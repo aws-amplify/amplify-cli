@@ -6,6 +6,7 @@ module.exports = {
   run: async (context) => {
   	const {awsmobile} = context;
   	
-  	return awsmobile.addResource(context, category);
+  	return awsmobile.serviceSelectionPrompt(context, category)
+  		.then((result) => awsmobile.addResource(context, result.provider, result.service, category));
    }
 }

@@ -22,8 +22,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "awsmobile-api": "../awsmobile-cli-plugin-storage",
-    "gluegun": "next"
+    "gluegun": "next",
+    "inquirer": "^3.2.1",
+    "chalk": "^2.0.1"
   },
   "devDependencies": {
     "ava": "^0.22.0",

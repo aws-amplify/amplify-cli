@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const chalk = require('chalk')
 const awsmobileCLIConstants = require('./constants.js');
 
 
@@ -36,9 +37,14 @@ function getProjectConfigFilePath(projectPath)
     return path.normalize(path.join(getDotConfigDirPath(projectPath), awsmobileCLIConstants.ProjectConfigFileName));
 }
 
-function getProjectInfoFilePath(projectPath)
+function getPluginConfigFilePath(projectPath)
 {
-    return path.normalize(path.join(getDotConfigDirPath(projectPath), awsmobileCLIConstants.ProjectInfoFileName));
+    return path.normalize(path.join(getDotConfigDirPath(projectPath), awsmobileCLIConstants.PluginConfigFileName));
+}
+
+function getAwsmobileMetaFilePath(projectPath)
+{
+    return path.normalize(path.join(getBackendDirPath(projectPath), awsmobileCLIConstants.AwsMobileMetaFileName));
 }
 
 function searchProjectRootPath()
@@ -64,19 +70,23 @@ function searchProjectRootPath()
 }
 
 function projectPathValidate(projectPath) {
+  if(projectPath === "/") {
+    console.log(chalk.red('You are not in a valid AWS mobile project'));
+    process.exit(1);
+  }
   let isGood = false
   if(fs.existsSync(projectPath)){
     const dotAwsmobileDirPath = getAwsmobileDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
-    const projectInfoFilePath = getProjectInfoFilePath(projectPath);
+    const pluginConfigFilePath = getPluginConfigFilePath(projectPath);
     const projectConfigFilePath = getProjectConfigFilePath(projectPath);
    
     isGood = fs.existsSync(dotAwsmobileDirPath) && 
               fs.existsSync(infoSubDirPath) && 
-              fs.existsSync(projectInfoFilePath)
+              fs.existsSync(pluginConfigFilePath) &&
+              fs.existsSync(projectConfigFilePath)
 
   }
-
   return isGood;
 }
 
@@ -85,6 +95,7 @@ module.exports = {
     getDotConfigDirPath,
     getBackendDirPath,
     getProjectConfigFilePath,
-    getProjectInfoFilePath
+    getPluginConfigFilePath,
+    getAwsmobileMetaFilePath
 }
   

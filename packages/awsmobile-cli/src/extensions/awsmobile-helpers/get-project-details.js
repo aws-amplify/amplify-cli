@@ -5,12 +5,12 @@ function getProjectDetails(category) {
 	const projectConfigFilePath = pathManager.getProjectConfigFilePath();
 	let projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
 	
-	const projectInfoFilePath = pathManager.getProjectInfoFilePath();
-	let projectInfo = JSON.parse(fs.readFileSync(projectInfoFilePath));
+	const pluginConfigFilePath = pathManager.getPluginConfigFilePath();
+	let pluginConfig = JSON.parse(fs.readFileSync(pluginConfigFilePath));
 
 	return {
 		projectConfig,
-		projectInfo
+		pluginConfig
 	};
 }
 

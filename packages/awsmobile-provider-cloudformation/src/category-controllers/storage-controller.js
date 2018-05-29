@@ -50,43 +50,19 @@ function copyCfnTemplate(context, category, options) {
   	return context.awsmobile.copyBatch(context, copyJobs, options);
 }
 
-function askServiceQuestion() {
-	if(supportedServices.length === 1) {
-		return new Promise((resolve, reject) => {
-			return resolve({service: supportedServices[0]});
-		});
-	}
-	let servicesInCheckBoxFormat = []
-
-	supportedServices.forEach((plugin) => {
-	    servicesInCheckBoxFormat.push({
-	      "name": supportedServices,
-	      "value": supportedServices
-	    });
-	});
-
-	var optionsQuestion = {
-      type: 'list',
-      name: 'service',
-      message: 'Which service do you want to use',
-      choices: supportedServices
-  	}
-  	return inquirer.prompt(optionsQuestion)
-}
-
-function addResource(context, category) {
+function addResource(context, category, service) {
+	let answers;
 	servicedMetadata = JSON.parse(fs.readFileSync(__dirname + '/supported-services.json'))[category];
 	supportedServices = Object.keys(servicedMetadata);
-	
-	return askServiceQuestion()
-		.then((answer) => {
-			let service = answer.service;
-			cfnFilename = servicedMetadata[service].cfnFilename;
-			return serviceWalkthrough(service);
+	cfnFilename = servicedMetadata[service].cfnFilename;
+	return serviceWalkthrough(service)
+		.then((result) => {
+			answers = result;
+			copyCfnTemplate(context, category, answers)
 		})
-		.then((answers) => copyCfnTemplate(context, category, answers));
-
+		.then(() => {
+			return answers.resourceName
+		});
 }
-
 
 module.exports = {addResource}; 

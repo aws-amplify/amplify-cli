@@ -3,9 +3,9 @@ var pathManager = require('./path-manager');
 var inquirer = require('inquirer');
 
 function configureProvider(context) {
-	const projectConfigFilePath = pathManager.getProjectConfigFilePath();
-	let projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-	let providers = projectConfig.providerPlugins;
+	const pluginConfigFilePath = pathManager.getPluginConfigFilePath();
+	let pluginConfig = JSON.parse(fs.readFileSync(pluginConfigFilePath));
+	let providers = pluginConfig.providerPlugins;
 	let pluginsInCheckBoxFormat = []
 	Object.keys(providers).forEach((provider) => {
 		pluginsInCheckBoxFormat.push({

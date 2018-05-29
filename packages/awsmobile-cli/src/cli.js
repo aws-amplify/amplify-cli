@@ -12,7 +12,7 @@ async function run (argv) {
   const cli = build()
     .brand('awsmobile')
     .src(__dirname)
-    .plugins(pluginDir, { matching: 'awsmobile-cli-*', hidden: true })
+    .plugins(pluginDir, { matching: 'awsmobile-category-*', hidden: true })
     .plugins('./node_modules', { matching: 'awsmobile-cli-*', hidden: true })
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
