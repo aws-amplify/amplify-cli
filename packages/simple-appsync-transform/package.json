@@ -1,0 +1,23 @@
+{
+  "name": "simple-appsync-transform",
+  "version": "1.0.0",
+  "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "author": "Michael Paris",
+  "license": "MIT",
+  "dependencies": {
+    "graphql": "^0.13.2",
+    "appsync-mapping-template": "1.0",
+    "cloudform": "2.0.1",
+    "graphql-transform": "1.0"
+  }
+}

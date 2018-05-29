@@ -1,0 +1,174 @@
+/* reset.css */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
+body {line-height:1.5;}
+table {border-collapse:separate;border-spacing:0;}
+caption, th, td {text-align:left;font-weight:normal;}
+table, td, th {vertical-align:middle;}
+blockquote:before, blockquote:after, q:before, q:after {content:"";}
+blockquote, q {quotes:"" "";}
+a img {border:none;}
+
+/* typography.css */
+html {font-size:100.01%;}
+body {font-size:80%;color:#222;background:#fff;font-family:"Helvetica Neue", Arial, Helvetica, sans-serif;}
+h1, h2, h3, h4, h5, h6 {font-weight:normal;color:#111;}
+h1 {font-size:3em;line-height:1;margin-bottom:0.5em;}
+h2 {font-size:2em;margin-bottom:0.75em;}
+h3 {font-size:1.5em;line-height:1;margin-bottom:1em;}
+h4 {font-size:1.2em;line-height:1.25;margin-bottom:1.25em;}
+h5 {font-size:1em;font-weight:bold;margin-bottom:1.5em;}
+h6 {font-size:1em;font-weight:bold;}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {margin:0;}
+p {margin:0 0 1.5em;}
+p img.left {float:left;margin:1.5em 1.5em 1.5em 0;padding:0;}
+p img.right {float:right;margin:1.5em 0 1.5em 1.5em;}
+a:focus, a:hover {color:#000;}
+a {color:#009;text-decoration:underline;}
+blockquote {margin:1.5em;color:#666;font-style:italic;}
+strong {font-weight:bold;}
+em, dfn {font-style:italic;}
+dfn {font-weight:bold;}
+sup, sub {line-height:0;}
+abbr, acronym {border-bottom:1px dotted #666;}
+address {margin:0 0 1.5em;font-style:italic;}
+del {color:#666;}
+pre {margin:1.5em 0;white-space:pre;}
+pre, code, tt {font:1em 'andale mono', 'lucida console', monospace;line-height:1.5;}
+li ul, li ol {margin:0;}
+ul, ol {margin:0 1.5em 1.5em 0;padding-left:3.333em;}
+ul {list-style-type:disc;}
+ol {list-style-type:decimal;}
+
+/* UI */
+body {
+	overflow-y: scroll;
+}
+
+#framework_name {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index: 1000;
+	font-size: 10px;
+	padding:0.5em 0.75em;
+	background-color: #fff;
+	background-color: rgba(255,255,255,0.9);
+
+	-webkit-border-top-left-radius: 6px;
+}
+* html #framework_name {
+	position: absolute;
+	bottom: auto;
+	top: expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.clientHeight));
+}
+
+/* Suites */
+.suite.passed, .runner.passed {
+	background-color: #6C6;
+}
+
+.suite.failed, .runner.failed {
+	background-color: #C30;
+}
+
+.spec.failed, .spec.passed, .spec.skipped {
+	padding-bottom: 0;
+}
+
+.spec.failed {
+	background-color: #FFC;
+}
+
+.spec.passed {
+	background-color: #CFC;
+}
+
+.suite a {
+	text-decoration: none;
+}
+
+.suite a.description {
+	color: #fff;
+}
+
+.runner a.description {
+	color: #fff;
+	font-weight: bold;
+}
+
+.spec.passed a.description {
+	color: #363;
+}
+
+.spec.failed a.description {
+	color: #C30;
+}
+
+/* CODE */
+.messages {
+	border: 0;
+}
+
+pre.examples-code {
+	background: #FFFFFF;
+	border: solid 1px #CCC;
+
+	margin: 0.5em 0;
+}
+pre.examples-code code {
+	display:block;
+
+	padding: 0.5em;
+	_padding-right: 0;
+	_padding-left: 0;
+
+	white-space: pre;
+	_width:100%;
+
+	font-size: 10px;
+	font-family: "Panic Sans", "Monaco", monospace !important;
+	overflow-x: auto;
+
+	scrollbar-base-color:       #FFF;
+	scrollbar-arrow-color:      #FFF;
+	scrollbar-track-color:      #FFF;
+	scrollbar-3dlight-color:    #eee;
+	scrollbar-highlight-color:  #eee;
+	scrollbar-face-color:       #eee;
+	scrollbar-shadow-color:     #eee;
+	scrollbar-darkshadow-color: #FFF;
+}
+
+
+/* INDEX PAGE */
+.container {
+	padding:3em;
+	width: auto;
+}
+
+#select {
+	text-align:right;
+}
+#select fieldset {
+	text-align:left;
+}
+#select label {
+	text-align:right;
+}
+#select div input {
+	line-height: 2em;
+}
+
+
+ul#prebuilt {
+	padding-left:0;
+	list-style:none;
+}
+ul#prebuilt li a {
+	font-size: 1.5em;
+	text-decoration: none;
+	padding: 0.5em;
+}
+ul#prebuilt li a:hover {
+	background-color: #eee;
+}

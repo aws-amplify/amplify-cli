@@ -1,0 +1,366 @@
+@CHARSET "UTF-8";
+
+/* --------------------
+* @Layout
+*/
+
+
+#slickspec_logo {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 9999;
+	padding:0.5em 0.75em;
+	color: #fff;
+	
+	font-size: 20px;
+	line-height: 20px;
+	
+	font-weight: normal;
+}
+#slickspec_logo a,
+#slickspec_logo a:link,
+#slickspec_logo a:visited {
+	color: #fff;
+	text-decoration: none;
+}
+#slickspec_logo a:hover {
+	color: #000;
+}
+
+#jsspec_container{padding-top:3em !important;}
+#framework_name {
+	position: absolute;
+	top: 42px;
+	right: 0px;
+	z-index: 1;
+	padding:0.5em 0.75em;
+	color: #000;
+	
+	font-size: 20px;
+	line-height: 20px;
+	
+	font-weight: normal;
+}
+#framework_name a,
+#framework_name a:link,
+#framework_name a:visited {
+	color: #fff;
+	text-decoration: none;
+}
+#framework_name a:hover {
+	color: #000;
+}
+
+
+#copyright{
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	z-index: 1000;
+	font-size: 10px;
+	padding:0.5em 0.75em;
+	background-color: #fff;
+	background-color: rgba(255,255,255,0.9);
+	
+	-webkit-border-top-left-radius: 6px;
+}
+* html #copyright {
+	position: absolute;
+	bottom: auto;
+	top: expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.clientHeight));
+}
+html.moobugger #copyright{
+	bottom: 180px;
+}
+
+
+html {
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+iframe {display:none;}
+iframe#debugger {display:block !important;}
+iframe#debugger{ position: fixed !important; bottom: 0; top: auto; }
+* html iframe#debugger{position:absolute !important;bottom:auto;top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.clientHeight));}
+
+.debug-spacer {display:none;}
+
+/*Make position:fixed work in IE6!*/
+
+* html,* html body   /* IE6 Fixed Position Jitter Fix */ {background-image:url(about:blank);background-attachment:fixed;}
+
+#slickspec_logo,
+.fixed-top           /* position fixed Top            */ {position: fixed    ; bottom: auto ; top:  0px                                                                                                          ; }
+* html #slickspec_logo,
+* html .fixed-top    /* IE6 position fixed Top        */ {position: absolute ; bottom: auto ; top:  expression(eval(document.documentElement.scrollTop))                                                         ; }
+.fixed-bottom        /* position fixed Bottom         */ {position: fixed    ; bottom: 0px  ; top:  auto                                                                                                         ; }
+* html .fixed-bottom /* IE6 position fixed Bottom     */ {position: absolute ; bottom: auto ; top:  expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.clientHeight)) ; }
+.fixed-left          /* position fixed Left           */ {position: fixed    ; right:  auto ; left: 0px                                                                                                         ; }
+* html .fixed-left   /* IE6 position fixed Left       */ {position: absolute ; right:  auto ; left: expression(eval(document.documentElement.scrollLeft))                                                       ; }
+.fixed-right         /* position fixed right          */ {position: fixed    ; right:  0px  ; left: auto                                                                                                        ; }
+* html .fixed-right  /* IE6 position fixed right      */ {position: absolute ; right:  auto ; left: expression(eval(document.documentElement.scrollWidth-this.clientWidth))                                     ; }
+
+
+
+body, #jsspec_container {
+	padding: 0;
+	margin: 0;
+	background-color: #FFFFFF;
+}
+
+#jsspec_container {
+	padding-bottom:180px;
+}
+
+#title {
+	padding: 0 !important;
+	margin: 0 !important;
+	height: 40px !important;
+/*	overflow: hidden !important;*/
+	
+	position: fixed;
+	_position: absolute;
+	top: 0px;	   
+	_top: expression(eval(document.documentElement.scrollTop));
+	left: 0px;
+	_left: expression(eval(document.documentElement.scrollLeft));
+	width: 100%;
+	_width: expression(eval(document.documentElement.clientWidth));
+	
+	z-index: 1000;
+}
+
+#title {
+	border-bottom:2px solid #fff;
+}
+
+#list {
+	overflow: auto;
+	
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	background: #eee;
+	
+	margin-top:42px;
+	
+	width: 250px;
+}
+* html #list{
+	position: absolute;
+	bottom: auto;
+	top: expression(eval(document.documentElement.scrollTop));
+	height: expression(eval(document.documentElement.clientHeight - 42));
+}
+html.moobugger #list{
+	bottom: 180px;
+}
+* html.moobugger #list{
+	bottom: auto;
+	height: expression(eval(document.documentElement.clientHeight - 42 - 180));
+}
+
+#log {
+	position:relative;
+	overflow: hidden;
+	
+	padding: 0;
+	margin: 0;
+	margin-top: 42px;
+	margin-left: 250px;
+}
+
+/*iPhone*/
+@media only screen and (max-device-width: 480px) {
+	#list {
+		overflow: visible;
+	}
+	
+	#log {
+		overflow: visible;
+	}
+}
+
+
+/* --------------------
+* @Decorations and colors
+*/
+* {
+	padding: 0;
+	margin: 0;
+	font-family: "Lucida Grande", Helvetica, sans-serif;
+}
+
+li {
+	list-style: none;
+}
+
+/* hiding subtitles */
+h2 {
+	display: none;
+}
+
+/* title section */
+div#title {
+	padding: 0em 0.5em;
+}
+
+div#title h1 {
+	float: right;
+	padding: 0.25em 0.75em;
+	font-size: 16px;
+}
+div#title h1 a:before{
+	content:"powered by ";
+	font-size: 9px;
+	font-style: italic;
+	color:#fff;
+}
+
+div#title ul {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin-left:120px;
+}
+div#title ul li {
+	font-size: 12px;
+	float: left;
+	padding: 0.75em 0em 0.5em 0.75em;
+	max-width: 14em;
+}
+
+div#title p {
+	float:right;
+	padding: 0.5em 0em 0.5em 0.75em;
+	font-size: 10px;
+}
+
+/* spec container */
+ul.specs {
+	margin: 0.5em;
+}
+ul.specs li {
+	margin-bottom: 0.1em;
+	position:relative;
+}
+
+/* spec title */
+ul.specs li h3 {
+	font-weight: bold;
+	font-size: 11px;
+	line-height: 13px;
+	padding: 0.5em 0.75em;
+	cursor: pointer;
+	_cursor: hand;
+}
+ul.specs li h3 a {
+	text-decoration: none;
+}
+ul.specs li h3 a:hover {
+	text-decoration: underline;
+}
+
+/* example container */
+ul.examples li {
+	background-color: #eee;
+	color: #999;
+	
+	border-style: solid;
+	border-width: 0px 0px 1px 5px;
+	margin: 0.2em 0em 0.2em 1em;
+}
+
+/* example title */
+ul.examples li h4 {
+	font-weight: normal;
+	font-size: 12px;
+	margin-left: 1em;
+}
+
+pre.examples-code {
+	background: #FFFFFF;
+	border: solid 1px #CCC;
+	
+	margin: 0.5em 2em;
+}
+pre.examples-code code {
+	display:block;
+	
+	padding: 0.5em;
+	_padding-right: 0;
+	_padding-left: 0;
+	
+	white-space: pre;
+	_width:100%;
+	
+	font-size: 10px;
+	font-family: "Panic Sans", "Monaco", monospace !important;
+	overflow-x: auto;
+	
+	scrollbar-base-color:       #FFF;
+	scrollbar-arrow-color:      #FFF;
+	scrollbar-track-color:      #FFF;
+	scrollbar-3dlight-color:    #eee;
+	scrollbar-highlight-color:  #eee;
+	scrollbar-face-color:       #eee;
+	scrollbar-shadow-color:     #eee;
+	scrollbar-darkshadow-color: #FFF;
+}
+
+/* example explaination */
+ul.examples li div {
+	padding: 1em 2em;
+	font-size: 11px;
+}
+
+/* styles for ongoing, success, failure, error */
+ul.specs li h3, ul.specs li h3 a { color: #666; background-color: #fff; }
+
+div.success, div.success a { color: #FFFFFF; background-color: #6C6; }
+div.exception, div.exception a { color: #FFFFFF; background-color: #C30; }
+
+ul.specs li.success h3, ul.specs li.success h3 a { color: #FFFFFF; background-color: #6C6; }
+ul.examples li.success, ul.examples li.success a { color: #363; background-color: #CFC; border-color: #6C6; }
+
+ul.specs li.exception h3, ul.specs li.exception h3 a { color: #FFFFFF; background-color: #C30; }
+ul.examples li.exception, ul.examples li.exception a { color: #C30; background-color: #FFC; border-color: #C30; }
+div.ongoing, div.ongoing a { color: #330; background-color: #FF9; }
+
+ul.specs li.ongoing h3, ul.specs li.ongoing h3 a { color: #330; background-color: #FF9; }
+ul.examples li.ongoing, ul.examples li.ongoing a { color: #330; background-color: #FF9; border-color: #CC0; }
+
+
+
+/* --------------------
+* values
+*/
+.number_value, .string_value, .regexp_value, .boolean_value, .dom_value {
+	font-family: monospace;
+	color: blue;
+}
+.object_value, .array_value {
+	line-height: 2em;
+	padding: 0.1em 0.2em;
+	margin: 0.1em 0;
+}
+.date_value {
+	font-family: monospace;
+	color: olive;
+}
+.undefined_value, .null_value {
+	font-style: italic;
+	color: blue;
+}
+.dom_attr_name {
+}
+.dom_attr_value {
+	color: red;
+}
+.dom_path {
+	font-size: 11px;
+	color: gray;
+}

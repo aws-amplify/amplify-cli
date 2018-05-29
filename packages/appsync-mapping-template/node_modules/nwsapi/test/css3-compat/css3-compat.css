@@ -1,0 +1,178 @@
+
+    /* TEST 0 : BASIC TESTS */
+    /* element type selector */
+    body { background-color: red; margin: 10px; padding: 10px; color: lime; font-family: sans-serif; }
+    div { background-color: red; }
+    div.header { background-color: #e0e0e0; color: black; padding: 10px; margin-bottom: 10px;}
+    /* class selector */
+    .unitTest { font-size: 0px; width: 10px; background-color: red; margin: 0px; margin-right: 2px; float: left; }
+    .test { margin-bottom: 2px; background-color: green;}
+    /* group of selectors */
+    .unitTest, .test { height: 10px; }
+
+    /* :target selector */
+    .target :target { background-color: lime; }
+
+    /* test 1 : childhood selector */
+    html > body { background-color: green; }
+    .test > .blox1 { background-color: lime; }
+
+    /* test 2 : attribute existence selector */
+    /* attribute with a value */
+    .blox2[align] { background-color: lime; }
+    /* attribute with empty value */
+    .blox3[align] { background-color: lime; }
+    /* attribute with almost similar name */
+    .blox4, .blox5 { background-color: lime }
+    .blox4[align], .blox5[align] { background-color: red; }
+
+    /* test3 : attribute value selector */
+    .blox6[align="center"] { background-color: lime; }
+    .blox6[align="c"] { background-color: red; }
+    .blox6[align="centera"] { background-color: red; }
+    .blox6[foo="\e9"] { background-color: lime; }
+    .blox6[\_foo="\e9"] { background-color: lime; }
+
+    /* test 4 : [~=] */
+    .blox7[class~="foo"] { background-color: lime; }
+    .blox8, .blox9, .blox10 { background-color: lime; }
+    .blox8[class~=""] { background-color: red; }
+    .blox9[foo~=""] { background-color: red; }
+    .blox10[foo~="foo"] { background-color: red; }
+
+    /* test5 [^=] */
+    .attrStart > .t3 { background-color: lime; }
+    .attrStart > .t1[class^="unit"] { background-color: lime; }
+    .attrStart > .t2 { background-color: lime; }
+    .attrStart > .t2[class^="nit"] { background-color: red; }
+    .attrStart > .t3[align^=""] { background-color: red; }
+    .attrStart > .t4[foo^="\e9"] { background-color: lime; }
+
+    /* test6 [$=] */
+    .attrEnd > .t3 { background-color: lime; }
+    .attrEnd > .t1[class$="t1"] { background-color: lime; }
+    .attrEnd > .t2 { background-color: lime; }
+    .attrEnd > .t2[class$="unit"] { background-color: red; }
+    .attrEnd > .t3[align$=""] { background-color: red; }
+    .attrEnd > .t4[foo$="\e9"] { background-color: lime; }
+
+    /* test7 [*=] */
+    .attrMiddle > .t3 { background-color: lime; }
+    .attrMiddle > .t1[class*="t t"] { background-color: lime; }
+    .attrMiddle > .t2 { background-color: lime; }
+    .attrMiddle > .t2[class*="a"] { background-color: red; }
+    .attrMiddle > .t3[align*=""] { background-color: red; }
+    .attrMiddle > .t4[foo*="\e9"] { background-color: lime; }
+
+    /* :first-child tests */
+    .firstChild .unitTest:first-child { background-color: lime; }
+    .blox12:first-child { background-color: red; }
+    .blox13:first-child { background-color: red; }
+    .blox12, .blox13 { background-color: lime }
+
+    /* :root tests */
+    html { background-color: red; }
+    :root { background-color: green; }
+
+    /* :nth-child(n) tests */
+    .nthchild1 > :nth-last-child(odd) { background-color: lime; }
+    .nthchild1 > :nth-child(odd) { background-color: lime; }
+
+    .nthchild2 > :nth-last-child(even) { background-color: lime; }
+    .nthchild2 > :nth-child(even) { background-color: lime; }
+
+    .nthchild3 > :nth-child(3n+2) { background-color: lime; }
+    .nthchild3 > :nth-last-child(3n+1) { background-color: lime; }
+    .nthchild3 > :nth-last-child(3n+3) { background-color: lime; }
+
+    .nthoftype1 > div:nth-of-type(odd) { background-color: lime; }
+    .nthoftype1 > div:nth-last-of-type(odd) { background-color: lime; }
+    .nthoftype1 > p { background-color: green; }
+
+    .nthoftype2 > div:nth-of-type(even) { background-color: lime; }
+    .nthoftype2 > div:nth-last-of-type(even) { background-color: lime; }
+    .nthoftype2 > p { background-color: green; }
+
+    .nthoftype3 > div:nth-of-type(3n+1) { background-color: lime; }
+    .nthoftype3 > div:nth-last-of-type(3n+1) { background-color: lime; }
+    .nthoftype3 > div:nth-last-of-type(3n+2) { background-color: lime; }
+    .nthoftype3 > p { background-color: green; }
+
+    /* :not() tests */
+    .blox14:not(span) { background-color: lime; }
+    .blox15:not([foo="blox14"]) { background-color: lime; }
+    .blox16 { background-color: red; }
+    .blox16:not(.blox15) { background-color: lime; }
+    .blox16:not(.blox15[foo="blox14"]) { background-color: red; }
+
+    /* :only-of-type tests */
+    .blox17 { background-color: red; }
+    .blox17:only-of-type { background-color: lime; }
+    .blox18:only-of-type { background-color: red; }
+    .blox18:not(:only-of-type) { background-color: lime; }
+
+    /* :last-child tests */
+    .lastChild > p { background-color: red; }
+    .lastChild > :last-child { background-color: lime }
+    .lastChild > :not(:last-child) { background-color: lime }
+
+    /* :first-of-type tests */
+    .firstOfType > p { background-color: red }
+    .firstOfType > *:first-of-type { background-color: lime; }
+    *.firstOfType > :not(:first-of-type) { background-color: lime; }
+
+    /* :last-of-type tests */
+    .lastOfType > p { background-color: red }
+    .lastOfType > *:last-of-type { background-color: lime; }
+    *.lastOfType > :not(:last-of-type) { background-color: lime; }
+
+    /* :only-child tests */
+    .onlyChild > *:not(:only-child) { background-color: lime; }
+    .onlyChild > .unitTest > *:only-child { background-color: lime; }
+
+    /* :only-of-type tests */
+    .onlyOfType *:only-of-type { background-color: lime; }
+    .onlyOfType *:not(:only-of-type) { background-color: lime; }
+
+    /* :empty tests */
+    .empty > .isEmpty { color: red; }
+    .empty > *.isEmpty:empty { background-color: lime; color: lime; }
+    .empty > .isNotEmpty { background-color: blue; color: blue; }
+    .empty > .isNotEmpty:empty { background-color: red; color: red; }
+    .empty > .isNotEmpty:not(:empty) { background-color: lime; color: lime; }
+
+    /* :lang() tests */
+    .lang :lang(en) { background-color: lime; }
+    .lang :lang(fr) { background-color: lime; }
+    .lang .t1 { background-color: blue; }
+    .lang .t1:lang(es) { background-color: lime; }
+    .lang :lang(es-AR) { background-color: red; }
+
+    /* [|=] tests */
+    .attrLang .t1 { background-color: lime; }
+    .attrLang .t1[lang|="en"] { background-color: red; }
+    .attrLang [lang|="fr"] { background-color: lime; }
+    .attrLang .t2[lang|="en"] { background-color: lime; }
+    .attrLang .t3 { background-color: blue; }
+    .attrLang .t3[lang|="es"] { background-color: lime; }
+    .attrLang [lang|="es-AR"] { background-color: red; }
+
+    /* UI tests */
+    .UI > * { float: left }
+    .UI { clear: both; height: auto; padding-top: 6px;}
+    .UI .t1:enabled > .unitTest { background-color: lime; }
+    .UI .t2:disabled > .unitTest { background-color: lime; }
+    .UI .t3:checked + div { background-color: lime; }
+    .UI .t4:not(:checked) + div { background-color: lime; }
+
+    /* ~ combinator tests */
+    .tilda { clear: both; height: auto; padding-top: 6px;}
+    .tilda .t1 { background-color: white; }
+    .tilda .t1 ~ .unitTest { background-color: lime; }
+    .tilda .t1:hover ~ .unitTest { background-color: red; }
+
+    /* ~ combinator tests */
+    .plus { clear: both; height: auto; padding-top: 6px;}
+    .plus .t1, .plus .t2 { background-color: white; }
+    .plus .t1 + .unitTest + .unitTest { background-color: lime; }
+    .plus .t1:hover + .unitTest + .unitTest { background-color: red; }

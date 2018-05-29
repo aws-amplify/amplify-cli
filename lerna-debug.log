@@ -1,0 +1,34 @@
+0 silly input [ 'build' ]
+1 silly flags { _: [ 'run' ],
+1 silly flags   'reject-cycles': false,
+1 silly flags   rejectCycles: false,
+1 silly flags   script: 'build',
+1 silly flags   args: [] }
+2 verbose rootPath /Users/parismic/Projects/appsync-model-transform
+3 info version 2.11.0
+4 silly existsSync /Users/parismic/Projects/appsync-model-transform/VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 silly runScriptInDir build [] cloudform
+9 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/cloudform' }
+10 silly runScriptInDir build [] appsync-mapping-template
+11 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/appsync-mapping-template' }
+12 silly runScriptInDir build [] graphql-transform
+13 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/graphql-transform' }
+14 silly runScriptInDir build [] simple-appsync-transform
+15 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/simple-appsync-transform' }
+16 silly runScriptInDir build [] appsync-cli
+17 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/appsync-cli' }
+18 error build Errored while running script in 'appsync-cli'
+19 error execute callback with error
+20 error Error: Command failed: yarn run build
+20 error warning ../../package.json: No license field
+20 error error Command failed with exit code 2.
+20 error yarn run v1.1.0
+20 error $ tsc
+20 error src/commands/compile.ts(4,29): error TS2307: Cannot find module 'simple-appsync-transform'.
+20 error src/commands/default.ts(4,29): error TS2307: Cannot find module 'simple-appsync-transform'.
+20 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+20 error
+20 error     at Promise.all.then.arr (/Users/parismic/.nvm/versions/node/v6.11.3/lib/node_modules/lerna/node_modules/execa/index.js:236:11)

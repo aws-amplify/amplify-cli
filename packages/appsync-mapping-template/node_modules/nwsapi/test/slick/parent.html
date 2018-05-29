@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Parent window</title>
+</head>
+<body>
+<script>
+(function() {
+  function test() {
+    alert(frames[0].document.querySelectorAll('[class~=fooBar]').length == 2 ? 'PASSED' : 'FAILED');
+  }
+
+  var iframe = document.createElement('iframe');
+  iframe.height = iframe.width = 200;
+  iframe.src = 'quirks.html';
+
+  if (iframe.addEventListener) {
+    iframe.addEventListener('load', test, false);
+  } else if (iframe.attachEvent) {
+    iframe.attachEvent('onload', test);
+  }
+  document.body.insertBefore(iframe, document.body.firstChild);
+}());
+</script>
+</body>
+</html>

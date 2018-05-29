@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>template xhtml as html</title>
+	<script src="../../Source/Slick.Parser.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../Source/Slick.Finder.js" type="text/javascript" charset="utf-8"></script>
+	
+	<style type="text/css">
+		div, input, a, button{
+			margin: 5px;
+			background: blue;
+			cursor: pointer;
+			float: left;
+			width: 100px;
+			height: 100px;
+			padding: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="div" tabindex="1">Should become green onclick</div>
+	<div id="div2">Shouldn't become green onclick</div>
+	<a id="anchor" title="anchor" href="#">Should become green onclick</a>
+	<button id="button" class="btn" type="submit">Should become green onclick</button>
+	
+	<script type="text/javascript" charset="utf-8">
+		var all = Slick.search('div, input, a, button'), el;
+		for (var i = 0; i < all.length; i++){
+			el = all[i];
+			(function(el){
+				el.onclick = function(){
+					el.focus();
+					if (Slick.find(':focus') === el){
+						el.style.backgroundColor = 'green';
+					}
+					return false;
+				};
+			})(el);
+		}
+	</script>
+</body>
+</html>

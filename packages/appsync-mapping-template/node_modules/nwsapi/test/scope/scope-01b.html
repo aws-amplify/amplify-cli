@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NWMatcher Scope Test 01</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="../../src/nwsapi.js"></script>
+</head>
+<body>
+
+<ul>
+ <li id="scope"><a>abc</a></li>
+ <li>def</li>
+ <li><a>efg</a></li>
+</ul>
+
+<script>
+
+  var scope = document.querySelector('#scope');
+
+  console.log(scope.querySelectorAll(':scope ul a').length); // 0
+  console.log(scope.querySelectorAll(':scope body ul a').length); // 0
+  console.log(scope.querySelectorAll(':scope a').length); // 1
+
+  //======================================================================
+
+  NW.Dom.first('#scope', document);
+
+  console.log(NW.Dom.select(':scope ul a', scope).length); // 0
+  console.log(NW.Dom.select(':scope body ul a', scope).length); // 0
+  console.log(NW.Dom.select(':scope a', scope).length); // 1
+
+</script>
+
+</body>
+</html>

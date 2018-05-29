@@ -1,0 +1,149 @@
+/* speed.css - nwsapi benchmark tool */
+
+/* DEFAULTS PAGE ELEMENTS */
+html, body { margin: 0; padding: 0 16px; }
+body { font: 13px Consolas, Monaco, monospace; }
+body.complete { background-color: #efe;  }
+
+/* HEADING & DESCRIPTIONS */
+.heading { display: table; width: 100%; }
+.heading > * { vertical-align: middle; }
+.heading ul { list-style: none; margin: 0; padding: 0; }
+.headcenter { min-width: 50%; margin: 0; padding: 0; }
+.headright { text-align: right; display: table-cell; }
+.headleft { text-align: left; display: table-cell; }
+h1.title { text-align: center; }
+
+/* TESTS & RESULTS TABLES */
+table { width: 100%; border: 1px solid #666; border-width: 1px 0 0 1px; }
+table { border-radius: 4px; border-collapse: separate; border-spacing: 0px; }
+th, td { border-style: solid; border-color: #666; border-width: 0 1px 1px 0; }
+th, td { min-width: 150px; width: 150px; text-align: right; padding: 4px 1em; }
+tr th { background-color: #eee; font-size: 16px; padding: 4px 0; }
+tr th { color: #c33; text-align: center; letter-spacing: 1px; }
+tr td:first-child { margin-left: 1em; text-align: left; }
+
+thead tr:first-child { color: #c33; text-align: center; letter-spacing: 1px; }
+thead tr:last-child { color: #c33; text-align: center; letter-spacing: 1px; }
+
+tbody tr:last-child { background-color: #eee; color: #c33; }
+
+tr:last-child td:first-child { border-bottom-left-radius: 4px; }
+tr:last-child td:last-child { border-bottom-right-radius: 4px; }
+
+tr:first-child th:first-child { border-top-left-radius: 4px; }
+tr:first-child th:last-child { border-top-right-radius: 4px; }
+
+td.red { background-color: #f99; color: #000; }
+td.green { background-color: #9f9; color: #000; }
+td.black { background-color: #333; color: #ccc; }
+td.yellow { background-color: #ff9; color: #000; }
+
+td.pending span { animation: shake 1s infinite; }
+td.pending span { display: inline-block; }
+td.selector { background-color: #def; }
+td.pending { background-color: #9cf; }
+
+pre {
+	margin: 0;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	font: 13px Consolas, Lucida, Monaco, monospace;
+}
+#message { text-align: center; }
+
+/* ANIMATED SELECTOR TEST */
+@keyframes shake {
+	10%, 90% { transform: translate3d(-1px, 0, 0); }
+	20%, 80% { transform: translate3d( 2px, 0, 0); }
+	30%, 70% { transform: translate3d(-4px, 0, 0); }
+	40%, 60% { transform: translate3d( 4px, 0, 0); }
+}
+
+/* PRESETS SELECTORS LIST */
+select#presets {
+	padding: 4px;
+	font: inherit;
+	border-radius: 3px;
+	border: 1px solid #369;
+}
+select#presets option {
+	padding: 4px;
+	text-indent: 8px;
+	border: 0px solid #def;
+	font: 13px Consolas, Lucida, Monaco, monospace; 
+}
+select#presets {
+	background-color: #def;
+	background-image: url('data:image/png;base64,\
+		iVBORw0KGgoAAAANSUhEUgAAAAcAAAALCAYAAACzkJeoAAAAOklE\
+		QVQYV2P4//8/AwxHRkb+B2I4H13iP7ICbBJwBbgkwBhuLDaMXxLZ\
+		ddgk8duJTQKnP7E6CFkChAFpxL/ydoaj+QAAAABJRU5ErkJggg==');
+	background-position: 96% center !important;
+	background-repeat: no-repeat !important;
+	-webkit-appearance: none !important;
+	-moz-appearance: none !important;
+}
+div.buttons, div.controls {
+	text-align: center;
+}
+button#stop,
+button#start {
+	color: #eee;
+	font: inherit;
+	margin: 16px 0;
+	border: 0 none;
+	padding: 8px 32px;
+	border-radius: 4px;
+	background-color: #222;
+}
+.button {
+	color: #fff;
+	width: 48px;
+	height: 48px;
+	sdisplay: block;
+	margin: 16px 0;
+	cursor: pointer;
+	text-align: center;
+	position: relative;
+	background-color: transparent;
+	background-image: url('data:image/svg+xml;utf8,\
+		<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48">\
+			<g transform="matrix(0.13429727 0 0 0.13381348 -1.4397597 -1.1683799)">\
+			<path d="m363.1 187.5a173.7 173.7 0 1 1-347.4 0 173.7 173.7 0 1 1 347.4 0z" style="fill:%23fff;stroke-width:10;stroke:%2369f"/>\
+			<path d="m347.1 187.8a157.6 157.6 0 1 1-315.3 0 157.6 157.6 0 1 1 315.3 0z" style="fill:%2369f;stroke-width:3"/>\
+			<text font-size="300px" y="297" x="188" style="fill:%23cff;font-family:Arial;font-size:300px;stroke-width:1px;text-anchor:middle">?</text>\
+			</g>\
+		</svg>');
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+#info {
+    top: 32px;
+    right: 16px;
+    color: #333;
+	width: 480px;
+	padding: 8px;
+    overflow: hidden;
+	text-align: left;
+    line-height: 20px;
+    position: absolute;
+    border-radius: 4px;
+	border: 1px solid #999;
+    border: 1px solid #ccc;
+    background: none repeat scroll 0 0 #eee;
+}
+.popbox {
+    visibility: hidden; opacity: 0;
+    transition: visibility 0s linear 0.3s, opacity 0.3s linear;
+    transition: all 0.4s ease;
+    transition-delay: 1s;
+    visibility: hidden;
+    opacity: 0;
+}
+.pophover:hover > .popbox {
+    transition: all 0.3s ease;
+    transition-delay: 0s;
+    visibility: visible;
+    opacity: 1;
+}

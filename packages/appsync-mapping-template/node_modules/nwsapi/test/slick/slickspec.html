@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Slick Specs</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="assets/screen.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+	<!--[if IE]><link rel="stylesheet" href="assets/ie.css" type="text/css" media="screen" title="no title" charset="utf-8" /><![endif]-->
+<style type="text/css" media="screen">
+
+.container {
+	padding:3em;
+	width: auto;
+}
+
+sup.version{
+	font-size: 9px;
+	font-style: italic;
+}
+
+div{
+	text-align:left;
+}
+#select .buttons {
+	text-align:right;
+}
+#select label {
+	text-align:right;
+	padding-top:0.8em;
+}
+#select div input {
+	line-height: 1em;
+	padding: 0.5em;
+}
+
+
+ul#prebuilt {
+	padding-left:0;
+	list-style:none;
+}
+#prebuilt dt a {
+	font-size: 1.5em;
+	text-decoration: none;
+	padding: 0.5em;
+}
+#prebuilt dt a:hover {
+	background-color: #DEE6F7;
+}
+.box a:hover {
+	background-color: #fff;
+}
+
+dt,dt b{
+	font-weight: normal;
+}
+
+dt{
+	padding-top:0.5em;
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+
+
+<h1>Slick<strong>Spec</strong> <sup class="version">pre-release</sup></h1>
+<p><em>Generic Selectors API Specification</em></p>
+
+<div class="span-12 last">
+	<p>SlickSpec is a framework independant specification for selectors engines.</p>
+	
+	<p>In this first release all the various separate specs have been combined into a single spec runner. Some of the frameworks specifically choose not to support some selectors that other frameworks fully support. In our next SlickSpec release we plan to separate out these selectors and have both a strict standards-only set and a common extenstions set of specs.</p>
+</div>
+
+<hr />
+
+<div class="span-22">
+	
+	<div class="span-8">
+		<h2>Bootstrapped</h2>
+		<dl id="prebuilt">
+			<!-- jQuery -->
+			<dt><a href="select.html?script=http://github.com/jeresig/sizzle/raw/master/sizzle.js&amp;script=bootstrap/sizzle.slickspec.js"> &rarr; SlickSpec <strong>Sizzle</strong> <sup class="version">edge</sup></a></dt>
+			<dt><a href="select.html?script=http://code.jquery.com/jquery-1.4a1.js&amp;script=bootstrap/sizzle.slickspec.js"> &rarr; SlickSpec <strong>Sizzle</strong> <sup class="version">jQuery 1.4</sup></a></dt>
+			<dt><a href="select.html?script=http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.js&amp;script=bootstrap/sizzle.slickspec.js"> &rarr; SlickSpec <strong>Sizzle</strong> <sup class="version">jQuery 1.3</sup></a> </dt>
+			
+			<!-- MooTools -->
+			<dt><a href="select.html?script=../Source/Slick.Finder.js&amp;script=../Source/Slick.Parser.js&amp;script=bootstrap/slick.slickspec.js"> &rarr; SlickSpec <small>MooTools</small> <strong>Slick</strong> <sup class="version">edge</sup></a></dt>
+			<dt><a href="select.html?script=http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools.js&amp;script=bootstrap/moo12.slickspec.js"> &rarr; SlickSpec <strong>MooTools</strong> <sup class="version">1.2.4</sup></a></dt>
+			
+			<!-- NWSAPI -->
+			<dt><a href="select.html?script=http://javascript.nwbox.com/nwsapi/nwsapi.js&amp;script=bootstrap/nwsapi.slickspec.js"> &rarr; SlickSpec <strong>NWSAPI</strong> <sup class="version">20091231</sup></a></dt>
+			
+			<!-- YUI -->
+			<dt><a href="select.html?script=http://ajax.googleapis.com/ajax/libs/yui/2/build/yahoo/yahoo.js&amp;script=http://ajax.googleapis.com/ajax/libs/yui/2/build/dom/dom.js&amp;script=http://ajax.googleapis.com/ajax/libs/yui/2/build/selector/selector.js&amp;script=bootstrap/yui.slickspec.js"> &rarr; SlickSpec <strong>YUI</strong> <sup class="version">2.x</sup></a></dt>
+		</dl>
+		
+		<h3>Results</h3>
+		<p>Here we list the historical results from various browsers so that you can quickly see previous results without having to run the specs yourself.</p>
+		
+		<h4>Mon Jan 11 16:28:58 -0500 2010</h4>
+		<dl>
+			<!-- jQuery -->
+			<dt><b><strong>Sizzle</strong> <sup class="version">edge 9AAF3C9A</sup></b></dt>
+			<dd>Safari 4: 1349 examples 76 failures 38 errors</dd>
+			<dd>IE 6: 1119 examples 12 failures 10 errors</dd>
+			<dt><b><strong>Sizzle</strong> <sup class="version">jQuery 1.4</sup></b></dt>
+			<dd>Safari 4: 1277 examples 74 failures 38 errors</dd>
+			<dt><b><strong>Sizzle</strong> <sup class="version">jQuery 1.3</sup></b> </dt>
+			<dd>Safari 4: 1277 examples 438 failures 42 errors</dd>
+			
+			<!-- MooTools -->
+			<dt><b><small>MooTools</small> <strong>Slick</strong> <sup class="version">edge</sup></b></dt>
+			<dd>Safari 4: 1690 examples 5 failures 0 errors</dd>
+			<dd>IE 6: 1165 examples 13 failures 0 errors</dd>
+			<dt><b><strong>MooTools</strong> <sup class="version">1.2.4</sup></b></dt>
+			<dd>Safari 4: 1213 examples 284 failures 191 errors</dd>
+			
+			<!-- NWSAPI -->
+			<dt><b><strong>NWSAPI</strong> <sup class="version">20171025</sup></b></dt>
+			<dd>Safari 11: 2063 specs 0 failures 0 errors</dd>
+			
+			<!-- YUI -->
+			<dt><b><strong>YUI</strong> <sup class="version">2.x</sup></b></dt>
+			<dd>Safari 4: 1258 examples 471 failures 8 errors</dd>
+		</dl>
+		
+	</div>
+	
+	<div class="span-12 box">
+		<h2>SlickSpec for any engine</h2>
+		<p>To run SlickSpec on your own selector engine all you need is a link to the source and a simple bootstrap script.</p>
+		<p>The bootstrap script maps the generic methods that the specs use to the specific selector engine's methods.</p>
+		<p>See the Slick.js bootstrap as an example <a href="bootstrap/slick.slickspec.js">bootstrap/slick.slickspec.js</a>.</p>
+		
+		<form action="select.html" method="get" accept-charset="utf-8" id="select">
+			<fieldset>
+				<legend>Run against a custom script</legend>
+				<div>
+					<label class="column span-3" for="script">Script(s)</label>
+					<input class="span-8 last" type="text" name="script" value="../Slick.Finder.js" />
+				</div>
+				<div>
+					<label class="column span-3" for="script">&nbsp;</label>
+					<input class="span-8 last" type="text" name="script" value="../Slick.Parser.js" />
+				</div>
+				<div>
+					<label class="column span-3" for="script">&nbsp;</label>
+					<input class="span-8 last" type="text" name="script" value="" />
+				</div>
+				<div>
+					<label class="column span-3" for="script"><span>Bootstrap Script</span></label>
+					<input class="span-8 last" type="text" name="script" value="bootstrap/slick.slickspec.js" />
+				</div>
+				<div>
+					<label class="column span-3" for="rerun">Rerun Spec</label>
+					<input class="span-8 last" type="text" name="rerun" value="" />
+				</div>
+			</fieldset>
+			
+			<div class="buttons">
+				<input type="submit" value="SlickSpec Custom &rarr;" />
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="span-12">
+	<h3>Known Issues</h3>
+	<ul>
+		<li>
+			<strong>Sometimes specs run multiple times and result in a % higher than 100%</strong><br />
+			This isn't that big of a deal since the result of each spec should remain the same no matter how many times it is run
+		</li>
+		<li>
+			<strong>Some specs are currently commented out</strong><br />
+			We're working on supporting those additional specs in an upcoming version.
+		</li>
+		<li>
+			<strong>Tons of specs fail, but only sometimes</strong><br />
+			Sometimes specs fail simple because they haven't fully loaded before the runner tried to run them.
+			This is on our TODO to get fixed. Currently we use SlickSpec mostly on our localhost. Try waiting until everyhing fully loads and then refreshing the runner.
+		</li>
+	</ul>
+	
+	<h3>Roadmap</h3>
+	<ul>
+		<li>
+			<strong>SlickSpec Pre-release <em>(current)</em></strong><br />
+			Get it done enough to be useful for selector engine developers.
+		</li>
+		<li>
+			<strong>SlickSpec 1.0 <em>(next)</em></strong>
+			<ol>
+				<li>
+					Switch from JSSpec to another JavaScript testing library.<br />
+					Probly Jasmine, but that is subject to change.
+				</li>
+				<li>
+					Separate out all the specs into separate groups<br />
+					<ul>
+						<li>W3C CSS 1</li>
+						<li>W3C CSS 2.1</li>
+						<li>W3C CSS 3</li>
+						<li>W3C CSS Draft</li>
+						<li>Library-specific Extensions<br />
+							<ul>
+								<li>jQuery's <code>:first</code></li>
+								<li>SlickJS's reverse combinators</li>
+								<li>etc&hellip;</li>
+							</ul>
+						</li>
+						<li>etc&hellip;</li>
+					</ul>
+				</li>
+			</ol>
+		</li>
+		<li>
+			<strong>SlickSpec 2.0 <em>(eventually)</em></strong>
+			<ul>
+				<li>
+					ServerSide JS support
+					<ul>
+						<li>Env.js</li>
+						<li>Jaxer</li>
+						<li>JScript.NET ActiveX "htmlfile"</li>
+						<li>etc&hellip;</li>
+					</ul>
+				</li>
+				<li>
+					Support multiple testing frameworks?
+				</li>
+				<li>
+					Store results and generate reports?
+				</li>
+				<li>
+					More integration with TestSwarm?
+				</li>
+				<li>
+					Bootstraps/Wrappers to map any selector engine's api to any other selector engine's api?
+				</li>
+				<li>
+					Other crazy awesome stuff!
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+
+<div class="row span-12 box">
+	<div>Help develop <a href="http://github.com/mootools/slick/" title="mootools/slick - GitHub">SlickSpec on GitHub</a> </div>
+	<div>Please report any issues with SlickSpec to <a href="http://github.com/mootools/slick/issues" title="Issues - mootools/slick - GitHub">SlickSpec Issues</a></div>
+</div>
+<div class="row span-12">
+	<p id="copyright"> SlickSpec&mdash;Copyright &copy; MooTools 2009&mdash;MIT License </p>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>NWSAPI HTML5 elements selection test</title>
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<script type="text/javascript" src="../../src/nwsapi.js"></script>
+<style type="text/css">
+abbr { Helvetica, sans-serif; font-weight: bold; }
+mark { background-color: yellow; }
+span { background-color: lime; }
+.pass { background-color: lime; }
+.fail { background-color: red; }
+</style>
+</head>
+
+<body>
+
+<h1>NWSAPI HTML5 elements selection test</h1>
+
+<p>Usual nonsense content...</p>
+
+<p>
+<abbr id="IBA" title="International Barbershop Association">IBA</abbr>
+Located at <mark id="NUM">116</mark> Messina Avenue, London NW6 4LD
+<abbr id="UK" title="United Kingdom">UK</abbr>
+</p>
+
+<section>
+  <ul>
+	<li id="first">First</li>
+	<li id="second">Second</li>
+	<li id="last">Last</li>
+  </ul>
+</section>
+
+<hr>
+
+<script type="text/javascript">
+
+window.onload = function() {
+
+  function log(msg) {
+    document.body.appendChild(document.createElement('div')).innerHTML = msg;
+  }
+
+  var i, temp, test, selectors = {
+    'abbr:first-of-type': 'IBA',
+    'abbr:last-of-type': 'UK',
+    'mark:only-of-type': 'NUM',
+    'abbr:nth-of-type(1)': 'IBA',
+    'abbr:nth-of-type(2)': 'UK',
+    'abbr:nth-last-of-type(1)': 'UK',
+    'abbr:nth-last-of-type(2)': 'IBA',
+    'section li:first-of-type': 'first',
+    'section li:last-of-type': 'last'
+  };
+
+  log('--- TEST USING NW.Dom.select ---');
+
+  for (i in selectors) {
+    temp = NW.Dom.select(i)[0];
+    test = temp && temp.id == selectors[i];
+    log((test ? temp.innerHTML : 'FAIL') + ' <span class="' + (test ? 'pass' : 'fail') + '">' + i + '</span>');
+  }
+
+  log('--- TEST USING document.querySelectorAll ---');
+
+  for (i in selectors) {
+    temp = document.querySelectorAll(i)[0];
+    test = temp && temp.id == selectors[i];
+    log((test ? temp.innerHTML : 'FAIL') + ' <span class="' + (test ? 'pass' : 'fail') + '">' + i + '</span>');
+  }
+
+};
+
+</script>
+
+</body>
+</html>

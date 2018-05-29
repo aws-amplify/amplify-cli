@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NWMatcher Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="../../src/nwsapi.js"></script>
+</head>
+<body>
+<div class="a">
+  <div class="a1"></div>
+  <div class="a2"></div>
+</div>
+<script>
+
+  var aNode = NW.Dom.first('.a')
+  var entriesUnscoped = NW.Dom.select('body div', aNode);
+  var entriesScoped = NW.Dom.select(':scope body div', aNode);
+
+  if (entriesUnscoped.length !== 2) {
+    console.log('1. Invalid number of entries, should be 2, got ' + entriesUnscoped.length);
+  } else {
+    console.log('1. Passed!');
+  }
+
+  if (entriesScoped.length !== 0) {
+    console.log('2. Invalid number of entries, should be 0, got ' + entriesScoped.length);
+  } else {
+    console.log('2. Passed!');
+  }
+
+</script>
+</body>
+</html>

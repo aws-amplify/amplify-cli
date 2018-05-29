@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<title>Browser Bugs (some should fail) :: SlickSpec</title>
+
+<!-- Debugger -->
+<script src="assets/moobugger/debugger.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- JSSpec -->
+<link rel="stylesheet" type="text/css" href="assets/slickspec.css" />
+<script type="text/javascript" charset="utf-8" src="assets/diff_match_patch.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/JSSpec.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/JSSpecHelpers.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/simple_request.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/getgetter.js"></script>
+
+<!-- Slick -->
+<script type="text/javascript" src="../Slick.Parser.js"></script>
+<script type="text/javascript" src="../Slick.Finder.js"></script>
+
+
+<!-- Specs -->
+<script src="specs/browser_bugs.js" type="text/javascript" charset="utf-8"></script>
+
+
+<!-- Runner -->
+<script type="text/javascript" charset="utf-8">
+
+
+new Mock(/\b(html|xhtml)\b/i, specsBrowserBugs);
+
+
+</script>
+</head>
+<body><h1 id="slickspec_logo"><a href="./">Slick<strong>Spec</strong></a></h1>
+
+
+<!-- mocks -->
+<iframe onload="Mock.register('template html standard',this.contentWindow)" src="mocks/template-standard.html"></iframe>
+<iframe onload="Mock.register('template html almost standard',this.contentWindow)" src="mocks/template-almost.html"></iframe>
+<iframe onload="Mock.register('template html quirks',this.contentWindow)" src="mocks/template-quirks.html"></iframe>
+
+<!--[if gt IE 8]><!-->
+<iframe onload="Mock.register('template xhtml',this.contentWindow)" src="mocks/template.xhtml"></iframe>
+<iframe onload="Mock.register('template xml',this.contentWindow)" src="mocks/template.xml"></iframe>
+<iframe onload="Mock.register('svg logo',this.contentWindow)" src="mocks/MooTools_Logo.svg"></iframe>
+<!-- <![endif]-->
+
+<!--[if gte IE 8]>
+<iframe onload="Mock.register('template html IE8 as IE7',this.contentWindow)" src="mocks/template-ie7.html"></iframe>
+<![endif]-->
+
+<script type="text/javascript" charset="utf-8">
+
+new Mock.Request('responseXML','mocks/xmlmock1.xml');
+new Mock.Request('responseXML','mocks/MooTools_Logo.svg');
+
+</script>
+<script type="text/javascript" charset="utf-8">
+(function(){try{
+	
+	var result = window.location.search.match(/\bscript=(.*?\.js)/i);
+	if (result) document.write('<scr'+'ipt src="'+ result[1] +'" type="text/javascript"><\/script>');
+	
+}catch(e){}})();
+</script>	
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"version":3,"file":"Transformer.js","sourceRoot":"","sources":["../src/Transformer.ts"],"names":[],"mappings":";;AACA,mCAAwD;AAExD;;;;;GAKG;AACH;IAEI;;;;OAIG;IACH,qBACW,IAAY,EACZ,UAAqC;QADrC,SAAI,GAAJ,IAAI,CAAQ;QACZ,eAAU,GAAV,UAAU,CAA2B;IAC5C,CAAC;IAYT,kBAAC;AAAD,CAAC,AAtBD,IAsBC;;AAGD,kCAAkC,aAAqB;IACnD,OAAO,eAAK,CAAC,aAAa,CAAC,CAAC,WAAW,CAAA;AAC3C,CAAC"}

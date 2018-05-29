@@ -1,0 +1,21 @@
+Linux
+================================
+js_linux    - Spidermonkey 1.8.0
+jsl_linux   - Javascript Lint
+jsmin_linux - JS Minifier
+
+
+MacOSX
+================================
+js_macos    - Spidermonkey 1.8.0
+jsl_macos   - Javascript Lint
+jsmin_macos - JS Minifier
+
+
+Windows
+================================
+js.exe      - Spidermonkey 1.8.0
+jsl.exe     - Javascript Lint
+jsmin.exe   - JS Minifier
+cygwin1.dll - DLL
+

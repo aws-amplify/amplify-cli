@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>NWSAPI test for escaped identifiers</title>
+<script type="text/javascript" src="../../src/nwsapi.js"></script>
+<!-- initialize NWSAPI -->
+<script>
+NW.Dom.configure({
+	'SELECTOR3': true,
+	'NON_ASCII': true,
+	'UNICODE16': true,
+	'ESCAPECHR': true,
+	'VERBOSITY': false
+});
+</script>
+<script type="text/javascript" src="./test_nwsapi_escaped_identifiers.js"></script>
+</head>
+<body>
+</body>
+</html>

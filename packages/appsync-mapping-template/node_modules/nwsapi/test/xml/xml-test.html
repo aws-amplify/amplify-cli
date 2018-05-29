@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>XML namespace: tag selector test</title>
+<script src="../../src/nwsapi.js" onload="NW.Dom.install()"></script>
+</head>
+<body>
+<script>
+onload = function() {
+  var parser, string, dom, el;
+  parser = new window.DOMParser();
+  string = '<?xml version="1.0"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title></dc:title></cp:coreProperties>';
+  dom = parser.parseFromString(string, 'text/xml');
+  el = dom.querySelectorAll('coreProperties');
+  if (el.length === 1) {
+    console.log('Passed!');
+  } else {
+    console.log('Failed!');
+  }
+  console.log(el);
+};
+</script>
+
+</body>
+</html>

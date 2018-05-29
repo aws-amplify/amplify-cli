@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+<!-- Jasmine -->
+
+<link rel="stylesheet" type="text/css" href="Jasmine/jasmine.css">
+<link rel="stylesheet" type="text/css" href="runner.css">
+
+<script type="text/javascript" src="Jasmine/jasmine.js"></script>
+
+<!-- Specs -->
+<script type="text/javascript" src="Helpers/jasmine-html.js"></script>
+<script type="text/javascript" charset="utf-8" src="Helpers/Syn.js"></script>
+<script type="text/javascript" charset="utf-8" src="Helpers/simulateEvent.js"></script>
+<script type="text/javascript" charset="utf-8" src="Helpers/JSSpecToJasmine.js"></script>
+<script type="text/javascript" charset="utf-8" src="Helpers/Loader.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Configuration.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+var SetNames = [],
+	SourceNames = [];
+
+(function(){
+
+// Load all the specs
+var loader = SpecLoader(Configuration, jasmine.parseQueryString(document.location.search.substr(1)));
+var load = function(object, base){
+	for (var j = 0; j < object.length; j++)
+		document.write('<scr'+'ipt src="../' + (base || '') + object[j] + '.js" type="text/javascript"><\/script>');
+};
+
+loader.setSourceLoader(load).setSpecLoader(load);
+loader.run();
+
+SetNames = loader.getSetNames();
+SourceNames = loader.getSourceNames();
+
+window.onload = function(){
+	// Run the specs
+	jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+	jasmine.getEnv().execute();
+	
+	// Change title
+	document.title = 'Specs for ' + Configuration.name;
+};
+
+})();
+</script>
+
+<title>MooTools-Runner</title>
+</head>
+<body>
+	<div id="framework_name"><script type="text/javascript">
+		document.write(Configuration.name + ' ' + SourceNames.join(', ') + ' [Sets: ' + SetNames.join(', ') + ']');
+	</script></div>
+</body>
+</html>

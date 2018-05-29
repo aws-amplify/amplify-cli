@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>YUI Selector Test Suite</title>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	  	<script src="../assets/getgetter.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body class="yui-skin-sam">
+	    <div id="demo" class="foo" title="this is a demo">
+	        <p class="para first" id="demo-first-child"><em>lorem ipsum</em></p>
+	        <p class="para">lorem ipsum</p>
+	        <p class="para last">lorem ipsum</p>
+	        <div><p>div lorem</p></div>
+	        <div id="demo-last-child"><p>last child</p></div>
+	    </div>
+
+	    <div id="demo2">
+	        <div>child of demo2</div>
+	    </div>
+
+	    <div id="empty"></div>
+
+	    <select id="test-select" name="test-select"> 
+	        <option value="0">foo</option> 
+	        <option value="1">bar</option> 
+	        <option>baz</option> 
+	    </select> 
+	    <div id="root-test">
+	        <ol id="nth-test">
+	            <li class="odd three-1 four-1">foo</li>
+	            <li class="even four-2 last-four-1">foo</li>
+	            <li class="odd four-3">foo</li>
+	            <li class="even three-1 four-4">foo</li>
+	            <li class="odd four-1">foo</li>
+	            <li class="even four-2 last-four-1">foo</li>
+	            <li class="odd three-1 four-3">foo</li>
+	            <li class="even four-4" id="test-lang-none">foo</li>
+	            <li class="odd four-1" lang="en-US" id="test-lang-en-us">foo</li>
+	            <li class="even three-1 four-2 last-four-1" lang="en" id="test-lang-en">foo</li>
+	        </ol>
+	    </div>
+	    <div id="nth-type-test">
+	        <span>span</span>
+	        <div>first div</div>
+	        <span>span</span>
+	        <div class="even">second div</div>
+	        <div>third div</div>
+	        <div class="even">fourth div</div> 
+	        <span>span</span>
+	    </div>
+	    <a id="href-test" href="foo.html">foo</a>
+	    <form id="test-inputs">
+	        <label for="checkbox-unchecked" id="label-checkbox-unchecked">label</label>
+	        <input type="checkbox" id="checkbox-unchecked" class="not-button">
+	        <input type="checkbox" checked id="checkbox-checked-noval" class="not-button">
+	        <input type="checkbox" checked="true" id="checkbox-checked" class="not-button">
+	        <input type="radio" id="radio-unchecked" class="not-button">
+	        <input type="radio" checked="true" id="radio-checked" class="not-button">
+	        <input type="button" value="foo">
+	        <input id="foo-bar" name="foo.bar" class="not-button">
+	    </form>
+
+	    <form id="form-root">
+	        <input type="button" value="foo">
+	        <input name="foo" class="text-input">
+	    </form>
+
+	    <div id="mod1">
+	            <div><h3>H3 - Title</h3></div>
+	            <div><p>lorem ipsum dolor sit <a href="#"><span>link</span></a></p></div>
+	    </div>
+
+	    <div class="Bar" id="class-bar"></div>
+	    <div id="contains-special">contains "' & ]</div>
+	    <div id="test-rel-div" rel="foo2"></div>
+	    <iframe src="test-frame.html" id="test-frame"></iframe>
+
+	    <dl id="test-dl">
+	        <dt>Window size</dt>
+	        <dd class="test-dd1">dd1</dd>
+	        <dt>Document size</dt>
+	        <dd class="test-dd2">dd2</dd>
+
+	    </dl>
+	    <div id="test-custom-attr" foo="bar">custom attribute</div>
+
+	</body>
+</html>

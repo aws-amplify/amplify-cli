@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NWSAPI Benchmark Tool</title>
+<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="stylesheet" media="screen" href="speed.css">
+<script type="text/javascript" src="assets/benchmark.js"></script>
+<script type="text/javascript" src="presets/presets.js"></script>
+</head>
+<body>
+<div class="heading">
+	<div class="headcenter control">
+		<h1 class="title">NWSAPI Benchmark Tool</h1>
+		<div class="controls">
+			<select id="presets" name="presets"><option hidden disabled selected>Choose a preset selector group</option></select>
+		</div>
+		<div class="buttons">
+			<button id="start" type="button" title="Start testing current set">START</button>
+			<button id="stop" type="button" title="Stop testing current set">STOP</button>
+		</div>
+	</div>
+	<div class="headright button pophover">
+		<ul id="info" class="popbox">
+			<li>Every selector engine gets its own isolated iframe</li>
+			<li>Each iframe is destroyed and reset after being used</li>
+			<li>Tests are performed on a copy of W3C Selectors page</li>
+			<li>Based on ideas & concepts seen in Mootools Slickspeed</li>
+			<li>Uses the awesome <a href="http://benchmarkjs.com">Benchmark.js</a> benchmarking library</li>
+		</ul>
+	</div>
+</div>
+<div id="main">
+	<table>
+		<thead id="perf-head"></thead>
+		<tbody id="perf-body"></tbody>
+	</table>
+	<h3>Colors Legend</h3>
+	<table cellpadding="0" cellspacing="0">
+		<thead><tr>
+			<th>faster selection</th>
+			<th>slower selection</th>
+			<th>exception thrown</th>
+			<th>different result</th>
+		</tr></thead>
+		<tbody><tr>
+			<td class="green" >&nbsp;</td>
+			<td class="red"   >&nbsp;</td>
+			<td class="black" >&nbsp;</td>
+			<td class="yellow">&nbsp;</td>
+		</tr></tbody>
+	</table>
+	<div id="message">&nbsp;</div>
+</div>
+
+<script type="text/javascript" src="speed.js"></script>
+</body>
+</html>

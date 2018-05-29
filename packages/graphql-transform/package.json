@@ -1,0 +1,26 @@
+{
+  "name": "graphql-transform",
+  "version": "1.0.0",
+  "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "lint": "tslint"
+  },
+  "keywords": [
+    "graphql",
+    "cloudformation",
+    "aws"
+  ],
+  "author": "Michael Paris",
+  "license": "MIT",
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "cloudform": "^2.0.1",
+    "graphql": "^0.13.2"
+  }
+}

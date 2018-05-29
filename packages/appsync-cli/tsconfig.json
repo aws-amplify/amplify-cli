@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir": "lib",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "lib": [
+            "es7",
+            "dom",
+            "esnext.asynciterable"
+        ],
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
+}

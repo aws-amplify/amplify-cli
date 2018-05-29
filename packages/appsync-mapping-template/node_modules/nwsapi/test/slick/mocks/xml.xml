@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<HTML>
+	<datael>tes</datael>
+	<datael>
+		<test>html</test>
+	</datael>
+	<idnode id="id_idnode"></idnode>
+	<datael>tes</datael>
+	<classnode class="class_classNode"></classnode>
+	<classnode id="node" style="border" class="class_classNode"></classnode>
+	<classnode href="http://url.com" class="class_classNode"></classnode>
+	<camelCasedTag></camelCasedTag>
+	<camelCasedTag></camelCasedTag>
+	<camelCasedTag>text</camelCasedTag>
+	<!-- a xml comment -->
+	<empty-attr attr=""></empty-attr>
+	<empty-attr attr="some"></empty-attr>
+	<el tabindex="0"></el>
+	<el tabindex="0"></el>
+	<el tabindex="1"></el>
+</HTML>

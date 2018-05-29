@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>quirks test</title>
+<script type="text/javascript">
+window.onload = function() {
+  if (top === self) {
+    alert(document.querySelectorAll('[class~=fooBar]').length == 2 ? 'PASSED' : 'FAILED');
+  }
+};
+</script>
+</head>
+<body>
+<div>
+  <div class="fooBar"></div>
+  <div class="foobar"></div>
+</div>
+</body>
+</html>

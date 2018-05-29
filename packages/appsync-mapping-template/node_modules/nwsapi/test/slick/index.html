@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Spec Runner</title>
+	<link rel="stylesheet" href="Runner/runner.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+	
+	<script type="text/javascript" src="Configuration.js"></script>
+</head>
+<body>
+<div class="container">
+
+<h1><strong>Specs</strong> for <script>document.write(Configuration.name);</script></h1>
+
+<ul id="prebuilt">
+	<script>
+	(function(){
+		for (var name in Configuration.presets){
+			document.write('<li><a href="Runner/runner.html?preset=' + name + '">&rarr; ' + name + ': [' + Configuration.presets[name].sets.join(', ') + '] Specs</a></li>');
+		}
+	})();
+	</script>
+</ul>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+<!-- JSSpec -->
+
+<link rel="stylesheet" type="text/css" href="Runner/Jasmine/jasmine.css" />
+<script type="text/javascript" charset="utf-8" src="Runner/Jasmine/jasmine.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/JSSpecHelpers.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/simple_request.js"></script>
+<script type="text/javascript" charset="utf-8" src="assets/getgetter.js"></script>
+
+<!-- Specs -->
+<script type="text/javascript" charset="utf-8" src="specs/syntax.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/xml.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/engine_bugs.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/select_nth-child.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/select_exhaustive.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/mock_template.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/google_closure.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/prototype.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/dojo.js"></script>
+<script type="text/javascript" charset="utf-8" src="specs/yui.js"></script>
+
+<!-- Runner -->
+
+<script type="text/javascript" charset="utf-8">
+
+
+// Specific Mocks
+
+new Mock('Closure', specsGoogleClosure);
+new Mock('PrototypeJS', specsPrototype);
+new Mock('jQuery', specsJQuery);
+new Mock('Dojo', specsDojo);
+new Mock('YUI', specsYUI);
+new Mock(/Generic.*?\bHTML/, specsMockTemplate);
+new Mock('xmlmock1', specsAssetsTemplateXML);
+
+// Specific Bugs
+
+new Mock(/\b(xml|svg|xhtml|html)\b/i, specsSelectorEngineBugs);
+new Mock(/\b(xml|svg|xhtml|html)\b/i, specsBrowserBugsFixed);
+
+// Selector Tests
+
+new Mock(/\b(xml|svg|xhtml|html)\b/i, specsSlickDocs);
+new Mock(/\b(xml|svg|xhtml|html)\b/i, specsSelectorExhaustive);
+new Mock(/\b(xml|svg|xhtml|html)\b/i, specsSelectNthChild);
+
+// XML
+
+new Mock(/\b(xml|svg|xhtml)\b/i, function(specs,context){
+	Describe('XML',function(){
+		it['should be XML'] = function(){
+			value_of(global.isXML(context.document)).should_be_true();
+		};
+	});
+});
+new Mock(/\b(html)\b/i, function(specs,context){
+	Describe('HTML',function(){
+		it['should not be XML'] = function(){
+			value_of(global.isXML(context.document)).should_be_false();
+		};
+	});
+});
+
+
+</script>
+<title>SlickSpec Select</title></head>
+<body><h1 id="slickspec_logo"><a href="../">Slick<strong>Spec</strong></a> </h1>
+<p id="copyright"> SlickSpec&mdash;Copyright &copy; MooTools 2009&mdash;MIT License </p>
+
+<!-- mocks -->
+<iframe onload="Mock.register('Generic HTML (standard)',this.contentWindow)" src="mocks/template-standard.html"></iframe>
+<iframe onload="Mock.register('Generic HTML (almost-standard)',this.contentWindow)" src="mocks/template-almost.html"></iframe>
+<iframe onload="Mock.register('Generic HTML (quirks)',this.contentWindow)" src="mocks/template-quirks.html"></iframe>
+
+<!--[if gt IE 8]><!-->
+<iframe onload="Mock.register('Generic XHTML',this.contentWindow)" src="mocks/template.xhtml"></iframe>
+<iframe onload="Mock.register('Generic XML',this.contentWindow)" src="mocks/template.xml"></iframe>
+<iframe onload="Mock.register('SVG',this.contentWindow)" src="mocks/MooTools_Logo.svg"></iframe>
+<!-- <![endif]-->
+
+<!--[if gte IE 8]>
+<iframe onload="Mock.register('Generic HTML (IE8 as IE7)',this.contentWindow)" src="mocks/template-ie7.html"></iframe>
+<![endif]-->
+
+<script type="text/javascript" charset="utf-8">
+
+new Mock.Request('XML responseXML','mocks/xmlmock1.xml');
+new Mock.Request('SVG responseXML','mocks/MooTools_Logo.svg');
+
+</script>
+
+<!-- Framework Mocks -->
+<iframe onload="Mock.register('Google Closure',this.contentWindow)" src="mocks/GoogleClosure-query_test.html"></iframe>
+<iframe onload="Mock.register('PrototypeJS',this.contentWindow)" src="mocks/Prototype-query_test.html"></iframe>
+<iframe onload="Mock.register('jQuery',this.contentWindow)" src="mocks/jQuery-query_test.html"></iframe>
+<iframe onload="Mock.register('Dojo',this.contentWindow)" src="mocks/dojo-query_test.html"></iframe>
+<iframe onload="Mock.register('YUI',this.contentWindow)" src="mocks/yui-query_test.html"></iframe>
+
+
+</body>
+</html>

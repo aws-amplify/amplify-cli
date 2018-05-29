@@ -1,0 +1,1 @@
+java -jar ./JSTestDriver/JSTestDriver.jar --config jsTestDriverServer.conf --port 9876 --runnerMode DEBUG

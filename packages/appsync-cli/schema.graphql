@@ -1,0 +1,8 @@
+type User @model {
+    id: ID!
+    name: String!
+}
+type Post @model {
+    id: ID!
+    title: String!
+}

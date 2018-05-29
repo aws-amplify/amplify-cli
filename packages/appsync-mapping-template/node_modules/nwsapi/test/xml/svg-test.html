@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>SVG namespace: attribute selector test</title>
+  <script src="../../src/nwsapi.js" onload="NW.Dom.install()"></script>
+</head>
+<body>
+
+<script>
+onload = function() {
+  var el = document.querySelectorAll('[*|href]');
+  if (el.length === 1) {
+    console.log('Passed!');
+  } else {
+    console.log('Failed!');
+  }
+  console.log(el);
+
+  // EXTRAS: API for getting namespaced attribute values
+  console.log(NW.Dom.hasAttributeNS(el[0], 'xlink:href'));
+  console.log(NW.Dom.getAttributeNS(el[0], 'xlink:href'));
+};
+</script>
+
+<svg xlink:href="foo"/>
+
+</body>
+</html>

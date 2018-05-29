@@ -1,0 +1,2 @@
+node buildJSTDConfiguration.js "$1"
+java -jar ./JSTestDriver/JSTestDriver.jar --config jsTestDriver.conf --tests all --reset

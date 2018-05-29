@@ -1,0 +1,26 @@
+{
+  "name": "appsync-cli",
+  "version": "1.0.0",
+  "description": "CLI for AWS AppSync",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "author": "Michael Paris",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "clime": "^0.5.9",
+    "graphql-transform": "1.0",
+    "simple-appsync-transform": "1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.1.2"
+  }
+}
