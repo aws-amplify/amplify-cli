@@ -5,4 +5,6 @@ type User @model {
 type Post @model {
     id: ID!
     title: String!
+    rating: Int!
+    tags: [String]
 }
