@@ -1,5 +1,14 @@
 import TransformerContext from './TransformerContext'
-import { DirectiveDefinitionNode, parse } from 'graphql'
+import {
+    DirectiveDefinitionNode,
+    parse,
+    TypeSystemDefinitionNode,
+    DirectiveNode,
+    ObjectTypeDefinitionNode,
+    InterfaceDefinitionNode,
+    FieldDefinitionNode,
+    UnionDefinitionNode
+} from 'graphql'
 
 /**
  * A GraphQLTransformer takes a context object, processes it, and
@@ -20,14 +29,60 @@ export default class Transformer {
     ) { }
 
     /**
-     * A transformer implements a single function that when given
-     * a set of model types and a transformation context is capable of generating
-     * a new context that describes the stack necessary to implement the
-     * data model defined by the types.
+     * An initializer that is called once at the beginning of a transformation.
+     * Initializers are called in the order they are declared.
      */
-    transform: (initial: TransformerContext, acc: TransformerContext) => TransformerContext
+    before?: (acc: TransformerContext) => void
 
-    // collect: (directive: string)
+    /**
+     * An initializer that is called once at the beginning of a transformation.
+     * Initializers are called in the order they are declared.
+     */
+    after?: (acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on objects type definitions. This includes type
+     * extensions.
+     */
+    object?: (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on objects type definitions. This includes type
+     * extensions.
+     */
+    interface?: (definition: InterfaceDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on object or interface field definitions.
+     */
+    field?: (definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on union definitions.
+     */
+    union?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on enum definitions.
+     */
+    enum?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on scalar definitions.
+     */
+    scalar?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on input definitions.
+     */
+    input?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
 }
 

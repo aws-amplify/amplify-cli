@@ -47,7 +47,7 @@ var DynamoDBMappingTemplate = /** @class */ (function () {
      * @param key
      */
     DynamoDBMappingTemplate.updateItem = function (_a) {
-        var key = _a.key;
+        var key = _a.key, condition = _a.condition;
         var keyNames = key.attributes.map(function (attr) { return attr[0]; });
         return ast_1.compoundExpression([
             ast_1.set(ast_1.ref('expNames'), ast_1.obj({})),
@@ -95,7 +95,8 @@ var DynamoDBMappingTemplate = /** @class */ (function () {
                 version: ast_1.str('2017-02-28'),
                 operation: ast_1.str('UpdateItem'),
                 key: key,
-                update: ast_1.ref('util.toJson($update)')
+                update: ast_1.ref('util.toJson($update)'),
+                condition: condition
             })
         ]);
     };

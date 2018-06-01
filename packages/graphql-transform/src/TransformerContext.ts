@@ -6,8 +6,13 @@ import {
     ObjectTypeDefinitionNode,
     FieldDefinitionNode,
     InputTypeDefinitionNode,
-    SchemaDefinitionNode
+    SchemaDefinitionNode,
+    ObjectTypeExtensionNode,
+    NamedTypeNode,
+    DocumentNode,
+    DefinitionNode
 } from 'graphql/language/ast'
+import { parse } from 'graphql/language'
 import blankTemplate from './util/blankTemplate'
 
 /**
@@ -19,6 +24,18 @@ export default class TransformerContext {
     public template: Template = blankTemplate()
 
     public nodeMap: { [name: string]: TypeSystemDefinitionNode } = {}
+
+    public inputDocument: DocumentNode
+
+    constructor(inputSDL: string) {
+        const doc: DocumentNode = parse(inputSDL)
+        for (const def of doc.definitions) {
+            if (def.kind === 'OperationDefinition' || def.kind === 'FragmentDefinition') {
+                throw new Error(`Found a ${def.kind}. Transformers accept only documents consisting of TypeSystemDefinitions.`)
+            }
+        }
+        this.inputDocument = doc
+    }
 
     public mergeResources(resources: { [key: string]: Resource }) {
         for (const resourceId of Object.keys(resources)) {
@@ -68,6 +85,60 @@ export default class TransformerContext {
             throw new Error(`Conflicting type '${obj.name.value}' found.`)
         }
         this.nodeMap[obj.name.value] = obj
+    }
+
+    /**
+     * Add an object type extension definition node to the context. If a type with this
+     * name does not already exist, an exception is thrown.
+     * @param obj The object type definition node to add.
+     */
+    public addObjectExtension(obj: ObjectTypeExtensionNode) {
+        if (!this.nodeMap[obj.name.value]) {
+            throw new Error(`Cannot extend non-existant type '${obj.name.value}'.`)
+        }
+        // AppSync does not yet understand type extensions so fold the types in.
+        const oldNode = this.nodeMap[obj.name.value]
+        const newDirs = obj.directives || []
+        const oldDirs = oldNode.directives || []
+        const mergedDirs = [...oldDirs, ...newDirs]
+        // An extension cannot redeclare fields.
+        const newFieldMap = obj.fields.reduce(
+            (acc: any, field: FieldDefinitionNode) => ({
+                ...acc,
+                [field.name.value]: field
+            }),
+            {}
+        )
+        const oldFields = oldNode.fields || []
+        const mergedFields = [...oldFields]
+        for (const oldField of oldFields) {
+            if (newFieldMap[oldField.name.value]) {
+                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare field ${oldField.name.value}`)
+            }
+            mergedFields.push(newFieldMap[oldField.name.value])
+        }
+        // An extension cannot redeclare interfaces
+        const newInterfaceMap = (obj.interfaces || []).reduce(
+            (acc: any, field: NamedTypeNode) => ({
+                ...acc,
+                [field.name.value]: field
+            }),
+            {}
+        )
+        const oldInterfaces = oldNode.interfaces || []
+        const mergedInterfaces = [...oldInterfaces]
+        for (const oldInterface of oldInterfaces) {
+            if (newFieldMap[oldInterface.name.value]) {
+                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare interface ${oldInterface.name.value}`)
+            }
+            mergedInterfaces.push(newFieldMap[oldInterface.name.value])
+        }
+        this.nodeMap[obj.name.value] = {
+            ...oldNode,
+            interfaces: mergedInterfaces,
+            directives: mergedDirs,
+            fields: mergedFields
+        }
     }
 
     /**

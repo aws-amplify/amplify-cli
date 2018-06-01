@@ -1,13 +1,13 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
     DirectiveDefinitionNode, parse, DirectiveNode, TypeSystemDefinitionNode,
-    buildASTSchema, printSchema
+    buildASTSchema, printSchema, ObjectTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, blankObject, makeField, makeArg, makeNamedType,
     makeNonNullType, makeSchema, makeOperationType, makeUpdateInputObject,
-    makeDeleteInputObject
+    makeDeleteInputObject, blankObjectExtension
 } from './definitions'
 import Template from 'cloudform/types/template'
 import { AppSync } from 'cloudform';
@@ -45,11 +45,39 @@ function makeDirectiveMap(directives: DirectiveNode[]) {
  */
 export default class SimpleTransform extends Transformer {
 
+    resources: ResourceFactory
+
     constructor() {
         super(
             'SimpleAppSyncTransformer',
             `directive @model on OBJECT`
         )
+        this.resources = new ResourceFactory();
+    }
+
+    public before(ctx: TransformerContext): void {
+        const template = this.resources.initTemplate();
+        ctx.mergeResources(template.Resources)
+        ctx.mergeParameters(template.Parameters)
+        const queryType = blankObject('Query')
+        const mutationType = blankObject('Mutation')
+        ctx.addObject(mutationType)
+        ctx.addObject(queryType)
+        const schema = makeSchema([
+            makeOperationType('query', 'Query'),
+            makeOperationType('mutation', 'Mutation')
+        ])
+        ctx.addSchema(schema)
+    }
+
+    public after(ctx: TransformerContext): void {
+        const built = buildASTSchema({
+            kind: 'Document',
+            definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
+        })
+        const SDL = printSchema(built)
+        const schemaResource = this.resources.makeAppSyncSchema(SDL)
+        ctx.setResource(ResourceFactory.GraphQLSchemaLogicalID, schemaResource)
     }
 
     /**
@@ -57,92 +85,53 @@ export default class SimpleTransform extends Transformer {
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
-    public transform(definitions: TypeSystemDefinitionNode[], ctx: TransformerContext): TransformerContext {
-        // Instantiate the resource factory and start building the template.
-        const resources = new ResourceFactory();
-        // First create the API record.
-        const template = resources.initTemplate();
-        const queryType = blankObject('Query')
-        const mutationType = blankObject('Mutation')
-        for (const def of definitions) {
-            const directiveMap = makeDirectiveMap(def.directives)
-            switch (def.kind) {
-                case 'ObjectTypeDefinition':
-                    // Create the supported resolvers.
-                    // Create the input & object types.
-                    ctx.addObject(def)
-                    const createInput = makeCreateInputObject(def)
-                    const updateInput = makeUpdateInputObject(def)
-                    const deleteInput = makeDeleteInputObject(def)
-                    ctx.addInput(createInput)
-                    ctx.addInput(updateInput)
-                    ctx.addInput(deleteInput)
-                    if (directiveMap.model && directiveMap.model.length > 0) {
-                        // If this type is a model then create put/delete mutations.
-                        const createResolver = resources.makeCreateResolver(def.name.value)
-                        template.Resources[`Create${def.name.value}Resolver`] = createResolver
-                        mutationType.fields.push(
-                            makeField(
-                                createResolver.Properties.FieldName,
-                                [makeArg('input', makeNonNullType(makeNamedType(createInput.name.value)))],
-                                makeNamedType(def.name.value)
-                            )
-                        )
-                        const updateResolver = resources.makeUpdateResolver(def.name.value)
-                        template.Resources[`Update${def.name.value}Resolver`] = updateResolver
-                        mutationType.fields.push(
-                            makeField(
-                                updateResolver.Properties.FieldName,
-                                [makeArg('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
-                                makeNamedType(def.name.value)
-                            )
-                        )
-                        const deleteResolver = resources.makeDeleteResolver(def.name.value)
-                        template.Resources[`Delete${def.name.value}Resolver`] = deleteResolver
-                        mutationType.fields.push(
-                            makeField(
-                                deleteResolver.Properties.FieldName,
-                                [makeArg('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
-                                makeNamedType(def.name.value)
-                            )
-                        )
-                        const getResolver = resources.makeGetResolver(def.name.value)
-                        template.Resources[`Get${def.name.value}Resolver`] = getResolver
-                        queryType.fields.push(
-                            makeField(
-                                getResolver.Properties.FieldName,
-                                [makeArg('id', makeNonNullType(makeNamedType('ID')))],
-                                makeNamedType(def.name.value)
-                            )
-                        )
-                    }
-                case 'InterfaceTypeDefinition':
-                // TODO: If an interface has @model on it then create operations
-                // for all its descendant types.
-                case 'ScalarTypeDefinition':
-                case 'UnionTypeDefinition':
-                case 'EnumTypeDefinition':
-                case 'InputObjectTypeDefinition':
-                default:
-                    continue
-            }
-        }
-        ctx.addObject(mutationType)
-        ctx.addObject(queryType)
-
-        const schema = makeSchema([
-            makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation')
-        ])
-        ctx.addSchema(schema)
-        const built = buildASTSchema({
-            kind: 'Document',
-            definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
-        })
-        const SDL = printSchema(built)
-        const schemaResource = resources.makeAppSyncSchema(SDL)
-        template.Resources[ResourceFactory.GraphQLSchemaLogicalID] = schemaResource
-        ctx.mergeResources(template.Resources)
-        ctx.mergeParameters(template.Parameters)
+    public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+        // Create the input & object types.
+        ctx.addObject(def)
+        const createInput = makeCreateInputObject(def)
+        const updateInput = makeUpdateInputObject(def)
+        const deleteInput = makeDeleteInputObject(def)
+        ctx.addInput(createInput)
+        ctx.addInput(updateInput)
+        ctx.addInput(deleteInput)
+        const mutationType = blankObjectExtension('Mutation')
+        const queryType = blankObjectExtension('Query')
+        // If this type is a model then create put/delete mutations.
+        const createResolver = this.resources.makeCreateResolver(def.name.value)
+        ctx.setResource(`Create${def.name.value}Resolver`, createResolver)
+        mutationType.fields.push(
+            makeField(
+                createResolver.Properties.FieldName,
+                [makeArg('input', makeNonNullType(makeNamedType(createInput.name.value)))],
+                makeNamedType(def.name.value)
+            )
+        )
+        const updateResolver = this.resources.makeUpdateResolver(def.name.value)
+        ctx.setResource(`Update${def.name.value}Resolver`, updateResolver)
+        mutationType.fields.push(
+            makeField(
+                updateResolver.Properties.FieldName,
+                [makeArg('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
+                makeNamedType(def.name.value)
+            )
+        )
+        const deleteResolver = this.resources.makeDeleteResolver(def.name.value)
+        ctx.setResource(`Delete${def.name.value}Resolver`, deleteResolver)
+        mutationType.fields.push(
+            makeField(
+                deleteResolver.Properties.FieldName,
+                [makeArg('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
+                makeNamedType(def.name.value)
+            )
+        )
+        const getResolver = this.resources.makeGetResolver(def.name.value)
+        ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+        queryType.fields.push(
+            makeField(
+                getResolver.Properties.FieldName,
+                [makeArg('id', makeNonNullType(makeNamedType('ID')))],
+                makeNamedType(def.name.value)
+            )
+        )
     }
 }

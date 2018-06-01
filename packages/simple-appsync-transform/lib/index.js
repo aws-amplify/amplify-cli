@@ -49,60 +49,16 @@ function makeDirectiveMap(directives) {
 var SimpleTransform = /** @class */ (function (_super) {
     __extends(SimpleTransform, _super);
     function SimpleTransform() {
-        return _super.call(this, 'SimpleAppSyncTransformer', "directive @model on OBJECT") || this;
+        var _this = _super.call(this, 'SimpleAppSyncTransformer', "directive @model on OBJECT") || this;
+        _this.resources = new resources_1.ResourceFactory();
+        return _this;
     }
-    /**
-     * Given the initial input and accumulated context return the new context.
-     * @param initial The input passed to the transform.
-     * @param ctx The accumulated context for the transform.
-     */
-    SimpleTransform.prototype.transform = function (definitions, ctx) {
-        // Instantiate the resource factory and start building the template.
-        var resources = new resources_1.ResourceFactory();
-        // First create the API record.
-        var template = resources.initTemplate();
+    SimpleTransform.prototype.before = function (ctx) {
+        var template = this.resources.initTemplate();
+        ctx.mergeResources(template.Resources);
+        ctx.mergeParameters(template.Parameters);
         var queryType = definitions_1.blankObject('Query');
         var mutationType = definitions_1.blankObject('Mutation');
-        for (var _i = 0, definitions_2 = definitions; _i < definitions_2.length; _i++) {
-            var def = definitions_2[_i];
-            var directiveMap = makeDirectiveMap(def.directives);
-            switch (def.kind) {
-                case 'ObjectTypeDefinition':
-                    // Create the supported resolvers.
-                    // Create the input & object types.
-                    ctx.addObject(def);
-                    var createInput = definitions_1.makeCreateInputObject(def);
-                    var updateInput = definitions_1.makeUpdateInputObject(def);
-                    var deleteInput = definitions_1.makeDeleteInputObject(def);
-                    ctx.addInput(createInput);
-                    ctx.addInput(updateInput);
-                    ctx.addInput(deleteInput);
-                    if (directiveMap.model && directiveMap.model.length > 0) {
-                        // If this type is a model then create put/delete mutations.
-                        var createResolver = resources.makeCreateResolver(def.name.value);
-                        template.Resources["Create" + def.name.value + "Resolver"] = createResolver;
-                        mutationType.fields.push(definitions_1.makeField(createResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(createInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
-                        var updateResolver = resources.makeUpdateResolver(def.name.value);
-                        template.Resources["Update" + def.name.value + "Resolver"] = updateResolver;
-                        mutationType.fields.push(definitions_1.makeField(updateResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(updateInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
-                        var deleteResolver = resources.makeDeleteResolver(def.name.value);
-                        template.Resources["Delete" + def.name.value + "Resolver"] = deleteResolver;
-                        mutationType.fields.push(definitions_1.makeField(deleteResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(deleteInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
-                        var getResolver = resources.makeGetResolver(def.name.value);
-                        template.Resources["Get" + def.name.value + "Resolver"] = getResolver;
-                        queryType.fields.push(definitions_1.makeField(getResolver.Properties.FieldName, [definitions_1.makeArg('id', definitions_1.makeNonNullType(definitions_1.makeNamedType('ID')))], definitions_1.makeNamedType(def.name.value)));
-                    }
-                case 'InterfaceTypeDefinition':
-                // TODO: If an interface has @model on it then create operations
-                // for all its descendant types.
-                case 'ScalarTypeDefinition':
-                case 'UnionTypeDefinition':
-                case 'EnumTypeDefinition':
-                case 'InputObjectTypeDefinition':
-                default:
-                    continue;
-            }
-        }
         ctx.addObject(mutationType);
         ctx.addObject(queryType);
         var schema = definitions_1.makeSchema([
@@ -110,15 +66,45 @@ var SimpleTransform = /** @class */ (function (_super) {
             definitions_1.makeOperationType('mutation', 'Mutation')
         ]);
         ctx.addSchema(schema);
+    };
+    SimpleTransform.prototype.after = function (ctx) {
         var built = graphql_1.buildASTSchema({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map(function (k) { return ctx.nodeMap[k]; })
         });
         var SDL = graphql_1.printSchema(built);
-        var schemaResource = resources.makeAppSyncSchema(SDL);
-        template.Resources[resources_1.ResourceFactory.GraphQLSchemaLogicalID] = schemaResource;
-        ctx.mergeResources(template.Resources);
-        ctx.mergeParameters(template.Parameters);
+        var schemaResource = this.resources.makeAppSyncSchema(SDL);
+        ctx.setResource(resources_1.ResourceFactory.GraphQLSchemaLogicalID, schemaResource);
+    };
+    /**
+     * Given the initial input and accumulated context return the new context.
+     * @param initial The input passed to the transform.
+     * @param ctx The accumulated context for the transform.
+     */
+    SimpleTransform.prototype.object = function (def, directive, ctx) {
+        // Create the input & object types.
+        ctx.addObject(def);
+        var createInput = definitions_1.makeCreateInputObject(def);
+        var updateInput = definitions_1.makeUpdateInputObject(def);
+        var deleteInput = definitions_1.makeDeleteInputObject(def);
+        ctx.addInput(createInput);
+        ctx.addInput(updateInput);
+        ctx.addInput(deleteInput);
+        var mutationType = definitions_1.blankObjectExtension('Mutation');
+        var queryType = definitions_1.blankObjectExtension('Query');
+        // If this type is a model then create put/delete mutations.
+        var createResolver = this.resources.makeCreateResolver(def.name.value);
+        ctx.setResource("Create" + def.name.value + "Resolver", createResolver);
+        mutationType.fields.push(definitions_1.makeField(createResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(createInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
+        var updateResolver = this.resources.makeUpdateResolver(def.name.value);
+        ctx.setResource("Update" + def.name.value + "Resolver", updateResolver);
+        mutationType.fields.push(definitions_1.makeField(updateResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(updateInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
+        var deleteResolver = this.resources.makeDeleteResolver(def.name.value);
+        ctx.setResource("Delete" + def.name.value + "Resolver", deleteResolver);
+        mutationType.fields.push(definitions_1.makeField(deleteResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(deleteInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
+        var getResolver = this.resources.makeGetResolver(def.name.value);
+        ctx.setResource("Get" + def.name.value + "Resolver", getResolver);
+        queryType.fields.push(definitions_1.makeField(getResolver.Properties.FieldName, [definitions_1.makeArg('id', definitions_1.makeNonNullType(definitions_1.makeNamedType('ID')))], definitions_1.makeNamedType(def.name.value)));
     };
     return SimpleTransform;
 }(graphql_transform_1.Transformer));

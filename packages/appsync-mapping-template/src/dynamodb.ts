@@ -55,8 +55,9 @@ export class DynamoDBMappingTemplate {
      * Create an update item resolver template.
      * @param key
      */
-    public static updateItem({ key }: {
-        key: ObjectNode
+    public static updateItem({ key, condition }: {
+        key: ObjectNode,
+        condition: ObjectNode
     }) {
         const keyNames = key.attributes.map((attr: [string, Expression]) => attr[0])
         return compoundExpression([
@@ -119,7 +120,8 @@ export class DynamoDBMappingTemplate {
                 version: str('2017-02-28'),
                 operation: str('UpdateItem'),
                 key,
-                update: ref('util.toJson($update)')
+                update: ref('util.toJson($update)'),
+                condition
             })
         ])
     }

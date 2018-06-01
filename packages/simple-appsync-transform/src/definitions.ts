@@ -1,7 +1,8 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode,
-    TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode
+    TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
+    ObjectTypeExtensionDefinitionNode
 } from 'graphql'
 import { toUpper, graphqlName } from './util'
 
@@ -117,6 +118,19 @@ export function makeSchema(operationTypes: OperationTypeDefinitionNode[]): Schem
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
         kind: 'ObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: [],
+        directives: [],
+        interfaces: []
+    }
+}
+
+export function blankObjectExtension(name: string): ObjectTypeExtensionDefinitionNode {
+    return {
+        kind: 'ObjectTypeExtensionDefinition',
         name: {
             kind: 'Name',
             value: name

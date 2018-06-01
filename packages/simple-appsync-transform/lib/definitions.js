@@ -116,6 +116,19 @@ function blankObject(name) {
     };
 }
 exports.blankObject = blankObject;
+function blankObjectExtension(name) {
+    return {
+        kind: 'ObjectTypeExtensionDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: [],
+        directives: [],
+        interfaces: []
+    };
+}
+exports.blankObjectExtension = blankObjectExtension;
 function makeField(name, args, type) {
     return {
         kind: 'FieldDefinition',

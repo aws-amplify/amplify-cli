@@ -2,7 +2,7 @@ import DynamoDB from 'cloudform/types/dynamoDb'
 import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
 import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter } from 'cloudform'
+import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
 import { DynamoDBMappingTemplate, print, str, ref, obj, set, forEach, compoundExpression, qref } from 'appsync-mapping-template'
 import { toUpper, graphqlName } from './util'
 
@@ -14,9 +14,12 @@ export class ResourceFactory {
     public static GraphQLAPILogicalID = 'GraphQLAPILogicalID'
     public static GraphQLSchemaLogicalID = 'GraphQLSchemaLogicalID'
     public static DynamoDBTableLogicalID = 'DynamoDBTableLogicalID'
-    public static ElasticSearchLogicalID = 'ElasticSearchLogicalID'
     public static IAMRoleLogicalID = 'IAMRoleLogicalID'
     public static APIKeyLogicalID = 'APIKeyLogicalID'
+    public static ElasticSearchDomainLogicalID = 'ElasticSearchDomainLogicalID'
+    public static StreamingLambdaIAMRoleLogicalID = 'StreamingLambdaIAMRoleLogicalID'
+    public static StreamingLambdaFunctionLogicalID = 'StreamingLambdaFunctionLogicalID'
+    public static StreamingLambdaEventSourceMappingLogicalID = 'StreamingLambdaEventSourceMappingLogicalID'
 
     // DataSource
     public static DynamoDBDataSourceLogicalID = 'DynamoDBDataSourceLogicalID'
@@ -28,7 +31,15 @@ export class ResourceFactory {
         ReadIOPS: 'ReadIOPS',
         WriteIOPS: 'WriteIOPS',
         ElasticSearchDomainName: 'ElasticSearchDomainName',
-        IAMRoleName: 'IAMRoleName'
+        IAMRoleName: 'IAMRoleName',
+        DebugStreamingLambda: 'DebugStreamingLambda',
+        StreamingIAMRoleName: 'StreamingIAMRoleName',
+        ElasticSearchInstanceCount: 'ElasticSearchInstanceCount',
+        ElasticSearchInstanceType: 'ElasticSearchInstanceType',
+        ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
+        StreamingLambdaCodeS3Bucket: 'StreamingLambdaCodeS3Bucket',
+        StreamingLambdaCodeS3Key: 'StreamingLambdaCodeS3Key',
+        StreamingLambdaCodeS3Version: 'StreamingLambdaCodeS3Version'
     }
 
     /**
@@ -58,6 +69,60 @@ export class ResourceFactory {
             [ResourceFactory.ParameterIds.IAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync.',
                 Default: 'AppSyncSimpleTransformRole'
+            }),
+            [ResourceFactory.ParameterIds.StreamingIAMRoleName]: new StringParameter({
+                Description: 'The name of the streaming lambda function.',
+                Default: 'DynamoDBToElasticSearch'
+            }),
+            [ResourceFactory.ParameterIds.DebugStreamingLambda]: new NumberParameter({
+                Description: 'Enable debug logs for the Dynamo -> ES streaming lambda.',
+                Default: 1,
+                AllowedValues: [0, 1]
+            }),
+            [ResourceFactory.ParameterIds.ElasticSearchInstanceCount]: new NumberParameter({
+                Description: 'The number of instances to launch into the ElasticSearch domain.',
+                Default: 1
+            }),
+            [ResourceFactory.ParameterIds.ElasticSearchDomainName]: new StringParameter({
+                Description: 'The name of the ElasticSearch domain.',
+                Default: 'appsync-elasticsearch-domain',
+                AllowedPattern: '^[a-z][a-z0-9-]*$',
+                MinLength: 1,
+                MaxLength: 28
+            }),
+            [ResourceFactory.ParameterIds.ElasticSearchInstanceType]: new StringParameter({
+                Description: 'The type of instance to launch into the ElasticSearch domain.',
+                Default: 't2.small.elasticsearch',
+                AllowedValues: [
+                    't2.small.elasticsearch', 't2.medium.elasticsearch', 'c4.large.elasticsearch',
+                    'c4.xlarge.elasticsearch', 'c4.2xlarge.elasticsearch', 'c4.4xlarge.elasticsearch',
+                    'c4.8xlarge.elasticsearch', 'm3.medium.elasticsearch', 'm3.large.elasticsearch',
+                    'm3.xlarge.elasticsearch', 'm3.2xlarge.elasticsearch', 'm4.large.elasticsearch',
+                    'm4.xlarge.elasticsearch', 'm4.2xlarge.elasticsearch', 'm4.4xlarge.elasticsearch',
+                    'm4.10xlarge.elasticsearch', 'r3.large.elasticsearch', 'r3.xlarge.elasticsearch',
+                    'r3.2xlarge.elasticsearch', 'r3.4xlarge.elasticsearch', 'r3.8xlarge.elasticsearch',
+                    'r4.large.elasticsearch', 'r4.xlarge.elasticsearch', 'r4.2xlarge.elasticsearch',
+                    'r4.4xlarge.elasticsearch', 'r4.8xlarge.elasticsearch', 'r4.16xlarge.elasticsearch',
+                    'i2.xlarge.elasticsearch', 'i2.2xlarge.elasticsearch', 'i3.large.elasticsearch',
+                    'i3.xlarge.elasticsearch', 'i3.2xlarge.elasticsearch', 'i3.4xlarge.elasticsearch',
+                    'i3.8xlarge.elasticsearch', 'i3.16xlarge.elasticsearch'
+                ]
+            }),
+            [ResourceFactory.ParameterIds.ElasticSearchEBSVolumeGB]: new NumberParameter({
+                Description: 'The size in GB of the EBS volumes that contain our data.',
+                Default: 20
+            }),
+            [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Bucket]: new StringParameter({
+                Description: 'S3 bucket containing the DynamoDB streaming lambda code.',
+                Default: 'mp-lambda-blueprints'
+            }),
+            [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Key]: new StringParameter({
+                Description: 'S3 key containing the DynamoDB streaming lambda code.',
+                Default: 'streaming-lambda.zip'
+            }),
+            [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Version]: new StringParameter({
+                Description: 'S3 key containing the DynamoDB lambda code version.',
+                Default: 'Sc32fGDZq2SdHBc1Hek6I3_Lzzt4OazX'
             })
         }
     }
@@ -73,7 +138,11 @@ export class ResourceFactory {
                 [ResourceFactory.DynamoDBTableLogicalID]: this.makeDynamoDBTable(),
                 [ResourceFactory.IAMRoleLogicalID]: this.makeIAMRole(),
                 [ResourceFactory.DynamoDBDataSourceLogicalID]: this.makeDynamoDBDataSource(),
-                [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey()
+                [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey(),
+                [ResourceFactory.ElasticSearchDomainLogicalID]: this.makeElasticSearchDomain(),
+                [ResourceFactory.StreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
+                [ResourceFactory.StreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
+                [ResourceFactory.StreamingLambdaEventSourceMappingLogicalID]: this.makeDynamoDBStreamEventSourceMapping()
             }
         }
     }
@@ -108,7 +177,7 @@ export class ResourceFactory {
      * @param logicalId The logicalId of the domain if it is different than the name of the data source.
      */
     public makeElasticSearchDataSource() {
-        const logicalName = ResourceFactory.ElasticSearchLogicalID
+        const logicalName = ResourceFactory.ElasticSearchDomainLogicalID
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
             Name: logicalName,
@@ -145,7 +214,44 @@ export class ResourceFactory {
             ProvisionedThroughput: {
                 ReadCapacityUnits: Fn.Ref(ResourceFactory.ParameterIds.ReadIOPS),
                 WriteCapacityUnits: Fn.Ref(ResourceFactory.ParameterIds.WriteIOPS)
+            },
+            StreamSpecification: {
+                StreamViewType: 'NEW_AND_OLD_IMAGES'
             }
+        })
+    }
+
+    /**
+     * Deploy a lambda function that will stream data from our DynamoDB table
+     * to our elasticsearch index.
+     */
+    public makeDynamoDBStreamingFunction() {
+        return new Lambda.Function({
+            Code: {
+                S3Bucket: Fn.Ref(ResourceFactory.ParameterIds.StreamingLambdaCodeS3Bucket),
+                S3Key: Fn.Ref(ResourceFactory.ParameterIds.StreamingLambdaCodeS3Key),
+                S3ObjectVersion: Fn.Ref(ResourceFactory.ParameterIds.StreamingLambdaCodeS3Version)
+            },
+            Handler: 'python_streaming_function.lambda_handler',
+            Role: Fn.GetAtt(ResourceFactory.StreamingLambdaIAMRoleLogicalID, 'Arn'),
+            Runtime: 'python3.6',
+            Environment: {
+                Variables: {
+                    ES_ENDPOINT: Fn.GetAtt(ResourceFactory.ElasticSearchDomainLogicalID, 'DomainEndpoint'),
+                    ES_REGION: Fn.Select(3, Fn.Split(':', Fn.GetAtt(ResourceFactory.ElasticSearchDomainLogicalID, 'DomainArn'))),
+                    DEBUG: Fn.Ref(ResourceFactory.ParameterIds.DebugStreamingLambda)
+                }
+            }
+        })
+    }
+
+    public makeDynamoDBStreamEventSourceMapping() {
+        return new Lambda.EventSourceMapping({
+            BatchSize: 100,
+            Enabled: true,
+            EventSourceArn: Fn.GetAtt(ResourceFactory.DynamoDBTableLogicalID, 'StreamArn'),
+            FunctionName: Fn.GetAtt(ResourceFactory.StreamingLambdaFunctionLogicalID, 'Arn'),
+            StartingPosition: 'TRIM_HORIZON'
         })
     }
 
@@ -194,8 +300,186 @@ export class ResourceFactory {
                             }
                         ]
                     }
+                }),
+                new IAM.Role.Policy({
+                    PolicyName: 'ElasticSearchAccess',
+                    PolicyDocument: {
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Action: [
+                                    "es:ESHttpPost",
+                                    "es:ESHttpDelete",
+                                    "es:ESHttpHead",
+                                    "es:ESHttpGet",
+                                    "es:ESHttpPost",
+                                    "es:ESHttpPut"
+                                ],
+                                Effect: "Allow",
+                                Resource: Fn.Join(
+                                    '/',
+                                    [
+                                        Fn.GetAtt(
+                                            ResourceFactory.ElasticSearchDomainLogicalID,
+                                            'DomainArn'
+                                        ),
+                                        '*'
+                                    ]
+                                )
+                            }
+                        ]
+                    }
                 })
             ]
+        })
+    }
+
+    /**
+     * Create a single role that has access to all the resources created by the
+     * transform.
+     * @param name  The name of the IAM role to create.
+     */
+    public makeStreamingLambdaIAMRole() {
+        return new IAM.Role({
+            RoleName: Fn.Ref(ResourceFactory.ParameterIds.StreamingIAMRoleName),
+            AssumeRolePolicyDocument: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Effect: "Allow",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Action: "sts:AssumeRole"
+                    }
+                ]
+            },
+            Policies: [
+                new IAM.Role.Policy({
+                    PolicyName: 'ElasticSearchAccess',
+                    PolicyDocument: {
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Action: [
+                                    "es:ESHttpPost",
+                                    "es:ESHttpDelete",
+                                    "es:ESHttpHead",
+                                    "es:ESHttpGet",
+                                    "es:ESHttpPost",
+                                    "es:ESHttpPut"
+                                ],
+                                Effect: "Allow",
+                                Resource: Fn.Join(
+                                    '/',
+                                    [
+                                        Fn.GetAtt(
+                                            ResourceFactory.ElasticSearchDomainLogicalID,
+                                            'DomainArn'
+                                        ),
+                                        '*'
+                                    ]
+                                )
+                            }
+                        ]
+                    }
+                }),
+                new IAM.Role.Policy({
+                    PolicyName: 'DynamoDBStreamAccess',
+                    PolicyDocument: {
+                        Version: "2012-10-17",
+                        Statement: [
+                            {
+                                Action: [
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:ListStreams"
+                                ],
+                                Effect: "Allow",
+                                Resource: [
+                                    Fn.Join(
+                                        '/',
+                                        [Fn.GetAtt(ResourceFactory.DynamoDBTableLogicalID, 'Arn'), 'stream', '*']
+                                    )
+                                ]
+                            }
+                        ]
+                    }
+                }),
+                new IAM.Role.Policy({
+                    PolicyName: 'CloudWatchLogsAccess',
+                    PolicyDocument: {
+                        Version: '2012-10-17',
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Action: [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                ],
+                                Resource: "arn:aws:logs:*:*:*"
+                            }
+                        ]
+                    }
+                })
+            ]
+        })
+    }
+
+    /**
+     * Create the elasticsearch domain.
+     */
+    public makeElasticSearchDomain() {
+        return new Elasticsearch.Domain({
+            DomainName: Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchDomainName),
+            ElasticsearchVersion: '6.2',
+            ElasticsearchClusterConfig: {
+                InstanceCount: Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchInstanceCount),
+                InstanceType: Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchInstanceType)
+            },
+            EBSOptions: {
+                EBSEnabled: true,
+                VolumeType: 'gp2',
+                VolumeSize: Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchEBSVolumeGB)
+            }
+            // AccessPolicies: {
+            //     Version: '2012-10-17',
+            //     Statement: [
+            //         {
+            //             Effect: 'Allow',
+            //             Action: ["es:*"],
+            //             Principal: {
+            //                 AWS: [
+            //                     Fn.Join(
+            //                         '', [
+            //                             'arn:aws:iam:',
+            //                             Refs.AccountId,
+            //                             ':role/',
+            //                             Fn.Ref(ResourceFactory.ParameterIds.StreamingIAMRoleName)
+            //                         ]
+            //                     ),
+            //                     Fn.Sub('arn:aws:iam::${AWS::AccountId}:role/${rolename}', { rolename: Fn.Ref(ResourceFactory.ParameterIds.IAMRoleName) })
+            //                 ]
+            //             },
+            //             Resource: Fn.Join(
+            //                 '',
+            //                 [
+            //                     'arn:aws:es:',
+            //                     Refs.Region,
+            //                     ':',
+            //                     Refs.AccountId,
+            //                     ':domain/',
+            //                     Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchDomainName),
+            //                     '/*'
+            //                 ]
+            //             )
+            //         }
+            //     ]
+            // }
+            // 
+            // TODO: Snapshotting
         })
     }
 
@@ -289,6 +573,13 @@ export class ResourceFactory {
                     key: obj({
                         '__typename': obj({ S: str(type) }),
                         id: obj({ S: str('$context.args.input.id') })
+                    }),
+                    condition: obj({
+                        expression: "attribute_exists(#type) AND attribute_exists(#id)",
+                        expressionNames: obj({
+                            "#type": "__typename",
+                            "#id": "id"
+                        })
                     })
                 })
             ),

@@ -8,6 +8,10 @@ import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
 
+function isFunction(obj: any) {
+    return obj && (typeof obj === 'function')
+}
+
 /**
  * A generic transformation library that takes as input a graphql schema
  * written in SDL and a set of transformers that operate on it. At the
@@ -40,20 +44,58 @@ export default class GraphQLTransform {
         // TODO: Validate the inputs.
         // TODO: Comb through the schema and validate it only uses directives defined by the transformers.
         // TODO: Have the library handle collecting any types/fields marked with a supported directive. Or have a helper.
-
-        const doc: DocumentNode = parse(schema)
-        // We only accept type system definitions. i.e. everything but fragments and operations.
-        const definitions = doc.definitions.filter(
-            (def: DefinitionNode) => def.kind !== 'OperationDefinition' && def.kind !== 'FragmentDefinition'
-        )
-        const context = new TransformerContext()
+        const context = new TransformerContext(schema)
         for (const transformer of this.transformers) {
             console.log(`Transforming with ${transformer.name}`)
+            if (isFunction(transformer.before)) {
+                transformer.before(context)
+            }
             // Apply each transformer and accumulate the context.
-            transformer.transform(definitions, context)
+            for (const def of context.inputDocument.definitions) {
+                for (const dir of def.directives) {
+                    switch (def.kind) {
+                        case 'ObjectTypeDefinition':
+                            if (isFunction(transformer.object)) {
+                                transformer.object(def, dir, context)
+                            }
+                            break
+                        // Create the supported resolvers.
+                        case 'InterfaceTypeDefinition':
+                            if (isFunction(transformer.interface)) {
+                                transformer.interface(def, dir, context)
+                            }
+                            break
+                        case 'ScalarTypeDefinition':
+                            if (isFunction(transformer.scalar)) {
+                                transformer.scalar(def, dir, context)
+                            }
+                            break
+                        case 'UnionTypeDefinition':
+                            if (isFunction(transformer.union)) {
+                                transformer.union(def, dir, context)
+                            }
+                            break
+                        case 'EnumTypeDefinition':
+                            if (isFunction(transformer.enum)) {
+                                transformer.enum(def, dir, context)
+                            }
+                            break
+                        case 'InputObjectTypeDefinition':
+                            if (isFunction(transformer.input)) {
+                                transformer.input(def, dir, context)
+                            }
+                            break
+                        default:
+                            continue
+                    }
+                }
+            }
             // TODO: Validate the new context.
             if (1 !== 1) {
                 throw new Error(`Invalid context after transformer ${transformer.name}`)
+            }
+            if (isFunction(transformer.after)) {
+                transformer.after(context)
             }
         }
         // Write the schema.
