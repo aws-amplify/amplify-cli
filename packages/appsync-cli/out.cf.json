@@ -304,6 +304,57 @@
                 }
             }
         },
+        "ElasticSearchDataSourceLogicalID": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPILogicalID",
+                        "ApiId"
+                    ]
+                },
+                "Name": "ElasticSearchDomainLogicalID",
+                "Type": "AMAZON_ELASTICSEARCH",
+                "ServiceRoleArn": {
+                    "Fn::GetAtt": [
+                        "IAMRoleLogicalID",
+                        "Arn"
+                    ]
+                },
+                "ElasticsearchConfig": {
+                    "AwsRegion": {
+                        "Fn::Select": [
+                            3,
+                            {
+                                "Fn::Split": [
+                                    ":",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "ElasticSearchDomainLogicalID",
+                                            "DomainArn"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "Endpoint": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "https://",
+                                {
+                                    "Fn::GetAtt": [
+                                        "ElasticSearchDomainLogicalID",
+                                        "DomainEndpoint"
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
         "APIKeyLogicalID": {
             "Type": "AWS::AppSync::ApiKey",
             "Properties": {
@@ -535,7 +586,7 @@
                 },
                 "FieldName": "createUser",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"PutItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"User\"\n    },\n    \"id\": {\n      \"S\":       \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\":   $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n    \"expression\":     \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n    \"expressionNames\": {\n      \"#type\":       \"__typename\",\n      \"#id\":       \"id\"\n    }\n  }\n}",
+                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": {\n          \"S\": \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -556,7 +607,7 @@
                 },
                 "FieldName": "updateUser",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"UpdateItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"User\"\n    },\n    \"id\": {\n      \"S\":       \"$context.args.input.id\"\n    }\n  },\n  \"update\":   $util.toJson($update),\n  \"condition\": {\n    \"expression\": ,\n    \"expressionNames\": {\n      \"#type\": ,\n      \"#id\": \n    }\n  }\n}",
+                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": {\n      \"expression\": ,\n      \"expressionNames\": {\n          \"#type\": ,\n          \"#id\": \n    }\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -577,7 +628,7 @@
                 },
                 "FieldName": "deleteUser",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"DeleteItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"User\"\n    },\n    \"id\":     $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -598,8 +649,38 @@
                 },
                 "FieldName": "getUser",
                 "TypeName": "Query",
-                "RequestMappingTemplate": "{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"GetItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"User\"\n    },\n    \"id\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
+            }
+        },
+        "SearchUserResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPILogicalID",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ElasticSearchDataSourceLogicalID",
+                        "Name"
+                    ]
+                },
+                "FieldName": "searchUser",
+                "TypeName": "Query",
+                "RequestMappingTemplate": {
+                    "Fn::Sub": [
+                        "#set( $body = {\n  \"size\": $util.defaultIfNull($ctx.args.first, 20),\n  \"sort\":   [{\n      \"createdAt\": \"asc\"\n  }, {\n      \"_id\": \"desc\"\n  }]\n} )\n#if( $util.isNull($ctx.args.query) )\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"User\"\n      }\n    },\n      \"must\":     [{\n          \"match_all\": {}\n    }]\n  }\n} )\n#else\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"User\"\n      }\n    },\n      \"must\":     [{\n          \"multi_match\": {\n              \"query\": \"$ctx.args.query\",\n              \"fields\":         [],\n              \"type\": \"best_fields\"\n      }\n    }]\n  }\n} )\n#end\n$util.qr($body.put(\"query\", $query))\n#if( !$util.isNullOrEmpty($ctx.args.after) )\n  #set( $split = $ctx.args.after.split(\"/\") )\n#set( $afterToken = [$split.get(0), $split.get(1)] )\n$util.qr($body.put(\"search_after\", $afterToken))\n#end\n#set( $indexPath = \"/${__ES_INDEX}/_search\" )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GET\",\n  \"path\": \"$indexPath.toLowerCase()\",\n  \"params\": {\n      \"body\": $util.toJson($body)\n  }\n}",
+                        {
+                            "__ES_INDEX": {
+                                "Ref": "DynamoDBTableLogicalID"
+                            }
+                        }
+                    ]
+                },
+                "ResponseMappingTemplate": "#set( $items = [] )\n#foreach( $entry in $context.result.hits.hits )\n  #if( !$foreach.hasNext )\n    #set( $nextToken = \"$entry.sort.get(0)/$entry.sort.get(1)\" )\n  #end\n$util.qr($items.add($entry.get(\"_source\")))\n#end\n$util.toJson({\n  \"items\": $items,\n  \"total\": $ctx.result.hits.total,\n  \"nextToken\": $nextToken\n})"
             }
         },
         "CreatePostResolver": {
@@ -619,7 +700,7 @@
                 },
                 "FieldName": "createPost",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"PutItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"Post\"\n    },\n    \"id\": {\n      \"S\":       \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\":   $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n    \"expression\":     \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n    \"expressionNames\": {\n      \"#type\":       \"__typename\",\n      \"#id\":       \"id\"\n    }\n  }\n}",
+                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -640,7 +721,7 @@
                 },
                 "FieldName": "updatePost",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"UpdateItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"Post\"\n    },\n    \"id\": {\n      \"S\":       \"$context.args.input.id\"\n    }\n  },\n  \"update\":   $util.toJson($update),\n  \"condition\": {\n    \"expression\": ,\n    \"expressionNames\": {\n      \"#type\": ,\n      \"#id\": \n    }\n  }\n}",
+                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": {\n      \"expression\": ,\n      \"expressionNames\": {\n          \"#type\": ,\n          \"#id\": \n    }\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -661,7 +742,7 @@
                 },
                 "FieldName": "deletePost",
                 "TypeName": "Mutation",
-                "RequestMappingTemplate": "{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"DeleteItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"Post\"\n    },\n    \"id\":     $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
             }
         },
@@ -682,8 +763,38 @@
                 },
                 "FieldName": "getPost",
                 "TypeName": "Query",
-                "RequestMappingTemplate": "{\n  \"version\":   \"2017-02-28\",\n  \"operation\":   \"GetItem\",\n  \"key\": {\n    \"__typename\": {\n      \"S\":       \"Post\"\n    },\n    \"id\":     $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
                 "ResponseMappingTemplate": "$util.toJson($context.result)"
+            }
+        },
+        "SearchPostResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPILogicalID",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ElasticSearchDataSourceLogicalID",
+                        "Name"
+                    ]
+                },
+                "FieldName": "searchPost",
+                "TypeName": "Query",
+                "RequestMappingTemplate": {
+                    "Fn::Sub": [
+                        "#set( $body = {\n  \"size\": $util.defaultIfNull($ctx.args.first, 20),\n  \"sort\":   [{\n      \"createdAt\": \"asc\"\n  }, {\n      \"_id\": \"desc\"\n  }]\n} )\n#if( $util.isNull($ctx.args.query) )\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"Post\"\n      }\n    },\n      \"must\":     [{\n          \"match_all\": {}\n    }]\n  }\n} )\n#else\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"Post\"\n      }\n    },\n      \"must\":     [{\n          \"multi_match\": {\n              \"query\": \"$ctx.args.query\",\n              \"fields\":         [\"title\", \"tags\"],\n              \"type\": \"best_fields\"\n      }\n    }]\n  }\n} )\n#end\n$util.qr($body.put(\"query\", $query))\n#if( !$util.isNullOrEmpty($ctx.args.after) )\n  #set( $split = $ctx.args.after.split(\"/\") )\n#set( $afterToken = [$split.get(0), $split.get(1)] )\n$util.qr($body.put(\"search_after\", $afterToken))\n#end\n#set( $indexPath = \"/${__ES_INDEX}/_search\" )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GET\",\n  \"path\": \"$indexPath.toLowerCase()\",\n  \"params\": {\n      \"body\": $util.toJson($body)\n  }\n}",
+                        {
+                            "__ES_INDEX": {
+                                "Ref": "DynamoDBTableLogicalID"
+                            }
+                        }
+                    ]
+                },
+                "ResponseMappingTemplate": "#set( $items = [] )\n#foreach( $entry in $context.result.hits.hits )\n  #if( !$foreach.hasNext )\n    #set( $nextToken = \"$entry.sort.get(0)/$entry.sort.get(1)\" )\n  #end\n$util.qr($items.add($entry.get(\"_source\")))\n#end\n$util.toJson({\n  \"items\": $items,\n  \"total\": $ctx.result.hits.total,\n  \"nextToken\": $nextToken\n})"
             }
         },
         "GraphQLSchemaLogicalID": {
@@ -695,7 +806,7 @@
                         "ApiId"
                     ]
                 },
-                "Definition": "input CreatePostInput {\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ninput CreateUserInput {\n  name: String!\n}\n\ninput DeletePostInput {\n  id: ID\n}\n\ninput DeleteUserInput {\n  id: ID\n}\n\ntype Mutation {\n\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ntype Query {\n\n}\n\ninput UpdatePostInput {\n  id: ID!\n  title: String\n  rating: Int\n  tags: [String]\n}\n\ninput UpdateUserInput {\n  id: ID!\n  name: String\n}\n\ntype User {\n  id: ID!\n  name: String!\n}\n"
+                "Definition": "input CreatePostInput {\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ninput CreateUserInput {\n  name: String!\n}\n\ninput DeletePostInput {\n  id: ID\n}\n\ninput DeleteUserInput {\n  id: ID\n}\n\ntype Mutation {\n  createUser(input: CreateUserInput!): User\n  updateUser(input: UpdateUserInput!): User\n  deleteUser(input: DeleteUserInput!): User\n  createPost(input: CreatePostInput!): Post\n  updatePost(input: UpdatePostInput!): Post\n  deletePost(input: DeletePostInput!): Post\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ntype PostConnection {\n  items: [Post]\n  total: Int\n  nextToken: String\n}\n\ntype Query {\n  getUser(id: ID!): User\n  searchUser(query: String!, first: Int, after: String): UserConnection\n  getPost(id: ID!): Post\n  searchPost(query: String!, first: Int, after: String): PostConnection\n}\n\ninput UpdatePostInput {\n  id: ID!\n  title: String\n  rating: Int\n  tags: [String]\n}\n\ninput UpdateUserInput {\n  id: ID!\n  name: String\n}\n\ntype User {\n  id: ID!\n  name: String!\n}\n\ntype UserConnection {\n  items: [User]\n  total: Int\n  nextToken: String\n}\n"
             }
         }
     },

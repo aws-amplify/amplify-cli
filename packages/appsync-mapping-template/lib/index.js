@@ -5,6 +5,6 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./ast"));
 __export(require("./dynamodb"));
+__export(require("./elasticsearch"));
 __export(require("./print"));
-__export(require("./util"));
 //# sourceMappingURL=index.js.map

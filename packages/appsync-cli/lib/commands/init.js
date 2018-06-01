@@ -8,23 +8,39 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const clime_1 = require("clime");
+const fs = require("fs");
+const log_1 = require("../log");
+const TemplateSchema = `type Post @model {
+    id: ID!
+    title: String! @search
+    tags: [String] @search
+    createdAt: String
+    updatedAt: String
+}
+`;
+const DefaultConfig = (name) => `
+{
+    "name": "${name}"
+}
+`;
 let default_1 = class default_1 extends clime_1.Command {
-    execute(name) {
-        return `Hello, ${name}!`;
+    execute() {
+        /**
+         * Initialize an application.
+         */
+        log_1.default.debug('Creating schema.graphql');
+        fs.writeFileSync('schema.graphql', TemplateSchema);
+        log_1.default.info(`
+            Edit the schema.graphql file and then run 'appsync create schema.graphql <application-name>' to build and deploy your API.
+        `);
     }
 };
 __decorate([
-    __param(0, clime_1.param({
-        description: 'Your name',
-        required: true,
-    })),
+    clime_1.metadata,
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], default_1.prototype, "execute", null);
 default_1 = __decorate([
@@ -33,4 +49,4 @@ default_1 = __decorate([
     })
 ], default_1);
 exports.default = default_1;
-//# sourceMappingURL=default.js.map
+//# sourceMappingURL=init.js.map

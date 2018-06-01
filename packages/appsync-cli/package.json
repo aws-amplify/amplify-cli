@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc && cp lib/index.js lib/appsync"
   },
   "keywords": [
     "graphql",
@@ -15,7 +15,9 @@
   "author": "Michael Paris",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.250.1",
     "babel-polyfill": "^6.26.0",
+    "chalk": "^2.4.1",
     "clime": "^0.5.9",
     "graphql-transform": "1.0",
     "simple-appsync-transform": "1.0"

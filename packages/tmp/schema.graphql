@@ -1,10 +1,7 @@
-type User @model {
-    id: ID!
-    name: String!
-}
 type Post @model {
     id: ID!
     title: String! @search
-    rating: Int!
     tags: [String] @search
+    createdAt: String
+    updatedAt: String
 }

@@ -158,4 +158,11 @@ function compoundExpression(expressions) {
     };
 }
 exports.compoundExpression = compoundExpression;
+function toJson(expr) {
+    return {
+        kind: 'Util.ToJson',
+        expr: expr
+    };
+}
+exports.toJson = toJson;
 //# sourceMappingURL=ast.js.map

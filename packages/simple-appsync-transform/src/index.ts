@@ -1,13 +1,13 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
     DirectiveDefinitionNode, parse, DirectiveNode, TypeSystemDefinitionNode,
-    buildASTSchema, printSchema, ObjectTypeDefinitionNode
+    buildASTSchema, printSchema, ObjectTypeDefinitionNode, FieldDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, blankObject, makeField, makeArg, makeNamedType,
     makeNonNullType, makeSchema, makeOperationType, makeUpdateInputObject,
-    makeDeleteInputObject, blankObjectExtension
+    makeDeleteInputObject, blankObjectExtension, makeConnection
 } from './definitions'
 import Template from 'cloudform/types/template'
 import { AppSync } from 'cloudform';
@@ -81,22 +81,29 @@ export default class SimpleTransform extends Transformer {
     }
 
     /**
-     * Given the initial input and accumulated context return the new context.
+     * Given the initial input and context manipulate the context to handle this object directive.
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
     public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
-        // Create the input & object types.
+        // Create the object type.
         ctx.addObject(def)
+        // Create the connection object type.
+        const connection = makeConnection(makeNamedType(def.name.value))
+        ctx.addObject(connection)
+        // Create the input types.
         const createInput = makeCreateInputObject(def)
         const updateInput = makeUpdateInputObject(def)
         const deleteInput = makeDeleteInputObject(def)
         ctx.addInput(createInput)
         ctx.addInput(updateInput)
         ctx.addInput(deleteInput)
+
+        // Create the mutation & query extension
         const mutationType = blankObjectExtension('Mutation')
         const queryType = blankObjectExtension('Query')
-        // If this type is a model then create put/delete mutations.
+
+        // Create the mutations.
         const createResolver = this.resources.makeCreateResolver(def.name.value)
         ctx.setResource(`Create${def.name.value}Resolver`, createResolver)
         mutationType.fields.push(
@@ -124,6 +131,9 @@ export default class SimpleTransform extends Transformer {
                 makeNamedType(def.name.value)
             )
         )
+        ctx.addObjectExtension(mutationType)
+
+        // Create the queries
         const getResolver = this.resources.makeGetResolver(def.name.value)
         ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
         queryType.fields.push(
@@ -133,5 +143,27 @@ export default class SimpleTransform extends Transformer {
                 makeNamedType(def.name.value)
             )
         )
+        const isSearchable = (field: FieldDefinitionNode) => field.directives.find(
+            (dir: DirectiveNode) => dir.name.value === 'search'
+        )
+        const pluckName = (field: FieldDefinitionNode) => field.name.value
+        const searchableFields = (def.fields || []).filter(isSearchable).map(pluckName)
+        const searchResolver = this.resources.makeSearchResolver(
+            def.name.value,
+            searchableFields
+        )
+        ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
+        queryType.fields.push(
+            makeField(
+                searchResolver.Properties.FieldName,
+                [
+                    makeArg('query', makeNonNullType(makeNamedType('String'))),
+                    makeArg('first', makeNamedType('Int')),
+                    makeArg('after', makeNamedType('String'))
+                ],
+                makeNamedType(connection.name.value)
+            )
+        )
+        ctx.addObjectExtension(queryType)
     }
 }

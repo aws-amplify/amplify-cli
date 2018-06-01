@@ -178,4 +178,21 @@ function makeListType(type) {
     };
 }
 exports.makeListType = makeListType;
+function makeConnection(type) {
+    return {
+        kind: 'ObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: util_1.graphqlName(util_1.toUpper(type.name.value) + "Connection")
+        },
+        fields: [
+            makeField("items", [], { kind: 'ListType', type: type }),
+            makeField("total", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
+            makeField("nextToken", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } })
+        ],
+        directives: [],
+        interfaces: []
+    };
+}
+exports.makeConnection = makeConnection;
 //# sourceMappingURL=definitions.js.map

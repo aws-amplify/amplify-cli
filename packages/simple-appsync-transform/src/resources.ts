@@ -3,7 +3,11 @@ import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
 import Template from 'cloudform/types/template'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
-import { DynamoDBMappingTemplate, print, str, ref, obj, set, forEach, compoundExpression, qref } from 'appsync-mapping-template'
+import {
+    DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
+    print, str, ref, obj, set, iff, ifElse, list, raw,
+    forEach, compoundExpression, qref, toJson
+} from 'appsync-mapping-template'
 import { toUpper, graphqlName } from './util'
 
 type AppSyncDataSourceType = 'AMAZON_DYNAMODB' | 'AMAZON_ELASTICSEARCH' | 'AWS_LAMBDA' | 'NONE'
@@ -138,6 +142,7 @@ export class ResourceFactory {
                 [ResourceFactory.DynamoDBTableLogicalID]: this.makeDynamoDBTable(),
                 [ResourceFactory.IAMRoleLogicalID]: this.makeIAMRole(),
                 [ResourceFactory.DynamoDBDataSourceLogicalID]: this.makeDynamoDBDataSource(),
+                [ResourceFactory.ElasticSearchDataSourceLogicalID]: this.makeElasticSearchDataSource(),
                 [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey(),
                 [ResourceFactory.ElasticSearchDomainLogicalID]: this.makeElasticSearchDomain(),
                 [ResourceFactory.StreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
@@ -184,8 +189,12 @@ export class ResourceFactory {
             Type: 'AMAZON_ELASTICSEARCH',
             ServiceRoleArn: Fn.GetAtt(ResourceFactory.IAMRoleLogicalID, 'Arn'),
             ElasticsearchConfig: {
-                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(logicalName, 'Arn'))),
-                Endpoint: Fn.GetAtt(logicalName, 'DomainEndpoint')
+                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(logicalName, 'DomainArn'))),
+                Endpoint:
+                    Fn.Join('', [
+                        'https://',
+                        Fn.GetAtt(logicalName, 'DomainEndpoint')
+                    ])
             }
         })
     }
@@ -444,42 +453,6 @@ export class ResourceFactory {
                 VolumeType: 'gp2',
                 VolumeSize: Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchEBSVolumeGB)
             }
-            // AccessPolicies: {
-            //     Version: '2012-10-17',
-            //     Statement: [
-            //         {
-            //             Effect: 'Allow',
-            //             Action: ["es:*"],
-            //             Principal: {
-            //                 AWS: [
-            //                     Fn.Join(
-            //                         '', [
-            //                             'arn:aws:iam:',
-            //                             Refs.AccountId,
-            //                             ':role/',
-            //                             Fn.Ref(ResourceFactory.ParameterIds.StreamingIAMRoleName)
-            //                         ]
-            //                     ),
-            //                     Fn.Sub('arn:aws:iam::${AWS::AccountId}:role/${rolename}', { rolename: Fn.Ref(ResourceFactory.ParameterIds.IAMRoleName) })
-            //                 ]
-            //             },
-            //             Resource: Fn.Join(
-            //                 '',
-            //                 [
-            //                     'arn:aws:es:',
-            //                     Refs.Region,
-            //                     ':',
-            //                     Refs.AccountId,
-            //                     ':domain/',
-            //                     Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchDomainName),
-            //                     '/*'
-            //                 ]
-            //             )
-            //         }
-            //     ]
-            // }
-            // 
-            // TODO: Snapshotting
         })
     }
 
@@ -635,6 +608,112 @@ export class ResourceFactory {
             ),
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
+            )
+        })
+    }
+
+    /**
+     * Create the ElasticSearch search resolver.
+     */
+    public makeSearchResolver(type: string, fieldsToSearch: string[]) {
+        const fieldName = graphqlName('search' + toUpper(type))
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceFactory.ElasticSearchDataSourceLogicalID, 'Name'),
+            FieldName: fieldName,
+            TypeName: 'Query',
+            RequestMappingTemplate: Fn.Sub(
+                print(
+                    compoundExpression([
+                        set(ref('body'), obj({
+                            size: ref('util.defaultIfNull($ctx.args.first, 20)'),
+                            sort: list([
+                                obj({ createdAt: str('asc') }),
+                                obj({ _id: str('desc') })
+                            ])
+                        })),
+                        ifElse(
+                            ref('util.isNull($ctx.args.query)'),
+                            set(
+                                ref('query'),
+                                obj({
+                                    bool: obj({
+                                        filter: obj({
+                                            term: obj({
+                                                '__typename.keyword': str(type)
+                                            })
+                                        }),
+                                        must: list([
+                                            obj({
+                                                match_all: obj({})
+                                            })
+                                        ])
+                                    })
+                                })
+                            ),
+                            set(
+                                ref('query'),
+                                obj({
+                                    bool: obj({
+                                        filter: obj({
+                                            term: obj({
+                                                '__typename.keyword': str(type)
+                                            })
+                                        }),
+                                        must: list([
+                                            obj({
+                                                multi_match: obj({
+                                                    query: str('$ctx.args.query'),
+                                                    fields: list(fieldsToSearch.map((s: string) => str(s))),
+                                                    type: str('best_fields')
+                                                })
+                                            })
+                                        ])
+                                    })
+                                })
+                            )
+                        ),
+                        qref('$body.put("query", $query)'),
+                        iff(
+                            raw('!$util.isNullOrEmpty($ctx.args.after)'),
+                            compoundExpression([
+                                set(ref('split'), ref('ctx.args.after.split("/")')),
+                                set(
+                                    ref('afterToken'),
+                                    list([ref('split.get(0)'), ref('split.get(1)')])
+                                ),
+                                qref('$body.put("search_after", $afterToken)')
+                            ])
+                        ),
+                        set(ref('indexPath'), str('/${__ES_INDEX}/_search')),
+                        ElasticSearchMappingTemplate.search({
+                            body: ref('util.toJson($body)'),
+                            pathRef: 'indexPath'
+                        })
+                    ]),
+                ),
+                { '__ES_INDEX': Fn.Ref(ResourceFactory.DynamoDBTableLogicalID) }
+            ),
+            ResponseMappingTemplate: print(
+                compoundExpression([
+                    set(ref('items'), list([])),
+                    forEach(
+                        ref('entry'),
+                        ref('context.result.hits.hits'),
+                        [
+                            iff(
+                                raw('!$foreach.hasNext'),
+                                set(ref('nextToken'), str('$entry.sort.get(0)/$entry.sort.get(1)'))
+                            ),
+                            qref('$items.add($entry.get("_source"))')
+                        ]
+                    ),
+                    toJson(obj({
+                        "items": ref('items'),
+                        "total": ref('ctx.result.hits.total'),
+                        "nextToken": ref('nextToken')
+                    }))
+                ])
             )
         })
     }

@@ -312,6 +312,17 @@ export function compoundExpression(expressions: Expression[]): CompoundExpressio
     }
 }
 
+export type ToJsonNode = {
+    kind: 'Util.ToJson',
+    expr: Expression
+}
+export function toJson(expr: Expression): ToJsonNode {
+    return {
+        kind: 'Util.ToJson',
+        expr
+    }
+}
+
 /**
  * A flow expression is one that dictates program flow e.g. if, ifelse, for, while, etc.
  */
@@ -336,4 +347,5 @@ export type Expression =
     | ListNode
     | SetNode
     | CommentNode
-    | CompoundExpressionNode;
+    | CompoundExpressionNode
+    | ToJsonNode;

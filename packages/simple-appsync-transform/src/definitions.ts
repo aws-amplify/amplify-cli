@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode,
     TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
-    ObjectTypeExtensionDefinitionNode
+    ObjectTypeExtensionDefinitionNode, NamedTypeNode
 } from 'graphql'
 import { toUpper, graphqlName } from './util'
 
@@ -187,5 +187,22 @@ export function makeListType(type: TypeNode): TypeNode {
     return {
         kind: 'ListType',
         type
+    }
+}
+
+export function makeConnection(type: NamedTypeNode): ObjectTypeDefinitionNode {
+    return {
+        kind: 'ObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: graphqlName(`${toUpper(type.name.value)}Connection`)
+        },
+        fields: [
+            makeField("items", [], { kind: 'ListType', type: type }),
+            makeField("total", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
+            makeField("nextToken", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } })
+        ],
+        directives: [],
+        interfaces: []
     }
 }

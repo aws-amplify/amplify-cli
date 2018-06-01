@@ -88,34 +88,36 @@ var TransformerContext = /** @class */ (function () {
         var oldDirs = oldNode.directives || [];
         var mergedDirs = oldDirs.concat(newDirs);
         // An extension cannot redeclare fields.
-        var newFieldMap = obj.fields.reduce(function (acc, field) {
+        var oldFields = oldNode.fields || [];
+        var oldFieldMap = oldFields.reduce(function (acc, field) {
             return (__assign({}, acc, (_a = {}, _a[field.name.value] = field, _a)));
             var _a;
         }, {});
-        var oldFields = oldNode.fields || [];
+        var newFields = obj.fields || [];
         var mergedFields = oldFields.slice();
-        for (var _i = 0, oldFields_1 = oldFields; _i < oldFields_1.length; _i++) {
-            var oldField = oldFields_1[_i];
-            if (newFieldMap[oldField.name.value]) {
-                throw new Error("Object type extension '" + obj.name.value + "' cannot redeclare field " + oldField.name.value);
+        for (var _i = 0, newFields_1 = newFields; _i < newFields_1.length; _i++) {
+            var newField = newFields_1[_i];
+            if (oldFieldMap[newField.name.value]) {
+                throw new Error("Object type extension '" + obj.name.value + "' cannot redeclare field " + newField.name.value);
             }
-            mergedFields.push(newFieldMap[oldField.name.value]);
+            mergedFields.push(newField);
         }
         // An extension cannot redeclare interfaces
-        var newInterfaceMap = (obj.interfaces || []).reduce(function (acc, field) {
+        var oldInterfaces = oldNode.interfaces || [];
+        var oldInterfaceMap = oldInterfaces.reduce(function (acc, field) {
             return (__assign({}, acc, (_a = {}, _a[field.name.value] = field, _a)));
             var _a;
         }, {});
-        var oldInterfaces = oldNode.interfaces || [];
+        var newInterfaces = obj.interfaces || [];
         var mergedInterfaces = oldInterfaces.slice();
-        for (var _a = 0, oldInterfaces_1 = oldInterfaces; _a < oldInterfaces_1.length; _a++) {
-            var oldInterface = oldInterfaces_1[_a];
-            if (newFieldMap[oldInterface.name.value]) {
-                throw new Error("Object type extension '" + obj.name.value + "' cannot redeclare interface " + oldInterface.name.value);
+        for (var _a = 0, newInterfaces_1 = newInterfaces; _a < newInterfaces_1.length; _a++) {
+            var newInterface = newInterfaces_1[_a];
+            if (oldInterfaceMap[newInterface.name.value]) {
+                throw new Error("Object type extension '" + obj.name.value + "' cannot redeclare interface " + newInterface.name.value);
             }
-            mergedInterfaces.push(newFieldMap[oldInterface.name.value]);
+            mergedInterfaces.push(newInterface);
         }
-        this.nodeMap[obj.name.value] = __assign({}, oldNode, { interfaces: mergedInterfaces, directives: mergedDirs, fields: mergedFields });
+        this.nodeMap[oldNode.name.value] = __assign({}, oldNode, { interfaces: mergedInterfaces, directives: mergedDirs, fields: mergedFields });
     };
     /**
      * Add an input type definition node to the context.

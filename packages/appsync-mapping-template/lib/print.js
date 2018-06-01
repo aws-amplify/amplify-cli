@@ -49,50 +49,42 @@ function printForEach(node, indent) {
         node.expressions.map(function (e) { return printExpr(e, indent + TAB); }).join('\n') +
         ("\n" + indent + "#end");
 }
-function printString(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return indent + "\"" + node.value + "\"";
+function printString(node) {
+    return "\"" + node.value + "\"";
 }
-function printRaw(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return "" + indent + node.value;
+function printRaw(node) {
+    return "" + node.value;
 }
-function printQuotes(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return indent + "\"" + printExpr(node.expr) + "\"";
+function printQuotes(node) {
+    return "\"" + printExpr(node.expr) + "\"";
 }
-function printInt(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return "" + indent + node.value;
+function printInt(node) {
+    return "" + node.value;
 }
-function printFloat(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return "" + indent + node.value;
+function printFloat(node) {
+    return "" + node.value;
 }
-function printNull(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return indent + "null";
+function printNull(node) {
+    return "null";
 }
-function printReference(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return indent + "$" + node.value;
+function printReference(node) {
+    return "$" + node.value;
 }
-function printQuietReference(node, indent) {
-    if (indent === void 0) { indent = ''; }
-    return indent + "$util.qr(" + node.value + ")";
+function printQuietReference(node) {
+    return "$util.qr(" + node.value + ")";
 }
 function printObject(node, indent) {
     if (indent === void 0) { indent = ''; }
     var attributes = node.attributes.map(function (attr, i) {
         return "" + indent + TAB + "\"" + attr[0] + "\": " + printExpr(attr[1], indent + TAB) + (i < node.attributes.length - 1 ? ',' : '');
     });
-    var divider = attributes.length > 0 ? '\n' : '';
-    return "{" + divider + attributes.join(divider) + divider + indent + "}";
+    var divider = attributes.length > 0 ? "\n" + indent : '';
+    return "{" + divider + attributes.join(divider) + divider + "}";
 }
 exports.printObject = printObject;
 function printList(node, indent) {
     if (indent === void 0) { indent = ''; }
-    var values = node.expressions.map(function (e) { return printExpr(e); }).join(', ');
+    var values = node.expressions.map(function (e) { return printExpr(e, indent); }).join(', ');
     return indent + "[" + values + "]";
 }
 function printSet(node, indent) {
@@ -106,6 +98,10 @@ function printComment(node, indent) {
 function printCompoundExpression(node, indent) {
     if (indent === void 0) { indent = ''; }
     return node.expressions.map(function (node) { return printExpr(node, indent); }).join("\n" + indent);
+}
+function printToJson(node, indent) {
+    if (indent === void 0) { indent = ''; }
+    return indent + "$util.toJson(" + printExpr(node.expr, '') + ")";
 }
 function printExpr(expr, indent) {
     if (indent === void 0) { indent = ''; }
@@ -130,21 +126,21 @@ function printExpr(expr, indent) {
         case 'ForEach':
             return printForEach(expr, indent);
         case 'String':
-            return printString(expr, indent);
+            return printString(expr);
         case 'Raw':
-            return printRaw(expr, indent);
+            return printRaw(expr);
         case 'Quotes':
-            return printQuotes(expr, indent);
+            return printQuotes(expr);
         case 'Float':
-            return printFloat(expr, indent);
+            return printFloat(expr);
         case 'Int':
-            return printInt(expr, indent);
+            return printInt(expr);
         case 'Null':
-            return printNull(expr, indent);
+            return printNull(expr);
         case 'Reference':
-            return printReference(expr, indent);
+            return printReference(expr);
         case 'QuietReference':
-            return printQuietReference(expr, indent);
+            return printQuietReference(expr);
         case 'Object':
             return printObject(expr, indent);
         case 'List':
@@ -155,6 +151,8 @@ function printExpr(expr, indent) {
             return printComment(expr, indent);
         case 'CompoundExpression':
             return printCompoundExpression(expr, indent);
+        case 'Util.ToJson':
+            return printToJson(expr, indent);
         default:
             return '';
     }

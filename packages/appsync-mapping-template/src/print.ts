@@ -3,7 +3,7 @@ import {
     ParensNode, EqualsNode, NotEqualsNode, ForEachNode,
     StringNode, IntNode, NullNode, ReferenceNode, QuietReferenceNode,
     ObjectNode, ListNode, FloatNode, QuotesNode, RawNode, SetNode, CompoundExpressionNode,
-    CommentNode
+    CommentNode, ToJsonNode
 } from './ast';
 
 const TAB = '  ';
@@ -56,48 +56,48 @@ function printForEach(node: ForEachNode, indent: string = ''): string {
         `\n${indent}#end`;
 }
 
-function printString(node: StringNode, indent: string = ''): string {
-    return `${indent}"${node.value}"`;
+function printString(node: StringNode): string {
+    return `"${node.value}"`;
 }
 
-function printRaw(node: RawNode, indent: string = ''): string {
-    return `${indent}${node.value}`;
+function printRaw(node: RawNode): string {
+    return `${node.value}`;
 }
 
-function printQuotes(node: QuotesNode, indent: string = ''): string {
-    return `${indent}"${printExpr(node.expr)}"`;
+function printQuotes(node: QuotesNode): string {
+    return `"${printExpr(node.expr)}"`;
 }
 
-function printInt(node: IntNode, indent: string = ''): string {
-    return `${indent}${node.value}`;
+function printInt(node: IntNode): string {
+    return `${node.value}`;
 }
 
-function printFloat(node: FloatNode, indent: string = ''): string {
-    return `${indent}${node.value}`;
+function printFloat(node: FloatNode): string {
+    return `${node.value}`;
 }
 
-function printNull(node: NullNode, indent: string = ''): string {
-    return `${indent}null`;
+function printNull(node: NullNode): string {
+    return `null`;
 }
 
-function printReference(node: ReferenceNode, indent: string = ''): string {
-    return `${indent}\$${node.value}`;
+function printReference(node: ReferenceNode): string {
+    return `\$${node.value}`;
 }
 
-function printQuietReference(node: QuietReferenceNode, indent: string = ''): string {
-    return `${indent}$util.qr(${node.value})`;
+function printQuietReference(node: QuietReferenceNode): string {
+    return `$util.qr(${node.value})`;
 }
 
 export function printObject(node: ObjectNode, indent: string = ''): string {
     const attributes = node.attributes.map((attr: [string, Expression], i: number) => {
         return `${indent}${TAB}"${attr[0]}": ${printExpr(attr[1], indent + TAB)}${i < node.attributes.length - 1 ? ',' : ''}`;
     });
-    const divider = attributes.length > 0 ? '\n' : ''
-    return `{${divider}${attributes.join(divider)}${divider}${indent}}`;
+    const divider = attributes.length > 0 ? `\n${indent}` : ''
+    return `{${divider}${attributes.join(divider)}${divider}}`;
 }
 
 function printList(node: ListNode, indent: string = ''): string {
-    const values = node.expressions.map((e: Expression) => printExpr(e)).join(', ');
+    const values = node.expressions.map((e: Expression) => printExpr(e, indent)).join(', ');
     return `${indent}[${values}]`;
 }
 
@@ -111,6 +111,10 @@ function printComment(node: CommentNode, indent: string = ''): string {
 
 function printCompoundExpression(node: CompoundExpressionNode, indent: string = ''): string {
     return node.expressions.map((node: Expression) => printExpr(node, indent)).join(`\n${indent}`)
+}
+
+function printToJson(node: ToJsonNode, indent: string = ''): string {
+    return `${indent}$util.toJson(${printExpr(node.expr, '')})`
 }
 
 function printExpr(expr: Expression, indent: string = ''): string {
@@ -133,21 +137,21 @@ function printExpr(expr: Expression, indent: string = ''): string {
         case 'ForEach':
             return printForEach(expr, indent);
         case 'String':
-            return printString(expr, indent);
+            return printString(expr);
         case 'Raw':
-            return printRaw(expr, indent);
+            return printRaw(expr);
         case 'Quotes':
-            return printQuotes(expr, indent);
+            return printQuotes(expr);
         case 'Float':
-            return printFloat(expr, indent);
+            return printFloat(expr);
         case 'Int':
-            return printInt(expr, indent);
+            return printInt(expr);
         case 'Null':
-            return printNull(expr, indent);
+            return printNull(expr);
         case 'Reference':
-            return printReference(expr, indent);
+            return printReference(expr);
         case 'QuietReference':
-            return printQuietReference(expr, indent);
+            return printQuietReference(expr);
         case 'Object':
             return printObject(expr, indent);
         case 'List':
@@ -158,6 +162,8 @@ function printExpr(expr: Expression, indent: string = ''): string {
             return printComment(expr, indent);
         case 'CompoundExpression':
             return printCompoundExpression(expr, indent)
+        case 'Util.ToJson':
+            return printToJson(expr, indent)
         default:
             return '';
     }

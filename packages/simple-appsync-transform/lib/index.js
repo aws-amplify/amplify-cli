@@ -77,22 +77,27 @@ var SimpleTransform = /** @class */ (function (_super) {
         ctx.setResource(resources_1.ResourceFactory.GraphQLSchemaLogicalID, schemaResource);
     };
     /**
-     * Given the initial input and accumulated context return the new context.
+     * Given the initial input and context manipulate the context to handle this object directive.
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
     SimpleTransform.prototype.object = function (def, directive, ctx) {
-        // Create the input & object types.
+        // Create the object type.
         ctx.addObject(def);
+        // Create the connection object type.
+        var connection = definitions_1.makeConnection(definitions_1.makeNamedType(def.name.value));
+        ctx.addObject(connection);
+        // Create the input types.
         var createInput = definitions_1.makeCreateInputObject(def);
         var updateInput = definitions_1.makeUpdateInputObject(def);
         var deleteInput = definitions_1.makeDeleteInputObject(def);
         ctx.addInput(createInput);
         ctx.addInput(updateInput);
         ctx.addInput(deleteInput);
+        // Create the mutation & query extension
         var mutationType = definitions_1.blankObjectExtension('Mutation');
         var queryType = definitions_1.blankObjectExtension('Query');
-        // If this type is a model then create put/delete mutations.
+        // Create the mutations.
         var createResolver = this.resources.makeCreateResolver(def.name.value);
         ctx.setResource("Create" + def.name.value + "Resolver", createResolver);
         mutationType.fields.push(definitions_1.makeField(createResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(createInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
@@ -102,9 +107,22 @@ var SimpleTransform = /** @class */ (function (_super) {
         var deleteResolver = this.resources.makeDeleteResolver(def.name.value);
         ctx.setResource("Delete" + def.name.value + "Resolver", deleteResolver);
         mutationType.fields.push(definitions_1.makeField(deleteResolver.Properties.FieldName, [definitions_1.makeArg('input', definitions_1.makeNonNullType(definitions_1.makeNamedType(deleteInput.name.value)))], definitions_1.makeNamedType(def.name.value)));
+        ctx.addObjectExtension(mutationType);
+        // Create the queries
         var getResolver = this.resources.makeGetResolver(def.name.value);
         ctx.setResource("Get" + def.name.value + "Resolver", getResolver);
         queryType.fields.push(definitions_1.makeField(getResolver.Properties.FieldName, [definitions_1.makeArg('id', definitions_1.makeNonNullType(definitions_1.makeNamedType('ID')))], definitions_1.makeNamedType(def.name.value)));
+        var isSearchable = function (field) { return field.directives.find(function (dir) { return dir.name.value === 'search'; }); };
+        var pluckName = function (field) { return field.name.value; };
+        var searchableFields = (def.fields || []).filter(isSearchable).map(pluckName);
+        var searchResolver = this.resources.makeSearchResolver(def.name.value, searchableFields);
+        ctx.setResource("Search" + def.name.value + "Resolver", searchResolver);
+        queryType.fields.push(definitions_1.makeField(searchResolver.Properties.FieldName, [
+            definitions_1.makeArg('query', definitions_1.makeNonNullType(definitions_1.makeNamedType('String'))),
+            definitions_1.makeArg('first', definitions_1.makeNamedType('Int')),
+            definitions_1.makeArg('after', definitions_1.makeNamedType('String'))
+        ], definitions_1.makeNamedType(connection.name.value)));
+        ctx.addObjectExtension(queryType);
     };
     return SimpleTransform;
 }(graphql_transform_1.Transformer));

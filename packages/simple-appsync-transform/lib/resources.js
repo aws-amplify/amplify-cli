@@ -103,6 +103,7 @@ var ResourceFactory = /** @class */ (function () {
                 _a[ResourceFactory.DynamoDBTableLogicalID] = this.makeDynamoDBTable(),
                 _a[ResourceFactory.IAMRoleLogicalID] = this.makeIAMRole(),
                 _a[ResourceFactory.DynamoDBDataSourceLogicalID] = this.makeDynamoDBDataSource(),
+                _a[ResourceFactory.ElasticSearchDataSourceLogicalID] = this.makeElasticSearchDataSource(),
                 _a[ResourceFactory.APIKeyLogicalID] = this.makeAppSyncApiKey(),
                 _a[ResourceFactory.ElasticSearchDomainLogicalID] = this.makeElasticSearchDomain(),
                 _a[ResourceFactory.StreamingLambdaIAMRoleLogicalID] = this.makeStreamingLambdaIAMRole(),
@@ -146,8 +147,11 @@ var ResourceFactory = /** @class */ (function () {
             Type: 'AMAZON_ELASTICSEARCH',
             ServiceRoleArn: cloudform_1.Fn.GetAtt(ResourceFactory.IAMRoleLogicalID, 'Arn'),
             ElasticsearchConfig: {
-                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'Arn'))),
-                Endpoint: cloudform_1.Fn.GetAtt(logicalName, 'DomainEndpoint')
+                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'DomainArn'))),
+                Endpoint: cloudform_1.Fn.Join('', [
+                    'https://',
+                    cloudform_1.Fn.GetAtt(logicalName, 'DomainEndpoint')
+                ])
             }
         });
     };
@@ -385,42 +389,6 @@ var ResourceFactory = /** @class */ (function () {
                 VolumeType: 'gp2',
                 VolumeSize: cloudform_1.Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchEBSVolumeGB)
             }
-            // AccessPolicies: {
-            //     Version: '2012-10-17',
-            //     Statement: [
-            //         {
-            //             Effect: 'Allow',
-            //             Action: ["es:*"],
-            //             Principal: {
-            //                 AWS: [
-            //                     Fn.Join(
-            //                         '', [
-            //                             'arn:aws:iam:',
-            //                             Refs.AccountId,
-            //                             ':role/',
-            //                             Fn.Ref(ResourceFactory.ParameterIds.StreamingIAMRoleName)
-            //                         ]
-            //                     ),
-            //                     Fn.Sub('arn:aws:iam::${AWS::AccountId}:role/${rolename}', { rolename: Fn.Ref(ResourceFactory.ParameterIds.IAMRoleName) })
-            //                 ]
-            //             },
-            //             Resource: Fn.Join(
-            //                 '',
-            //                 [
-            //                     'arn:aws:es:',
-            //                     Refs.Region,
-            //                     ':',
-            //                     Refs.AccountId,
-            //                     ':domain/',
-            //                     Fn.Ref(ResourceFactory.ParameterIds.ElasticSearchDomainName),
-            //                     '/*'
-            //                 ]
-            //             )
-            //         }
-            //     ]
-            // }
-            // 
-            // TODO: Snapshotting
         });
     };
     /**
@@ -552,6 +520,81 @@ var ResourceFactory = /** @class */ (function () {
                 })
             })),
             ResponseMappingTemplate: appsync_mapping_template_1.print(appsync_mapping_template_1.ref('util.toJson($context.result)'))
+        });
+    };
+    /**
+     * Create the ElasticSearch search resolver.
+     */
+    ResourceFactory.prototype.makeSearchResolver = function (type, fieldsToSearch) {
+        var fieldName = util_1.graphqlName('search' + util_1.toUpper(type));
+        return new appSync_1.default.Resolver({
+            ApiId: cloudform_1.Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: cloudform_1.Fn.GetAtt(ResourceFactory.ElasticSearchDataSourceLogicalID, 'Name'),
+            FieldName: fieldName,
+            TypeName: 'Query',
+            RequestMappingTemplate: cloudform_1.Fn.Sub(appsync_mapping_template_1.print(appsync_mapping_template_1.compoundExpression([
+                appsync_mapping_template_1.set(appsync_mapping_template_1.ref('body'), appsync_mapping_template_1.obj({
+                    size: appsync_mapping_template_1.ref('util.defaultIfNull($ctx.args.first, 20)'),
+                    sort: appsync_mapping_template_1.list([
+                        appsync_mapping_template_1.obj({ createdAt: appsync_mapping_template_1.str('asc') }),
+                        appsync_mapping_template_1.obj({ _id: appsync_mapping_template_1.str('desc') })
+                    ])
+                })),
+                appsync_mapping_template_1.ifElse(appsync_mapping_template_1.ref('util.isNull($ctx.args.query)'), appsync_mapping_template_1.set(appsync_mapping_template_1.ref('query'), appsync_mapping_template_1.obj({
+                    bool: appsync_mapping_template_1.obj({
+                        filter: appsync_mapping_template_1.obj({
+                            term: appsync_mapping_template_1.obj({
+                                '__typename.keyword': appsync_mapping_template_1.str(type)
+                            })
+                        }),
+                        must: appsync_mapping_template_1.list([
+                            appsync_mapping_template_1.obj({
+                                match_all: appsync_mapping_template_1.obj({})
+                            })
+                        ])
+                    })
+                })), appsync_mapping_template_1.set(appsync_mapping_template_1.ref('query'), appsync_mapping_template_1.obj({
+                    bool: appsync_mapping_template_1.obj({
+                        filter: appsync_mapping_template_1.obj({
+                            term: appsync_mapping_template_1.obj({
+                                '__typename.keyword': appsync_mapping_template_1.str(type)
+                            })
+                        }),
+                        must: appsync_mapping_template_1.list([
+                            appsync_mapping_template_1.obj({
+                                multi_match: appsync_mapping_template_1.obj({
+                                    query: appsync_mapping_template_1.str('$ctx.args.query'),
+                                    fields: appsync_mapping_template_1.list(fieldsToSearch.map(function (s) { return appsync_mapping_template_1.str(s); })),
+                                    type: appsync_mapping_template_1.str('best_fields')
+                                })
+                            })
+                        ])
+                    })
+                }))),
+                appsync_mapping_template_1.qref('$body.put("query", $query)'),
+                appsync_mapping_template_1.iff(appsync_mapping_template_1.raw('!$util.isNullOrEmpty($ctx.args.after)'), appsync_mapping_template_1.compoundExpression([
+                    appsync_mapping_template_1.set(appsync_mapping_template_1.ref('split'), appsync_mapping_template_1.ref('ctx.args.after.split("/")')),
+                    appsync_mapping_template_1.set(appsync_mapping_template_1.ref('afterToken'), appsync_mapping_template_1.list([appsync_mapping_template_1.ref('split.get(0)'), appsync_mapping_template_1.ref('split.get(1)')])),
+                    appsync_mapping_template_1.qref('$body.put("search_after", $afterToken)')
+                ])),
+                appsync_mapping_template_1.set(appsync_mapping_template_1.ref('indexPath'), appsync_mapping_template_1.str('/${__ES_INDEX}/_search')),
+                appsync_mapping_template_1.ElasticSearchMappingTemplate.search({
+                    body: appsync_mapping_template_1.ref('util.toJson($body)'),
+                    pathRef: 'indexPath'
+                })
+            ])), { '__ES_INDEX': cloudform_1.Fn.Ref(ResourceFactory.DynamoDBTableLogicalID) }),
+            ResponseMappingTemplate: appsync_mapping_template_1.print(appsync_mapping_template_1.compoundExpression([
+                appsync_mapping_template_1.set(appsync_mapping_template_1.ref('items'), appsync_mapping_template_1.list([])),
+                appsync_mapping_template_1.forEach(appsync_mapping_template_1.ref('entry'), appsync_mapping_template_1.ref('context.result.hits.hits'), [
+                    appsync_mapping_template_1.iff(appsync_mapping_template_1.raw('!$foreach.hasNext'), appsync_mapping_template_1.set(appsync_mapping_template_1.ref('nextToken'), appsync_mapping_template_1.str('$entry.sort.get(0)/$entry.sort.get(1)'))),
+                    appsync_mapping_template_1.qref('$items.add($entry.get("_source"))')
+                ]),
+                appsync_mapping_template_1.toJson(appsync_mapping_template_1.obj({
+                    "items": appsync_mapping_template_1.ref('items'),
+                    "total": appsync_mapping_template_1.ref('ctx.result.hits.total'),
+                    "nextToken": appsync_mapping_template_1.ref('nextToken')
+                }))
+            ]))
         });
     };
     // Resources

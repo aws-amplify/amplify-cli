@@ -101,39 +101,43 @@ export default class TransformerContext {
         const newDirs = obj.directives || []
         const oldDirs = oldNode.directives || []
         const mergedDirs = [...oldDirs, ...newDirs]
+
         // An extension cannot redeclare fields.
-        const newFieldMap = obj.fields.reduce(
+        const oldFields = oldNode.fields || []
+        const oldFieldMap = oldFields.reduce(
             (acc: any, field: FieldDefinitionNode) => ({
                 ...acc,
                 [field.name.value]: field
             }),
             {}
         )
-        const oldFields = oldNode.fields || []
+        const newFields = obj.fields || []
         const mergedFields = [...oldFields]
-        for (const oldField of oldFields) {
-            if (newFieldMap[oldField.name.value]) {
-                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare field ${oldField.name.value}`)
+        for (const newField of newFields) {
+            if (oldFieldMap[newField.name.value]) {
+                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare field ${newField.name.value}`)
             }
-            mergedFields.push(newFieldMap[oldField.name.value])
+            mergedFields.push(newField)
         }
+
         // An extension cannot redeclare interfaces
-        const newInterfaceMap = (obj.interfaces || []).reduce(
+        const oldInterfaces = oldNode.interfaces || []
+        const oldInterfaceMap = oldInterfaces.reduce(
             (acc: any, field: NamedTypeNode) => ({
                 ...acc,
                 [field.name.value]: field
             }),
             {}
         )
-        const oldInterfaces = oldNode.interfaces || []
+        const newInterfaces = obj.interfaces || []
         const mergedInterfaces = [...oldInterfaces]
-        for (const oldInterface of oldInterfaces) {
-            if (newFieldMap[oldInterface.name.value]) {
-                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare interface ${oldInterface.name.value}`)
+        for (const newInterface of newInterfaces) {
+            if (oldInterfaceMap[newInterface.name.value]) {
+                throw new Error(`Object type extension '${obj.name.value}' cannot redeclare interface ${newInterface.name.value}`)
             }
-            mergedInterfaces.push(newFieldMap[oldInterface.name.value])
+            mergedInterfaces.push(newInterface)
         }
-        this.nodeMap[obj.name.value] = {
+        this.nodeMap[oldNode.name.value] = {
             ...oldNode,
             interfaces: mergedInterfaces,
             directives: mergedDirs,
