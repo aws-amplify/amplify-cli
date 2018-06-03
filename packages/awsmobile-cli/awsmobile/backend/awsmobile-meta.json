@@ -1,0 +1,8 @@
+{
+	"storage": {
+		"xyz": {
+			"service": "S3",
+			"providerPlugin": "awsmobile-provider-cloudformation"
+		}
+	}
+}

@@ -1,5 +1,4 @@
 .DS_Store
-awsmobile
 node_modules
 npm-debug.log
 coverage

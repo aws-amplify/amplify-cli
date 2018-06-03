@@ -9,85 +9,85 @@ const awsmobileCLIConstants = require('./constants.js');
 //////////////////////////////////////////////////////////////////////
 
 /////////////////////level 0
-function getAwsmobileDirPath(projectPath)
-{
-    if(!projectPath) {
+function getAwsmobileDirPath(projectPath) {
+    if (!projectPath) {
         projectPath = searchProjectRootPath();
     }
     return path.normalize(path.join(projectPath, awsmobileCLIConstants.AwsmobileCLIDirName));
 }
 
 /////////////////////level 1
-function getDotConfigDirPath(projectPath)
-{
+function getDotConfigDirPath(projectPath) {
 
     return path.normalize(path.join(getAwsmobileDirPath(projectPath), awsmobileCLIConstants.DotConfigAwsmobileCLISubDirName));
 }
 
-function getBackendDirPath(projectPath)
-{
+function getBackendDirPath(projectPath) {
     return path.normalize(path.join(getAwsmobileDirPath(projectPath), awsmobileCLIConstants.BackendAwsmobileCLISubDirName));
 }
 
+function getCurrentCloudBackendDirPath(projectPath) {
+    return path.normalize(path.join(getAwsmobileDirPath(projectPath), awsmobileCLIConstants.CurrentCloudBackendAwsmobileCLISubDirName));
+}
 
 /////////////////////level 2
 
-function getProjectConfigFilePath(projectPath)
-{
+function getProjectConfigFilePath(projectPath) {
     return path.normalize(path.join(getDotConfigDirPath(projectPath), awsmobileCLIConstants.ProjectConfigFileName));
 }
 
-function getPluginConfigFilePath(projectPath)
-{
+function getPluginConfigFilePath(projectPath) {
     return path.normalize(path.join(getDotConfigDirPath(projectPath), awsmobileCLIConstants.PluginConfigFileName));
 }
 
-function getAwsmobileMetaFilePath(projectPath)
-{
+function getAwsmobileMetaFilePath(projectPath) {
     return path.normalize(path.join(getBackendDirPath(projectPath), awsmobileCLIConstants.AwsMobileMetaFileName));
 }
 
-function searchProjectRootPath()
-{
+function getCurentBackendCloudAwsmobileMetaFilePath(projectPath) {
+    return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), awsmobileCLIConstants.AwsMobileMetaFileName));
+}
+
+function searchProjectRootPath() {
     let result;
     let currentPath = process.cwd();
 
-    do{
-        if(projectPathValidate(currentPath)){
+    do {
+        if (projectPathValidate(currentPath)) {
             result = currentPath;
-            break 
-        }else{
+            break
+        } else {
             let parentPath = path.dirname(currentPath);
-            if(currentPath == parentPath){
+            if (currentPath == parentPath) {
                 break;
-            }else{
+            } else {
                 currentPath = parentPath;
             }
         }
-    }while(true);
+    } while (true);
 
     return result;
 }
 
 function projectPathValidate(projectPath) {
-  if(projectPath === "/") {
-    console.log(chalk.red('You are not in a valid AWS mobile project'));
-    process.exit(1);
-  }
-  let isGood = false
-  if(fs.existsSync(projectPath)){
-    const dotAwsmobileDirPath = getAwsmobileDirPath(projectPath);
-    const infoSubDirPath = getDotConfigDirPath(projectPath);
-    const pluginConfigFilePath = getPluginConfigFilePath(projectPath);
-    const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-   
-    isGood = fs.existsSync(dotAwsmobileDirPath) && 
-              fs.existsSync(infoSubDirPath) && 
-              fs.existsSync(pluginConfigFilePath) &&
-              fs.existsSync(projectConfigFilePath)
+    if (projectPath === "/") {
+        console.log(chalk.red('You are not in a valid AWS mobile project'));
+        process.exit(1);
+    }
+    let isGood = false
+    if (fs.existsSync(projectPath)) {
+        const dotAwsmobileDirPath = getAwsmobileDirPath(projectPath);
+        const infoSubDirPath = getDotConfigDirPath(projectPath);
+        const pluginConfigFilePath = getPluginConfigFilePath(projectPath);
+        const projectConfigFilePath = getProjectConfigFilePath(projectPath);
 
-  }
-  return isGood;
+        isGood = fs.existsSync(dotAwsmobileDirPath) &&
+            fs.existsSync(infoSubDirPath) &&
+            fs.existsSync(pluginConfigFilePath) &&
+            fs.existsSync(projectConfigFilePath)
+
+    }
+    return isGood;
 }
 
 module.exports = {
@@ -95,7 +95,8 @@ module.exports = {
     getDotConfigDirPath,
     getBackendDirPath,
     getProjectConfigFilePath,
+    getCurrentCloudBackendDirPath,
     getPluginConfigFilePath,
-    getAwsmobileMetaFilePath
+    getAwsmobileMetaFilePath,
+    getCurentBackendCloudAwsmobileMetaFilePath
 }
-  

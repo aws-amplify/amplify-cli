@@ -1,0 +1,10 @@
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: AuthenticatedRead
+      BucketName: test
+Outputs:
+  BucketName:
+    Value: test
+    Description: Bucket name for the S3 bucket
