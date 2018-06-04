@@ -1,11 +1,12 @@
 var fs = require('fs');
+var path = require('path');
 var inquirer = require('inquirer');
 var servicedMetadata;
 var supportedServices;
 var cfnFilename;
 
 function serviceWalkthrough(service) {
-	let inputs = servicedMetadata[service].inputs;
+	let inputs = serviceMetadata.inputs;
 	let questions = [];
 	for(let i = 0; i < inputs.length; i++) {
 		// Can have a cool question builder function here based on input json - will iterate on this
@@ -52,9 +53,10 @@ function copyCfnTemplate(context, category, options) {
 
 function addResource(context, category, service) {
 	let answers;
-	servicedMetadata = JSON.parse(fs.readFileSync(__dirname + '/supported-services.json'))[category];
-	supportedServices = Object.keys(servicedMetadata);
-	cfnFilename = servicedMetadata[service].cfnFilename;
+	serviceMetadata = JSON.parse(fs.readFileSync(__dirname + '/../supported-services.json'))[service];
+	supportedServices = Object.keys(serviceMetadata);
+	cfnFilename = serviceMetadata.cfnFilename;
+
 	return serviceWalkthrough(service)
 		.then((result) => {
 			answers = result;
@@ -65,4 +67,39 @@ function addResource(context, category, service) {
 		});
 }
 
-module.exports = {addResource}; 
+function createResource(context, category, resourceName) {
+	let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
+	let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+	let files = fs.readdirSync(resourceDir);
+
+	// Fetch all the Cloudformation templates (can be json or yml)
+
+	let cfnFiles = files.filter(function(file){
+    	return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
+	});
+
+	return new CloudFormation(context)
+		.then((cfnItem) => {
+			return cfnItem.createResources(resourceDir, cfnFiles, category, resourceName);
+		});
+}
+
+function deleteResource(context, category, resourceName) {
+	let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
+	let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+	let files = fs.readdirSync(resourceDir);
+
+	// Fetch all the Cloudformation templates (can be json or yml)
+
+	let cfnFiles = files.filter(function(file){
+    	return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
+	});
+
+	return new CloudFormation(context)
+		.then((cfnItem) => {
+			return cfnItem.deleteResources(resourceDir, cfnFiles, category, resourceName);
+		});
+}
+
+
+module.exports = {addResource, createResource, deleteResource}; 

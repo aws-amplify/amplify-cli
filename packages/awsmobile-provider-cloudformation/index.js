@@ -1,17 +1,52 @@
-var fs = require('fs');
-var categoryControllers = require("./src/category-controllers/category-controller-mapping");
-const provider = 'awsmobile-cli-provider-cloudformation';
+const fs = require('fs');
+const path = require('path');
 
-function addResource(context, category, service) {
-  var categoryController = categoryControllers[category];
-  return categoryController.addResource(context, category, service);
-};
+var CloudFormation = require("./src/aws-utils/aws-cfn");
 
-function getServices(context, category) {
-	servicedMetadata = JSON.parse(fs.readFileSync(__dirname + '/src/category-controllers/supported-services.json'))[category];
-	supportedServices = Object.keys(servicedMetadata);
+function createResource(context, category, resourceName) {
+    let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
+    let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    let files = fs.readdirSync(resourceDir);
 
-	return supportedServices;
+    // Fetch all the Cloudformation templates for the resource (can be json or yml)
+    let cfnFiles = files.filter(function(file) {
+        return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
+    });
+
+    return new CloudFormation(context)
+        .then((cfnItem) => {
+            return cfnItem.updateResourceStacks(resourceDir, cfnFiles, category, resourceName);
+        });
 }
 
-module.exports = { addResource, getServices }
+function updateResource(context, category, resourceName) {
+    let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
+    let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    let files = fs.readdirSync(resourceDir);
+
+    // Fetch all the Cloudformation templates (can be json or yml)
+    let cfnFiles = files.filter(function(file) {
+        return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
+    });
+
+    return new CloudFormation(context)
+        .then((cfnItem) => {
+            return cfnItem.updateResourceStacks(resourceDir, cfnFiles, category, resourceName);
+        });
+}
+
+function deleteResource(context, category, resourceName) {
+    let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
+    let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+
+    return new CloudFormation(context)
+        .then((cfnItem) => {
+            return cfnItem.deleteResourceStack(resourceDir, category, resourceName);
+        });
+}
+
+module.exports = {
+    createResource,
+    updateResource,
+    deleteResource
+}

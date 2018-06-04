@@ -3,19 +3,29 @@
 
 // bring in each of the constituents
 
-const addResource = require('./awsmobile-helpers/add-resource').addResource;
+const removeResource = require('./awsmobile-helpers/remove-resource').removeResource;
+const pushResources = require('./awsmobile-helpers/push-resources').pushResources;
 const getProjectDetails = require('./awsmobile-helpers/get-project-details').getProjectDetails;
 const copyBatch = require('./awsmobile-helpers/copy-batch').copyBatch;
 const pathManager = require('./awsmobile-helpers/path-manager');
 const serviceSelectionPrompt = require('./awsmobile-helpers/service-selection-prompt').serviceSelectionPrompt;
+const getUserCreds = require('./awsmobile-helpers/get-user-creds').getUserCreds;
+const updateAwsMobileMetaAfterResourceAdd = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceAdd ;
+const updateAwsMobileMetaAfterResourceUpdate = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceUpdate;
+const updateAwsMobileMetaAfterResourceDelete = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceDelete;
 
 module.exports = (context) => {
   const awsmobile = {
-    addResource,
+    removeResource,
+    pushResources,
     getProjectDetails,
     copyBatch,
     pathManager,
-    serviceSelectionPrompt
+    serviceSelectionPrompt,
+    getUserCreds,
+    updateAwsMobileMetaAfterResourceUpdate,
+    updateAwsMobileMetaAfterResourceAdd,
+    updateAwsMobileMetaAfterResourceDelete
   };
   
   context.awsmobile = awsmobile;
