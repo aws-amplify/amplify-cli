@@ -1,0 +1,41 @@
+{
+  "name": "awsmobile",
+  "version": "2.0.0",
+  "description": "awsmobile CLI",
+  "private": true,
+  "bin": {
+    "awsmobile": "bin/awsmobile"
+  },
+  "scripts": {
+    "format": "prettier --write **/*.{js,json} && standard --fix",
+    "lint": "standard",
+    "test": "ava",
+    "watch": "ava --watch",
+    "coverage": "nyc ava"
+  },
+  "files": [
+    "LICENSE",
+    "readme.md",
+    "docs",
+    "bin",
+    "src"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.0.1",
+    "fs-extra": "^6.0.1",
+    "gluegun": "next",
+    "inquirer": "^3.2.1",
+    "ora": "^2.1.0"
+  },
+  "devDependencies": {
+    "ava": "^0.22.0",
+    "babel-eslint": "^8.0.1",
+    "nyc": "^11.2.1",
+    "prettier": "^1.7.4",
+    "standard": "^10.0.0"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  }
+}
