@@ -4,6 +4,5 @@
 	"BuildCommand": "build",
 	"StartCommand": "npm run-script start",
 	"ProjectName": "myProject123",
-	"Framework": "react",
-	"ProjectBucket": "myproject123-awsmobilecli-cfn-templates-rkfqjixgm"
+	"Framework": "react"
 }
