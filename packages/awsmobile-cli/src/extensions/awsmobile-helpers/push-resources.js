@@ -16,27 +16,25 @@ function pushResources(context, category, resourceName) {
 	let resourcesToBeCreated = getResourcesToBeCreated(context, awsmobileMeta, currentAwsmobileMeta, category, resourceName);
 	let resourcesToBeUpdated = getResourcesToBeUpdated(context, awsmobileMeta, currentAwsmobileMeta, category, resourceName);
 	let resourcesToBeDeleted = getResourcesToBeDeleted(context, awsmobileMeta, currentAwsmobileMeta, category, resourceName);
-	let promises = [];
-	promises.push(createResources(context, category, resourcesToBeCreated));
-	promises.push(updateResources(context, category, resourcesToBeUpdated));
-	promises.push(deleteResources(context, category, resourcesToBeDeleted));
 	let spinner;
 
 	return context.prompt.confirm('Are you sure you want to continue?')
 		.then((answer) => {
 			if(answer) {
+				let promises = [];
+				promises.push(createResources(context, category, resourcesToBeCreated));
+				promises.push(updateResources(context, category, resourcesToBeUpdated));
+				promises.push(deleteResources(context, category, resourcesToBeDeleted));
 				spinner = ora('Updating resources in the cloud. This may take a few minutes...').start();
 				return Promise.all(promises);
 			} else {
 				process.exit(1);
 			}
 		})
-		.then(() => {
-			spinner.succeed('All resources updated are updated in the cloud');
-		})
+		.then(() => spinner.succeed('All resources updated are updated in the cloud'))
 		.catch((err) => {
-			spinner.fail('There was an issue pushing the resources to the cloud');
 			context.print.info(err.stack);
+			spinner.fail('There was an issue pushing the resources to the cloud');
 		});
 }
 
@@ -87,7 +85,6 @@ function updateResources(context, category, resourcesToBeUpdated) {
 }
 
 function deleteResources(context, category, resourcesToBeDeleted) {
-
 	let deleteResourcePromises = [];
 	let providerPlugins = getProviderPlugins();
 

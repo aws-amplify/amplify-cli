@@ -4,5 +4,9 @@
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "license": "Apache-2.0",
+  "dependencies": {
+    "shortid": "^2.2.8",
+    "aws-sdk": "^2.250.1"
+  },
   "private": true
 }

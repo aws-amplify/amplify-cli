@@ -3,5 +3,8 @@
   "version": "0.1.0",
   "description": "awsmobile-cli storage plugin",
   "main": "index.js",
+  "dependencies": {
+    "inquirer": "^3.2.1"
+  },
   "license": "Apache-2.0"
 }
