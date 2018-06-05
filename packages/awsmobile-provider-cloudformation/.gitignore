@@ -1,6 +1,5 @@
-**/.DS_Store
+.DS_Store
 node_modules
-lerna-debug.log
 npm-debug.log
 coverage
 .nyc_output

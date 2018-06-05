@@ -2,6 +2,7 @@ var aws = require("./aws.js");
 var S3 = require("./aws-s3");
 var fs = require('fs');
 var path = require('path');
+var shortid = require('shortid');
 
 class CloudFormation {
     constructor(context) {
@@ -24,11 +25,17 @@ class CloudFormation {
 
     updateResourceStack(dir, cfnFile, category, resourceName) {
         let filePath = path.normalize(path.join(dir, cfnFile));
-        let projectDetails = this.context.awsmobile.getProjectDetails()
+        let projectDetails = this.context.awsmobile.getProjectDetails();
+        let projectBucket = projectDetails.projectConfig.ProjectBucket;
         let projectName = projectDetails.projectConfig.ProjectName;
-        let bucketName = projectName.toLowerCase() + "-awsmobilecli-cfn-templates-randomchars";
+        let updateProjectConfigFile = false;
+
+        if(!projectBucket) {
+            updateProjectConfigFile = true;
+            projectBucket = projectName.toLowerCase() + "-awsmobile-" + shortid.generate().toLowerCase();
+        }
         let stackName = projectName + '-' + category + '-' + resourceName;
-        let templateURL = "https://s3.amazonaws.com/" + bucketName + '/' + cfnFile;
+        let templateURL = "https://s3.amazonaws.com/" + projectBucket + '/' + cfnFile;
 
         return new S3(this.context)
             .then((s3) => {
@@ -36,12 +43,14 @@ class CloudFormation {
                 let s3Params = {
                     Body: fs.createReadStream(filePath),
                     Key: cfnFile,
-                    Bucket: bucketName
+                    Bucket: projectBucket
                 };
                 return s3.uploadFile(s3Params);
             })
             .then(() => {
-
+                if(updateProjectConfigFile) {
+                    this.context.awsmobile.updateProjectConfig({"ProjectBucket": projectBucket});
+                }
                 let cfnStackCheckParams = {
                     "StackName": stackName
                 };
