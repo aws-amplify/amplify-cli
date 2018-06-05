@@ -2,9 +2,22 @@
 	"Cognito": {
 		"inputs": [
 			{
+				"key": "resourceName",
+				"question": "Please provide a friendly name for your resource?",
+				"required": true
+			},
+			{
 				"key": "userPoolName",
 				"question": "Please provide a friendly name for your user pool.",
 				"required": true
+			},
+			{
+				"key": "passwordPolicy",
+				"question": "Please choose a password policy:",
+				"required": true,
+				"options": [
+					"Default Policy",
+					"Custom Policy"]
 			}
 		],
 		"cfnFilename": "cognito-userpool-template.yml.ejs",

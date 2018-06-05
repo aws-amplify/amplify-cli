@@ -26,7 +26,7 @@ function removeResource(context, category) {
             let resourceName = answer.resource;
             let resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-            return context.prompt.confirm("Are you sure you want to delete the resource? This would delete all corresponding files related to this resource from the backend directory.")
+            return context.prompt.confirm("Are you sure you want to delete the resource? This would delete all corresponding backend data.")
                 .then((confirm) => {
                     if(confirm) {
                         return new Promise((resolve, reject) => {
