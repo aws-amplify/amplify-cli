@@ -3,6 +3,7 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: <%= props.userPoolName %>
+      MfaConfiguration: <%= props.mfaConfiguration %>
 
 
 Outputs:

@@ -12,12 +12,13 @@
 				"required": true
 			},
 			{
-				"key": "passwordPolicy",
-				"question": "Please choose a password policy:",
+				"key": "mfaConfiguration",
+				"question": "Please choose an MFA Configuration:",
 				"required": true,
 				"options": [
-					"Default Policy",
-					"Custom Policy"]
+					"ON",
+					"OFF",
+					"OPTIONAL"]
 			}
 		],
 		"cfnFilename": "cognito-userpool-template.yml.ejs",
