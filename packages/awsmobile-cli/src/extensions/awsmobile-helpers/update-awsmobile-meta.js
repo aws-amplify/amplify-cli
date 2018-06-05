@@ -68,15 +68,11 @@ function updateAwsMetaFile(filePath, category, resourceName, options, timeStamp)
 }
 
 function moveBackendResourcesToCurrentCloudBackend(category, resourceName) {
-    let targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
+    let targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath()));
     let sourceDir = path.normalize(pathManager.getBackendDirPath(), category, resourceName);
-
-    let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
-    let awsmobileCloudMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
 
     try {
         fs.copySync(sourceDir, targetDir);
-        fs.copySync(awsmobileMetaFilePath, awsmobileCloudMetaFilePath);
     } catch(err) {
         console.log(err.stack);
     }

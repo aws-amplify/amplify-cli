@@ -26,7 +26,8 @@
     "fs-extra": "^6.0.1",
     "gluegun": "next",
     "inquirer": "^3.2.1",
-    "ora": "^2.1.0"
+    "ora": "^2.1.0",
+    "shortid": "^2.2.8"
   },
   "devDependencies": {
     "ava": "^0.22.0",
