@@ -1,0 +1,4 @@
+node_modules/
+packages/awsmobile-cli/awsmobile/backend/
+packages/awsmobile-cli/awsmobile/.config/
+packages/awsmobile-cli/awsmobile/#current-cloud-backend

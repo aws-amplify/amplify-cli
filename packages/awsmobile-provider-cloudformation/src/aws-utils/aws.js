@@ -2,11 +2,13 @@ var aws = require('aws-sdk');
 
 // AWS promise with configuration through Odin
 aws.configureWithCreds = (context) => {
-    if (aws.config.credentials) {
-        return Promise.resolve(aws);
-    } else {
+    // if (aws.config.credentials) {
+    //     console.log('creds: ' + JSON.stringify(aws.config.credentials))
+    //     return Promise.resolve(aws);
+    // } else {
+        console.log('or the other thing')
         return Promise.resolve(withDefaultConfiguration(aws, context));
-    }
+    // }
 };
 
 function withDefaultConfiguration(aws, context) {

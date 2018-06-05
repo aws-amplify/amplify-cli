@@ -1,0 +1,10 @@
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: <%= props.userPoolName %>
+
+Outputs:
+  UserPoolName:
+    Value: <%= props.userPoolName %>
+    Description: Bucket name for the S3 bucket

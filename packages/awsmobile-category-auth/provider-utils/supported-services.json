@@ -1,0 +1,13 @@
+{
+	"Cognito": {
+		"inputs": [
+			{
+				"key": "userPoolName",
+				"question": "Please provide a friendly name for your user pool.",
+				"required": true
+			}
+		],
+		"cfnFilename": "cognito-userpool-template.yml.ejs",
+		"provider": "awsmobile-provider-cloudformation"
+	}
+}

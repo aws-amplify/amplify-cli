@@ -26,12 +26,13 @@ class CloudFormation {
         let filePath = path.normalize(path.join(dir, cfnFile));
         let projectDetails = this.context.awsmobile.getProjectDetails()
         let projectName = projectDetails.projectConfig.ProjectName;
-        let bucketName = projectName.toLowerCase() + "-awsmobilecli-cfn-templates";
+        let bucketName = projectName.toLowerCase() + "-awsmobilecli-cfn-templates-randomchars";
         let stackName = projectName + '-' + category + '-' + resourceName;
         let templateURL = "https://s3.amazonaws.com/" + bucketName + '/' + cfnFile;
 
         return new S3(this.context)
             .then((s3) => {
+
                 let s3Params = {
                     Body: fs.createReadStream(filePath),
                     Key: cfnFile,
@@ -40,6 +41,7 @@ class CloudFormation {
                 return s3.uploadFile(s3Params);
             })
             .then(() => {
+
                 let cfnStackCheckParams = {
                     "StackName": stackName
                 };

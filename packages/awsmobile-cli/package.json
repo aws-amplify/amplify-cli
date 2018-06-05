@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "ava": "^0.22.0",
+    "aws-sdk": "^2.250.1",
     "babel-eslint": "^8.0.1",
     "nyc": "^11.2.1",
     "prettier": "^1.7.4",
