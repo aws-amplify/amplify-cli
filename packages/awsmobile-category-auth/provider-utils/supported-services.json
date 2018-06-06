@@ -19,6 +19,37 @@
 					"ON",
 					"OFF",
 					"OPTIONAL"]
+			},
+			{
+				"key": "sms",
+				"question": "Am I being asked?",
+				"conditions": [
+					{
+						"operator": "||",
+						"conditions": [
+							{
+								"operator": "||",
+								"conditions": [
+									{
+										"key": "resourceName",
+										"value": "a",
+										"operator": "!="
+									},
+									{
+										"key": "userPoolName",
+										"value": "b",
+										"operator": "!="
+									}
+								]
+							},
+							{
+								"key": "mfaConfiguration",
+								"value": "ON",
+								"operator": "="
+							}
+						]
+					}	
+				]
 			}
 		],
 		"cfnFilename": "cognito-userpool-template.yml.ejs",

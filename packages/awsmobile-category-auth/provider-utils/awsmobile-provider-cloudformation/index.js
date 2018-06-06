@@ -2,6 +2,7 @@
 var fs = require('fs');
 var path = require('path');
 var inquirer = require('inquirer');
+var getWhen = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-when-function').getWhen;
 var servicedMetadata;
 var supportedServices;
 var cfnFilename;
@@ -17,6 +18,7 @@ function serviceWalkthrough(service) {
 			let question = {
 				name: inputs[i].key,
 				message: inputs[i].question,
+				when: getWhen(inputs[i]),
 				type: 'list',
 				choices: inputs[i].options
 			};
@@ -25,8 +27,10 @@ function serviceWalkthrough(service) {
 			let question = {
 				name: inputs[i].key,
 				message: inputs[i].question,
+				when: getWhen(inputs[i]),
 				type: 'input'
 			};
+
 			questions.push(question);
 		}
 	}

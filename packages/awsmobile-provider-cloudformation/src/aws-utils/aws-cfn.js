@@ -24,6 +24,8 @@ class CloudFormation {
     }
 
     updateResourceStack(dir, cfnFile, category, resourceName) {
+
+        console.log(this.context.awsmobile.getProjectDetails().projectConfig)
         let filePath = path.normalize(path.join(dir, cfnFile));
         let projectDetails = this.context.awsmobile.getProjectDetails();
         let projectBucket = projectDetails.projectConfig.ProjectBucket;
@@ -32,8 +34,10 @@ class CloudFormation {
 
         if(!projectBucket) {
             updateProjectConfigFile = true;
+
             projectBucket = projectName.toLowerCase() + "-awsmobile-" + shortid.generate().toLowerCase();
         }
+
         let stackName = projectName + '-' + category + '-' + resourceName;
         let templateURL = "https://s3.amazonaws.com/" + projectBucket + '/' + cfnFile;
 
