@@ -6,14 +6,14 @@ const { build } = require('gluegun')
 async function run (argv) {
   // create a CLI runtime
 
-  let pluginDir = __dirname + '/../../';
   let nodeModuleDir = __dirname + '/../node_modules'; 
 
   const cli = build()
     .brand('awsmobile')
     .src(__dirname)
-    .plugins(pluginDir, { matching: 'awsmobile-category-*', hidden: true })
-    .plugins('./node_modules', { matching: 'awsmobile-cli-*', hidden: true })
+    .plugins(nodeModuleDir, { matching: 'awsmobile-*', hidden: true })
+    .plugins(nodeModuleDir, { matching: 'awsmobile-provider-*', hidden: true })
+    .plugins(nodeModuleDir, { matching: 'awsmobile-frontend-*', hidden: true })
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create()
