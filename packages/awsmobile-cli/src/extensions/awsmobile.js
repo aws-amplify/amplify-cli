@@ -3,9 +3,11 @@
 
 // bring in each of the constituents
 
+const constants = require('./awsmobile-helpers/constants');
 const removeResource = require('./awsmobile-helpers/remove-resource').removeResource;
 const pushResources = require('./awsmobile-helpers/push-resources').pushResources;
 const getProjectDetails = require('./awsmobile-helpers/get-project-details').getProjectDetails;
+const getResourceStatus = require('./awsmobile-helpers/get-resource-status').getResourceStatus;
 const copyBatch = require('./awsmobile-helpers/copy-batch').copyBatch;
 const pathManager = require('./awsmobile-helpers/path-manager');
 const serviceSelectionPrompt = require('./awsmobile-helpers/service-selection-prompt').serviceSelectionPrompt;
@@ -17,9 +19,11 @@ const updateAwsMobileMetaAfterResourceDelete = require('./awsmobile-helpers/upda
 
 module.exports = (context) => {
   const awsmobile = {
+    constants,
     removeResource,
     pushResources,
     getProjectDetails,
+    getResourceStatus,
     copyBatch,
     pathManager,
     serviceSelectionPrompt,
