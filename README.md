@@ -7,20 +7,12 @@ The AppSync model transform simplifies application development on AWS. With it, 
 It takes a SDL document that defines a data model
 
 ```graphql
-type Score @table {
+type Post @model {
     id: ID!
-    user: User
-    score: Int!
-}
-type ScoreBoard @table {
-    id: ID!
-    topScores: [Score] @connection
-    game: Game @connection(name: "GameScoreboard")
-}
-type Game @table {
-    id: ID!
-    name: String
-    scoreBoard: ScoreBoard @connection(name: "GameScoreboard")
+    title: String! @search
+    tags: [String] @search
+    createdAt: String
+    updatedAt: String
 }
 ```
 
