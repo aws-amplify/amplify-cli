@@ -78,13 +78,9 @@ function projectPathValidate(projectPath) {
     if (fs.existsSync(projectPath)) {
         const dotAwsmobileDirPath = getAwsmobileDirPath(projectPath);
         const infoSubDirPath = getDotConfigDirPath(projectPath);
-        const pluginConfigFilePath = getPluginConfigFilePath(projectPath);
-        const projectConfigFilePath = getProjectConfigFilePath(projectPath);
 
         isGood = fs.existsSync(dotAwsmobileDirPath) &&
-            fs.existsSync(infoSubDirPath) &&
-            fs.existsSync(pluginConfigFilePath) &&
-            fs.existsSync(projectConfigFilePath)
+            fs.existsSync(infoSubDirPath)
 
     }
     return isGood;
