@@ -11,9 +11,9 @@ async function run (argv) {
   const cli = build()
     .brand('awsmobile')
     .src(__dirname)
-    .plugins(nodeModuleDir, { matching: 'awsmobile-*', hidden: true })
-    .plugins(nodeModuleDir, { matching: 'awsmobile-provider-*', hidden: true })
-    .plugins(nodeModuleDir, { matching: 'awsmobile-frontend-*', hidden: true })
+    .plugins(nodeModuleDir, { matching: 'awsmobile-*', hidden: false })
+    // .plugins(nodeModuleDir, { matching: 'awsmobile-provider-*', hidden: true })
+    // .plugins(nodeModuleDir, { matching: 'awsmobile-frontend-*', hidden: true })
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create()
