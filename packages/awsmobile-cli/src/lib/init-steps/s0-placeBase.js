@@ -7,6 +7,7 @@ function run(context){
     const dotConfigDirPath = mobile.pathManager.getDotConfigDirPath(projectPath); 
     const backendDirPath = mobile.pathManager.getBackendDirPath(projectPath); 
     const currentBackendDirPath = mobile.pathManager.getCurrentCloudBackendDirPath(projectPath); 
+   
 
     fs.ensureDirSync(awsmobileDirPath); 
     fs.ensureDirSync(dotConfigDirPath); 
@@ -25,6 +26,12 @@ function run(context){
     }; 
     let jsonString = JSON.stringify(projectConfig, null, 4);
     fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
+
+    const backendMetaFilePath = mobile.pathManager.getAwsmobileMetaFilePath(projectPath);
+    const meta = {
+    }; 
+    jsonString = JSON.stringify(meta, null, 4);
+    fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
 }
 
 module.exports = {

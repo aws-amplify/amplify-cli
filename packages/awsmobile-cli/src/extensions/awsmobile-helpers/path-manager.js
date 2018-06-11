@@ -13,12 +13,15 @@ function getAwsmobileDirPath(projectPath) {
     if (!projectPath) {
         projectPath = searchProjectRootPath();
     }
-    return path.normalize(path.join(projectPath, awsmobileCLIConstants.AwsmobileCLIDirName));
+    if(projectPath){
+        return path.normalize(path.join(projectPath, awsmobileCLIConstants.AwsmobileCLIDirName));
+    }else{
+        throw new Error('you are not working inside a valid awsmobile project')
+    }
 }
 
 /////////////////////level 1
 function getDotConfigDirPath(projectPath) {
-
     return path.normalize(path.join(getAwsmobileDirPath(projectPath), awsmobileCLIConstants.DotConfigAwsmobileCLISubDirName));
 }
 
@@ -70,10 +73,6 @@ function searchProjectRootPath() {
 }
 
 function projectPathValidate(projectPath) {
-    if (projectPath === "/") {
-        console.log(chalk.red('You are not in a valid AWS mobile project'));
-        process.exit(1);
-    }
     let isGood = false
     if (fs.existsSync(projectPath)) {
         const dotAwsmobileDirPath = getAwsmobileDirPath(projectPath);
@@ -87,6 +86,7 @@ function projectPathValidate(projectPath) {
 }
 
 module.exports = {
+    searchProjectRootPath,
     getAwsmobileDirPath,
     getDotConfigDirPath,
     getBackendDirPath,
