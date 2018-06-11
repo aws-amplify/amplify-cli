@@ -2,7 +2,7 @@
 	"providerPlugins": {
 		"awsmobile-provider-cloudformation": {
 			"name": "AWS Cloudformation",
-			"path": "/Users/dnnoyes/aws-amplify-staging/packages/awsmobile-provider-cloudformation"
+			"path": "/Users/kaustavg/amplify-cli/packages/awsmobile-provider-cloudformation"
 		}
 	},
 	"frontendPlugins": [],
