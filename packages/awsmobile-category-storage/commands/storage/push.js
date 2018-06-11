@@ -7,6 +7,6 @@ module.exports = {
   	const {awsmobile, parameters} = context;
   	let resourceName = parameters.first;
   	
-  	//return awsmobile.pushResources(context, category, resourceName);
+  	return awsmobile.pushResources(context, category, resourceName);
    }
 }

@@ -8,9 +8,9 @@ const updateAwsmobileMeta = require('./update-awsmobile-meta').updateAwsmobileMe
 const getResourceStatus = require('./get-resource-status').getResourceStatus;
 let spinner;
 
-function pushResources(context) {
+function pushResources(context, category, resourceName) {
 	const {print} = context;
-	getResourceStatus();
+	getResourceStatus(category, resourceName);
 
 	return context.prompt.confirm('Are you sure you want to continue?')
 		.then((answer) => {
@@ -21,7 +21,7 @@ function pushResources(context) {
 				for(let i = 0; i < providerPlugins.length; i++) {
 					let pluginPath = providerPlugins[i].path || providerPlugins[i].plugin;
 					let pluginModule = require(pluginPath);
-					providerPromises.push(pluginModule.pushResources(context));
+					providerPromises.push(pluginModule.pushResources(context, category, resourceName));
 				}
 				spinner = ora('Updating resources in the cloud. This may take a few minutes...').start();
 				return Promise.all(providerPromises);
