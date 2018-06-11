@@ -14,6 +14,8 @@ function getResourceStatus(category, resourceName) {
 	let resourcesToBeUpdated = getResourcesToBeUpdated(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
 	let resourcesToBeDeleted = getResourcesToBeDeleted(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
 
+	resourcesToBeCreated = resourcesToBeCreated.filter((resource) => resource.category !== "provider");
+
 	showResourceTable(resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted);
 
 	return {resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted};

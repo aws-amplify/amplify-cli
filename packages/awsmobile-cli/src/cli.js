@@ -7,6 +7,7 @@ async function run (argv) {
   // create a CLI runtime
 
   let nodeModuleDir = __dirname + '/../node_modules'; 
+  let pluginDir = __dirname + '/../../';
 
   const cli = build()
     .brand('awsmobile')
@@ -14,6 +15,7 @@ async function run (argv) {
     .plugins(nodeModuleDir, { matching: 'awsmobile-*', hidden: false })
     // .plugins(nodeModuleDir, { matching: 'awsmobile-provider-*', hidden: true })
     // .plugins(nodeModuleDir, { matching: 'awsmobile-frontend-*', hidden: true })
+    .plugins(pluginDir, { matching: 'awsmobile-category-*', hidden: true })
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create()
