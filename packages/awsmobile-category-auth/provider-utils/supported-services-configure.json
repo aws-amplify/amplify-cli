@@ -14,11 +14,98 @@
 			},
 			{
 				"key": "resourceName",
-				"question": "Please provide a friendly name for your resource that will be used to label auto-generated services:",
+				"question": "Please provide a friendly name for your resource?",
 				"required": true
+			},
+			{
+				"key": "userPoolName",
+				"question": "Please provide a friendly name for your user pool.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "mfaConfiguration",
+				"question": "Please choose an multifactor authentication (MFA) configuration:",
+				"required": true,
+				"type": "list",
+				"options": [
+					"ON",
+					"OFF",
+					"OPTIONAL"],
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "smsAuthenticationMessage",
+				"question": "Please specify an SMS authentication message:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "includes",
+					"value": "{####}",
+					"onErrorMsg": "Your SMS authentication message must include '{####}' representing the authentication code that the user will receive."
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					}
+				]
+			},
+			{
+				"key": "smsVerificationMessage",
+				"question": "Please specify an SMS verification message:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "includes",
+					"value": "{####}",
+					"onErrorMsg": "Your SMS verification message must include '{####}' representing the verification code that the user will receive."
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					}
+				]
+			},
+			{
+				"key": "identityPoolName",
+				"question": "Please enter a friendly name for your identity pool.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito Identity Pools",
+						"operator": "includes"
+					}
+				]
 			}
 		],
-		"cfnFilename": "auth-template-configure.yml.ejs",
+		"cfnFilename": "auth-template.yml.ejs",
 		"provider": "awsmobile-provider-cloudformation"
 	}
 }

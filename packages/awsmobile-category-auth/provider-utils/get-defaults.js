@@ -11,19 +11,22 @@ const general = (project) => {
   }
 }
 
-const userPoolDefaults = (name) => {
+const userPoolDefaults = () => {
   return {
-    userPoolName: `${name}-userpool-${uuid()}`,
+    userPoolName: `<name>-userpool-${uuid()}`,
     mfaConfiguration: 'ON',
-    roleName: `${name}-sns-role-${uuid()}`,
+    roleName: `<name>-sns-role-${uuid()}`,
     roleExternalId: uuid(),
-    policyName: `${this.roleName}-SNSPolicy`
+    policyName: `<name>-SNSPolicy`,
+    smsAuthenticationMessage: "Your authentication code is {####}",
+    smsVerificationMessage: "Your verification code is {####}"
   }
 }
 
-const identityPoolDefaults = (name) => {
+const identityPoolDefaults = () => {
   return {
-    identityPoolName: `${name}_identitypool_${uuid().replace(/-/g, '_')}`,
+    // replace dashes with underscores for id pool regex constraint
+    identityPoolName: `<name>_identitypool_${uuid().replace(/-/g, '_')}`,
     allowUnauthenticatedIdentities: false
   }
 }
@@ -36,8 +39,8 @@ const functionMap = {
 const getAllDefaults = (project) => {
   let target = general(project);
   let sources = [
-    userPoolDefaults(target.resourceName),
-    identityPoolDefaults(target.resourceName)
+    userPoolDefaults(),
+    identityPoolDefaults()
   ];
 
   return Object.assign(target, ...sources)

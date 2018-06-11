@@ -1,5 +1,7 @@
 
 function getWhen (input) {
+
+  //TODO: Promisify
   const conditionParser = function(answers){
 
     let andConditions = true;
