@@ -28,10 +28,8 @@ class S3 {
             Bucket: bucketName
         };
 
-
         return this.ifBucketExists(bucketName)
             .then((result) => {
-                // console.log(bucketName, result)
                 if (!result) {
                     this.context.print.warning('S3 Bucket to store cloudformation templates not present. Creating one for you....');
                     this.context.print.warning('Bucket name: ' + bucketName);

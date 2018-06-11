@@ -33,16 +33,13 @@ class CloudFormation {
 
         if(!projectBucket) {
             updateProjectConfigFile = true;
-
             projectBucket = projectName.toLowerCase() + "-awsmobile-" + shortid.generate().toLowerCase();
         }
-
         let stackName = projectName + '-' + category + '-' + resourceName;
         let templateURL = "https://s3.amazonaws.com/" + projectBucket + '/' + cfnFile;
 
         return new S3(this.context)
             .then((s3) => {
-
                 let s3Params = {
                     Body: fs.createReadStream(filePath),
                     Key: cfnFile,

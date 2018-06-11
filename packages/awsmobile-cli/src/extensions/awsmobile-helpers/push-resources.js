@@ -18,8 +18,6 @@ function pushResources(context, category, resourceName) {
 	let resourcesToBeDeleted = getResourcesToBeDeleted(context, awsmobileMeta, currentAwsmobileMeta, category, resourceName);
 	let spinner;
 
-	console.log('spinner: '  + spinner)
-
 	return context.prompt.confirm('Are you sure you want to continue?')
 		.then((answer) => {
 			if(answer) {
