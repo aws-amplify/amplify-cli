@@ -2,6 +2,17 @@
 	"Cognito": {
 		"inputs": [
 			{
+				"key": "authSelections",
+				"question": "Select the authentication/authorization services that you want to use:",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					"Cognito Identity Pools",
+					"Cognito User Pools",
+					"Federated Identity Providers"
+				]
+			},
+			{
 				"key": "resourceName",
 				"question": "Please provide a friendly name for your resource?",
 				"required": true
@@ -9,50 +20,78 @@
 			{
 				"key": "userPoolName",
 				"question": "Please provide a friendly name for your user pool.",
-				"required": true
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
 			},
 			{
 				"key": "mfaConfiguration",
-				"question": "Please choose an MFA Configuration:",
+				"question": "Please choose an multifactor authentication (MFA) configuration:",
 				"required": true,
+				"type": "list",
 				"options": [
 					"ON",
 					"OFF",
-					"OPTIONAL"]
+					"OPTIONAL"],
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
 			},
 			{
-				"key": "sms",
-				"question": "Am I being asked?",
-				"conditions": [
+				"key": "snsCallarArn",
+				"question": "Please enter the Amazon Simple Notification Service (SNS) ARN that will be used for MFA.",
+				"andConditions": [
 					{
-						"operator": "||",
-						"conditions": [
-							{
-								"operator": "||",
-								"conditions": [
-									{
-										"key": "resourceName",
-										"value": "a",
-										"operator": "!="
-									},
-									{
-										"key": "userPoolName",
-										"value": "b",
-										"operator": "!="
-									}
-								]
-							},
-							{
-								"key": "mfaConfiguration",
-								"value": "ON",
-								"operator": "="
-							}
-						]
-					}	
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!=" 
+					},
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "externalId",
+				"question": "Please enter the external ID for your MFA SNS users.",
+				"andConditions": [
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!=" 
+					},
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "identityPoolName",
+				"question": "Please enter a friendly name for your identity pool.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito Identity Pools",
+						"operator": "includes"
+					}
 				]
 			}
 		],
-		"cfnFilename": "cognito-userpool-template.yml.ejs",
+		"cfnFilename": "auth-template.yml.ejs",
 		"provider": "awsmobile-provider-cloudformation"
 	}
 }

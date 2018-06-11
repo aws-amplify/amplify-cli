@@ -23,9 +23,8 @@ class CloudFormation {
         return Promise.all(promises);
     }
 
-    updateResourceStack(dir, cfnFile, category, resourceName) {
+    updateResourceStack(dir, cfnFile, category, resourceName, capabilities) {
 
-        console.log(this.context.awsmobile.getProjectDetails().projectConfig)
         let filePath = path.normalize(path.join(dir, cfnFile));
         let projectDetails = this.context.awsmobile.getProjectDetails();
         let projectBucket = projectDetails.projectConfig.ProjectBucket;
@@ -61,8 +60,11 @@ class CloudFormation {
 
                 let cfnStackCreateParams = {
                     "StackName": stackName,
-                    "TemplateURL": templateURL
+                    "TemplateURL": templateURL,
                 };
+
+                cfnStackCreateParams.Capabilities = ["CAPABILITY_NAMED_IAM"]
+
                 let cfnModel = this.cfn;
                 let context = this.context;
 

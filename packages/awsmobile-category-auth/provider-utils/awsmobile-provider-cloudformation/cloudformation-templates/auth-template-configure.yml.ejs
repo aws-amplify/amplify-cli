@@ -1,0 +1,66 @@
+Resources:
+
+
+
+  <%if (props.authSelections.includes('Cognito User Pools') && props.mfaConfiguration != 'OFF') { %>
+
+
+  IAMRole: 
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: <%=props.roleName %>
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - Sid: ""
+            Effect: "Allow"
+            Principal: 
+              Service: "cognito-idp.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+            Condition: 
+              StringEquals:
+                sts:ExternalId: <%= props.roleExternalId %>
+      Policies: 
+        - 
+          PolicyName: <%= props.policyName %>
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - 
+                Effect: "Allow"
+                Action: 
+                  - "sns:Publish"
+                Resource: "*"
+
+  <% } %>
+  <%if (props.authSelections.includes('Cognito User Pools')) { %>
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: <%= props.userPoolName %>
+      MfaConfiguration: '<%= props.mfaConfiguration %>'
+      <%if (props.mfaConfiguration != 'OFF') { %>
+      SmsConfiguration: 
+        SnsCallerArn: !GetAtt IAMRole.Arn
+        ExternalId: <%= props.roleExternalId %>  
+    DependsOn: IAMRole
+    <% } %>
+  <% } %>
+  <%if (props.authSelections.includes('Cognito Identity Pools')) { %>
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties: 
+      IdentityPoolName: <%= props.identityPoolName %>
+      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
+  <% } %> 
+  
+Outputs :
+  UserPoolName:
+    Value: <%= props.userPoolName %>
+    Description:  name for the user pool
+  CreatedIAMRole: 
+    Value: !GetAtt IAMRole.Arn
+    Description: role arn
+    Export:
+      Name: !Sub "SNSRole"

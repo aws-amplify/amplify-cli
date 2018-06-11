@@ -1,0 +1,24 @@
+{
+	"Cognito": {
+		"inputs": [
+			{
+				"key": "authSelections",
+				"question": "Select the authentication/authorization services that you want to use:",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					"Cognito Identity Pools",
+					"Cognito User Pools",
+					"Federated Identity Providers"
+				]
+			},
+			{
+				"key": "resourceName",
+				"question": "Please provide a friendly name for your resource that will be used to label auto-generated services:",
+				"required": true
+			}
+		],
+		"cfnFilename": "auth-template-configure.yml.ejs",
+		"provider": "awsmobile-provider-cloudformation"
+	}
+}
