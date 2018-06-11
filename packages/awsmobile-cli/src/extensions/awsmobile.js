@@ -12,6 +12,7 @@ const getResourceStatus = require('./awsmobile-helpers/get-resource-status').get
 const copyBatch = require('./awsmobile-helpers/copy-batch').copyBatch;
 const pathManager = require('./awsmobile-helpers/path-manager');
 const nameManager = require('./awsmobile-helpers/name-manager'); 
+const serviceSelectionPrompt = require('./awsmobile-helpers/service-select-prompt').serviceSelectionPrompt; 
 const updateProjectConfig = require('./awsmobile-helpers/update-project-config').updateProjectConfig;
 const updateAwsMobileMetaAfterResourceAdd = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceAdd ;
 const updateAwsMobileMetaAfterResourceUpdate = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceUpdate;
@@ -27,6 +28,7 @@ module.exports = (context) => {
     getResourceStatus,
     copyBatch,
     pathManager,
+    serviceSelectionPrompt,
     updateAwsMobileMetaAfterResourceUpdate,
     updateAwsMobileMetaAfterResourceAdd,
     updateAwsMobileMetaAfterResourceDelete,
