@@ -14,6 +14,8 @@ const pathManager = require('./awsmobile-helpers/path-manager');
 const nameManager = require('./awsmobile-helpers/name-manager'); 
 const serviceSelectionPrompt = require('./awsmobile-helpers/service-select-prompt').serviceSelectionPrompt; 
 const updateProjectConfig = require('./awsmobile-helpers/update-project-config').updateProjectConfig;
+const updateProviderAwsMobileMeta = require('./awsmobile-helpers/update-awsmobile-meta').updateProviderAwsMobileMeta;
+const updateAwsMobileMetaAfterPush = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterPush;
 const updateAwsMobileMetaAfterResourceAdd = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceAdd ;
 const updateAwsMobileMetaAfterResourceUpdate = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceUpdate;
 const updateAwsMobileMetaAfterResourceDelete = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceDelete;
@@ -32,7 +34,8 @@ module.exports = (context) => {
     updateAwsMobileMetaAfterResourceUpdate,
     updateAwsMobileMetaAfterResourceAdd,
     updateAwsMobileMetaAfterResourceDelete,
-    updateProjectConfig
+    updateProviderAwsMobileMeta,
+    updateAwsMobileMetaAfterPush
   };
   
   context.awsmobile = awsmobile;

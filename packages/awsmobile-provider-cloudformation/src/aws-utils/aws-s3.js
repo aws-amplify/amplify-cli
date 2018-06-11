@@ -1,4 +1,7 @@
-var aws = require("./aws.js");
+const aws = require("./aws.js");
+var shortid = require('shortid');
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
+const providerName = require("../../constants").ProviderName;
 
 class S3 {
     constructor(context) {
@@ -13,13 +16,27 @@ class S3 {
     uploadFile(s3Params) {
         // Create Bucket if not present
         // Then upload the files
+        let projectDetails = this.context.awsmobile.getProjectDetails();
+        let projectName = projectDetails.projectConfig.ProjectName;
+        let projectBucket = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].s3DeploymentBucket : '';
+        let updateProjectConfigFile = false;
 
-        let bucketName = s3Params.Bucket;
+        if(!projectBucket) {
+            updateProjectConfigFile = true;
+            projectBucket = projectName.toLowerCase() + "-awsmobile-" + shortid.generate().toLowerCase();
+        }
 
-        return this.createBucket(bucketName)
+        s3Params.Bucket = projectBucket;
+
+        return this.createBucket(projectBucket)
             .then(() => {
+                if(updateProjectConfigFile) {
+                    this.context.awsmobile.updateProviderAwsMobileMeta(providerName, {"s3DeploymentBucket": projectBucket});
+                }
                 return this.s3.putObject(s3Params).promise();
-            });
+            })
+            .then(() => projectBucket);
+
     }
 
     createBucket(bucketName) {

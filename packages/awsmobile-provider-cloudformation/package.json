@@ -1,5 +1,5 @@
 {
-  "name": "awsmobile-provider-awscfn",
+  "name": "awsmobile-provider-cloudformation",
   "version": "0.1.0",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",

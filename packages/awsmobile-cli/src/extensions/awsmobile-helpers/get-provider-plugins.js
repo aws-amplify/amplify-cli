@@ -4,7 +4,7 @@ function getPlugins() {
         "providerPlugins": {
             "awsmobile-provider-cloudformation": {
                 "name": "AWS Cloudformation",
-                "path": "awsmobile-provider-awscfn"
+                "path": "awsmobile-provider-cloudformation"
             }
         },
         "frontendPlugins": [],
