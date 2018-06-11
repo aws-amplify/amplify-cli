@@ -8,7 +8,8 @@ const pressEnterToContinue = require('./awsmobile-helpers/press-enter-to-continu
 const removeResource = require('./awsmobile-helpers/remove-resource').removeResource;
 const pushResources = require('./awsmobile-helpers/push-resources').pushResources;
 const getProjectDetails = require('./awsmobile-helpers/get-project-details').getProjectDetails;
-const getResourceStatus = require('./awsmobile-helpers/get-resource-status').getResourceStatus;
+const getResourceStatus = require('./awsmobile-helpers/resource-status').getResourceStatus;
+const showResourceTable = require('./awsmobile-helpers/resource-status').showResourceTable;
 const copyBatch = require('./awsmobile-helpers/copy-batch').copyBatch;
 const pathManager = require('./awsmobile-helpers/path-manager');
 const nameManager = require('./awsmobile-helpers/name-manager'); 
@@ -30,6 +31,7 @@ module.exports = (context) => {
     getResourceStatus,
     copyBatch,
     pathManager,
+    showResourceTable,
     serviceSelectionPrompt,
     updateAwsMobileMetaAfterResourceUpdate,
     updateAwsMobileMetaAfterResourceAdd,
