@@ -6,8 +6,8 @@ module.exports = {
     name: 'init',
     run: async (context) => {
         placeBase.run(context)
-        .then(configSettings)
-        .then(initProviders); 
+        .then(configSettings.run)
+        .then(initProviders.run); 
     }
 }
   

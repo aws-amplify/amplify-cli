@@ -31,7 +31,7 @@
     "awsmobile-frontend-js": "^0.1.0",
     "awsmobile-frontend-xcode": "^0.1.0",
     "awsmobile-hosting": "^0.1.0",
-    "awsmobile-provider-cloudformation": "file:../awsmobile-provider-cloudformation",
+    "awsmobile-provider-cloudformation": "^0.1.0",
     "awsmobile-storage": "^0.1.0",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",

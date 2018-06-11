@@ -2,25 +2,18 @@ function run(context){
     const projectPath = process.cwd(); 
     const mobile = context.awsmobile; 
 
-    //todo: insert provider selections
-    const projectCofnigFilePath = mobile.pathManager.getProjectConfigFilePath(projectPath); 
-    const projectConfig = {
-        "providers" : {
-            awscfn: "awsmobile-provider-awscfn"
-        }
-    }; 
-    let jsonString = JSON.stringify(projectConfig, null, 4);
-    fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
-    context.projectConfig = projectConfig; 
+    let initializationTasks = []
 
-    const backendMetaFilePath = mobile.pathManager.getAwsmobileMetaFilePath(projectPath);
-    const meta = {
-    }; 
-    jsonString = JSON.stringify(meta, null, 4);
-    fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
-    context.meta = meta; 
-    
-    return context; 
+    Object.keys(context.initInfo.projectConfig.providers).forEach((providerKey)=>{
+        const provider = require(context.initInfo.projectConfig.providers[providerKey]); 
+        initializationTasks.push(
+            provider.init(context)
+        )
+    })
+
+    return Promise.all(initializationTasks).then((values)=>{
+        return context
+    })
 }
 
 module.exports = {
