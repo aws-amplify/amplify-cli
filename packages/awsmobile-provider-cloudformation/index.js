@@ -5,9 +5,9 @@ const Cloudformation = require("./src/aws-utils/aws-cfn");
 const providerName = require("./constants").ProviderName;
 const nestedStackFileName = "nested-cloudformation-stack.yml"; 
 
-function pushResources(context, category) {
+function pushResources(context, category, resourceName) {
 
-    let {resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted} = context.awsmobile.getResourceStatus(category);
+    let {resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted} = context.awsmobile.getResourceStatus(category, resourceName);
     let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
     let projectDetails = context.awsmobile.getProjectDetails();
 
