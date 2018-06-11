@@ -5,12 +5,12 @@ const Table = require('cli-table2');
 const pathManager = require('./path-manager');
 const getProviderPlugins = require('./get-provider-plugins').getPlugins;
 const updateAwsmobileMeta = require('./update-awsmobile-meta').updateAwsmobileMeta
-const getResourceStatus = require('./get-resource-status').getResourceStatus;
+const showResourceTable = require('./resource-status').showResourceTable;
 let spinner;
 
 function pushResources(context, category, resourceName) {
 	const {print} = context;
-	getResourceStatus(category, resourceName);
+	showResourceTable(category, resourceName);
 
 	return context.prompt.confirm('Are you sure you want to continue?')
 		.then((answer) => {

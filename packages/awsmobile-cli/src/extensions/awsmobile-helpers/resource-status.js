@@ -4,10 +4,10 @@ const Table = require('cli-table2');
 const pathManager = require('./path-manager');
 
 function getResourceStatus(category, resourceName) {
-	const awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
+	let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
 	let awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
 
-	const currentAwsmobileMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
+	let currentAwsmobileMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
 	let currentAwsmobileMeta = JSON.parse(fs.readFileSync(currentAwsmobileMetaFilePath));
 
 	let resourcesToBeCreated = getResourcesToBeCreated(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
@@ -16,13 +16,21 @@ function getResourceStatus(category, resourceName) {
 
 	resourcesToBeCreated = resourcesToBeCreated.filter((resource) => resource.category !== "provider");
 
-	showResourceTable(resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted);
-
 	return {resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted};
 
 }
 
-function showResourceTable(resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted) {
+function showResourceTable(category, resourceName) {
+	let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
+	let awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
+
+	let currentAwsmobileMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
+	let currentAwsmobileMeta = JSON.parse(fs.readFileSync(currentAwsmobileMetaFilePath));
+
+	let resourcesToBeCreated = getResourcesToBeCreated(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
+	let resourcesToBeUpdated = getResourcesToBeUpdated(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
+	let resourcesToBeDeleted = getResourcesToBeDeleted(awsmobileMeta, currentAwsmobileMeta, category, resourceName);
+
 	const createOperationLabel = 'Create';
 	const updateOperationLabel = 'Update';
 	const deleteOperationLabel = 'Delete';
@@ -140,5 +148,6 @@ function capitalize(str) {
 }
 
 module.exports = {
- 	getResourceStatus
+ 	getResourceStatus,
+ 	showResourceTable
 }
