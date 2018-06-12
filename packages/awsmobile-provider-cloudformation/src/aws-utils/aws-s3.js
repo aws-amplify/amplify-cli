@@ -52,9 +52,7 @@ class S3 {
                     this.context.print.warning('Bucket name: ' + bucketName);
 
                     return this.s3.createBucket(params).promise()
-                        .then(() => {
-                            this.s3.waitFor('bucketExists', params).promise()
-                        })
+                        .then(() => this.s3.waitFor('bucketExists', params).promise())
                         .then(() => {
                             this.context.print.success('S3 Bucket sucessfully created');
                             return bucketName;

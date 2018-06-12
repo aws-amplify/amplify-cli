@@ -11,9 +11,9 @@ function withDefaultConfiguration(aws, context) {
 	// Fetch access key, secret key and region from context based on provider
     // Part of init/config
     let creds = {
-		"accessKey": "AKIAIPIJDRIITS7VPMGQ",
-		"secretKey": "hVx9XQGYWVZNIW/HnmJWSIZ2UV4dIaLtaZ91140Z",
-		"region": "us-west-2"
+		"accessKey": "<your access key>",
+		"secretKey": "<your secret key>",
+		"region": "<your-region>"
 	};
     return setAWSConfig(aws, creds.accessKey, creds.secretKey, creds.region);	    
 }

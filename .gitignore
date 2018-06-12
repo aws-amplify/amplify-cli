@@ -6,4 +6,4 @@ coverage
 .nyc_output
 yarn.lock
 package.lock
-packages/awsmobile-cli/awsmobile/.config/plugin-config.json
+packages/awsmobile-cli/awsmobile/.config/

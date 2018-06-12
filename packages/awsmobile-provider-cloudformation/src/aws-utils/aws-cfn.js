@@ -42,11 +42,6 @@ class CloudFormation {
                     "StackName": stackName
                 };
 
-                let cfnStackCreateParams = {
-                    "StackName": stackName,
-                    "TemplateURL": templateURL,
-                };
-
                 let cfnModel = this.cfn;
                 let context = this.context;
                 let self = this;
