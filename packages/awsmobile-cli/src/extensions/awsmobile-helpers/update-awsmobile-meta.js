@@ -20,16 +20,52 @@ function updateAwsMobileMetaAfterResourceAdd(category, resourceName, options) {
     fs.writeFileSync(awsmobileMetaFilePath, jsonString, 'utf8');
 }
 
-function updateAwsMobileMetaAfterResourceUpdate(category, resourceName, options) {
+function updateProviderAwsMobileMeta(providerName, options) {
+    const awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
+
+    let awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
+    if (!awsmobileMeta.provider) {
+        awsmobileMeta.provider = {};
+        awsmobileMeta.provider[providerName] = {};
+    } else {
+        if (!awsmobileMeta.provider[providerName]) {
+            awsmobileMeta.provider[providerName] = {};
+        }
+    }
+
+    Object.keys(options).forEach((key) => {
+        awsmobileMeta.provider[providerName][key] = options[key];
+    });
+
+    let jsonString = JSON.stringify(awsmobileMeta, null, '\t');
+    fs.writeFileSync(awsmobileMetaFilePath, jsonString, 'utf8');
+}
+
+
+function updateAwsMobileMetaAfterResourceUpdate(category, resourceName, attribute, value) {
     let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
-    let awsmobileCloudMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
+    //let awsmobileCloudMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
     let currentTimestamp = new Date();
 
-    updateAwsMetaFile(awsmobileMetaFilePath, category, resourceName, options, currentTimestamp);
-    updateAwsMetaFile(awsmobileCloudMetaFilePath, category, resourceName, options, currentTimestamp);
+    updateAwsMetaFile(awsmobileMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
+    //updateAwsMetaFile(awsmobileCloudMetaFilePath, category, resourceName, attribute, value, currentTimestamp);
 
     // Move resource directories from backend to current-backend
-    moveBackendResourcesToCurrentCloudBackend(category, resourceName);
+    //moveBackendResourcesToCurrentCloudBackend(category, resourceName);
+
+}
+
+function updateAwsMobileMetaAfterPush(resources) {
+    let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
+    let awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
+    let currentTimestamp = new Date();
+
+    for(let i = 0; i < resources.length; i++) {
+        awsmobileMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+    }
+    console.log('Im here!!');
+
+    moveBackendResourcesToCurrentCloudBackend(resources);
 
 }
 
@@ -48,7 +84,7 @@ function updateAwsMobileMetaAfterResourceDelete(category, resourceName) {
     filesystem.remove(resourceDir);
 }
 
-function updateAwsMetaFile(filePath, category, resourceName, options, timeStamp) {
+function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
     let awsmobileMeta = JSON.parse(fs.readFileSync(filePath));
 
     if (!awsmobileMeta[category]) {
@@ -60,26 +96,31 @@ function updateAwsMetaFile(filePath, category, resourceName, options, timeStamp)
         }
     }
 
-    awsmobileMeta[category][resourceName].options = options;
+    awsmobileMeta[category][resourceName][attribute] = value;
     awsmobileMeta[category][resourceName].lastPushTimeStamp = timeStamp;
 
     let jsonString = JSON.stringify(awsmobileMeta, null, '\t');
     fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
-function moveBackendResourcesToCurrentCloudBackend(category, resourceName) {
+function moveBackendResourcesToCurrentCloudBackend(resources) {
     let targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath()));
-    let sourceDir = path.normalize(pathManager.getBackendDirPath(), category, resourceName);
+    let awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
+    let awsmobileCloudMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
 
-    try {
+    for(let i = 0; i < resources.length; i++) {
+        let sourceDir = path.normalize(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName);
         fs.copySync(sourceDir, targetDir);
-    } catch(err) {
-        console.log(err.stack);
     }
+    console.log('okay im here');
+    console.log(awsmobileMetaFilePath);
+    fs.copySync(awsmobileMetaFilePath, awsmobileCloudMetaFilePath, { overwrite: true });
 }
 
 module.exports = {
     updateAwsMobileMetaAfterResourceAdd,
     updateAwsMobileMetaAfterResourceUpdate,
-    updateAwsMobileMetaAfterResourceDelete
+    updateAwsMobileMetaAfterResourceDelete,
+    updateAwsMobileMetaAfterPush,
+    updateProviderAwsMobileMeta
 }

@@ -1,10 +1,17 @@
-var fs = require('fs');
-var pathManager = require('./path-manager')
-
 function getPlugins() {
     let providerDetailsList = [];
-    const pluginConfigFilePath = pathManager.getPluginConfigFilePath();
-    let pluginConfig = JSON.parse(fs.readFileSync(pluginConfigFilePath));
+    let pluginConfig = {
+        "providerPlugins": {
+            "awsmobile-provider-cloudformation": {
+                "name": "AWS Cloudformation",
+                "path": "awsmobile-provider-cloudformation"
+            }
+        },
+        "frontendPlugins": [],
+        "defaultProviders": [
+            "awsmobile-provider-cloudformation"
+        ]
+    };
     let providerPlugins = pluginConfig.defaultProviders;
 
     for (let i = 0; i < providerPlugins.length; i++) {
