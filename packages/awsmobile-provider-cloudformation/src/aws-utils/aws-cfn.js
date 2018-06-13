@@ -8,7 +8,6 @@ shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 const providerName = require('../../constants').ProviderName;
 
 class CloudFormation {
-
   constructor(context) {
     return aws.configureWithCreds(context)
       .then((awsItem) => {
@@ -44,27 +43,26 @@ class CloudFormation {
         const { context } = this;
         const self = this;
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           cfnModel.describeStacks(cfnStackCheckParams, (err) => {
             const cfnParentStackParams = {
               StackName: stackName,
               TemplateURL: templateURL,
-              Capabilities: ["CAPABILITY_NAMED_IAM"]
+              Capabilities: ['CAPABILITY_NAMED_IAM'],
             };
 
             if (err != null && err.statusCode === 400) { // Create new parent stack
               const cfnCompleteStatus = 'stackCreateComplete';
               cfnModel.createStack(cfnParentStackParams, (createErr) => {
+                console.log(`Creating new parent cloudformation stack:${stackName}`);
                 if (createErr) {
-                  console.log('Error creating cloudformation stack');
-                  console.log(createErr, createErr.stack);
-                  resolve();
+                  console.error('Error creating cloudformation stack');
+                  reject(createErr);
                 }
                 cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
                   if (completeErr) {
-                    console.log('Error creating cloudformation stack');
-                    console.log(completeErr, completeErr.stack);
-                    resolve();
+                    console.error('Error creating cloudformation stack');
+                    reject(completeErr);
                   } else {
                     context.awsmobile.updateProviderAwsMobileMeta(
                       providerName,
@@ -79,15 +77,13 @@ class CloudFormation {
               cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
                 const cfnCompleteStatus = 'stackUpdateComplete';
                 if (updateErr) {
-                  console.log('Error updating cloudformation stack');
-                  console.log(updateErr, updateErr.stack);
-                  resolve();
+                  console.error('Error updating cloudformation stack');
+                  reject(updateErr);
                 }
                 cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
                   if (completeErr) {
-                    console.log('Error updating cloudformation stack');
-                    console.log(completeErr, completeErr.stack);
-                    resolve();
+                    console.error('Error updating cloudformation stack');
+                    reject(completeErr);
                   } else {
                     return self.updateAwsmobileMetaFileWithStackOutputs(stackName)
                       .then(() => resolve());
@@ -151,7 +147,7 @@ class CloudFormation {
 
     const cfnModel = this.cfn;
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       cfnModel.describeStacks(cfnStackParams, (err) => {
         let cfnDeleteStatus = 'stackCreateComplete';
         if (err === null) {
@@ -159,22 +155,19 @@ class CloudFormation {
             cfnDeleteStatus = 'stackDeleteComplete';
             if (deleteErr) {
               console.log(`Error deleting stack ${stackName}`);
-              console.log(deleteErr, deleteErr.stack);
-              resolve();
+              reject(deleteErr);
             }
             cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                console.log(completeErr, completeErr.stack);
-                resolve();
+                reject(completeErr);
               } else {
                 resolve();
               }
             });
           });
         } else {
-          console.log(err.stack);
-          resolve();
+          reject(err);
         }
       });
     });
