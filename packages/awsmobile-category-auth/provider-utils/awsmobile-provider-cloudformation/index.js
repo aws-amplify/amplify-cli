@@ -39,15 +39,6 @@ function serviceWalkthrough(service, context) {
 			}
 		}
 
-		if (inputs[i].validation){
-			
-			question = Object.assign({
-				validate: validator(inputs[i]) 
-			}, question)
-		}
-
-
-
 		if(inputs[i].type && inputs[i].type == "list") {
 			question = Object.assign({
 				type: 'list',
@@ -122,39 +113,4 @@ function addResource(context, category, service, configure) {
 		});
 }
 
-function createResource(context, category, resourceName) {
-	let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
-	let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-	let files = fs.readdirSync(resourceDir);
-
-	// Fetch all the Cloudformation templates (can be json or yml)
-
-	let cfnFiles = files.filter(function(file){
-    	return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
-	});
-
-	return new CloudFormation(context)
-		.then((cfnItem) => {
-			return cfnItem.createResources(resourceDir, cfnFiles, category, resourceName);
-		});
-}
-
-function deleteResource(context, category, resourceName) {
-	let backEndDir = context.awsmobile.pathManager.getBackendDirPath();
-	let resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-	let files = fs.readdirSync(resourceDir);
-
-	// Fetch all the Cloudformation templates (can be json or yml)
-
-	let cfnFiles = files.filter(function(file){
-    	return ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1));
-	});
-
-	return new CloudFormation(context)
-		.then((cfnItem) => {
-			return cfnItem.deleteResources(resourceDir, cfnFiles, category, resourceName);
-		});
-}
-
-
-module.exports = {addResource, createResource, deleteResource}; 
+module.exports = {addResource}; 

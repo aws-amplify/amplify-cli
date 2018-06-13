@@ -3,17 +3,13 @@ const subcommand = 'add';
 const category = 'auth';
 const providerControllers = require("../../provider-utils/provider-controller-mapping");
 
-
-
 var options;
 
 module.exports = {
     name: subcommand,
     run: async (context) => {
         const {awsmobile} = context;
-
         const configure = context.parameters.options.configure ? '-configure' : '';
-
         const servicesMetadata = JSON.parse(fs.readFileSync(__dirname + `/../../provider-utils/supported-services${configure}.json`));
 
         return awsmobile.serviceSelectionPrompt(context, category, servicesMetadata)

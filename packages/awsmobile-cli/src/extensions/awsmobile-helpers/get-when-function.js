@@ -8,14 +8,14 @@ function getWhen (input) {
     let orConditions = true;
 
     if (input.andConditions && input.andConditions.length > 0) {
-      andConditions = input.andConditions.every((i) => {
-        return findMatch(i, answers)
+      andConditions = input.andConditions.every((condition) => {
+        return findMatch(condition, answers)
       })
     }
 
     if (input.orConditions && input.orConditions.length > 0) {
-      orConditions = input.orConditions.some((i) => {
-        return findMatch(i, answers)
+      orConditions = input.orConditions.some((condition) => {
+        return findMatch(condition, answers)
       })
     }
 

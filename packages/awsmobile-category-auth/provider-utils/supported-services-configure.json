@@ -31,7 +31,7 @@
 			},
 			{
 				"key": "mfaConfiguration",
-				"question": "Please choose an multifactor authentication (MFA) configuration:",
+				"question": "Please choose a multifactor authentication (MFA) configuration:",
 				"required": true,
 				"type": "list",
 				"options": [
