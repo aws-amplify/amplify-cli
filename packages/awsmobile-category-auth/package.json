@@ -5,6 +5,12 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "eslint": "^4.19.1",
+    "inquirer": "^6.0.0",
     "uuid": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0"
   }
 }

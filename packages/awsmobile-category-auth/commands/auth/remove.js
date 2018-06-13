@@ -1,12 +1,12 @@
-const subcommand = 'remove'
-const category = 'auth'
+const subcommand = 'remove';
+const category = 'auth';
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
-    const {awsmobile, parameters} = context;
-    let resourceName = parameters.first;
+    const { awsmobile, parameters } = context;
+    const resourceName = parameters.first;
 
-    return awsmobile.removeResource(context, category);
-   }
-}
+    return awsmobile.removeResource(context, category, resourceName);
+  },
+};
