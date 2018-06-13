@@ -1,7 +1,6 @@
 module.exports = {
-    name: 'configure',
-    run: async (context) => {
-        console.log(context)
-    }
-}
-  
+  name: 'configure',
+  run: async (context) => {
+    console.log(context);
+  },
+};

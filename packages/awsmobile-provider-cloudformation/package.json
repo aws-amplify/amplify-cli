@@ -5,8 +5,16 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "shortid": "^2.2.8",
-    "aws-sdk": "^2.250.1"
+    "aws-sdk": "^2.250.1",
+    "eslint": "^4.19.1",
+    "shortid": "^2.2.8"
   },
-  "private": true
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0"
+  }
 }
