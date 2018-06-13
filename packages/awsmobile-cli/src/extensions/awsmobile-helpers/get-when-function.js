@@ -32,11 +32,9 @@ const findMatch = (cond, answers) => {
   let response = true;
   if (cond.operator === '=' && (!answers[cond.key] || answers[cond.key] != cond.value)){
     response = false;
-  }
-  if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] == cond.value)){
+  } else if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] == cond.value)){
     response = false;
-  }
-  if (cond.operator === 'includes' && (!answers[cond.key] || !answers[cond.key].includes(cond.value))){
+  } else if (cond.operator === 'includes' && (!answers[cond.key] || !answers[cond.key].includes(cond.value))){
     response = false;
   }
 

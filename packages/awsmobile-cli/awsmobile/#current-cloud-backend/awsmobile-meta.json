@@ -1,1 +1,34 @@
-{}
+{
+	"storage": {
+		"test": {
+			"service": "S3",
+			"providerPlugin": "awsmobile-provider-cloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/myproject123-awsmobile-b1prqyplq/test-cloudformation-template.yml",
+				"logicalId": "storagetest"
+			},
+			"lastPushTimeStamp": "2018-06-12T23:37:50.488Z",
+			"output": {
+				"BucketName": "absidbsadasd"
+			}
+		},
+		"dnjf": {
+			"service": "S3",
+			"providerPlugin": "awsmobile-provider-cloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/myproject123-awsmobile-b1prqyplq/dnjf-cloudformation-template.yml",
+				"logicalId": "storagednjf"
+			},
+			"lastPushTimeStamp": "2018-06-12T23:37:50.488Z",
+			"output": {
+				"BucketName": "sdjfnbdssdfkdsf"
+			}
+		}
+	},
+	"provider": {
+		"awsmobile-provider-cloudformation": {
+			"s3DeploymentBucket": "myproject123-awsmobile-b1prqyplq",
+			"parentStackName": "myProject123h1y8qkagq"
+		}
+	}
+}

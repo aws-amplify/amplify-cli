@@ -1,17 +1,16 @@
-// var fs = require('fs');
-// var pathManager = require('./path-manager')
 
-// function getUserCreds(provider) {
-// 	// Based on the provider fetch the creds
-// 	// Logic here should be modififed as  a part of init/config command
+function getUserCreds() {
+  // Based on the provider fetch the creds
+  // Logic here should be modififed as  a part of init/config command
 
-// 	return {
-// 		"accessKey": "AKIAI5LD6XA6YBWCTR2Q",
-// 		"secretKey": "hVx9XQGYWVZNIW/HnmJWSIZ2UV4dIaLtaZ91140Z",
-// 		"region": "us-west-2"
-// 	};
-// }
+  return {
+    accessKey: '<your accessKey>',
+    secretKey: '<your secretKey',
+    region: '<your region',
+  };
+}
 
-// module.exports = {
-//  	getUserCreds
-// }
+module.exports = {
+  getUserCreds,
+};
+
