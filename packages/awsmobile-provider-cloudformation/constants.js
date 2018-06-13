@@ -1,3 +1,3 @@
 module.exports = {
-    ProviderName: "awsmobile-provider-cloudformation"
-}
+  ProviderName: 'awsmobile-provider-cloudformation',
+};
