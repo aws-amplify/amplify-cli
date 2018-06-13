@@ -5,4 +5,5 @@
 	"StartCommand": "npm run-script start",
 	"ProjectName": "myProject123",
 	"Framework": "react"
+
 }

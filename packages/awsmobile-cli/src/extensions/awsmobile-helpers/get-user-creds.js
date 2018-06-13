@@ -1,3 +1,4 @@
+
 function getUserCreds() {
   // Based on the provider fetch the creds
   // Logic here should be modififed as  a part of init/config command
@@ -12,3 +13,4 @@ function getUserCreds() {
 module.exports = {
   getUserCreds,
 };
+

@@ -8,6 +8,7 @@ shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 const providerName = require('../../constants').ProviderName;
 
 class CloudFormation {
+
   constructor(context) {
     return aws.configureWithCreds(context)
       .then((awsItem) => {
@@ -48,6 +49,7 @@ class CloudFormation {
             const cfnParentStackParams = {
               StackName: stackName,
               TemplateURL: templateURL,
+              Capabilities: ["CAPABILITY_NAMED_IAM"]
             };
 
             if (err != null && err.statusCode === 400) { // Create new parent stack
