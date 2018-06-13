@@ -76,7 +76,7 @@ function addResource(context, category, service, configure) {
   let props = {};
 
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename } = serviceMetadata.cfnFilename;
+  const { cfnFilename } = serviceMetadata;
 
   return serviceWalkthrough(service, context)
     .then((result) => {
