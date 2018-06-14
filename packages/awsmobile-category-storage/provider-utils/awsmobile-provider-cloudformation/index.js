@@ -1,5 +1,8 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
+const validator = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/input-validation').inputValidation;
+const { getProjectDetails } = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-project-details');
+const { getAllDefaults } = require('../get-defaults');
 
 let serviceMetadata;
 
@@ -7,25 +10,32 @@ function serviceWalkthrough() {
   const { inputs } = serviceMetadata;
   const questions = [];
   for (let i = 0; i < inputs.length; i += 1) {
-    // Can have a cool question builder function here based on input json - will iterate on this
-    // Can also have some validations here based on the input json
-    // Uncool implementation here
-    if (inputs[i].options) {
-      const question = {
-        name: inputs[i].key,
-        message: inputs[i].question,
+    let question = {
+      name: inputs[i].key,
+      message: inputs[i].question,
+      validate: validator(inputs[i]),
+      default: () => {
+        const defaultValue = getAllDefaults(getProjectDetails())[inputs[i].key];
+        return defaultValue;
+      },
+    };
+
+    if (inputs[i].type && inputs[i].type === 'list') {
+      question = Object.assign({
         type: 'list',
         choices: inputs[i].options,
-      };
-      questions.push(question);
+      }, question);
+    } else if (inputs[i].type && inputs[i].type === 'multiselect') {
+      question = Object.assign({
+        type: 'checkbox',
+        choices: inputs[i].options,
+      }, question);
     } else {
-      const question = {
-        name: inputs[i].key,
-        message: inputs[i].question,
+      question = Object.assign({
         type: 'input',
-      };
-      questions.push(question);
+      }, question);
     }
+    questions.push(question);
   }
 
   return inquirer.prompt(questions);

@@ -4,17 +4,28 @@
 			{
 				"key": "resourceName",
 				"question": "Please provide a friendly name for your resource?",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
 				"required": true
 			},
 			{
 
 				"key": "bucketName",
 				"question": "What is the bucket name?",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-z0-9]+$",
+					"onErrorMsg": "Bucket name should be alphanumeric and lowercase"
+				},
 				"required": true
 			},
 			{
 			    "key": "policy",
-			    "question": "What is the bucket name?",
+			    "type": "list",
+			    "question": "What would be the bucket policy?",
 			    "required": false,
 			    "options": [
 			    	"AuthenticatedRead", 
