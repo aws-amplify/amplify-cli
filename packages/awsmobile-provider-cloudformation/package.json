@@ -10,7 +10,15 @@
     "path": "^0.12.7",
     "util": "^0.10.3",
     "moment": "^2.21.0", 
-    "fs-extra": "^4.0.2"
+    "fs-extra": "^4.0.2",
+    "eslint": "^4.19.1"
   },
-  "private": true
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0"
+  }
 }

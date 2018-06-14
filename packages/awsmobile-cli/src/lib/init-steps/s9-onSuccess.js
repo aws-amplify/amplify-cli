@@ -1,4 +1,4 @@
-const fs = require('fs-extra'); 
+const fs = require('fs-extra');
 
 function run(context){
     const projectPath = context.initInfo.projecPath; 
@@ -8,10 +8,6 @@ function run(context){
     const backendDirPath = mobile.pathManager.getBackendDirPath(projectPath); 
     const currentBackendDirPath = mobile.pathManager.getCurrentCloudBackendDirPath(projectPath); 
 
-    fs.ensureDirSync(awsmobileDirPath); 
-    fs.ensureDirSync(dotConfigDirPath); 
-    fs.ensureDirSync(backendDirPath); 
-    fs.ensureDirSync(currentBackendDirPath); 
 
     let jsonString = JSON.stringify(context.initInfo.projectConfig, null, 4);
     const projectCofnigFilePath = mobile.pathManager.getProjectConfigFilePath(projectPath); 
@@ -26,5 +22,5 @@ function run(context){
 }
 
 module.exports = {
-    run
-}
+  run,
+};

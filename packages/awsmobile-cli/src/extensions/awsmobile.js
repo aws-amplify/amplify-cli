@@ -4,21 +4,23 @@
 // bring in each of the constituents
 
 const constants = require('./awsmobile-helpers/constants');
-const pressEnterToContinue = require('./awsmobile-helpers/press-enter-to-continue')
-const removeResource = require('./awsmobile-helpers/remove-resource').removeResource;
-const pushResources = require('./awsmobile-helpers/push-resources').pushResources;
-const getProjectDetails = require('./awsmobile-helpers/get-project-details').getProjectDetails;
-const getResourceStatus = require('./awsmobile-helpers/get-resource-status').getResourceStatus;
-const copyBatch = require('./awsmobile-helpers/copy-batch').copyBatch;
+const pressEnterToContinue = require('./awsmobile-helpers/press-enter-to-continue');
+const { removeResource } = require('./awsmobile-helpers/remove-resource');
+const { pushResources } = require('./awsmobile-helpers/push-resources');
+const { getProjectDetails } = require('./awsmobile-helpers/get-project-details');
+const { getResourceStatus } = require('./awsmobile-helpers/resource-status');
+const { showResourceTable } = require('./awsmobile-helpers/resource-status');
+const { copyBatch } = require('./awsmobile-helpers/copy-batch');
 const pathManager = require('./awsmobile-helpers/path-manager');
-const nameManager = require('./awsmobile-helpers/name-manager'); 
-const serviceSelectionPrompt = require('./awsmobile-helpers/service-select-prompt').serviceSelectionPrompt; 
-const updateProjectConfig = require('./awsmobile-helpers/update-project-config').updateProjectConfig;
-const updateProviderAwsMobileMeta = require('./awsmobile-helpers/update-awsmobile-meta').updateProviderAwsMobileMeta;
-const updateAwsMobileMetaAfterPush = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterPush;
-const updateAwsMobileMetaAfterResourceAdd = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceAdd ;
-const updateAwsMobileMetaAfterResourceUpdate = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceUpdate;
-const updateAwsMobileMetaAfterResourceDelete = require('./awsmobile-helpers/update-awsmobile-meta').updateAwsMobileMetaAfterResourceDelete;
+// const nameManager = require('./awsmobile-helpers/name-manager');
+const { serviceSelectionPrompt } = require('./awsmobile-helpers/service-select-prompt');
+const {
+  updateProviderAwsMobileMeta,
+  updateAwsMobileMetaAfterPush,
+  updateAwsMobileMetaAfterResourceAdd,
+  updateAwsMobileMetaAfterResourceUpdate,
+  updateAwsMobileMetaAfterResourceDelete,
+} = require('./awsmobile-helpers/update-awsmobile-meta');
 
 module.exports = (context) => {
   const awsmobile = {
@@ -30,13 +32,14 @@ module.exports = (context) => {
     getResourceStatus,
     copyBatch,
     pathManager,
+    showResourceTable,
     serviceSelectionPrompt,
     updateAwsMobileMetaAfterResourceUpdate,
     updateAwsMobileMetaAfterResourceAdd,
     updateAwsMobileMetaAfterResourceDelete,
     updateProviderAwsMobileMeta,
-    updateAwsMobileMetaAfterPush
+    updateAwsMobileMetaAfterPush,
   };
-  
+
   context.awsmobile = awsmobile;
-}
+};

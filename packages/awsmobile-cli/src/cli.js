@@ -1,13 +1,13 @@
-const { build } = require('gluegun')
+const { build } = require('gluegun');
 
 /**
  * Create the cli and kick it off
  */
-async function run (argv) {
+async function run(argv) {
   // create a CLI runtime
 
-  let nodeModuleDir = __dirname + '/../node_modules'; 
-  // let pluginDir = __dirname + '/../../'; // Use for dev
+  const nodeModuleDir = `${__dirname}/../node_modules`;
+  const pluginDir = `${__dirname}/../../`; // Use for dev
 
   const cli = build()
     .brand('awsmobile')
@@ -15,16 +15,16 @@ async function run (argv) {
     .plugins(nodeModuleDir, { matching: 'awsmobile-*', hidden: false })
     // .plugins(nodeModuleDir, { matching: 'awsmobile-provider-*', hidden: true })
     // .plugins(nodeModuleDir, { matching: 'awsmobile-frontend-*', hidden: true })
-    // .plugins(pluginDir, { matching: 'awsmobile-category-*', hidden: true }) // Use for dev
+    .plugins(pluginDir, { matching: 'awsmobile-category-*', hidden: true }) // Use for dev
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
-    .create()
+    .create();
 
   // and run it
-  const context = await cli.run(argv)
+  const context = await cli.run(argv);
 
   // send it back (for testing, mostly)
-  return context
+  return context;
 }
 
-module.exports = { run }
+module.exports = { run };
