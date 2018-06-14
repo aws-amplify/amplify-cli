@@ -6,23 +6,29 @@ const fs = require('fs-extra');
 
 function run(context){
     return new Promise((resolve, reject)=>{
-        console.log('init CloudFormation///////////////')
+        const region = "<region>";
+        const credential = {
+            accessKeyId: "<accessKeyId>",
+            secretAccessKey: "<secretAccessKey>",
+        }
         aws.config.update({
-            accessKeyId: "AKIAJ2IWIRMJYPRJO6WA",//"<accessKeyId>",
-            secretAccessKey: "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",//"<secretAccessKey>",
-            region: "us-east-1",//"<region>"
+            accessKeyId: credential.accessKeyId,
+            secretAccessKey: credential.secretAccessKey,
+            region: region,
         }); 
 
         const awscfn = new aws.CloudFormation(); 
         const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
         const timeStamp = '-' + moment().format("YYYYMMDDHHmmss");
+        const stackName = context.initInfo.projectName + timeStamp; 
+        const deploymentBucketName = stackName + '-deployment'; 
         const params = {
-            StackName: context.initInfo.projectName + timeStamp,
+            StackName: stackName,
             TemplateBody: fs.readFileSync(initTemplateFilePath).toString(), 
             Parameters: [
                 {
                     ParameterKey: "DeploymentBucketName",   
-                    ParameterValue: context.initInfo.projectName + timeStamp + '-deployment'
+                    ParameterValue: deploymentBucketName
                 }                     
             ]
         }; 
@@ -31,17 +37,21 @@ function run(context){
             if(err){
                 reject(err); 
             }else{
-                processStackCreationData(context, data)
+                processStackCreationData(context, region, params, data)
                 resolve(context)
             }
         });
     });
 }
 
-function processStackCreationData(context, data){
-    console.log('CloudFormation init returned/////////////////');
-    console.log(util.inspect(data));
-    context.cloufFormationInitResponse = data; 
+function processStackCreationData(context, region, params, data){
+    const metaData = {
+        Region: region,
+        StackId: data.StackId, 
+        StackName: params.StackName,
+        DeploymentBucket: params.Parameters[0]['ParameterValue']
+    }; 
+    context.initInfo.metaData['awsmobile-provider-cloudformation'] = metaData; 
 }
 
 module.exports = {
