@@ -1,10 +1,5 @@
 import { ResourceBase } from '../resource';
 import { Value, List } from '../dataTypes';
-export declare class LaunchTemplateConfig {
-    LaunchTemplateSpecification?: FleetLaunchTemplateSpecification;
-    Overrides?: List<LaunchTemplateOverrides>;
-    constructor(properties: LaunchTemplateConfig);
-}
 export declare class IamInstanceProfileSpecification {
     Arn?: Value<string>;
     constructor(properties: IamInstanceProfileSpecification);
@@ -62,7 +57,6 @@ export declare class SpotFleetRequestConfigData {
     ExcessCapacityTerminationPolicy?: Value<string>;
     IamFleetRole: Value<string>;
     LaunchSpecifications?: List<SpotFleetLaunchSpecification>;
-    LaunchTemplateConfigs?: List<LaunchTemplateConfig>;
     ReplaceUnhealthyInstances?: Value<boolean>;
     SpotPrice?: Value<string>;
     TargetCapacity: Value<number>;
@@ -81,12 +75,6 @@ export declare class EbsBlockDevice {
     VolumeType?: Value<string>;
     constructor(properties: EbsBlockDevice);
 }
-export declare class FleetLaunchTemplateSpecification {
-    LaunchTemplateId?: Value<string>;
-    LaunchTemplateName?: Value<string>;
-    Version?: Value<string>;
-    constructor(properties: FleetLaunchTemplateSpecification);
-}
 export declare class InstanceIpv6Address {
     Ipv6Address: Value<string>;
     constructor(properties: InstanceIpv6Address);
@@ -94,14 +82,6 @@ export declare class InstanceIpv6Address {
 export declare class GroupIdentifier {
     GroupId: Value<string>;
     constructor(properties: GroupIdentifier);
-}
-export declare class LaunchTemplateOverrides {
-    AvailabilityZone?: Value<string>;
-    InstanceType?: Value<string>;
-    SpotPrice?: Value<string>;
-    SubnetId?: Value<string>;
-    WeightedCapacity?: Value<number>;
-    constructor(properties: LaunchTemplateOverrides);
 }
 export declare class SpotFleetMonitoring {
     Enabled?: Value<boolean>;
@@ -118,7 +98,6 @@ export interface SpotFleetProperties {
     SpotFleetRequestConfigData: SpotFleetRequestConfigData;
 }
 export default class SpotFleet extends ResourceBase {
-    static LaunchTemplateConfig: typeof LaunchTemplateConfig;
     static IamInstanceProfileSpecification: typeof IamInstanceProfileSpecification;
     static InstanceNetworkInterfaceSpecification: typeof InstanceNetworkInterfaceSpecification;
     static SpotFleetTagSpecification: typeof SpotFleetTagSpecification;
@@ -127,10 +106,8 @@ export default class SpotFleet extends ResourceBase {
     static SpotPlacement: typeof SpotPlacement;
     static SpotFleetRequestConfigData: typeof SpotFleetRequestConfigData;
     static EbsBlockDevice: typeof EbsBlockDevice;
-    static FleetLaunchTemplateSpecification: typeof FleetLaunchTemplateSpecification;
     static InstanceIpv6Address: typeof InstanceIpv6Address;
     static GroupIdentifier: typeof GroupIdentifier;
-    static LaunchTemplateOverrides: typeof LaunchTemplateOverrides;
     static SpotFleetMonitoring: typeof SpotFleetMonitoring;
     static BlockDeviceMapping: typeof BlockDeviceMapping;
     constructor(properties?: SpotFleetProperties);

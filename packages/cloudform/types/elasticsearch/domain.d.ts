@@ -25,6 +25,11 @@ export declare class EBSOptions {
     VolumeType?: Value<string>;
     constructor(properties: EBSOptions);
 }
+export declare class EncryptionAtRestOptions {
+    Enabled?: Value<boolean>;
+    KmsKeyId?: Value<string>;
+    constructor(properties: EncryptionAtRestOptions);
+}
 export interface DomainProperties {
     AccessPolicies?: any;
     AdvancedOptions?: {
@@ -34,6 +39,7 @@ export interface DomainProperties {
     EBSOptions?: EBSOptions;
     ElasticsearchClusterConfig?: ElasticsearchClusterConfig;
     ElasticsearchVersion?: Value<string>;
+    EncryptionAtRestOptions?: EncryptionAtRestOptions;
     SnapshotOptions?: SnapshotOptions;
     Tags?: ResourceTag[];
     VPCOptions?: VPCOptions;
@@ -43,5 +49,6 @@ export default class Domain extends ResourceBase {
     static ElasticsearchClusterConfig: typeof ElasticsearchClusterConfig;
     static SnapshotOptions: typeof SnapshotOptions;
     static EBSOptions: typeof EBSOptions;
+    static EncryptionAtRestOptions: typeof EncryptionAtRestOptions;
     constructor(properties?: DomainProperties);
 }

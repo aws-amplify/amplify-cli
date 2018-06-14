@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const sizeConstraintSet_1 = require("./sizeConstraintSet");
 const sqlInjectionMatchSet_1 = require("./sqlInjectionMatchSet");

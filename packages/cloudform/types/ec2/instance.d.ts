@@ -33,6 +33,12 @@ export declare class AssociationParameter {
     Value: List<Value<string>>;
     constructor(properties: AssociationParameter);
 }
+export declare class LaunchTemplateSpecification {
+    LaunchTemplateId?: Value<string>;
+    LaunchTemplateName?: Value<string>;
+    Version: Value<string>;
+    constructor(properties: LaunchTemplateSpecification);
+}
 export declare class Ebs {
     DeleteOnTermination?: Value<boolean>;
     Encrypted?: Value<boolean>;
@@ -77,13 +83,14 @@ export interface InstanceProperties {
     ElasticGpuSpecifications?: List<ElasticGpuSpecification>;
     HostId?: Value<string>;
     IamInstanceProfile?: Value<string>;
-    ImageId: Value<string>;
+    ImageId?: Value<string>;
     InstanceInitiatedShutdownBehavior?: Value<string>;
     InstanceType?: Value<string>;
     Ipv6AddressCount?: Value<number>;
     Ipv6Addresses?: List<InstanceIpv6Address>;
     KernelId?: Value<string>;
     KeyName?: Value<string>;
+    LaunchTemplate?: LaunchTemplateSpecification;
     Monitoring?: Value<boolean>;
     NetworkInterfaces?: List<NetworkInterface>;
     PlacementGroupName?: Value<string>;
@@ -105,6 +112,7 @@ export default class Instance extends ResourceBase {
     static InstanceIpv6Address: typeof InstanceIpv6Address;
     static Volume: typeof Volume;
     static AssociationParameter: typeof AssociationParameter;
+    static LaunchTemplateSpecification: typeof LaunchTemplateSpecification;
     static Ebs: typeof Ebs;
     static NoDevice: typeof NoDevice;
     static SsmAssociation: typeof SsmAssociation;

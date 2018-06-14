@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -10,7 +10,7 @@ export interface EventSourceMappingProperties {
     Enabled?: Value<boolean>
     EventSourceArn: Value<string>
     FunctionName: Value<string>
-    StartingPosition: Value<string>
+    StartingPosition?: Value<string>
 }
 
 export default class EventSourceMapping extends ResourceBase {

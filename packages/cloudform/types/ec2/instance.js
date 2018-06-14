@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const resource_1 = require("../resource");
 class ElasticGpuSpecification {
@@ -32,6 +32,12 @@ class AssociationParameter {
     }
 }
 exports.AssociationParameter = AssociationParameter;
+class LaunchTemplateSpecification {
+    constructor(properties) {
+        Object.assign(this, properties);
+    }
+}
+exports.LaunchTemplateSpecification = LaunchTemplateSpecification;
 class Ebs {
     constructor(properties) {
         Object.assign(this, properties);
@@ -78,6 +84,7 @@ Instance.NetworkInterface = NetworkInterface;
 Instance.InstanceIpv6Address = InstanceIpv6Address;
 Instance.Volume = Volume;
 Instance.AssociationParameter = AssociationParameter;
+Instance.LaunchTemplateSpecification = LaunchTemplateSpecification;
 Instance.Ebs = Ebs;
 Instance.NoDevice = NoDevice;
 Instance.SsmAssociation = SsmAssociation;

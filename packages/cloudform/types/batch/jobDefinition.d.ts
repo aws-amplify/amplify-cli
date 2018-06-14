@@ -24,6 +24,10 @@ export declare class ContainerProperties {
     Image: Value<string>;
     constructor(properties: ContainerProperties);
 }
+export declare class Timeout {
+    AttemptDurationSeconds?: Value<number>;
+    constructor(properties: Timeout);
+}
 export declare class MountPoints {
     ReadOnly?: Value<boolean>;
     SourceVolume?: Value<string>;
@@ -48,6 +52,7 @@ export declare class VolumesHost {
 export interface JobDefinitionProperties {
     Type: Value<string>;
     Parameters?: any;
+    Timeout?: Timeout;
     ContainerProperties: ContainerProperties;
     JobDefinitionName?: Value<string>;
     RetryStrategy?: RetryStrategy;
@@ -56,6 +61,7 @@ export default class JobDefinition extends ResourceBase {
     static Volumes: typeof Volumes;
     static RetryStrategy: typeof RetryStrategy;
     static ContainerProperties: typeof ContainerProperties;
+    static Timeout: typeof Timeout;
     static MountPoints: typeof MountPoints;
     static Environment: typeof Environment;
     static Ulimit: typeof Ulimit;

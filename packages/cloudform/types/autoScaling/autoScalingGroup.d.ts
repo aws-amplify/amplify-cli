@@ -42,6 +42,7 @@ export interface AutoScalingGroupProperties {
     MinSize: Value<string>;
     NotificationConfigurations?: List<NotificationConfiguration>;
     PlacementGroup?: Value<string>;
+    ServiceLinkedRoleARN?: Value<string>;
     Tags?: ResourceTag[];
     TargetGroupARNs?: List<Value<string>>;
     TerminationPolicies?: List<Value<string>>;

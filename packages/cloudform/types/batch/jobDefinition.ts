@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -35,6 +35,14 @@ export class ContainerProperties {
     Image: Value<string>
 
     constructor(properties: ContainerProperties) {
+        Object.assign(this, properties)
+    }
+}
+
+export class Timeout {
+    AttemptDurationSeconds?: Value<number>
+
+    constructor(properties: Timeout) {
         Object.assign(this, properties)
     }
 }
@@ -79,6 +87,7 @@ export class VolumesHost {
 export interface JobDefinitionProperties {
     Type: Value<string>
     Parameters?: any
+    Timeout?: Timeout
     ContainerProperties: ContainerProperties
     JobDefinitionName?: Value<string>
     RetryStrategy?: RetryStrategy
@@ -88,6 +97,7 @@ export default class JobDefinition extends ResourceBase {
     static Volumes = Volumes
     static RetryStrategy = RetryStrategy
     static ContainerProperties = ContainerProperties
+    static Timeout = Timeout
     static MountPoints = MountPoints
     static Environment = Environment
     static Ulimit = Ulimit

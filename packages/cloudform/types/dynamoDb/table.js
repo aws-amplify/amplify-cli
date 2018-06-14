@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const resource_1 = require("../resource");
 class TimeToLiveSpecification {
@@ -44,6 +44,12 @@ class Projection {
     }
 }
 exports.Projection = Projection;
+class PointInTimeRecoverySpecification {
+    constructor(properties) {
+        Object.assign(this, properties);
+    }
+}
+exports.PointInTimeRecoverySpecification = PointInTimeRecoverySpecification;
 class SSESpecification {
     constructor(properties) {
         Object.assign(this, properties);
@@ -68,6 +74,7 @@ Table.ProvisionedThroughput = ProvisionedThroughput;
 Table.GlobalSecondaryIndex = GlobalSecondaryIndex;
 Table.KeySchema = KeySchema;
 Table.Projection = Projection;
+Table.PointInTimeRecoverySpecification = PointInTimeRecoverySpecification;
 Table.SSESpecification = SSESpecification;
 Table.StreamSpecification = StreamSpecification;
 exports.default = Table;

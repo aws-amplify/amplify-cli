@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase, ResourceTag} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -52,6 +52,16 @@ export class AssociationParameter {
     Value: List<Value<string>>
 
     constructor(properties: AssociationParameter) {
+        Object.assign(this, properties)
+    }
+}
+
+export class LaunchTemplateSpecification {
+    LaunchTemplateId?: Value<string>
+    LaunchTemplateName?: Value<string>
+    Version: Value<string>
+
+    constructor(properties: LaunchTemplateSpecification) {
         Object.assign(this, properties)
     }
 }
@@ -125,13 +135,14 @@ export interface InstanceProperties {
     ElasticGpuSpecifications?: List<ElasticGpuSpecification>
     HostId?: Value<string>
     IamInstanceProfile?: Value<string>
-    ImageId: Value<string>
+    ImageId?: Value<string>
     InstanceInitiatedShutdownBehavior?: Value<string>
     InstanceType?: Value<string>
     Ipv6AddressCount?: Value<number>
     Ipv6Addresses?: List<InstanceIpv6Address>
     KernelId?: Value<string>
     KeyName?: Value<string>
+    LaunchTemplate?: LaunchTemplateSpecification
     Monitoring?: Value<boolean>
     NetworkInterfaces?: List<NetworkInterface>
     PlacementGroupName?: Value<string>
@@ -154,6 +165,7 @@ export default class Instance extends ResourceBase {
     static InstanceIpv6Address = InstanceIpv6Address
     static Volume = Volume
     static AssociationParameter = AssociationParameter
+    static LaunchTemplateSpecification = LaunchTemplateSpecification
     static Ebs = Ebs
     static NoDevice = NoDevice
     static SsmAssociation = SsmAssociation

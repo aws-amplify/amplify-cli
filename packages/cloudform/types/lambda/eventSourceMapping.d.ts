@@ -5,7 +5,7 @@ export interface EventSourceMappingProperties {
     Enabled?: Value<boolean>;
     EventSourceArn: Value<string>;
     FunctionName: Value<string>;
-    StartingPosition: Value<string>;
+    StartingPosition?: Value<string>;
 }
 export default class EventSourceMapping extends ResourceBase {
     constructor(properties?: EventSourceMappingProperties);

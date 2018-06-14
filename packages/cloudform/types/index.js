@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const elasticBeanstalk_1 = require("./elasticBeanstalk");
 exports.ElasticBeanstalk = elasticBeanstalk_1.default;
@@ -7,6 +7,8 @@ const appSync_1 = require("./appSync");
 exports.AppSync = appSync_1.default;
 const ec2_1 = require("./ec2");
 exports.EC2 = ec2_1.default;
+const serviceCatalog_1 = require("./serviceCatalog");
+exports.ServiceCatalog = serviceCatalog_1.default;
 const cognito_1 = require("./cognito");
 exports.Cognito = cognito_1.default;
 const events_1 = require("./events");
@@ -23,12 +25,12 @@ const apiGateway_1 = require("./apiGateway");
 exports.ApiGateway = apiGateway_1.default;
 const wafRegional_1 = require("./wafRegional");
 exports.WAFRegional = wafRegional_1.default;
+const workSpaces_1 = require("./workSpaces");
+exports.WorkSpaces = workSpaces_1.default;
 const rds_1 = require("./rds");
 exports.RDS = rds_1.default;
 const emr_1 = require("./emr");
 exports.EMR = emr_1.default;
-const workSpaces_1 = require("./workSpaces");
-exports.WorkSpaces = workSpaces_1.default;
 const logs_1 = require("./logs");
 exports.Logs = logs_1.default;
 const kinesis_1 = require("./kinesis");
@@ -47,6 +49,8 @@ const ecs_1 = require("./ecs");
 exports.ECS = ecs_1.default;
 const elasticLoadBalancingV2_1 = require("./elasticLoadBalancingV2");
 exports.ElasticLoadBalancingV2 = elasticLoadBalancingV2_1.default;
+const neptune_1 = require("./neptune");
+exports.Neptune = neptune_1.default;
 const stepFunctions_1 = require("./stepFunctions");
 exports.StepFunctions = stepFunctions_1.default;
 const kinesisAnalytics_1 = require("./kinesisAnalytics");
@@ -97,14 +101,14 @@ const ses_1 = require("./ses");
 exports.SES = ses_1.default;
 const codeBuild_1 = require("./codeBuild");
 exports.CodeBuild = codeBuild_1.default;
+const budgets_1 = require("./budgets");
+exports.Budgets = budgets_1.default;
 const dax_1 = require("./dax");
 exports.DAX = dax_1.default;
 const dataPipeline_1 = require("./dataPipeline");
 exports.DataPipeline = dataPipeline_1.default;
 const cloudTrail_1 = require("./cloudTrail");
 exports.CloudTrail = cloudTrail_1.default;
-const serviceCatalog_1 = require("./serviceCatalog");
-exports.ServiceCatalog = serviceCatalog_1.default;
 const cloudFormation_1 = require("./cloudFormation");
 exports.CloudFormation = cloudFormation_1.default;
 const cloud9_1 = require("./cloud9");
@@ -131,6 +135,7 @@ exports.default = {
     ElasticBeanstalk: exports.ElasticBeanstalk,
     AppSync: exports.AppSync,
     EC2: exports.EC2,
+    ServiceCatalog: exports.ServiceCatalog,
     Cognito: exports.Cognito,
     Events: exports.Events,
     WAF: exports.WAF,
@@ -139,9 +144,9 @@ exports.default = {
     Elasticsearch: exports.Elasticsearch,
     ApiGateway: exports.ApiGateway,
     WAFRegional: exports.WAFRegional,
+    WorkSpaces: exports.WorkSpaces,
     RDS: exports.RDS,
     EMR: exports.EMR,
-    WorkSpaces: exports.WorkSpaces,
     Logs: exports.Logs,
     Kinesis: exports.Kinesis,
     AutoScaling: exports.AutoScaling,
@@ -151,6 +156,7 @@ exports.default = {
     CloudWatch: exports.CloudWatch,
     ECS: exports.ECS,
     ElasticLoadBalancingV2: exports.ElasticLoadBalancingV2,
+    Neptune: exports.Neptune,
     StepFunctions: exports.StepFunctions,
     KinesisAnalytics: exports.KinesisAnalytics,
     OpsWorks: exports.OpsWorks,
@@ -176,10 +182,10 @@ exports.default = {
     CodeDeploy: exports.CodeDeploy,
     SES: exports.SES,
     CodeBuild: exports.CodeBuild,
+    Budgets: exports.Budgets,
     DAX: exports.DAX,
     DataPipeline: exports.DataPipeline,
     CloudTrail: exports.CloudTrail,
-    ServiceCatalog: exports.ServiceCatalog,
     CloudFormation: exports.CloudFormation,
     Cloud9: exports.Cloud9,
     ServiceDiscovery: exports.ServiceDiscovery,

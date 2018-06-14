@@ -14,6 +14,7 @@ export declare class ContainerDefinition {
     Environment?: List<KeyValuePair>;
     Essential?: Value<boolean>;
     ExtraHosts?: List<HostEntry>;
+    HealthCheck?: HealthCheck;
     Hostname?: Value<string>;
     Image?: Value<string>;
     Links?: List<Value<string>>;
@@ -81,6 +82,14 @@ export declare class Volume {
     Name?: Value<string>;
     constructor(properties: Volume);
 }
+export declare class HealthCheck {
+    Command: List<Value<string>>;
+    Interval?: Value<number>;
+    Retries?: Value<number>;
+    StartPeriod?: Value<number>;
+    Timeout?: Value<number>;
+    constructor(properties: HealthCheck);
+}
 export declare class PortMapping {
     ContainerPort?: Value<number>;
     HostPort?: Value<number>;
@@ -126,6 +135,7 @@ export default class TaskDefinition extends ResourceBase {
     static KernelCapabilities: typeof KernelCapabilities;
     static TaskDefinitionPlacementConstraint: typeof TaskDefinitionPlacementConstraint;
     static Volume: typeof Volume;
+    static HealthCheck: typeof HealthCheck;
     static PortMapping: typeof PortMapping;
     static Ulimit: typeof Ulimit;
     static LinuxParameters: typeof LinuxParameters;

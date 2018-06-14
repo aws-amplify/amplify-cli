@@ -12,6 +12,11 @@ export declare class PlacementStrategy {
     Type: Value<string>;
     constructor(properties: PlacementStrategy);
 }
+export declare class ServiceRegistry {
+    Port?: Value<number>;
+    RegistryArn?: Value<string>;
+    constructor(properties: ServiceRegistry);
+}
 export declare class DeploymentConfiguration {
     MaximumPercent?: Value<number>;
     MinimumHealthyPercent?: Value<number>;
@@ -45,11 +50,13 @@ export interface ServiceProperties {
     PlatformVersion?: Value<string>;
     Role?: Value<string>;
     ServiceName?: Value<string>;
+    ServiceRegistries?: List<ServiceRegistry>;
     TaskDefinition: Value<string>;
 }
 export default class Service extends ResourceBase {
     static LoadBalancer: typeof LoadBalancer;
     static PlacementStrategy: typeof PlacementStrategy;
+    static ServiceRegistry: typeof ServiceRegistry;
     static DeploymentConfiguration: typeof DeploymentConfiguration;
     static PlacementConstraint: typeof PlacementConstraint;
     static AwsVpcConfiguration: typeof AwsVpcConfiguration;

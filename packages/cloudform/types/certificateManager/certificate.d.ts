@@ -10,6 +10,7 @@ export interface CertificateProperties {
     DomainValidationOptions?: List<DomainValidationOption>;
     SubjectAlternativeNames?: List<Value<string>>;
     Tags?: ResourceTag[];
+    ValidationMethod?: Value<string>;
 }
 export default class Certificate extends ResourceBase {
     static DomainValidationOption: typeof DomainValidationOption;

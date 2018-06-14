@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -30,6 +30,22 @@ export class ElasticsearchBufferingHints {
     }
 }
 
+export class SplunkDestinationConfiguration {
+    CloudWatchLoggingOptions?: CloudWatchLoggingOptions
+    HECAcknowledgmentTimeoutInSeconds?: Value<number>
+    HECEndpoint: Value<string>
+    HECEndpointType: Value<string>
+    HECToken: Value<string>
+    ProcessingConfiguration?: ProcessingConfiguration
+    RetryOptions?: SplunkRetryOptions
+    S3BackupMode?: Value<string>
+    S3Configuration: S3DestinationConfiguration
+
+    constructor(properties: SplunkDestinationConfiguration) {
+        Object.assign(this, properties)
+    }
+}
+
 export class EncryptionConfiguration {
     KMSEncryptionConfig?: KMSEncryptionConfig
     NoEncryptionConfig?: Value<string>
@@ -50,8 +66,8 @@ export class CloudWatchLoggingOptions {
 }
 
 export class ProcessingConfiguration {
-    Enabled: Value<boolean>
-    Processors: List<Processor>
+    Enabled?: Value<boolean>
+    Processors?: List<Processor>
 
     constructor(properties: ProcessingConfiguration) {
         Object.assign(this, properties)
@@ -63,6 +79,14 @@ export class BufferingHints {
     SizeInMBs: Value<number>
 
     constructor(properties: BufferingHints) {
+        Object.assign(this, properties)
+    }
+}
+
+export class SplunkRetryOptions {
+    DurationInSeconds: Value<number>
+
+    constructor(properties: SplunkRetryOptions) {
         Object.assign(this, properties)
     }
 }
@@ -174,15 +198,18 @@ export interface DeliveryStreamProperties {
     KinesisStreamSourceConfiguration?: KinesisStreamSourceConfiguration
     RedshiftDestinationConfiguration?: RedshiftDestinationConfiguration
     S3DestinationConfiguration?: S3DestinationConfiguration
+    SplunkDestinationConfiguration?: SplunkDestinationConfiguration
 }
 
 export default class DeliveryStream extends ResourceBase {
     static ElasticsearchDestinationConfiguration = ElasticsearchDestinationConfiguration
     static ElasticsearchBufferingHints = ElasticsearchBufferingHints
+    static SplunkDestinationConfiguration = SplunkDestinationConfiguration
     static EncryptionConfiguration = EncryptionConfiguration
     static CloudWatchLoggingOptions = CloudWatchLoggingOptions
     static ProcessingConfiguration = ProcessingConfiguration
     static BufferingHints = BufferingHints
+    static SplunkRetryOptions = SplunkRetryOptions
     static KinesisStreamSourceConfiguration = KinesisStreamSourceConfiguration
     static ProcessorParameter = ProcessorParameter
     static Processor = Processor

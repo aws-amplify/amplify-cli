@@ -19,6 +19,18 @@ export declare class ElasticsearchBufferingHints {
     SizeInMBs: Value<number>;
     constructor(properties: ElasticsearchBufferingHints);
 }
+export declare class SplunkDestinationConfiguration {
+    CloudWatchLoggingOptions?: CloudWatchLoggingOptions;
+    HECAcknowledgmentTimeoutInSeconds?: Value<number>;
+    HECEndpoint: Value<string>;
+    HECEndpointType: Value<string>;
+    HECToken: Value<string>;
+    ProcessingConfiguration?: ProcessingConfiguration;
+    RetryOptions?: SplunkRetryOptions;
+    S3BackupMode?: Value<string>;
+    S3Configuration: S3DestinationConfiguration;
+    constructor(properties: SplunkDestinationConfiguration);
+}
 export declare class EncryptionConfiguration {
     KMSEncryptionConfig?: KMSEncryptionConfig;
     NoEncryptionConfig?: Value<string>;
@@ -31,14 +43,18 @@ export declare class CloudWatchLoggingOptions {
     constructor(properties: CloudWatchLoggingOptions);
 }
 export declare class ProcessingConfiguration {
-    Enabled: Value<boolean>;
-    Processors: List<Processor>;
+    Enabled?: Value<boolean>;
+    Processors?: List<Processor>;
     constructor(properties: ProcessingConfiguration);
 }
 export declare class BufferingHints {
     IntervalInSeconds: Value<number>;
     SizeInMBs: Value<number>;
     constructor(properties: BufferingHints);
+}
+export declare class SplunkRetryOptions {
+    DurationInSeconds: Value<number>;
+    constructor(properties: SplunkRetryOptions);
 }
 export declare class KinesisStreamSourceConfiguration {
     KinesisStreamARN: Value<string>;
@@ -111,14 +127,17 @@ export interface DeliveryStreamProperties {
     KinesisStreamSourceConfiguration?: KinesisStreamSourceConfiguration;
     RedshiftDestinationConfiguration?: RedshiftDestinationConfiguration;
     S3DestinationConfiguration?: S3DestinationConfiguration;
+    SplunkDestinationConfiguration?: SplunkDestinationConfiguration;
 }
 export default class DeliveryStream extends ResourceBase {
     static ElasticsearchDestinationConfiguration: typeof ElasticsearchDestinationConfiguration;
     static ElasticsearchBufferingHints: typeof ElasticsearchBufferingHints;
+    static SplunkDestinationConfiguration: typeof SplunkDestinationConfiguration;
     static EncryptionConfiguration: typeof EncryptionConfiguration;
     static CloudWatchLoggingOptions: typeof CloudWatchLoggingOptions;
     static ProcessingConfiguration: typeof ProcessingConfiguration;
     static BufferingHints: typeof BufferingHints;
+    static SplunkRetryOptions: typeof SplunkRetryOptions;
     static KinesisStreamSourceConfiguration: typeof KinesisStreamSourceConfiguration;
     static ProcessorParameter: typeof ProcessorParameter;
     static Processor: typeof Processor;

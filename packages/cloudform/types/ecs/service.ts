@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -19,6 +19,15 @@ export class PlacementStrategy {
     Type: Value<string>
 
     constructor(properties: PlacementStrategy) {
+        Object.assign(this, properties)
+    }
+}
+
+export class ServiceRegistry {
+    Port?: Value<number>
+    RegistryArn?: Value<string>
+
+    constructor(properties: ServiceRegistry) {
         Object.assign(this, properties)
     }
 }
@@ -72,12 +81,14 @@ export interface ServiceProperties {
     PlatformVersion?: Value<string>
     Role?: Value<string>
     ServiceName?: Value<string>
+    ServiceRegistries?: List<ServiceRegistry>
     TaskDefinition: Value<string>
 }
 
 export default class Service extends ResourceBase {
     static LoadBalancer = LoadBalancer
     static PlacementStrategy = PlacementStrategy
+    static ServiceRegistry = ServiceRegistry
     static DeploymentConfiguration = DeploymentConfiguration
     static PlacementConstraint = PlacementConstraint
     static AwsVpcConfiguration = AwsVpcConfiguration

@@ -25,6 +25,7 @@ export interface RestApiProperties {
     Parameters?: {
         [key: string]: Value<string>;
     };
+    Policy?: any;
 }
 export default class RestApi extends ResourceBase {
     static S3Location: typeof S3Location;

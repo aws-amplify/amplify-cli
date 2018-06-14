@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const resource_1 = require("../resource");
 class ElasticsearchDestinationConfiguration {
@@ -14,6 +14,12 @@ class ElasticsearchBufferingHints {
     }
 }
 exports.ElasticsearchBufferingHints = ElasticsearchBufferingHints;
+class SplunkDestinationConfiguration {
+    constructor(properties) {
+        Object.assign(this, properties);
+    }
+}
+exports.SplunkDestinationConfiguration = SplunkDestinationConfiguration;
 class EncryptionConfiguration {
     constructor(properties) {
         Object.assign(this, properties);
@@ -38,6 +44,12 @@ class BufferingHints {
     }
 }
 exports.BufferingHints = BufferingHints;
+class SplunkRetryOptions {
+    constructor(properties) {
+        Object.assign(this, properties);
+    }
+}
+exports.SplunkRetryOptions = SplunkRetryOptions;
 class KinesisStreamSourceConfiguration {
     constructor(properties) {
         Object.assign(this, properties);
@@ -99,10 +111,12 @@ class DeliveryStream extends resource_1.ResourceBase {
 }
 DeliveryStream.ElasticsearchDestinationConfiguration = ElasticsearchDestinationConfiguration;
 DeliveryStream.ElasticsearchBufferingHints = ElasticsearchBufferingHints;
+DeliveryStream.SplunkDestinationConfiguration = SplunkDestinationConfiguration;
 DeliveryStream.EncryptionConfiguration = EncryptionConfiguration;
 DeliveryStream.CloudWatchLoggingOptions = CloudWatchLoggingOptions;
 DeliveryStream.ProcessingConfiguration = ProcessingConfiguration;
 DeliveryStream.BufferingHints = BufferingHints;
+DeliveryStream.SplunkRetryOptions = SplunkRetryOptions;
 DeliveryStream.KinesisStreamSourceConfiguration = KinesisStreamSourceConfiguration;
 DeliveryStream.ProcessorParameter = ProcessorParameter;
 DeliveryStream.Processor = Processor;

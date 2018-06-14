@@ -7,6 +7,7 @@ export declare class VpcSettings {
 }
 export interface MicrosoftADProperties {
     CreateAlias?: Value<boolean>;
+    Edition?: Value<string>;
     EnableSso?: Value<boolean>;
     Name: Value<string>;
     Password: Value<string>;

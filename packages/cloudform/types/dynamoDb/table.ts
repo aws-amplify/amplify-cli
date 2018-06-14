@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase, ResourceTag} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -69,6 +69,14 @@ export class Projection {
     }
 }
 
+export class PointInTimeRecoverySpecification {
+    PointInTimeRecoveryEnabled?: Value<boolean>
+
+    constructor(properties: PointInTimeRecoverySpecification) {
+        Object.assign(this, properties)
+    }
+}
+
 export class SSESpecification {
     SSEEnabled: Value<boolean>
 
@@ -90,6 +98,7 @@ export interface TableProperties {
     GlobalSecondaryIndexes?: List<GlobalSecondaryIndex>
     KeySchema: List<KeySchema>
     LocalSecondaryIndexes?: List<LocalSecondaryIndex>
+    PointInTimeRecoverySpecification?: PointInTimeRecoverySpecification
     ProvisionedThroughput: ProvisionedThroughput
     SSESpecification?: SSESpecification
     StreamSpecification?: StreamSpecification
@@ -106,6 +115,7 @@ export default class Table extends ResourceBase {
     static GlobalSecondaryIndex = GlobalSecondaryIndex
     static KeySchema = KeySchema
     static Projection = Projection
+    static PointInTimeRecoverySpecification = PointInTimeRecoverySpecification
     static SSESpecification = SSESpecification
     static StreamSpecification = StreamSpecification
 

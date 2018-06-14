@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase, ResourceTag} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -27,7 +27,7 @@ export interface ComputeEnvironmentProperties {
     Type: Value<string>
     ServiceRole: Value<string>
     ComputeEnvironmentName?: Value<string>
-    ComputeResources: ComputeResources
+    ComputeResources?: ComputeResources
     State?: Value<string>
 }
 

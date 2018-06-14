@@ -20,7 +20,7 @@ export interface ComputeEnvironmentProperties {
     Type: Value<string>;
     ServiceRole: Value<string>;
     ComputeEnvironmentName?: Value<string>;
-    ComputeResources: ComputeResources;
+    ComputeResources?: ComputeResources;
     State?: Value<string>;
 }
 export default class ComputeEnvironment extends ResourceBase {

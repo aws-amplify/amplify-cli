@@ -29,6 +29,7 @@ export interface LaunchConfigurationProperties {
     InstanceType: Value<string>;
     KernelId?: Value<string>;
     KeyName?: Value<string>;
+    LaunchConfigurationName?: Value<string>;
     PlacementTenancy?: Value<string>;
     RamDiskId?: Value<string>;
     SecurityGroups?: List<Value<string>>;

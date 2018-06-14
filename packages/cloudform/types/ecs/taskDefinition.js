@@ -1,5 +1,5 @@
 "use strict";
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
 Object.defineProperty(exports, "__esModule", { value: true });
 const resource_1 = require("../resource");
 class ContainerDefinition {
@@ -62,6 +62,12 @@ class Volume {
     }
 }
 exports.Volume = Volume;
+class HealthCheck {
+    constructor(properties) {
+        Object.assign(this, properties);
+    }
+}
+exports.HealthCheck = HealthCheck;
 class PortMapping {
     constructor(properties) {
         Object.assign(this, properties);
@@ -101,6 +107,7 @@ TaskDefinition.HostEntry = HostEntry;
 TaskDefinition.KernelCapabilities = KernelCapabilities;
 TaskDefinition.TaskDefinitionPlacementConstraint = TaskDefinitionPlacementConstraint;
 TaskDefinition.Volume = Volume;
+TaskDefinition.HealthCheck = HealthCheck;
 TaskDefinition.PortMapping = PortMapping;
 TaskDefinition.Ulimit = Ulimit;
 TaskDefinition.LinuxParameters = LinuxParameters;

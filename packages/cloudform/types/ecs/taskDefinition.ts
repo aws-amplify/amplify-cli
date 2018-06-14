@@ -1,4 +1,4 @@
-/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.2.0 */
+/* Generated from https://d3teyb21fexa9r.cloudfront.net/latest/gzip/CloudFormationResourceSpecification.json, version 2.4.0 */
    
 import {ResourceBase} from '../resource'
 import {Value, List} from '../dataTypes'
@@ -15,6 +15,7 @@ export class ContainerDefinition {
     Environment?: List<KeyValuePair>
     Essential?: Value<boolean>
     ExtraHosts?: List<HostEntry>
+    HealthCheck?: HealthCheck
     Hostname?: Value<string>
     Image?: Value<string>
     Links?: List<Value<string>>
@@ -120,6 +121,18 @@ export class Volume {
     }
 }
 
+export class HealthCheck {
+    Command: List<Value<string>>
+    Interval?: Value<number>
+    Retries?: Value<number>
+    StartPeriod?: Value<number>
+    Timeout?: Value<number>
+
+    constructor(properties: HealthCheck) {
+        Object.assign(this, properties)
+    }
+}
+
 export class PortMapping {
     ContainerPort?: Value<number>
     HostPort?: Value<number>
@@ -182,6 +195,7 @@ export default class TaskDefinition extends ResourceBase {
     static KernelCapabilities = KernelCapabilities
     static TaskDefinitionPlacementConstraint = TaskDefinitionPlacementConstraint
     static Volume = Volume
+    static HealthCheck = HealthCheck
     static PortMapping = PortMapping
     static Ulimit = Ulimit
     static LinuxParameters = LinuxParameters

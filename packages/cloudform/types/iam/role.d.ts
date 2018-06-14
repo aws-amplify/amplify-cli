@@ -8,6 +8,7 @@ export declare class Policy {
 export interface RoleProperties {
     AssumeRolePolicyDocument: any;
     ManagedPolicyArns?: List<Value<string>>;
+    MaxSessionDuration?: Value<number>;
     Path?: Value<string>;
     Policies?: List<Policy>;
     RoleName?: Value<string>;

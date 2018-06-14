@@ -38,6 +38,10 @@ export declare class Projection {
     ProjectionType?: Value<string>;
     constructor(properties: Projection);
 }
+export declare class PointInTimeRecoverySpecification {
+    PointInTimeRecoveryEnabled?: Value<boolean>;
+    constructor(properties: PointInTimeRecoverySpecification);
+}
 export declare class SSESpecification {
     SSEEnabled: Value<boolean>;
     constructor(properties: SSESpecification);
@@ -51,6 +55,7 @@ export interface TableProperties {
     GlobalSecondaryIndexes?: List<GlobalSecondaryIndex>;
     KeySchema: List<KeySchema>;
     LocalSecondaryIndexes?: List<LocalSecondaryIndex>;
+    PointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
     ProvisionedThroughput: ProvisionedThroughput;
     SSESpecification?: SSESpecification;
     StreamSpecification?: StreamSpecification;
@@ -66,6 +71,7 @@ export default class Table extends ResourceBase {
     static GlobalSecondaryIndex: typeof GlobalSecondaryIndex;
     static KeySchema: typeof KeySchema;
     static Projection: typeof Projection;
+    static PointInTimeRecoverySpecification: typeof PointInTimeRecoverySpecification;
     static SSESpecification: typeof SSESpecification;
     static StreamSpecification: typeof StreamSpecification;
     constructor(properties?: TableProperties);
