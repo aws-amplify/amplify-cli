@@ -1,22 +1,20 @@
 const uuid = require('uuid');
 
-const general = (project) => {
-  const name = project.projectConfig.ProjectName;
+const [shortId] = uuid().split('-');
 
-  return {
-    resourceName: name,
-    authSelections: [
-      'Cognito Identity Pools',
-    ],
-  };
-};
+const general = () => ({
+  resourceName: `cognito${shortId}`,
+  authSelections: [
+    'Cognito Identity Pools',
+  ],
+});
 
 const userPoolDefaults = () => ({
   userPoolName: `<name>-userpool-${uuid()}`,
   mfaConfiguration: 'ON',
   roleName: `<name>-sns-role-${uuid()}`,
   roleExternalId: uuid(),
-  policyName: '<name>-SNSPolicy',
+  policyName: `<name>-sns-policy-${uuid()}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
 });
@@ -32,8 +30,8 @@ const functionMap = {
   'Cognito User Pools': identityPoolDefaults,
 };
 
-const getAllDefaults = (project) => {
-  const target = general(project);
+const getAllDefaults = () => {
+  const target = general();
   const sources = [
     userPoolDefaults(),
     identityPoolDefaults(),

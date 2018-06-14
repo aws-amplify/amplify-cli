@@ -7,6 +7,10 @@ module.exports = {
     const { awsmobile, parameters } = context;
     const resourceName = parameters.first;
 
-    return awsmobile.removeResource(context, category, resourceName);
+    return awsmobile.removeResource(context, category, resourceName)
+      .catch((err) => {
+        context.print.info(err.stack);
+        context.print.error('There was an error removing the storage resource');
+      });
   },
 };

@@ -3,29 +3,40 @@ const inquirer = require('inquirer');
 
 let serviceMetadata;
 
-function serviceWalkthrough() {
+function serviceWalkthrough(context, defaultValuesFilename) {
+  const { awsmobile } = context;
   const { inputs } = serviceMetadata;
+  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+
   const questions = [];
   for (let i = 0; i < inputs.length; i += 1) {
-    // Can have a cool question builder function here based on input json - will iterate on this
-    // Can also have some validations here based on the input json
-    // Uncool implementation here
-    if (inputs[i].options) {
-      const question = {
-        name: inputs[i].key,
-        message: inputs[i].question,
+    let question = {
+      name: inputs[i].key,
+      message: inputs[i].question,
+      validate: awsmobile.inputValidation(inputs[i]),
+      default: () => {
+        const defaultValue = getAllDefaults(awsmobile.getProjectDetails())[inputs[i].key];
+        return defaultValue;
+      },
+    };
+
+    if (inputs[i].type && inputs[i].type === 'list') {
+      question = Object.assign({
         type: 'list',
         choices: inputs[i].options,
-      };
-      questions.push(question);
+      }, question);
+    } else if (inputs[i].type && inputs[i].type === 'multiselect') {
+      question = Object.assign({
+        type: 'checkbox',
+        choices: inputs[i].options,
+      }, question);
     } else {
-      const question = {
-        name: inputs[i].key,
-        message: inputs[i].question,
+      question = Object.assign({
         type: 'input',
-      };
-      questions.push(question);
+      }, question);
     }
+    questions.push(question);
   }
 
   return inquirer.prompt(questions);
@@ -52,9 +63,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  const { cfnFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename } = serviceMetadata;
 
-  return serviceWalkthrough()
+  return serviceWalkthrough(context, defaultValuesFilename)
     .then((result) => {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);
