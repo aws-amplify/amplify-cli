@@ -41,15 +41,16 @@ export default class GraphQLTransform {
      * @param references Any cloudformation references.
      */
     public transform(schema: string, template: Template = blankTemplate()): Template {
-        // TODO: Validate the inputs.
-        // TODO: Comb through the schema and validate it only uses directives defined by the transformers.
-        // TODO: Have the library handle collecting any types/fields marked with a supported directive. Or have a helper.
         const context = new TransformerContext(schema)
         for (const transformer of this.transformers) {
             console.log(`Transforming with ${transformer.name}`)
             if (isFunction(transformer.before)) {
                 transformer.before(context)
             }
+            // TODO: Validate that the transformer supports all the methods
+            // required for the directive definition. Also verify that
+            // directives are not used where they are not allowed.
+
             // Apply each transformer and accumulate the context.
             for (const def of context.inputDocument.definitions) {
                 for (const dir of def.directives) {
@@ -90,6 +91,12 @@ export default class GraphQLTransform {
                     }
                 }
             }
+        }
+        // .transform() is meant to behave like a composition so the
+        // after functions are called in the reverse order (as if they were popping off a stack)
+        let reverseThroughTransformers = this.transformers.length - 1;
+        while (reverseThroughTransformers >= 0) {
+            const transformer = this.transformers[reverseThroughTransformers]
             // TODO: Validate the new context.
             if (1 !== 1) {
                 throw new Error(`Invalid context after transformer ${transformer.name}`)
@@ -97,6 +104,7 @@ export default class GraphQLTransform {
             if (isFunction(transformer.after)) {
                 transformer.after(context)
             }
+            reverseThroughTransformers -= 1
         }
         // Write the schema.
         return context.template

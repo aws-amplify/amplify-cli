@@ -15,6 +15,26 @@ import {
 import { parse } from 'graphql/language'
 import blankTemplate from './util/blankTemplate'
 
+export class TransformerContextMetadata {
+
+    /**
+     * Used by transformers to pass information between one another.
+     */
+    private metadata: { [key: string]: any } = {}
+
+    public get(key: string): any {
+        return this.metadata[key];
+    }
+
+    public set(key: string, val: any): void {
+        return this.metadata[key] = val;
+    }
+
+    public has(key: string) {
+        return Boolean(this.metadata[key] !== undefined)
+    }
+}
+
 /**
  * The transformer context is responsible for accumulating the resources,
  * types, and parameters necessary to support an AppSync transform.
@@ -26,6 +46,8 @@ export default class TransformerContext {
     public nodeMap: { [name: string]: TypeSystemDefinitionNode } = {}
 
     public inputDocument: DocumentNode
+
+    public metadata: TransformerContextMetadata = new TransformerContextMetadata()
 
     constructor(inputSDL: string) {
         const doc: DocumentNode = parse(inputSDL)

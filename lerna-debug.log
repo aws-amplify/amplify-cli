@@ -16,15 +16,18 @@
 11 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/appsync-mapping-template' }
 12 silly runScriptInDir build [] graphql-transform
 13 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/graphql-transform' }
-14 silly runScriptInDir build [] simple-appsync-transform
-15 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/simple-appsync-transform' }
-16 error build Errored while running script in 'simple-appsync-transform'
-17 error execute callback with error
-18 error Error: Command failed: yarn run build
-18 error error Command failed with exit code 2.
-18 error yarn run v1.1.0
-18 error $ tsc
-18 error src/resources.ts(687,25): error TS2304: Cannot find name 'index'.
-18 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
-18 error
-18 error     at Promise.all.then.arr (/Users/parismic/.nvm/versions/node/v6.11.3/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
+14 silly runScriptInDir build [] appsync-dynamodb-transformer
+15 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/appsync-dynamodb-transformer' }
+16 silly runScriptInDir build [] appsync-elasticsearch-transformer
+17 silly getExecOpts { cwd: '/Users/parismic/Projects/appsync-model-transform/packages/appsync-elasticsearch-transformer' }
+18 error build Errored while running script in 'appsync-elasticsearch-transformer'
+19 error execute callback with error
+20 error Error: Command failed: yarn run build
+20 error error Command failed with exit code 2.
+20 error yarn run v1.1.0
+20 error $ tsc
+20 error src/AppSyncSearchableTransformer.ts(29,24): error TS2304: Cannot find name 'ObjectTypeDefinitionNode'.
+20 error src/AppSyncSearchableTransformer.ts(29,61): error TS2304: Cannot find name 'DirectiveNode'.
+20 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+20 error
+20 error     at Promise.all.then.arr (/Users/parismic/.nvm/versions/node/v6.11.3/lib/node_modules/lerna/node_modules/execa/index.js:236:11)

@@ -1,7 +1,0 @@
-type Post @model {
-    id: ID!
-    title: String! @search
-    tags: [String] @search
-    createdAt: String
-    updatedAt: String
-}

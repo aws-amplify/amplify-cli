@@ -6,7 +6,7 @@
     "scripts": {
         "test": "jest",
         "build": "tsc",
-        "lint": "tslint"
+        "lint": "tslint -p ./tslint.json"
     },
     "keywords": [
         "graphql",

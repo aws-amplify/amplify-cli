@@ -22,9 +22,6 @@ var GraphQLTransform = /** @class */ (function () {
      */
     GraphQLTransform.prototype.transform = function (schema, template) {
         if (template === void 0) { template = blankTemplate_1.default(); }
-        // TODO: Validate the inputs.
-        // TODO: Comb through the schema and validate it only uses directives defined by the transformers.
-        // TODO: Have the library handle collecting any types/fields marked with a supported directive. Or have a helper.
         var context = new TransformerContext_1.default(schema);
         for (var _i = 0, _a = this.transformers; _i < _a.length; _i++) {
             var transformer = _a[_i];
@@ -32,6 +29,9 @@ var GraphQLTransform = /** @class */ (function () {
             if (isFunction(transformer.before)) {
                 transformer.before(context);
             }
+            // TODO: Validate that the transformer supports all the methods
+            // required for the directive definition. Also verify that
+            // directives are not used where they are not allowed.
             // Apply each transformer and accumulate the context.
             for (var _b = 0, _c = context.inputDocument.definitions; _b < _c.length; _b++) {
                 var def = _c[_b];
@@ -74,6 +74,12 @@ var GraphQLTransform = /** @class */ (function () {
                     }
                 }
             }
+        }
+        // .transform() is meant to behave like a composition so the
+        // after functions are called in the reverse order (as if they were popping off a stack)
+        var reverseThroughTransformers = this.transformers.length - 1;
+        while (reverseThroughTransformers >= 0) {
+            var transformer = this.transformers[reverseThroughTransformers];
             // TODO: Validate the new context.
             if (1 !== 1) {
                 throw new Error("Invalid context after transformer " + transformer.name);
@@ -81,6 +87,7 @@ var GraphQLTransform = /** @class */ (function () {
             if (isFunction(transformer.after)) {
                 transformer.after(context);
             }
+            reverseThroughTransformers -= 1;
         }
         // Write the schema.
         return context.template;

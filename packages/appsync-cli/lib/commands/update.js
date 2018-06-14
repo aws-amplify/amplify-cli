@@ -23,7 +23,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const clime_1 = require("clime");
 const File_1 = require("../types/File");
 const graphql_transform_1 = require("graphql-transform");
-const simple_appsync_transform_1 = require("simple-appsync-transform");
+const appsync_dynamodb_transformer_1 = require("appsync-dynamodb-transformer");
+const appsync_elasticsearch_transformer_1 = require("appsync-elasticsearch-transformer");
 const log_1 = require("../log");
 const aws_sdk_1 = require("aws-sdk");
 function updateStack(template, name, region) {
@@ -74,7 +75,8 @@ let default_1 = class default_1 extends clime_1.Command {
         return __awaiter(this, void 0, void 0, function* () {
             const transformer = new graphql_transform_1.default({
                 transformers: [
-                    new simple_appsync_transform_1.default()
+                    new appsync_dynamodb_transformer_1.default(),
+                    new appsync_elasticsearch_transformer_1.default()
                 ]
             });
             const cfdoc = transformer.transform(schema.readSync());

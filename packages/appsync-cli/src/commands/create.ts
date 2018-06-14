@@ -1,7 +1,8 @@
 import { Command, command, param } from 'clime';
 import File from '../types/File';
 import GraphQLTransform from 'graphql-transform';
-import SimpleTransform from 'simple-appsync-transform'
+import DynamoDBTransformer from 'appsync-dynamodb-transformer'
+import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
 import { exec } from 'child_process'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
@@ -72,7 +73,8 @@ export default class extends Command {
     ) {
         const transformer = new GraphQLTransform({
             transformers: [
-                new SimpleTransform()
+                new DynamoDBTransformer(),
+                new ElasticSearchTransformer()
             ]
         })
         const cfdoc = transformer.transform(schema.readSync());

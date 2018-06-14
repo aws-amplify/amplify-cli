@@ -10,6 +10,25 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var language_1 = require("graphql/language");
 var blankTemplate_1 = require("./util/blankTemplate");
+var TransformerContextMetadata = /** @class */ (function () {
+    function TransformerContextMetadata() {
+        /**
+         * Used by transformers to pass information between one another.
+         */
+        this.metadata = {};
+    }
+    TransformerContextMetadata.prototype.get = function (key) {
+        return this.metadata[key];
+    };
+    TransformerContextMetadata.prototype.set = function (key, val) {
+        return this.metadata[key] = val;
+    };
+    TransformerContextMetadata.prototype.has = function (key) {
+        return Boolean(this.metadata[key] !== undefined);
+    };
+    return TransformerContextMetadata;
+}());
+exports.TransformerContextMetadata = TransformerContextMetadata;
 /**
  * The transformer context is responsible for accumulating the resources,
  * types, and parameters necessary to support an AppSync transform.
@@ -18,6 +37,7 @@ var TransformerContext = /** @class */ (function () {
     function TransformerContext(inputSDL) {
         this.template = blankTemplate_1.default();
         this.nodeMap = {};
+        this.metadata = new TransformerContextMetadata();
         var doc = language_1.parse(inputSDL);
         for (var _i = 0, _a = doc.definitions; _i < _a.length; _i++) {
             var def = _a[_i];

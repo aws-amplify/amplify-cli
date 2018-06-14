@@ -1,7 +1,4 @@
 import { Command, command, param, metadata } from 'clime';
-import File from '../types/File';
-import GraphQLTransform from 'graphql-transform';
-import SimpleTransform from 'simple-appsync-transform'
 import * as fs from 'fs'
 import log from '../log'
 

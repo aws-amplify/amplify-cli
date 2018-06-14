@@ -6,7 +6,6 @@
         "forin": true,
         "indent": false,
         "label-position": true,
-        "label-undefined": true,
         "max-line-length": [
             true,
             150
@@ -17,7 +16,6 @@
         "no-construct": true,
         "no-constructor-vars": false,
         "no-debugger": true,
-        "no-duplicate-key": true,
         "no-duplicate-variable": true,
         "no-empty": true,
         "no-eval": true,
@@ -26,7 +24,6 @@
         "no-trailing-whitespace": true,
         "no-unused-expression": true,
         "no-unused-variable": false,
-        "no-unreachable": true,
         "no-use-before-declare": true,
         "no-var-requires": false,
         "one-line": [

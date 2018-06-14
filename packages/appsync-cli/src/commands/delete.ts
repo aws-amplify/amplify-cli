@@ -1,8 +1,4 @@
 import { Command, command, param } from 'clime';
-import File from '../types/File';
-import GraphQLTransform from 'graphql-transform';
-import SimpleTransform from 'simple-appsync-transform'
-import { exec } from 'child_process'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
 
