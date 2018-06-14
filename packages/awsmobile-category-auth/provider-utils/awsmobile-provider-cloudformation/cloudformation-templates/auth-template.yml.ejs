@@ -61,8 +61,11 @@ Resources:
   
 Outputs :
   UserPoolName:
-    Value: <%= props.userPoolName %>
+    Value: !Ref 'UserPool'
     Description:  name for the user pool
+  IdentityPoolName:
+    Value: !Ref 'IdentityPool'
+    Description:  name for the identity pool
   CreatedIAMRole: 
     Value: !GetAtt IAMRole.Arn
     Description: role arn

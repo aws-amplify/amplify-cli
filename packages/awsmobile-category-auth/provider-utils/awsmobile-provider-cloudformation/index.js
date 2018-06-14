@@ -1,14 +1,13 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
-const { getWhen } = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-when-function');
-const { getProjectDetails } = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-project-details');
-const validator = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/input-validation').inputValidation;
-const getDefaults = require('../get-defaults');
 
 let serviceMetadata;
 
-function serviceWalkthrough() {
+function serviceWalkthrough(context, defaultValuesFilename) {
   const { inputs } = serviceMetadata;
+  const { awsmobile } = context;
+  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
 
   const questions = [];
   for (let i = 0; i < inputs.length; i += 1) {
@@ -19,10 +18,10 @@ function serviceWalkthrough() {
     let question = {
       name: inputs[i].key,
       message: inputs[i].question,
-      when: getWhen(inputs[i]),
-      validate: validator(inputs[i]),
+      when: awsmobile.getWhen(inputs[i]),
+      validate: awsmobile.inputValidation(inputs[i]),
       default: (answers) => {
-        const defaultValue = getDefaults.getAllDefaults(getProjectDetails())[inputs[i].key];
+        const defaultValue = getAllDefaults(awsmobile.getProjectDetails())[inputs[i].key];
 
         if (defaultValue && answers.resourceName) {
           return defaultValue.replace(/<name>/g, answers.resourceName);
@@ -76,14 +75,17 @@ function addResource(context, category, service, configure) {
   let props = {};
 
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename } = serviceMetadata;
 
-  return serviceWalkthrough(service, context)
+  return serviceWalkthrough(context, defaultValuesFilename)
     .then((result) => {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
+      const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+      const { functionMap } = require(defaultValuesSrc);
+
       result.authSelections.forEach((i) => {
-        props = Object.assign(props, getDefaults.functionMap[i](result.resourceName));
+        props = Object.assign(props, functionMap[i](result.resourceName));
       });
 
       /* merge actual answers object into props object of defaults answers,

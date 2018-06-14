@@ -148,14 +148,16 @@ function formNestedStack(awsmobileMeta) {
     resources.forEach((resource) => {
       const resourceDetails = awsmobileMeta[category][resource];
       const resourceKey = category + resource;
-      const templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-
-      nestedStack.Resources[resourceKey] = {
-        Type: 'AWS::CloudFormation::Stack',
-        Properties: {
-          TemplateURL: templateURL,
-        },
-      };
+      let templateURL;
+      if (resourceDetails.providerMetadata) {
+        templateURL = resourceDetails.providerMetadata.s3TemplateURL;
+        nestedStack.Resources[resourceKey] = {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: templateURL,
+          },
+        };
+      }
     });
   });
 

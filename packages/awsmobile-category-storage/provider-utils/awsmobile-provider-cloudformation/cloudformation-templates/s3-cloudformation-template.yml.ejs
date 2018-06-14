@@ -6,5 +6,5 @@ Resources:
       BucketName: <%= props.bucketName %>
 Outputs:
   BucketName:
-    Value: <%= props.bucketName %>
+    Value: !Ref 'S3Bucket'
     Description: Bucket name for the S3 bucket
