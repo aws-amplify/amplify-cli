@@ -13,9 +13,9 @@ var Transformer = /** @class */ (function () {
      *
      * Each transformer defines a set of directives that it knows how to translate.
      */
-    function Transformer(name, directives) {
+    function Transformer(name, directive) {
         this.name = name;
-        this.directives = directives;
+        this.directive = directive;
     }
     return Transformer;
 }());

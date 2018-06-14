@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var graphql_transform_1 = require("graphql-transform");
+var graphql_1 = require("graphql");
 var resources_1 = require("./resources");
 /**
  * Handles the @searchable directive on OBJECT types.
@@ -18,7 +19,7 @@ var resources_1 = require("./resources");
 var AppSyncSearchableTransformer = /** @class */ (function (_super) {
     __extends(AppSyncSearchableTransformer, _super);
     function AppSyncSearchableTransformer() {
-        var _this = _super.call(this, 'AppSyncSearchableTransformer', "directive @searchable on OBJECT") || this;
+        var _this = _super.call(this, 'AppSyncSearchableTransformer', graphql_1.parse("directive @searchable on OBJECT").definitions[0]) || this;
         _this.resources = new resources_1.ResourceFactory();
         return _this;
     }

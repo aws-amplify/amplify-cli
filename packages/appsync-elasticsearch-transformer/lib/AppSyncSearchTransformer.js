@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var graphql_transform_1 = require("graphql-transform");
+var graphql_1 = require("graphql");
 var resources_1 = require("./resources");
 var definitions_1 = require("./definitions");
 /**
@@ -31,7 +32,7 @@ var definitions_1 = require("./definitions");
 var AppSyncSearchTransformer = /** @class */ (function (_super) {
     __extends(AppSyncSearchTransformer, _super);
     function AppSyncSearchTransformer() {
-        var _this = _super.call(this, 'AppSyncSearchTransformer', "directive @search on FIELD") || this;
+        var _this = _super.call(this, 'AppSyncSearchTransformer', graphql_1.parse("directive @search on FIELD").definitions[0]) || this;
         _this.resources = new resources_1.ResourceFactory();
         return _this;
     }

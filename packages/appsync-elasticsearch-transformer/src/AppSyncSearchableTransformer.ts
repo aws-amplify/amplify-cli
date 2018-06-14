@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
-import { ObjectTypeDefinitionNode, DirectiveNode } from 'graphql'
+import { ObjectTypeDefinitionNode, DirectiveNode, parse } from 'graphql'
 import { ResourceFactory } from './resources'
 import { AppSync } from 'cloudform';
 
