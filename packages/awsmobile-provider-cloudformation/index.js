@@ -3,13 +3,11 @@ const path = require('path');
 const S3 = require("./src/aws-utils/aws-s3");
 const Cloudformation = require("./src/aws-utils/aws-cfn");
 const providerName = require("./constants").ProviderName;
+const initializer = require('./lib/initializer'); 
 const nestedStackFileName = "nested-cloudformation-stack.yml"; 
 
 function init(context){
-    return new Promise((resolve, reject)=>{
-        console.log('cloudformation init/////////////'); 
-        resolve(context); 
-    })
+    return initializer.run(context); 
 }
 
 function pushResources(context, category) {

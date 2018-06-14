@@ -1,0 +1,30 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Parent stack for the awsmobile CloudFormation provider",
+    "Parameters":{
+        "DeploymentBucketName":{
+            "Description": "Name of the common deployment bucket provided by the parent stack",
+            "Type": "String",
+            "Default": "DeploymentBucket"
+        }
+    }, 
+    "Resources": {
+        "DeploymentBucket" : {
+            "Type" : "AWS::S3::Bucket", 
+            "Properties": {
+                "BucketName": {"Ref": "DeploymentBucketName"}
+            }
+        }
+    },
+    "Outputs" : {
+        "ParentStack":{
+            "Description": "test output description", 
+            "Value": {"Ref": "AWS::StackName"},
+            "Export": {
+                "Id" : {"Ref": "AWS::StackId"},
+                "Name" : {"Ref": "AWS::StackName"},
+                "DeploymentBucketName": {"Ref": "DeploymentBucketName"}
+            }
+        }
+    }
+}

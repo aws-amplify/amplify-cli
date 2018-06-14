@@ -1,4 +1,5 @@
 const fs = require('fs-extra'); 
+const path = require('path'); 
 
 function run(context){
     return new Promise((resolve, reject)=>{
@@ -6,9 +7,12 @@ function run(context){
         const mobile = context.awsmobile; 
 
         context.initInfo.projectPath = projectPath; 
+        context.initInfo.projectName = path.basename(projectPath); 
         //insert the provider selection logic here
         const projectConfig = {
-            "providers" : {
+            projectName: context.initInfo.projectName, 
+            projectPath: context.initInfo.projectPath, 
+            providers : {
                 awscfn: "awsmobile-provider-cloudformation"
             }
         }; 
