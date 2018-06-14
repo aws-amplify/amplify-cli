@@ -25,6 +25,8 @@
     "appsync-elasticsearch-transformer": "1.0"
   },
   "devDependencies": {
-    "@types/node": "^10.1.2"
+    "@types/node": "^10.1.2",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
   }
 }
