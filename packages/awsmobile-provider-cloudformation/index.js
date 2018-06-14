@@ -4,11 +4,12 @@ const S3 = require('./src/aws-utils/aws-s3');
 const Cloudformation = require('./src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
 
-const initializer = require('./lib/initializer'); 
-const nestedStackFileName = "nested-cloudformation-stack.yml"; 
+const initializer = require('./lib/initializer');
 
-function init(context){
-    return initializer.run(context); 
+const nestedStackFileName = 'nested-cloudformation-stack.yml';
+
+function init(context) {
+  return initializer.run(context);
 }
 
 function pushResources(context, category, resourceName) {
@@ -163,6 +164,6 @@ function formNestedStack(awsmobileMeta) {
 
 
 module.exports = {
-    init, 
-    pushResources
-}
+  init,
+  pushResources,
+};
