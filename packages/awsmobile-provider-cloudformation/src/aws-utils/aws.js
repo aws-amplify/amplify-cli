@@ -1,18 +1,15 @@
 const aws = require('aws-sdk');
+const configurationManager = require('../../lib/configuration-manager');
 
 // AWS promise with configuration through Odin
 aws.configureWithCreds = context => new Promise((resolve) => {
   resolve(withDefaultConfiguration(aws, context));
 });
 
-function withDefaultConfiguration(awsModel) {
+function withDefaultConfiguration(aws, context) {
   // Fetch access key, secret key and region from context based on provider
   // Part of init/config
-  const creds = {
-    accessKey: '<your access key>',
-    secretKey: '<your secret key>',
-    region: '<your-region>',
-  };
+  const creds = configurationManager.getConfiguration(context)
   return setAWSConfig(awsModel, creds.accessKey, creds.secretKey, creds.region);
 }
 

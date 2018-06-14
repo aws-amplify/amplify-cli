@@ -2,19 +2,12 @@ const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
+const configurationManager = require('./configuration-manager')
 
 function run(context) {
   return new Promise((resolve, reject) => {
-    const region = '<region>';
-    const credential = {
-      accessKeyId: '<accessKeyId>',
-      secretAccessKey: '<secretAccessKey>',
-    };
-    aws.config.update({
-      accessKeyId: credential.accessKeyId,
-      secretAccessKey: credential.secretAccessKey,
-      region,
-    });
+    const config = configurationManager.getConfiguration(context); 
+    aws.config.update(config);
 
     const awscfn = new aws.CloudFormation();
     const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
@@ -36,7 +29,7 @@ function run(context) {
       if (err) {
         reject(err);
       } else {
-        processStackCreationData(context, region, params, data);
+        processStackCreationData(context, config.region, params, data);
         resolve(context);
       }
     });
