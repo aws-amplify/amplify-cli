@@ -1,21 +1,22 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
-const validator = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/input-validation').inputValidation;
-const { getProjectDetails } = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-project-details');
-const { getAllDefaults } = require('../get-defaults');
 
 let serviceMetadata;
 
-function serviceWalkthrough() {
+function serviceWalkthrough(context, defaultValuesFilename) {
+  const { awsmobile } = context;
   const { inputs } = serviceMetadata;
+  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+
   const questions = [];
   for (let i = 0; i < inputs.length; i += 1) {
     let question = {
       name: inputs[i].key,
       message: inputs[i].question,
-      validate: validator(inputs[i]),
+      validate: awsmobile.inputValidation(inputs[i]),
       default: () => {
-        const defaultValue = getAllDefaults(getProjectDetails())[inputs[i].key];
+        const defaultValue = getAllDefaults(awsmobile.getProjectDetails())[inputs[i].key];
         return defaultValue;
       },
     };
@@ -62,9 +63,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  const { cfnFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename } = serviceMetadata;
 
-  return serviceWalkthrough()
+  return serviceWalkthrough(context, defaultValuesFilename)
     .then((result) => {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);

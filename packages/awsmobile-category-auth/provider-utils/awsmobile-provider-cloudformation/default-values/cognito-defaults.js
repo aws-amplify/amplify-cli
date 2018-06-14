@@ -1,7 +1,9 @@
 const uuid = require('uuid');
 
+const [shortId] = uuid().split('-');
+
 const general = () => ({
-  resourceName: `cognito${uuid().replace(/-/g, '')}`,
+  resourceName: `cognito${shortId}`,
   authSelections: [
     'Cognito Identity Pools',
   ],

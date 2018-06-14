@@ -14,11 +14,12 @@
 			},
 			{
 				"key": "resourceName",
-				"question": "Please provide a friendly name for your resource that will be used to label auto-generated services:",
+				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
 				"required": true
 			}
 		],
 		"cfnFilename": "auth-template.yml.ejs",
+		"defaultValuesFilename": "cognito-defaults.js",
 		"provider": "awsmobile-provider-cloudformation"
 	}
 }
