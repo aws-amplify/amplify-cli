@@ -5,9 +5,13 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "shortid": "^2.2.8",
     "aws-sdk": "^2.250.1",
-    "eslint": "^4.19.1",
-    "shortid": "^2.2.8"
+    "path": "^0.12.7",
+    "util": "^0.10.3",
+    "moment": "^2.21.0", 
+    "fs-extra": "^4.0.2",
+    "eslint": "^4.19.1"
   },
   "scripts": {
     "lint": "eslint ."
