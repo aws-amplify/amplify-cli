@@ -1,8 +1,8 @@
 function configure(context){
 }
 
-function getConfiguration(context){
-}
+// function getConfiguration(context){
+// }
 
 function getConfiguration(context){
     const region = "<region>";
