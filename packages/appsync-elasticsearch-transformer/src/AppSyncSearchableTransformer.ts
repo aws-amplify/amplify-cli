@@ -13,7 +13,7 @@ export class AppSyncSearchableTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncSearchableTransformer',
-            `directive @searchable on OBJECT`
+            parse(`directive @searchable on OBJECT`).definitions[0]
         )
         this.resources = new ResourceFactory();
     }

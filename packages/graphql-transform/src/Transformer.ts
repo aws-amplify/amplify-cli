@@ -25,7 +25,7 @@ export default class Transformer {
      */
     constructor(
         public name: string,
-        public directives: DirectiveDefinitionNode[]
+        public directive: DirectiveDefinitionNode
     ) { }
 
     /**

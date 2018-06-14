@@ -20,5 +20,9 @@
     "appsync-mapping-template": "1.0",
     "cloudform": "2.0.1",
     "graphql-transform": "1.0"
+  },
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
   }
 }
