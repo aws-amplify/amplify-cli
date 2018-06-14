@@ -14,7 +14,7 @@ function run(context){
         }); 
 
         const awscfn = new aws.CloudFormation(); 
-        const initTemplateFilePath = path.join(__dirname, 'parentStackTemplate.json');
+        const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
         const timeStamp = '-' + moment().format("YYYYMMDDHHmmss");
         const params = {
             StackName: context.initInfo.projectName + timeStamp,
@@ -22,7 +22,7 @@ function run(context){
             Parameters: [
                 {
                     ParameterKey: "DeploymentBucketName",   
-                    ParameterValue: context.initInfo.projectName + timeStamp        
+                    ParameterValue: context.initInfo.projectName + timeStamp + '-deployment'
                 }                     
             ]
         }; 
