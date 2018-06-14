@@ -286,7 +286,18 @@ import EMRCluster from './emr/cluster';
 import EMRInstanceGroupConfig from './emr/instanceGroupConfig';
 import EMRStep from './emr/step';
 import EMRSecurityConfiguration from './emr/securityConfiguration';
-export declare const Logs: any;
+export declare const Logs: {
+    LogGroup: typeof LogsLogGroup;
+    MetricFilter: typeof LogsMetricFilter;
+    LogStream: typeof LogsLogStream;
+    SubscriptionFilter: typeof LogsSubscriptionFilter;
+    Destination: typeof LogsDestination;
+};
+import LogsLogGroup from './logs/logGroup';
+import LogsMetricFilter from './logs/metricFilter';
+import LogsLogStream from './logs/logStream';
+import LogsSubscriptionFilter from './logs/subscriptionFilter';
+import LogsDestination from './logs/destination';
 export declare const Kinesis: {
     Stream: typeof KinesisStream;
 };
@@ -843,7 +854,13 @@ declare const _default: {
         Step: typeof EMRStep;
         SecurityConfiguration: typeof EMRSecurityConfiguration;
     };
-    Logs: any;
+    Logs: {
+        LogGroup: typeof LogsLogGroup;
+        MetricFilter: typeof LogsMetricFilter;
+        LogStream: typeof LogsLogStream;
+        SubscriptionFilter: typeof LogsSubscriptionFilter;
+        Destination: typeof LogsDestination;
+    };
     Kinesis: {
         Stream: typeof KinesisStream;
     };
