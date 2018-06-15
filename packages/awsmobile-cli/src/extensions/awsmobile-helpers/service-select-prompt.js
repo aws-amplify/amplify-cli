@@ -12,14 +12,6 @@ function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
         providerName: supportedServices[service].provider,
       });
     }
-    /* const provider = providerPlugins.find(providerItem => providerItem.plugin ===
-      supportedServices[service].provider);
-    if (provider !== undefined) {
-      filteredServices.push({
-        service,
-        provider,
-      });
-    } */
   });
 
   return filteredServices;
