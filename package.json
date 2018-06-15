@@ -3,7 +3,9 @@
   "version": "2.0.0",
   "description": "awsmobile-cli",
   "scripts": {
-  	"lint": "lerna run -- lint"
+    "lint": "lerna run -- lint",
+    "lint-fix": "lerna run -- lint-fix",
+    "setup-dev": "lerna bootstrap && cd packages/awsmobile-cli && npm link"
   },
   "main": "index.js",
   "license": "Apache-2.0",
