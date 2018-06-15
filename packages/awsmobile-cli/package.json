@@ -9,6 +9,7 @@
   "scripts": {
     "format": "prettier --write **/*.{js,json} && standard --fix",
     "lint": "eslint src",
+    "lint-fix": "eslint . --fix",
     "test": "ava",
     "watch": "ava --watch",
     "coverage": "nyc ava"

@@ -1,12 +1,5 @@
-
-
 Resources:
-
-
-
   <%if (props.authSelections.includes('Cognito User Pools') && props.mfaConfiguration != 'OFF') { %>
-
-
   IAMRole: 
     Type: AWS::IAM::Role
     Properties:
@@ -69,5 +62,3 @@ Outputs :
   CreatedIAMRole: 
     Value: !GetAtt IAMRole.Arn
     Description: role arn
-    Export:
-      Name: !Sub "SNSRole"

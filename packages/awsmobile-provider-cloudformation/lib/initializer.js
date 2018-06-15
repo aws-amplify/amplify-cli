@@ -1,39 +1,32 @@
-const aws = require('aws-sdk');
 const moment = require('moment');
-const path = require('path');
 const fs = require('fs-extra');
+const Cloudformation = require('../src/aws-utils/aws-cfn');
 const configurationManager = require('./configuration-manager');
+const providerName = require('../constants').ProviderName;
 
 function run(context) {
-  return new Promise((resolve, reject) => {
-    const config = configurationManager.getConfiguration(context);
-    aws.config.update(config);
+  const config = configurationManager.getConfiguration(context);
+  const initTemplateFilePath = `${__dirname}/rootStackTemplate.json`;
+  const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
+  const stackName = context.initInfo.projectName + timeStamp;
+  const deploymentBucketName = `${stackName}-deployment`;
+  const params = {
+    StackName: stackName,
+    TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
+    Parameters: [
+      {
+        ParameterKey: 'DeploymentBucketName',
+        ParameterValue: deploymentBucketName,
+      },
+    ],
+  };
 
-    const awscfn = new aws.CloudFormation();
-    const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
-    const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
-    const stackName = context.initInfo.projectName + timeStamp;
-    const deploymentBucketName = `${stackName}-deployment`;
-    const params = {
-      StackName: stackName,
-      TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
-      Parameters: [
-        {
-          ParameterKey: 'DeploymentBucketName',
-          ParameterValue: deploymentBucketName,
-        },
-      ],
-    };
-
-    awscfn.createStack(params, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        processStackCreationData(context, config.region, params, data);
-        resolve(context);
-      }
+  return new Cloudformation(context)
+    .then(cfnItem => cfnItem.createResourceStack(params))
+    .then((data) => {
+      processStackCreationData(context, config.region, params, data);
+      return context;
     });
-  });
 }
 
 function processStackCreationData(context, region, params, data) {
@@ -43,7 +36,8 @@ function processStackCreationData(context, region, params, data) {
     StackName: params.StackName,
     DeploymentBucket: params.Parameters[0].ParameterValue,
   };
-  context.initInfo.metaData['awsmobile-provider-cloudformation'] = metaData;
+  context.initInfo.metaData.provider = {};
+  context.initInfo.metaData.provider[providerName] = metaData;
 }
 
 module.exports = {

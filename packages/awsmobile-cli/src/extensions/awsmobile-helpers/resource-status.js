@@ -152,31 +152,11 @@ function getResourceStatus(category, resourceName) {
 }
 
 function showResourceTable(category, resourceName) {
-  const awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
-  const awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
-
-  const currentAwsmobileMetaFilePath = pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
-  const currentAwsmobileMeta = JSON.parse(fs.readFileSync(currentAwsmobileMetaFilePath));
-
-  const resourcesToBeCreated = getResourcesToBeCreated(
-    awsmobileMeta,
-    currentAwsmobileMeta,
-    category,
-    resourceName,
-  );
-  const resourcesToBeUpdated = getResourcesToBeUpdated(
-    awsmobileMeta,
-    currentAwsmobileMeta,
-    category,
-    resourceName,
-  );
-  const resourcesToBeDeleted = getResourcesToBeDeleted(
-    awsmobileMeta,
-    currentAwsmobileMeta,
-    category,
-    resourceName,
-  );
-
+  const {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    resourcesToBeDeleted,
+  } = getResourceStatus(category, resourceName);
   const createOperationLabel = 'Create';
   const updateOperationLabel = 'Update';
   const deleteOperationLabel = 'Delete';

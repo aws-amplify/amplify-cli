@@ -40,6 +40,6 @@
 		],
 		"defaultValuesFilename": "s3-defaults.js",
 		"cfnFilename": "s3-cloudformation-template.yml.ejs",
-		"provider": "awsmobile-provider-cloudformation"
+		"provider": "aws-cloudformation"
 	}
 }

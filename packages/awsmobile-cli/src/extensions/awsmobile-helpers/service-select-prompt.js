@@ -1,17 +1,15 @@
 const inquirer = require('inquirer');
-const getProviderPlugins = require('./get-provider-plugins').getPlugins;
-
+const { getProviderPlugins } = require('./get-provider-plugins');
 
 function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
   const filteredServices = [];
 
   Object.keys(supportedServices).forEach((service) => {
-    const provider = providerPlugins.find(providerItem => providerItem.plugin ===
-      supportedServices[service].provider);
-    if (provider !== undefined) {
+    if (providerPlugins[supportedServices[service].provider]) {
       filteredServices.push({
         service,
-        provider,
+        providerPlugin: providerPlugins[supportedServices[service].provider],
+        providerName: supportedServices[service].provider,
       });
     }
   });
@@ -24,11 +22,11 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 
   for (let i = 0; i < supportedServices.length; i += 1) {
     options.push({
-      name: `${supportedServices[i].provider.name}:${supportedServices[i].service}`,
+      name: `${supportedServices[i].providerName}:${supportedServices[i].service}`,
       value: {
-        provider: supportedServices[i].provider.plugin,
+        provider: supportedServices[i].providerPlugin,
         service: supportedServices[i].service,
-        providerName: supportedServices[i].provider.name,
+        providerName: supportedServices[i].providerName,
       },
     });
   }

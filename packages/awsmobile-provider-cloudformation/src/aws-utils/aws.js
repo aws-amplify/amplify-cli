@@ -10,7 +10,8 @@ function withDefaultConfiguration(awsModel, context) {
   // Fetch access key, secret key and region from context based on provider
   // Part of init/config
   const creds = configurationManager.getConfiguration(context);
-  return setAWSConfig(awsModel, creds.accessKey, creds.secretKey, creds.region);
+
+  return setAWSConfig(awsModel, creds.accessKeyId, creds.secretAccessKey, creds.region);
 }
 
 function setAWSConfig(awsModel, access, secret, region) {
@@ -19,6 +20,7 @@ function setAWSConfig(awsModel, access, secret, region) {
     accessKeyId: access,
     secretAccessKey: secret,
   });
+
   awsModel.config.setPromisesDependency(Promise);
   return awsModel;
 }
