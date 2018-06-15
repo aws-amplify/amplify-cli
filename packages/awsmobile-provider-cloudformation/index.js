@@ -1,15 +1,36 @@
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
 const S3 = require('./src/aws-utils/aws-s3');
 const Cloudformation = require('./src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
-
-const initializer = require('./lib/initializer');
+const configurationManager = require('./lib/configuration-manager');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
 function init(context) {
-  return initializer.run(context);
+  const config = configurationManager.getConfiguration(context);
+  const initTemplateFilePath = `${__dirname}/lib/rootStackTemplate.json`;
+  const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
+  const stackName = context.initInfo.projectName + timeStamp;
+  const deploymentBucketName = `${stackName}-deployment`;
+  const params = {
+    StackName: stackName,
+    TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
+    Parameters: [
+      {
+        ParameterKey: 'DeploymentBucketName',
+        ParameterValue: deploymentBucketName,
+      },
+    ],
+  };
+
+  return new Cloudformation(context)
+    .then(cfnItem => cfnItem.createResourceStack(params))
+    .then((data) => {
+      processStackCreationData(context, config.region, params, data);
+      return context;
+    });
 }
 
 function pushResources(context, category, resourceName) {
@@ -45,7 +66,6 @@ function pushResources(context, category, resourceName) {
 }
 
 function updateCloudFormationNestedStack(context, nestedStack) {
-  const { awsmobile } = context;
   const backEndDir = context.awsmobile.pathManager.getBackendDirPath();
   const nestedStackFilepath = path.normalize(path.join(
     backEndDir,
@@ -57,34 +77,10 @@ function updateCloudFormationNestedStack(context, nestedStack) {
   context.filesystem.write(nestedStackFilepath, jsonString);
 
   return new Cloudformation(context)
-    .then((cfnItem) => {
-      if (Object.keys(nestedStack.Resources).length === 0) {
-        return cfnItem.deleteResourceStack()
-          .then(() => {
-            const awsmobileMetaFilePath = awsmobile.pathManager.getAwsmobileMetaFilePath();
-            /* eslint-disable */
-            const awsmobileCloudMetaFilePath = awsmobile.pathManager.getCurentBackendCloudAwsmobileMetaFilePath();
-            /* eslint-enable */
-            removeStackNameInAwsMetaFile(awsmobileMetaFilePath);
-            removeStackNameInAwsMetaFile(awsmobileCloudMetaFilePath);
-          });
-      }
-      return cfnItem.updateResourceStack(
-        path.normalize(path.join(backEndDir, providerName)),
-        nestedStackFileName,
-      );
-    });
-}
-
-function removeStackNameInAwsMetaFile(awsmobileMetaFilePath) {
-  const awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
-  if (awsmobileMeta.provider) {
-    if (awsmobileMeta.provider[providerName]) {
-      delete awsmobileMeta.provider[providerName].parentStackName;
-      const jsonString = JSON.stringify(awsmobileMeta, null, '\t');
-      fs.writeFileSync(awsmobileMetaFilePath, jsonString, 'utf8');
-    }
-  }
+    .then(cfnItem => cfnItem.updateResourceStack(
+      path.normalize(path.join(backEndDir, providerName)),
+      nestedStackFileName,
+    ));
 }
 
 function updateS3Templates(context, resourcesToBeUpdated, awsmobileMeta) {
@@ -134,14 +130,10 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 }
 
 function formNestedStack(awsmobileMeta) {
-  const nestedStack = {
-    AWSTemplateFormatVersion: '2010-09-09',
-    Resources: {},
-  };
+  const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/lib/rootStackTemplate.json`));
 
   let categories = Object.keys(awsmobileMeta);
   categories = categories.filter(category => category !== 'provider');
-
   categories.forEach((category) => {
     const resources = Object.keys(awsmobileMeta[category]);
 
@@ -162,6 +154,18 @@ function formNestedStack(awsmobileMeta) {
   });
 
   return nestedStack;
+}
+
+function processStackCreationData(context, region, params, data) {
+  const metaData = {
+    Region: region,
+    StackId: data.StackId,
+    StackName: params.StackName,
+    DeploymentBucket: params.Parameters[0].ParameterValue,
+  };
+  context.initInfo.metaData.provider = {};
+
+  context.initInfo.metaData.provider['awsmobile-provider-cloudformation'] = metaData;
 }
 
 

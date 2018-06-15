@@ -1,19 +1,25 @@
 const inquirer = require('inquirer');
-const getProviderPlugins = require('./get-provider-plugins').getPlugins;
-
+const { getProviderPlugins } = require('./get-provider-plugins');
 
 function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
   const filteredServices = [];
 
   Object.keys(supportedServices).forEach((service) => {
-    const provider = providerPlugins.find(providerItem => providerItem.plugin ===
+    if (providerPlugins[supportedServices[service].provider]) {
+      filteredServices.push({
+        service,
+        providerPlugin: providerPlugins[supportedServices[service].provider],
+        providerName: supportedServices[service].provider,
+      });
+    }
+    /* const provider = providerPlugins.find(providerItem => providerItem.plugin ===
       supportedServices[service].provider);
     if (provider !== undefined) {
       filteredServices.push({
         service,
         provider,
       });
-    }
+    } */
   });
 
   return filteredServices;
@@ -24,11 +30,11 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 
   for (let i = 0; i < supportedServices.length; i += 1) {
     options.push({
-      name: `${supportedServices[i].provider.name}:${supportedServices[i].service}`,
+      name: `${supportedServices[i].providerName}:${supportedServices[i].service}`,
       value: {
-        provider: supportedServices[i].provider.plugin,
+        provider: supportedServices[i].providerPlugin,
         service: supportedServices[i].service,
-        providerName: supportedServices[i].provider.name,
+        providerName: supportedServices[i].providerName,
       },
     });
   }

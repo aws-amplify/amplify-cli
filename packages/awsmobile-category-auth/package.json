@@ -4,6 +4,9 @@
   "description": "awsmobile-cli authentication plugin",
   "main": "index.js",
   "license": "Apache-2.0",
+  "scripts": {
+    "lint": "eslint src"
+  },
   "dependencies": {
     "eslint": "^4.19.1",
     "inquirer": "^6.0.0",

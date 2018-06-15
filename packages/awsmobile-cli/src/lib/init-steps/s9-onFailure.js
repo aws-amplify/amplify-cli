@@ -1,4 +1,4 @@
-const {print} = require('gluegun/print')
+const { print } = require('gluegun/print');
 const util = require('util');
 
 function run(e) {

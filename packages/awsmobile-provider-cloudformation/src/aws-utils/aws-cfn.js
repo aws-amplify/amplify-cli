@@ -2,9 +2,6 @@ const aws = require('./aws.js');
 const S3 = require('./aws-s3');
 const fs = require('fs');
 const path = require('path');
-const shortid = require('shortid');
-
-shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
 const providerName = require('../../constants').ProviderName;
 
 class CloudFormation {
@@ -17,13 +14,41 @@ class CloudFormation {
       });
   }
 
+  createResourceStack(cfnParentStackParams) {
+    const cfnModel = this.cfn;
+    const { context } = this;
+    const cfnCompleteStatus = 'stackCreateComplete';
+    const cfnStackCheckParams = {
+      StackName: cfnParentStackParams.StackName,
+    };
+
+    return new Promise((resolve, reject) => {
+      cfnModel.createStack(cfnParentStackParams, (createErr, data) => {
+        if (createErr) {
+          context.print.error('Error creating cloudformation stack');
+          reject(createErr);
+        }
+        cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+          if (completeErr) {
+            context.print.error('Error creating cloudformation stack');
+            reject(completeErr);
+          }
+          resolve(data);
+        });
+      });
+    });
+  }
+
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.awsmobile.getProjectDetails();
-    const projectName = projectDetails.projectConfig.ProjectName;
-    let stackName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].parentStackName : '';
+    const stackName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].StackName : '';
+    const deploymentBucketName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucket : '';
     if (!stackName) {
-      stackName = projectName + shortid.generate().toLowerCase();
+      throw (new Error('Project Stack is not yet created. Please use awsmobile init to initialize the project.'));
+    }
+    if (!deploymentBucketName) {
+      throw (new Error('Project deployment bucket is not yet created. Please use awsmobile init to initialize the project.'));
     }
 
     return new S3(this.context)
@@ -45,52 +70,38 @@ class CloudFormation {
 
         return new Promise((resolve, reject) => {
           cfnModel.describeStacks(cfnStackCheckParams, (err) => {
+            if (err) {
+              reject(new Error("Project stack doesn't exist"));
+              context.print.info(err.stack);
+            }
             const cfnParentStackParams = {
               StackName: stackName,
               TemplateURL: templateURL,
               Capabilities: ['CAPABILITY_NAMED_IAM'],
+              Parameters: [
+                {
+                  ParameterKey: 'DeploymentBucketName',
+                  ParameterValue: deploymentBucketName,
+                },
+              ],
             };
 
-            if (err != null && err.statusCode === 400) { // Create new parent stack
-              const cfnCompleteStatus = 'stackCreateComplete';
-              cfnModel.createStack(cfnParentStackParams, (createErr) => {
-                console.log(`Creating new parent cloudformation stack:${stackName}`);
-                if (createErr) {
-                  console.error('Error creating cloudformation stack');
-                  reject(createErr);
-                }
-                cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-                  if (completeErr) {
-                    console.error('Error creating cloudformation stack');
-                    reject(completeErr);
-                  } else {
-                    context.awsmobile.updateProviderAwsMobileMeta(
-                      providerName,
-                      { parentStackName: stackName },
-                    );
-                    return self.updateAwsmobileMetaFileWithStackOutputs(stackName)
-                      .then(() => resolve());
-                  }
-                });
-              });
-            } else {
-              cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
-                const cfnCompleteStatus = 'stackUpdateComplete';
-                if (updateErr) {
+            cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
+              const cfnCompleteStatus = 'stackUpdateComplete';
+              if (updateErr) {
+                console.error('Error updating cloudformation stack');
+                reject(updateErr);
+              }
+              cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+                if (completeErr) {
                   console.error('Error updating cloudformation stack');
-                  reject(updateErr);
+                  reject(completeErr);
+                } else {
+                  return self.updateAwsmobileMetaFileWithStackOutputs(stackName)
+                    .then(() => resolve());
                 }
-                cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-                  if (completeErr) {
-                    console.error('Error updating cloudformation stack');
-                    reject(completeErr);
-                  } else {
-                    return self.updateAwsmobileMetaFileWithStackOutputs(stackName)
-                      .then(() => resolve());
-                  }
-                });
               });
-            }
+            });
           });
         });
       });
@@ -106,10 +117,14 @@ class CloudFormation {
     const cfnModel = this.cfn;
     return cfnModel.describeStackResources(cfnParentStackParams).promise()
       .then((result) => {
-        const resources = result.StackResources;
+        let resources = result.StackResources;
+        resources = resources.filter(resource => resource.LogicalResourceId !== 'DeploymentBucket');
         const promises = [];
 
         for (let i = 0; i < resources.length; i += 1) {
+          if (resources[i].LogicalResourceId === 'DeploymentBucket') {
+            continue;
+          }
           const cfnNestedStackParams = {
             StackName: resources[i].PhysicalResourceId,
           };
@@ -125,6 +140,7 @@ class CloudFormation {
                 const index = resources.findIndex(resourceItem =>
                   resourceItem.LogicalResourceId ===
                     logicalResourceId);
+
                 if (index !== -1) {
                   this.context.awsmobile.updateAwsMobileMetaAfterResourceUpdate(category, resource, 'output', formatOutputs(stackResult[index].Stacks[0].Outputs));
                 }
