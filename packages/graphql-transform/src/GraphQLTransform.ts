@@ -3,7 +3,7 @@ import AppSync from 'cloudform/types/appSync'
 import {
     buildASTSchema, parse, DocumentNode,
     DefinitionNode, TypeSystemDefinitionNode, printSchema, DirectiveDefinitionNode,
-    Kind, DirectiveNode, TypeDefinitionNode
+    Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode, EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode, InputValueDefinitionNode, EnumValueDefinitionNode
 } from 'graphql'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
@@ -66,6 +66,70 @@ function matchDirective(definition: DirectiveDefinitionNode, directive: Directiv
     return isValidLocation;
 }
 
+function matchFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: FieldDefinitionNode) {
+    if (definition.name.value !== directive.name.value) {
+        // The definition is for the wrong directive. Do not match.
+        return false;
+    }
+    let isValidLocation = false;
+    for (const location of definition.locations) {
+        switch (location.value) {
+            case `FIELD_DEFINITION`:
+                isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation
+                break
+        }
+    }
+    return isValidLocation;
+}
+
+function matchInputFieldDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
+    if (definition.name.value !== directive.name.value) {
+        // The definition is for the wrong directive. Do not match.
+        return false;
+    }
+    let isValidLocation = false;
+    for (const location of definition.locations) {
+        switch (location.value) {
+            case `INPUT_FIELD_DEFINITION`:
+                isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation
+                break
+        }
+    }
+    return isValidLocation;
+}
+
+function matchArgumentDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: InputValueDefinitionNode) {
+    if (definition.name.value !== directive.name.value) {
+        // The definition is for the wrong directive. Do not match.
+        return false;
+    }
+    let isValidLocation = false;
+    for (const location of definition.locations) {
+        switch (location.value) {
+            case `ARGUMENT_DEFINITION`:
+                isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation
+                break
+        }
+    }
+    return isValidLocation;
+}
+
+function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: EnumValueDefinitionNode) {
+    if (definition.name.value !== directive.name.value) {
+        // The definition is for the wrong directive. Do not match.
+        return false;
+    }
+    let isValidLocation = false;
+    for (const location of definition.locations) {
+        switch (location.value) {
+            case `ENUM_VALUE`:
+                isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation
+                break
+        }
+    }
+    return isValidLocation;
+}
+
 /**
  * A generic transformation library that takes as input a graphql schema
  * written in SDL and a set of transformers that operate on it. At the
@@ -117,54 +181,29 @@ export default class GraphQLTransform {
                             `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
                         )
                     }
-                    if (matchDirective(transformer.directive, dir, def)) {
-                        switch (def.kind) {
-                            case 'ObjectTypeDefinition':
-                                if (isFunction(transformer.object)) {
-                                    transformer.object(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`)
-                                }
-                            // Create the supported resolvers.
-                            case 'InterfaceTypeDefinition':
-                                if (isFunction(transformer.interface)) {
-                                    transformer.interface(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'interface()' method`)
-                                }
-                            case 'ScalarTypeDefinition':
-                                if (isFunction(transformer.scalar)) {
-                                    transformer.scalar(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'scalar()' method`)
-                                }
-                            case 'UnionTypeDefinition':
-                                if (isFunction(transformer.union)) {
-                                    transformer.union(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'union()' method`)
-                                }
-                            case 'EnumTypeDefinition':
-                                if (isFunction(transformer.enum)) {
-                                    transformer.enum(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enum()' method`)
-                                }
-                            case 'InputObjectTypeDefinition':
-                                if (isFunction(transformer.input)) {
-                                    transformer.input(def, dir, context)
-                                    break
-                                } else {
-                                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'input()' method`)
-                                }
-                            default:
-                                continue
-                        }
+                    switch (def.kind) {
+                        case 'ObjectTypeDefinition':
+                            this.transformObject(transformer, def, dir, context)
+                            // Walk the fields and call field transformers.
+                            break
+                        case 'InterfaceTypeDefinition':
+                            this.transformInterface(transformer, def, dir, context)
+                            // Walk the fields and call field transformers.
+                            break;
+                        case 'ScalarTypeDefinition':
+                            this.transformScalar(transformer, def, dir, context)
+                            break;
+                        case 'UnionTypeDefinition':
+                            this.transformUnion(transformer, def, dir, context)
+                            break;
+                        case 'EnumTypeDefinition':
+                            this.transformEnum(transformer, def, dir, context)
+                            break;
+                        case 'InputObjectTypeDefinition':
+                            this.transformInputObject(transformer, def, dir, context)
+                            break;
+                        default:
+                            continue
                     }
                 }
             }
@@ -185,5 +224,130 @@ export default class GraphQLTransform {
         }
         // Write the schema.
         return context.template
+    }
+
+    private transformObject(transformer: Transformer, def: ObjectTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.object)) {
+                transformer.object(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`)
+            }
+        }
+        for (const field of def.fields) {
+            for (const fDir of field.directives) {
+                this.transformField(transformer, field, fDir, context)
+            }
+        }
+    }
+
+    private transformField(transformer: Transformer, def: FieldDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchFieldDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.field)) {
+                transformer.field(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+            }
+        }
+        for (const arg of def.arguments) {
+            for (const aDir of arg.directives) {
+                this.transformArgument(transformer, arg, aDir, context)
+            }
+        }
+    }
+
+    private transformArgument(transformer: Transformer, def: InputValueDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchArgumentDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.argument)) {
+                transformer.argument(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+            }
+        }
+    }
+
+    private transformInterface(transformer: Transformer, def: InterfaceTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.interface)) {
+                transformer.interface(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'interface()' method`)
+            }
+        }
+        for (const field of def.fields) {
+            for (const fDir of field.directives) {
+                this.transformField(transformer, field, fDir, context)
+            }
+        }
+    }
+
+    private transformScalar(transformer: Transformer, def: ScalarTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.scalar)) {
+                transformer.scalar(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'scalar()' method`)
+            }
+        }
+    }
+
+    private transformUnion(transformer: Transformer, def: UnionTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.union)) {
+                transformer.union(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'union()' method`)
+            }
+        }
+    }
+
+    private transformEnum(transformer: Transformer, def: EnumTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.enum)) {
+                transformer.enum(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enum()' method`)
+            }
+        }
+        for (const value of def.values) {
+            for (const vDir of value.directives) {
+                this.transformEnumValue(transformer, value, vDir, context)
+            }
+        }
+    }
+
+    private transformEnumValue(transformer: Transformer, def: EnumValueDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchEnumValueDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.enumValue)) {
+                transformer.enumValue(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+            }
+        }
+    }
+
+    private transformInputObject(transformer: Transformer, def: InputObjectTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.input)) {
+                transformer.input(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'input()' method`)
+            }
+        }
+        for (const field of def.fields) {
+            for (const fDir of field.directives) {
+                this.transformInputField(transformer, field, fDir, context)
+            }
+        }
+    }
+
+    private transformInputField(transformer: Transformer, def: InputValueDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+        if (matchInputFieldDirective(transformer.directive, dir, def)) {
+            if (isFunction(transformer.inputValue)) {
+                transformer.inputValue(def, dir, context)
+            } else {
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+            }
+        }
     }
 }
