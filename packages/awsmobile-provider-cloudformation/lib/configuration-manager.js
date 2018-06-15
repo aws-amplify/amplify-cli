@@ -7,10 +7,10 @@ function configure(context) {/* eslint-enable */
 
 /* eslint-disable */
 function getConfiguration(context) {/* eslint-enable */
-  const region = '<region>';
+  const region = 'us-east-1';
   const credential = {
-    accessKeyId: '<accessKeyId>',
-    secretAccessKey: '<secretAccessKey>',
+    accessKeyId: 'AKIAI5LD6XA6YBWCTR2Q',
+    secretAccessKey: '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',
   };
   return {
     accessKeyId: credential.accessKeyId,
