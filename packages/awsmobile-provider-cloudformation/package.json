@@ -14,7 +14,8 @@
     "eslint": "^4.19.1"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "private": true,
   "devDependencies": {

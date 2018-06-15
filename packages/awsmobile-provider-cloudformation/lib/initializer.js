@@ -2,11 +2,11 @@ const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
-const configurationManager = require('./configuration-manager')
+const configurationManager = require('./configuration-manager');
 
 function run(context) {
   return new Promise((resolve, reject) => {
-    const config = configurationManager.getConfiguration(context); 
+    const config = configurationManager.getConfiguration(context);
     aws.config.update(config);
 
     const awscfn = new aws.CloudFormation();

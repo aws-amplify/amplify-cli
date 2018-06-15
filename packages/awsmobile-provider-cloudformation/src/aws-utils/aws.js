@@ -6,11 +6,11 @@ aws.configureWithCreds = context => new Promise((resolve) => {
   resolve(withDefaultConfiguration(aws, context));
 });
 
-function withDefaultConfiguration(aws, context) {
+function withDefaultConfiguration(awsModel, context) {
   // Fetch access key, secret key and region from context based on provider
   // Part of init/config
-  const creds = configurationManager.getConfiguration(context)
-  return setAWSConfig(aws, creds.accessKey, creds.secretKey, creds.region);
+  const creds = configurationManager.getConfiguration(context);
+  return setAWSConfig(awsModel, creds.accessKey, creds.secretKey, creds.region);
 }
 
 function setAWSConfig(awsModel, access, secret, region) {
