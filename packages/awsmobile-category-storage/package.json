@@ -9,7 +9,8 @@
     "uuid": "^2.0.3"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "license": "Apache-2.0",
   "devDependencies": {

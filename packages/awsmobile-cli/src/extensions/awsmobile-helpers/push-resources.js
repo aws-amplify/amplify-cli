@@ -25,7 +25,6 @@ function pushResources(context, category, resourceName) {
     })
     .then(() => spinner.succeed('All resources updated are updated in the cloud'))
     .catch((err) => {
-      console.log(err.stack);
       spinner.fail('There was an issue pushing the resources to the cloud');
       throw err;
     });

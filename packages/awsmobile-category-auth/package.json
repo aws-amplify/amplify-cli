@@ -5,7 +5,8 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
   },
   "dependencies": {
     "eslint": "^4.19.1",
