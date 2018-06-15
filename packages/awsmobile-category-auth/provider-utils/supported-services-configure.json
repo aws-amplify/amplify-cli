@@ -112,6 +112,6 @@
 		],
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
-		"provider": "awsmobile-provider-cloudformation"
+		"provider": "aws-cloudformation"
 	}
 }
