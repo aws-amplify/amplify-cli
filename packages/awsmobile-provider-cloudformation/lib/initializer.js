@@ -1,5 +1,6 @@
 const moment = require('moment');
 const fs = require('fs-extra');
+const path = require('path');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const configurationManager = require('./configuration-manager');
 const providerName = require('../constants').ProviderName;
@@ -38,6 +39,14 @@ function processStackCreationData(context, region, params, data) {
   };
   context.initInfo.metaData.provider = {};
   context.initInfo.metaData.provider[providerName] = metaData;
+
+  stampAmplifyRunControl(context.initInfo.projectPath, metaData);
+}
+
+function stampAmplifyRunControl(projectPath, metaData) {
+  const filePath = path.join(projectPath, '.amplifyrc');
+  const jsonString = JSON.stringify(metaData, null, 4);
+  fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
 module.exports = {
