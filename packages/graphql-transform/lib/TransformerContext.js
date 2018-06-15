@@ -8,7 +8,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var language_1 = require("graphql/language");
+var graphql_1 = require("graphql");
 var blankTemplate_1 = require("./util/blankTemplate");
 var TransformerContextMetadata = /** @class */ (function () {
     function TransformerContextMetadata() {
@@ -38,7 +38,7 @@ var TransformerContext = /** @class */ (function () {
         this.template = blankTemplate_1.default();
         this.nodeMap = {};
         this.metadata = new TransformerContextMetadata();
-        var doc = language_1.parse(inputSDL);
+        var doc = graphql_1.parse(inputSDL);
         for (var _i = 0, _a = doc.definitions; _i < _a.length; _i++) {
             var def = _a[_i];
             if (def.kind === 'OperationDefinition' || def.kind === 'FragmentDefinition') {
@@ -93,6 +93,14 @@ var TransformerContext = /** @class */ (function () {
         }
         this.nodeMap[obj.name.value] = obj;
     };
+    TransformerContext.prototype.getObject = function (name) {
+        if (this.nodeMap[name]) {
+            var node = this.nodeMap[name];
+            if (node.kind === graphql_1.Kind.OBJECT_TYPE_DEFINITION) {
+                return node;
+            }
+        }
+    };
     /**
      * Add an object type extension definition node to the context. If a type with this
      * name does not already exist, an exception is thrown.
@@ -103,7 +111,7 @@ var TransformerContext = /** @class */ (function () {
             throw new Error("Cannot extend non-existant type '" + obj.name.value + "'.");
         }
         // AppSync does not yet understand type extensions so fold the types in.
-        var oldNode = this.nodeMap[obj.name.value];
+        var oldNode = this.getObject(obj.name.value);
         var newDirs = obj.directives || [];
         var oldDirs = oldNode.directives || [];
         var mergedDirs = oldDirs.concat(newDirs);

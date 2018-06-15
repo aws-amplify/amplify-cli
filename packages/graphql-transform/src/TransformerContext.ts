@@ -5,14 +5,14 @@ import {
     TypeSystemDefinitionNode,
     ObjectTypeDefinitionNode,
     FieldDefinitionNode,
-    InputTypeDefinitionNode,
+    InputObjectTypeDefinitionNode,
     SchemaDefinitionNode,
     ObjectTypeExtensionNode,
     NamedTypeNode,
     DocumentNode,
-    DefinitionNode
-} from 'graphql/language/ast'
-import { parse } from 'graphql/language'
+    Kind,
+    parse
+} from 'graphql'
 import blankTemplate from './util/blankTemplate'
 
 export class TransformerContextMetadata {
@@ -109,6 +109,15 @@ export default class TransformerContext {
         this.nodeMap[obj.name.value] = obj
     }
 
+    public getObject(name: string): ObjectTypeDefinitionNode | undefined {
+        if (this.nodeMap[name]) {
+            const node = this.nodeMap[name]
+            if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
+                return node as ObjectTypeDefinitionNode;
+            }
+        }
+    }
+
     /**
      * Add an object type extension definition node to the context. If a type with this
      * name does not already exist, an exception is thrown.
@@ -119,7 +128,7 @@ export default class TransformerContext {
             throw new Error(`Cannot extend non-existant type '${obj.name.value}'.`)
         }
         // AppSync does not yet understand type extensions so fold the types in.
-        const oldNode = this.nodeMap[obj.name.value]
+        const oldNode = this.getObject(obj.name.value)
         const newDirs = obj.directives || []
         const oldDirs = oldNode.directives || []
         const mergedDirs = [...oldDirs, ...newDirs]
@@ -171,7 +180,7 @@ export default class TransformerContext {
      * Add an input type definition node to the context.
      * @param inp The input type definition node to add.
      */
-    public addInput(inp: InputTypeDefinitionNode) {
+    public addInput(inp: InputObjectTypeDefinitionNode) {
         if (this.nodeMap[inp.name.value]) {
             throw new Error(`Conflicting input type '${inp.name.value}' found.`)
         }

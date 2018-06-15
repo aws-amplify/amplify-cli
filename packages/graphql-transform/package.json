@@ -4,7 +4,7 @@
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc",
     "lint": "tslint -p ./tslint.json"
   },
@@ -16,11 +16,29 @@
   "author": "Michael Paris",
   "license": "MIT",
   "devDependencies": {
+    "@types/graphql": "^0.13.1",
+    "@types/jest": "^23.1.0",
     "tslint": "^5.10.0",
+    "ts-jest": "^22.4.6",
+    "jest": "^23.0.0",
     "typescript": "^2.8.3"
   },
   "dependencies": {
     "cloudform": "^2.0.1",
     "graphql": "^0.13.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

@@ -2,13 +2,17 @@ import TransformerContext from './TransformerContext'
 import {
     DirectiveDefinitionNode,
     parse,
-    TypeSystemDefinitionNode,
     DirectiveNode,
     ObjectTypeDefinitionNode,
-    InterfaceDefinitionNode,
+    InterfaceTypeDefinitionNode,
     FieldDefinitionNode,
-    UnionDefinitionNode
+    UnionTypeDefinitionNode,
+    Kind,
+    EnumTypeDefinitionNode,
+    ScalarTypeDefinitionNode,
+    InputObjectTypeDefinitionNode
 } from 'graphql'
+import { InvalidDirectiveDefinitionError } from './errors'
 
 /**
  * A GraphQLTransformer takes a context object, processes it, and
@@ -18,15 +22,30 @@ import {
  */
 export default class Transformer {
 
+    public name: string
+
+    public directive: DirectiveDefinitionNode
+
     /**
      * Each transformer has a name.
      *
      * Each transformer defines a set of directives that it knows how to translate.
      */
     constructor(
-        public name: string,
-        public directive: DirectiveDefinitionNode
-    ) { }
+        name: string,
+        directiveDef: string
+    ) {
+        this.name = name
+        const doc = parse(directiveDef);
+        if (doc.definitions.length !== 1) {
+            throw new InvalidDirectiveDefinitionError('Transformers must specify exactly one directive definition.')
+        }
+        const def = doc.definitions[0]
+        if (def.kind !== Kind.DIRECTIVE_DEFINITION) {
+            throw new InvalidDirectiveDefinitionError(`Transformers must specify a directive definition not a definition of kind '${def.kind}'.`)
+        }
+        this.directive = def
+    }
 
     /**
      * An initializer that is called once at the beginning of a transformation.
@@ -52,7 +71,7 @@ export default class Transformer {
      * This method handles transforming directives on objects type definitions. This includes type
      * extensions.
      */
-    interface?: (definition: InterfaceDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    interface?: (definition: InterfaceTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
@@ -64,25 +83,25 @@ export default class Transformer {
      * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on union definitions.
      */
-    union?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    union?: (definition: UnionTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on enum definitions.
      */
-    enum?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    enum?: (definition: EnumTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on scalar definitions.
      */
-    scalar?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    scalar?: (definition: ScalarTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on input definitions.
      */
-    input?: (definition: UnionDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    input?: (definition: InputObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
 }
 
