@@ -3,7 +3,6 @@ const fs = require('fs');
 const subcommand = 'add';
 const category = 'storage';
 const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
-const providerControllers = require('../../provider-utils/provider-controller-mapping');
 
 let options;
 
@@ -18,7 +17,11 @@ module.exports = {
           service: result.service,
           providerPlugin: result.provider,
         };
-        const providerController = providerControllers[result.provider];
+        const providerController = require(`../../provider-utils/${result.provider}/index`);
+        if (!providerController) {
+          context.print.error('Provider not confgiured for this category');
+          return;
+        }
         return providerController.addResource(context, category, result.service);
       })
       .then(resourceName => awsmobile.updateAwsMobileMetaAfterResourceAdd(
