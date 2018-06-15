@@ -5,7 +5,7 @@ function run(context) {
       projectName: context.initInfo.projectName,
       projectPath: context.initInfo.projectPath,
       providers: {
-        awscfn: 'awsmobile-provider-cloudformation',
+        'aws-cloudformation': 'awsmobile-provider-cloudformation',
       },
     };
 
