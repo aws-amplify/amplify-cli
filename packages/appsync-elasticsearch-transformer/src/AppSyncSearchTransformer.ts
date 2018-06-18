@@ -34,7 +34,7 @@ export class AppSyncSearchTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncSearchTransformer',
-            parse(`directive @search on FIELD`).definitions[0]
+            'directive @search on FIELD'
         )
         this.resources = new ResourceFactory();
     }

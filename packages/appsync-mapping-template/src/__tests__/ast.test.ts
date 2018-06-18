@@ -13,7 +13,6 @@ test('create a put item resolver with the ast', () => {
         })
     })
     const template = print(resolver)
-    console.log(template)
     expect(template).toBeDefined()
 });
 
@@ -24,6 +23,5 @@ test('create a response mapping template that merges a nested object', () => {
     ]);
     const returnStatement = ref('util.toJson($result)')
     const template = print(compoundExpression([setResult, mergeLoop, returnStatement]))
-    console.log(template)
     expect(template).toBeDefined()
 })

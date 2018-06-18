@@ -1,9 +1,10 @@
 import Template from 'cloudform/types/template'
-import AppSync from 'cloudform/types/appSync'
 import {
-    buildASTSchema, parse, DocumentNode,
-    DefinitionNode, TypeSystemDefinitionNode, printSchema, DirectiveDefinitionNode,
-    Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode, InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode, EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode, InputValueDefinitionNode, EnumValueDefinitionNode
+    TypeSystemDefinitionNode, DirectiveDefinitionNode,
+    Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode,
+    InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode,
+    EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
+    InputValueDefinitionNode, EnumValueDefinitionNode
 } from 'graphql'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
@@ -261,7 +262,7 @@ export default class GraphQLTransform {
             if (isFunction(transformer.argument)) {
                 transformer.argument(def, dir, context)
             } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'argument()' method`)
             }
         }
     }
@@ -321,7 +322,7 @@ export default class GraphQLTransform {
             if (isFunction(transformer.enumValue)) {
                 transformer.enumValue(def, dir, context)
             } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enumValue()' method`)
             }
         }
     }
@@ -346,7 +347,7 @@ export default class GraphQLTransform {
             if (isFunction(transformer.inputValue)) {
                 transformer.inputValue(def, dir, context)
             } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
+                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'inputValue()' method`)
             }
         }
     }
