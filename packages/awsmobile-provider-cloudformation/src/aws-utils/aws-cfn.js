@@ -2,7 +2,9 @@ const aws = require('./aws.js');
 const S3 = require('./aws-s3');
 const fs = require('fs');
 const path = require('path');
+const _ = require('lodash');
 const providerName = require('../../constants').ProviderName;
+const columnify = require('columnify');
 
 class CloudFormation {
   constructor(context) {
@@ -10,6 +12,7 @@ class CloudFormation {
       .then((awsItem) => {
         this.cfn = new awsItem.CloudFormation();
         this.context = context;
+        this.eventComplete = false;
         return this;
       });
   }
@@ -21,14 +24,18 @@ class CloudFormation {
     const cfnStackCheckParams = {
       StackName: cfnParentStackParams.StackName,
     };
+    const self = this;
+    self.eventStartTime = new Date();
 
     return new Promise((resolve, reject) => {
       cfnModel.createStack(cfnParentStackParams, (createErr, data) => {
+        this.readStackEvents(cfnParentStackParams.StackName);
         if (createErr) {
           context.print.error('Error creating cloudformation stack');
           reject(createErr);
         }
         cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+          self.eventComplete = true;
           if (completeErr) {
             context.print.error('Error creating cloudformation stack');
             reject(completeErr);
@@ -37,6 +44,83 @@ class CloudFormation {
         });
       });
     });
+  }
+
+  readStackEvents(stackName) {
+    // Stores all the events displayed to the user (useful to do a diff with new Events)
+    let allShownEvents = [];
+    const self = this;
+    const cfnModel = this.cfn;
+    const params = {
+      StackName: stackName,
+    };
+    const pollForEvents = setInterval(() => {
+      if (self.eventComplete) {
+        clearInterval(pollForEvents);
+      }
+      cfnModel.describeStackEvents(params, (err, data) => {
+        if (err) {
+          console.log(err);
+          /* Not throwing error out here since this is an asynchornous event
+          running in the background */
+        } else {
+          let stackEvents = data.StackEvents;
+          stackEvents = stackEvents.filter(event => self.eventStartTime
+            < new Date(event.Timestamp));
+
+          if (allShownEvents.length === 0) { // Showing events for the first time to the user
+            if (stackEvents.length > 0) {
+              showEvents(stackEvents);
+              allShownEvents = stackEvents;
+            }
+          } else {
+            let newEvents = _.differenceBy(stackEvents, allShownEvents, 'EventId');
+
+            if (newEvents.length > 0) {
+              // To store all the uniq nestedStacks which are a part of the new found events
+              const nestedStacks = [];
+              const nestedStackEventPromises = [];
+
+              for (let i = 0; i < newEvents.length; i += 1) {
+                if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
+                  // Logic to fetch events from nested stack within the parent stacks
+                  if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
+                    /*eslint-disable*/
+                    nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
+                    /* eslint-enable */
+                    nestedStacks.push(newEvents[i].PhysicalResourceId);
+                  }
+                }
+              }
+
+              return Promise.all(nestedStackEventPromises)
+                .then((nestedstackEvents) => {
+                  newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
+                    combinedEventList.concat(nestedstackEventList), newEvents);
+                  // Just get the new events to display to the user
+
+                  newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
+                  newEvents = _.uniqBy(newEvents, 'EventId');
+                  showEvents(newEvents);
+                  allShownEvents = allShownEvents.concat(newEvents);
+                });
+            }
+          }
+        }
+      });
+    }, 10000); // Poll for any events every 10 seconds
+  }
+
+  getNestedStackEvents(stackName) {
+    const self = this;
+    return this.cfn.describeStackEvents({ StackName: stackName }).promise()
+      .then((data) => {
+        let nestedstackEvents = data.StackEvents;
+        nestedstackEvents = nestedstackEvents.filter(event =>
+          self.eventStartTime < new Date(event.Timestamp));
+
+        return nestedstackEvents;
+      });
   }
 
   updateResourceStack(dir, cfnFile) {
@@ -68,6 +152,8 @@ class CloudFormation {
         const { context } = this;
         const self = this;
 
+        this.eventStartTime = new Date();
+
         return new Promise((resolve, reject) => {
           cfnModel.describeStacks(cfnStackCheckParams, (err) => {
             if (err) {
@@ -87,12 +173,15 @@ class CloudFormation {
             };
 
             cfnModel.updateStack(cfnParentStackParams, (updateErr) => {
+              self.readStackEvents(stackName);
+
               const cfnCompleteStatus = 'stackUpdateComplete';
               if (updateErr) {
                 console.error('Error updating cloudformation stack');
                 reject(updateErr);
               }
               cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
+                self.eventComplete = true;
                 if (completeErr) {
                   console.error('Error updating cloudformation stack');
                   reject(completeErr);
@@ -128,7 +217,6 @@ class CloudFormation {
           const cfnNestedStackParams = {
             StackName: resources[i].PhysicalResourceId,
           };
-
           promises.push(cfnModel.describeStacks(cfnNestedStackParams).promise());
         }
 
@@ -197,5 +285,12 @@ function formatOutputs(outputs) {
   }
 
   return formattedOutputs;
+}
+
+function showEvents(events) {
+  console.log('\n');
+  events = events.sort((a, b) => new Date(a.Timestamp) > new Date(b.Timestamp));
+
+  console.log(columnify(events, { columns: ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'], showHeaders: false }));
 }
 module.exports = CloudFormation;

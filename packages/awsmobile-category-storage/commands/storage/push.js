@@ -8,6 +8,7 @@ module.exports = {
     const resourceName = parameters.first;
 
     return awsmobile.pushResources(context, category, resourceName)
+      .then(() => process.exit(1))
       .catch((err) => {
         context.print.info(err.stack);
         context.print.error('There was an error pushing the storage resource');
