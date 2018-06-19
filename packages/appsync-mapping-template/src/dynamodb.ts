@@ -1,7 +1,8 @@
 import {
     obj, ref, Expression, ReferenceNode, StringNode,
     IntNode, FloatNode, str, ObjectNode, compoundExpression,
-    set, list, forEach, ifElse, qref, iff, raw
+    set, list, forEach, ifElse, qref, iff, raw,
+    CompoundExpressionNode
 } from './ast';
 
 export class DynamoDBMappingTemplate {
@@ -58,7 +59,7 @@ export class DynamoDBMappingTemplate {
     public static updateItem({ key, condition }: {
         key: ObjectNode,
         condition: ObjectNode
-    }) {
+    }): CompoundExpressionNode {
         const keyNames = key.attributes.map((attr: [string, Expression]) => attr[0])
         return compoundExpression([
             set(ref('expNames'), obj({})),
