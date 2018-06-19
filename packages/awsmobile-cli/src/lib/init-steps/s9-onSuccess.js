@@ -25,7 +25,7 @@ function run(context) {
   fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
   const backendMetaFilePath = mobile.pathManager.getAwsmobileMetaFilePath(projectPath);
   fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
-  print.info('init successfully!');
+  print.success('Project initialized successfully. Yay!');
 }
 
 module.exports = {
