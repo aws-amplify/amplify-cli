@@ -2,7 +2,7 @@ const ora = require('ora');
 const { getProviderPlugins } = require('./get-provider-plugins');
 const { showResourceTable } = require('./resource-status');
 
-let spinner;
+let spinner = ora('Updating resources in the cloud. This may take a few minutes...')
 
 function pushResources(context, category, resourceName) {
   showResourceTable(category, resourceName);
@@ -18,13 +18,14 @@ function pushResources(context, category, resourceName) {
           providerPromises.push(pluginModule.pushResources(context, category, resourceName));
         });
 
-        spinner = ora('Updating resources in the cloud. This may take a few minutes...').start();
+        spinner.start();
         return Promise.all(providerPromises);
       }
       process.exit(1);
     })
     .then(() => spinner.succeed('All resources updated are updated in the cloud'))
     .catch((err) => {
+      console.log(err)
       spinner.fail('There was an issue pushing the resources to the cloud');
       throw err;
     });

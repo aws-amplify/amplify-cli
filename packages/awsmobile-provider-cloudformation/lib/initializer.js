@@ -6,7 +6,11 @@ const configurationManager = require('./configuration-manager');
 const providerName = require('../constants').ProviderName;
 
 function run(context) {
-  const config = configurationManager.getConfiguration(context);
+  const config = {
+    accessKeyId: "<your-key-id>",
+    secretAccessKey: "you-key",
+    region: "<region>",
+  };
   const initTemplateFilePath = `${__dirname}/rootStackTemplate.json`;
   const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
   const stackName = context.initInfo.projectName + timeStamp;
