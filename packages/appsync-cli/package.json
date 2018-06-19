@@ -4,7 +4,7 @@
   "description": "CLI for AWS AppSync",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "build": "tsc && cp lib/index.js lib/appsync",
     "lint": "tslint -p ./tslint.json"
   },
