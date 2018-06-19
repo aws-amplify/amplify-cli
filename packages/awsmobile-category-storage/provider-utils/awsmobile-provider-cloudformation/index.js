@@ -1,45 +1,12 @@
 const fs = require('fs');
-const inquirer = require('inquirer');
 
 let serviceMetadata;
 
-function serviceWalkthrough(context, defaultValuesFilename) {
-  const { awsmobile } = context;
-  const { inputs } = serviceMetadata;
-  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
+function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
-  const questions = [];
-  for (let i = 0; i < inputs.length; i += 1) {
-    let question = {
-      name: inputs[i].key,
-      message: inputs[i].question,
-      validate: awsmobile.inputValidation(inputs[i]),
-      default: () => {
-        const defaultValue = getAllDefaults(awsmobile.getProjectDetails())[inputs[i].key];
-        return defaultValue;
-      },
-    };
-
-    if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign({
-        type: 'list',
-        choices: inputs[i].options,
-      }, question);
-    } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign({
-        type: 'checkbox',
-        choices: inputs[i].options,
-      }, question);
-    } else {
-      question = Object.assign({
-        type: 'input',
-      }, question);
-    }
-    questions.push(question);
-  }
-
-  return inquirer.prompt(questions);
+  return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
 
@@ -63,9 +30,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  const { cfnFilename, defaultValuesFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  return serviceWalkthrough(context, defaultValuesFilename)
+  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);
