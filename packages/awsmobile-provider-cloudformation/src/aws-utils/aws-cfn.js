@@ -12,7 +12,6 @@ class CloudFormation {
       .then((awsItem) => {
         this.cfn = new awsItem.CloudFormation();
         this.context = context;
-        this.eventComplete = false;
         return this;
       });
   }
@@ -35,7 +34,9 @@ class CloudFormation {
           reject(createErr);
         }
         cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-          self.eventComplete = true;
+          if(self.pollForEvents) {
+            clearInterval(self.pollForEvents);
+          }
           if (completeErr) {
             context.print.error('Error creating cloudformation stack');
             reject(completeErr);
@@ -54,10 +55,7 @@ class CloudFormation {
     const params = {
       StackName: stackName,
     };
-    const pollForEvents = setInterval(() => {
-      if (self.eventComplete) {
-        clearInterval(pollForEvents);
-      }
+    this.pollForEvents = setInterval(() => {
       cfnModel.describeStackEvents(params, (err, data) => {
         if (err) {
           console.log(err);
@@ -181,7 +179,9 @@ class CloudFormation {
                 reject(updateErr);
               }
               cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-                self.eventComplete = true;
+                if(self.pollForEvents) {
+                  clearInterval(self.pollForEvents);
+                }
                 if (completeErr) {
                   console.error('Error updating cloudformation stack');
                   reject(completeErr);

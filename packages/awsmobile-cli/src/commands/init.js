@@ -11,7 +11,6 @@ module.exports = {
       .then(configSettings.run)
       .then(initProviders.run)
       .then(onSuccess.run)
-      .then(() => process.exit(1))
       .catch(onFailure.run);
   },
 };
