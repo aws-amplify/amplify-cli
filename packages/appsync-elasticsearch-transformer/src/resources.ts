@@ -100,7 +100,7 @@ export class ResourceFactory {
             }),
             [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Bucket]: new StringParameter({
                 Description: 'S3 bucket containing the DynamoDB streaming lambda code.',
-                Default: 'mp-lambda-blueprints'
+                Default: 'sr-lambda-blueprints'
             }),
             [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Key]: new StringParameter({
                 Description: 'S3 key containing the DynamoDB streaming lambda code.',
@@ -108,7 +108,7 @@ export class ResourceFactory {
             }),
             [ResourceFactory.ParameterIds.StreamingLambdaCodeS3Version]: new StringParameter({
                 Description: 'S3 key containing the DynamoDB lambda code version.',
-                Default: 'Sc32fGDZq2SdHBc1Hek6I3_Lzzt4OazX'
+                Default: 'n9NaP2A0v3G3BzPXDkrs3rbrkLq2O4qJ'
             })
         }
     }

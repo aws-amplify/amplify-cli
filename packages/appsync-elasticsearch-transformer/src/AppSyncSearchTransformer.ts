@@ -51,6 +51,7 @@ export class AppSyncSearchTransformer extends Transformer {
      * @param ctx The accumulated context for the transform.
      */
     public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+
         // Create the connection object type.
         const connection = makeConnection(makeNamedType(def.name.value))
         ctx.addObject(connection)
