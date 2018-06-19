@@ -6,7 +6,9 @@
         "outDir": "lib",
         "lib": [
             "es2015",
-            "es2016.array.include"
+            "es2016.array.include",
+            "esnext.asynciterable",
+            "dom"
         ]
     }
 }

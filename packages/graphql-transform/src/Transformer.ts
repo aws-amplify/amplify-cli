@@ -10,7 +10,9 @@ import {
     Kind,
     EnumTypeDefinitionNode,
     ScalarTypeDefinitionNode,
-    InputObjectTypeDefinitionNode
+    InputObjectTypeDefinitionNode,
+    InputValueDefinitionNode,
+    EnumValueDefinitionNode
 } from 'graphql'
 import { InvalidDirectiveDefinitionError } from './errors'
 
@@ -75,9 +77,15 @@ export default class Transformer {
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
-     * This method handles transforming directives on object or interface field definitions.
+     * This method handles transforming directives on object for field definitions.
      */
     field?: (definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on object or input argument definitions.
+     */
+    argument?: (definition: InputValueDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
@@ -93,6 +101,12 @@ export default class Transformer {
 
     /**
      * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on enum value definitions.
+     */
+    enumValue?: (definition: EnumValueDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on scalar definitions.
      */
     scalar?: (definition: ScalarTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
@@ -102,6 +116,12 @@ export default class Transformer {
      * This method handles transforming directives on input definitions.
      */
     input?: (definition: InputObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+
+    /**
+     * A transformer implements a single function per location that its directive can be applied.
+     * This method handles transforming directives on input value definitions.
+     */
+    inputValue?: (definition: InputValueDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
 
 }
 

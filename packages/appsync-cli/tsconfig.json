@@ -10,7 +10,8 @@
             "es7",
             "es2015",
             "dom",
-            "esnext.asynciterable"
+            "esnext.asynciterable",
+            "dom"
         ],
     },
     "exclude": [
