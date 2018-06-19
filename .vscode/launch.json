@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "graphql-transform",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/packages/graphql-transform/lib/run.js"
+        },
+        {
+            "name": "appsync-elasticsearch-transformer",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/packages/appsync-elasticsearch-transformer/lib/run.js"
+        },
+        {
+            "name": "appsync-dynamodb-transformer",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/packages/appsync-dynamodb-transformer/lib/run.js"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Hybrid",
+            "configurations": [
+                "graphql-transform",
+                "appsync-elasticsearch-transformer",
+                "appsync-dynamodb-transformer"
+            ]
+        }
+    ]
+}

@@ -60,3 +60,5 @@ typings/
 
 # next.js build output
 .next
+
+packages/*/lib
