@@ -22,4 +22,6 @@ const transformer = new GraphQLTransform({
     ]
 })
 const out = transformer.transform(validSchema);
-console.log(out);
+if (out) {
+    console.log(out);
+}
