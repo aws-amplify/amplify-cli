@@ -7,9 +7,9 @@ const providerName = require('../constants').ProviderName;
 
 function run(context) {
   const config = {
-    accessKeyId: "<your-key-id>",
-    secretAccessKey: "you-key",
-    region: "<region>",
+    accessKeyId: "AKIAJ2IWIRMJYPRJO6WA",
+    secretAccessKey: "pW3LeIzQI7Tgf+IQXF5dh7JOSAKxs+RUnmnyWT+k",
+    region: "us-east-1"
   };
   const initTemplateFilePath = `${__dirname}/rootStackTemplate.json`;
   const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
