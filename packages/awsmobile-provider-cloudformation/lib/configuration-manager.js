@@ -7,87 +7,112 @@ const awsRegions = require('./aws-regions');
 const sharedConfigDirName = '.amplify'; 
 
 function configure(context) {
+    context.projectConfigInfo = {}; 
     printInfo(context); 
-    let projectConfigInfo = {context}; 
-    return promptForProjectConfigUpdate(projectConfigInfo)
+    return promptForProjectConfigUpdate(context)
     .then(carryOutConfigAction); 
 }
 
 function init(context){
+    context.projectConfigInfo = {}; 
     printInfo(context); 
-    let projectConfigInfo = {context}; 
-    return comfirmProjectConfigSetup(projectConfigInfo)
+    return comfirmProjectConfigSetup(context, true)
     .then(carryOutConfigAction); 
 }
 
-function carryOutConfigAction(projectConfigInfo){
-    switch(projectConfigInfo.action){
+function carryOutConfigAction(context){
+    switch(context.projectConfigInfo.action){
+        case 'init': 
+            return initialize(context); 
         case 'create':
-            create(projectConfigInfo); 
+            return create(context); 
         break; 
         case 'update': 
-            update(projectConfigInfo); 
+            return update(context); 
         break; 
         case 'remove': 
-            remove(projectConfigInfo); 
+            return remove(context); 
+        break; 
+        default: 
+            return context; 
         break; 
     }
 }
 
-function create(projectConfigInfo){
-    configProject(projectConfigInfo)
+function initialize(context){
+    configProject(context)
     .then(validateConfig)
-    .then(projectConfigInfo=>{
-        if(projectConfigInfo.configValidated){
-            createProjectConfig(projectConfigInfo); 
+    .then(context=>{
+        if(context.projectConfigInfo.configValidated){
+            return context; 
+        }else{
+            throw 'Invalid configuration settings'; 
         }
     })
 }
 
-function update(projectConfigInfo){
-    configProject(projectConfigInfo)
+function onInitSuccessful(context){
+    return createProjectConfig(context); 
+}
+
+function create(context){
+    configProject(context)
     .then(validateConfig)
-    .then(projectConfigInfo=>{
-        if(projectConfigInfo.configValidated){
-            updateProjectConfig(projectConfigInfo); 
+    .then(context=>{
+        if(context.projectConfigInfo.configValidated){
+            createProjectConfig(context); 
+            return context; 
+        }else{
+            throw 'Invalid configuration settings'; 
         }
     })
 }
 
-function remove(projectConfigInfo){
-    return confirmProjectConfigRemoval(projectConfigInfo)
-    .then(projectConfigInfo=>{
-        if(projectConfigInfo.action != 'cancel'){
-            removeProjectConfig(projectConfigInfo); 
+function update(context){
+    configProject(context)
+    .then(validateConfig)
+    .then(context=>{
+        if(context.projectConfigInfo.configValidated){
+            updateProjectConfig(context); 
+        }
+    })
+}
+
+function remove(context){
+    return confirmProjectConfigRemoval(context)
+    .then(context=>{
+        if(context.projectConfigInfo.action != 'cancel'){
+            removeProjectConfig(context); 
         }
     })
 }
 
 function printInfo(context){
+    context.print.info('');
     context.print.info('General configuration of the aws-cloudformation provider follow that of the aws-cli.');
     context.print.info('Please follow the aws-cli documentation to set up general configuration.');
     context.print.info('You can also configure the provider specifically for this project.'); 
     context.print.info('Project specific configuration overrides the general configuration.'); 
+    context.print.info('');
 }
 
-function comfirmProjectConfigSetup(projectConfigInfo){
+function comfirmProjectConfigSetup(context, isInit){
     const configProjectComfirmation = {
         type: 'confirm',
         name: 'setProjectConfig',
         message: 'Set project specific configuration',
         default: false
     };
-
     return inquirer.prompt(configProjectComfirmation)
     .then(answers => {
-        projectConfigInfo.action = answers.setProjectConfig ? 'create' : 'cancel'; 
-        return projectConfigInfo; 
+        context.projectConfigInfo.action = answers.setProjectConfig ? (isInit? 'init' : 'create') : 'cancel';
+        return context; 
     }); 
 }
 
-function promptForProjectConfigUpdate(projectConfigInfo){
-    getProjectConfig(projectConfigInfo); 
-    if(projectConfigInfo.projectConfigExists){
+function promptForProjectConfigUpdate(context){
+    getProjectConfig(context); 
+    if(context.projectConfigInfo.projectConfigExists){
         const updateOrRemove =  {
             type: 'list',
             name: 'action',
@@ -97,15 +122,15 @@ function promptForProjectConfigUpdate(projectConfigInfo){
         };
         return inquirer.prompt(updateOrRemove)
         .then(answers=>{
-            projectConfigInfo.action = answers.action; 
-            return projectConfigInfo; 
+            context.projectConfigInfo.action = answers.action; 
+            return context; 
         })
     }else{
-        return comfirmProjectConfigSetup(projectConfigInfo); 
+        return comfirmProjectConfigSetup(context); 
     }
 }
 
-function confirmProjectConfigRemoval(projectConfigInfo){
+function confirmProjectConfigRemoval(context){
     const removeProjectComfirmation = {
         type: 'confirm',
         name: 'removeProjectConfig',
@@ -114,12 +139,13 @@ function confirmProjectConfigRemoval(projectConfigInfo){
     };
     return inquirer.prompt(removeProjectComfirmation)
     .then(answers => {
-        projectConfigInfo.action = answers.removeProjectConfig ? 'confirmed-remove' : 'cancel';
-        return projectConfigInfo; 
+        context.projectConfigInfo.action = answers.removeProjectConfig ? 'confirmed-remove' : 'cancel';
+        return context; 
     }); 
 }
 
-function configProject(projectConfigInfo){
+function configProject(context){
+    const projectConfigInfo = context.projectConfigInfo; 
     const useProfileConfirmation = {
         type: 'confirm',
         name: 'useProfile',
@@ -163,7 +189,7 @@ function configProject(projectConfigInfo){
             return inquirer.prompt(profileName)
             .then(answers=>{
                 projectConfigInfo.profileName = answers.profileName; 
-                return projectConfigInfo; 
+                return context; 
             }); 
         }else{
             return inquirer.prompt(configurationSettings)
@@ -171,13 +197,14 @@ function configProject(projectConfigInfo){
                 projectConfigInfo.accessKeyId = answers.accessKeyId; 
                 projectConfigInfo.secretAccessKey = answers.secretAccessKey; 
                 projectConfigInfo.region = answers.region; 
-                return projectConfigInfo; 
+                return context; 
             }); 
         }
     }); 
 }
 
-function validateConfig(projectConfigInfo){
+function validateConfig(context){
+    const projectConfigInfo = context.projectConfigInfo; 
     projectConfigInfo.configValidated = false; 
     if(projectConfigInfo.useProfile){
         if(projectConfigInfo.profileName && projectConfigInfo.profileName.length > 0){
@@ -189,11 +216,11 @@ function validateConfig(projectConfigInfo){
             projectConfigInfo.secretAccessKey && projectConfigInfo.secretAccessKey != '<secretAccessKey>' && 
             projectConfigInfo.region && awsRegions.regions.includes(projectConfigInfo.region); 
     }
-    return projectConfigInfo; 
+    return context; 
 }
 
-function createProjectConfig(projectConfigInfo){
-    const context = projectConfigInfo.context; 
+function createProjectConfig(context){
+    const projectConfigInfo = context.projectConfigInfo; 
     const awsConfigInfo = {
         useProfile: projectConfigInfo.useProfile, 
     }
@@ -218,10 +245,11 @@ function createProjectConfig(projectConfigInfo){
     const configInfoFilePath = path.join(context.awsmobile.pathManager.getDotConfigDirPath(), 'aws-info.json');
     let jsonString = JSON.stringify(awsConfigInfo, null, 4);
     fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+    return context; 
 }
 
-function getProjectConfig(projectConfigInfo){
-    const context = projectConfigInfo.context; 
+function getProjectConfig(context){
+    const projectConfigInfo = context.projectConfigInfo; 
     projectConfigInfo.projectConfigExists = false;
     const configInfoFilePath = path.join(context.awsmobile.pathManager.getDotConfigDirPath(), 'aws-info.json')
     if(fs.existsSync(configInfoFilePath)){
@@ -242,16 +270,17 @@ function getProjectConfig(projectConfigInfo){
             fs.removeSync(configInfoFilePath); 
         }
     }
-    return projectConfigInfo; 
+    return context; 
 }
 
-function updateProjectConfig(projectConfigInfo){
-    removeProjectConfig(projectConfigInfo); 
-    createProjectConfig(projectConfigInfo); 
+function updateProjectConfig(context){
+    removeProjectConfig(context); 
+    createProjectConfig(context); 
+    return context; 
 }
 
-function removeProjectConfig(projectConfigInfo){
-    const context = projectConfigInfo.context; 
+function removeProjectConfig(context){
+    const projectConfigInfo = context.projectConfigInfo; 
     const configInfoFilePath = path.join(context.awsmobile.pathManager.getDotConfigDirPath(), 'aws-info.json')
     if(fs.existsSync(configInfoFilePath)){
         const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8')); 
@@ -260,6 +289,7 @@ function removeProjectConfig(projectConfigInfo){
         }
         fs.removeSync(configInfoFilePath)
     }
+    return context; 
 }
 
 function loadProjectConfig(context, awsClient){
@@ -268,7 +298,6 @@ function loadProjectConfig(context, awsClient){
     if(fs.existsSync(configInfoFilePath)){
         const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8')); 
         if(configInfo.useProfile && configInfo.profileName){
-            console.log('profileName: ', configInfo.profileName); 
             process.env.AWS_PROFILE = configInfo.profileName; 
         }else if(configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)){
             awsClient.config.loadFromPath(configInfo.awsConfigFilePath);
@@ -278,6 +307,7 @@ function loadProjectConfig(context, awsClient){
 
 module.exports = {
     init, 
+    onInitSuccessful,
     configure,
     loadProjectConfig
 };
