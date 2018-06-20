@@ -62,5 +62,6 @@ typings/
 .next
 
 packages/*/lib
-
 packages/*/node_modules
+.vscode/settings.json
+*.out.json

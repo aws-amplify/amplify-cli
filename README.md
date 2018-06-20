@@ -52,7 +52,12 @@ git clone https://github.com/mikeparisstuff/appsync-model-transform.git .
 
 ### Prerequisites
 
-You will need to have [nodejs and npm installed](https://nodejs.org/en/download/).
+* You will need to have [nodejs and npm installed](https://nodejs.org/en/download/).
+* You will then need to install `lerna` and `yarn` as npm global packages.
+```
+npm install -g lerna
+npm install -g yarn
+```
 
 ### Installing
 
@@ -60,6 +65,13 @@ Install the dependencies
 
 ```
 lerna bootstrap
+```
+
+Generate on cloudform package
+
+```
+cd packages/cloudform
+npm run generate
 ```
 
 And build
@@ -77,6 +89,8 @@ Tests are written with [jest](https://facebook.github.io/jest/) and can be run f
 ```
 lerna run test
 ```
+
+Alternatively, there are some debug configurations defined in [.vscode/launch.json](./.vscode/launch.json) you can use Visual Studio code to add debug breakpoints to debug the code.
 
 ## Contributing
 
