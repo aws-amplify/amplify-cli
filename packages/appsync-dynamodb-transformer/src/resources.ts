@@ -205,8 +205,8 @@ export class ResourceFactory {
      * Create a resolver that creates an item in DynamoDB.
      * @param type
      */
-    public makeCreateResolver(type: string) {
-        const fieldName = graphqlName('create' + toUpper(type))
+    public makeCreateResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
@@ -239,8 +239,8 @@ export class ResourceFactory {
         }).dependsOn(ResourceFactory.GraphQLSchemaLogicalID)
     }
 
-    public makeUpdateResolver(type: string) {
-        const fieldName = graphqlName(`update` + toUpper(type))
+    public makeUpdateResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
@@ -253,10 +253,10 @@ export class ResourceFactory {
                         id: obj({ S: str('$context.args.input.id') })
                     }),
                     condition: obj({
-                        expression: "attribute_exists(#type) AND attribute_exists(#id)",
+                        expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
                         expressionNames: obj({
-                            "#type": "__typename",
-                            "#id": "id"
+                            "#type": str("__typename"),
+                            "#id": str("id")
                         })
                     })
                 })
@@ -271,8 +271,8 @@ export class ResourceFactory {
      * Create a resolver that creates an item in DynamoDB.
      * @param type
      */
-    public makeGetResolver(type: string) {
-        const fieldName = graphqlName('get' + toUpper(type))
+    public makeGetResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
@@ -296,8 +296,8 @@ export class ResourceFactory {
      * Create a resolver that deletes an item from DynamoDB.
      * @param type 
      */
-    public makeDeleteResolver(type: string) {
-        const fieldName = graphqlName('delete' + toUpper(type))
+    public makeDeleteResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),

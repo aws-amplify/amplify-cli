@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode,
     TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
-    ObjectTypeExtensionDefinitionNode, NamedTypeNode
+    ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode
 } from 'graphql'
 import { toUpper, graphqlName } from './util'
 
@@ -12,7 +12,7 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
         .filter((field: FieldDefinitionNode) => field.name.value !== 'id')
         .map(
             (field: FieldDefinitionNode) => ({
-                kind: 'InputValueDefinition',
+                kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
                 type: field.type,
                 description: field.description,
@@ -21,7 +21,10 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
         )
     return {
         kind: 'InputObjectTypeDefinition',
-        description: `Input type for ${obj.name.value} mutations`,
+        description: {
+            kind: 'StringValue',
+            value: `Input type for ${obj.name.value} mutations`
+        },
         name: {
             kind: 'Name',
             value: name
@@ -36,7 +39,7 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     const fields: InputValueDefinitionNode[] = obj.fields
         .map(
             (field: FieldDefinitionNode) => ({
-                kind: 'InputValueDefinition',
+                kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
                 type: field.name.value === 'id' ?
                     wrapNonNull(field.type) :
@@ -46,8 +49,11 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
             })
         )
     return {
-        kind: 'InputObjectTypeDefinition',
-        description: `Input type for ${obj.name.value} mutations`,
+        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        description: {
+            kind: 'StringValue',
+            value: `Input type for ${obj.name.value} mutations`
+        },
         name: {
             kind: 'Name',
             value: name
@@ -60,17 +66,23 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
 export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName('Delete' + toUpper(obj.name.value) + 'Input')
     return {
-        kind: 'InputObjectTypeDefinition',
-        description: `Input type for ${obj.name.value} delete mutations`,
+        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        description: {
+            kind: 'StringValue',
+            value: `Input type for ${obj.name.value} delete mutations`
+        },
         name: {
             kind: 'Name',
             value: name
         },
         fields: [{
-            kind: 'InputValueDefinition',
+            kind: Kind.INPUT_VALUE_DEFINITION,
             name: { kind: 'Name', value: 'id' },
             type: makeNamedType('ID'),
-            description: `The id of the ${obj.name.value} to delete.`,
+            description: {
+                kind: 'StringValue',
+                value: `The id of the ${obj.name.value} to delete.`
+            },
             directives: []
         }],
         directives: []
@@ -110,8 +122,9 @@ export function makeOperationType(
 
 export function makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode {
     return {
-        kind: 'SchemaDefinition',
-        operationTypes
+        kind: Kind.SCHEMA_DEFINITION,
+        operationTypes,
+        directives: []
     }
 }
 
@@ -128,9 +141,9 @@ export function blankObject(name: string): ObjectTypeDefinitionNode {
     }
 }
 
-export function blankObjectExtension(name: string): ObjectTypeExtensionDefinitionNode {
+export function blankObjectExtension(name: string): ObjectTypeExtensionNode {
     return {
-        kind: 'ObjectTypeExtensionDefinition',
+        kind: Kind.OBJECT_TYPE_EXTENSION,
         name: {
             kind: 'Name',
             value: name
@@ -141,9 +154,16 @@ export function blankObjectExtension(name: string): ObjectTypeExtensionDefinitio
     }
 }
 
-export function makeField(name: string, args: InputValueDefinitionNode[], type: TypeNode): ObjectTypeDefinitionNode {
+export function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode {
     return {
-        kind: 'FieldDefinition',
+        ...object,
+        fields: [...object.fields, ...fields]
+    }
+}
+
+export function makeField(name: string, args: InputValueDefinitionNode[], type: TypeNode): FieldDefinitionNode {
+    return {
+        kind: Kind.FIELD_DEFINITION,
         name: {
             kind: 'Name',
             value: name
@@ -166,7 +186,7 @@ export function makeArg(name: string, type: TypeNode): InputValueDefinitionNode 
     }
 }
 
-export function makeNamedType(name: string): TypeNode {
+export function makeNamedType(name: string): NamedTypeNode {
     return {
         kind: 'NamedType',
         name: {
@@ -176,9 +196,9 @@ export function makeNamedType(name: string): TypeNode {
     }
 }
 
-export function makeNonNullType(type: TypeNode): TypeNode {
+export function makeNonNullType(type: NamedTypeNode | ListTypeNode): NonNullTypeNode {
     return {
-        kind: 'NonNullType',
+        kind: Kind.NON_NULL_TYPE,
         type
     }
 }

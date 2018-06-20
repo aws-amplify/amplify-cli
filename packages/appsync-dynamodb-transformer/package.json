@@ -4,7 +4,7 @@
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc",
     "lint": "tslint -p ./tslint.json"
   },
@@ -23,7 +23,22 @@
   },
   "devDependencies": {
     "@types/node": "^10.3.4",
+    "@types/graphql": "^0.13.1",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

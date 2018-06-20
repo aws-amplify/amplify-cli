@@ -137,7 +137,7 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
  * end of a transformation, a fully specified cloudformation template
  * is emitted.
  */
-interface GraphQLTransformOptions {
+export interface GraphQLTransformOptions {
     transformers: Transformer[]
 }
 export default class GraphQLTransform {

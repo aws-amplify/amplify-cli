@@ -7,7 +7,7 @@ import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, blankObject, makeField, makeArg, makeNamedType,
     makeNonNullType, makeSchema, makeOperationType, makeUpdateInputObject,
-    makeDeleteInputObject, blankObjectExtension
+    makeDeleteInputObject, blankObjectExtension, extensionWithFields
 } from './definitions'
 import Template from 'cloudform/types/template'
 import { AppSync } from 'cloudform';
@@ -26,6 +26,21 @@ function makeDirectiveMap(directives: DirectiveNode[]) {
         }
     }
     return directiveMap;
+}
+
+interface QueryNameMap {
+    get?: string
+}
+
+interface MutationNameMap {
+    create?: string;
+    update?: string;
+    delete?: string;
+}
+
+interface ModelDirectiveArgs {
+    queries?: QueryNameMap,
+    mutations?: MutationNameMap
 }
 
 /**
@@ -50,7 +65,11 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncDynamoDBTransformer',
-            `directive @model on OBJECT`
+            `directive @model(queries: DynamoDBQueryMap, mutations: DynamoDBMutationMap) on OBJECT`,
+            `
+                input DynamoDBMutationMap { create: String, update: String, delete: String }
+                input DynamoDBQueryMap { get: String }
+            `
         )
         this.resources = new ResourceFactory();
     }
@@ -75,7 +94,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         ctx.setResource(ResourceFactory.GraphQLSchemaLogicalID, schemaResource)
     }
 
-    public after(ctx: TransformerContext): void {
+    public after = (ctx: TransformerContext): void => {
         const built = buildASTSchema({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
@@ -90,7 +109,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
-    public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Create the object type.
         ctx.addObject(def)
 
@@ -103,49 +122,107 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         ctx.addInput(deleteInput)
 
         // Create the mutation & query extension
-        const mutationType = blankObjectExtension('Mutation')
-        const queryType = blankObjectExtension('Query')
+        let mutationType = blankObjectExtension('Mutation')
+        let queryType = blankObjectExtension('Query')
+
+        // Get any name overrides provided by the user. If an empty map it provided
+        // then we do not generate those fields.
+        const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
+
+        let shouldMakeCreate = true;
+        let shouldMakeUpdate = true;
+        let shouldMakeDelete = true;
+        let shouldMakeGet = true;
+        let createFieldNameOverride = undefined;
+        let updateFieldNameOverride = undefined;
+        let deleteFieldNameOverride = undefined;
+        let getFieldNameOverride = undefined;
+
+        // Figure out which queries to make and if they have name overrides.
+        if (directiveArguments.queries) {
+            if (!directiveArguments.queries.get) {
+                shouldMakeGet = false;
+            } else {
+                getFieldNameOverride = directiveArguments.queries.get
+            }
+        }
+
+        // Figure out which mutations to make and if they have name overrides
+        if (directiveArguments.mutations) {
+            if (!directiveArguments.mutations.create) {
+                shouldMakeCreate = false;
+            } else {
+                createFieldNameOverride = directiveArguments.mutations.create
+            }
+            if (!directiveArguments.mutations.update) {
+                shouldMakeUpdate = false;
+            } else {
+                updateFieldNameOverride = directiveArguments.mutations.update
+            }
+            if (!directiveArguments.mutations.delete) {
+                shouldMakeDelete = false;
+            } else {
+                deleteFieldNameOverride = directiveArguments.mutations.delete
+            }
+        }
+
+        const queryNameMap: QueryNameMap = directiveArguments.queries
+        const mutationNameMap: MutationNameMap = directiveArguments.mutations
 
         // Create the mutations.
-        const createResolver = this.resources.makeCreateResolver(def.name.value)
-        ctx.setResource(`Create${def.name.value}Resolver`, createResolver)
-        mutationType.fields.push(
-            makeField(
-                createResolver.Properties.FieldName,
-                [makeArg('input', makeNonNullType(makeNamedType(createInput.name.value)))],
-                makeNamedType(def.name.value)
+        if (shouldMakeCreate) {
+            const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
+            ctx.setResource(`Create${def.name.value}Resolver`, createResolver)
+            mutationType = extensionWithFields(
+                mutationType,
+                [makeField(
+                    createResolver.Properties.FieldName,
+                    [makeArg('input', makeNonNullType(makeNamedType(createInput.name.value)))],
+                    makeNamedType(def.name.value)
+                )]
             )
-        )
-        const updateResolver = this.resources.makeUpdateResolver(def.name.value)
-        ctx.setResource(`Update${def.name.value}Resolver`, updateResolver)
-        mutationType.fields.push(
-            makeField(
-                updateResolver.Properties.FieldName,
-                [makeArg('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
-                makeNamedType(def.name.value)
+        }
+
+        if (shouldMakeUpdate) {
+            const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
+            ctx.setResource(`Update${def.name.value}Resolver`, updateResolver)
+            mutationType = extensionWithFields(
+                mutationType,
+                [makeField(
+                    updateResolver.Properties.FieldName,
+                    [makeArg('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
+                    makeNamedType(def.name.value)
+                )]
             )
-        )
-        const deleteResolver = this.resources.makeDeleteResolver(def.name.value)
-        ctx.setResource(`Delete${def.name.value}Resolver`, deleteResolver)
-        mutationType.fields.push(
-            makeField(
-                deleteResolver.Properties.FieldName,
-                [makeArg('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
-                makeNamedType(def.name.value)
+        }
+
+        if (shouldMakeDelete) {
+            const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
+            ctx.setResource(`Delete${def.name.value}Resolver`, deleteResolver)
+            mutationType = extensionWithFields(
+                mutationType,
+                [makeField(
+                    deleteResolver.Properties.FieldName,
+                    [makeArg('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
+                    makeNamedType(def.name.value)
+                )]
             )
-        )
+        }
         ctx.addObjectExtension(mutationType)
 
         // Create the queries
-        const getResolver = this.resources.makeGetResolver(def.name.value)
-        ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
-        queryType.fields.push(
-            makeField(
-                getResolver.Properties.FieldName,
-                [makeArg('id', makeNonNullType(makeNamedType('ID')))],
-                makeNamedType(def.name.value)
+        if (shouldMakeGet) {
+            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
+            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+            queryType = extensionWithFields(
+                queryType,
+                [makeField(
+                    getResolver.Properties.FieldName,
+                    [makeArg('id', makeNonNullType(makeNamedType('ID')))],
+                    makeNamedType(def.name.value)
+                )]
             )
-        )
+        }
         ctx.addObjectExtension(queryType)
     }
 }
