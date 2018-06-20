@@ -15,7 +15,6 @@ const { copyBatch } = require('./awsmobile-helpers/copy-batch');
 const pathManager = require('./awsmobile-helpers/path-manager');
 const nameManager = require('./awsmobile-helpers/name-manager');
 const { getWhen } = require('../../../awsmobile-cli/src/extensions/awsmobile-helpers/get-when-function');
-// const nameManager = require('./awsmobile-helpers/name-manager');
 const { serviceSelectionPrompt } = require('./awsmobile-helpers/service-select-prompt');
 const {
   updateProviderAwsMobileMeta,
@@ -34,6 +33,7 @@ module.exports = (context) => {
     getWhen,
     inputValidation,
     pathManager,
+    nameManager,
     pressEnterToContinue,
     pushResources,
     removeResource,

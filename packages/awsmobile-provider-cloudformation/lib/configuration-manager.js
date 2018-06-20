@@ -7,27 +7,65 @@ const awsRegions = require('./aws-regions');
 const sharedConfigDirName = '.amplify'; 
 
 function configure(context) {
-    printInfo(); 
-    let projectCofnigInfo = getProjectConfig(context); 
-    projectCofnigInfo.context = context; 
-
+    printInfo(context); 
+    let projectConfigInfo = {context}; 
     return promptForProjectConfigUpdate(projectConfigInfo)
-    .then(configProject)
-    .then(updateProjectConfig); 
+    .then(carryOutConfigAction); 
 }
 
 function init(context){
-    printInfo(); 
+    printInfo(context); 
     let projectConfigInfo = {context}; 
-
     return comfirmProjectConfigSetup(projectConfigInfo)
-    .then(configProject)
-    .then(setProjectConfig); 
+    .then(carryOutConfigAction); 
 }
 
-function printInfo(){
-    context.print.info('The aws-cloudformation provider uses the aws sdk for javascript to access aws resources.');
-    context.print.info('Please follow the aws sdk documentation to set up general configurations.');
+function carryOutConfigAction(projectConfigInfo){
+    switch(projectConfigInfo.action){
+        case 'create':
+            create(projectConfigInfo); 
+        break; 
+        case 'update': 
+            update(projectConfigInfo); 
+        break; 
+        case 'remove': 
+            remove(projectConfigInfo); 
+        break; 
+    }
+}
+
+function create(projectConfigInfo){
+    configProject(projectConfigInfo)
+    .then(validateConfig)
+    .then(projectConfigInfo=>{
+        if(projectConfigInfo.configValidated){
+            createProjectConfig(projectConfigInfo); 
+        }
+    })
+}
+
+function update(projectConfigInfo){
+    configProject(projectConfigInfo)
+    .then(validateConfig)
+    .then(projectConfigInfo=>{
+        if(projectConfigInfo.configValidated){
+            updateProjectConfig(projectConfigInfo); 
+        }
+    })
+}
+
+function remove(projectConfigInfo){
+    return confirmProjectConfigRemoval(projectConfigInfo)
+    .then(projectConfigInfo=>{
+        if(projectConfigInfo.action != 'cancel'){
+            removeProjectConfig(projectConfigInfo); 
+        }
+    })
+}
+
+function printInfo(context){
+    context.print.info('General configuration of the aws-cloudformation provider follow that of the aws-cli.');
+    context.print.info('Please follow the aws-cli documentation to set up general configuration.');
     context.print.info('You can also configure the provider specifically for this project.'); 
     context.print.info('Project specific configuration overrides the general configuration.'); 
 }
@@ -42,23 +80,24 @@ function comfirmProjectConfigSetup(projectConfigInfo){
 
     return inquirer.prompt(configProjectComfirmation)
     .then(answers => {
-        projectConfigInfo.setProjectConfig = answers.setProjectConfig; 
+        projectConfigInfo.action = answers.setProjectConfig ? 'create' : 'cancel'; 
         return projectConfigInfo; 
     }); 
 }
 
 function promptForProjectConfigUpdate(projectConfigInfo){
+    getProjectConfig(projectConfigInfo); 
     if(projectConfigInfo.projectConfigExists){
         const updateOrRemove =  {
             type: 'list',
-            name: 'updateOrRemove',
+            name: 'action',
             message: "Do you want to udpate or remove the project specific configuration",
-            choices: ['update', 'remove'],
+            choices: ['update', 'remove', 'cancel'],
             default: 'update'
         };
         return inquirer.prompt(updateOrRemove)
         .then(answers=>{
-            projectConfigInfo.updateOrRemove = answers.updateOrRemove; 
+            projectConfigInfo.action = answers.action; 
             return projectConfigInfo; 
         })
     }else{
@@ -75,7 +114,7 @@ function confirmProjectConfigRemoval(projectConfigInfo){
     };
     return inquirer.prompt(removeProjectComfirmation)
     .then(answers => {
-        projectConfigInfo.removeProjectConfig = answers.removeProjectConfig; 
+        projectConfigInfo.action = answers.removeProjectConfig ? 'confirmed-remove' : 'cancel';
         return projectConfigInfo; 
     }); 
 }
@@ -85,7 +124,7 @@ function configProject(projectConfigInfo){
         type: 'confirm',
         name: 'useProfile',
         message: 'Use profile',
-        default: true
+        default: projectConfigInfo.useProfile
     };
 
     const profileName = {
@@ -138,7 +177,22 @@ function configProject(projectConfigInfo){
     }); 
 }
 
-function setProjectConfig(projectConfigInfo){
+function validateConfig(projectConfigInfo){
+    projectConfigInfo.configValidated = false; 
+    if(projectConfigInfo.useProfile){
+        if(projectConfigInfo.profileName && projectConfigInfo.profileName.length > 0){
+            projectConfigInfo.configValidated = true; 
+        }
+    }else{
+        projectConfigInfo.configValidated = 
+            projectConfigInfo.accessKeyId && projectConfigInfo.accessKeyId != '<accessKeyId>' && 
+            projectConfigInfo.secretAccessKey && projectConfigInfo.secretAccessKey != '<secretAccessKey>' && 
+            projectConfigInfo.region && awsRegions.regions.includes(projectConfigInfo.region); 
+    }
+    return projectConfigInfo; 
+}
+
+function createProjectConfig(projectConfigInfo){
     const context = projectConfigInfo.context; 
     const awsConfigInfo = {
         useProfile: projectConfigInfo.useProfile, 
@@ -166,23 +220,26 @@ function setProjectConfig(projectConfigInfo){
     fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
 }
 
-function getProjectConfig(context){
-    let projectConfigInfo = {
-        projectConfigExists: false
-    }; 
+function getProjectConfig(projectConfigInfo){
+    const context = projectConfigInfo.context; 
+    projectConfigInfo.projectConfigExists = false;
     const configInfoFilePath = path.join(context.awsmobile.pathManager.getDotConfigDirPath(), 'aws-info.json')
     if(fs.existsSync(configInfoFilePath)){
-        projectConfigInfo.projectConfigExists = true;
-        const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8')); 
-        if(configInfo.useProfile && configInfo.profileName){
-            projectConfigInfo.useProfile = configInfo.useProfile;
-            projectConfigInfo.profileName = configInfo.profileName;
-        }else if(configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)){
-            const awsConfig = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8')); 
-            projectConfigInfo.useProfile = false; 
-            projectConfigInfo.accessKeyId = awsConfig.accessKeyId; 
-            projectConfigInfo.secretAccessKey = awsConfig.secretAccessKey;
-            projectConfigInfo.region = awsConfig.region;
+        try{
+            const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8')); 
+            if(configInfo.useProfile && configInfo.profileName){
+                projectConfigInfo.useProfile = configInfo.useProfile;
+                projectConfigInfo.profileName = configInfo.profileName;
+            }else if(configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)){
+                const awsConfig = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8')); 
+                projectConfigInfo.useProfile = false; 
+                projectConfigInfo.accessKeyId = awsConfig.accessKeyId; 
+                projectConfigInfo.secretAccessKey = awsConfig.secretAccessKey;
+                projectConfigInfo.region = awsConfig.region;
+            }
+            projectConfigInfo.projectConfigExists = true;
+        }catch(e){
+            fs.removeSync(configInfoFilePath); 
         }
     }
     return projectConfigInfo; 
@@ -190,13 +247,14 @@ function getProjectConfig(context){
 
 function updateProjectConfig(projectConfigInfo){
     removeProjectConfig(projectConfigInfo); 
-    setProjectConfig(projectConfigInfo); 
+    createProjectConfig(projectConfigInfo); 
 }
 
 function removeProjectConfig(projectConfigInfo){
     const context = projectConfigInfo.context; 
     const configInfoFilePath = path.join(context.awsmobile.pathManager.getDotConfigDirPath(), 'aws-info.json')
     if(fs.existsSync(configInfoFilePath)){
+        const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8')); 
         if(configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)){
             fs.removeSync(configInfo.awsConfigFilePath);
         }
