@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources: 
+  DynamoDBTable: 
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        <% for(var i=0; i < props.AttributeDefinitions.length; i++) { %>
+        -
+          AttributeName: <%= props.AttributeDefinitions[i].AttributeName %>
+          AttributeType: <%= props.AttributeDefinitions[i].AttributeType %>
+
+        <% } %>
+      KeySchema: 
+        <% for(var i=0; i < props.KeySchema.length; i++) { %>
+        -
+          AttributeName: <%= props.KeySchema[i].AttributeName %>
+          KeyType: <%= props.KeySchema[i].KeyType %>
+        <% } %>
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: <%= props.TableName %>
+      <%if (props.GlobalSecondaryIndexes) { %>
+      GlobalSecondaryIndexes: 
+        <% for(var i=0; i < props.GlobalSecondaryIndexes.length; i++) { %>
+        -
+          IndexName: <%= props.GlobalSecondaryIndexes[i].IndexName %>
+          KeySchema:
+            <% for(var j=0; j < props.GlobalSecondaryIndexes[i].KeySchema.length; j++) { %>
+            -
+              AttributeName: <%= props.GlobalSecondaryIndexes[i].KeySchema[j].AttributeName %>
+              KeyType: <%= props.GlobalSecondaryIndexes[i].KeySchema[j].KeyType %>
+            <% } %>
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+        <% } %>
+      <% } %>
+
+Outputs :
+  TableName:
+    Value: !Ref 'DynamoDBTable'
+  TableArn:
+    Value: !GetAtt DynamoDBTable.Arn
