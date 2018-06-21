@@ -17,6 +17,6 @@ const regionMappings = {
 
 module.exports = {
   regions: Object.keys(regionMappings),
-  mappings: regionMappings,
+  regionMappings,
 };
 
