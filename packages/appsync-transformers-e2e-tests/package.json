@@ -17,21 +17,23 @@
   "author": "Michael Paris",
   "license": "MIT",
   "dependencies": {
-    "graphql": "^0.13.2",
     "appsync-mapping-template": "1.0",
+    "axios": "^0.18.0",
     "cloudform": "2.0.1",
+    "graphql": "^0.13.2",
     "graphql-transform": "1.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/graphql": "^0.13.1",
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",
+    "appsync-dynamodb-transformer": "1.0.0",
     "aws-sdk": "^2.259.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3",
-    "appsync-dynamodb-transformer": "1.0.0"
+    "typescript": "^2.8.3"
   },
   "jest": {
     "transform": {

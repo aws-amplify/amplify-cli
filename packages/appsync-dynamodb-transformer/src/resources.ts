@@ -24,6 +24,7 @@ export class ResourceFactory {
 
     // Outputs
     public static GraphQLAPIEndpointOutput = 'GraphQLAPIEndpoint'
+    public static GraphQLAPIApiKeyOutput = 'GraphQLAPIKey'
 
     // DataSource
     public static DynamoDBDataSourceLogicalID = 'DynamoDBDataSource'
@@ -81,7 +82,8 @@ export class ResourceFactory {
                 [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey()
             },
             Outputs: {
-                [ResourceFactory.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput()
+                [ResourceFactory.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
+                [ResourceFactory.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
             }
         }
     }
@@ -117,7 +119,17 @@ export class ResourceFactory {
             Description: "Your GraphQL API endpoint.",
             Value: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'GraphQLUrl'),
             Export: {
-                Name: Fn.Join(':', [Refs.StackName, "GraphQLAPIEndpoint"])
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiEndpoint"])
+            }
+        }
+    }
+
+    public makeApiKeyOutput(): Output {
+        return {
+            Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
+            Value: Fn.GetAtt(ResourceFactory.APIKeyLogicalID, 'ApiKey'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
             }
         }
     }
