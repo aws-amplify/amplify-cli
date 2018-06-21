@@ -1,6 +1,7 @@
 import DynamoDB from 'cloudform/types/dynamoDb'
 import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
+import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
 import {
@@ -15,21 +16,24 @@ type AppSyncDataSourceType = 'AMAZON_DYNAMODB' | 'AMAZON_ELASTICSEARCH' | 'AWS_L
 export class ResourceFactory {
 
     // Resources
-    public static GraphQLAPILogicalID = 'GraphQLAPILogicalID'
-    public static GraphQLSchemaLogicalID = 'GraphQLSchemaLogicalID'
-    public static DynamoDBTableLogicalID = 'DynamoDBTableLogicalID'
-    public static DynamoDBAccessIAMRoleLogicalID = 'DynamoDBAccessIAMRoleLogicalID'
-    public static APIKeyLogicalID = 'APIKeyLogicalID'
+    public static GraphQLAPILogicalID = 'GraphQLAPI'
+    public static GraphQLSchemaLogicalID = 'GraphQLSchema'
+    public static DynamoDBTableLogicalID = 'DynamoDBTable'
+    public static DynamoDBAccessIAMRoleLogicalID = 'DynamoDBAccessIAMRole'
+    public static APIKeyLogicalID = 'APIKey'
+
+    // Outputs
+    public static GraphQLAPIEndpointOutput = 'GraphQLAPIEndpoint'
 
     // DataSource
-    public static DynamoDBDataSourceLogicalID = 'DynamoDBDataSourceLogicalID'
+    public static DynamoDBDataSourceLogicalID = 'DynamoDBDataSource'
 
     public static ParameterIds = {
         AppSyncApiName: 'AppSyncApiName',
         DynamoDBTableName: 'DynamoDBTableName',
         ReadIOPS: 'ReadIOPS',
         WriteIOPS: 'WriteIOPS',
-        DynamoDBAccessIAMRole: 'DynamoDBAccessIAMRole',
+        DynamoDBAccessIAMRoleName: 'DynamoDBAccessIAMRoleName',
     }
 
     /**
@@ -56,7 +60,7 @@ export class ResourceFactory {
                 Description: 'The number of write IOPS the table should support.',
                 Default: 5
             }),
-            [ResourceFactory.ParameterIds.DynamoDBAccessIAMRole]: new StringParameter({
+            [ResourceFactory.ParameterIds.DynamoDBAccessIAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync.',
                 Default: 'AppSyncSimpleTransformRole'
             })
@@ -75,6 +79,9 @@ export class ResourceFactory {
                 [ResourceFactory.DynamoDBAccessIAMRoleLogicalID]: this.makeIAMRole(),
                 [ResourceFactory.DynamoDBDataSourceLogicalID]: this.makeDynamoDBDataSource(),
                 [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey()
+            },
+            Outputs: {
+                [ResourceFactory.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput()
             }
         }
     }
@@ -100,6 +107,19 @@ export class ResourceFactory {
         return new AppSync.ApiKey({
             ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId')
         })
+    }
+
+    /**
+     * Outputs
+     */
+    public makeAPIEndpointOutput(): Output {
+        return {
+            Description: "Your GraphQL API endpoint.",
+            Value: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'GraphQLUrl'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLAPIEndpoint"])
+            }
+        }
     }
 
     /**
@@ -140,7 +160,7 @@ export class ResourceFactory {
      */
     public makeIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Ref(ResourceFactory.ParameterIds.DynamoDBAccessIAMRole),
+            RoleName: Fn.Ref(ResourceFactory.ParameterIds.DynamoDBAccessIAMRoleName),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [

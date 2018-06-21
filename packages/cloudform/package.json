@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc --declaration",
+    "clean": "echo done",
     "generate": "ts-node --project tsconfig.json generator/generator.ts",
     "run-example": "ts-node ./cli/cloudform.ts example/example.ts"
   },

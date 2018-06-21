@@ -18,8 +18,8 @@ export class AppSyncSearchableTransformer extends Transformer {
         this.resources = new ResourceFactory();
     }
 
-    public before(ctx: TransformerContext): void {
-        // Any one time setup   
+    public before = (ctx: TransformerContext): void => {
+        // Any one time setup
     }
 
     /**
@@ -27,7 +27,7 @@ export class AppSyncSearchableTransformer extends Transformer {
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
-    public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Transformer code here
     }
 }

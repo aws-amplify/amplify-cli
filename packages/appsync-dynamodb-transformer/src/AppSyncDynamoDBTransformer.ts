@@ -1,7 +1,8 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
     DirectiveDefinitionNode, parse, DirectiveNode, TypeSystemDefinitionNode,
-    buildASTSchema, printSchema, ObjectTypeDefinitionNode, FieldDefinitionNode
+    buildASTSchema, printSchema, ObjectTypeDefinitionNode, FieldDefinitionNode,
+    print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
@@ -45,12 +46,12 @@ interface ModelDirectiveArgs {
 
 /**
  * The simple transform.
- * 
+ *
  * This transform creates a single DynamoDB table for all of your application's
  * data. It uses a standard key structure and nested map to store object values.
  * A relationKey field
- * 
- * { 
+ *
+ * {
  *  type (HASH),
  *  id (SORT),
  *  value (MAP),
@@ -74,10 +75,11 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         this.resources = new ResourceFactory();
     }
 
-    public before(ctx: TransformerContext): void {
+    public before = (ctx: TransformerContext): void => {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
+        ctx.mergeOutputs(template.Outputs)
         const queryType = blankObject('Query')
         const mutationType = blankObject('Mutation')
         ctx.addObject(mutationType)

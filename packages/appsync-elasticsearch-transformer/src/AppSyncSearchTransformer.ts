@@ -39,7 +39,7 @@ export class AppSyncSearchTransformer extends Transformer {
         this.resources = new ResourceFactory();
     }
 
-    public before(ctx: TransformerContext): void {
+    public before = (ctx: TransformerContext): void => {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
@@ -50,7 +50,7 @@ export class AppSyncSearchTransformer extends Transformer {
      * @param initial The input passed to the transform.
      * @param ctx The accumulated context for the transform.
      */
-    public object(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
 
         // Create the connection object type.
         const connection = makeConnection(makeNamedType(def.name.value))

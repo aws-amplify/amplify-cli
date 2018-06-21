@@ -15,16 +15,18 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
                 type: field.type,
-                description: field.description,
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
                 directives: []
             })
         )
     return {
         kind: 'InputObjectTypeDefinition',
-        description: {
-            kind: 'StringValue',
-            value: `Input type for ${obj.name.value} mutations`
-        },
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
         name: {
             kind: 'Name',
             value: name
@@ -44,16 +46,18 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
                 type: field.name.value === 'id' ?
                     wrapNonNull(field.type) :
                     unwrapNonNull(field.type),
-                description: field.description,
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
                 directives: []
             })
         )
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        description: {
-            kind: 'StringValue',
-            value: `Input type for ${obj.name.value} mutations`
-        },
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
         name: {
             kind: 'Name',
             value: name
@@ -67,10 +71,11 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     const name = graphqlName('Delete' + toUpper(obj.name.value) + 'Input')
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        description: {
-            kind: 'StringValue',
-            value: `Input type for ${obj.name.value} delete mutations`
-        },
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} delete mutations`
+        // },
         name: {
             kind: 'Name',
             value: name
@@ -79,10 +84,11 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
             kind: Kind.INPUT_VALUE_DEFINITION,
             name: { kind: 'Name', value: 'id' },
             type: makeNamedType('ID'),
-            description: {
-                kind: 'StringValue',
-                value: `The id of the ${obj.name.value} to delete.`
-            },
+            // TODO: Service does not support new style descriptions so wait.
+            // description: {
+            //     kind: 'StringValue',
+            //     value: `The id of the ${obj.name.value} to delete.`
+            // },
             directives: []
         }],
         directives: []

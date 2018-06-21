@@ -37,7 +37,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
             new AppSyncDynamoDBTransformer()
         ]
     })
-    const out = transformer.transform(validSchema);
+    const out = transformer.transform(validSchema)
     expect(out).toBeDefined()
     const schema = out.Resources[ResourceFactory.GraphQLSchemaLogicalID]
     expect(schema).toBeDefined()

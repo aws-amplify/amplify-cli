@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 0",
     "build": "tsc && cp lib/index.js lib/appsync",
+    "clean": "rm -rf ./lib",
     "lint": "tslint -p ./tslint.json"
   },
   "keywords": [

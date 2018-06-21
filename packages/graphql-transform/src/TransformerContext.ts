@@ -1,6 +1,7 @@
 import Template from 'cloudform/types/template'
 import Resource from 'cloudform/types/resource'
 import Parameter from 'cloudform/types/parameter'
+import Output from 'cloudform/types/output'
 import {
     TypeSystemDefinitionNode,
     ObjectTypeDefinitionNode,
@@ -83,6 +84,23 @@ export default class TransformerContext {
 
     public setResource(key: string, resource: Resource): void {
         this.template.Resources[key] = resource
+    }
+
+    public setOutput(key: string, output: Output): void {
+        this.template.Outputs[key] = output;
+    }
+
+    public getOutput(key: string): Output {
+        return this.template.Outputs[key]
+    }
+
+    public mergeOutputs(outputs: { [key: string]: Output }) {
+        for (const outputName of Object.keys(outputs)) {
+            if (this.template.Parameters[outputName]) {
+                throw new Error(`Conflicting CloudFormation parameter name: ${outputName}`)
+            }
+        }
+        this.template.Outputs = { ...this.template.Outputs, ...outputs }
     }
 
     /**
