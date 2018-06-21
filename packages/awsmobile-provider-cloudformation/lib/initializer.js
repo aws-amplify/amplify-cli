@@ -2,6 +2,7 @@ const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
+const ora = require('ora'); 
 const constants = require('../constants');
 const configurationManager = require('./configuration-manager');
 
@@ -24,13 +25,26 @@ function run(context) {
         ],
       };
 
+      const spinner = ora('Creating root stack');
+      spinner.start(); 
       awscfn.createStack(params, (err, data) => {
         if (err) {
-          reject(err);
-        } else {
-          processStackCreationData(ctxt, params, data);
-          resolve(ctxt);
-        }
+            spinner.fail('Root stack creation failed'); 
+            reject(err);
+        } 
+        const waitParams = {
+            StackName: stackName
+        }; 
+        spinner.start('Waiting for root stack creation to complete'); 
+        awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData)=>{
+            if(waitErr){
+                spinner.fail('Root stack creation failed'); 
+                reject(waitErr); 
+            }
+            spinner.succeed('Successfully created the root stack'); 
+            processStackCreationData(ctxt, waitData);
+            resolve(ctxt);
+        }); 
       });
     }));
 }
@@ -52,14 +66,14 @@ function getConfiguredAwsCfnClient(context) {
   return new aws.CloudFormation();
 }
 
-function processStackCreationData(context, params, data) {
-  const metaData = {
-    StackId: data.StackId,
-    StackName: params.StackName,
-    DeploymentBucket: params.Parameters[0].ParameterValue,
-  };
-  context.initInfo.metaData.provider = {};
-  context.initInfo.metaData.provider[constants.ProviderName] = metaData;
+function processStackCreationData(context, stackDescriptiondata) {
+    let metaData = {}; 
+    const {Outputs} = stackDescriptiondata.Stacks[0]; 
+    Outputs.forEach(element => {
+        metaData[element.OutputKey] = element.OutputValue; 
+    });
+    context.initInfo.metaData.provider = {};
+    context.initInfo.metaData.provider[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {
