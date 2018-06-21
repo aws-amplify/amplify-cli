@@ -1,7 +1,3 @@
-const ora = require('ora');
-
-let spinner;
-
 function run(context) {
   const initializationTasks = [];
   Object.keys(context.initInfo.projectConfig.providers).forEach((providerKey) => {

@@ -68,7 +68,7 @@ function processStackCreationData(context, params, data) {
 
 function onInitSuccessful(context){
     configurationManager.onInitSuccessful(context); 
-    stampAmplifyRunControl(context.initInfo.projectPath, metaData);
+    stampAmplifyRunControl(context.initInfo.projectPath, context.initInfo.metaData);
 }
   
 function stampAmplifyRunControl(projectPath, metaData) {

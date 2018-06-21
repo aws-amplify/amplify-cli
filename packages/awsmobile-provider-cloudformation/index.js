@@ -5,11 +5,16 @@ function init(context) {
   return initializer.run(context);
 }
 
+function onInitSuccessful(context) {
+  return initializer.onInitSuccessful(context);
+}
+
 function pushResources(context, category, resourceName) {
   return resourcePusher.run(context, category, resourceName);
 }
 
 module.exports = {
   init,
+  onInitSuccessful,
   pushResources,
 };
