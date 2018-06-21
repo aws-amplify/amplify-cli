@@ -2,7 +2,7 @@ const ora = require('ora');
 const { getProviderPlugins } = require('./get-provider-plugins');
 const { showResourceTable } = require('./resource-status');
 
-let spinner = ora('Updating resources in the cloud. This may take a few minutes...')
+const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 
 function pushResources(context, category, resourceName) {
   showResourceTable(category, resourceName);
@@ -25,7 +25,7 @@ function pushResources(context, category, resourceName) {
     })
     .then(() => spinner.succeed('All resources updated are updated in the cloud'))
     .catch((err) => {
-      console.log(err)
+      console.log(err);
       spinner.fail('There was an issue pushing the resources to the cloud');
       throw err;
     });

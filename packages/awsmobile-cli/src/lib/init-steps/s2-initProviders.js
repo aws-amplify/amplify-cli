@@ -5,11 +5,9 @@ function run(context) {
     initializationTasks.push(provider.init(context));
   });
   return Promise.all(initializationTasks)
-    .then(() => {
-        return context;
-    })
+    .then(() => context)
     .catch((err) => {
-        throw err;
+      throw err;
     });
 }
 
