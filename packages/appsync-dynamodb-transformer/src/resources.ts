@@ -37,12 +37,6 @@ export class ResourceFactory {
         DynamoDBAccessIAMRoleName: 'DynamoDBAccessIAMRoleName',
     }
 
-    /**
-     * The ResourceFactory creates AWS cloudformation resource specifications
-     * for the appsync-dynamodb-transformerer
-     */
-    constructor() { }
-
     public makeParams() {
         return {
             [ResourceFactory.ParameterIds.AppSyncApiName]: new StringParameter({

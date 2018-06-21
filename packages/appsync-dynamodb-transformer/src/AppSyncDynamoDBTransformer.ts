@@ -15,7 +15,7 @@ import { AppSync } from 'cloudform';
 
 /**
  * Create a Map<string, DirectiveNode[]> for each passed in item.
- * @param name 
+ * @param directives The directives to reduce into a map.
  */
 function makeDirectiveMap(directives: DirectiveNode[]) {
     const directiveMap: { [name: string]: DirectiveNode[] } = {}

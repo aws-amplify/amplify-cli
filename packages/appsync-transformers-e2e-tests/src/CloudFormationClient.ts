@@ -85,13 +85,20 @@ export class CloudFormationClient {
     /**
      * Periodically polls a stack waiting for a status change. If the status
      * changes to success then this resolves if it changes to error then it rejects.
-     * @param stackName 
+     * @param name: The stack name to wait for
+     * @param success: The status' that indicate success.
+     * @param failure: The status' that indicate failure.
+     * @param poll: The status' that indicate to keep polling.
+     * @param maxPolls: The max number of times to poll.
+     * @param pollInterval: The frequency of polling.
      */
     async waitForStack(
         name: string,
         success: StackStatus[] = ["CREATE_COMPLETE", "ROLLBACK_COMPLETE", "DELETE_COMPLETE", "UPDATE_COMPLETE", "UPDATE_ROLLBACK_COMPLETE"],
         failure: StackStatus[] = ["CREATE_FAILED", "ROLLBACK_FAILED", "DELETE_FAILED", "UPDATE_ROLLBACK_FAILED"],
-        poll: StackStatus[] = ["CREATE_IN_PROGRESS", "ROLLBACK_IN_PROGRESS", "UPDATE_IN_PROGRESS", "REVIEW_IN_PROGRESS", "DELETE_IN_PROGRESS", "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_IN_PROGRESS"],
+        poll: StackStatus[] = [
+            "CREATE_IN_PROGRESS", "ROLLBACK_IN_PROGRESS", "UPDATE_IN_PROGRESS", "REVIEW_IN_PROGRESS", "DELETE_IN_PROGRESS",
+            "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_IN_PROGRESS"],
         maxPolls: number = 100,
         pollInterval: number = 5,
     ): Promise<CloudFormation.Stack> {
@@ -104,14 +111,16 @@ export class CloudFormationClient {
             if (maxPolls === 0) {
                 return Promise.reject(new Error(`Stack did not finish before hitting the max poll count.`))
             } else {
-                return await this.wait<CloudFormation.Stack>(pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval)
+                return await this.wait<CloudFormation.Stack>(
+                    pollInterval, this.waitForStack, name, success, failure, poll, maxPolls - 1, pollInterval
+                )
             }
         }
         return Promise.reject(new Error('Invalid stack status: ' + stack.StackStatus))
     }
 
     /**
-     * 
+     * Promise wrapper around setTimeout.
      * @param secs The number of seconds to wait.
      * @param fun The function to call after waiting.
      * @param args The arguments to pass to the function after the wait.

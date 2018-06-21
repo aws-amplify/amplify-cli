@@ -16,9 +16,12 @@ export interface GraphQLResponse {
 export class GraphQLClient {
     constructor(private url: string, private headers: any) { }
 
-    async query(query: string, vars: any): Promise<GraphQLResponse> {
+    async query(query: string, variables: any): Promise<GraphQLResponse> {
         const axRes = await axios.post<GraphQLResponse>(
-            this.url, vars, { headers: this.headers }
+            this.url, {
+                query,
+                variables
+            }, { headers: this.headers }
         )
         return axRes.data
     }
