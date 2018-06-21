@@ -21,10 +21,15 @@ function run(context) {
 
   jsonString = JSON.stringify(context.initInfo.metaData, null, 4);
   const currentBackendMetaFilePath =
-        mobile.pathManager.getCurentBackendCloudAwsmobileMetaFilePath(projectPath);
+            mobile.pathManager.getCurentBackendCloudAwsmobileMetaFilePath(projectPath);
   fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
   const backendMetaFilePath = mobile.pathManager.getAwsmobileMetaFilePath(projectPath);
   fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+
+  Object.keys(context.initInfo.projectConfig.providers).forEach((providerKey) => {
+    const provider = require(context.initInfo.projectConfig.providers[providerKey]);
+    provider.onInitSuccessful(context);
+  });
   print.success('Project initialized successfully. Yay!');
 }
 

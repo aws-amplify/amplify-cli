@@ -17,6 +17,13 @@
         }
     },
     "Outputs" : {
+        "Region": {
+            "Description": "CloudFormation provider root stack region", 
+            "Value": {"Ref": "AWS::Region"},
+            "Export": {
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-Region"}
+            }
+        }, 
         "StackId": {
             "Description": "CloudFormation provider root stack id", 
             "Value": {"Ref": "AWS::StackName"},

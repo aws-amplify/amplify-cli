@@ -34,7 +34,7 @@ class CloudFormation {
           reject(createErr);
         }
         cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-          if(self.pollForEvents) {
+          if (self.pollForEvents) {
             clearInterval(self.pollForEvents);
           }
           if (completeErr) {
@@ -179,7 +179,7 @@ class CloudFormation {
                 reject(updateErr);
               }
               cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-                if(self.pollForEvents) {
+                if (self.pollForEvents) {
                   clearInterval(self.pollForEvents);
                 }
                 if (completeErr) {
