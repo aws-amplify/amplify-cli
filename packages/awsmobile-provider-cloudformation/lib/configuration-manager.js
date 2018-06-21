@@ -40,7 +40,7 @@ function carryOutConfigAction(context){
 }
 
 function initialize(context){
-    configProject(context)
+    return configProject(context)
     .then(validateConfig)
     .then(context=>{
         if(context.projectConfigInfo.configValidated){
@@ -56,7 +56,7 @@ function onInitSuccessful(context){
 }
 
 function create(context){
-    configProject(context)
+    return configProject(context)
     .then(validateConfig)
     .then(context=>{
         if(context.projectConfigInfo.configValidated){
@@ -69,7 +69,7 @@ function create(context){
 }
 
 function update(context){
-    configProject(context)
+    return configProject(context)
     .then(validateConfig)
     .then(context=>{
         if(context.projectConfigInfo.configValidated){
@@ -90,7 +90,6 @@ function remove(context){
 function printInfo(context){
     context.print.info('');
     context.print.info('General configuration of the aws-cloudformation provider follow that of the aws-cli.');
-    context.print.info('Please follow the aws-cli documentation to set up general configuration.');
     context.print.info('You can also configure the provider specifically for this project.'); 
     context.print.info('Project specific configuration overrides the general configuration.'); 
     context.print.info('');
