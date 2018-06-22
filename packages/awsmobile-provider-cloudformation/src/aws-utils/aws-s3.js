@@ -13,7 +13,7 @@ class S3 {
 
   uploadFile(s3Params) {
     const projectDetails = this.context.awsmobile.getProjectDetails();
-    const projectBucket = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucket : '';
+    const projectBucket = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucketName : '';
     s3Params.Bucket = projectBucket;
 
     return this.s3.putObject(s3Params).promise()

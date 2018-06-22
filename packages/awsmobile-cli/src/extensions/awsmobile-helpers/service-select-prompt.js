@@ -55,7 +55,7 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 }
 
 function serviceSelectionPrompt(context, category, supportedServices) {
-  const providerPlugins = getProviderPlugins();
+  const providerPlugins = getProviderPlugins(context);
   supportedServices = filterServicesByEnabledProviders(providerPlugins, supportedServices);
 
   return serviceQuestionWalkthrough(context, supportedServices, category);

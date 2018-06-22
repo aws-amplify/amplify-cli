@@ -3,10 +3,7 @@ function run(context) {
     // insert the provider selection logic here
     context.initInfo.projectConfig = {
       projectName: context.initInfo.projectName,
-      projectPath: context.initInfo.projectPath,
-      providers: {
-        'aws-cloudformation': 'awsmobile-provider-cloudformation',
-      },
+      projectPath: context.initInfo.projectPath
     };
 
     context.initInfo.metaData = {

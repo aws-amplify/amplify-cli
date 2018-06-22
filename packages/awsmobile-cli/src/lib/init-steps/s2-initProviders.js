@@ -1,7 +1,10 @@
+const { getProviderPlugins } = require('../../extensions/awsmobile-helpers/get-provider-plugins');
+
 function run(context) {
   const initializationTasks = [];
-  Object.keys(context.initInfo.projectConfig.providers).forEach((providerKey) => {
-    const provider = require(context.initInfo.projectConfig.providers[providerKey]);
+  const providers = getProviderPlugins(context); 
+  Object.keys(providers).forEach((providerKey) => {
+    const provider = require(providers[providerKey]);
     initializationTasks.push(provider.init(context));
   });
   return Promise.all(initializationTasks)

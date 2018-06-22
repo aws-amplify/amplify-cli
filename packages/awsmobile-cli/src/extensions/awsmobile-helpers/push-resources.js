@@ -10,7 +10,7 @@ function pushResources(context, category, resourceName) {
   return context.prompt.confirm('Are you sure you want to continue?')
     .then((answer) => {
       if (answer) {
-        const providerPlugins = getProviderPlugins();
+        const providerPlugins = getProviderPlugins(context);
         const providerPromises = [];
 
         Object.keys(providerPlugins).forEach((provider) => {

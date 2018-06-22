@@ -125,7 +125,7 @@ class CloudFormation {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.awsmobile.getProjectDetails();
     const stackName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].StackName : '';
-    const deploymentBucketName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucket : '';
+    const deploymentBucketName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucketName : '';
     if (!stackName) {
       throw (new Error('Project Stack is not yet created. Please use awsmobile init to initialize the project.'));
     }

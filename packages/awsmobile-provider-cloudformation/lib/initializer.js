@@ -30,8 +30,9 @@ function run(context) {
       awscfn.createStack(params, (err, data) => {
         if (err) {
             spinner.fail('Root stack creation failed'); 
-            reject(err);
-        } 
+            return reject(err);
+        }
+    
         const waitParams = {
             StackName: stackName
         }; 
@@ -39,7 +40,7 @@ function run(context) {
         awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData)=>{
             if(waitErr){
                 spinner.fail('Root stack creation failed'); 
-                reject(waitErr); 
+                return reject(waitErr); 
             }
             spinner.succeed('Successfully created the root stack'); 
             processStackCreationData(ctxt, waitData);

@@ -74,7 +74,9 @@ function update(context) {
     .then((ctxt) => {
       if (ctxt.projectConfigInfo.configValidated) {
         updateProjectConfig(ctxt);
+        return ctxt; 
       }
+      throw new Error('Invalid configuration settings');
     });
 }
 

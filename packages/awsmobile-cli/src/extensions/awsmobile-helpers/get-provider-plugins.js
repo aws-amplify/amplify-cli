@@ -1,10 +1,11 @@
-const fs = require('fs');
-const pathManager = require('./path-manager');
-
-function getProviderPlugins() {
-  const projectConfigFilePath = pathManager.getProjectConfigFilePath();
-  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-  return projectConfig.providers;
+function getProviderPlugins(context) {
+  let providers = {}; 
+  context.runtime.plugins.forEach(plugin => {
+    if(plugin.name.includes('provider')){
+      providers[plugin.name] = plugin.directory; 
+    }
+  });
+  return providers; 
 }
 
 module.exports = {
