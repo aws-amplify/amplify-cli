@@ -6,16 +6,17 @@ import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
 import AuthTransformer from 'appsync-auth-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
+import { ResourceConstants } from 'appsync-transformer-common'
 
 async function createStack(template: any, name: string, region: string) {
     const cloudformation = new CloudFormation({ apiVersion: '2010-05-15', region });
     const params = [
         {
-            ParameterKey: 'AppSyncApiName',
+            ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
             ParameterValue: name
         },
         {
-            ParameterKey: 'DynamoDBTableName',
+            ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
             ParameterValue: name + 'Table'
         },
         // {

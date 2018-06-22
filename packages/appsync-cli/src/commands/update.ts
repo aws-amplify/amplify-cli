@@ -5,28 +5,29 @@ import DynamoDBTransformer from 'appsync-dynamodb-transformer'
 import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
+import { ResourceConstants } from 'appsync-transformer-common'
 
 async function updateStack(template: any, name: string, region: string) {
     const cloudformation = new CloudFormation({ apiVersion: '2010-05-15', region });
     const params = [
         {
-            ParameterKey: 'AppSyncApiName',
+            ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
             UsePreviousValue: true
         },
         {
-            ParameterKey: 'DynamoDBTableName',
+            ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
             UsePreviousValue: true
         },
         {
-            ParameterKey: 'ElasticSearchDomainName',
+            ParameterKey: ResourceConstants.PARAMETERS.ElasticSearchDomainName,
             UsePreviousValue: true
         },
         {
-            ParameterKey: 'IAMRoleName',
+            ParameterKey: ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName,
             UsePreviousValue: true
         },
         {
-            ParameterKey: 'StreamingIAMRoleName',
+            ParameterKey: ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName,
             UsePreviousValue: true
         }
     ]

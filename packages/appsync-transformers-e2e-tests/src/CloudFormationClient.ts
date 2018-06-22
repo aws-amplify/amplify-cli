@@ -1,5 +1,6 @@
 import { CloudFormation } from 'aws-sdk'
 import { DescribeStacksOutput, StackStatus } from 'aws-sdk/clients/cloudformation';
+import { ResourceConstants } from 'appsync-transformer-common'
 
 async function promisify<I, O>(
     fun: (arg: I, cb: (e: Error, d: O) => void) => void,
@@ -33,15 +34,15 @@ export class CloudFormationClient {
     async createStack(template: any, name: string) {
         const params = [
             {
-                ParameterKey: 'AppSyncApiName',
+                ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
                 ParameterValue: name
             },
             {
-                ParameterKey: 'DynamoDBTableName',
+                ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
                 ParameterValue: name + 'Table'
             },
             {
-                ParameterKey: 'DynamoDBAccessIAMRoleName',
+                ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName,
                 ParameterValue: name + 'Role'
             }
         ]

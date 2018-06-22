@@ -26,7 +26,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
 
 test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     const validSchema = `type Post @model(queries: { get: "customGetPost" }) {
-        id: ID! 
+        id: ID!
         title: String!
         createdAt: String
         updatedAt: String

@@ -9,6 +9,14 @@ export class ResourceConstants {
         DynamoDBModelTableLogicalID: 'DynamoDBModelTable',
         DynamoDBModelTableAccessIAMRoleLogicalID: 'DynamoDBModelTableAccessIAMRole',
         DynamoDBModelTableDataSourceLogicalID: 'DynamoDBModelTableDataSource',
+
+        // ElasticSearch
+        ElasticSearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
+        ElasticSearchDomainLogicalID: 'ElasticSearchDomain',
+        ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
+        ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
+        ElasticSearchStreamingLambdaEventSourceMappingLogicalID: 'ElasticSearchStreamingLambdaEventSourceMapping',
+        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource'
     }
     public static PARAMETERS = {
         // AppSync
@@ -18,7 +26,20 @@ export class ResourceConstants {
         DynamoDBModelTableName: 'DynamoDBModelTableName',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
-        DynamoDBModelTableAccessIAMRoleName: 'DynamoDBModelTableAccessIAMRoleName'
+        DynamoDBModelTableAccessIAMRoleName: 'DynamoDBModelTableAccessIAMRoleName',
+
+        // ElasticSearch
+        ElasticSearchDomainName: 'ElasticSearchDomainName',
+        ElasticSearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
+        ElasticSearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
+        ElasticSearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
+        ElasticSearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
+        ElasticSearchInstanceCount: 'ElasticSearchInstanceCount',
+        ElasticSearchInstanceType: 'ElasticSearchInstanceType',
+        ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
+        ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
+        ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
+        ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version'
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {}

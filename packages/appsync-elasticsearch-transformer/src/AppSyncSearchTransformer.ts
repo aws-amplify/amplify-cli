@@ -1,25 +1,24 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
-    DirectiveDefinitionNode, parse, DirectiveNode, TypeSystemDefinitionNode,
-    buildASTSchema, printSchema, ObjectTypeDefinitionNode, FieldDefinitionNode
+    DirectiveNode, ObjectTypeDefinitionNode, FieldDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    blankObject, makeField, makeArg, makeNamedType,
-    makeNonNullType, makeSchema, makeOperationType,
-    blankObjectExtension, makeConnection
+    makeSearchConnection
 } from './definitions'
-import Template from 'cloudform/types/template'
-import { AppSync } from 'cloudform';
+import {
+    makeNamedType, blankObjectExtension, makeArg, makeField, makeNonNullType,
+    extensionWithFields
+} from 'appsync-transformer-common'
 
 /**
  * The simple transform.
- * 
+ *
  * This transform creates a single DynamoDB table for all of your application's
  * data. It uses a standard key structure and nested map to store object values.
  * A relationKey field
- * 
- * { 
+ *
+ * {
  *  type (HASH),
  *  id (SORT),
  *  value (MAP),
@@ -53,10 +52,10 @@ export class AppSyncSearchTransformer extends Transformer {
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
 
         // Create the connection object type.
-        const connection = makeConnection(makeNamedType(def.name.value))
+        const connection = makeSearchConnection(makeNamedType(def.name.value))
         ctx.addObject(connection)
 
-        const queryType = blankObjectExtension('Query')
+        let queryType = blankObjectExtension('Query')
 
         // Todo: The @search directive in the current setup should really be a field transform.
         // This object transform should create the search filter & sort inputs as well as the
@@ -71,8 +70,9 @@ export class AppSyncSearchTransformer extends Transformer {
             searchableFields
         )
         ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
-        queryType.fields.push(
-            makeField(
+        queryType = extensionWithFields(
+            queryType,
+            [makeField(
                 searchResolver.Properties.FieldName,
                 [
                     makeArg('query', makeNonNullType(makeNamedType('String'))),
@@ -80,7 +80,7 @@ export class AppSyncSearchTransformer extends Transformer {
                     makeArg('after', makeNamedType('String'))
                 ],
                 makeNamedType(connection.name.value)
-            )
+            )]
         )
         ctx.addObjectExtension(queryType)
     }

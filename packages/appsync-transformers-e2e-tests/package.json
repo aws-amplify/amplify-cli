@@ -21,7 +21,8 @@
     "axios": "^0.18.0",
     "cloudform": "2.0.1",
     "graphql": "^0.13.2",
-    "graphql-transform": "1.0"
+    "graphql-transform": "1.0",
+    "appsync-transformer-common": "1.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

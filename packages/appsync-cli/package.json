@@ -24,7 +24,8 @@
     "graphql-transform": "1.0",
     "appsync-dynamodb-transformer": "1.0",
     "appsync-elasticsearch-transformer": "1.0",
-    "appsync-auth-transformer": "1.0"
+    "appsync-auth-transformer": "1.0",
+    "appsync-transformer-common": "1.0"
   },
   "devDependencies": {
     "@types/node": "^10.1.2",
