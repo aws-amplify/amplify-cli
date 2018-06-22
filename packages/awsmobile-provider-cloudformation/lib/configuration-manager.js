@@ -53,7 +53,11 @@ function initialize(context) {
 }
 
 function onInitSuccessful(context) {
-  return createProjectConfig(context);
+    if(context.projectConfigInfo.action === 'init'){
+        return createProjectConfig(context);
+    }else{
+        return context; 
+    }
 }
 
 function create(context) {

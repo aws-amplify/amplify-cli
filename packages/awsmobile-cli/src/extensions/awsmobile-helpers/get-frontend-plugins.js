@@ -1,14 +1,14 @@
-function getProviderPlugins(context) {
-    let providers = {}; 
+function getFrontendPlugins(context) {
+    let frontendPlugins = {}; 
     context.runtime.plugins.forEach(plugin => {
       if(plugin.name.includes('frontend')){
-        providers[plugin.name] = plugin.directory; 
+        frontendPlugins[plugin.name] = plugin.directory; 
       }
     });
-    return providers; 
+    return frontendPlugins; 
 }
   
 module.exports = {
-    getProviderPlugins,
+    getFrontendPlugins,
 };
   
