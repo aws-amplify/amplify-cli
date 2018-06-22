@@ -3,7 +3,7 @@ import File from '../types/File';
 import GraphQLTransform from 'graphql-transform';
 import DynamoDBTransformer from 'appsync-dynamodb-transformer'
 import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
-import { exec } from 'child_process'
+import AuthTransformer from 'appsync-auth-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
 
@@ -18,18 +18,18 @@ async function createStack(template: any, name: string, region: string) {
             ParameterKey: 'DynamoDBTableName',
             ParameterValue: name + 'Table'
         },
-        {
-            ParameterKey: 'ElasticSearchDomainName',
-            ParameterValue: name.toLowerCase()
-        },
-        {
-            ParameterKey: 'IAMRoleName',
-            ParameterValue: name + 'Role'
-        },
-        {
-            ParameterKey: 'StreamingIAMRoleName',
-            ParameterValue: name + 'StreamingLambda'
-        }
+        // {
+        //     ParameterKey: 'ElasticSearchDomainName',
+        //     ParameterValue: name.toLowerCase()
+        // },
+        // {
+        //     ParameterKey: 'IAMRoleName',
+        //     ParameterValue: name + 'Role'
+        // },
+        // {
+        //     ParameterKey: 'StreamingIAMRoleName',
+        //     ParameterValue: name + 'StreamingLambda'
+        // }
     ]
     // const paramOverrides = Object.keys(params).map((k: string) => `${k}=${params[k]}`).join(' ')
     return await new Promise((resolve, reject) => {
@@ -74,7 +74,8 @@ export default class extends Command {
         const transformer = new GraphQLTransform({
             transformers: [
                 new DynamoDBTransformer(),
-                new ElasticSearchTransformer()
+                // new ElasticSearchTransformer(),
+                new AuthTransformer()
             ]
         })
         const cfdoc = transformer.transform(schema.readSync());

@@ -1,33 +1,16 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
-    DirectiveDefinitionNode, parse, DirectiveNode, TypeSystemDefinitionNode,
-    buildASTSchema, printSchema, ObjectTypeDefinitionNode, FieldDefinitionNode,
-    print
+    DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    makeCreateInputObject, blankObject, makeField, makeArg, makeNamedType,
-    makeNonNullType, makeSchema, makeOperationType, makeUpdateInputObject,
-    makeDeleteInputObject, blankObjectExtension, extensionWithFields
+    makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject
 } from './definitions'
-import Template from 'cloudform/types/template'
-import { AppSync } from 'cloudform';
-
-/**
- * Create a Map<string, DirectiveNode[]> for each passed in item.
- * @param directives The directives to reduce into a map.
- */
-function makeDirectiveMap(directives: DirectiveNode[]) {
-    const directiveMap: { [name: string]: DirectiveNode[] } = {}
-    for (const dir of directives) {
-        if (!directiveMap[dir.name.value]) {
-            directiveMap[dir.name.value] = [dir]
-        } else {
-            directiveMap[dir.name.value].push(dir)
-        }
-    }
-    return directiveMap;
-}
+import {
+    blankObject, makeField, makeArg, makeNamedType,
+    makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
+    extensionWithFields, ResourceConstants
+} from 'appsync-transformer-common'
 
 interface QueryNameMap {
     get?: string
@@ -93,7 +76,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
-        ctx.setResource(ResourceFactory.GraphQLSchemaLogicalID, schemaResource)
+        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
     public after = (ctx: TransformerContext): void => {
@@ -103,7 +86,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         })
         const SDL = printSchema(built)
         const schemaResource = this.resources.makeAppSyncSchema(SDL)
-        ctx.setResource(ResourceFactory.GraphQLSchemaLogicalID, schemaResource)
+        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
     /**

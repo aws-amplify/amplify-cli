@@ -1,5 +1,3 @@
-import { ArgumentNode, valueFromASTUntyped, ValueNode } from 'graphql';
-
 export function graphqlName(val: string): string {
     if (!val.trim()) { return ''; }
     const cleaned = val.replace(/^[^_A-Za-z]+|[^_0-9A-Za-z]/g, '')

@@ -5,57 +5,31 @@ import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
 import {
-    DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
-    print, str, ref, obj, set, iff, ifElse, list, raw,
-    forEach, compoundExpression, qref, toJson
+    DynamoDBMappingTemplate, print, str, ref, obj, set, compoundExpression, qref
 } from 'appsync-mapping-template'
-import { toUpper, graphqlName } from './util'
-
-type AppSyncDataSourceType = 'AMAZON_DYNAMODB' | 'AMAZON_ELASTICSEARCH' | 'AWS_LAMBDA' | 'NONE'
+import { ResourceConstants, graphqlName, toUpper } from 'appsync-transformer-common'
 
 export class ResourceFactory {
 
-    // Resources
-    public static GraphQLAPILogicalID = 'GraphQLAPI'
-    public static GraphQLSchemaLogicalID = 'GraphQLSchema'
-    public static DynamoDBTableLogicalID = 'DynamoDBTable'
-    public static DynamoDBAccessIAMRoleLogicalID = 'DynamoDBAccessIAMRole'
-    public static APIKeyLogicalID = 'APIKey'
-
-    // Outputs
-    public static GraphQLAPIEndpointOutput = 'GraphQLAPIEndpoint'
-    public static GraphQLAPIApiKeyOutput = 'GraphQLAPIKey'
-
-    // DataSource
-    public static DynamoDBDataSourceLogicalID = 'DynamoDBDataSource'
-
-    public static ParameterIds = {
-        AppSyncApiName: 'AppSyncApiName',
-        DynamoDBTableName: 'DynamoDBTableName',
-        ReadIOPS: 'ReadIOPS',
-        WriteIOPS: 'WriteIOPS',
-        DynamoDBAccessIAMRoleName: 'DynamoDBAccessIAMRoleName',
-    }
-
     public makeParams() {
         return {
-            [ResourceFactory.ParameterIds.AppSyncApiName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
                 Description: 'The name of the AppSync API',
                 Default: 'AppSyncSimpleTransform'
             }),
-            [ResourceFactory.ParameterIds.DynamoDBTableName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableName]: new StringParameter({
                 Description: 'The name of the DynamoDB table backing your API.',
                 Default: 'AppSyncSimpleTransformTable'
             }),
-            [ResourceFactory.ParameterIds.ReadIOPS]: new NumberParameter({
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5
             }),
-            [ResourceFactory.ParameterIds.WriteIOPS]: new NumberParameter({
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
                 Description: 'The number of write IOPS the table should support.',
                 Default: 5
             }),
-            [ResourceFactory.ParameterIds.DynamoDBAccessIAMRoleName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync.',
                 Default: 'AppSyncSimpleTransformRole'
             })
@@ -69,15 +43,15 @@ export class ResourceFactory {
         return {
             Parameters: this.makeParams(),
             Resources: {
-                [ResourceFactory.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
-                [ResourceFactory.DynamoDBTableLogicalID]: this.makeDynamoDBTable(),
-                [ResourceFactory.DynamoDBAccessIAMRoleLogicalID]: this.makeIAMRole(),
-                [ResourceFactory.DynamoDBDataSourceLogicalID]: this.makeDynamoDBDataSource(),
-                [ResourceFactory.APIKeyLogicalID]: this.makeAppSyncApiKey()
+                [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
+                [ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID]: this.makeDynamoDBTable(),
+                [ResourceConstants.RESOURCES.DynamoDBModelTableAccessIAMRoleLogicalID]: this.makeIAMRole(),
+                [ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID]: this.makeDynamoDBDataSource(),
+                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
             },
             Outputs: {
-                [ResourceFactory.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
-                [ResourceFactory.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
+                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
+                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
             }
         }
     }
@@ -87,21 +61,21 @@ export class ResourceFactory {
      */
     public makeAppSyncAPI() {
         return new AppSync.GraphQLApi({
-            Name: Fn.Ref(ResourceFactory.ParameterIds.AppSyncApiName),
+            Name: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
             AuthenticationType: 'API_KEY'
         })
     }
 
     public makeAppSyncSchema(schema: string) {
         return new AppSync.GraphQLSchema({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Definition: schema
         })
     }
 
     public makeAppSyncApiKey() {
         return new AppSync.ApiKey({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId')
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
         })
     }
 
@@ -111,7 +85,7 @@ export class ResourceFactory {
     public makeAPIEndpointOutput(): Output {
         return {
             Description: "Your GraphQL API endpoint.",
-            Value: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'GraphQLUrl'),
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'GraphQLUrl'),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "GraphQLApiEndpoint"])
             }
@@ -121,7 +95,7 @@ export class ResourceFactory {
     public makeApiKeyOutput(): Output {
         return {
             Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
-            Value: Fn.GetAtt(ResourceFactory.APIKeyLogicalID, 'ApiKey'),
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
             }
@@ -134,7 +108,7 @@ export class ResourceFactory {
      */
     public makeDynamoDBTable() {
         return new DynamoDB.Table({
-            TableName: Fn.Ref(ResourceFactory.ParameterIds.DynamoDBTableName),
+            TableName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableName),
             KeySchema: [{
                 AttributeName: '__typename',
                 KeyType: 'HASH'
@@ -150,8 +124,8 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }],
             ProvisionedThroughput: {
-                ReadCapacityUnits: Fn.Ref(ResourceFactory.ParameterIds.ReadIOPS),
-                WriteCapacityUnits: Fn.Ref(ResourceFactory.ParameterIds.WriteIOPS)
+                ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
             },
             StreamSpecification: {
                 StreamViewType: 'NEW_AND_OLD_IMAGES'
@@ -166,7 +140,7 @@ export class ResourceFactory {
      */
     public makeIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Ref(ResourceFactory.ParameterIds.DynamoDBAccessIAMRoleName),
+            RoleName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -198,8 +172,8 @@ export class ResourceFactory {
                                     'dynamodb:UpdateItem'
                                 ],
                                 Resource: [
-                                    Fn.GetAtt(ResourceFactory.DynamoDBTableLogicalID, 'Arn'),
-                                    Fn.Join('/', [Fn.GetAtt(ResourceFactory.DynamoDBTableLogicalID, 'Arn'), '*'])
+                                    Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'),
+                                    Fn.Join('/', [Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), '*'])
                                 ]
                             }
                         ]
@@ -214,12 +188,12 @@ export class ResourceFactory {
      * spec for a data source pointing to the dynamodb table.
      */
     public makeDynamoDBDataSource() {
-        const logicalName = ResourceFactory.DynamoDBTableLogicalID
+        const logicalName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
         return new AppSync.DataSource({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Name: logicalName,
             Type: 'AMAZON_DYNAMODB',
-            ServiceRoleArn: Fn.GetAtt(ResourceFactory.DynamoDBAccessIAMRoleLogicalID, 'Arn'),
+            ServiceRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableAccessIAMRoleLogicalID, 'Arn'),
             DynamoDBConfig: {
                 AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(logicalName, 'Arn'))),
                 TableName: Fn.Ref(logicalName)
@@ -234,8 +208,8 @@ export class ResourceFactory {
     public makeCreateResolver(type: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type))
         return new AppSync.Resolver({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
@@ -262,14 +236,14 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceFactory.GraphQLSchemaLogicalID)
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     public makeUpdateResolver(type: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type))
         return new AppSync.Resolver({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
@@ -290,7 +264,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceFactory.GraphQLSchemaLogicalID)
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     /**
@@ -300,8 +274,8 @@ export class ResourceFactory {
     public makeGetResolver(type: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
         return new AppSync.Resolver({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
             RequestMappingTemplate: print(
@@ -315,18 +289,19 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceFactory.GraphQLSchemaLogicalID)
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     /**
      * Create a resolver that deletes an item from DynamoDB.
-     * @param type 
+     * @param type The name of the type to delete an item of.
+     * @param nameOverride A user provided override for the field name.
      */
     public makeDeleteResolver(type: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type))
         return new AppSync.Resolver({
-            ApiId: Fn.GetAtt(ResourceFactory.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceFactory.DynamoDBDataSourceLogicalID, 'Name'),
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
@@ -340,6 +315,6 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceFactory.GraphQLSchemaLogicalID)
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 }

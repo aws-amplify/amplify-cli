@@ -1,6 +1,6 @@
 type Post @model {
     id: ID!
-    title: String! @search
-    rating: Int! @search
-    tags: [String] @search
+    title: String!
+    rating: Int!
+    tags: [String]
 }

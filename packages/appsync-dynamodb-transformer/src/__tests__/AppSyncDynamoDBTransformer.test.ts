@@ -1,15 +1,15 @@
 import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
+    ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
+    DefinitionNode, Kind
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
+import { ResourceConstants } from 'appsync-transformer-common'
 import { AppSyncDynamoDBTransformer } from '../AppSyncDynamoDBTransformer'
-import { ResourceFactory } from '../resources'
 
 test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     const validSchema = `
-    type Post @model { 
-        id: ID! 
+    type Post @model {
+        id: ID!
         title: String!
         createdAt: String
         updatedAt: String
@@ -25,7 +25,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
 });
 
 test('Test AppSyncDynamoDBTransformer with query overrides', () => {
-    const validSchema = `type Post @model(queries: { get: "customGetPost" }) { 
+    const validSchema = `type Post @model(queries: { get: "customGetPost" }) {
         id: ID! 
         title: String!
         createdAt: String
@@ -39,10 +39,10 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     })
     const out = transformer.transform(validSchema)
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceFactory.GraphQLSchemaLogicalID]
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
     expect(schema).toBeDefined()
-    const definition = schema['Properties']['Definition']
-    expect(definition).toBeDefined
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
@@ -51,7 +51,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
 
 test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     const validSchema = `type Post @model(mutations: { create: "customCreatePost", update: "customUpdatePost", delete: "customDeletePost" }) { 
-        id: ID! 
+        id: ID!
         title: String!
         createdAt: String
         updatedAt: String
@@ -64,10 +64,10 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceFactory.GraphQLSchemaLogicalID]
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
     expect(schema).toBeDefined()
-    const definition = schema['Properties']['Definition']
-    expect(definition).toBeDefined
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
     expect(mutationType).toBeDefined()
@@ -76,7 +76,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
 
 test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) { 
-        id: ID! 
+        id: ID!
         title: String!
         createdAt: String
         updatedAt: String
@@ -89,10 +89,10 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceFactory.GraphQLSchemaLogicalID]
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
     expect(schema).toBeDefined()
-    const definition = schema['Properties']['Definition']
-    expect(definition).toBeDefined
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
     expect(mutationType).toBeDefined()
@@ -108,7 +108,7 @@ function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
 }
 
 function doNotExpectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
-    for (const fieldName in fields) {
+    for (const fieldName of fields) {
         expect(
             type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
         ).toBeUndefined()

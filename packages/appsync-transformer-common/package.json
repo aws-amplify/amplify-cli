@@ -1,7 +1,7 @@
 {
-  "name": "appsync-dynamodb-transformer",
+  "name": "appsync-transformer-common",
   "version": "1.0.0",
-  "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
+  "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
@@ -20,8 +20,7 @@
     "graphql": "^0.13.2",
     "appsync-mapping-template": "1.0",
     "cloudform": "2.0.1",
-    "graphql-transform": "1.0",
-    "appsync-transformer-common": "1.0"
+    "graphql-transform": "1.0"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",
