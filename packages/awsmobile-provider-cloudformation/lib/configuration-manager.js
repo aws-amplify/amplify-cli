@@ -53,11 +53,10 @@ function initialize(context) {
 }
 
 function onInitSuccessful(context) {
-    if(context.projectConfigInfo.action === 'init'){
-        return createProjectConfig(context);
-    }else{
-        return context; 
-    }
+  if (context.projectConfigInfo.action === 'init') {
+    return createProjectConfig(context);
+  }
+  return context;
 }
 
 function create(context) {
@@ -78,7 +77,7 @@ function update(context) {
     .then((ctxt) => {
       if (ctxt.projectConfigInfo.configValidated) {
         updateProjectConfig(ctxt);
-        return ctxt; 
+        return ctxt;
       }
       throw new Error('Invalid configuration settings');
     });

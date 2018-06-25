@@ -12,35 +12,35 @@ function run(context) {
 
     context.initInfo.projectConfig = {
       projectName: context.initInfo.projectName,
-      projectPath: context.initInfo.projectPath
+      projectPath: context.initInfo.projectPath,
     };
 
     context.initInfo.metaData = {
     };
 
-    scanWithFrontendHandlers(context); 
+    scanWithFrontendHandlers(context);
 
     resolve(context);
   });
 }
 
-function scanWithFrontendHandlers(context){
-  const frontendPlugins = getFrontendPlugins(context); 
-  let suitableHandler
-  let fitToHandleScore = -1; 
-  Object.keys(frontendPlugins).forEach(key=>{
-      const {scanProject} = require(frontendPlugins[key]); 
-      const newScore = scanProject(context); 
-      if(newScore > fitToHandleScore){
-        fitToHandleScore = newScore; 
-        suitableHandler = key; 
-      }
-  }); 
+function scanWithFrontendHandlers(context) {
+  const frontendPlugins = getFrontendPlugins(context);
+  let suitableHandler;
+  let fitToHandleScore = -1;
+  Object.keys(frontendPlugins).forEach((key) => {
+    const { scanProject } = require(frontendPlugins[key]);
+    const newScore = scanProject(context);
+    if (newScore > fitToHandleScore) {
+      fitToHandleScore = newScore;
+      suitableHandler = key;
+    }
+  });
 
-  context.initInfo.frontendPlugins = frontendPlugins; 
-  context.initInfo.suitableHandler = suitableHandler; 
+  context.initInfo.frontendPlugins = frontendPlugins;
+  context.initInfo.suitableHandler = suitableHandler;
 
-  return suitableHandler; 
+  return suitableHandler;
 }
 
 module.exports = {

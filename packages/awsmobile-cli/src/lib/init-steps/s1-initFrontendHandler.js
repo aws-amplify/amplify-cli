@@ -10,12 +10,12 @@ function run(context) {
   };
   return inquirer.prompt(selectFrontendHandler)
     .then((answers) => {
-      context.initInfo.projectConfig.frontendHandler = {}; 
-      context.initInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] = 
+      context.initInfo.projectConfig.frontendHandler = {};
+      context.initInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] =
         context.initInfo.frontendPlugins[answers.selectedFrontendHandler];
-      delete context.initInfo.frontendPlugins; 
-      delete context.initInfo.suitableHandler; 
-      return context; 
+      delete context.initInfo.frontendPlugins;
+      delete context.initInfo.suitableHandler;
+      return context;
     });
 }
 

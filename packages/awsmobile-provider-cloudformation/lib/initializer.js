@@ -2,7 +2,7 @@ const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
-const ora = require('ora'); 
+const ora = require('ora');
 const constants = require('../constants');
 const configurationManager = require('./configuration-manager');
 
@@ -26,26 +26,26 @@ function run(context) {
       };
 
       const spinner = ora('Creating root stack');
-      spinner.start(); 
-      awscfn.createStack(params, (err, data) => {
+      spinner.start();
+      awscfn.createStack(params, (err) => {
         if (err) {
-            spinner.fail('Root stack creation failed'); 
-            return reject(err);
+          spinner.fail('Root stack creation failed');
+          return reject(err);
         }
-    
+
         const waitParams = {
-            StackName: stackName
-        }; 
-        spinner.start('Waiting for root stack creation to complete'); 
-        awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData)=>{
-            if(waitErr){
-                spinner.fail('Root stack creation failed'); 
-                return reject(waitErr); 
-            }
-            spinner.succeed('Successfully created the root stack'); 
-            processStackCreationData(ctxt, waitData);
-            resolve(ctxt);
-        }); 
+          StackName: stackName,
+        };
+        spinner.start('Waiting for root stack creation to complete');
+        awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData) => {
+          if (waitErr) {
+            spinner.fail('Root stack creation failed');
+            return reject(waitErr);
+          }
+          spinner.succeed('Successfully created the root stack');
+          processStackCreationData(ctxt, waitData);
+          resolve(ctxt);
+        });
       });
     }));
 }
@@ -68,13 +68,13 @@ function getConfiguredAwsCfnClient(context) {
 }
 
 function processStackCreationData(context, stackDescriptiondata) {
-    let metaData = {}; 
-    const {Outputs} = stackDescriptiondata.Stacks[0]; 
-    Outputs.forEach(element => {
-        metaData[element.OutputKey] = element.OutputValue; 
-    });
-    context.initInfo.metaData.provider = {};
-    context.initInfo.metaData.provider[constants.ProviderName] = metaData;
+  const metaData = {};
+  const { Outputs } = stackDescriptiondata.Stacks[0];
+  Outputs.forEach((element) => {
+    metaData[element.OutputKey] = element.OutputValue;
+  });
+  context.initInfo.metaData.provider = {};
+  context.initInfo.metaData.provider[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {

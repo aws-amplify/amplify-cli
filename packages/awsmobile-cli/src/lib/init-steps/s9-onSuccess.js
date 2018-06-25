@@ -1,7 +1,5 @@
 const fs = require('fs-extra');
 const { print } = require('gluegun/print');
-const { getProviderPlugins } = require('../../extensions/awsmobile-helpers/get-provider-plugins');
-
 
 function run(context) {
   const { projectPath } = context.initInfo;
@@ -28,7 +26,7 @@ function run(context) {
   const backendMetaFilePath = mobile.pathManager.getAwsmobileMetaFilePath(projectPath);
   fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
 
-  const providers = getProviderPlugins(context); 
+  const { providers } = context.initInfo.projectConfig;
   Object.keys(providers).forEach((providerKey) => {
     const provider = require(providers[providerKey]);
     provider.onInitSuccessful(context);
