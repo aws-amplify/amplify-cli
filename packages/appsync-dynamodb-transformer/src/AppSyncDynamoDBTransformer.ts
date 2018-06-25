@@ -4,16 +4,18 @@ import {
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject
+    makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
+    makeTableScalarFilterInputObject, makeTableXFilterInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
     makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
-    extensionWithFields, ResourceConstants
+    extensionWithFields, ResourceConstants, makeListType
 } from 'appsync-transformer-common'
 
 interface QueryNameMap {
-    get?: string
+    get?: string;
+    list?: string;
 }
 
 interface MutationNameMap {
@@ -118,10 +120,12 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         let shouldMakeUpdate = true;
         let shouldMakeDelete = true;
         let shouldMakeGet = true;
+        let shouldMakeList = true;
         let createFieldNameOverride = undefined;
         let updateFieldNameOverride = undefined;
         let deleteFieldNameOverride = undefined;
         let getFieldNameOverride = undefined;
+        let listFieldNameOverride = undefined;
 
         // Figure out which queries to make and if they have name overrides.
         if (directiveArguments.queries) {
@@ -129,6 +133,11 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 shouldMakeGet = false;
             } else {
                 getFieldNameOverride = directiveArguments.queries.get
+            }
+            if (!directiveArguments.queries.list) {
+                shouldMakeList = false;
+            } else {
+                listFieldNameOverride = directiveArguments.queries.list
             }
         }
 
@@ -208,6 +217,69 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 )]
             )
         }
+
+        if (shouldMakeList) {
+
+            // Create the TableXConnection
+            const tableXConnectionName = `Table${def.name.value}Connection`
+            const connectionType = blankObject(tableXConnectionName)
+            ctx.addObject(connectionType)
+
+            // Create TableXConnection type with items and nextToken
+            let connectionTypeExtension = blankObjectExtension(tableXConnectionName)
+            connectionTypeExtension = extensionWithFields(
+                connectionTypeExtension,
+                [makeField(
+                    'items',
+                    [],
+                    makeListType(makeNamedType(def.name.value))
+                )]
+            )
+            connectionTypeExtension = extensionWithFields(
+                connectionTypeExtension,
+                [makeField(
+                    'nextToken',
+                    [],
+                    makeNamedType('String')
+                )]
+            )
+            ctx.addObjectExtension(connectionTypeExtension)
+
+            // Create the list resolver
+            const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride)
+            ctx.setResource(`List${def.name.value}Resolver`, listResolver)
+
+            // Create the Scalar filter inputs
+            const tableStringFilterInput = makeTableScalarFilterInputObject('String')
+            const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
+            const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
+            const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
+            const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
+            ctx.addInput(tableStringFilterInput)
+            ctx.addInput(tableIDFilterInput)
+            ctx.addInput(tableIntFilterInput)
+            ctx.addInput(tableFloatFilterInput)
+            ctx.addInput(tableBooleanFilterInput)
+
+            // Create the TableXFilterInput
+            const tableXFilterInput = makeTableXFilterInputObject(def)
+            ctx.addInput(tableXFilterInput)
+
+            // Extend the query type to include listX
+            queryType = extensionWithFields(
+                queryType,
+                [makeField(
+                    listResolver.Properties.FieldName,
+                    [
+                        makeArg('filterInput', makeNamedType(`Table${def.name.value}FilterInput`)),
+                        makeArg('limit', makeNamedType('Int')),
+                        makeArg('nextToken', makeNamedType('String'))
+                    ],
+                    makeNamedType(tableXConnectionName)
+                )]
+            )
+        }
+
         ctx.addObjectExtension(queryType)
     }
 }

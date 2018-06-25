@@ -1,8 +1,9 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode, FieldDefinitionNode, Kind
+    InputValueDefinitionNode, FieldDefinitionNode, Kind,
+    NamedTypeNode, NonNullTypeNode, ListTypeNode
 } from 'graphql'
-import { wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName } from 'appsync-transformer-common'
+import { wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType } from 'appsync-transformer-common'
 
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
@@ -92,3 +93,113 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
         directives: []
     }
 }
+
+export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${obj.name.value}FilterInput`)
+    const fields: InputValueDefinitionNode[] = obj.fields
+        .filter((field: FieldDefinitionNode) => isScalar(SCALARS,field.type) === true)
+        .map(
+            (field: FieldDefinitionNode) => ({
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                name: field.name,
+                type: makeNamedType('Table' + getBaseType(field.type) + 'FilterInput'),
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
+                directives: []
+            })
+        )
+    return {
+        kind: 'InputObjectTypeDefinition',
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields,
+        directives: []
+    }
+}
+
+export function makeTableScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${type}FilterInput`)
+    let condition = getScalarCondition(type)
+    const fields: InputValueDefinitionNode[] = condition
+        .map((condition: string) => ({
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: { kind: "Name" as "Name", value: condition },
+            type: condition === 'between' ?
+                makeListType(makeNamedType(type)) : makeNamedType(type),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: []
+        }))
+    return {
+        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields,
+        directives: []
+    }
+}
+
+function getScalarCondition(type: string): string[] {
+    switch(type) {
+        case 'String':
+            return STRING_CONDITIONS
+        case 'ID':
+            return ID_CONDITIONS
+        case 'Int':
+            return INT_CONDITIONS
+        case 'Float':
+            return FLOAT_CONDITIONS
+        case 'Boolean':
+            return BOOLEAN_CONDITIONS
+        default:
+            throw 'Valid types are String, ID, Int, Float, Boolean' 
+    }
+}
+
+function getBaseType(type: NamedTypeNode | NonNullTypeNode | ListTypeNode) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return getBaseType(type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return getBaseType(type.type)
+    } else {
+        return type.name.value;
+    }
+}
+
+function isScalar(scalars: { [key:string]: Boolean }, type: NamedTypeNode | NonNullTypeNode | ListTypeNode) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isScalar(scalars, type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return isScalar(scalars, type.type)
+    } else {
+        return Boolean(SCALARS[type.name.value])
+    }
+}
+
+const SCALARS = {
+    String: true,
+    Int: true,
+    Float: true,
+    Boolean: true,
+    ID: true
+}
+
+const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const BOOLEAN_CONDITIONS = ['ne', 'eq']

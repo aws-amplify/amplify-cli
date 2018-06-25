@@ -293,6 +293,41 @@ export class ResourceFactory {
     }
 
     /**
+     * Create a resolver that lists items in DynamoDB.
+     * TODO: actually fill out the right filter expression. This is a placeholder only.
+     * @param type
+     */
+    public makeListResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('list' + toUpper(type))
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            FieldName: fieldName,
+            TypeName: 'Query',
+            RequestMappingTemplate: print(
+                DynamoDBMappingTemplate.listItem({
+                    filter: obj({
+                        expression: str(`contains(#type) AND contains(#id)`),
+                        expressionNames: obj({
+                            "#type": str('__typename'),
+                            "#id": str('id'),
+                        }),
+                        expressionValues: obj({
+                            ":type": str('__typename'),
+                            ":id": str('id'),
+                        })
+                    }),
+                    limit: ref('util.dynamodb.toDynamoDBJson($ctx.args.limit)'),
+                    nextToken: ref('util.dynamodb.toDynamoDBJson($ctx.args.nextToken)')
+                })
+            ),
+            ResponseMappingTemplate: print(
+                ref('util.toJson($context.result)')
+            )
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+    /**
      * Create a resolver that deletes an item from DynamoDB.
      * @param type The name of the type to delete an item of.
      * @param nameOverride A user provided override for the field name.
