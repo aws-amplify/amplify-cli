@@ -39,6 +39,24 @@ export class DynamoDBMappingTemplate {
     }
 
     /**
+     * Create a list item resolver template.
+     * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+     */
+    public static listItem({ filter, limit, nextToken }: {
+        filter: ObjectNode,
+        limit: Expression,
+        nextToken?: Expression
+    }): ObjectNode {
+        return obj({
+            version: str('2017-02-28'),
+            operation: str('Scan'),
+            filter,
+            limit,
+            nextToken
+        })
+    }
+
+    /**
      * Create a delete item resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
