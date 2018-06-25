@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const sequential = require('promise-sequential')
+const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 
 function run(context) {
@@ -23,7 +23,7 @@ function run(context) {
       const initializationTasks = [];
       Object.keys(providers).forEach((providerKey) => {
         const provider = require(providers[providerKey]);
-        initializationTasks.push(()=>provider.init(context));
+        initializationTasks.push(() => provider.init(context));
       });
       return sequential(initializationTasks)
         .then(() => context)

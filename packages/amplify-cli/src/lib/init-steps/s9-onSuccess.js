@@ -3,7 +3,7 @@ const { print } = require('gluegun/print');
 
 function run(context) {
   const { projectPath } = context.initInfo;
-  const amplify = context.amplify;
+  const { amplify } = context;
 
   const amplifyDirPath = amplify.pathManager.getamplifyDirPath(projectPath);
   const dotConfigDirPath = amplify.pathManager.getDotConfigDirPath(projectPath);
