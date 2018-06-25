@@ -1,4 +1,4 @@
-# AWS Mobile CLI
+# AWS Amplify CLI
 
 To setup your local dev environment:
 
@@ -8,8 +8,8 @@ To setup your local dev environment:
 
 To test your category: 
 - `cd <your test frontend project>`
-- `awsmobile init` 
-- `awsmobile <your category> <subcommand>` 
+- `amplify init` 
+- `amplify <your category> <subcommand>` 
 
 About aws credentials and configurations
 

@@ -1,0 +1,15 @@
+{
+  "name": "amplify-category-api",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "apache-2.0",
+  "defaults": {
+    "apiName": "amplify-api",
+    "apiType": [
+      "regional",
+      "edge"
+    ],
+    "apiStageName": "prod",
+    "apiCors": "*"
+  }
+}

@@ -1,7 +1,0 @@
-{
-  "name": "awsmobile-frontend-js",
-  "version": "0.1.0",
-  "description": "awsmobile-cli frontend plugin for javascript projects",
-  "main": "index.js",
-  "license": "Apache-2.0"
-}

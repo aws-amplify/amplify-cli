@@ -1,0 +1,7 @@
+{
+  "name": "amplify-category-analytics",
+  "version": "0.1.0",
+  "description": "amplify-cli analytics and user engagement plugin",
+  "main": "index.js",
+  "license": "Apache-2.0"
+}

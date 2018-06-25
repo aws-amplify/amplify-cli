@@ -1,0 +1,59 @@
+{
+  "name": "amplify-cli",
+  "version": "2.0.0",
+  "description": "amplify CLI",
+  "private": true,
+  "bin": {
+    "amplify": "bin/amplify"
+  },
+  "scripts": {
+    "format": "prettier --write **/*.{js,json} && standard --fix",
+    "lint": "eslint src",
+    "lint-fix": "eslint . --fix",
+    "test": "ava",
+    "watch": "ava --watch",
+    "coverage": "nyc ava"
+  },
+  "files": [
+    "LICENSE",
+    "readme.md",
+    "docs",
+    "bin",
+    "src"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "amplify-analytics": "file:../amplify-category-analytics",
+    "amplify-api": "file:../amplify-category-api",
+    "amplify-appsync": "file:../amplify-category-appsync",
+    "amplify-auth": "file:../amplify-category-auth",
+    "amplify-database": "file:../amplify-category-database",
+    "amplify-hosting": "file:../amplify-category-hosting",
+    "amplify-storage": "file:../amplify-category-storage",
+    "amplify-frontend-android": "file:../amplify-frontend-android",
+    "amplify-frontend-js": "file:../amplify-frontend-js",
+    "amplify-frontend-xcode": "file:../amplify-frontend-xcode",
+    "amplify-provider-cloudformation": "file:../amplify-provider-cloudformation",
+    "cfonts": "^2.1.2",
+    "chalk": "^2.0.1",
+    "cli-table2": "0.2.0",
+    "eslint": "^4.19.1",
+    "fs-extra": "^6.0.1",
+    "gluegun": "next",
+    "inquirer": "^3.2.1",
+    "moment": "^2.22.2",
+    "ora": "^2.1.0"
+  },
+  "devDependencies": {
+    "ava": "^0.22.0",
+    "babel-eslint": "^8.0.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "nyc": "^11.2.1",
+    "prettier": "^1.7.4",
+    "standard": "^10.0.0"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  }
+}

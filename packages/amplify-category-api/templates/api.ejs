@@ -1,0 +1,382 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "AWS Amplify API"
+Parameters:
+  LambdaFunctionName:
+    Type: String
+    Default: "EmberServerlessFunction"
+    Description: "AWS Amplify created function"
+  AppClientName:
+    Type: String
+    Default: "EmberServerlessWebClient"
+    Description: "Cognito user pools app client name"
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    DependsOn: CognitoUserPool
+    Properties:
+      StageName: Prod
+      DefinitionBody:
+        swagger: "2.0"
+        info:
+          version: "2017-02-24T04:09:00Z"
+          title: "EmberServerlessAPI"
+        basePath: "/Prod"
+        schemes:
+        - "https"
+        paths:
+          "/docs":
+            get:
+              consumes:
+              - "application/json"
+              produces:
+              - "application/json"
+              parameters:
+              - name: "user"
+                in: "header"
+                required: false
+                type: "string"
+              - name: "id"
+                in: "query"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+              security:
+              - EmberServerless: []
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html\n\
+                    ##  This template will pass through all parameters including path, querystring,\
+                    \ header, stage variables, and context through to the integration endpoint\
+                    \ via the body/payload\n#set($allParams = $input.params())\n{\n\"body-json\"\
+                    \ : $input.json('$'),\n\"params\" : {\n#foreach($type in $allParams.keySet())\n\
+                    \    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName\
+                    \ in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\
+                    \n        #if($foreach.hasNext),#end\n    #end\n}\n    #if($foreach.hasNext),#end\n\
+                    #end\n},\n\"stage-variables\" : {\n#foreach($key in $stageVariables.keySet())\n\
+                    \"$key\" : \"$util.escapeJavaScript($stageVariables.get($key))\"\n   \
+                    \ #if($foreach.hasNext),#end\n#end\n},\n\"context\" : {\n    \"user\"\
+                    \ : \"$context.authorizer.claims.sub\",\n\t\"email\" : \"$context.authorizer.claims.email\"\
+                    ,\n    \"account-id\" : \"$context.identity.accountId\",\n    \"api-id\"\
+                    \ : \"$context.apiId\",\n    \"api-key\" : \"$context.identity.apiKey\"\
+                    ,\n    \"authorizer-principal-id\" : \"$context.authorizer.principalId\"\
+                    ,\n    \"caller\" : \"$context.identity.caller\",\n    \"cognito-authentication-provider\"\
+                    \ : \"$context.identity.cognitoAuthenticationProvider\",\n    \"cognito-authentication-type\"\
+                    \ : \"$context.identity.cognitoAuthenticationType\",\n    \"cognito-identity-id\"\
+                    \ : \"$context.identity.cognitoIdentityId\",\n    \"cognito-identity-pool-id\"\
+                    \ : \"$context.identity.cognitoIdentityPoolId\",\n    \"httpMethod\" :\
+                    \ \"$context.httpMethod\",\n    \"stage\" : \"$context.stage\",\n    \"\
+                    source-ip\" : \"$context.identity.sourceIp\",\n    \"user\" : \"$context.identity.user\"\
+                    ,\n    \"user-agent\" : \"$context.identity.userAgent\",\n    \"user-arn\"\
+                    \ : \"$context.identity.userArn\",\n    \"request-id\" : \"$context.requestId\"\
+                    ,\n    \"resource-id\" : \"$context.resourceId\",\n    \"resource-path\"\
+                    \ : \"$context.resourcePath\"\n    }\n}\n"
+                uri: !Join [ "", [ "arn:aws:apigateway:", !Ref "AWS::Region",  ":lambda:path/2015-03-31/functions/arn:aws:lambda:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":function:", !Ref "LambdaFunctionName", "/invocations" ] ]
+                passthroughBehavior: "when_no_templates"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws"
+            post:
+              consumes:
+              - "application/json"
+              produces:
+              - "application/json"
+              parameters:
+              - name: "user"
+                in: "header"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+              security:
+              - EmberServerless: []
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html\n\
+                    ##  This template will pass through all parameters including path, querystring,\
+                    \ header, stage variables, and context through to the integration endpoint\
+                    \ via the body/payload\n#set($allParams = $input.params())\n{\n\"body-json\"\
+                    \ : $input.json('$'),\n\"params\" : {\n#foreach($type in $allParams.keySet())\n\
+                    \    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName\
+                    \ in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\
+                    \n        #if($foreach.hasNext),#end\n    #end\n}\n    #if($foreach.hasNext),#end\n\
+                    #end\n},\n\"stage-variables\" : {\n#foreach($key in $stageVariables.keySet())\n\
+                    \"$key\" : \"$util.escapeJavaScript($stageVariables.get($key))\"\n   \
+                    \ #if($foreach.hasNext),#end\n#end\n},\n\"context\" : {\n    \"user\"\
+                    \ : \"$context.authorizer.claims.sub\",\n\t\"email\" : \"$context.authorizer.claims.email\"\
+                    ,\n    \"account-id\" : \"$context.identity.accountId\",\n    \"api-id\"\
+                    \ : \"$context.apiId\",\n    \"api-key\" : \"$context.identity.apiKey\"\
+                    ,\n    \"authorizer-principal-id\" : \"$context.authorizer.principalId\"\
+                    ,\n    \"caller\" : \"$context.identity.caller\",\n    \"cognito-authentication-provider\"\
+                    \ : \"$context.identity.cognitoAuthenticationProvider\",\n    \"cognito-authentication-type\"\
+                    \ : \"$context.identity.cognitoAuthenticationType\",\n    \"cognito-identity-id\"\
+                    \ : \"$context.identity.cognitoIdentityId\",\n    \"cognito-identity-pool-id\"\
+                    \ : \"$context.identity.cognitoIdentityPoolId\",\n    \"httpMethod\" :\
+                    \ \"$context.httpMethod\",\n    \"stage\" : \"$context.stage\",\n    \"\
+                    source-ip\" : \"$context.identity.sourceIp\",\n    \"user\" : \"$context.identity.user\"\
+                    ,\n    \"user-agent\" : \"$context.identity.userAgent\",\n    \"user-arn\"\
+                    \ : \"$context.identity.userArn\",\n    \"request-id\" : \"$context.requestId\"\
+                    ,\n    \"resource-id\" : \"$context.resourceId\",\n    \"resource-path\"\
+                    \ : \"$context.resourcePath\"\n    }\n}\n"
+                uri: !Join [ "", [ "arn:aws:apigateway:", !Ref "AWS::Region",  ":lambda:path/2015-03-31/functions/arn:aws:lambda:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":function:", !Ref "LambdaFunctionName", "/invocations" ] ]
+                passthroughBehavior: "when_no_templates"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws"
+            delete:
+              consumes:
+              - "application/json"
+              produces:
+              - "application/json"
+              parameters:
+              - name: "user"
+                in: "header"
+                required: false
+                type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+              security:
+              - EmberServerless: []
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html\n\
+                    ##  This template will pass through all parameters including path, querystring,\
+                    \ header, stage variables, and context through to the integration endpoint\
+                    \ via the body/payload\n#set($allParams = $input.params())\n{\n\"body-json\"\
+                    \ : $input.json('$'),\n\"params\" : {\n#foreach($type in $allParams.keySet())\n\
+                    \    #set($params = $allParams.get($type))\n\"$type\" : {\n    #foreach($paramName\
+                    \ in $params.keySet())\n    \"$paramName\" : \"$util.escapeJavaScript($params.get($paramName))\"\
+                    \n        #if($foreach.hasNext),#end\n    #end\n}\n    #if($foreach.hasNext),#end\n\
+                    #end\n},\n\"stage-variables\" : {\n#foreach($key in $stageVariables.keySet())\n\
+                    \"$key\" : \"$util.escapeJavaScript($stageVariables.get($key))\"\n   \
+                    \ #if($foreach.hasNext),#end\n#end\n},\n\"context\" : {\n    \"user\"\
+                    \ : \"$context.authorizer.claims.sub\",\n\t\"email\" : \"$context.authorizer.claims.email\"\
+                    ,\n    \"account-id\" : \"$context.identity.accountId\",\n    \"api-id\"\
+                    \ : \"$context.apiId\",\n    \"api-key\" : \"$context.identity.apiKey\"\
+                    ,\n    \"authorizer-principal-id\" : \"$context.authorizer.principalId\"\
+                    ,\n    \"caller\" : \"$context.identity.caller\",\n    \"cognito-authentication-provider\"\
+                    \ : \"$context.identity.cognitoAuthenticationProvider\",\n    \"cognito-authentication-type\"\
+                    \ : \"$context.identity.cognitoAuthenticationType\",\n    \"cognito-identity-id\"\
+                    \ : \"$context.identity.cognitoIdentityId\",\n    \"cognito-identity-pool-id\"\
+                    \ : \"$context.identity.cognitoIdentityPoolId\",\n    \"httpMethod\" :\
+                    \ \"$context.httpMethod\",\n    \"stage\" : \"$context.stage\",\n    \"\
+                    source-ip\" : \"$context.identity.sourceIp\",\n    \"user\" : \"$context.identity.user\"\
+                    ,\n    \"user-agent\" : \"$context.identity.userAgent\",\n    \"user-arn\"\
+                    \ : \"$context.identity.userArn\",\n    \"request-id\" : \"$context.requestId\"\
+                    ,\n    \"resource-id\" : \"$context.resourceId\",\n    \"resource-path\"\
+                    \ : \"$context.resourcePath\"\n    }\n}\n"
+                uri: !Join [ "", [ "arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/arn:aws:lambda:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":function:", !Ref "LambdaFunctionName", "/invocations" ] ] 
+                passthroughBehavior: "when_no_templates"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws"
+            options:
+              consumes:
+              - "application/json"
+              produces:
+              - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PUT,DELETE'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,user'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                passthroughBehavior: "when_no_match"
+                type: "mock"
+        securityDefinitions:
+          EmberServerless:
+            type: "apiKey"
+            name: "user"
+            in: "header"
+            x-amazon-apigateway-authtype: "cognito_user_pools"
+            x-amazon-apigateway-authorizer:
+              providerARNs:
+              - !GetAtt CognitoUserPool.Arn
+              type: "cognito_user_pools"
+        definitions:
+          Empty:
+            type: "object"
+            title: "Empty Schema"
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Handler: index.handler
+      Runtime: nodejs4.3
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+      Events:
+        GetDocs:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /docs
+            Method: GET
+        NewDoc:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /docs
+            Method: POST
+        DeleteDoc:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /docs
+            Method: DELETE
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: EmberServerless
+      AutoVerifiedAttributes: 
+        - "email"
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: CognitoUserPool
+    Properties:
+      ClientName: !Ref AppClientName
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders:
+        - ClientId: !Ref CognitoUserPoolClient
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
+  CognitoIdentityPoolRoles:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    DependsOn: CognitoIdentityPool
+    Properties:
+      IdentityPoolId: !Ref CognitoIdentityPool
+      Roles:
+        authenticated: !GetAtt AuthenticatedRole.Arn
+        unauthenticated: !GetAtt UnauthenticatedRole.Arn
+  UnauthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud: !Ref CognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: unauthenticated
+      Policies:
+        -
+          PolicyName: EmberServerlessUnauthenticatedApi
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - mobileanalytics:PutEvents
+              - cognito-sync:*
+              Resource:
+              - "*"
+  AuthenticatedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud: !Ref CognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: authenticated
+      Policies:
+        -
+          PolicyName: EmberServerlessAuthenticatedApi
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - execute-api:Invoke
+              Resource: !Join [ "", [ "arn:aws:execute-api:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId", ":", !Ref ApiGatewayApi, "/*" ] ]
+  Table:
+    Type: AWS::Serverless::SimpleTable
+Outputs:
+  CognitoIdentityPoolId:
+    Description: Cognito Identity Pool ID
+    Value: !Ref CognitoIdentityPool
+  CognitoUserPoolsId:
+    Description: Cognito User Pools ID
+    Value: !Ref CognitoUserPool
+  CognitoUserPoolsClientId:
+    Description: Cognito User Pools App Client ID
+    Value: !Ref CognitoUserPoolClient
+  Api:
+    Description: API Gateway ID
+    Value: !Ref ApiGatewayApi
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref ApiGatewayApi
+        - '.execute-api.'
+        - !Ref 'AWS::Region'
+        - '.amazonaws.com/Prod'
