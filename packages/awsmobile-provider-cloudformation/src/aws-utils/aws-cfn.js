@@ -124,8 +124,8 @@ class CloudFormation {
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.awsmobile.getProjectDetails();
-    const stackName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].StackName : '';
-    const deploymentBucketName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].DeploymentBucketName : '';
+    const stackName = projectDetails.awsmobileMeta.providers ? projectDetails.awsmobileMeta.providers[providerName].StackName : '';
+    const deploymentBucketName = projectDetails.awsmobileMeta.providers ? projectDetails.awsmobileMeta.providers[providerName].DeploymentBucketName : '';
     if (!stackName) {
       throw (new Error('Project Stack is not yet created. Please use awsmobile init to initialize the project.'));
     }
@@ -240,7 +240,7 @@ class CloudFormation {
 
   deleteResourceStack() {
     const projectDetails = this.context.awsmobile.getProjectDetails();
-    const stackName = projectDetails.awsmobileMeta.provider ? projectDetails.awsmobileMeta.provider[providerName].parentStackName : '';
+    const stackName = projectDetails.awsmobileMeta.providers ? projectDetails.awsmobileMeta.providers[providerName].parentStackName : '';
     if (!stackName) {
       throw new Error('Project stack does not exist');
     }

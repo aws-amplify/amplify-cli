@@ -73,8 +73,8 @@ function processStackCreationData(context, stackDescriptiondata) {
   Outputs.forEach((element) => {
     metaData[element.OutputKey] = element.OutputValue;
   });
-  context.initInfo.metaData.provider = {};
-  context.initInfo.metaData.provider[constants.ProviderName] = metaData;
+  context.initInfo.metaData.providers = {};
+  context.initInfo.metaData.providers[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {

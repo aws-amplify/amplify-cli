@@ -55,15 +55,15 @@ function updateProviderAwsMobileMeta(providerName, options) {
   const awsmobileMetaFilePath = pathManager.getAwsmobileMetaFilePath();
 
   const awsmobileMeta = JSON.parse(fs.readFileSync(awsmobileMetaFilePath));
-  if (!awsmobileMeta.provider) {
-    awsmobileMeta.provider = {};
-    awsmobileMeta.provider[providerName] = {};
-  } else if (!awsmobileMeta.provider[providerName]) {
-    awsmobileMeta.provider[providerName] = {};
+  if (!awsmobileMeta.providers) {
+    awsmobileMeta.providers = {};
+    awsmobileMeta.providers[providerName] = {};
+  } else if (!awsmobileMeta.providers[providerName]) {
+    awsmobileMeta.providers[providerName] = {};
   }
 
   Object.keys(options).forEach((key) => {
-    awsmobileMeta.provider[providerName][key] = options[key];
+    awsmobileMeta.providers[providerName][key] = options[key];
   });
 
   const jsonString = JSON.stringify(awsmobileMeta, null, '\t');
