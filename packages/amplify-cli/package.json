@@ -1,7 +1,7 @@
 {
   "name": "amplify-cli",
   "version": "2.0.0",
-  "description": "amplify CLI",
+  "description": "Amplify CLI",
   "private": true,
   "bin": {
     "amplify": "bin/amplify"
@@ -23,15 +23,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "amplify-analytics": "file:../amplify-category-analytics",
-    "amplify-api": "file:../amplify-category-api",
-    "amplify-appsync": "file:../amplify-category-appsync",
-    "amplify-auth": "file:../amplify-category-auth",
-    "amplify-database": "file:../amplify-category-database",
-    "amplify-hosting": "file:../amplify-category-hosting",
-    "amplify-storage": "file:../amplify-category-storage",
+    "amplify-category-analytics": "file:../amplify-category-analytics",
+    "amplify-category-api": "file:../amplify-category-api",
+    "amplify-category-appsync": "file:../amplify-category-appsync",
+    "amplify-category-auth": "file:../amplify-category-auth",
+    "amplify-category-hosting": "file:../amplify-category-hosting",
+    "amplify-category-storage": "file:../amplify-category-storage",
     "amplify-frontend-android": "file:../amplify-frontend-android",
-    "amplify-frontend-js": "file:../amplify-frontend-js",
+    "amplify-frontend-javascript": "file:../amplify-frontend-javascript",
     "amplify-frontend-xcode": "file:../amplify-frontend-xcode",
     "amplify-provider-cloudformation": "file:../amplify-provider-cloudformation",
     "cfonts": "^2.1.2",

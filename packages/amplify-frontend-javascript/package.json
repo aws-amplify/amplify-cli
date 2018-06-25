@@ -1,5 +1,5 @@
 {
-  "name": "amplify-frontend-js",
+  "name": "amplify-frontend-javascript",
   "version": "0.1.0",
   "description": "amplify-cli frontend plugin for javascript projects",
   "main": "index.js",
