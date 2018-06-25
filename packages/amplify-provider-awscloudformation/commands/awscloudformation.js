@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'aws-cloudformation',
+  name: 'awscloudformation',
   alias: ['awscfn'],
   run: async (context) => {
     const { print } = context;

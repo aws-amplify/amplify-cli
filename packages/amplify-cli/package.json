@@ -32,7 +32,7 @@
     "amplify-frontend-android": "file:../amplify-frontend-android",
     "amplify-frontend-javascript": "file:../amplify-frontend-javascript",
     "amplify-frontend-xcode": "file:../amplify-frontend-xcode",
-    "amplify-provider-cloudformation": "file:../amplify-provider-cloudformation",
+    "amplify-provider-awscloudformation": "file:../amplify-provider-awscloudformation",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",
     "cli-table2": "0.2.0",

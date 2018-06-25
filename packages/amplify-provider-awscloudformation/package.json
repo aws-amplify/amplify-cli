@@ -1,5 +1,5 @@
 {
-  "name": "amplify-provider-cloudformation",
+  "name": "amplify-provider-awscloudformation",
   "version": "0.1.0",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",

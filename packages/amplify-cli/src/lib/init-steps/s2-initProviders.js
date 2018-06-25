@@ -8,7 +8,7 @@ function run(context) {
     name: 'selectedProviders',
     message: 'Please select the backend providers to initialize.',
     choices: Object.keys(providerPlugins),
-    default: ['amplify-provider-cloudformation'],
+    default: ['amplify-provider-awscloudformation'],
   };
   return inquirer.prompt(selectProviders)
     .then((answers) => {
