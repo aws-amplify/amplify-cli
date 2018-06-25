@@ -1,0 +1,16 @@
+module.exports = {
+  amplifyCLIDirName: 'amplify',
+  DotConfigamplifyCLISubDirName: '.config',
+  BackendamplifyCLISubDirName: 'backend',
+  CurrentCloudBackendamplifyCLISubDirName: '#current-cloud-backend',
+  PluginConfigFileName: 'plugin-config.json',
+  ProjectConfigFileName: 'project-config.json',
+  amplifyMetaFileName: 'amplify-meta.json',
+  BrandName: 'AWS Amplify',
+  CliName: 'amplify',
+  DateTimeFormatString: 'YYYY-MM-DD-HH-mm-ss',
+  DateTimeFormatStringCompact: 'YYYYMMDDHHmmss',
+  DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',
+  DefaultAWSSecretAccessKey: '<YOUR_SECRET_ACCESS_KEY>',
+  DefaultAWSRegion: 'us-east-1',
+};

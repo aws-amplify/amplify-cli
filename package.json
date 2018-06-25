@@ -1,11 +1,11 @@
 {
-  "name": "awsmobile-cli-v2",
+  "name": "amplify-cli",
   "version": "2.0.0",
-  "description": "awsmobile-cli",
+  "description": "amplify-cli",
   "scripts": {
     "lint": "lerna run -- lint",
     "lint-fix": "lerna run -- lint-fix",
-    "setup-dev": "lerna bootstrap && cd packages/awsmobile-cli && npm link"
+    "setup-dev": "lerna bootstrap && cd packages/amplify-cli && npm link"
   },
   "main": "index.js",
   "license": "Apache-2.0",

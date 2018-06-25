@@ -1,0 +1,7 @@
+{
+  "name": "amplify-category-hosting",
+  "version": "0.1.0",
+  "description": "amplify-cli hosting plugin",
+  "main": "index.js",
+  "license": "Apache-2.0"
+}
