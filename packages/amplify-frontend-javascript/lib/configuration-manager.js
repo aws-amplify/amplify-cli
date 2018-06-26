@@ -58,7 +58,11 @@ function confirmFramework(context){
     };
     return inquirer.prompt(frameworkComfirmation)
     .then((answers) => {
-        context[constants.Label]['framework'] = answers.framework; 
+        if(context[constants.Label]['framework'] !== answers.framework){
+            context[constants.Label]['framework'] = answers.framework; 
+            context[constants.Label]['config'] = 
+            frameworkConfigMapping[context[constants.Label]['framework']]; 
+        }
         return context;
     });
 }
