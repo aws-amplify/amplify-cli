@@ -4,6 +4,34 @@ import {
     ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode
 } from 'graphql'
 
+const SCALARS = {
+    String: true,
+    Int: true,
+    Float: true,
+    Boolean: true,
+    ID: true
+}
+
+export function isScalar(type: TypeNode) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isScalar(type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return isScalar(type.type)
+    } else {
+        return Boolean(SCALARS[type.name.value])
+    }
+}
+
+export function getBaseType(type: TypeNode) {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return getBaseType(type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return getBaseType(type.type)
+    } else {
+        return type.name.value;
+    }
+}
+
 export function unwrapNonNull(type: TypeNode) {
     if (type.kind === 'NonNullType') {
         return unwrapNonNull(type.type)

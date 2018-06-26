@@ -1,9 +1,17 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode, FieldDefinitionNode, Kind,
-    NamedTypeNode, NonNullTypeNode, ListTypeNode
+    InputValueDefinitionNode, FieldDefinitionNode, Kind
 } from 'graphql'
-import { wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType } from 'appsync-transformer-common'
+import { 
+    wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
+    isScalar, getBaseType
+} from 'appsync-transformer-common'
+
+const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
@@ -97,7 +105,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
 export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Table${obj.name.value}FilterInput`)
     const fields: InputValueDefinitionNode[] = obj.fields
-        .filter((field: FieldDefinitionNode) => isScalar(SCALARS,field.type) === true)
+        .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
@@ -169,37 +177,3 @@ function getScalarCondition(type: string): string[] {
             throw 'Valid types are String, ID, Int, Float, Boolean' 
     }
 }
-
-function getBaseType(type: NamedTypeNode | NonNullTypeNode | ListTypeNode) {
-    if (type.kind === Kind.NON_NULL_TYPE) {
-        return getBaseType(type.type)
-    } else if (type.kind === Kind.LIST_TYPE) {
-        return getBaseType(type.type)
-    } else {
-        return type.name.value;
-    }
-}
-
-function isScalar(scalars: { [key:string]: Boolean }, type: NamedTypeNode | NonNullTypeNode | ListTypeNode) {
-    if (type.kind === Kind.NON_NULL_TYPE) {
-        return isScalar(scalars, type.type)
-    } else if (type.kind === Kind.LIST_TYPE) {
-        return isScalar(scalars, type.type)
-    } else {
-        return Boolean(SCALARS[type.name.value])
-    }
-}
-
-const SCALARS = {
-    String: true,
-    Int: true,
-    Float: true,
-    Boolean: true,
-    ID: true
-}
-
-const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
-const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
-const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
-const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
-const BOOLEAN_CONDITIONS = ['ne', 'eq']
