@@ -1,15 +1,18 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
 
-function updateProjectConfig(options) {
-  const projectConfigFilePath = pathManager.getProjectConfigFilePath();
-  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+function updateProjectConfig(projectPath, label, data) {
+  let projectConfig;
+  const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
+  if(fs.existsSync(projectConfigFilePath)){
+    projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  }else{
+    projectConfig = {}; 
+  }
 
-  Object.keys(options).forEach((key) => {
-    projectConfig[key] = options[key];
-  });
+  projectConfig[label] = data; 
 
-  const jsonString = JSON.stringify(projectConfig, null, '\t');
+  const jsonString = JSON.stringify(projectConfig, null, 4);
   fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 }
 

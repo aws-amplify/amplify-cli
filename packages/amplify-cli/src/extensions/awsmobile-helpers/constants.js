@@ -1,6 +1,5 @@
 module.exports = {
   AmplifyCLIDirName: 'amplify',
-  DotAmplifyDirName: '.amplify',
   DotConfigamplifyCLISubDirName: '.config',
   BackendamplifyCLISubDirName: 'backend',
   CurrentCloudBackendamplifyCLISubDirName: '#current-cloud-backend',

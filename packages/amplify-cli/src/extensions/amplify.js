@@ -17,6 +17,7 @@ const pathManager = require('./amplify-helpers/path-manager');
 const nameManager = require('./amplify-helpers/name-manager');
 const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers/get-when-function');
 const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-prompt');
+const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -41,6 +42,7 @@ module.exports = (context) => {
     removeResource,
     showResourceTable,
     serviceSelectionPrompt,
+    updateProjectConfig,
     updateamplifyMetaAfterResourceUpdate,
     updateamplifyMetaAfterResourceAdd,
     updateamplifyMetaAfterResourceDelete,

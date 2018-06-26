@@ -7,7 +7,7 @@ function run(context) {
   const selectProviders = {
     type: 'checkbox',
     name: 'selectedProviders',
-    message: 'Please select the backend providers to initialize.',
+    message: 'Please select the backend providers.',
     choices: Object.keys(providerPlugins),
     default: ['amplify-provider-awscloudformation'],
   };
