@@ -1,6 +1,6 @@
 "use strict";
 
-const npm = /^win/.test(process.platform) ? "npm.cmd" : "npm" 
+const npm = /^win/.test(process.platform) ? "npm.cmd" : "npm"; 
 
 const reactConfig = {
 	"SourceDir": "src",
@@ -66,5 +66,5 @@ module.exports = {
 	'vue': vueConfig, 
 	'android': androidConfig,
 	'xcode': xcodeConfig,
-	'default': defaultConfig
+	'none': defaultConfig
 }
