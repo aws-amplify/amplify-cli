@@ -121,7 +121,7 @@ function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, reso
 
 
 function getResourceStatus(category, resourceName) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   const currentamplifyMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();

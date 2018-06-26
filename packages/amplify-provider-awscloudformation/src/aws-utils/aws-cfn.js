@@ -3,7 +3,7 @@ const S3 = require('./aws-s3');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-const providerName = require('../../constants').ProviderName;
+const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 
 class CloudFormation {

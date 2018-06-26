@@ -7,7 +7,7 @@ const amplifyCLIConstants = require('./constants.js');
 function projectPathValidate(projectPath) {
   let isGood = false;
   if (fs.existsSync(projectPath)) {
-    const dotamplifyDirPath = getamplifyDirPath(projectPath);
+    const dotamplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
     isGood = fs.existsSync(dotamplifyDirPath) &&
@@ -39,7 +39,7 @@ function searchProjectRootPath() {
 }
 
 // ///////////////////level 0
-function getamplifyDirPath(projectPath) {
+function getAmplifyDirPath(projectPath) {
   if (!projectPath) {
     projectPath = searchProjectRootPath();
   }
@@ -55,23 +55,36 @@ function getamplifyDirPath(projectPath) {
 // ///////////////////level 1
 function getDotConfigDirPath(projectPath) {
   return path.normalize(path.join(
-    getamplifyDirPath(projectPath),
+    getAmplifyDirPath(projectPath),
     amplifyCLIConstants.DotConfigamplifyCLISubDirName,
   ));
 }
 
 function getBackendDirPath(projectPath) {
   return path.normalize(path.join(
-    getamplifyDirPath(projectPath),
+    getAmplifyDirPath(projectPath),
     amplifyCLIConstants.BackendamplifyCLISubDirName,
   ));
 }
 
 function getCurrentCloudBackendDirPath(projectPath) {
   return path.normalize(path.join(
-    getamplifyDirPath(projectPath),
+    getAmplifyDirPath(projectPath),
     amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName,
   ));
+}
+
+function getAmplifyRcFilePath(projectPath){
+  if (!projectPath) {
+    projectPath = searchProjectRootPath();
+  }
+  if (projectPath) {
+    return path.normalize(path.join(
+      projectPath,
+      '.amplifyrc',
+    ));
+  }
+  throw new Error('you are not working inside a valid amplify project');
 }
 
 
@@ -91,7 +104,7 @@ function getPluginConfigFilePath(projectPath) {
   ));
 }
 
-function getamplifyMetaFilePath(projectPath) {
+function getAmplifyMetaFilePath(projectPath) {
   return path.normalize(path.join(
     getBackendDirPath(projectPath),
     amplifyCLIConstants.amplifyMetaFileName,
@@ -108,12 +121,12 @@ function getCurentBackendCloudamplifyMetaFilePath(projectPath) {
 
 module.exports = {
   searchProjectRootPath,
-  getamplifyDirPath,
+  getAmplifyDirPath,
   getDotConfigDirPath,
   getBackendDirPath,
   getProjectConfigFilePath,
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
-  getamplifyMetaFilePath,
+  getAmplifyMetaFilePath,
   getCurentBackendCloudamplifyMetaFilePath,
 };

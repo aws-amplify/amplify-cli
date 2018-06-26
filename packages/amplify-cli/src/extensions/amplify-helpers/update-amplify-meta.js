@@ -22,7 +22,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
   const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath()));
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
@@ -37,7 +37,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 }
 
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
@@ -52,7 +52,7 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
 }
 
 function updateProvideramplifyMeta(providerName, options) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
 
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   if (!amplifyMeta.providers) {
@@ -72,7 +72,7 @@ function updateProvideramplifyMeta(providerName, options) {
 
 
 function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute, value) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   // let amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
   const currentTimestamp = new Date();
 
@@ -87,7 +87,7 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
 }
 
 function updateamplifyMetaAfterPush(resources) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   const currentTimestamp = new Date();
 

@@ -1,5 +1,5 @@
 const aws = require('./aws.js');
-const providerName = require('../../constants').ProviderName;
+const providerName = require('../../lib/constants').ProviderName;
 
 class S3 {
   constructor(context) {
