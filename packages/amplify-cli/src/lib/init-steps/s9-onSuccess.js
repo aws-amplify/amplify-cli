@@ -22,13 +22,11 @@ function run(context) {
     providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
   });
 
-  return sequential(providerOnSuccessTasks)
-  .then(()=>{
+  return sequential(providerOnSuccessTasks).then(()=>{
     const handlerName = Object.keys(context.initInfo.projectConfig.frontendHandler)[0]; 
     const frontendHandler = require(context.initInfo.projectConfig.frontendHandler[handlerName]);
     return frontendHandler.onInitSuccessful(context); 
-  })
-  then(()=>{
+  }).then(()=>{
     let jsonString = JSON.stringify(context.initInfo.projectConfig, null, 4);
     const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
     fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');

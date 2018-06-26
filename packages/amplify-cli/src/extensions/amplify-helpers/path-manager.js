@@ -130,6 +130,7 @@ module.exports = {
   getAmplifyDirPath,
   getDotConfigDirPath,
   getBackendDirPath,
+  getAmplifyRcFilePath,
   getProjectConfigFilePath,
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
