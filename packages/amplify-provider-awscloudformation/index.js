@@ -1,6 +1,6 @@
 const initializer = require('./lib/initializer');
 const resourcePusher = require('./lib/push-resources');
-const constants = require('./lib/constants')
+const constants = require('./lib/constants');
 
 function init(context) {
   return initializer.run(context);
