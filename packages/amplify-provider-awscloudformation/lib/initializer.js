@@ -74,21 +74,21 @@ function processStackCreationData(context, stackDescriptiondata) {
     metaData[element.OutputKey] = element.OutputValue;
   });
 
-  if(!context.initInfo.metaData.providers){
+  if (!context.initInfo.metaData.providers) {
     context.initInfo.metaData.providers = {};
   }
   context.initInfo.metaData.providers[constants.ProviderName] = metaData;
-  
-  if(!context.initInfo.rcData.providers){
+
+  if (!context.initInfo.rcData.providers) {
     context.initInfo.rcData.providers = {};
   }
   context.initInfo.rcData.providers[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {
-  return new Promise((resolve)=>{
+  return new Promise((resolve) => {
     configurationManager.onInitSuccessful(context);
-    resolve(context); 
+    resolve(context);
   });
 }
 

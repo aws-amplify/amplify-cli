@@ -39,7 +39,7 @@ function searchProjectRootPath() {
   return result;
 }
 
-function getHomeDotAmplifyDirPath(){
+function getHomeDotAmplifyDirPath() {
   return path.join(homedir, amplifyCLIConstants.DotAmplifyDirName);
 }
 
@@ -79,7 +79,7 @@ function getCurrentCloudBackendDirPath(projectPath) {
   ));
 }
 
-function getAmplifyRcFilePath(projectPath){
+function getAmplifyRcFilePath(projectPath) {
   if (!projectPath) {
     projectPath = searchProjectRootPath();
   }

@@ -4,13 +4,13 @@ const pathManager = require('./path-manager');
 function updateProjectConfig(projectPath, label, data) {
   let projectConfig;
   const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
-  if(fs.existsSync(projectConfigFilePath)){
+  if (fs.existsSync(projectConfigFilePath)) {
     projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-  }else{
-    projectConfig = {}; 
+  } else {
+    projectConfig = {};
   }
 
-  projectConfig[label] = data; 
+  projectConfig[label] = data;
 
   const jsonString = JSON.stringify(projectConfig, null, 4);
   fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');

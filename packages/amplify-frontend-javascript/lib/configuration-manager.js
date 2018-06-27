@@ -132,7 +132,7 @@ function guessFramework(projectPath){
                 }
             }
         }
-    }catch{
+    }catch(e){
         frameWork = 'none';
     }
     return frameWork;
