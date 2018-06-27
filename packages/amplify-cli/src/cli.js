@@ -1,21 +1,11 @@
 const { build } = require('gluegun');
 
-/**
- * Create the cli and kick it off
- */
 async function run(argv) {
-  // create a CLI runtime
-
   const nodeModuleDir = `${__dirname}/../node_modules`;
-  // const pluginDir = `${__dirname}/../../`; // Use for dev
-
   const cli = build()
     .brand('amplify')
     .src(__dirname)
     .plugins(nodeModuleDir, { matching: 'amplify-*', hidden: false })
-    // .plugins(nodeModuleDir, { matching: 'amplify-provider-*', hidden: true })
-    // .plugins(nodeModuleDir, { matching: 'amplify-frontend-*', hidden: true })
-    // .plugins(pluginDir, { matching: 'amplify-category-*', hidden: true }) // Use for dev
     .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create();

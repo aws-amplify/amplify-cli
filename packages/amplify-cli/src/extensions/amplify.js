@@ -7,6 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
+const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
@@ -16,6 +17,7 @@ const pathManager = require('./amplify-helpers/path-manager');
 const nameManager = require('./amplify-helpers/name-manager');
 const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers/get-when-function');
 const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-prompt');
+const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -28,6 +30,7 @@ module.exports = (context) => {
   const amplify = {
     constants,
     copyBatch,
+    getProjectConfig,
     getProjectDetails,
     getResourceStatus,
     getWhen,
@@ -39,6 +42,7 @@ module.exports = (context) => {
     removeResource,
     showResourceTable,
     serviceSelectionPrompt,
+    updateProjectConfig,
     updateamplifyMetaAfterResourceUpdate,
     updateamplifyMetaAfterResourceAdd,
     updateamplifyMetaAfterResourceDelete,

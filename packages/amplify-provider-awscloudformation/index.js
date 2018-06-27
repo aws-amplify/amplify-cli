@@ -1,5 +1,6 @@
 const initializer = require('./lib/initializer');
 const resourcePusher = require('./lib/push-resources');
+const constants = require('./lib/constants')
 
 function init(context) {
   return initializer.run(context);
@@ -16,5 +17,6 @@ function pushResources(context, category, resourceName) {
 module.exports = {
   init,
   onInitSuccessful,
+  constants,
   pushResources,
 };

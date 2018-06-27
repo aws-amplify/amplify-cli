@@ -18,6 +18,9 @@ function run(context) {
     context.initInfo.metaData = {
     };
 
+    context.initInfo.rcData = {
+    };
+
     scanWithFrontendHandlers(context);
 
     resolve(context);
@@ -36,7 +39,6 @@ function scanWithFrontendHandlers(context) {
       suitableHandler = key;
     }
   });
-
   context.initInfo.frontendPlugins = frontendPlugins;
   context.initInfo.suitableHandler = suitableHandler;
 

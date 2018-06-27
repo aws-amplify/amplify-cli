@@ -16,6 +16,11 @@ function run(context) {
       delete context.initInfo.frontendPlugins;
       delete context.initInfo.suitableHandler;
       return context;
+    })
+    .then((ctxt)=>{
+      const handlerName = Object.keys(context.initInfo.projectConfig.frontendHandler)[0]; 
+      const frontendHandler = require(context.initInfo.projectConfig.frontendHandler[handlerName]);
+      return frontendHandler.init(ctxt); 
     });
 }
 

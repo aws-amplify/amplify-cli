@@ -4,7 +4,7 @@ const inquirer = require('inquirer');
 const pathManager = require('./path-manager');
 
 function removeResource(context, category) {
-  const amplifyMetaFilePath = pathManager.getamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {

@@ -3,20 +3,20 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const homedir = require('os').homedir();
 const awsRegions = require('./aws-regions');
+const constants = require('./constants');
 
-const sharedConfigDirName = '.amplify';
-
-function configure(context) {
-  context.projectConfigInfo = {};
-  printInfo(context);
-  return promptForProjectConfigUpdate(context)
-    .then(carryOutConfigAction);
-}
 
 function init(context) {
   context.projectConfigInfo = {};
   printInfo(context);
   return comfirmProjectConfigSetup(context, true)
+    .then(carryOutConfigAction);
+}
+
+function configure(context) {
+  context.projectConfigInfo = {};
+  printInfo(context);
+  return promptForProjectConfigUpdate(context)
     .then(carryOutConfigAction);
 }
 
@@ -108,11 +108,11 @@ function comfirmProjectConfigSetup(context, isInit) {
     default: false,
   };
   return inquirer.prompt(configProjectComfirmation)
-    .then((answers) => {
-      const initOrCreate = isInit ? 'init' : 'create';
-      context.projectConfigInfo.action = answers.setProjectConfig ? initOrCreate : 'cancel';
-      return context;
-    });
+  .then((answers) => {
+    const initOrCreate = isInit ? 'init' : 'create';
+    context.projectConfigInfo.action = answers.setProjectConfig ? initOrCreate : 'cancel';
+    return context;
+  });
 }
 
 function promptForProjectConfigUpdate(context) {
@@ -237,7 +237,7 @@ function createProjectConfig(context) {
       secretAccessKey: projectConfigInfo.secretAccessKey,
       region: projectConfigInfo.region,
     };
-    const sharedConfigDirPath = path.join(homedir, sharedConfigDirName);
+    const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.Label);
     fs.ensureDirSync(sharedConfigDirPath);
     const configFileName = context.amplify.nameManager.makeid(10);
     const awsConfigFilePath = path.join(sharedConfigDirPath, configFileName);

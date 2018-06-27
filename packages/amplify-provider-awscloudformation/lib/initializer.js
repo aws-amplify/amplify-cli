@@ -3,7 +3,7 @@ const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
 const ora = require('ora');
-const constants = require('../constants');
+const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 
 function run(context) {
@@ -73,19 +73,23 @@ function processStackCreationData(context, stackDescriptiondata) {
   Outputs.forEach((element) => {
     metaData[element.OutputKey] = element.OutputValue;
   });
-  context.initInfo.metaData.providers = {};
+
+  if(!context.initInfo.metaData.providers){
+    context.initInfo.metaData.providers = {};
+  }
   context.initInfo.metaData.providers[constants.ProviderName] = metaData;
+  
+  if(!context.initInfo.rcData.providers){
+    context.initInfo.rcData.providers = {};
+  }
+  context.initInfo.rcData.providers[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {
-  configurationManager.onInitSuccessful(context);
-  stampAmplifyRunControl(context.initInfo.projectPath, context.initInfo.metaData);
-}
-
-function stampAmplifyRunControl(projectPath, metaData) {
-  const filePath = path.join(projectPath, '.amplifyrc');
-  const jsonString = JSON.stringify(metaData, null, 4);
-  fs.writeFileSync(filePath, jsonString, 'utf8');
+  return new Promise((resolve)=>{
+    configurationManager.onInitSuccessful(context);
+    resolve(context); 
+  });
 }
 
 module.exports = {

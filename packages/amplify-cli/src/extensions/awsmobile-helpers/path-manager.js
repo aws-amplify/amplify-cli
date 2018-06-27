@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const homedir = require('os').homedir();
 const amplifyCLIConstants = require('./constants.js');
 
 /* Helpers */
@@ -39,10 +38,6 @@ function searchProjectRootPath() {
   return result;
 }
 
-function getHomeDotAmplifyDirPath(){
-  return path.join(homedir, amplifyCLIConstants.DotAmplifyDirName);
-}
-
 // ///////////////////level 0
 function getAmplifyDirPath(projectPath) {
   if (!projectPath) {
@@ -79,19 +74,6 @@ function getCurrentCloudBackendDirPath(projectPath) {
   ));
 }
 
-function getAmplifyRcFilePath(projectPath){
-  if (!projectPath) {
-    projectPath = searchProjectRootPath();
-  }
-  if (projectPath) {
-    return path.normalize(path.join(
-      projectPath,
-      '.amplifyrc',
-    ));
-  }
-  throw new Error('you are not working inside a valid amplify project');
-}
-
 
 // ///////////////////level 2
 
@@ -126,11 +108,9 @@ function getCurentBackendCloudamplifyMetaFilePath(projectPath) {
 
 module.exports = {
   searchProjectRootPath,
-  getHomeDotAmplifyDirPath,
   getAmplifyDirPath,
   getDotConfigDirPath,
   getBackendDirPath,
-  getAmplifyRcFilePath,
   getProjectConfigFilePath,
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
