@@ -1,11 +1,11 @@
+const configurationManager = require('./configuration-manager');
+
 function run(context) {
-  return new Promise((resolve) => {
-    resolve(context); 
-  }); 
+  return configurationManager.init(context); 
 }
 
 function onInitSuccessful(context) {
-  return context; 
+  return configurationManager.onInitSuccessful(context); 
 }
 
 module.exports = {

@@ -1,8 +1,9 @@
 const initializer = require('./lib/initializer');
+const projectScanner = require('./lib/project-scanner'); 
 const constants = require('./lib/constants'); 
 
-function scanProject(context){
-  return 100; 
+function scanProject(projectPath){
+  return projectScanner.run(projectPath); 
 }
 
 function init(context) {
