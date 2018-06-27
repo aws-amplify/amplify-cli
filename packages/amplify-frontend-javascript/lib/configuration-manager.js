@@ -112,24 +112,28 @@ function confirmConfiguration(context){
 
 function guessFramework(projectPath){
     let frameWork = 'none';
-    const packageJsonFilePath = path.join(projectPath, 'package.json');
-    if (fs.existsSync(packageJsonFilePath)) {
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonFilePath, 'utf8'));
-        if(packageJson && packageJson.dependencies){
-            if(packageJson.dependencies['react']){
-                frameWork = 'react' ;
-                if(packageJson.dependencies['react-native']){
-                    frameWork = 'react-native';
+    try{
+        const packageJsonFilePath = path.join(projectPath, 'package.json');
+        if (fs.existsSync(packageJsonFilePath)) {
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonFilePath, 'utf8'));
+            if(packageJson && packageJson.dependencies){
+                if(packageJson.dependencies['react']){
+                    frameWork = 'react' ;
+                    if(packageJson.dependencies['react-native']){
+                        frameWork = 'react-native';
+                    }
+                }else if(packageJson.dependencies['@angular/core']){
+                    frameWork = 'angular';
+                    if(packageJson.dependencies['ionic-angular']){
+                        frameWork = 'ionic';
+                    }
+                }else if(packageJson.dependencies['vue']){
+                    frameWork = 'vue';
                 }
-            }else if(packageJson.dependencies['@angular/core']){
-                frameWork = 'angular';
-                if(packageJson.dependencies['ionic-angular']){
-                    frameWork = 'ionic';
-                }
-            }else if(packageJson.dependencies['vue']){
-                frameWork = 'vue';
             }
         }
+    }catch{
+        frameWork = 'none';
     }
     return frameWork;
 }

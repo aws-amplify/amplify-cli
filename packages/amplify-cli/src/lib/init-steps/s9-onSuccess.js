@@ -50,7 +50,7 @@ function run(context) {
 
 function printWelcomeMessage(projectPath){
   console.log()
-  console.log('Success! your project is now initialized with amplify')
+  console.log('Your project has been successfully initialized.')
   console.log()
 }
 
