@@ -2,7 +2,7 @@ import { Command, command, param } from 'clime';
 import File from '../types/File';
 import GraphQLTransform from 'graphql-transform';
 import DynamoDBTransformer from 'appsync-dynamodb-transformer'
-import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
+import { AppSyncSearchableTransformer } from 'appsync-elasticsearch-transformer'
 
 @command({
     description: 'Deploy an AppSync API from your schema.graphql file',
@@ -23,7 +23,7 @@ export default class extends Command {
         const transformer = new GraphQLTransform({
             transformers: [
                 new DynamoDBTransformer(),
-                new ElasticSearchTransformer()
+                new AppSyncSearchableTransformer()
             ]
         })
         const cfdoc = transformer.transform(schemaFile.readSync());

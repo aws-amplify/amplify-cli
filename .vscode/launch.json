@@ -2,6 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "appsync-cli",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/packages/appsync-cli/lib/run.js"
+        },
+        {
             "name": "graphql-transform",
             "type": "node",
             "request": "launch",

@@ -7,32 +7,42 @@
             "Description": "The name of the AppSync API",
             "Default": "AppSyncSimpleTransform"
         },
-        "DynamoDBTableName": {
+        "DynamoDBModelTableName": {
             "Type": "String",
             "Description": "The name of the DynamoDB table backing your API.",
             "Default": "AppSyncSimpleTransformTable"
         },
-        "ReadIOPS": {
+        "DynamoDBModelTableReadIOPS": {
             "Type": "Number",
             "Description": "The number of read IOPS the table should support.",
             "Default": 5
         },
-        "WriteIOPS": {
+        "DynamoDBModelTableWriteIOPS": {
             "Type": "Number",
             "Description": "The number of write IOPS the table should support.",
             "Default": 5
         },
-        "IAMRoleName": {
+        "DynamoDBModelTableAccessIAMRoleName": {
             "Type": "String",
             "Description": "The name of the IAM role assumed by AppSync.",
             "Default": "AppSyncSimpleTransformRole"
         },
-        "StreamingIAMRoleName": {
+        "ElasticSearchAccessIAMRoleName": {
+            "Type": "String",
+            "Description": "The name of the IAM role assumed by AppSync.",
+            "Default": "AppSyncElasticSearchAccess"
+        },
+        "ElasticSearchStreamingFunctionName": {
             "Type": "String",
             "Description": "The name of the streaming lambda function.",
-            "Default": "DynamoDBToElasticSearch"
+            "Default": "DynamoDBToElasticSearchFunction"
         },
-        "DebugStreamingLambda": {
+        "ElasticSearchStreamingIAMRoleName": {
+            "Type": "String",
+            "Description": "The name of the streaming lambda function IAM role.",
+            "Default": "DynamoDBToElasticSearchFunctionIAMRole"
+        },
+        "ElasticSearchDebugStreamingLambda": {
             "Type": "Number",
             "Description": "Enable debug logs for the Dynamo -> ES streaming lambda.",
             "Default": 1,
@@ -101,24 +111,24 @@
             "Description": "The size in GB of the EBS volumes that contain our data.",
             "Default": 20
         },
-        "StreamingLambdaCodeS3Bucket": {
+        "ElasticSearchStreamingLambdaCodeS3Bucket": {
             "Type": "String",
             "Description": "S3 bucket containing the DynamoDB streaming lambda code.",
-            "Default": "mp-lambda-blueprints"
+            "Default": "sr-lambda-blueprints"
         },
-        "StreamingLambdaCodeS3Key": {
+        "ElasticSearchStreamingLambdaCodeS3Key": {
             "Type": "String",
             "Description": "S3 key containing the DynamoDB streaming lambda code.",
             "Default": "streaming-lambda.zip"
         },
-        "StreamingLambdaCodeS3Version": {
+        "ElasticSearchStreamingLambdaCodeS3Version": {
             "Type": "String",
             "Description": "S3 key containing the DynamoDB lambda code version.",
-            "Default": "Sc32fGDZq2SdHBc1Hek6I3_Lzzt4OazX"
+            "Default": "n9NaP2A0v3G3BzPXDkrs3rbrkLq2O4qJ"
         }
     },
     "Resources": {
-        "GraphQLAPILogicalID": {
+        "GraphQLAPI": {
             "Type": "AWS::AppSync::GraphQLApi",
             "Properties": {
                 "Name": {
@@ -127,11 +137,11 @@
                 "AuthenticationType": "API_KEY"
             }
         },
-        "DynamoDBTableLogicalID": {
+        "DynamoDBModelTable": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
                 "TableName": {
-                    "Ref": "DynamoDBTableName"
+                    "Ref": "DynamoDBModelTableName"
                 },
                 "KeySchema": [
                     {
@@ -155,10 +165,10 @@
                 ],
                 "ProvisionedThroughput": {
                     "ReadCapacityUnits": {
-                        "Ref": "ReadIOPS"
+                        "Ref": "DynamoDBModelTableReadIOPS"
                     },
                     "WriteCapacityUnits": {
-                        "Ref": "WriteIOPS"
+                        "Ref": "DynamoDBModelTableWriteIOPS"
                     }
                 },
                 "StreamSpecification": {
@@ -166,11 +176,11 @@
                 }
             }
         },
-        "IAMRoleLogicalID": {
+        "DynamoDBModelTableAccessIAMRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
-                    "Ref": "IAMRoleName"
+                    "Ref": "DynamoDBModelTableAccessIAMRoleName"
                 },
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -205,7 +215,7 @@
                                     "Resource": [
                                         {
                                             "Fn::GetAtt": [
-                                                "DynamoDBTableLogicalID",
+                                                "DynamoDBModelTable",
                                                 "Arn"
                                             ]
                                         },
@@ -215,7 +225,7 @@
                                                 [
                                                     {
                                                         "Fn::GetAtt": [
-                                                            "DynamoDBTableLogicalID",
+                                                            "DynamoDBModelTable",
                                                             "Arn"
                                                         ]
                                                     },
@@ -227,7 +237,180 @@
                                 }
                             ]
                         }
+                    }
+                ]
+            }
+        },
+        "DynamoDBModelTableDataSource": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "Name": "DynamoDBModelTable",
+                "Type": "AMAZON_DYNAMODB",
+                "ServiceRoleArn": {
+                    "Fn::GetAtt": [
+                        "DynamoDBModelTableAccessIAMRole",
+                        "Arn"
+                    ]
+                },
+                "DynamoDBConfig": {
+                    "AwsRegion": {
+                        "Fn::Select": [
+                            3,
+                            {
+                                "Fn::Split": [
+                                    ":",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "DynamoDBModelTable",
+                                            "Arn"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
                     },
+                    "TableName": {
+                        "Ref": "DynamoDBModelTable"
+                    }
+                }
+            }
+        },
+        "GraphQLAPIKey": {
+            "Type": "AWS::AppSync::ApiKey",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                }
+            }
+        },
+        "GraphQLSchema": {
+            "Type": "AWS::AppSync::GraphQLSchema",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "Definition": "input CreatePostInput {\n  title: String!\n  upvotes: Int\n  downvotes: Int\n  percantageUp: Float\n  comments: [String]\n  isPublished: Boolean\n}\n\ninput DeletePostInput {\n  id: ID\n}\n\ntype Mutation {\n  createPost(input: CreatePostInput!): Post\n  updatePost(input: UpdatePostInput!): Post\n  deletePost(input: DeletePostInput!): Post\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  upvotes: Int\n  downvotes: Int\n  percantageUp: Float\n  comments: [String]\n  isPublished: Boolean\n}\n\ntype Query {\n  getPost(id: ID!): Post\n}\n\ninput SearchableFloatRangeInput {\n  gt: Float\n  lt: Float\n  gte: Float\n  lte: Float\n}\n\ninput SearchableIntRangeInput {\n  gt: Int\n  lt: Int\n  gte: Int\n  lte: Int\n}\n\ninput SearchablePostQueryInput {\n  title: SearchableStringQueryInput\n  upvotes: SearchableIntRangeInput\n  downvotes: SearchableIntRangeInput\n  percantageUp: SearchableFloatRangeInput\n  isPublished: Boolean\n}\n\ninput SearchableStringQueryInput {\n  eq: String\n  match: String\n  matchPhrase: String\n  exists: Boolean\n  regexp: String\n}\n\ninput UpdatePostInput {\n  id: ID!\n  title: String\n  upvotes: Int\n  downvotes: Int\n  percantageUp: Float\n  comments: [String]\n  isPublished: Boolean\n}\n"
+            }
+        },
+        "CreatePostResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "DynamoDBModelTableDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "createPost",
+                "TypeName": "Mutation",
+                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
+                "ResponseMappingTemplate": "$util.toJson($context.result)"
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "UpdatePostResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "DynamoDBModelTableDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "updatePost",
+                "TypeName": "Mutation",
+                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": {\n      \"expression\": \"attribute_exists(#type) AND attribute_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
+                "ResponseMappingTemplate": "$util.toJson($context.result)"
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "DeletePostResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "DynamoDBModelTableDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "deletePost",
+                "TypeName": "Mutation",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
+                "ResponseMappingTemplate": "$util.toJson($context.result)"
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "GetPostResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "DynamoDBModelTableDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "getPost",
+                "TypeName": "Query",
+                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
+                "ResponseMappingTemplate": "$util.toJson($context.result)"
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "ElasticSearchAccessIAMRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {
+                    "Ref": "ElasticSearchAccessIAMRoleName"
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "appsync.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Policies": [
                     {
                         "PolicyName": "ElasticSearchAccess",
                         "PolicyDocument": {
@@ -249,7 +432,7 @@
                                             [
                                                 {
                                                     "Fn::GetAtt": [
-                                                        "ElasticSearchDomainLogicalID",
+                                                        "ElasticSearchDomain",
                                                         "DomainArn"
                                                     ]
                                                 },
@@ -264,60 +447,20 @@
                 ]
             }
         },
-        "DynamoDBDataSourceLogicalID": {
+        "ElasticSearchDataSource": {
             "Type": "AWS::AppSync::DataSource",
             "Properties": {
                 "ApiId": {
                     "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
+                        "GraphQLAPI",
                         "ApiId"
                     ]
                 },
-                "Name": "DynamoDBTableLogicalID",
-                "Type": "AMAZON_DYNAMODB",
-                "ServiceRoleArn": {
-                    "Fn::GetAtt": [
-                        "IAMRoleLogicalID",
-                        "Arn"
-                    ]
-                },
-                "DynamoDBConfig": {
-                    "AwsRegion": {
-                        "Fn::Select": [
-                            3,
-                            {
-                                "Fn::Split": [
-                                    ":",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "DynamoDBTableLogicalID",
-                                            "Arn"
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "TableName": {
-                        "Ref": "DynamoDBTableLogicalID"
-                    }
-                }
-            }
-        },
-        "ElasticSearchDataSourceLogicalID": {
-            "Type": "AWS::AppSync::DataSource",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "Name": "ElasticSearchDomainLogicalID",
+                "Name": "ElasticSearchDomain",
                 "Type": "AMAZON_ELASTICSEARCH",
                 "ServiceRoleArn": {
                     "Fn::GetAtt": [
-                        "IAMRoleLogicalID",
+                        "ElasticSearchAccessIAMRole",
                         "Arn"
                     ]
                 },
@@ -330,7 +473,7 @@
                                     ":",
                                     {
                                         "Fn::GetAtt": [
-                                            "ElasticSearchDomainLogicalID",
+                                            "ElasticSearchDomain",
                                             "DomainArn"
                                         ]
                                     }
@@ -345,7 +488,7 @@
                                 "https://",
                                 {
                                     "Fn::GetAtt": [
-                                        "ElasticSearchDomainLogicalID",
+                                        "ElasticSearchDomain",
                                         "DomainEndpoint"
                                     ]
                                 }
@@ -355,18 +498,7 @@
                 }
             }
         },
-        "APIKeyLogicalID": {
-            "Type": "AWS::AppSync::ApiKey",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                }
-            }
-        },
-        "ElasticSearchDomainLogicalID": {
+        "ElasticSearchDomain": {
             "Type": "AWS::Elasticsearch::Domain",
             "Properties": {
                 "DomainName": {
@@ -390,11 +522,11 @@
                 }
             }
         },
-        "StreamingLambdaIAMRoleLogicalID": {
+        "ElasticSearchStreamingLambdaIAMRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
-                    "Ref": "StreamingIAMRoleName"
+                    "Ref": "ElasticSearchStreamingIAMRoleName"
                 },
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -430,7 +562,7 @@
                                             [
                                                 {
                                                     "Fn::GetAtt": [
-                                                        "ElasticSearchDomainLogicalID",
+                                                        "ElasticSearchDomain",
                                                         "DomainArn"
                                                     ]
                                                 },
@@ -462,7 +594,7 @@
                                                 [
                                                     {
                                                         "Fn::GetAtt": [
-                                                            "DynamoDBTableLogicalID",
+                                                            "DynamoDBModelTable",
                                                             "Arn"
                                                         ]
                                                     },
@@ -496,24 +628,27 @@
                 ]
             }
         },
-        "StreamingLambdaFunctionLogicalID": {
+        "ElasticSearchStreamingLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Code": {
                     "S3Bucket": {
-                        "Ref": "StreamingLambdaCodeS3Bucket"
+                        "Ref": "ElasticSearchStreamingLambdaCodeS3Bucket"
                     },
                     "S3Key": {
-                        "Ref": "StreamingLambdaCodeS3Key"
+                        "Ref": "ElasticSearchStreamingLambdaCodeS3Key"
                     },
                     "S3ObjectVersion": {
-                        "Ref": "StreamingLambdaCodeS3Version"
+                        "Ref": "ElasticSearchStreamingLambdaCodeS3Version"
                     }
+                },
+                "FunctionName": {
+                    "Ref": "ElasticSearchStreamingFunctionName"
                 },
                 "Handler": "python_streaming_function.lambda_handler",
                 "Role": {
                     "Fn::GetAtt": [
-                        "StreamingLambdaIAMRoleLogicalID",
+                        "ElasticSearchStreamingLambdaIAMRole",
                         "Arn"
                     ]
                 },
@@ -522,7 +657,7 @@
                     "Variables": {
                         "ES_ENDPOINT": {
                             "Fn::GetAtt": [
-                                "ElasticSearchDomainLogicalID",
+                                "ElasticSearchDomain",
                                 "DomainEndpoint"
                             ]
                         },
@@ -534,7 +669,7 @@
                                         ":",
                                         {
                                             "Fn::GetAtt": [
-                                                "ElasticSearchDomainLogicalID",
+                                                "ElasticSearchDomain",
                                                 "DomainArn"
                                             ]
                                         }
@@ -543,272 +678,121 @@
                             ]
                         },
                         "DEBUG": {
-                            "Ref": "DebugStreamingLambda"
+                            "Ref": "ElasticSearchDebugStreamingLambda"
                         }
                     }
                 }
             }
         },
-        "StreamingLambdaEventSourceMappingLogicalID": {
+        "ElasticSearchStreamingLambdaEventSourceMapping": {
             "Type": "AWS::Lambda::EventSourceMapping",
             "Properties": {
                 "BatchSize": 100,
                 "Enabled": true,
                 "EventSourceArn": {
                     "Fn::GetAtt": [
-                        "DynamoDBTableLogicalID",
+                        "DynamoDBModelTable",
                         "StreamArn"
                     ]
                 },
                 "FunctionName": {
                     "Fn::GetAtt": [
-                        "StreamingLambdaFunctionLogicalID",
+                        "ElasticSearchStreamingLambdaFunction",
                         "Arn"
                     ]
                 },
                 "StartingPosition": "TRIM_HORIZON"
             }
-        },
-        "CreateUserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "createUser",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": {\n          \"S\": \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "UpdateUserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "updateUser",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": {\n      \"expression\": ,\n      \"expressionNames\": {\n          \"#type\": ,\n          \"#id\": \n    }\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "DeleteUserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "deleteUser",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "GetUserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "getUser",
-                "TypeName": "Query",
-                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"User\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "SearchUserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ElasticSearchDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "searchUser",
-                "TypeName": "Query",
-                "RequestMappingTemplate": {
-                    "Fn::Sub": [
-                        "#set( $body = {\n  \"size\": $util.defaultIfNull($ctx.args.first, 20),\n  \"sort\":   [{\n      \"createdAt\": \"asc\"\n  }, {\n      \"_id\": \"desc\"\n  }]\n} )\n#if( $util.isNull($ctx.args.query) )\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"User\"\n      }\n    },\n      \"must\":     [{\n          \"match_all\": {}\n    }]\n  }\n} )\n#else\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"User\"\n      }\n    },\n      \"must\":     [{\n          \"multi_match\": {\n              \"query\": \"$ctx.args.query\",\n              \"fields\":         [],\n              \"type\": \"best_fields\"\n      }\n    }]\n  }\n} )\n#end\n$util.qr($body.put(\"query\", $query))\n#if( !$util.isNullOrEmpty($ctx.args.after) )\n  #set( $split = $ctx.args.after.split(\"/\") )\n#set( $afterToken = [$split.get(0), $split.get(1)] )\n$util.qr($body.put(\"search_after\", $afterToken))\n#end\n#set( $indexPath = \"/${__ES_INDEX}/_search\" )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GET\",\n  \"path\": \"$indexPath.toLowerCase()\",\n  \"params\": {\n      \"body\": $util.toJson($body)\n  }\n}",
-                        {
-                            "__ES_INDEX": {
-                                "Ref": "DynamoDBTableLogicalID"
-                            }
-                        }
-                    ]
-                },
-                "ResponseMappingTemplate": "#set( $items = [] )\n#foreach( $entry in $context.result.hits.hits )\n  #if( !$foreach.hasNext )\n    #set( $nextToken = \"$entry.sort.get(0)/$entry.sort.get(1)\" )\n  #end\n$util.qr($items.add($entry.get(\"_source\")))\n#end\n$util.toJson({\n  \"items\": $items,\n  \"total\": $ctx.result.hits.total,\n  \"nextToken\": $nextToken\n})"
-            }
-        },
-        "CreatePostResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "createPost",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $value = $util.map.copyAndRemoveAllKeys($context.args.input, []) )\n$util.qr($value.put(\"createdAt\", \"$util.time.nowISO8601()\"))\n$util.qr($value.put(\"updatedAt\", \"$util.time.nowISO8601()\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$util.autoId()\"\n    }\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($value),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#type) AND attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#type\": \"__typename\",\n          \"#id\": \"id\"\n    }\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "UpdatePostResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "updatePost",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($ctx.args.input, [\"__typename\", \"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#${entry.key}\") )\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n  #else\n    $util.qr($expSet.put(\"#${entry.key}\", \":${entry.key}\"))\n$util.qr($expNames.put(\"#${entry.key}\", \"${entry.key}\"))\n$util.qr($expValues.put(\":${entry.key}\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n#foreach( $entry in $expSet.entrySet() )\n  #set( $expression = \"$expression $entry.key = $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"${expression} ADD\" )\n#foreach( $entry in $expAdd.entrySet() )\n  #set( $expression = \"$expression $entry.key $entry.value\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"${expression} REMOVE\" )\n#foreach( $entry in $expRemove )\n  #set( $expression = \"$expression $entry\" )\n  #if( $foreach.hasNext() )\n    #set( $expression = \"$expression,\" )\n  #end\n#end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !${expNames.isEmpty()} )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !${expValues.isEmpty()} )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": {\n      \"expression\": ,\n      \"expressionNames\": {\n          \"#type\": ,\n          \"#id\": \n    }\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "DeletePostResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "deletePost",
-                "TypeName": "Mutation",
-                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "GetPostResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "DynamoDBDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "getPost",
-                "TypeName": "Query",
-                "RequestMappingTemplate": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"__typename\": {\n          \"S\": \"Post\"\n    },\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
-                "ResponseMappingTemplate": "$util.toJson($context.result)"
-            }
-        },
-        "SearchPostResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ElasticSearchDataSourceLogicalID",
-                        "Name"
-                    ]
-                },
-                "FieldName": "searchPost",
-                "TypeName": "Query",
-                "RequestMappingTemplate": {
-                    "Fn::Sub": [
-                        "#set( $body = {\n  \"size\": $util.defaultIfNull($ctx.args.first, 20),\n  \"sort\":   [{\n      \"createdAt\": \"asc\"\n  }, {\n      \"_id\": \"desc\"\n  }]\n} )\n#if( $util.isNull($ctx.args.query) )\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"Post\"\n      }\n    },\n      \"must\":     [{\n          \"match_all\": {}\n    }]\n  }\n} )\n#else\n  #set( $query = {\n  \"bool\": {\n      \"filter\": {\n          \"term\": {\n              \"__typename.keyword\": \"Post\"\n      }\n    },\n      \"must\":     [{\n          \"multi_match\": {\n              \"query\": \"$ctx.args.query\",\n              \"fields\":         [\"title\", \"tags\"],\n              \"type\": \"best_fields\"\n      }\n    }]\n  }\n} )\n#end\n$util.qr($body.put(\"query\", $query))\n#if( !$util.isNullOrEmpty($ctx.args.after) )\n  #set( $split = $ctx.args.after.split(\"/\") )\n#set( $afterToken = [$split.get(0), $split.get(1)] )\n$util.qr($body.put(\"search_after\", $afterToken))\n#end\n#set( $indexPath = \"/${__ES_INDEX}/_search\" )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GET\",\n  \"path\": \"$indexPath.toLowerCase()\",\n  \"params\": {\n      \"body\": $util.toJson($body)\n  }\n}",
-                        {
-                            "__ES_INDEX": {
-                                "Ref": "DynamoDBTableLogicalID"
-                            }
-                        }
-                    ]
-                },
-                "ResponseMappingTemplate": "#set( $items = [] )\n#foreach( $entry in $context.result.hits.hits )\n  #if( !$foreach.hasNext )\n    #set( $nextToken = \"$entry.sort.get(0)/$entry.sort.get(1)\" )\n  #end\n$util.qr($items.add($entry.get(\"_source\")))\n#end\n$util.toJson({\n  \"items\": $items,\n  \"total\": $ctx.result.hits.total,\n  \"nextToken\": $nextToken\n})"
-            }
-        },
-        "GraphQLSchemaLogicalID": {
-            "Type": "AWS::AppSync::GraphQLSchema",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPILogicalID",
-                        "ApiId"
-                    ]
-                },
-                "Definition": "input CreatePostInput {\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ninput CreateUserInput {\n  name: String!\n}\n\ninput DeletePostInput {\n  id: ID\n}\n\ninput DeleteUserInput {\n  id: ID\n}\n\ntype Mutation {\n  createUser(input: CreateUserInput!): User\n  updateUser(input: UpdateUserInput!): User\n  deleteUser(input: DeleteUserInput!): User\n  createPost(input: CreatePostInput!): Post\n  updatePost(input: UpdatePostInput!): Post\n  deletePost(input: DeletePostInput!): Post\n}\n\ntype Post {\n  id: ID!\n  title: String!\n  rating: Int!\n  tags: [String]\n}\n\ntype PostConnection {\n  items: [Post]\n  total: Int\n  nextToken: String\n}\n\ntype Query {\n  getUser(id: ID!): User\n  searchUser(query: String!, first: Int, after: String): UserConnection\n  getPost(id: ID!): Post\n  searchPost(query: String!, first: Int, after: String): PostConnection\n}\n\ninput UpdatePostInput {\n  id: ID!\n  title: String\n  rating: Int\n  tags: [String]\n}\n\ninput UpdateUserInput {\n  id: ID!\n  name: String\n}\n\ntype User {\n  id: ID!\n  name: String!\n}\n\ntype UserConnection {\n  items: [User]\n  total: Int\n  nextToken: String\n}\n"
-            }
         }
     },
-    "Outputs": {}
+    "Outputs": {
+        "GraphQLAPIEndpointOutput": {
+            "Description": "Your GraphQL API endpoint.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "GraphQLAPI",
+                    "GraphQLUrl"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "GraphQLApiEndpoint"
+                        ]
+                    ]
+                }
+            }
+        },
+        "GraphQLAPIKeyOutput": {
+            "Description": "Your GraphQL API key. Provide via 'x-api-key' header.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "GraphQLAPIKey",
+                    "ApiKey"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "GraphQLApiKey"
+                        ]
+                    ]
+                }
+            }
+        },
+        "ElasticSearchStreamingLambdaIAMRoleArn": {
+            "Description": "Your lambda function Arn that will stream data from the DynamoDB table to the Elasticsearch Index",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ElasticSearchStreamingLambdaIAMRole",
+                    "Arn"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "ElasticSearchStreamingLambdaIAMRoleArn"
+                        ]
+                    ]
+                }
+            }
+        },
+        "ElasticSearchAccessIAMRoleArn": {
+            "Description": "The IAM Role used to execute queries against the ElasticSearch index.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "ElasticSearchAccessIAMRole",
+                    "Arn"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "ElasticSearchAccessIAMRoleArn"
+                        ]
+                    ]
+                }
+            }
+        }
+    }
 }

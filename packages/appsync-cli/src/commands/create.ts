@@ -2,7 +2,7 @@ import { Command, command, param } from 'clime';
 import File from '../types/File';
 import GraphQLTransform from 'graphql-transform';
 import DynamoDBTransformer from 'appsync-dynamodb-transformer'
-import ElasticSearchTransformer from 'appsync-elasticsearch-transformer'
+import { AppSyncSearchableTransformer } from 'appsync-elasticsearch-transformer'
 import AuthTransformer from 'appsync-auth-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
@@ -75,7 +75,7 @@ export default class extends Command {
         const transformer = new GraphQLTransform({
             transformers: [
                 new DynamoDBTransformer(),
-                // new ElasticSearchTransformer(),
+                new AppSyncSearchableTransformer(),
                 new AuthTransformer()
             ]
         })

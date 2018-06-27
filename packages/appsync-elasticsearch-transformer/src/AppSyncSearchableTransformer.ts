@@ -1,7 +1,15 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
-import { ObjectTypeDefinitionNode, DirectiveNode, parse } from 'graphql'
+import {
+    DirectiveNode, ObjectTypeDefinitionNode, FieldDefinitionNode
+} from 'graphql'
 import { ResourceFactory } from './resources'
-import { AppSync } from 'cloudform';
+import {
+    makeStaticFields, makeSearchInputObject
+} from './definitions'
+import {
+    makeNamedType, blankObjectExtension, makeArg, makeField, makeNonNullType,
+    extensionWithFields
+} from 'appsync-transformer-common'
 
 /**
  * Handles the @searchable directive on OBJECT types.
@@ -19,7 +27,15 @@ export class AppSyncSearchableTransformer extends Transformer {
     }
 
     public before = (ctx: TransformerContext): void => {
-        // Any one time setup
+        const template = this.resources.initTemplate();
+        ctx.mergeResources(template.Resources)
+        ctx.mergeParameters(template.Parameters)
+        ctx.mergeOutputs(template.Outputs)
+
+        const staticInputTypes = makeStaticFields();
+        for (const i in staticInputTypes) {
+            ctx.addObject(staticInputTypes[i])
+        }
     }
 
     /**
@@ -28,6 +44,11 @@ export class AppSyncSearchableTransformer extends Transformer {
      * @param ctx The accumulated context for the transform.
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-        // Transformer code here
+
+        // Create the connection object type.
+        const connection = makeSearchInputObject(def)
+        ctx.addObject(connection)
+        
+        // TODO: Add resolvers to the newly created Connection Input type.
     }
 }

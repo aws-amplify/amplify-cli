@@ -45,7 +45,9 @@ export class ResourceConstants {
     public static CONDITIONS = {}
     public static OUTPUTS = {
         GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
-        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput'
+        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput',
+        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
+        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn'
     }
     public static METADATA = {}
 }

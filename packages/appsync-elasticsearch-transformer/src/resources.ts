@@ -1,6 +1,7 @@
 import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
 import Template from 'cloudform/types/template'
+import Output from 'cloudform/types/output'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
 import {
     ElasticSearchMappingTemplate,
@@ -79,6 +80,29 @@ export class ResourceFactory {
     }
 
     /**
+     * Outputs
+     */
+    public makeLambdaIAMRoleOutput(): Output {
+        return {
+            Description: "Your lambda function Arn that will stream data from the DynamoDB table to the Elasticsearch Index",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "ElasticSearchStreamingLambdaIAMRoleArn"])
+            }
+        }
+    }
+
+    public makeElasticsearchIAMRoleOutput(): Output {
+        return {
+            Description: "The IAM Role used to execute queries against the ElasticSearch index.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "ElasticSearchAccessIAMRoleArn"])
+            }
+        }
+    }
+
+    /**
      * Creates the barebones template for an application.
      */
     public initTemplate(): Template {
@@ -91,6 +115,10 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
                 [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
                 [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaEventSourceMappingLogicalID]: this.makeDynamoDBStreamEventSourceMapping()
+            },
+            Outputs: {
+                [ResourceConstants.OUTPUTS.ElasticSearchStreamingLambdaIAMRoleArn]: this.makeLambdaIAMRoleOutput(),
+                [ResourceConstants.OUTPUTS.ElasticSearchAccessIAMRoleArn]: this.makeElasticsearchIAMRoleOutput()
             }
         }
     }
