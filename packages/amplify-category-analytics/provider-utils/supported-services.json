@@ -1,0 +1,20 @@
+{
+	"Pinpoint": {
+		"inputs": [
+			{
+				"key": "resourceName",
+				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			}
+		],
+		"defaultValuesFilename": "pinpoint-defaults.js",
+		"serviceWalkthroughFilename": "pinpoint-walkthrough.js",
+		"cfnFilename": "pinpoint-cloudformation-template.yml.ejs",
+		"provider": "amplify-provider-awscloudformation"
+	}
+}
