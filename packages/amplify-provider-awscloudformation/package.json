@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "aws-sdk": "^2.250.1",
+    "cfn-lint": "^1.7.2",
     "columnify": "^1.5.4",
     "eslint": "^4.19.1",
     "fs-extra": "^4.0.2",
