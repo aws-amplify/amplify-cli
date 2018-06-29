@@ -58,9 +58,6 @@ function addResource(context, category, service, configure) {
         }
       });
 
-      console.log('cfnFileName', cfnFilename)
-
-
       copyCfnTemplate(context, category, props, cfnFilename);
     })
     .then(() => props.resourceName);
