@@ -7,7 +7,6 @@
     "amplify": "bin/amplify"
   },
   "scripts": {
-    "format": "prettier --write **/*.{js,json} && standard --fix",
     "lint": "eslint src",
     "lint-fix": "eslint . --fix",
     "test": "ava",
@@ -50,10 +49,6 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
     "nyc": "^11.2.1",
-    "prettier": "^1.7.4",
-    "standard": "^10.0.0"
-  },
-  "standard": {
-    "parser": "babel-eslint"
+    "prettier": "^1.7.4"
   }
 }
