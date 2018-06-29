@@ -98,6 +98,134 @@
 				]
 			},
 			{
+				"key": "defaultPasswordPolicy",
+				"question": "Do you want to use the default password policy for this User Pool?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "passwordPolicy.minLength",
+				"question": "Enter the minimum password length for this User Pool:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "range",
+					"value": {"min": 6, "max": 98},
+					"onErrorMsg": "The minimum password length must be a number and must be greater than 5 and less than 99."
+				},
+				"andConditions": [
+					{
+						"key": "defaultPasswordPolicy",
+						"value": false,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "passwordPolicy.requiresLower",
+				"question": "Should this User Pool require passwords with lowercase characters?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "defaultPasswordPolicy",
+						"value": false,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "passwordPolicy.requiresUpper",
+				"question": "Should this User Pool require passwords with uppercase characters?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "defaultPasswordPolicy",
+						"value": false,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "passwordPolicy.requiresNumbers",
+				"question": "Should this User Pool require passwords with numbers?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "defaultPasswordPolicy",
+						"value": false,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "passwordPolicy.requiresSymbols",
+				"question": "Should this User Pool require passwords with special symbols?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "defaultPasswordPolicy",
+						"value": false,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "editRequiredAttributes",
+				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "requiredAttributes",
+				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					"address",
+					"birthdate",
+					"email",
+					"family_name",
+					"gender",
+					"given_name",
+					"locale",
+					"middle_name",
+					"name",
+					"nickname",
+					"phone_number",
+					"picture",
+					"preferred_username",
+					"profile",
+					"timezone",
+					"updated_at",
+					"website"
+				],
+				"andConditions": [
+					{
+						"key": "editRequiredAttributes",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
 				"key": "identityPoolName",
 				"question": "Please enter a name for your identity pool.",
 				"required": true,
