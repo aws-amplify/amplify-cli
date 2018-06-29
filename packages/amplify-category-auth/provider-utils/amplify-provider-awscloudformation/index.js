@@ -3,6 +3,13 @@ const inquirer = require('inquirer');
 
 let serviceMetadata;
 
+function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { serviceWalkthrough } = require(serviceWalkthroughSrc);
+
+  return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+}
+
 function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
@@ -20,17 +27,15 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-async function addResource(context, category, service, configure) {
+
+function addResource(context, category, service, configure) {
   let props = {};
-
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename, defaultValuesFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/core-questions`;
-  const { serviceWalkthrough } = require(serviceWalkthroughSrc);
-
-  let result = await serviceWalkthrough(context, defaultValuesFilename, serviceMetadata)
+  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
+
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
@@ -52,6 +57,9 @@ async function addResource(context, category, service, configure) {
           props[el] = props[el].replace(/<label>/g, props.resourceName);
         }
       });
+
+      console.log('cfnFileName', cfnFilename)
+
 
       copyCfnTemplate(context, category, props, cfnFilename);
     })
