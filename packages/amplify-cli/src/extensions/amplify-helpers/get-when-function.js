@@ -21,9 +21,7 @@ function getWhen(input) {
 
 // HELPER FUNCTION TO DETERMINE IF A SINGLE CONDITION IS MET BY ANSWERS
 const findMatch = (cond, answers) => {
-
-  if (cond.key == 'defaultPasswordPolicy'){
-  }
+  
   let response = true;
   if (cond.operator === '=' && answers[cond.key] != undefined && answers[cond.key] !== cond.value) {
     response = false;
