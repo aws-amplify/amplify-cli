@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const cfnLint = require('cfn-lint');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
@@ -14,6 +15,8 @@ function run(context, category, resourceName) {
   } = context.amplify.getResourceStatus(category, resourceName);
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
+
+  validateCfnTemplates(context, resources);
 
   return updateS3Templates(context, resources, projectDetails.amplifyMeta)
     .then(() => {
@@ -37,6 +40,27 @@ function run(context, category, resourceName) {
       }
     });
 }
+
+function validateCfnTemplates(context, resourcesToBeUpdated) {
+  for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
+    const { category, resourceName } = resourcesToBeUpdated[i];
+    const backEndDir = context.amplify.pathManager.getBackendDirPath();
+    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    const files = fs.readdirSync(resourceDir);
+    // Fetch all the Cloudformation templates for the resource (can be json or yml)
+    const cfnFiles = files.filter(file => ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1)));
+    for (let j = 0; j < cfnFiles.length; j += 1) {
+      const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
+      try {
+        cfnLint.validateFile(filePath);
+      } catch (err) {
+        context.print.error(`Invalid Cloudformation tempalte: ${filePath}`);
+        throw err;
+      }
+    }
+  }
+}
+
 
 function updateCloudFormationNestedStack(context, nestedStack) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();

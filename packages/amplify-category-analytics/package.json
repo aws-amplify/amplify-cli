@@ -1,7 +1,19 @@
 {
   "name": "amplify-category-analytics",
   "version": "0.1.0",
-  "description": "amplify-cli analytics and user engagement plugin",
-  "main": "index.js",
-  "license": "Apache-2.0"
+  "description": "amplify-cli analytics plugin",
+  "dependencies": {
+    "eslint": "^4.19.1",
+    "inquirer": "^3.2.1",
+    "uuid": "^2.0.3"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0"
+  }
 }
