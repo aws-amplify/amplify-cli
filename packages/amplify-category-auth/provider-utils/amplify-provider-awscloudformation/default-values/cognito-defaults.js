@@ -27,7 +27,14 @@ const userPoolDefaults = () => ({
   requiredAttributes: [
     'email',
     'phone_number'
-  ]
+  ],
+});
+
+const userPoolClientDefaults = () => ({
+  name: `<label>-app-client-${uuid()}`,
+  authFlow: 'ADMIN_NO_SRP_AUTH',
+  generateSecret: true,
+  refreshTokenValidity: 30
 });
 
 const identityPoolDefaults = () => ({
@@ -39,6 +46,7 @@ const identityPoolDefaults = () => ({
 const functionMap = {
   'Cognito Identity Pools': userPoolDefaults,
   'Cognito User Pools': identityPoolDefaults,
+  'Cognito Identity Pool Clients': userPoolClientDefaults
 };
 
 const getAllDefaults = () => {
@@ -46,6 +54,7 @@ const getAllDefaults = () => {
   const sources = [
     userPoolDefaults(),
     identityPoolDefaults(),
+    userPoolClientDefaults()
   ];
 
   return Object.assign(target, ...sources);
@@ -55,6 +64,7 @@ module.exports = {
   general,
   userPoolDefaults,
   identityPoolDefaults,
+  userPoolClientDefaults,
   getAllDefaults,
   functionMap,
 };

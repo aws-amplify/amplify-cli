@@ -226,6 +226,73 @@
 				]
 			},
 			{
+				"key": "createUserpoolClient",
+				"question": "Do you want to create an App Client for your Userpool?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "Cognito User Pools",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "userpoolClient.name",
+				"question": "Provide a name for the App Client: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClient.authFlow",
+				"question": "Authentication flow you want to use:",
+				"required": true,
+				"type": "select",
+				"options": [
+					"ADMIN_NO_SRP_AUTH",
+					"CUSTOM_AUTH_FLOW_ONLY"
+				],
+				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClient.generateSecret",
+				"question": "Do you want to generate a secret for your app?",
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClient.refreshTokenValidity",
+				"question": "Specify the app's refresh token expiration period (in days):",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
 				"key": "identityPoolName",
 				"question": "Please enter a name for your identity pool.",
 				"required": true,
@@ -240,6 +307,7 @@
 		],
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
+		"serviceWalkthroughFilename": "core-questions.js",
 		"provider": "amplify-provider-awscloudformation"
 	}
 }
