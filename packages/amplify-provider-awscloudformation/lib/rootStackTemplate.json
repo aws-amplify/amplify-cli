@@ -6,6 +6,14 @@
             "Description": "Name of the common deployment bucket provided by the parent stack",
             "Type": "String",
             "Default": "DeploymentBucket"
+        },
+        "AuthRoleName":{
+            "Type": "String",
+            "Default": "AuthRoleName"
+        },
+        "UnauthRoleName":{
+            "Type": "String",
+            "Default": "UnauthRoleName"
         }
     }, 
     "Resources": {
@@ -14,6 +22,75 @@
             "Properties": {
                 "BucketName": {"Ref": "DeploymentBucketName"}
             }
+        },
+        "IdentityPool": {
+            "Type": "AWS::Cognito::IdentityPool",
+            "Properties": {
+                "IdentityPoolName": "xyz",
+                "AllowUnauthenticatedIdentities": true
+            }
+        },
+        "AuthRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {"Ref": "AuthRoleName"},
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Sid": "",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "cognito-identity.amazonaws.com"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {
+                        "StringEquals": {
+                          "cognito-identity.amazonaws.com:aud": {"Ref": "IdentityPool"}
+                        },
+                        "ForAnyValue:StringLike": {
+                          "cognito-identity.amazonaws.com:amr": "authenticated"
+                        }
+                      }
+                    }
+                  ]
+                }
+            }
+        },
+        "UnauthRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {"Ref": "UnauthRoleName"},
+                "AssumeRolePolicyDocument":{
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Sid": "",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "cognito-identity.amazonaws.com"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {
+                        "StringEquals": {
+                          "cognito-identity.amazonaws.com:aud": {"Ref": "IdentityPool"}
+                        },
+                        "ForAnyValue:StringLike": {
+                          "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                        }
+                      }
+                    }
+                  ]
+                }
+            }
+
+        },
+        "IdentityPoolIAMRoleMap": {
+          "Type" : "AWS::Cognito::IdentityPoolRoleAttachment",
+          "Properties" : {
+            "IdentityPoolId" : {"Ref": "IdentityPool"},
+            "Roles" : { "authenticated": {"Fn::GetAtt": ["AuthRole", "Arn"]}, "unauthenticated": {"Fn::GetAtt": ["UnauthRole", "Arn"]}}
+          }
         }
     },
     "Outputs" : {
@@ -44,6 +121,15 @@
             "Export": {
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-DeploymentBucketName"}
             }
+        },
+        "AuthRole": {
+            "Value": {"Fn::GetAtt": ["AuthRole", "Arn"]}
+        },
+        "UnauthRole": {
+            "Value": {"Fn::GetAtt": ["UnauthRole", "Arn"]}
+        },
+        "DefaultIdentityPool": {
+            "Value": {"Ref": "IdentityPool" }
         }
     }
 }
