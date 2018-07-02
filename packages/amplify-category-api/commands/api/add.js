@@ -19,7 +19,7 @@ module.exports = {
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not confgiured for this category');
+          context.print.error('Provider not configured for this category');
           return;
         }
         return providerController.addResource(context, category, result.service, options);

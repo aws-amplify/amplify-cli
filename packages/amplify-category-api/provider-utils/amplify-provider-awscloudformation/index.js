@@ -36,7 +36,7 @@ function addResource(context, category, service, options) {
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
       if (result.answers) {
-        ({ answers } = result.answers);
+        ({ answers } = result);
         options.dependsOn = result.dependsOn;
       } else {
         answers = result;

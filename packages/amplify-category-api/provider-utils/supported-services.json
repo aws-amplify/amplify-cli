@@ -1,7 +1,6 @@
 {
 	"AppSync": {
-		"inputs": [
-			{
+		"inputs": [{
 				"key": "resourceName",
 				"type": "input",
 				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
@@ -29,22 +28,116 @@
 				"key": "templateSelection",
 				"type": "list",
 				"question": "Choose from one of the options below",
-				"options": [
-			    	{ "name": "Use sample AppSync-DynamoDB example cloudformation template",
-			    	  "value": "default"
-			    	},
-			    	{ 
-			    	  "name": "Use custom AppSync cloudformation template",
-			    	  "value": "custom"
+				"options": [{
+						"name": "Use sample AppSync-DynamoDB example cloudformation template",
+						"value": "default"
+					},
+					{
+						"name": "Use custom AppSync cloudformation template",
+						"value": "custom"
 					}
 				],
 				"required": true
 			},
 			{
 
+				"key": "authType",
+				"type": "list",
+				"question": "Choose an authorization type for the API",
+				"options": [{
+						"name": "API key",
+						"value": "apiKey"
+					},
+					{
+						"name": "AWS Identity and Access Management (IAM)",
+						"value": "iam"
+					},
+					{
+						"name": "Amazon Cognito User Pool",
+						"value": "cognito"
+					},
+					{
+						"name": "OpenID Connect",
+						"value": "openId"
+					}
+
+				],
+				"required": true
+			},
+			{
+
+				"key": "cognitoUserPoolId",
+				"type": "input",
+				"question": "Please provide a user pool ID:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9._-]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+				},
+				"required": true
+			},
+			{
+
+				"key": "cognitoAction",
+				"type": "list",
+				"question": "Select the default permission for requests to your API",
+				"options": [
+					"ALLOW",
+					"DENY"
+				]
+			},
+			{
+
+				"key": "appClientRegex",
+				"type": "input",
+				"question": "Type a regular expression to allow or block requests to this API (Optional)"
+			},
+			{
+
+				"key": "openIdUrl",
+				"type": "input",
+				"question": "Please provide the URL of your OpenID Connect provider used for discovery:",
+				"required": true
+			},
+			{
+
+				"key": "clientId",
+				"type": "input",
+				"question": "Please provide a client id from your OpenID Client Connect application to only allow tokens from that application(Optional):"
+			},
+			{
+
+				"key": "issueTTL",
+				"type": "input",
+				"question": "Please provide the number of milliseconds a token is valid for after being issued to a user. Set to 0 to disable(Optional):",
+				"validation": {
+					"operator": "regex",
+					"value": "^[0-9]+$",
+					"onErrorMsg": "Value entered can only be numeric"
+				}
+			},
+			{
+
+				"key": "authTTL",
+				"type": "input",
+				"question": "Please provide the number of milliseconds a token is valid for after being authenticated. Set to 0 to disable(Optional):",
+				"validation": {
+					"operator": "regex",
+					"value": "^[0-9]+$",
+					"onErrorMsg": "Value entered can only be numeric"
+				}
+			},
+			{
+
+				"key": "apiKeyExpiryDays",
+				"type": "input",
+				"question": "Please provide the days after which the api key would be invalid (with a minimum of 1 day and a maximum of 365 days):"
+			},
+			{
+
 				"key": "dataSourceType",
 				"type": "list",
-				"question": "Choose a data source you would like to add to your GraphQL API",
+				"question": "Choose a data source you would like to add to your AppSync API",
 				"options": [
 			    	"DynamoDb",
 			    	"Lambda",
@@ -56,13 +149,13 @@
 				"key": "dynamoDbType",
 				"type": "list",
 				"question": "Choose a DynamoDB data source option",
-				"options": [
-			    	{ "name": "Use DynamoDB table configured in the current Amplify project",
-			    	  "value": "currentProject"
-			    	},
-			    	{ 
-			    	  "name": "Create a new DynamoDB table",
-			    	  "value": "newResource"
+				"options": [{
+						"name": "Use DynamoDB table configured in the current Amplify project",
+						"value": "currentProject"
+					},
+					{
+						"name": "Create a new DynamoDB table",
+						"value": "newResource"
 					}
 				]
 			},
@@ -70,7 +163,7 @@
 
 				"key": "dynamoDbResources",
 				"type": "list",
-				"question": "Choose from one of the already configured DynamoDB tables"			
+				"question": "Choose from one of the already configured DynamoDB tables"
 			}
 		],
 		"defaultValuesFilename": "appSync-defaults.js",
