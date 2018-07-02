@@ -12,7 +12,7 @@ const getAllDefaults = (project) => {
     region,
     defaultTableName: `Posts${shortId}`,
   };
-  console.log(defaults);
+  
   return defaults;
 };
 
