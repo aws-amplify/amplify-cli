@@ -1,0 +1,81 @@
+{
+	"AppSync": {
+		"inputs": [
+			{
+				"key": "resourceName",
+				"type": "input",
+				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			},
+			{
+
+				"key": "apiName",
+				"type": "input",
+				"question": "Please provide API name:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9._-]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+				},
+				"required": true
+			},
+			{
+
+				"key": "templateSelection",
+				"type": "list",
+				"question": "Choose from one of the options below",
+				"options": [
+			    	{ "name": "Use sample AppSync-DynamoDB example cloudformation template",
+			    	  "value": "default"
+			    	},
+			    	{ 
+			    	  "name": "Use custom AppSync cloudformation template",
+			    	  "value": "custom"
+					}
+				],
+				"required": true
+			},
+			{
+
+				"key": "dataSourceType",
+				"type": "list",
+				"question": "Choose a data source you would like to add to your GraphQL API",
+				"options": [
+			    	"DynamoDb",
+			    	"Lambda",
+			    	"Elasticsearch"
+				]
+			},
+			{
+
+				"key": "dynamoDbType",
+				"type": "list",
+				"question": "Choose a DynamoDB data source option",
+				"options": [
+			    	{ "name": "Use DynamoDB table configured in the current Amplify project",
+			    	  "value": "currentProject"
+			    	},
+			    	{ 
+			    	  "name": "Create a new DynamoDB table",
+			    	  "value": "newResource"
+					}
+				]
+			},
+			{
+
+				"key": "dynamoDbResources",
+				"type": "list",
+				"question": "Choose from one of the already configured DynamoDB tables"			
+			}
+		],
+		"defaultValuesFilename": "appSync-defaults.js",
+		"serviceWalkthroughFilename": "appSync-walkthrough.js",
+		"cfnFilename": "appSync-cloudformation-template-default.yml.ejs",
+		"provider": "amplify-provider-awscloudformation"
+	}
+}

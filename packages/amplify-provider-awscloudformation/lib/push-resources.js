@@ -21,6 +21,7 @@ function run(context, category, resourceName) {
   return updateS3Templates(context, resources, projectDetails.amplifyMeta)
     .then(() => {
       projectDetails = context.amplify.getProjectDetails();
+
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
           context,
@@ -139,17 +140,32 @@ function formNestedStack(amplifyMeta) {
       const resourceKey = category + resource;
       let templateURL;
       if (resourceDetails.providerMetadata) {
+        let parameters = {};
+        let dependsOn = resourceDetails.dependsOn;
+
+        if(dependsOn) {
+          for(let i = 0; i < dependsOn.length; i++) {
+            for(let j = 0; j < dependsOn[i].attributes.length; j++) {
+
+              let parameterKey = dependsOn[i].category + dependsOn[i].resourceName + dependsOn[i].attributes[j];
+              let dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
+
+              parameters[parameterKey] = { "Fn::GetAtt" : [ dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`]};
+            }
+          }
+        } 
+
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         nestedStack.Resources[resourceKey] = {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: templateURL,
+            Parameters: parameters
           },
         };
       }
     });
   });
-
   return nestedStack;
 }
 

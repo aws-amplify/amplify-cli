@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const subcommand = 'add';
-const category = 'storage';
+const category = 'api';
 const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
 let options;
@@ -27,7 +27,7 @@ module.exports = {
       .then(() => context.print.success('Successfully added resource'))
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('There was an error adding the storage resource');
+        context.print.error('There was an error adding the API resource');
       });
   },
 };

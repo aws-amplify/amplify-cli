@@ -1,0 +1,82 @@
+---
+<%if (props.dependsOn) { %>
+Parameters:
+<% for(var i=0; i < props.dependsOn.length; i++) { %>
+<% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+  <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>:
+    Type: String
+    Default: <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>
+<% } %>
+<% } %>
+<% } %>
+
+Resources:
+  GraphQLApi:
+    Type: "AWS::AppSync::GraphQLApi"
+    Properties:
+      Name: <%= props.apiName %>
+      AuthenticationType: AWS_IAM
+
+  ServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: <%= props.serviceRoleName %>
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service: appsync.amazonaws.com
+            Action: 'sts:AssumeRole'
+  <%if (props.dataSources && props.dataSources.dynamoDb) { %>
+
+  ServicePolicyDynamo:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.servicePolicyName %>
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'dynamodb:Query'
+              - 'dynamodb:BatchWriteItem'
+              - 'dynamodb:GetItem'
+              - 'dynamodb:DeleteItem'
+              - 'dynamodb:PutItem'
+              - 'dynamodb:Scan'
+              - 'dynamodb:UpdateItem'
+            Resource:
+              <% for(var i=0; i < props.dataSources.dynamoDb.length; i++) { %>
+              - !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Arn
+              <% } %>
+      Roles:
+        - !Ref ServiceRole
+    <% } %>
+
+  <%if (props.dataSources && props.dataSources.dynamoDb) { %>
+  <% for(var i=0; i < props.dataSources.dynamoDb.length; i++) { %>
+  <%= props.dataSources.dynamoDb[i].resourceName %>DataSource:
+    Type: "AWS::AppSync::DataSource"
+    Properties:
+      ApiId: !GetAtt GraphQLApi.ApiId
+      Name: !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Name
+      ServiceRoleArn:  !GetAtt ServiceRole.Arn
+      Type: AMAZON_DYNAMODB
+      DynamoDBConfig:
+        AwsRegion: <%= props.region %>
+        TableName: !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Name
+  <% } %>
+  <% } %>
+
+Outputs:
+  GraphQLApiARN:
+    Description: The App ID of the GraphQL endpoint.
+    Value: !Ref GraphQLApi
+  GraphQLApiId:
+    Description: The App ID of the GraphQL endpoint.
+    Value: !GetAtt GraphQLApi.ApiId
+  GraphQLApiEndpoint:
+    Description: The URL for the GraphQL endpoint.
+    Value: !GetAtt GraphQLApi.GraphQLUrl

@@ -1,6 +1,8 @@
+const featureName = 'api';
+
 module.exports = {
-  name: 'api',
-  run: async ({ print, api }) => {
-    print.info(await api())
+  name: featureName,
+  run: async (context) => {
+    context.print.info("Here's a list of all the Amplify API commands!");
   },
-}
+};
