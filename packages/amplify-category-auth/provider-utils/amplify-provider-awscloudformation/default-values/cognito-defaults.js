@@ -10,18 +10,29 @@ const general = () => ({
 });
 
 const userPoolDefaults = () => ({
-  userPoolName: `<name>-userpool-${uuid()}`,
+  userPoolName: `<label>-userpool-${uuid()}`,
   mfaConfiguration: 'ON',
-  roleName: `<name>-sns-role-${uuid()}`,
+  roleName: `<label>-sns-role-${uuid()}`,
   roleExternalId: uuid(),
-  policyName: `<name>-sns-policy-${uuid()}`,
+  policyName: `<label>-sns-policy-${uuid()}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
+  passwordPolicy: {
+    minLength: 8,
+    requiresLower: true,
+    requiresUpper: true,
+    requiresNumbers: true,
+    requiresSymbols: true
+  },
+  requiredAttributes: [
+    'email',
+    'phone_number'
+  ]
 });
 
 const identityPoolDefaults = () => ({
   // replace dashes with underscores for id pool regex constraint
-  identityPoolName: `<name>_identitypool_${uuid().replace(/-/g, '_')}`,
+  identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
 });
 

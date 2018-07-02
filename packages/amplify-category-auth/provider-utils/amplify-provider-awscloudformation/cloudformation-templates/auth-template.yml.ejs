@@ -34,6 +34,19 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: <%= props.userPoolName %>
+      Schema: 
+        <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
+        -
+          Name: <%= props.requiredAttributes[i] %>
+          Required: true
+        <% } %>
+      Policies:
+        PasswordPolicy:
+          MinimumLength: <%= props.passwordPolicy.minLength %>
+          RequireLowercase: <%= props.passwordPolicy.requiresLower %>
+          RequireNumbers: <%=  props.passwordPolicy.requiresNumbers %>
+          RequireSymbols: <%= props.passwordPolicy.requiresSymbols %>
+          RequireUppercase: <%= props.passwordPolicy.requiresUpper %>
       MfaConfiguration: '<%= props.mfaConfiguration %>'
       <%if (props.mfaConfiguration != 'OFF') { %>
       SmsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
@@ -41,8 +54,11 @@ Resources:
       SmsConfiguration: 
         SnsCallerArn: !GetAtt IAMRole.Arn
         ExternalId: <%= props.roleExternalId %>  
+      <% } %>
+    <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: IAMRole
     <% } %>
+
   <% } %>
   <%if (props.authSelections.includes('Cognito Identity Pools')) { %>
   IdentityPool:
@@ -59,6 +75,8 @@ Outputs :
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
+  <%if (props.mfaConfiguration != 'OFF') { %>
   CreatedIAMRole: 
     Value: !GetAtt IAMRole.Arn
     Description: role arn
+  <% } %>
