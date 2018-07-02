@@ -39,33 +39,31 @@ function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 
   return inquirer.prompt(questions)
     .then((answers) => {
-        if(answers.templateSelection === "default") {
-          Object.assign(allDefaultValues, answers);
-          return allDefaultValues;
-        } else {
-          return askCustomQuestions(context, inputs)
-            .then((result) => {
-                Object.assign(allDefaultValues, result.answers);
-                allDefaultValues.customCfnFile = 'appSync-cloudformation-template-custom.yml.ejs';
-                return {answers: allDefaultValues, dependsOn: result.dependsOn};
-            });
-        }
+      if (answers.templateSelection === 'default') {
+        Object.assign(allDefaultValues, answers);
+        return allDefaultValues;
+      }
+      return askCustomQuestions(context, inputs)
+        .then((result) => {
+          Object.assign(allDefaultValues, result.answers);
+          allDefaultValues.customCfnFile = 'appSync-cloudformation-template-custom.yml.ejs';
+          return { answers: allDefaultValues, dependsOn: result.dependsOn };
+        });
     });
 }
 
 async function askCustomQuestions(context, inputs) {
-  let answers = {};
+  const answers = {};
   let dependsOn = [];
 
-  if(await context.prompt.confirm('Do you want to add a data source to your AppSync API?')) {
+  if (await context.prompt.confirm('Do you want to add a data source to your AppSync API?')) {
     const dataSourceAnswers = await askDataSourceQuestions(context, inputs);
-    let dataSources = dataSourceAnswers.dataSources;
-    dependsOn = dataSourceAnswers.dependsOn;
-    Object.assign(answers, {dataSources});
-    Object.assign(answers, {dependsOn});
+    const { dataSources } = dataSourceAnswers;
+    ({ dependsOn } = dataSourceAnswers.dependsOn);
+    Object.assign(answers, { dataSources });
+    Object.assign(answers, { dependsOn });
   }
-  return {answers, dependsOn};
-
+  return { answers, dependsOn };
 }
 async function askDataSourceQuestions(context, inputs) {
   const dataSourceTypeQuestion = {
@@ -74,39 +72,38 @@ async function askDataSourceQuestions(context, inputs) {
     message: inputs[3].question,
     choices: inputs[3].options,
   };
-  let dataSources = {};
-  let dependsOn = [];
+  const dataSources = {};
+  const dependsOn = [];
   let continueDataSourcesQuestion = true;
 
   // Ask data source related questions
 
   while (continueDataSourcesQuestion) {
     const dataSourceAnswer = await inquirer.prompt([dataSourceTypeQuestion]);
-    switch(dataSourceAnswer[inputs[3].key]) {
+    switch (dataSourceAnswer[inputs[3].key]) {
       case 'DynamoDb': {
-        let resourceName = await askDynamoDBQuestions(context, inputs);
-        if(!dataSources.dynamoDb) {
-          dataSources.dynamoDb = [{category: 'storage', resourceName}];
+        const resourceName = await askDynamoDBQuestions(context, inputs);
+        if (!dataSources.dynamoDb) {
+          dataSources.dynamoDb = [{ category: 'storage', resourceName }];
         } else {
-          dataSources.dynamoDb.push({category: 'storage', resourceName});
+          dataSources.dynamoDb.push({ category: 'storage', resourceName });
         }
         dependsOn.push({
-          category: 'storage', 
+          category: 'storage',
           resourceName,
-          attributes: ['Name', 'Arn']});
+          attributes: ['Name', 'Arn'],
+        });
       }
-      break;
+        break;
       default: context.print.error('Feature not yet implemented');
     }
     continueDataSourcesQuestion = await context.prompt.confirm('Do you want to add another data source?');
   }
 
-  return {dataSources, dependsOn};
-
+  return { dataSources, dependsOn };
 }
 
 async function askDynamoDBQuestions(context, inputs) {
-
   const dynamoDbTypeQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
@@ -114,18 +111,18 @@ async function askDynamoDBQuestions(context, inputs) {
     choices: inputs[4].options,
   };
   const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
-  while(true) {
-    switch(dynamoDbTypeAnswer[inputs[4].key]) {
+  while (true) {
+    switch (dynamoDbTypeAnswer[inputs[4].key]) {
       case 'currentProject': {
-        const storageResources = context.amplify.getProjectDetails().amplifyMeta['storage'];
-        const dynamoDbProjectResources = []; 
+        const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
+        const dynamoDbProjectResources = [];
         Object.keys(storageResources).forEach((resourceName) => {
-          if(storageResources[resourceName].service === "DynamoDB") {
+          if (storageResources[resourceName].service === 'DynamoDB') {
             dynamoDbProjectResources.push(resourceName);
           }
         });
-        if(dynamoDbProjectResources.length === 0) {
-          context.print.error("There are no DynamoDb resources configured in your project currently");
+        if (dynamoDbProjectResources.length === 0) {
+          context.print.error('There are no DynamoDb resources configured in your project currently');
           break;
         }
         const dynamoResourceQuestion = {
@@ -138,22 +135,18 @@ async function askDynamoDBQuestions(context, inputs) {
         const dynamoResourceAnswer = await inquirer.prompt([dynamoResourceQuestion]);
 
         return dynamoResourceAnswer[inputs[5].key];
-
       }
-      break;
       case 'newResource': {
         const { add } = require('amplify-category-storage');
         return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
           .then((resourceName) => {
-            context.print.success("Succesfully added DynamoDb table localy");
+            context.print.success('Succesfully added DynamoDb table localy');
             return resourceName;
           });
       }
-      break;
       default: context.print.error('Invalid option selected');
     }
   }
-
 }
 
 

@@ -37,11 +37,11 @@ function addResource(context, category, service, options) {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
-          category,
-          answers.resourceName,
-          options,
+        category,
+        answers.resourceName,
+        options,
       );
-      return answers.resourceName
+      return answers.resourceName;
     });
 }
 

@@ -1,6 +1,6 @@
-module.exports = toolbox => {
+module.exports = (toolbox) => {
   toolbox.api = async () => {
-    let params = toolbox.parameters
-    console.log(params)
-  }
-}
+    const params = toolbox.parameters;
+    console.log(params);
+  };
+};

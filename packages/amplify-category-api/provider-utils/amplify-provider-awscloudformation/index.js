@@ -31,29 +31,27 @@ function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   let { cfnFilename } = serviceMetadata;
-  const {defaultValuesFilename, serviceWalkthroughFilename} = serviceMetadata;
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
-      let dependsOn;
-
-      if(result.answers) {
-        answers = result.answers;
+      if (result.answers) {
+        ({ answers } = result.answers);
         options.dependsOn = result.dependsOn;
       } else {
         answers = result;
       }
-      if(answers.customCfnFile) {
+      if (answers.customCfnFile) {
         cfnFilename = answers.customCfnFile;
       }
 
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
-          category,
-          answers.resourceName,
-          options
+        category,
+        answers.resourceName,
+        options,
       );
-      return answers.resourceName
+      return answers.resourceName;
     });
 }
 

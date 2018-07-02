@@ -4,6 +4,7 @@
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "dependencies": {
+    "amplify-category-storage": "file:../amplify-category-storage",
     "eslint": "^4.19.1",
     "inquirer": "^3.2.1",
     "uuid": "^2.0.3"
@@ -14,7 +15,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "amplify-category-storage": "file:../amplify-category-storage",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"
   }

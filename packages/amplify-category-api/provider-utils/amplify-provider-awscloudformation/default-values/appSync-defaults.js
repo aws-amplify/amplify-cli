@@ -10,7 +10,7 @@ const getAllDefaults = (project) => {
     serviceRoleName: `serviceRole${shortId}`,
     servicePolicyName: `servicePolicy${shortId}`,
     region,
-    defaultTableName: `Posts${shortId}`
+    defaultTableName: `Posts${shortId}`,
   };
   console.log(defaults);
   return defaults;

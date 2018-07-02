@@ -2,8 +2,8 @@ const category = 'storage';
 
 module.exports = {
   add: async (context, providerName, service) => {
-    let options = {
-      service: service,
+    const options = {
+      service,
       providerPlugin: providerName,
     };
     const providerController = require(`./provider-utils/${providerName}/index`);
@@ -12,5 +12,5 @@ module.exports = {
       return;
     }
     return providerController.addResource(context, category, service, options);
-  }
+  },
 };
