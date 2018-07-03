@@ -25,11 +25,13 @@ const {
   updateamplifyMetaAfterResourceUpdate,
   updateamplifyMetaAfterResourceDelete,
 } = require('./amplify-helpers/update-amplify-meta');
+const { executeProviderUtils } = require('./amplify-helpers/execute-provider-utils');
 
 module.exports = (context) => {
   const amplify = {
     constants,
     copyBatch,
+    executeProviderUtils,
     getProjectConfig,
     getProjectDetails,
     getResourceStatus,

@@ -22,6 +22,7 @@ module.exports = {
           context.print.error('Provider not configured for this category');
           return;
         }
+
         return providerController.addResource(context, category, result.service, options);
       })
       .then(() => context.print.success('Successfully added resource'))

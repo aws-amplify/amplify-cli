@@ -79,19 +79,24 @@ async function askSecurityQuestions(context, inputs) {
   };
 
   const securitySetting = {};
+  while (true) {
+    const securityTypeAnswer = await inquirer.prompt([securityTypeQuestion]);
+    securitySetting.type = securityTypeAnswer[inputs[3].key];
 
-  const securityTypeAnswer = await inquirer.prompt([securityTypeQuestion]);
-  securitySetting.type = securityTypeAnswer[inputs[3].key];
-
-  switch (securityTypeAnswer[inputs[3].key]) {
-    case 'cognito': securitySetting.options = await askCognitoQuestions(context, inputs);
+    switch (securityTypeAnswer[inputs[3].key]) {
+      case 'cognito': securitySetting.options = await askCognitoQuestions(context, inputs);
+        break;
+      case 'openId': securitySetting.options = await askOpenIdQuestions(context, inputs);
+        break;
+      case 'apiKey': securitySetting.options = await askApiKeyQuestions(context, inputs);
+        break;
+      case 'iam': securitySetting.options = {};
+        break;
+      default: context.print.error('Invalid option');
+    }
+    if (securitySetting.options) {
       break;
-    case 'openId': securitySetting.options = await askOpenIdQuestions(context, inputs);
-      break;
-    case 'apiKey': securitySetting.options = await askApiKeyQuestions(context, inputs);
-      break;
-    case 'iam': break;
-    default: context.print.error('Invalid option');
+    }
   }
 
   return securitySetting;
@@ -100,27 +105,49 @@ async function askSecurityQuestions(context, inputs) {
 async function askCognitoQuestions(context, inputs) {
   const { amplify } = context;
 
+  const regions = await amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
 
-  const userPoolIdQuestion = {
+  const regionQuestion = {
     type: inputs[4].type,
     name: inputs[4].key,
     message: inputs[4].question,
-    validate: amplify.inputValidation(inputs[4]),
+    choices: regions,
   };
 
-  const defaultActionQuestion = {
+  const regionAnswer = await inquirer.prompt([regionQuestion]);
+
+  const userPools = await amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getUserPools', { region: regionAnswer[inputs[4].key] });
+
+  const userPoolOptions = userPools.map(userPool => ({
+    value: userPool.Id,
+    name: `${userPool.Id}(${userPool.Name})`,
+  }));
+
+  if (userPoolOptions.length === 0) {
+    context.print.error('You do not have any user pools configured for the selected region');
+    return;
+  }
+
+  const userPoolIdQuestion = {
     type: inputs[5].type,
     name: inputs[5].key,
     message: inputs[5].question,
-    choices: inputs[5].options,
-    validate: amplify.inputValidation(inputs[5]),
+    choices: userPoolOptions,
   };
 
-  const appIdClientRegexQuestion = {
+  const defaultActionQuestion = {
     type: inputs[6].type,
     name: inputs[6].key,
     message: inputs[6].question,
+    choices: inputs[6].options,
     validate: amplify.inputValidation(inputs[6]),
+  };
+
+  const appIdClientRegexQuestion = {
+    type: inputs[7].type,
+    name: inputs[7].key,
+    message: inputs[7].question,
+    validate: amplify.inputValidation(inputs[7]),
   };
 
   return await inquirer.prompt([userPoolIdQuestion,
@@ -132,32 +159,32 @@ async function askOpenIdQuestions(context, inputs) {
   const { amplify } = context;
 
   const openIdDomainQuestion = {
-    type: inputs[7].type,
-    name: inputs[7].key,
-    message: inputs[7].question,
-    validate: amplify.inputValidation(inputs[7]),
-  };
-
-  const clientIdQuestion = {
     type: inputs[8].type,
     name: inputs[8].key,
     message: inputs[8].question,
     validate: amplify.inputValidation(inputs[8]),
   };
 
-  const issueTTLQuestion = {
+  const clientIdQuestion = {
     type: inputs[9].type,
     name: inputs[9].key,
     message: inputs[9].question,
     validate: amplify.inputValidation(inputs[9]),
-    default: 0,
   };
 
-  const authTTLQuestion = {
+  const issueTTLQuestion = {
     type: inputs[10].type,
     name: inputs[10].key,
     message: inputs[10].question,
     validate: amplify.inputValidation(inputs[10]),
+    default: 0,
+  };
+
+  const authTTLQuestion = {
+    type: inputs[11].type,
+    name: inputs[11].key,
+    message: inputs[11].question,
+    validate: amplify.inputValidation(inputs[11]),
     default: 0,
   };
 
@@ -169,11 +196,11 @@ async function askOpenIdQuestions(context, inputs) {
 
 async function askApiKeyQuestions(context, inputs) {
   const apiKeyExpiryQuestion = {
-    type: inputs[11].type,
-    name: inputs[11].key,
-    message: inputs[11].question,
+    type: inputs[12].type,
+    name: inputs[12].key,
+    message: inputs[12].question,
     validate: answer => new Promise((resolve, reject) => {
-      if (!answer || Number.isNaN(answer) || Number(answer) <= 0 || Number(answer) > 365) {
+      if (!answer || Number.isNaN(Number(answer)) || Number(answer) <= 0 || Number(answer) > 365) {
         reject(new Error('The number of days should be set between 1 to 365'));
       }
       resolve(true);
@@ -188,10 +215,10 @@ async function askApiKeyQuestions(context, inputs) {
 
 async function askDataSourceQuestions(context, inputs) {
   const dataSourceTypeQuestion = {
-    type: inputs[12].type,
-    name: inputs[12].key,
-    message: inputs[12].question,
-    choices: inputs[12].options,
+    type: inputs[13].type,
+    name: inputs[13].key,
+    message: inputs[13].question,
+    choices: inputs[13].options,
   };
   const dataSources = {};
   const dependsOn = [];
@@ -201,7 +228,7 @@ async function askDataSourceQuestions(context, inputs) {
 
   while (continueDataSourcesQuestion) {
     const dataSourceAnswer = await inquirer.prompt([dataSourceTypeQuestion]);
-    switch (dataSourceAnswer[inputs[12].key]) {
+    switch (dataSourceAnswer[inputs[13].key]) {
       case 'DynamoDb': {
         const resourceName = await askDynamoDBQuestions(context, inputs);
         if (!dataSources.dynamoDb) {
@@ -226,14 +253,14 @@ async function askDataSourceQuestions(context, inputs) {
 
 async function askDynamoDBQuestions(context, inputs) {
   const dynamoDbTypeQuestion = {
-    type: inputs[13].type,
-    name: inputs[13].key,
-    message: inputs[13].question,
-    choices: inputs[13].options,
+    type: inputs[14].type,
+    name: inputs[14].key,
+    message: inputs[14].question,
+    choices: inputs[14].options,
   };
   while (true) {
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
-    switch (dynamoDbTypeAnswer[inputs[13].key]) {
+    switch (dynamoDbTypeAnswer[inputs[14].key]) {
       case 'currentProject': {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
         const dynamoDbProjectResources = [];
@@ -247,15 +274,15 @@ async function askDynamoDBQuestions(context, inputs) {
           break;
         }
         const dynamoResourceQuestion = {
-          type: inputs[14].type,
-          name: inputs[14].key,
-          message: inputs[14].question,
+          type: inputs[15].type,
+          name: inputs[15].key,
+          message: inputs[15].question,
           choices: dynamoDbProjectResources,
         };
 
         const dynamoResourceAnswer = await inquirer.prompt([dynamoResourceQuestion]);
 
-        return dynamoResourceAnswer[inputs[14].key];
+        return dynamoResourceAnswer[inputs[15].key];
       }
       case 'newResource': {
         let add;

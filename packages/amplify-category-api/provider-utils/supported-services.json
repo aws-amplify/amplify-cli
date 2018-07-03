@@ -66,9 +66,15 @@
 			},
 			{
 
+				"key": "cognitoUserPoolRegion",
+				"type": "list",
+				"question": "Please provide a user pool ID:"
+			},
+			{
+
 				"key": "cognitoUserPoolId",
-				"type": "input",
-				"question": "Please provide a user pool ID:",
+				"type": "list",
+				"question": "Please select a user pool ID:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9._-]+$",
