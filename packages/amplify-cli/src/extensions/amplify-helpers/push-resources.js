@@ -23,7 +23,7 @@ function pushResources(context, category, resourceName) {
       }
       process.exit(1);
     })
-    .then(() => spinner.succeed('All resources updated are updated in the cloud'))
+    .then(() => spinner.succeed('All resources are updated in the cloud'))
     .catch((err) => {
       console.log(err);
       spinner.fail('There was an issue pushing the resources to the cloud');

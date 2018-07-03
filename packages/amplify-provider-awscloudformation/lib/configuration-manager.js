@@ -151,7 +151,7 @@ function configProject(context) {
   const useProfileConfirmation = {
     type: 'confirm',
     name: 'useProfile',
-    message: 'Use profile',
+    message: 'Do you want to use an existing AWS profile set on your system?',
     default: projectConfigInfo.useProfile,
   };
 

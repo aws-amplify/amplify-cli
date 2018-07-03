@@ -3,6 +3,9 @@ function inputValidation(question) {
 
 
     if (!question.validation) {
+      if (question.required) {
+        return input ? resolve(true) : reject(new Error('A response is required for this field'));
+      }
       resolve(true);
     }
     if (question.validation.operator === 'includes') {
