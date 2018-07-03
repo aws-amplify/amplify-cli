@@ -103,7 +103,7 @@ function comfirmProjectConfigSetup(context, isInit) {
     type: 'confirm',
     name: 'setProjectConfig',
     message: 'Set project specific configuration',
-    default: true,
+    default: false,
   };
   return inquirer.prompt(configProjectComfirmation)
     .then((answers) => {
@@ -152,7 +152,7 @@ function configProject(context) {
     type: 'confirm',
     name: 'useProfile',
     message: 'Do you want to use an existing AWS profile set on your system?',
-    default: false,
+    default: projectConfigInfo.useProfile,
   };
 
   const profileName = {
