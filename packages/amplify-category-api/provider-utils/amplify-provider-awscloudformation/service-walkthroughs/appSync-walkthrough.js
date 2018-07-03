@@ -79,7 +79,7 @@ async function askSecurityQuestions(context, inputs) {
   };
 
   const securitySetting = {};
-  while (true) {
+  while (!securitySetting.options) {
     const securityTypeAnswer = await inquirer.prompt([securityTypeQuestion]);
     securitySetting.type = securityTypeAnswer[inputs[3].key];
 
@@ -93,9 +93,6 @@ async function askSecurityQuestions(context, inputs) {
       case 'iam': securitySetting.options = {};
         break;
       default: context.print.error('Invalid option');
-    }
-    if (securitySetting.options) {
-      break;
     }
   }
 
@@ -120,7 +117,7 @@ async function askCognitoQuestions(context, inputs) {
 
   const userPoolOptions = userPools.map(userPool => ({
     value: userPool.Id,
-    name: `${userPool.Id}(${userPool.Name})`,
+    name: `${userPool.Id} (${userPool.Name})`,
   }));
 
   if (userPoolOptions.length === 0) {

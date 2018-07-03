@@ -11,6 +11,10 @@ module.exports = {
           userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
         }
         return userPools;
-      })),
+      }))
+    .catch((err) => {
+      context.print.error('Failed to fetch user pools');
+      throw err;
+    }),
 
 };
