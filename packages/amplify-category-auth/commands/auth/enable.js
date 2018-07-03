@@ -1,5 +1,4 @@
 const fs = require('fs');
-const inquirer = require('inquirer');
 
 const subcommand = 'enable';
 const category = 'auth';
@@ -13,25 +12,13 @@ module.exports = {
     const configure = context.parameters.options.configure ? '-configure' : '';
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services${configure}.json`));
 
-    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth;
-    let currentValues = null;
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {}
 
-    if (!existingAuth || Object.keys(existingAuth).length > 0){
-      let edit = await inquirer.prompt([{
-        type: 'confirm',
-        name: 'quitOrEdit',
-        message: "Auth has already been enabled for this project.  Do you want to edit the current setting?"
-      }]);
-
-      if (!edit){
-        return context.print.warning('Ok. You can always edit or remove the Auth resource at a later date.')
-      } else {
-        currentValues = existingAuth
-      }
-      
+    if (Object.keys(existingAuth).length > 0){
+      return context.print.warning('Auth has already been enable for this project.')
     }
     
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata, currentValues)
+    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {
           service: result.service,
