@@ -30,11 +30,21 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  let { cfnFilename } = serviceMetadata;
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
-      answers = result;
+      if (result.answers) {
+        ({ answers } = result);
+        options.dependsOn = result.dependsOn;
+      } else {
+        answers = result;
+      }
+      if (answers.customCfnFile) {
+        cfnFilename = answers.customCfnFile;
+      }
+
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
