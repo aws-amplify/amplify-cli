@@ -1,7 +1,0 @@
-{
-  "name": "amplify-category-appsync",
-  "version": "0.1.0",
-  "description": "amplify-cli appsync plugin",
-  "main": "index.js",
-  "license": "Apache-2.0"
-}
