@@ -4,14 +4,25 @@ const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-pro
 
 function run(context) {
   const providerPlugins = getProviderPlugins(context);
+  const providerPluginList = Object.keys(providerPlugins);
+
   const selectProviders = {
     type: 'checkbox',
     name: 'selectedProviders',
     message: 'Please select the backend providers.',
-    choices: Object.keys(providerPlugins),
+    choices: providerPluginList,
     default: ['amplify-provider-awscloudformation'],
   };
-  return inquirer.prompt(selectProviders)
+
+  const providerQuestion = providerPluginList.length === 1 ?
+    Promise.resolve({ selectedProviders: providerPluginList }) :
+    inquirer.prompt(selectProviders);
+
+  if (providerPluginList.length === 1) {
+    context.print.info(`Using default provider ${providerPluginList[0]}`);
+  }
+
+  return providerQuestion
     .then((answers) => {
       context.initInfo.projectConfig.providers = {};
       answers.selectedProviders.forEach((providerKey) => {
