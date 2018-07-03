@@ -21,9 +21,8 @@ function getWhen(input) {
 
 // HELPER FUNCTION TO DETERMINE IF A SINGLE CONDITION IS MET BY ANSWERS
 const findMatch = (cond, answers) => {
-  
   let response = true;
-  if (cond.operator === '=' && answers[cond.key] != undefined && answers[cond.key] !== cond.value) {
+  if (cond.operator === '=' && answers[cond.key] !== undefined && answers[cond.key] !== cond.value) {
     response = false;
   } else if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] === cond.value)) {
     response = false;

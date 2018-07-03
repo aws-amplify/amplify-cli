@@ -24,7 +24,6 @@
   "dependencies": {
     "amplify-category-analytics": "file:../amplify-category-analytics",
     "amplify-category-api": "file:../amplify-category-api",
-    "amplify-category-appsync": "file:../amplify-category-appsync",
     "amplify-category-auth": "file:../amplify-category-auth",
     "amplify-category-hosting": "file:../amplify-category-hosting",
     "amplify-category-storage": "file:../amplify-category-storage",

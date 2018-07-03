@@ -25,8 +25,8 @@ function pushResources(context, category, resourceName) {
       process.exit(1);
     })
     .then(() => {
-      onCategoryOutputsChange(); 
-      spinner.succeed('All resources are updated in the cloud'); 
+      onCategoryOutputsChange();
+      spinner.succeed('All resources are updated in the cloud');
     })
     .catch((err) => {
       console.log(err);

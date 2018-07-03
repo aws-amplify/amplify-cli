@@ -92,12 +92,12 @@ function onInitSuccessful(context) {
   });
 }
 
-function normalizeStackName(stackName){
-  let result = stackName.replace(/[^-a-zA-Z0-9]/g, ''); 
-  if(/^[^a-zA-Z]/.test(result) || result.length == 0){
-    result = 'a' + result; 
+function normalizeStackName(stackName) {
+  let result = stackName.replace(/[^-a-zA-Z0-9]/g, '');
+  if (/^[^a-zA-Z]/.test(result) || result.length === 0) {
+    result = `a${result}`;
   }
-  return result; 
+  return result;
 }
 
 module.exports = {
