@@ -36,13 +36,13 @@ function run(context) {
         const waitParams = {
           StackName: stackName,
         };
-        spinner.start('Initializing project in the cloud..');
+        spinner.start('Initializing project in the cloud...');
         awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData) => {
           if (waitErr) {
             spinner.fail('Root stack creation failed');
             return reject(waitErr);
           }
-          spinner.succeed('Successfully initialized project in the cloud. Yay!');
+          spinner.succeed('Successfully initialized project in the cloud.');
           processStackCreationData(ctxt, waitData);
           resolve(ctxt);
         });

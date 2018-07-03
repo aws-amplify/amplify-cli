@@ -209,7 +209,6 @@ async function askApiKeyQuestions(context, inputs) {
 
   const apiKeyExpiryAnswer = await inquirer.prompt([apiKeyExpiryQuestion]);
   apiKeyExpiryAnswer[inputs[12].key] = moment().add(Number(apiKeyExpiryAnswer[inputs[12].key]), 'days').unix();
-  console.log(apiKeyExpiryAnswer);
   context.print.info(`Expiry date of the API key set to: ${moment.unix(apiKeyExpiryAnswer[inputs[12].key]).local().format('YYYY-MM-DD HH:mm:ss')}`);
   return apiKeyExpiryAnswer;
 }
