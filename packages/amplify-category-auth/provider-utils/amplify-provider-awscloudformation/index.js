@@ -42,36 +42,13 @@ function addResource(context, category, service, configure) {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`
       const { functionMap } = require(defaultValuesSrc);
-      const { authFlowMap, coreAttributeMap, appClientReadAttributeMap} = require(stringMapFileSrc); 
+      const { authFlowMap, coreAttributes, appClientReadAttributes} = require(stringMapFileSrc); 
 
-      result.authSelections.forEach((i) => {
-        props = Object.assign(props, functionMap[i](result.resourceName));
-      });
 
       /* merge actual answers object into props object of defaults answers,
        * ensuring that manual entries override defaults */
-      props = Object.assign(props, result);
 
-      if (props.userpoolClientAuthFlow){
-        props.userpoolClientAuthFlow = props.userpoolClientAuthFlow.map((x) => {
-          return authFlowMap[x]
-        })
-      }
-
-      if (props.requiredAttributes){
-        props.requiredAttributes = props.requiredAttributes.map((v) => {
-          return coreAttributeMap[v]
-        })
-      }
-
-      if (props.userpoolClientSetAttributes){
-        props.userpoolClientReadAttributes = props.userpoolClientReadAttributes.map((v) => {
-          return appClientReadAttributeMap[v] 
-        })
-        props.userpoolClientWriteAttributes = props.userpoolClientWriteAttributes.map((t) => {
-          return coreAttributeMap[t]
-        })
-      }
+      props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
 
       /* make sure that resource name populates '<label'>
        * placeholder from default if it hasn't already */

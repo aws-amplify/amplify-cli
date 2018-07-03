@@ -1,6 +1,12 @@
 Resources:
-  <%if (props.authSelections.includes('Cognito User Pools') && props.mfaConfiguration != 'OFF') { %>
-  IAMRole: 
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties: 
+      IdentityPoolName: <%= props.identityPoolName %>
+      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
+
+  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  SNSRole: 
     Type: AWS::IAM::Role
     Properties:
       RoleName: <%=props.roleName %>
@@ -29,7 +35,7 @@ Resources:
                 Resource: "*"
 
   <% } %>
-  <%if (props.authSelections.includes('Cognito User Pools')) { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -52,15 +58,15 @@ Resources:
       SmsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
       SmsVerificationMessage: <%= props.smsVerificationMessage %>
       SmsConfiguration: 
-        SnsCallerArn: !GetAtt IAMRole.Arn
+        SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%= props.roleExternalId %>  
       <% } %>
     <%if (props.mfaConfiguration != 'OFF') { %>
-    DependsOn: IAMRole
+    DependsOn: SNSRole
     <% } %>
 
   <% } %>
-
+  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPoolClient:
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
@@ -83,24 +89,20 @@ Resources:
       RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
-
-  <%if (props.authSelections.includes('Cognito Identity Pools')) { %>
-  IdentityPool:
-    Type: AWS::Cognito::IdentityPool
-    Properties: 
-      IdentityPoolName: <%= props.identityPoolName %>
-      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
   <% } %> 
-  
+ 
+ 
 Outputs :
-  UserPoolName:
-    Value: !Ref 'UserPool'
-    Description:  name for the user pool
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
-  <%if (props.mfaConfiguration != 'OFF') { %>
-  CreatedIAMRole: 
-    Value: !GetAtt IAMRole.Arn
+  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
+  UserPoolName:
+    Value: !Ref 'UserPool'
+    Description:  name for the user pool
+  <% } %>
+  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  CreatedSNSRole: 
+    Value: !GetAtt SNSRole.Arn
     Description: role arn
   <% } %>

@@ -3,17 +3,15 @@
 		"inputs": [
 			{
 				"key": "authSelections",
+				"set": "core",
 				"question": "Select the authentication/authorization services that you want to use:",
 				"required": true,
-				"type": "multiselect",
-				"options": [
-					"Cognito Identity Pools",
-					"Cognito User Pools",
-					"Federated Identity Providers"
-				]
+				"type": "list",
+				"map": "authSelections"
 			},
 			{
 				"key": "resourceName",
+				"set": "core",
 				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
 				"validation": {
 					"operator": "regex",
@@ -23,19 +21,27 @@
 				"required": true
 			},
 			{
+				"key": "identityPoolName",
+				"set": "core",
+				"question": "Please enter a name for your identity pool.",
+				"required": true
+			},
+			{
 				"key": "userPoolName",
+				"set": "core",
 				"question": "Please provide a name for your user pool:",
 				"required": true,
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "mfaConfiguration",
+				"set": "core",
 				"question": "Please choose a multifactor authentication (MFA) configuration:",
 				"required": true,
 				"type": "list",
@@ -46,13 +52,14 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "smsAuthenticationMessage",
+				"set": "core",
 				"question": "Please specify an SMS authentication message:",
 				"required": true,
 				"type": "input",
@@ -64,8 +71,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -76,6 +83,7 @@
 			},
 			{
 				"key": "smsVerificationMessage",
+				"set": "core",
 				"question": "Please specify an SMS verification message:",
 				"required": true,
 				"type": "input",
@@ -87,8 +95,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -99,19 +107,21 @@
 			},
 			{
 				"key": "defaultPasswordPolicy",
+				"set": "core",
 				"question": "Do you want to use the default password policy for this User Pool?",
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "passwordPolicyMinLength",
+				"set": "core",
 				"question": "Enter the minimum password length for this User Pool:",
 				"required": true,
 				"type": "input",
@@ -130,6 +140,7 @@
 			},
 			{
 				"key": "passwordPolicyCharacters",
+				"set": "core",
 				"question": "Select the password character requirements for your userpool:",
 				"required": true,
 				"type": "multiselect",
@@ -149,23 +160,25 @@
 			},
 			{
 				"key": "editRequiredAttributes",
-				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
+				"set": "core",
+				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these as required?",
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "requiredAttributes",
+				"set": "core",
 				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
 				"required": true,
 				"type": "multiselect",
-				"map": "coreAttributeMap",
+				"map": "coreAttributes",
 				"andConditions": [
 					{
 						"key": "editRequiredAttributes",
@@ -176,19 +189,21 @@
 			},
 			{
 				"key": "createUserpoolClient",
+				"set": "app-client",
 				"question": "Do you want to create an App Client for your Userpool?",
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "Cognito User Pools",
-						"operator": "includes"
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "userpoolClientName",
+				"set": "app-client",
 				"question": "Provide a name for the App Client: ",
 				"required": true,
 				"validation": {
@@ -206,6 +221,7 @@
 			},
 			{
 				"key": "userpoolClientAuthFlow",
+				"set": "app-client",
 				"question": "Select the authentication flow you want to use:",
 				"required": true,
 				"type": "multiselect",
@@ -219,20 +235,8 @@
 				]
 			},
 			{
-				"key": "userpoolClientGenerateSecret",
-				"question": "Do you want to generate a secret for your app?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
-					}
-				]
-			},
-			{
 				"key": "userpoolClientRefreshTokenValidity",
+				"set": "app-client",
 				"question": "Specify the app's refresh token expiration period (in days):",
 				"required": true,
 				"andConditions": [
@@ -241,10 +245,16 @@
 						"value": true,
 						"operator": "="
 					}
-				]
+				],
+				"validation": {
+					"operator": "range",
+					"value": {"min": 1, "max": 365},
+					"onErrorMsg": "Token expiration should be between 1 to 365 days."
+				}
 			},
 			{
 				"key": "userpoolClientSetAttributes",
+				"set": "app-client",
 				"question": "Do you want to specify the user attributes this app can read and write?",
 				"required": true,
 				"type":"confirm",
@@ -258,11 +268,17 @@
 			},
 			{
 				"key": "userpoolClientReadAttributes",
+				"set": "app-client",
 				"question": "Specify read attributes:",
 				"required": true,
 				"type": "multiselect",
-				"map": "appClientReadAttributeMap",
+				"map" : "appClientReadAttributes",
 				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					},
 					{
 						"key": "userpoolClientSetAttributes",
 						"value": true,
@@ -272,34 +288,29 @@
 			},
 			{
 				"key": "userpoolClientWriteAttributes",
+				"set": "app-client",
 				"question": "Specify write attributes:",
 				"required": true,
 				"type": "multiselect",				
-				"map": "appClientReadAttributeMap",
+				"map": "coreAttributes",
+				"requiredOptions": "requiredAttributes",
 				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					},
 					{
 						"key": "userpoolClientSetAttributes",
 						"value": true,
 						"operator": "="
 					}
 				]
-			},
-			{
-				"key": "identityPoolName",
-				"question": "Please enter a name for your identity pool.",
-				"required": true,
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "Cognito Identity Pools",
-						"operator": "includes"
-					}
-				]
 			}
 		],
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
-		"serviceWalkthroughFilename": "core-questions.js",
+		"serviceWalkthroughFilename": "auth-questions.js",
 		"stringMapFilename": "string-maps.js",
 		"provider": "amplify-provider-awscloudformation"
 	}

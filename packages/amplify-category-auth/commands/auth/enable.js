@@ -1,17 +1,37 @@
 const fs = require('fs');
+const inquirer = require('inquirer');
 
-const subcommand = 'add';
+const subcommand = 'enable';
 const category = 'auth';
 let options;
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
+
     const { amplify } = context;
     const configure = context.parameters.options.configure ? '-configure' : '';
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services${configure}.json`));
 
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth;
+    let currentValues = null;
+
+    if (!existingAuth || Object.keys(existingAuth).length > 0){
+      let edit = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'quitOrEdit',
+        message: "Auth has already been enabled for this project.  Do you want to edit the current setting?"
+      }]);
+
+      if (!edit){
+        return context.print.warning('Ok. You can always edit or remove the Auth resource at a later date.')
+      } else {
+        currentValues = existingAuth
+      }
+      
+    }
+    
+    return amplify.serviceSelectionPrompt(context, category, servicesMetadata, currentValues)
       .then((result) => {
         options = {
           service: result.service,
@@ -19,7 +39,7 @@ module.exports = {
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not confgiured for this category');
+          context.print.error('Provider not configured for this category');
           return;
         }
         return providerController.addResource(context, category, result.service, configure);

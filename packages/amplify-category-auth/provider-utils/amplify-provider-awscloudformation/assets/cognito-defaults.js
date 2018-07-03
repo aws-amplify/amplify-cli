@@ -2,12 +2,12 @@ const uuid = require('uuid');
 
 const [shortId] = uuid().split('-');
 
-const {authFlowMap, coreAttributeMap, appClientReadAttributeMap} = require('./string-maps')
+const {authFlowMap, coreAttributes, appClientReadAttributes} = require('./string-maps')
 
 const general = () => ({
   resourceName: `cognito${shortId}`,
   authSelections: [
-    'Cognito Identity Pools',
+    'Cognito Identity Pool Only',
   ],
 });
 
@@ -27,28 +27,37 @@ const userPoolDefaults = () => ({
     'Requires Symbols'
   ],
   requiredAttributes: [
-    Object.keys(coreAttributeMap)[2],
-    Object.keys(coreAttributeMap)[10],
+    coreAttributes[2],
+    coreAttributes[10],
   ],
   userpoolClientName: `<label>-app-client-${uuid()}`,
-  userpoolClientAuthFlow: [Object.keys(authFlowMap)[0]],
+  userpoolClientAuthFlow: [authFlowMap[0]],
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity:30,
   userpoolClientReadAttributes: [
-    Object.keys(appClientReadAttributeMap)[2],
-    Object.keys(appClientReadAttributeMap)[10],
-  ]
+    appClientReadAttributes[2],
+    appClientReadAttributes[10],
+  ],
+  identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
+  allowUnauthenticatedIdentities: false,
+  ...identityPoolDefaults()
 });
+
+
 
 const identityPoolDefaults = () => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
+  authRoleName: `<label>-auth-role-${uuid()}`,
+  authRoleExternalId: uuid(),
+  unAuthRoleName: `<label>-unauth-role-${uuid()}`,
+  unAuthRoleExternalId: uuid(),
 });
 
 const functionMap = {
-  'Cognito Identity Pools': userPoolDefaults,
-  'Cognito User Pools': identityPoolDefaults
+  'identityPoolOnly': identityPoolDefaults,
+  'identityPoolAndUserPool': userPoolDefaults
 };
 
 
