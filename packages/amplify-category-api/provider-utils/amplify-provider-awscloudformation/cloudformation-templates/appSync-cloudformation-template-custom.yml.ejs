@@ -24,7 +24,7 @@ Resources:
       <%if (props.securitySetting.type == 'cognito') { %>
       AuthenticationType: AMAZON_COGNITO_USER_POOLS
       UserPoolConfig:
-        AwsRegion: <%= props.region %>
+        AwsRegion: <%= props.securitySetting.options.region %>
         UserPoolId: <%= props.securitySetting.options.cognitoUserPoolId %>
         DefaultAction: <%= props.securitySetting.options.cognitoAction %>
         <%if (props.securitySetting.options.appClientRegex) { %>
