@@ -11,11 +11,17 @@ function init(context) {
 }
 
 function onInitSuccessful(context) {
-  return initializer.onInitSuccessful(context);}
+  return initializer.onInitSuccessful(context);
+}
+
+function onCategoryOutputsChange(context){
+
+}
 
 module.exports = {
   constants,
   scanProject,
   init,
-  onInitSuccessful
+  onInitSuccessful, 
+  onCategoryOutputsChange
 };
