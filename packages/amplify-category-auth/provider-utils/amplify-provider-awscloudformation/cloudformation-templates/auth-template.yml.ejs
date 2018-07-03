@@ -42,11 +42,11 @@ Resources:
         <% } %>
       Policies:
         PasswordPolicy:
-          MinimumLength: <%= props.passwordPolicy.minLength %>
-          RequireLowercase: <%= props.passwordPolicy.requiresLower %>
-          RequireNumbers: <%=  props.passwordPolicy.requiresNumbers %>
-          RequireSymbols: <%= props.passwordPolicy.requiresSymbols %>
-          RequireUppercase: <%= props.passwordPolicy.requiresUpper %>
+          MinimumLength: <%= props.passwordPolicyMinLength %>
+          RequireLowercase: <%= props.passwordPolicyCharacters.includes('Requires Lowercase') %>
+          RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
+          RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
+          RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
       MfaConfiguration: '<%= props.mfaConfiguration %>'
       <%if (props.mfaConfiguration != 'OFF') { %>
       SmsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
@@ -61,7 +61,28 @@ Resources:
 
   <% } %>
 
-
+  UserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: <%= props.userpoolClientName %>
+      ExplicitAuthFlows: 
+        <% for(var i=0; i < props.userpoolClientAuthFlow.length; i++) { %>
+        - <%= props.userpoolClientAuthFlow[i] %>
+        <% } %>
+      <%if (props.userpoolClientSetAttributes) { %>
+      ReadAttributes:
+        <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
+        - "<%= props.userpoolClientReadAttributes[i] %>"
+        <% } %>
+      WriteAttributes:
+        <% for(var i=0; i < props.userpoolClientWriteAttributes.length; i++) { %>
+        - "<%= props.userpoolClientWriteAttributes[i] %>"
+        <% } %>
+      <% } %>
+      GenerateSecret: <%= props.userpoolClientGenerateSecret %>
+      RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
+      UserPoolId: !Ref UserPool
+    DependsOn: UserPool
 
   <%if (props.authSelections.includes('Cognito Identity Pools')) { %>
   IdentityPool:

@@ -2,6 +2,8 @@ const uuid = require('uuid');
 
 const [shortId] = uuid().split('-');
 
+const {authFlowMap, coreAttributeMap, appClientReadAttributeMap} = require('./string-maps')
+
 const general = () => ({
   resourceName: `cognito${shortId}`,
   authSelections: [
@@ -17,24 +19,25 @@ const userPoolDefaults = () => ({
   policyName: `<label>-sns-policy-${uuid()}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
-  passwordPolicy: {
-    minLength: 8,
-    requiresLower: true,
-    requiresUpper: true,
-    requiresNumbers: true,
-    requiresSymbols: true
-  },
-  requiredAttributes: [
-    'email',
-    'phone_number'
+  passwordPolicyMinLength: 8,
+  passwordPolicyCharacters: [
+    'Requires Lowercase',
+    'Requires Uppercase',
+    'Requires Numbers',
+    'Requires Symbols'
   ],
-});
-
-const userPoolClientDefaults = () => ({
-  name: `<label>-app-client-${uuid()}`,
-  authFlow: 'ADMIN_NO_SRP_AUTH',
-  generateSecret: true,
-  refreshTokenValidity: 30
+  requiredAttributes: [
+    Object.keys(coreAttributeMap)[2],
+    Object.keys(coreAttributeMap)[10],
+  ],
+  userpoolClientName: `<label>-app-client-${uuid()}`,
+  userpoolClientAuthFlow: [Object.keys(authFlowMap)[0]],
+  userpoolClientGenerateSecret: true,
+  userpoolClientRefreshTokenValidity:30,
+  userpoolClientReadAttributes: [
+    Object.keys(appClientReadAttributeMap)[2],
+    Object.keys(appClientReadAttributeMap)[10],
+  ]
 });
 
 const identityPoolDefaults = () => ({
@@ -45,16 +48,16 @@ const identityPoolDefaults = () => ({
 
 const functionMap = {
   'Cognito Identity Pools': userPoolDefaults,
-  'Cognito User Pools': identityPoolDefaults,
-  'Cognito Identity Pool Clients': userPoolClientDefaults
+  'Cognito User Pools': identityPoolDefaults
 };
+
+
 
 const getAllDefaults = () => {
   const target = general();
   const sources = [
     userPoolDefaults(),
-    identityPoolDefaults(),
-    userPoolClientDefaults()
+    identityPoolDefaults()
   ];
 
   return Object.assign(target, ...sources);
@@ -64,7 +67,6 @@ module.exports = {
   general,
   userPoolDefaults,
   identityPoolDefaults,
-  userPoolClientDefaults,
   getAllDefaults,
-  functionMap,
+  functionMap
 };

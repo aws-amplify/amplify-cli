@@ -1,5 +1,7 @@
 function inputValidation(question) {
-  const validator = input => new Promise((resolve, reject) => {
+  const validator = (input, answers) => new Promise((resolve, reject) => {
+
+
     if (!question.validation) {
       resolve(true);
     }
@@ -13,7 +15,7 @@ function inputValidation(question) {
       return regex.test(input) ?
         resolve(true) : reject(question.validation.onErrorMsg);
     }
-    if (question.validation.operator === 'range') {
+    if (question.validation.operator == 'range') {
       return input >= question.validation.value.min && input <= question.validation.value.max ? resolve(true) : reject(question.validation.onErrorMsg);
     }
     if (question.required) {

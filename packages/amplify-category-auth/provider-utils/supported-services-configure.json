@@ -111,7 +111,7 @@
 				]
 			},
 			{
-				"key": "passwordPolicy.minLength",
+				"key": "passwordPolicyMinLength",
 				"question": "Enter the minimum password length for this User Pool:",
 				"required": true,
 				"type": "input",
@@ -129,49 +129,16 @@
 				]
 			},
 			{
-				"key": "passwordPolicy.requiresLower",
-				"question": "Should this User Pool require passwords with lowercase characters?",
+				"key": "passwordPolicyCharacters",
+				"question": "Select the password character requirements for your userpool:",
 				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "defaultPasswordPolicy",
-						"value": false,
-						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "passwordPolicy.requiresUpper",
-				"question": "Should this User Pool require passwords with uppercase characters?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "defaultPasswordPolicy",
-						"value": false,
-						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "passwordPolicy.requiresNumbers",
-				"question": "Should this User Pool require passwords with numbers?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "defaultPasswordPolicy",
-						"value": false,
-						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "passwordPolicy.requiresSymbols",
-				"question": "Should this User Pool require passwords with special symbols?",
-				"required": true,
-				"type": "confirm",
+				"type": "multiselect",
+				"options": [
+					"Requires Lowercase",
+					"Requires Uppercase",
+					"Requires Numbers",
+					"Requires Symbols"
+				],
 				"andConditions": [
 					{
 						"key": "defaultPasswordPolicy",
@@ -198,25 +165,7 @@
 				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
 				"required": true,
 				"type": "multiselect",
-				"options": [
-					"address",
-					"birthdate",
-					"email",
-					"family_name",
-					"gender",
-					"given_name",
-					"locale",
-					"middle_name",
-					"name",
-					"nickname",
-					"phone_number",
-					"picture",
-					"preferred_username",
-					"profile",
-					"timezone",
-					"updated_at",
-					"website"
-				],
+				"map": "coreAttributeMap",
 				"andConditions": [
 					{
 						"key": "editRequiredAttributes",
@@ -239,9 +188,14 @@
 				]
 			},
 			{
-				"key": "userpoolClient.name",
+				"key": "userpoolClientName",
 				"question": "Provide a name for the App Client: ",
 				"required": true,
+				"validation": {
+					"operator": "regex",
+					"value": "^.{1,128}$",
+					"onErrorMsg": "App Client Name must be at least 1 character and no more than 128."
+				},
 				"andConditions": [
 					{
 						"key": "createUserpoolClient",
@@ -251,14 +205,11 @@
 				]
 			},
 			{
-				"key": "userpoolClient.authFlow",
-				"question": "Authentication flow you want to use:",
+				"key": "userpoolClientAuthFlow",
+				"question": "Select the authentication flow you want to use:",
 				"required": true,
-				"type": "select",
-				"options": [
-					"ADMIN_NO_SRP_AUTH",
-					"CUSTOM_AUTH_FLOW_ONLY"
-				],
+				"type": "multiselect",
+				"map": "authFlowMap",
 				"andConditions": [
 					{
 						"key": "createUserpoolClient",
@@ -268,7 +219,7 @@
 				]
 			},
 			{
-				"key": "userpoolClient.generateSecret",
+				"key": "userpoolClientGenerateSecret",
 				"question": "Do you want to generate a secret for your app?",
 				"required": true,
 				"type": "confirm",
@@ -281,12 +232,53 @@
 				]
 			},
 			{
-				"key": "userpoolClient.refreshTokenValidity",
+				"key": "userpoolClientRefreshTokenValidity",
 				"question": "Specify the app's refresh token expiration period (in days):",
 				"required": true,
 				"andConditions": [
 					{
 						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClientSetAttributes",
+				"question": "Do you want to specify the user attributes this app can read and write?",
+				"required": true,
+				"type":"confirm",
+				"andConditions": [
+					{
+						"key": "createUserpoolClient",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClientReadAttributes",
+				"question": "Specify read attributes:",
+				"required": true,
+				"type": "multiselect",
+				"map": "appClientReadAttributeMap",
+				"andConditions": [
+					{
+						"key": "userpoolClientSetAttributes",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "userpoolClientWriteAttributes",
+				"question": "Specify write attributes:",
+				"required": true,
+				"type": "multiselect",				
+				"map": "appClientReadAttributeMap",
+				"andConditions": [
+					{
+						"key": "userpoolClientSetAttributes",
 						"value": true,
 						"operator": "="
 					}
@@ -308,6 +300,7 @@
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
 		"serviceWalkthroughFilename": "core-questions.js",
+		"stringMapFilename": "string-maps.js",
 		"provider": "amplify-provider-awscloudformation"
 	}
 }

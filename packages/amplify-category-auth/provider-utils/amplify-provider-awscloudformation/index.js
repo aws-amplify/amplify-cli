@@ -3,11 +3,11 @@ const inquirer = require('inquirer');
 
 let serviceMetadata;
 
-function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
+function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
-  return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  return serviceWalkthrough(context, defaultValuesFilename, stringMapFilename, serviceMetadata);
 }
 
 function copyCfnTemplate(context, category, options, cfnFilename) {
@@ -24,6 +24,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
+
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
@@ -31,15 +32,17 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service, configure) {
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
+  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
     .then((result) => {
 
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
-      const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+      const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
+      const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`
       const { functionMap } = require(defaultValuesSrc);
+      const { authFlowMap, coreAttributeMap, appClientReadAttributeMap} = require(stringMapFileSrc); 
 
       result.authSelections.forEach((i) => {
         props = Object.assign(props, functionMap[i](result.resourceName));
@@ -49,6 +52,27 @@ function addResource(context, category, service, configure) {
        * ensuring that manual entries override defaults */
       props = Object.assign(props, result);
 
+      if (props.userpoolClientAuthFlow){
+        props.userpoolClientAuthFlow = props.userpoolClientAuthFlow.map((x) => {
+          return authFlowMap[x]
+        })
+      }
+
+      if (props.requiredAttributes){
+        props.requiredAttributes = props.requiredAttributes.map((v) => {
+          return coreAttributeMap[v]
+        })
+      }
+
+      if (props.userpoolClientSetAttributes){
+        props.userpoolClientReadAttributes = props.userpoolClientReadAttributes.map((v) => {
+          return appClientReadAttributeMap[v] 
+        })
+        props.userpoolClientWriteAttributes = props.userpoolClientWriteAttributes.map((t) => {
+          return coreAttributeMap[t]
+        })
+      }
+
       /* make sure that resource name populates '<label'>
        * placeholder from default if it hasn't already */
       // TODO: improve this
@@ -57,9 +81,6 @@ function addResource(context, category, service, configure) {
           props[el] = props[el].replace(/<label>/g, props.resourceName);
         }
       });
-
-      console.log('cfnFileName', cfnFilename)
-
 
       copyCfnTemplate(context, category, props, cfnFilename);
     })

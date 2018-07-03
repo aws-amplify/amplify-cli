@@ -20,6 +20,8 @@
 		],
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
+		"serviceWalkthroughFilename": "core-questions.js",
+		"stringMapFilename": "string-maps.js",
 		"provider": "amplify-provider-awscloudformation"
 	}
 }

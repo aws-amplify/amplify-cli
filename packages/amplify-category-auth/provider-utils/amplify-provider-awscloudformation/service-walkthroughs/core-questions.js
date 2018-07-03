@@ -1,10 +1,12 @@
 const inquirer = require('inquirer');
 
-async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata) {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
+  const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`
   const { getAllDefaults } = require(defaultValuesSrc);
+  const { getAllMaps } = require(stringMapsSrc);
 
   const questions = [];
   for (let i = 0; i < inputs.length; i += 1) {
@@ -30,14 +32,15 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     };
 
     if (inputs[i].type && inputs[i].type === 'list') {
+      
       question = Object.assign({
         type: 'list',
-        choices: inputs[i].options,
+        choices: inputs[i].map ? Object.keys(getAllMaps()[inputs[i].map]) : inputs[i].options,
       }, question);
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
       question = Object.assign({
         type: 'checkbox',
-        choices: inputs[i].options,
+        choices: inputs[i].map ? Object.keys(getAllMaps()[inputs[i].map]) : inputs[i].options,
       }, question);
     } else if (inputs[i].type && inputs[i].type === 'confirm') {
       question = Object.assign({
