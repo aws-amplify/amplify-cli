@@ -23,13 +23,6 @@
                 "BucketName": {"Ref": "DeploymentBucketName"}
             }
         },
-        "IdentityPool": {
-            "Type": "AWS::Cognito::IdentityPool",
-            "Properties": {
-                "IdentityPoolName": "xyz",
-                "AllowUnauthenticatedIdentities": true
-            }
-        },
         "AuthRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -45,9 +38,6 @@
                       },
                       "Action": "sts:AssumeRoleWithWebIdentity",
                       "Condition": {
-                        "StringEquals": {
-                          "cognito-identity.amazonaws.com:aud": {"Ref": "IdentityPool"}
-                        },
                         "ForAnyValue:StringLike": {
                           "cognito-identity.amazonaws.com:amr": "authenticated"
                         }
@@ -72,9 +62,6 @@
                       },
                       "Action": "sts:AssumeRoleWithWebIdentity",
                       "Condition": {
-                        "StringEquals": {
-                          "cognito-identity.amazonaws.com:aud": {"Ref": "IdentityPool"}
-                        },
                         "ForAnyValue:StringLike": {
                           "cognito-identity.amazonaws.com:amr": "unauthenticated"
                         }
@@ -84,13 +71,6 @@
                 }
             }
 
-        },
-        "IdentityPoolIAMRoleMap": {
-          "Type" : "AWS::Cognito::IdentityPoolRoleAttachment",
-          "Properties" : {
-            "IdentityPoolId" : {"Ref": "IdentityPool"},
-            "Roles" : { "authenticated": {"Fn::GetAtt": ["AuthRole", "Arn"]}, "unauthenticated": {"Fn::GetAtt": ["UnauthRole", "Arn"]}}
-          }
         }
     },
     "Outputs" : {
@@ -127,9 +107,6 @@
         },
         "UnauthRole": {
             "Value": {"Fn::GetAtt": ["UnauthRole", "Arn"]}
-        },
-        "DefaultIdentityPool": {
-            "Value": {"Ref": "IdentityPool" }
         }
     }
 }

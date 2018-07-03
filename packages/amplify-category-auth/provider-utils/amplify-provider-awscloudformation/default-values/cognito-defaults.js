@@ -22,12 +22,12 @@ const userPoolDefaults = () => ({
     requiresLower: true,
     requiresUpper: true,
     requiresNumbers: true,
-    requiresSymbols: true
+    requiresSymbols: true,
   },
   requiredAttributes: [
     'email',
-    'phone_number'
-  ]
+    'phone_number',
+  ],
 });
 
 const identityPoolDefaults = () => ({
