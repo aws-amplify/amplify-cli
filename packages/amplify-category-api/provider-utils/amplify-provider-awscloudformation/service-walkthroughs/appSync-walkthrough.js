@@ -147,9 +147,12 @@ async function askCognitoQuestions(context, inputs) {
     validate: amplify.inputValidation(inputs[7]),
   };
 
-  return await inquirer.prompt([userPoolIdQuestion,
+  const cognitoAnswers = await inquirer.prompt([userPoolIdQuestion,
     defaultActionQuestion,
     appIdClientRegexQuestion]);
+  Object.assign(cognitoAnswers, regionAnswer);
+
+  return cognitoAnswers;
 }
 
 async function askOpenIdQuestions(context, inputs) {
@@ -205,8 +208,9 @@ async function askApiKeyQuestions(context, inputs) {
   };
 
   const apiKeyExpiryAnswer = await inquirer.prompt([apiKeyExpiryQuestion]);
-  apiKeyExpiryAnswer[inputs[11].key] = moment().add(Number(apiKeyExpiryAnswer[inputs[11].key]), 'days').unix();
-  context.print.info(`Expiry date of the API key set to: ${moment.unix(apiKeyExpiryAnswer[inputs[11].key]).local().format('YYYY-MM-DD HH:mm:ss')}`);
+  apiKeyExpiryAnswer[inputs[12].key] = moment().add(Number(apiKeyExpiryAnswer[inputs[12].key]), 'days').unix();
+  console.log(apiKeyExpiryAnswer);
+  context.print.info(`Expiry date of the API key set to: ${moment.unix(apiKeyExpiryAnswer[inputs[12].key]).local().format('YYYY-MM-DD HH:mm:ss')}`);
   return apiKeyExpiryAnswer;
 }
 
