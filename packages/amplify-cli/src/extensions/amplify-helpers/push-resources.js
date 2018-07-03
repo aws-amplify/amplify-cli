@@ -1,5 +1,5 @@
 const ora = require('ora');
-const { getProviderPlugins } = require('./get-provider-plugins');
+const { getProjectConfig } = require('./get-project-config');
 const { showResourceTable } = require('./resource-status');
 const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 
@@ -11,11 +11,11 @@ function pushResources(context, category, resourceName) {
   return context.prompt.confirm('Are you sure you want to continue?')
     .then((answer) => {
       if (answer) {
-        const providerPlugins = getProviderPlugins(context);
+        const { providers } = getProjectConfig();
         const providerPromises = [];
 
-        Object.keys(providerPlugins).forEach((provider) => {
-          const pluginModule = require(providerPlugins[provider]);
+        Object.keys(providers).forEach((providerName) => {
+          const pluginModule = require(providers[providerName]);
           providerPromises.push(pluginModule.pushResources(context, category, resourceName));
         });
 
