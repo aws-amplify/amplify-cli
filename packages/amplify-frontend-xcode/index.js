@@ -1,7 +1,8 @@
+const fs = require('fs');
+const path = require('path'); 
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner'); 
 const constants = require('./lib/constants'); 
-
 
 function scanProject(projectPath){
   return projectScanner.run(projectPath); 
