@@ -41,8 +41,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       }, question);
     } else if (inputs[i].type && inputs[i].type === 'confirm') {
       question = Object.assign({
-        type: 'confirm'
-      }, question)
+        type: 'confirm',
+      }, question);
     } else {
       question = Object.assign({
         type: 'input',

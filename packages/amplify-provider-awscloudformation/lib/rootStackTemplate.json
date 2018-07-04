@@ -6,6 +6,14 @@
             "Description": "Name of the common deployment bucket provided by the parent stack",
             "Type": "String",
             "Default": "DeploymentBucket"
+        },
+        "AuthRoleName":{
+            "Type": "String",
+            "Default": "AuthRoleName"
+        },
+        "UnauthRoleName":{
+            "Type": "String",
+            "Default": "UnauthRoleName"
         }
     }, 
     "Resources": {
@@ -14,6 +22,55 @@
             "Properties": {
                 "BucketName": {"Ref": "DeploymentBucketName"}
             }
+        },
+        "AuthRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {"Ref": "AuthRoleName"},
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Sid": "",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "cognito-identity.amazonaws.com"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {
+                        "ForAnyValue:StringLike": {
+                          "cognito-identity.amazonaws.com:amr": "authenticated"
+                        }
+                      }
+                    }
+                  ]
+                }
+            }
+        },
+        "UnauthRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {"Ref": "UnauthRoleName"},
+                "AssumeRolePolicyDocument":{
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Sid": "",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Federated": "cognito-identity.amazonaws.com"
+                      },
+                      "Action": "sts:AssumeRoleWithWebIdentity",
+                      "Condition": {
+                        "ForAnyValue:StringLike": {
+                          "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                        }
+                      }
+                    }
+                  ]
+                }
+            }
+
         }
     },
     "Outputs" : {
@@ -44,6 +101,12 @@
             "Export": {
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-DeploymentBucketName"}
             }
+        },
+        "AuthRole": {
+            "Value": {"Fn::GetAtt": ["AuthRole", "Arn"]}
+        },
+        "UnauthRole": {
+            "Value": {"Fn::GetAtt": ["UnauthRole", "Arn"]}
         }
     }
 }
