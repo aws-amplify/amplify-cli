@@ -1,5 +1,4 @@
 const fs = require('fs');
-const inquirer = require('inquirer');
 
 let serviceMetadata;
 
@@ -36,7 +35,6 @@ function addResource(context, category, service, configure) {
 
   return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
     .then((result) => {
-
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
