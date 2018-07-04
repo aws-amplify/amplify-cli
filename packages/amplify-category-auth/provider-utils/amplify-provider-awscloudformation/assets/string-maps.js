@@ -74,7 +74,6 @@ const coreAttributes = [
   }
 ]
 
-
 const appClientReadAttributes = [
   ...coreAttributes,
   {

@@ -43,8 +43,6 @@ const userPoolDefaults = () => ({
   ...identityPoolDefaults()
 });
 
-
-
 const identityPoolDefaults = () => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
@@ -59,8 +57,6 @@ const functionMap = {
   'identityPoolOnly': identityPoolDefaults,
   'identityPoolAndUserPool': userPoolDefaults
 };
-
-
 
 const getAllDefaults = () => {
   const target = general();
