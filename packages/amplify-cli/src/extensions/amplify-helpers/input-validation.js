@@ -18,7 +18,7 @@ function inputValidation(question) {
       return regex.test(input) ?
         resolve(true) : reject(question.validation.onErrorMsg);
     }
-    if (question.validation.operator == 'range') {
+    if (question.validation.operator === 'range') {
       return input >= question.validation.value.min && input <= question.validation.value.max ? resolve(true) : reject(question.validation.onErrorMsg);
     }
     if (question.required) {
