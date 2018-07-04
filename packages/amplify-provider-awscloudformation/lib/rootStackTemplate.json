@@ -102,11 +102,17 @@
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-DeploymentBucketName"}
             }
         },
-        "AuthRole": {
+        "AuthRoleArn": {
             "Value": {"Fn::GetAtt": ["AuthRole", "Arn"]}
         },
-        "UnauthRole": {
+        "UnauthRoleArn": {
             "Value": {"Fn::GetAtt": ["UnauthRole", "Arn"]}
+        },
+        "AuthRoleName": {
+            "Value": {"Ref": "AuthRole"}
+        },
+        "UnauthRoleName": {
+            "Value": {"Ref": "UnauthRole"}
         }
     }
 }

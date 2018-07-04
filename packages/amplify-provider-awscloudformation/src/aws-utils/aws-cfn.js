@@ -126,6 +126,9 @@ class CloudFormation {
     const projectDetails = this.context.amplify.getProjectDetails();
     const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
     const deploymentBucketName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+    const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
+    const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
+
     if (!stackName) {
       throw (new Error('Project Stack is not yet created. Please use amplify init to initialize the project.'));
     }
@@ -167,6 +170,14 @@ class CloudFormation {
                   ParameterKey: 'DeploymentBucketName',
                   ParameterValue: deploymentBucketName,
                 },
+                {
+                  ParameterKey: 'AuthRoleName',
+                  ParameterValue: authRoleName,
+                },
+                {
+                  ParameterKey: 'UnauthRoleName',
+                  ParameterValue: unauthRoleName,
+                },
               ],
             };
 
@@ -207,13 +218,18 @@ class CloudFormation {
     return cfnModel.describeStackResources(cfnParentStackParams).promise()
       .then((result) => {
         let resources = result.StackResources;
-        resources = resources.filter(resource => resource.LogicalResourceId !== 'DeploymentBucket');
+        resources = resources.filter(resource => (resource.LogicalResourceId !== 'DeploymentBucket' && resource.LogicalResourceId !== 'AuthRole' && resource.LogicalResourceId !== 'UnauthRole'));
+
+
         const promises = [];
 
         for (let i = 0; i < resources.length; i += 1) {
-          if (resources[i].LogicalResourceId === 'DeploymentBucket') {
+          if (resources[i].LogicalResourceId === 'DeploymentBucket' ||
+          resources[i].LogicalResourceId === 'AuthRole'
+          || resources[i].LogicalResourceId === 'UnauthRole') {
             continue;
           }
+
           const cfnNestedStackParams = {
             StackName: resources[i].PhysicalResourceId,
           };
