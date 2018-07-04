@@ -47,10 +47,6 @@ const identityPoolDefaults = () => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
-  authRoleName: `<label>-auth-role-${uuid()}`,
-  authRoleExternalId: uuid(),
-  unAuthRoleName: `<label>-unauth-role-${uuid()}`,
-  unAuthRoleExternalId: uuid(),
 });
 
 const functionMap = {

@@ -45,7 +45,7 @@ function parseInputs (inputs, amplify, defaultValuesFilename, stringMapsFilename
         question = Object.assign(question, {
           choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`) ,...trueOptions],
           filter: ((input) => {
-            return input = input.concat(...requiredOptions.map(z => z.key))
+            return input = input.concat(...requiredOptions.map(z => z.value))
           })
         })
       }
