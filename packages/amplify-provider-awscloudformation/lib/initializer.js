@@ -14,13 +14,24 @@ function run(context) {
       const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
       const stackName = normalizeStackName(ctxt.initInfo.projectName + timeStamp);
       const deploymentBucketName = `${stackName}-deployment`;
+      const authRoleName = `${stackName}-authRole`;
+      const unauthRoleName = `${stackName}-unauthRole`;
       const params = {
         StackName: stackName,
+        Capabilities: ['CAPABILITY_NAMED_IAM'],
         TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
         Parameters: [
           {
             ParameterKey: 'DeploymentBucketName',
             ParameterValue: deploymentBucketName,
+          },
+          {
+            ParameterKey: 'AuthRoleName',
+            ParameterValue: authRoleName,
+          },
+          {
+            ParameterKey: 'UnauthRoleName',
+            ParameterValue: unauthRoleName,
           },
         ],
       };
