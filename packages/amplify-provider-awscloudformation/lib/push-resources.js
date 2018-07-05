@@ -73,7 +73,7 @@ function packageResources(context, resources) {
       .then((result) => {
         ({ zipFilename } = result);
         // Upload zip file to S3
-        s3Key = 'ampify-builds/' + result.zipFilename;
+        s3Key = `ampify-builds/${result.zipFilename}`;
         return new S3(context)
           .then((s3) => {
             const s3Params = {
@@ -175,7 +175,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     .then((s3) => {
       const s3Params = {
         Body: fs.createReadStream(filePath),
-        Key: 'amplify-cfn-templates/' + cfnFile,
+        Key: `amplify-cfn-templates/${cfnFile}`,
       };
       return s3.uploadFile(s3Params);
     })
