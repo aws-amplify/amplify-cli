@@ -112,12 +112,13 @@ function updateamplifyMetaAfterBuild(resource) {
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 }
 
-function updateamplifyMetaAfterPackage(resource) {
+function updateamplifyMetaAfterPackage(resource, zipFilename) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   const currentTimestamp = new Date();
   /*eslint-disable */
   amplifyMeta[resource.category][resource.resourceName].lastPackageTimeStamp = currentTimestamp;
+  amplifyMeta[resource.category][resource.resourceName].distZipFilename = zipFilename;
   /* eslint-enable */
 
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');

@@ -20,6 +20,11 @@ function buildResource(context, resource) {
   const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, 'src', 'package.json'));
   const packageJsonMeta = fs.statSync(packageJsonPath);
   const resourceDirMeta = fs.statSync(resourceDir);
+  const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
+
+  let zipFilename = resource.distZipFilename;
+  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, zipFilename)) : '';
+
 
   if (!resource.lastBuildTimeStamp ||
     new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)) {
@@ -28,21 +33,20 @@ function buildResource(context, resource) {
     context.amplify.updateamplifyMetaAfterBuild(resource);
   }
 
-  if (!resource.lastPackageTimeStamp ||
+  if (!resource.lastPackageTimeStamp || !resource.distZipFilename ||
     new Date(resourceDirMeta.atime) > new Date(resource.lastPackageTimeStamp)) {
-    const zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
-    const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
+    zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
 
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir);
     }
 
-    const zipFilePath = path.normalize(path.join(distDir, zipFilename));
+    zipFilePath = path.normalize(path.join(distDir, zipFilename));
     const output = fs.createWriteStream(zipFilePath);
 
     return new Promise((resolve, reject) => {
       output.on('close', () => {
-        context.amplify.updateamplifyMetaAfterPackage(resource);
+        context.amplify.updateamplifyMetaAfterPackage(resource, zipFilename);
         resolve({ zipFilePath, zipFilename });
       });
       output.on('error', () => {
@@ -54,6 +58,8 @@ function buildResource(context, resource) {
       zip.finalize();
     });
   }
+
+  return new Promise(resolve => resolve({ zipFilename, zipFilePath }));
 }
 
 module.exports = {
