@@ -1,8 +1,8 @@
-const { getProviderPlugins } = require('./get-provider-plugins');
+const { getProjectConfig } = require('./get-project-config');
 
-async function executeProviderUtils(context, provider, utilName, options) {
-  const providerPlugins = getProviderPlugins(context);
-  const pluginModule = require(providerPlugins[provider]);
+async function executeProviderUtils(context, providerName, utilName, options) {
+  const { providers } = getProjectConfig();
+  const pluginModule = require(providers[providerName]);
 
   return await pluginModule.providerUtils[utilName](context, options);
 }

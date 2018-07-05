@@ -33,7 +33,7 @@ function scanWithFrontendHandlers(context) {
   let fitToHandleScore = -1;
   Object.keys(frontendPlugins).forEach((key) => {
     const { scanProject } = require(frontendPlugins[key]);
-    const newScore = scanProject(context);
+    const newScore = scanProject(context.initInfo.projectPath);
     if (newScore > fitToHandleScore) {
       fitToHandleScore = newScore;
       suitableHandler = key;
