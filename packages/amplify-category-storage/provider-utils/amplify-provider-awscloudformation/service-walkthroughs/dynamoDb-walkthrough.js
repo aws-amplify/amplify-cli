@@ -210,6 +210,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
 
+  
+  answers.accessLevel = await inquirer.prompt(amplify.sharedQuestions.accessLevel('table'))
+
+  answers.testRole = 'cli5-20180704153129-authRole'
+
   return answers;
 }
 
