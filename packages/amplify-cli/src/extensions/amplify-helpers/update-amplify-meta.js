@@ -112,7 +112,7 @@ function updateamplifyMetaAfterBuild(resource) {
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 }
 
-function updateamplifyMetaAfterPackage(resource, zipFilename) {
+function updateAmplifyMetaAfterPackage(resource, zipFilename) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   const currentTimestamp = new Date();
@@ -153,5 +153,5 @@ module.exports = {
   updateamplifyMetaAfterPush,
   updateamplifyMetaAfterBuild,
   updateProvideramplifyMeta,
-  updateamplifyMetaAfterPackage
+  updateAmplifyMetaAfterPackage
 };

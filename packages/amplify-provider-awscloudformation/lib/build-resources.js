@@ -46,7 +46,7 @@ function buildResource(context, resource) {
 
     return new Promise((resolve, reject) => {
       output.on('close', () => {
-        context.amplify.updateamplifyMetaAfterPackage(resource, zipFilename);
+        context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
         resolve({ zipFilePath, zipFilename });
       });
       output.on('error', () => {

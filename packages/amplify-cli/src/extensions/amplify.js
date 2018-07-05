@@ -24,7 +24,7 @@ const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
   updateamplifyMetaAfterBuild,
-   updateamplifyMetaAfterPackage,
+  updateAmplifyMetaAfterPackage,
   updateamplifyMetaAfterResourceAdd,
   updateamplifyMetaAfterResourceUpdate,
   updateamplifyMetaAfterResourceDelete,
@@ -57,7 +57,7 @@ module.exports = (context) => {
     updateProvideramplifyMeta,
     updateamplifyMetaAfterPush,
     updateamplifyMetaAfterBuild,
-    updateamplifyMetaAfterPackage
+    updateAmplifyMetaAfterPackage
   };
 
   context.amplify = amplify;
