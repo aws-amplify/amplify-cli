@@ -112,19 +112,22 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   if (await context.prompt.confirm('Do you want to add a sort key to your table?')) {
     // Ask for sort key
-
-    const sortKeyQuestion = {
-      type: inputs[5].type,
-      name: inputs[5].key,
-      message: inputs[5].question,
-      choices: indexableAttributeList,
-    };
-    const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
-    answers.KeySchema.push({
-      AttributeName: sortKeyAnswer[inputs[5].key],
-      KeyType: 'RANGE',
-    });
-    usedAttributeDefinitions.add(sortKeyAnswer[inputs[5].key]);
+    if (answers.AttributeDefinitions.length > 1){
+      const sortKeyQuestion = {
+        type: inputs[5].type,
+        name: inputs[5].key,
+        message: inputs[5].question,
+        choices: indexableAttributeList,
+      };
+      const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+      answers.KeySchema.push({
+        AttributeName: sortKeyAnswer[inputs[5].key],
+        KeyType: 'RANGE',
+      });
+      usedAttributeDefinitions.add(sortKeyAnswer[inputs[5].key]);
+    } else {
+      context.print.error('You must add additional keys in order to select a sort key.');
+    }
   }
 
   answers.KeySchema = answers.KeySchema;
