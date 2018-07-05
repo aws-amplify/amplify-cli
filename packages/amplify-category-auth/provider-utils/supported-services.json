@@ -3,23 +3,23 @@
 		"inputs": [
 			{
 				"key": "authSelections",
+				"set": "core",
 				"question": "Select the authentication/authorization services that you want to use:",
 				"required": true,
-				"type": "multiselect",
-				"options": [
-					"Cognito Identity Pools",
-					"Cognito User Pools",
-					"Federated Identity Providers"
-				]
+				"type": "list",
+				"map": "authSelections"
 			},
 			{
 				"key": "resourceName",
+				"set": "core",
 				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
 				"required": true
 			}
 		],
 		"cfnFilename": "auth-template.yml.ejs",
 		"defaultValuesFilename": "cognito-defaults.js",
+		"serviceWalkthroughFilename": "auth-questions.js",
+		"stringMapFilename": "string-maps.js",
 		"provider": "amplify-provider-awscloudformation"
 	}
 }

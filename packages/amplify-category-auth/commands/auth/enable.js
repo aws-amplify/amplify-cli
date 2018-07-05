@@ -1,16 +1,23 @@
 const fs = require('fs');
 
-const subcommand = 'add';
+const subcommand = 'enable';
 const category = 'auth';
 let options;
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
+
     const { amplify } = context;
     const configure = context.parameters.options.configure ? '-configure' : '';
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services${configure}.json`));
 
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {}
+
+    if (Object.keys(existingAuth).length > 0){
+      return context.print.warning('Auth has already been "enabled" for this project.')
+    }
+    
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {
@@ -19,7 +26,7 @@ module.exports = {
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not confgiured for this category');
+          context.print.error('Provider not configured for this category');
           return;
         }
         return providerController.addResource(context, category, result.service, configure);

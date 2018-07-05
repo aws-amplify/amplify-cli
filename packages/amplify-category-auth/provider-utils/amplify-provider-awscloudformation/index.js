@@ -2,11 +2,11 @@ const fs = require('fs');
 
 let serviceMetadata;
 
-function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
+function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
-  return serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  return serviceWalkthrough(context, defaultValuesFilename, stringMapFilename, serviceMetadata);
 }
 
 function copyCfnTemplate(context, category, options, cfnFilename) {
@@ -23,6 +23,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
+
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
@@ -30,22 +31,22 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service, configure) {
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
+  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
     .then((result) => {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
-      const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+      const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
+      const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`
       const { functionMap } = require(defaultValuesSrc);
+      const { authFlowMap, coreAttributes, appClientReadAttributes} = require(stringMapFileSrc); 
 
-      result.authSelections.forEach((i) => {
-        props = Object.assign(props, functionMap[i](result.resourceName));
-      });
 
       /* merge actual answers object into props object of defaults answers,
        * ensuring that manual entries override defaults */
-      props = Object.assign(props, result);
+
+      props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
 
       /* make sure that resource name populates '<label'>
        * placeholder from default if it hasn't already */

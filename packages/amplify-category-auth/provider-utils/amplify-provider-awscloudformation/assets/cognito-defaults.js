@@ -2,10 +2,12 @@ const uuid = require('uuid');
 
 const [shortId] = uuid().split('-');
 
+const {authFlowMap, coreAttributes, appClientReadAttributes} = require('./string-maps')
+
 const general = () => ({
   resourceName: `cognito${shortId}`,
   authSelections: [
-    'Cognito Identity Pools',
+    'Cognito Identity Pool Only',
   ],
 });
 
@@ -17,17 +19,28 @@ const userPoolDefaults = () => ({
   policyName: `<label>-sns-policy-${uuid()}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
-  passwordPolicy: {
-    minLength: 8,
-    requiresLower: true,
-    requiresUpper: true,
-    requiresNumbers: true,
-    requiresSymbols: true,
-  },
-  requiredAttributes: [
-    'email',
-    'phone_number',
+  passwordPolicyMinLength: 8,
+  passwordPolicyCharacters: [
+    'Requires Lowercase',
+    'Requires Uppercase',
+    'Requires Numbers',
+    'Requires Symbols'
   ],
+  requiredAttributes: [
+    coreAttributes[2],
+    coreAttributes[10],
+  ],
+  userpoolClientName: `<label>-app-client-${uuid()}`,
+  userpoolClientAuthFlow: [authFlowMap[0]],
+  userpoolClientGenerateSecret: true,
+  userpoolClientRefreshTokenValidity:30,
+  userpoolClientReadAttributes: [
+    appClientReadAttributes[2],
+    appClientReadAttributes[10],
+  ],
+  identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
+  allowUnauthenticatedIdentities: false,
+  ...identityPoolDefaults()
 });
 
 const identityPoolDefaults = () => ({
@@ -37,15 +50,15 @@ const identityPoolDefaults = () => ({
 });
 
 const functionMap = {
-  'Cognito Identity Pools': userPoolDefaults,
-  'Cognito User Pools': identityPoolDefaults,
+  'identityPoolOnly': identityPoolDefaults,
+  'identityPoolAndUserPool': userPoolDefaults
 };
 
 const getAllDefaults = () => {
   const target = general();
   const sources = [
     userPoolDefaults(),
-    identityPoolDefaults(),
+    identityPoolDefaults()
   ];
 
   return Object.assign(target, ...sources);
@@ -56,5 +69,5 @@ module.exports = {
   userPoolDefaults,
   identityPoolDefaults,
   getAllDefaults,
-  functionMap,
+  functionMap
 };
