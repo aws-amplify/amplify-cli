@@ -41,7 +41,6 @@
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
     "ora": "^2.1.0",
-    "path": "^0.12.7",
     "promise-sequential": "^1.1.1"
   },
   "devDependencies": {
