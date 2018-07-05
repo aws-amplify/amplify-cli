@@ -7,17 +7,16 @@ let options;
 module.exports = {
   name: subcommand,
   run: async (context) => {
-
     const { amplify } = context;
     const configure = context.parameters.options.configure ? '-configure' : '';
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services${configure}.json`));
 
-    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {}
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
-    if (Object.keys(existingAuth).length > 0){
-      return context.print.warning('Auth has already been "enabled" for this project.')
+    if (Object.keys(existingAuth).length > 0) {
+      return context.print.warning('Auth has already been "enabled" for this project.');
     }
-    
+
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {

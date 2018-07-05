@@ -3,18 +3,18 @@
   "version": "0.1.0",
   "description": "amplify-cli api plugin",
   "main": "index.js",
-  "dependencies": {
-    "amplify-category-storage": "file:../amplify-category-storage",
-    "eslint": "^4.19.1",
-    "inquirer": "^3.2.1",
-    "moment": "^2.22.2",
-    "uuid": "^2.0.3"
-  },
+  "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
   },
-  "license": "Apache-2.0",
+  "dependencies": {
+    "amplify-category-storage": "file:../amplify-category-storage",
+    "eslint": "^4.9.0",
+    "inquirer": "^3.2.1",
+    "moment": "^2.22.2",
+    "uuid": "^2.0.3"
+  },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"

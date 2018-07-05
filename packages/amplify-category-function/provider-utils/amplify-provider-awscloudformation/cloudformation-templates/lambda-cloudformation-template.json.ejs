@@ -1,0 +1,46 @@
+{
+    "Resources": {
+        "LambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Handler": "index.handler",
+            "FunctionName": "<%= props.functionName %>",
+            "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
+            "Runtime": "nodejs8.10",
+            "Timeout": "25"
+          }
+        },
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "<%=props.roleName %>",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "FunctionName": {
+            "Value": {
+                "Ref": "LambdaFunction"
+            }
+        },
+        "FunctionArn": {
+            "Value": {"Fn::GetAtt": ["LambdaFunction", "Arn"]}
+        }
+    }
+}

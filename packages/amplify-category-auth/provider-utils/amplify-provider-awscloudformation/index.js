@@ -31,16 +31,18 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 function addResource(context, category, service, configure) {
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
-  const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const {
+    cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
+  } = serviceMetadata;
 
   return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
     .then((result) => {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`
+      const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`;
       const { functionMap } = require(defaultValuesSrc);
-      const { authFlowMap, coreAttributes, appClientReadAttributes} = require(stringMapFileSrc); 
+      const { authFlowMap, coreAttributes, appClientReadAttributes } = require(stringMapFileSrc);
 
 
       /* merge actual answers object into props object of defaults answers,
