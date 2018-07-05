@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 let serviceMetadata;
 
@@ -55,4 +56,30 @@ function addResource(context, category, service) {
     .then(() => answers.resourceName);
 }
 
-module.exports = { addResource };
+function invoke(context, category, resourceName) {
+  // Run grunt
+  const grunt = require('grunt');
+  grunt.task.init = function () {};
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
+
+  grunt.initConfig({
+    lambda_invoke: {
+      default: {
+        options: {
+          file_name: `${srcDir}/index.js`,
+          event: `${srcDir}/event.json`,
+        },
+      },
+    },
+  });
+  process.chdir(`${__dirname}/../../`); // grunt checks for node_mnodules in this dir
+
+  grunt.loadNpmTasks('grunt-aws-lambda');
+
+  grunt.tasks(['lambda_invoke'], {}, () => {
+    console.log('Done running invoke function.');
+  });
+}
+
+module.exports = { addResource, invoke };

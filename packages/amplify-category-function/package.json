@@ -4,6 +4,8 @@
   "description": "amplify-cli function plugin",
   "dependencies": {
     "eslint": "^4.19.1",
+    "grunt": "^1.0.3",
+    "grunt-aws-lambda": "^0.13.0",
     "inquirer": "^3.2.1",
     "uuid": "^3.3.2"
   },
