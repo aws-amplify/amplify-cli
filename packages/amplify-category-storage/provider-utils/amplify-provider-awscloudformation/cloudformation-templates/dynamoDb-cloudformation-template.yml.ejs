@@ -5,13 +5,13 @@ Resources:
     Type: "AWS::IAM::Policy"
     Properties:
       Roles:
-        <%if (props.accessLevel !== 'Protected') { %>
+        <%if (props.accessLevel === 'Public') { %>
         - <%= props.unAuthRoleName %>
         <% } %>
-        <%if (props.accessLevel === 'Protected') { %>
+        <%if (props.accessLevel !== 'Public') { %>
         - <%= props.authRoleName %>
         <% } %>
-      PolicyName: "DynamoAccessPolicy55"
+      PolicyName: <%= props.accessLevel %>
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -33,8 +33,8 @@ Resources:
             <% } %> 
             Resource:
               - !GetAtt DynamoDBTable.Arn
-              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/MyIndex"  ]]
-            <%if (props.accessLevel === 'Private') { %>
+              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/*"  ]]
+            <%if (props.accessLevel === 'Private') { %>     
             Condition:
               ForAllValues:StringEquals:
                 dynamodb:LeadingKeys:
@@ -57,9 +57,9 @@ Resources:
             <% } %>
             Resource:
               - !GetAtt DynamoDBTable.Arn
-              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/MyIndex"  ]]
+              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/*"  ]]
             
-            <%if (props.accessLevel === 'Protected') { %>
+            <%if (['Protected', 'Private'].includes(props.accessLevel)) { %>
             Condition:
               ForAllValues:StringEquals:
                 dynamodb:LeadingKeys:

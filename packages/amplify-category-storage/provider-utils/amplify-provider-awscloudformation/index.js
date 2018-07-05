@@ -28,17 +28,19 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-function addResource(context, category, service, options) {
+function  addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    .then((result) => {
+  return  serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
+    .then ( async (result) => {
+      let roles = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
       answers = result;
-      answers.unAuthRoleName = context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleName;
-      answers.authRoleName = context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleName,
-      answers.policyName = answers.tableName + uuid()
+      answers.unAuthRoleName = roles.unauthRoleName;
+      answers.authRoleName = roles.authRoleName,
+      answers.policyName = answers.TableName + uuid()
+
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,

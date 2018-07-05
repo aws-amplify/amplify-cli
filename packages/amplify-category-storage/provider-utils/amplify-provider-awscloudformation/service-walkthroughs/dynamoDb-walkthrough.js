@@ -42,7 +42,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask resource and table name question
 
-  const answers = await inquirer.prompt(resourceQuestions);
+  let answers = await inquirer.prompt(resourceQuestions);
 
   // Ask attribute questions
 
@@ -211,9 +211,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
 
   
-  answers.accessLevel = await inquirer.prompt(amplify.sharedQuestions.accessLevel('table'))
-
-  answers.testRole = 'cli5-20180704153129-authRole'
+  answers = Object.assign(answers, await inquirer.prompt(amplify.sharedQuestions.accessLevel('table')));
 
   return answers;
 }

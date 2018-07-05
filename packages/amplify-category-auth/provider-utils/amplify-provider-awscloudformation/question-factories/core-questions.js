@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 
-function parseInputs (inputs, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers){
+function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers) {
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -29,25 +29,26 @@ function parseInputs (inputs, amplify, defaultValuesFilename, stringMapsFilename
       },
     };
 
-    if (inputs[i].type && ['list', 'multiselect'].includes(inputs[i].type)){
-      if (!inputs[i].requiredOptions || !currentAnswers[inputs[i].requiredOptions]){
+    if (inputs[i].type && ['list', 'multiselect'].includes(inputs[i].type)) {
+      if (!inputs[i].requiredOptions || !currentAnswers[inputs[i].requiredOptions]) {
         question = Object.assign({
-          choices: inputs[i].map ? getAllMaps()[inputs[i].map]: inputs[i].options,
+          choices: inputs[i].map ? getAllMaps()[inputs[i].map] : inputs[i].options,
         }, question);
       } else {
-        let requiredOptions = getAllMaps()[inputs[i].map].filter((x) => {
-          return  currentAnswers[inputs[i].requiredOptions].includes(x.value)
-        })
-        let trueOptions = getAllMaps()[inputs[i].map].filter((x) => {
-          return !currentAnswers[inputs[i].requiredOptions].includes(x.value)
-        })
+        const requiredOptions = getAllMaps()[inputs[i].map]
+          .filter(x => currentAnswers[inputs[i].requiredOptions]
+            .includes(x.value));
+        const trueOptions = getAllMaps()[inputs[i].map]
+          .filter(x => !currentAnswers[inputs[i].requiredOptions]
+            .includes(x.value));
 
         question = Object.assign(question, {
-          choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`) ,...trueOptions],
+          choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
           filter: ((input) => {
-            return input = input.concat(...requiredOptions.map(z => z.value))
-          })
-        })
+            input = input.concat(...requiredOptions.map(z => z.value));
+            return input;
+          }),
+        });
       }
     }
 
@@ -67,7 +68,7 @@ function parseInputs (inputs, amplify, defaultValuesFilename, stringMapsFilename
       question = Object.assign({
         type: 'input',
       }, question);
-    }  
+    }
 
     questions.push(question);
   }
@@ -75,4 +76,4 @@ function parseInputs (inputs, amplify, defaultValuesFilename, stringMapsFilename
   return questions;
 }
 
-  module.exports = {parseInputs}
+module.exports = { parseInputs };

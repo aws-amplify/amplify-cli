@@ -1,7 +1,7 @@
 const uuid = require('uuid');
-const [shortId] = uuid().split('-');
+const { authFlowMap, coreAttributes, appClientReadAttributes } = require('./string-maps');
 
-const {authFlowMap, coreAttributes, appClientReadAttributes} = require('./string-maps')
+const [shortId] = uuid().split('-');
 
 const general = () => ({
   resourceName: `cognito${shortId}`,
@@ -23,7 +23,7 @@ const userPoolDefaults = () => ({
     'Requires Lowercase',
     'Requires Uppercase',
     'Requires Numbers',
-    'Requires Symbols'
+    'Requires Symbols',
   ],
   requiredAttributes: [
     coreAttributes[2],
@@ -32,37 +32,32 @@ const userPoolDefaults = () => ({
   userpoolClientName: `<label>-app-client-${uuid()}`,
   userpoolClientAuthFlow: [authFlowMap[0]],
   userpoolClientGenerateSecret: true,
-  userpoolClientRefreshTokenValidity:30,
+  userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [
     appClientReadAttributes[2],
     appClientReadAttributes[10],
   ],
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
-  ...identityPoolDefaults()
+  ...identityPoolDefaults(),
 });
 
-
-
 const identityPoolDefaults = () => ({
-  
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
- 
 });
 
 const functionMap = {
-  'identityPoolOnly': identityPoolDefaults,
-  'identityPoolAndUserPool': userPoolDefaults
+  identityPoolOnly: identityPoolDefaults,
+  identityPoolAndUserPool: userPoolDefaults,
 };
 
 const getAllDefaults = () => {
-
   const target = general();
   const sources = [
     userPoolDefaults(),
-    identityPoolDefaults()
+    identityPoolDefaults(),
   ];
 
   return Object.assign(target, ...sources);
@@ -73,5 +68,5 @@ module.exports = {
   userPoolDefaults,
   identityPoolDefaults,
   getAllDefaults,
-  functionMap
+  functionMap,
 };
