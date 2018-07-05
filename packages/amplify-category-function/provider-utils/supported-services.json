@@ -1,0 +1,30 @@
+{
+	"Lambda": {
+		"inputs": [
+			{
+				"key": "resourceName",
+				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			},
+			{
+				"key": "functionName",
+				"question": "Please provide the Lambda function name:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9._-]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+				},
+				"required": true
+			}
+		],
+		"defaultValuesFilename": "lambda-defaults.js",
+		"serviceWalkthroughFilename": "lambda-walkthrough.js",
+		"cfnFilename": "lambda-cloudformation-template.json.ejs",
+		"provider": "amplify-provider-awscloudformation"
+	}
+}

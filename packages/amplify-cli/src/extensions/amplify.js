@@ -7,6 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
+const { buildResources } = require('./amplify-helpers/build-resources');
 const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
@@ -22,6 +23,8 @@ const { updateProjectConfig } = require('./amplify-helpers/update-project-config
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
+  updateamplifyMetaAfterBuild,
+   updateamplifyMetaAfterPackage,
   updateamplifyMetaAfterResourceAdd,
   updateamplifyMetaAfterResourceUpdate,
   updateamplifyMetaAfterResourceDelete,
@@ -30,6 +33,7 @@ const { executeProviderUtils } = require('./amplify-helpers/execute-provider-uti
 
 module.exports = (context) => {
   const amplify = {
+    buildResources,
     constants,
     copyBatch,
     executeProviderUtils,
@@ -52,6 +56,8 @@ module.exports = (context) => {
     updateamplifyMetaAfterResourceDelete,
     updateProvideramplifyMeta,
     updateamplifyMetaAfterPush,
+    updateamplifyMetaAfterBuild,
+    updateamplifyMetaAfterPackage
   };
 
   context.amplify = amplify;
