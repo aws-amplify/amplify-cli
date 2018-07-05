@@ -4,6 +4,17 @@ Resources:
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
       AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
+  
+  IdentityPoolRoleMap:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties: 
+      IdentityPoolId: !Ref 'IdentityPool'
+      Roles:
+        <%if (props.allowUnauthenticatedIdentities) { %>
+          unauthenticated: <%= props.unAuthRoleArn %>
+        <% } %>
+          authenticated: <%= props.authRoleArn %>
+    DependsOn: IdentityPool
 
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   SNSRole: 

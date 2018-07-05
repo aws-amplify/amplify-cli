@@ -39,10 +39,14 @@ async function serviceWalkthrough(
     appClientAnswers = await inquirer.prompt(appClientQuestions);
   }
 
+  const roles = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
+
+
 
   return {
     ...coreAnswers,
     ...appClientAnswers,
+    ...roles,
   };
 }
 

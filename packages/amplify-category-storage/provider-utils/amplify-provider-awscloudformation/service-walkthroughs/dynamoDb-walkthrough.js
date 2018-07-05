@@ -104,7 +104,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyAnswer[inputs[4].key]);
 
-
   if (primaryKeyAttrIndex > -1) {
     indexableAttributeList.splice(primaryKeyAttrIndex, 1);
   }

@@ -38,7 +38,7 @@ const userPoolDefaults = () => ({
     appClientReadAttributes[10],
   ],
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
-  allowUnauthenticatedIdentities: false,
+  allowUnauthenticatedIdentities: true,
   ...identityPoolDefaults(),
 });
 
