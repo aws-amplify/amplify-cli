@@ -64,4 +64,4 @@ typings/
 packages/*/lib
 packages/*/node_modules
 .vscode/settings.json
-*.out.json
+cf.out.json

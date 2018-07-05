@@ -3,9 +3,10 @@ import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
 import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
+import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
 import {
-    DynamoDBMappingTemplate, print, str, ref, obj, set, compoundExpression, qref
+    DynamoDBMappingTemplate, ObjectNode, Expression,  print, str,
+    ref, obj, set, compoundExpression, qref
 } from 'appsync-mapping-template'
 import { ResourceConstants, graphqlName, toUpper } from 'appsync-transformer-common'
 
@@ -299,27 +300,23 @@ export class ResourceFactory {
      */
     public makeListResolver(type: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName('list' + toUpper(type))
+        const defaultPageLimit = 10
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
             RequestMappingTemplate: print(
-                DynamoDBMappingTemplate.listItem({
-                    filter: obj({
-                        expression: str(`contains(#type) AND contains(#id)`),
-                        expressionNames: obj({
-                            "#type": str('__typename'),
-                            "#id": str('id'),
-                        }),
-                        expressionValues: obj({
-                            ":type": str('__typename'),
-                            ":id": str('id'),
-                        })
-                    }),
-                    limit: ref('util.dynamodb.toDynamoDBJson($ctx.args.limit)'),
-                    nextToken: ref('util.dynamodb.toDynamoDBJson($ctx.args.nextToken)')
-                })
+                compoundExpression([
+                    set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+                    set(ref('token'), ref('util.defaultIfNullOrBlank("$context.args.token", "null")')),
+                    DynamoDBMappingTemplate.listItem({
+                        filter: ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+                        limit: ref('limit'),
+                        nextToken: ref('token')
+                    })
+                ])
             ),
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')

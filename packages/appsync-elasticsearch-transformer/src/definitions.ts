@@ -7,8 +7,8 @@ import {
 } from 'appsync-transformer-common'
 
 const searchableStringQueryInputName = 'SearchableStringQueryInput';
-const searchableIntRangeInputName = 'SearchableIntRangeInput';
-const searchableFloatRangeInputName = 'SearchableFloatRangeInput'
+const searchableIntQueryInputName = 'searchableIntQueryInput';
+const searchableFloatQueryInputName = 'searchableFloatQueryInput'
 
 export function makeSearchableStringQueryInput(): ObjectTypeDefinitionNode {
     return {
@@ -37,12 +37,12 @@ export function makeSearchableStringQueryInput(): ObjectTypeDefinitionNode {
     }
 }
 
-export function makeSearchableIntRangeInput(): ObjectTypeDefinitionNode {
+export function makeSearchableIntQueryInput(): ObjectTypeDefinitionNode {
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
         name: {
             kind: 'Name',
-            value: searchableIntRangeInputName
+            value: searchableIntQueryInputName
         },
         fields: [
             makeField("gt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
@@ -55,12 +55,12 @@ export function makeSearchableIntRangeInput(): ObjectTypeDefinitionNode {
     }
 }
 
-export function makeSearchableFloatRangeInput(): ObjectTypeDefinitionNode {
+export function makeSearchableFloatQueryInput(): ObjectTypeDefinitionNode {
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
         name: {
             kind: 'Name',
-            value: searchableFloatRangeInputName
+            value: searchableFloatQueryInputName
         },
         fields: [
             makeField("gt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } }),
@@ -76,8 +76,8 @@ export function makeSearchableFloatRangeInput(): ObjectTypeDefinitionNode {
 export function makeStaticFields(): ReadonlyArray<ObjectTypeDefinitionNode> {
     return new Array(
         makeSearchableStringQueryInput(),
-        makeSearchableIntRangeInput(),
-        makeSearchableFloatRangeInput()
+        makeSearchableIntQueryInput(),
+        makeSearchableFloatQueryInput()
     );
 }
 
@@ -86,9 +86,9 @@ export function getSearchableNamedType(namedType: NamedTypeNode): NamedTypeNode 
         case 'String':
             return makeNamedType(searchableStringQueryInputName);
         case 'Int':
-        return makeNamedType(searchableIntRangeInputName);
+        return makeNamedType(searchableIntQueryInputName);
         case 'Float':
-        return makeNamedType(searchableFloatRangeInputName);
+        return makeNamedType(searchableFloatQueryInputName);
         case 'Boolean':
             return makeNamedType('Boolean') // TODO
         default:

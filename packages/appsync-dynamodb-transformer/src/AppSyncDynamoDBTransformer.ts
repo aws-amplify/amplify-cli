@@ -219,7 +219,6 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         }
 
         if (shouldMakeList) {
-
             // Create the TableXConnection
             const tableXConnectionName = `Table${def.name.value}Connection`
             const connectionType = blankObject(tableXConnectionName)
@@ -271,7 +270,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 [makeField(
                     listResolver.Properties.FieldName,
                     [
-                        makeArg('filterInput', makeNamedType(`Table${def.name.value}FilterInput`)),
+                        makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
                         makeArg('limit', makeNamedType('Int')),
                         makeArg('nextToken', makeNamedType('String'))
                     ],

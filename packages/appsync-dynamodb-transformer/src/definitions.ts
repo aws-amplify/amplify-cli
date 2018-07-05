@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode, Kind
 } from 'graphql'
-import { 
+import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
     isScalar, getBaseType
 } from 'appsync-transformer-common'
@@ -162,7 +162,7 @@ export function makeTableScalarFilterInputObject(type: string): InputObjectTypeD
 }
 
 function getScalarCondition(type: string): string[] {
-    switch(type) {
+    switch (type) {
         case 'String':
             return STRING_CONDITIONS
         case 'ID':
@@ -174,6 +174,6 @@ function getScalarCondition(type: string): string[] {
         case 'Boolean':
             return BOOLEAN_CONDITIONS
         default:
-            throw 'Valid types are String, ID, Int, Float, Boolean' 
+            throw 'Valid types are String, ID, Int, Float, Boolean'
     }
 }
