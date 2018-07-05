@@ -12,7 +12,7 @@ function run(context) {
       const awscfn = getConfiguredAwsCfnClient(ctxt);
       const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
       const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
-      const stackName = ctxt.initInfo.projectName + timeStamp;
+      const stackName = normalizeStackName(ctxt.initInfo.projectName + timeStamp);
       const deploymentBucketName = `${stackName}-deployment`;
       const authRoleName = `${stackName}-authRole`;
       const unauthRoleName = `${stackName}-unauthRole`;
@@ -101,6 +101,14 @@ function onInitSuccessful(context) {
     configurationManager.onInitSuccessful(context);
     resolve(context);
   });
+}
+
+function normalizeStackName(stackName) {
+  let result = stackName.replace(/[^-a-zA-Z0-9]/g, '');
+  if (/^[^a-zA-Z]/.test(result) || result.length === 0) {
+    result = `a${result}`;
+  }
+  return result;
 }
 
 module.exports = {

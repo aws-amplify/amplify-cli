@@ -16,7 +16,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   amplifyMeta[category][resourceName][attribute] = value;
   amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp;
 
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  const jsonString = JSON.stringify(amplifyMeta, null, 4);
   fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 

@@ -10,6 +10,7 @@ const { pushResources } = require('./amplify-helpers/push-resources');
 const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
+const { getCategoryOutputs } = require('./amplify-helpers/get-category-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
 const { sharedQuestions } = require( './amplify-helpers/shared-questions.js')
 const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
@@ -36,6 +37,7 @@ module.exports = (context) => {
     getProjectConfig,
     getProjectDetails,
     getResourceStatus,
+    getCategoryOutputs,
     getWhen,
     inputValidation,
     pathManager,
