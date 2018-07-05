@@ -1,0 +1,28 @@
+Type: "AWS::IAM::Policy"
+Properties: 
+  PolicyDocument:
+    Version: '2012-10-17'
+    Statement:
+      - Effect: Allow
+        Action:
+        - dynamodb:BatchGetItem
+        - dynamodb:DescribeTable
+        - dynamodb:GetItem
+        - dynamodb:ListTables
+        - dynamodb:Query
+        - dynamodb:Scan
+        Resource:
+          - !GetAtt DynamoDBTable.Arn
+          - <%=!GetAtt DynamoDBTable.Arn%>/index/MyIndex 
+      - Effect: Allow
+        Action:
+        - dynamodb:BatchWriteItem
+        - dynamodb:DeleteItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        Resource:
+          - !GetAtt DynamoDBTable.Arn
+          - <%=!GetAtt DynamoDBTable.Arn%>/index/MyIndex 
+  PolicyName: s3Policy
+  Roles:
+    - <%= props.testRole %>
