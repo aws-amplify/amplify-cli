@@ -2,6 +2,7 @@ const initializer = require('./lib/initializer');
 const resourcePusher = require('./lib/push-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
+const { setupNewUser } = require('./lib/setup-new-user');
 
 function init(context) {
   return initializer.run(context);
@@ -21,4 +22,5 @@ module.exports = {
   constants,
   pushResources,
   providerUtils,
+  setupNewUser, 
 };

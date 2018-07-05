@@ -238,7 +238,7 @@ function createProjectConfig(context) {
     const sharedConfigDirPath =
       path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
     fs.ensureDirSync(sharedConfigDirPath);
-    const configFileName = context.amplify.nameManager.makeid(10);
+    const configFileName = context.amplify.makeId(10);
     const awsConfigFilePath = path.join(sharedConfigDirPath, configFileName);
     const jsonString = JSON.stringify(awsConfig, null, 4);
     fs.writeFileSync(awsConfigFilePath, jsonString, 'utf8');
