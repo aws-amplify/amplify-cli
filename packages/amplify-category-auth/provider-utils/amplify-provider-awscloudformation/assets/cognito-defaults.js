@@ -1,5 +1,4 @@
 const uuid = require('uuid');
-
 const [shortId] = uuid().split('-');
 
 const {authFlowMap, coreAttributes, appClientReadAttributes} = require('./string-maps')
@@ -43,10 +42,14 @@ const userPoolDefaults = () => ({
   ...identityPoolDefaults()
 });
 
+
+
 const identityPoolDefaults = () => ({
+  
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
+ 
 });
 
 const functionMap = {
@@ -55,6 +58,7 @@ const functionMap = {
 };
 
 const getAllDefaults = () => {
+
   const target = general();
   const sources = [
     userPoolDefaults(),

@@ -1,5 +1,72 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources: 
+
+  AccessPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      Roles:
+        <%if (props.accessLevel !== 'Protected') { %>
+        - <%= props.unAuthRoleName %>
+        <% } %>
+        <%if (props.accessLevel === 'Protected') { %>
+        - <%= props.authRoleName %>
+        <% } %>
+      PolicyName: "DynamoAccessPolicy55"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+            <%if (props.accessLevel !== 'Private') { %>
+              - "dynamodb:BatchGetItem"
+              - "dynamodb:DescribeTable"
+              - "dynamodb:GetItem"
+              - "dynamodb:ListTables"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+            <% } %>            
+            <%if (props.accessLevel === 'Private') { %>
+              - "dynamodb:BatchWriteItem"
+              - "dynamodb:DeleteItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"   
+            <% } %> 
+            Resource:
+              - !GetAtt DynamoDBTable.Arn
+              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/MyIndex"  ]]
+            <%if (props.accessLevel === 'Private') { %>
+            Condition:
+              ForAllValues:StringEquals:
+                dynamodb:LeadingKeys:
+                  - ${cognito-identity.amazonaws.com:sub}
+            <% } %>
+          - Effect: Allow
+            Action:
+            <%if (props.accessLevel !== 'Private') { %>
+              - "dynamodb:BatchWriteItem"
+              - "dynamodb:DeleteItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+            <% } %>
+            <%if (props.accessLevel === 'Private') { %>      
+              - "dynamodb:BatchGetItem"
+              - "dynamodb:DescribeTable"
+              - "dynamodb:GetItem"
+              - "dynamodb:ListTables"
+              - "dynamodb:Query"
+            <% } %>
+            Resource:
+              - !GetAtt DynamoDBTable.Arn
+              - !Join [ "/", [ !GetAtt DynamoDBTable.Arn, "index/MyIndex"  ]]
+            
+            <%if (props.accessLevel === 'Protected') { %>
+            Condition:
+              ForAllValues:StringEquals:
+                dynamodb:LeadingKeys:
+                  - ${cognito-identity.amazonaws.com:sub}
+            <% } %>
+    DependsOn: "DynamoDBTable"       
+
   DynamoDBTable: 
     Type: "AWS::DynamoDB::Table"
     Properties: 

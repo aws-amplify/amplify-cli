@@ -17,6 +17,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     return i.set === "app-client";
   })
 
+
   const coreQuestions = parseInputs(coreQuestionInputs, amplify, defaultValuesFilename, stringMapsFilename)
   
   coreAnswers = await inquirer.prompt(coreQuestions);
@@ -25,6 +26,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     const appClientQuestions = parseInputs(appClientInputs, amplify, defaultValuesFilename, stringMapsFilename, coreAnswers)
     appClientAnswers = await inquirer.prompt(appClientQuestions);
   }
+
+
 
   return {
     ...coreAnswers,

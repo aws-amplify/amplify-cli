@@ -8,7 +8,8 @@ const sharedQuestions = {
       "choices": [
         "Public",
         "Private",
-        "Protected"
+        "Protected",
+        "None"
       ]
     }
   }

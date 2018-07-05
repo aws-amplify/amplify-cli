@@ -1,4 +1,5 @@
 const fs = require('fs');
+const uuid = require('uuid');
 
 let serviceMetadata;
 
@@ -35,6 +36,9 @@ function addResource(context, category, service, options) {
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
       answers = result;
+      answers.unAuthRoleName = context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleName;
+      answers.authRoleName = context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleName,
+      answers.policyName = answers.tableName + uuid()
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
