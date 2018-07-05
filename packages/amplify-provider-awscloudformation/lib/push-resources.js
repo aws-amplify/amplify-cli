@@ -68,16 +68,17 @@ function packageResources(context, resources) {
   resources = resources.filter(resource => resource.build);
 
   const packageResource = (context, resource) => {
-    let zipFilename;
+    let s3Key;
     return buildResource(context, resource)
       .then((result) => {
         ({ zipFilename } = result);
         // Upload zip file to S3
+        s3Key = 'ampify-builds/' + result.zipFilename;
         return new S3(context)
           .then((s3) => {
             const s3Params = {
               Body: fs.createReadStream(result.zipFilePath),
-              Key: result.zipFilename,
+              Key: s3Key,
             };
             return s3.uploadFile(s3Params);
           });
@@ -105,7 +106,7 @@ function packageResources(context, resources) {
 
         cfnMeta.Resources.LambdaFunction.Properties.Code = {
           S3Bucket: s3Bucket,
-          S3Key: zipFilename,
+          S3Key: s3Key,
         };
 
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
@@ -168,17 +169,18 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
 
 function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta) {
   const filePath = path.normalize(path.join(resourceDir, cfnFile));
+  let s3Key;
 
   return new S3(context)
     .then((s3) => {
       const s3Params = {
         Body: fs.createReadStream(filePath),
-        Key: cfnFile,
+        Key: 'amplify-cfn-templates/' + cfnFile,
       };
       return s3.uploadFile(s3Params);
     })
     .then((projectBucket) => {
-      const templateURL = `https://s3.amazonaws.com/${projectBucket}/${cfnFile}`;
+      const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
       const providerMetadata = amplifyMeta[category][resourceName].providerMetadata || {};
       providerMetadata.s3TemplateURL = templateURL;
       providerMetadata.logicalId = category + resourceName;
