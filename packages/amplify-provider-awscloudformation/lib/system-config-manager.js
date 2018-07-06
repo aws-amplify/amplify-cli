@@ -44,7 +44,8 @@ function setProfile(awsConfig, profileName){
         }
     });
     if(!isConfigSet){
-        config['profile ' + profileName] = {
+        const keyName = (profileName === 'default')? 'default': 'profile ' + profileName;
+        config[keyName] = {
             'region': awsConfig.region, 
         };
     }
