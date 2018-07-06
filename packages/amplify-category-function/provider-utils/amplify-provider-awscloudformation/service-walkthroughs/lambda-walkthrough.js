@@ -6,37 +6,29 @@ function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
-  const questions = [];
-  for (let i = 0; i < inputs.length; i += 1) {
-    let question = {
-      name: inputs[i].key,
-      message: inputs[i].question,
-      validate: amplify.inputValidation(inputs[i]),
+  // Ask resource and Lambda function name
+
+  const resourceQuestions = [
+    {
+      type: inputs[0].type,
+      name: inputs[0].key,
+      message: inputs[0].question,
+      validate: amplify.inputValidation(inputs[0]),
       default: () => {
-        const defaultValue = getAllDefaults(amplify.getProjectDetails())[inputs[i].key];
+        const defaultValue = getAllDefaults(amplify.getProjectDetails())[inputs[0].key];
         return defaultValue;
       },
-    };
-
-    if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign({
-        type: 'list',
-        choices: inputs[i].options,
-      }, question);
-    } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign({
-        type: 'checkbox',
-        choices: inputs[i].options,
-      }, question);
-    } else {
-      question = Object.assign({
-        type: 'input',
-      }, question);
+    },
+    {
+      type: inputs[1].type,
+      name: inputs[1].key,
+      message: inputs[1].question,
+      validate: amplify.inputValidation(inputs[1]),
+      default: answers => answers.resourceName,
     }
-    questions.push(question);
-  }
+  ];
 
-  return inquirer.prompt(questions)
+  return inquirer.prompt(resourceQuestions)
     .then((answers) => {
       const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
       Object.assign(allDefaultValues, answers);
