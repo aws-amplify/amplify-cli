@@ -1,11 +1,20 @@
 const inquirer = require('inquirer');
 
 function run(context) {
+  const frontEndPluginMap = Object.keys(context.initInfo.frontendPlugins).map((plugin) => {
+    const pluginSplit = plugin.split('-');
+    const frameWork = pluginSplit[2];
+    return {
+      name: frameWork,
+      value: plugin,
+    };
+  });
+
   const selectFrontendHandler = {
     type: 'list',
     name: 'selectedFrontendHandler',
-    message: 'Please select the proper frontend handler',
-    choices: Object.keys(context.initInfo.frontendPlugins),
+    message: "Please choose the type of app that you're building",
+    choices: frontEndPluginMap,
     default: context.initInfo.suitableHandler,
   };
   return inquirer.prompt(selectFrontendHandler)

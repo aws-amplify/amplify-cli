@@ -23,13 +23,8 @@ module.exports = {
           context.print.error('Provider not confgiured for this category');
           return;
         }
-        return providerController.addResource(context, category, result.service);
+        return providerController.addResource(context, category, result.service, options);
       })
-      .then(resourceName => amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        resourceName,
-        options,
-      ))
       .then(() => context.print.success('Successfully added resource'))
       .catch((err) => {
         context.print.info(err.stack);

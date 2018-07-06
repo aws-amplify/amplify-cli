@@ -53,7 +53,7 @@ function run(context) {
             spinner.fail('Root stack creation failed');
             return reject(waitErr);
           }
-          spinner.succeed('Successfully initialized project in the cloud.');
+          spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
           processStackCreationData(ctxt, waitData);
           resolve(ctxt);
         });

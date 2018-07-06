@@ -91,6 +91,25 @@ Resources:
         - !Ref ServiceRole
     <% } %>
 
+  <%if (props.dataSources && props.dataSources.lambda) { %>
+  ServicePolicyLambda:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.servicePolicyName %>
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'lambda:invokeFunction'
+            Resource:
+              <% for(var i=0; i < props.dataSources.lambda.length; i++) { %>
+              - !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Arn
+              <% } %>
+      Roles:
+        - !Ref ServiceRole
+  <% } %>
+
   <%if (props.dataSources && props.dataSources.dynamoDb) { %>
   <% for(var i=0; i < props.dataSources.dynamoDb.length; i++) { %>
   <%= props.dataSources.dynamoDb[i].resourceName %>DataSource:
@@ -103,6 +122,20 @@ Resources:
       DynamoDBConfig:
         AwsRegion: <%= props.region %>
         TableName: !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Name
+  <% } %>
+  <% } %>
+
+  <%if (props.dataSources && props.dataSources.lambda) { %>
+  <% for(var i=0; i < props.dataSources.lambda.length; i++) { %>
+  <%= props.dataSources.lambda[i].resourceName %>DataSource:
+    Type: "AWS::AppSync::DataSource"
+    Properties:
+      ApiId: !GetAtt GraphQLApi.ApiId
+      Name: !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Name
+      ServiceRoleArn:  !GetAtt ServiceRole.Arn
+      Type: AWS_LAMBDA
+      LambdaConfig:
+        LambdaFunctionArn: !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Arn
   <% } %>
   <% } %>
 
