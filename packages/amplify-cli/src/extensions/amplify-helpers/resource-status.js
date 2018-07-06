@@ -13,9 +13,10 @@ function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeS
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
   const dirStats = fs.statSync(resourceDir);
-  if (fs.existsSync(srcDir)){
+  if (fs.existsSync(srcDir)) {
     const srcDirStats = fs.statSync(srcDir);
-    lastModifiedDirTime = new Date(srcDirStats.atime) > new Date(dirStats.atime) ? srcDirStats.atime : dirStats.atime;
+    lastModifiedDirTime = new Date(srcDirStats.atime) > new Date(dirStats.atime) ?
+      srcDirStats.atime : dirStats.atime;
   } else {
     lastModifiedDirTime = dirStats.atime;
   }
@@ -32,7 +33,6 @@ function capitalize(str) {
 }
 
 function getAllResources(amplifyMeta, category, resourceName) {
-
   let resources = [];
 
   Object.keys((amplifyMeta)).forEach((categoryName) => {
@@ -56,8 +56,6 @@ function getAllResources(amplifyMeta, category, resourceName) {
   }
 
   return resources;
-
-
 }
 
 function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName) {
@@ -190,14 +188,16 @@ function getResourceStatus(category, resourceName) {
 
   resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.category !== 'provider');
 
-  return { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources };
+  return {
+    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
+  };
 }
 
 function showResourceTable(category, resourceName) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
-    resourcesToBeDeleted
+    resourcesToBeDeleted,
   } = getResourceStatus(category, resourceName);
   const createOperationLabel = 'Create';
   const updateOperationLabel = 'Update';

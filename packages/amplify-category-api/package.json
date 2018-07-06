@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "amplify-category-storage": "file:../amplify-category-storage",
+    "amplify-category-function": "file:../amplify-category-function",
     "eslint": "^4.9.0",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",

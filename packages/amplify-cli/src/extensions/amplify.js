@@ -57,7 +57,7 @@ module.exports = (context) => {
     updateProvideramplifyMeta,
     updateamplifyMetaAfterPush,
     updateamplifyMetaAfterBuild,
-    updateAmplifyMetaAfterPackage
+    updateAmplifyMetaAfterPackage,
   };
 
   context.amplify = amplify;
