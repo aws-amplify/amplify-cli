@@ -21,8 +21,10 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
   const options = [];
 
   for (let i = 0; i < supportedServices.length; i += 1) {
+    const providerSplit = supportedServices[i].providerName.split('-');
+    const providerName = providerSplit[2];
     options.push({
-      name: `${supportedServices[i].providerName}:${supportedServices[i].service}`,
+      name: `${providerName}:${supportedServices[i].service}`,
       value: {
         provider: supportedServices[i].providerPlugin,
         service: supportedServices[i].service,

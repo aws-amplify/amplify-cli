@@ -1,5 +1,5 @@
 {
-  "name": "amplify-frontend-xcode",
+  "name": "amplify-frontend-iOS",
   "version": "0.1.0",
   "description": "amplify-cli frontend plugin for xcode projects",
   "main": "index.js",

@@ -71,7 +71,6 @@ function packageResources(context, resources) {
     let s3Key;
     return buildResource(context, resource)
       .then((result) => {
-        ({ zipFilename } = result);
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
         return new S3(context)
@@ -169,7 +168,6 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
 
 function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta) {
   const filePath = path.normalize(path.join(resourceDir, cfnFile));
-  let s3Key;
 
   return new S3(context)
     .then((s3) => {

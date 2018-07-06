@@ -89,6 +89,7 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
 function updateamplifyMetaAfterPush(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+
   const currentTimestamp = new Date();
 
   for (let i = 0; i < resources.length; i += 1) {
@@ -96,6 +97,9 @@ function updateamplifyMetaAfterPush(resources) {
     amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
     /* eslint-enable */
   }
+
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   moveBackendResourcesToCurrentCloudBackend(resources);
 }
@@ -153,5 +157,5 @@ module.exports = {
   updateamplifyMetaAfterPush,
   updateamplifyMetaAfterBuild,
   updateProvideramplifyMeta,
-  updateAmplifyMetaAfterPackage
+  updateAmplifyMetaAfterPackage,
 };

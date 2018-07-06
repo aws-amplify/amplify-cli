@@ -1,6 +1,5 @@
 function inputValidation(question) {
-  const validator = (input, answers) => new Promise((resolve, reject) => {
-
+  const validator = input => new Promise((resolve, reject) => {
     if (!question.validation) {
       if (question.required) {
         return input ? resolve(true) : reject(new Error('A response is required for this field'));
