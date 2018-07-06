@@ -73,7 +73,7 @@ function packageResources(context, resources) {
       .then((result) => {
         ({ zipFilename } = result);
         // Upload zip file to S3
-        s3Key = `ampify-builds/${result.zipFilename}`;
+        s3Key = `amplify-builds/${result.zipFilename}`;
         return new S3(context)
           .then((s3) => {
             const s3Params = {
