@@ -167,20 +167,23 @@ function configProject(context) {
       type: 'input',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
-      default: projectConfigInfo.accessKeyId ? projectConfigInfo.accessKeyId : '<accessKeyId>',
+      default: projectConfigInfo.accessKeyId ? 
+      projectConfigInfo.accessKeyId : constants.DefaultAWSAccessKeyId,
     },
     {
       type: 'input',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
-      default: projectConfigInfo.secretAccessKey ? projectConfigInfo.secretAccessKey : '<secretAccessKey>',
+      default: projectConfigInfo.secretAccessKey ? 
+      projectConfigInfo.secretAccessKey : constants.DefaultAWSSecretAccessKey,
     },
     {
       type: 'list',
       name: 'region',
       message: 'region: ',
       choices: awsRegions.regions,
-      default: projectConfigInfo.region ? projectConfigInfo.region : 'us-east-1',
+      default: projectConfigInfo.region ? 
+      projectConfigInfo.region : constants.DefaultAWSRegion,
     },
   ];
 
@@ -213,9 +216,9 @@ function validateConfig(context) {
     }
   } else {
     projectConfigInfo.configValidated = projectConfigInfo.accessKeyId &&
-            projectConfigInfo.accessKeyId !== '<accessKeyId>' &&
+            projectConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId &&
             projectConfigInfo.secretAccessKey &&
-            projectConfigInfo.secretAccessKey !== '<secretAccessKey>' &&
+            projectConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
             projectConfigInfo.region && awsRegions.regions.includes(projectConfigInfo.region);
   }
   return context;
@@ -285,7 +288,8 @@ function updateProjectConfig(context) {
 }
 
 function removeProjectConfig(context) {
-  const configInfoFilePath = path.join(context.amplify.pathManager.getDotConfigDirPath(), 'aws-info.json');
+  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
     if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
@@ -298,7 +302,8 @@ function removeProjectConfig(context) {
 
 function loadProjectConfig(context, awsClient) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  const configInfoFilePath = path.join(context.amplify.pathManager.getDotConfigDirPath(), 'aws-info.json');
+  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
     if (configInfo.useProfile && configInfo.profileName) {
