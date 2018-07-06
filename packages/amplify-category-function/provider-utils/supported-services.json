@@ -20,6 +20,26 @@
 					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
+			},
+			{
+				"key": "handlerFilename",
+				"question": "Please provide the name of your script file which contains your handler function:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9._-]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+				},
+				"required": true
+			},
+			{
+				"key": "handlerName",
+				"question": "Please provide the name of the handler function to invoke:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9._-]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
+				},
+				"required": true
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",

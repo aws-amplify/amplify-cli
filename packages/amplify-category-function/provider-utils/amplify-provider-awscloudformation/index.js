@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const inquirer = require('inquirer');
 
 let serviceMetadata;
 
@@ -56,8 +57,34 @@ function addResource(context, category, service) {
     .then(() => answers.resourceName);
 }
 
-function invoke(context, category, resourceName) {
-  // Run grunt
+async function invoke(context, category, service, resourceName) {
+  const { amplify } = context;
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { inputs } = serviceMetadata;
+  const resourceQuestions = [
+    {
+      type: inputs[2].type,
+      name: inputs[2].key,
+      message: inputs[2].question,
+      validate: amplify.inputValidation(inputs[2]),
+      default: 'index.js',
+    },
+    {
+      type: inputs[3].type,
+      name: inputs[3].key,
+      message: inputs[3].question,
+      validate: amplify.inputValidation(inputs[3]),
+      default: 'handler',
+    },
+  ];
+
+  // Ask handler and function file name questions
+
+  const resourceAnswers = await inquirer.prompt(resourceQuestions);
+
+
+  // Run grunt for invoking lambda function
+
   const grunt = require('grunt');
   grunt.task.init = function () {};
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -67,7 +94,8 @@ function invoke(context, category, resourceName) {
     lambda_invoke: {
       default: {
         options: {
-          file_name: `${srcDir}/index.js`,
+          file_name: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
+          handler: `${resourceAnswers[inputs[3].key]}`,
           event: `${srcDir}/event.json`,
         },
       },

@@ -27,7 +27,7 @@ module.exports = {
           return;
         }
 
-        return providerController.invoke(context, category, resourceName);
+        return providerController.invoke(context, category, result.service, resourceName);
       })
       .catch((err) => {
         context.print.info(err.stack);
