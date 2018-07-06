@@ -170,6 +170,27 @@
 				"key": "dynamoDbResources",
 				"type": "list",
 				"question": "Choose from one of the already configured DynamoDB tables"
+			},
+			{
+
+				"key": "lambdaType",
+				"type": "list",
+				"question": "Choose a Lambda data source option",
+				"options": [{
+						"name": "Use a Lambda function configured in the current Amplify project",
+						"value": "currentProject"
+					},
+					{
+						"name": "Create a new Lambda function",
+						"value": "newResource"
+					}
+				]
+			},
+			{
+
+				"key": "lambdaResources",
+				"type": "list",
+				"question": "Choose from one of the already configured Lambda functions"
 			}
 		],
 		"defaultValuesFilename": "appSync-defaults.js",

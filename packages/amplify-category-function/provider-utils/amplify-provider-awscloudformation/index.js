@@ -43,7 +43,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-function addResource(context, category, service) {
+function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -52,6 +52,11 @@ function addResource(context, category, service) {
     .then((result) => {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);
+      context.amplify.updateamplifyMetaAfterResourceAdd(
+        category,
+        answers.resourceName,
+        options,
+      );
     })
     .then(() => answers.resourceName);
 }

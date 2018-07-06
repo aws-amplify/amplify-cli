@@ -243,6 +243,20 @@ async function askDataSourceQuestions(context, inputs) {
         });
       }
         break;
+      case 'Lambda': {
+        const resourceName = await askLambdaQuestions(context, inputs);
+        if (!dataSources.lambda) {
+          dataSources.lambda = [{ category: 'function', resourceName }];
+        } else {
+          dataSources.lambda.push({ category: 'function', resourceName });
+        }
+        dependsOn.push({
+          category: 'function',
+          resourceName,
+          attributes: ['Name', 'Arn'],
+        });
+      }
+        break;
       default: context.print.error('Feature not yet implemented');
     }
     continueDataSourcesQuestion = await context.prompt.confirm('Do you want to add another data source?');
@@ -303,5 +317,56 @@ async function askDynamoDBQuestions(context, inputs) {
   }
 }
 
+async function askLambdaQuestions(context, inputs) {
+  const lambdaTypeQuestion = {
+    type: inputs[16].type,
+    name: inputs[16].key,
+    message: inputs[16].question,
+    choices: inputs[16].options,
+  };
+  while (true) {
+    const lambdaTypeAnswer = await inquirer.prompt([lambdaTypeQuestion]);
+    switch (lambdaTypeAnswer[inputs[16].key]) {
+      case 'currentProject': {
+        const storageResources = context.amplify.getProjectDetails().amplifyMeta.function;
+        const lambdaProjectResources = [];
+        Object.keys(storageResources).forEach((resourceName) => {
+          if (storageResources[resourceName].service === 'Lambda') {
+            lambdaProjectResources.push(resourceName);
+          }
+        });
+        if (lambdaProjectResources.length === 0) {
+          context.print.error('There are no Lambda resources configured in your project currently');
+          break;
+        }
+        const lambdaResourceQuestion = {
+          type: inputs[17].type,
+          name: inputs[17].key,
+          message: inputs[17].question,
+          choices: lambdaProjectResources,
+        };
+
+        const lambdaResourceAnswer = await inquirer.prompt([lambdaResourceQuestion]);
+
+        return lambdaResourceAnswer[inputs[17].key];
+      }
+      case 'newResource': {
+        let add;
+        try {
+          ({ add } = require('amplify-category-function'));
+        } catch (e) {
+          context.print.error('Function plugin not installed in the CLI. Please install it to use this feature');
+          break;
+        }
+        return add(context, 'amplify-provider-awscloudformation', 'Lambda')
+          .then((resourceName) => {
+            context.print.success('Succesfully added Lambda table localy');
+            return resourceName;
+          });
+      }
+      default: context.print.error('Invalid option selected');
+    }
+  }
+}
 
 module.exports = { serviceWalkthrough };

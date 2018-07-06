@@ -25,7 +25,7 @@ function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
       default: answers => answers.resourceName,
-    }
+    },
   ];
 
   return inquirer.prompt(resourceQuestions)
