@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path'); 
 const initializer = require('./lib/initializer');
+const configManager = require('./lib/configuration-manager');
 const projectScanner = require('./lib/project-scanner'); 
 const constants = require('./lib/constants'); 
 
@@ -23,10 +24,15 @@ function onCategoryOutputsChange(data){
   fs.writeFileSync(filePath, jsonString, 'utf8');
 }
 
+function configure(context){
+  return configManager.configure(context);
+}
+
 module.exports = {
   constants,
   scanProject,
   init,
   onInitSuccessful, 
+  configure,
   onCategoryOutputsChange
 };

@@ -7,11 +7,11 @@ const constants = require('./constants');
 function init(context){
     context.print.info('Please tell us about your project'); 
     context[constants.Label] = {
-        framework: guessFramework(context.initInfo.projectPath)
+        framework: guessFramework(context.exeInfo.projectConfig.projectPath)
     };
     return promptForConfiguration(context)
     .then(()=>{
-        context.initInfo.projectConfig[constants.Label] = context[constants.Label]; 
+        context.exeInfo.projectConfig[constants.Label] = context[constants.Label]; 
         return context; 
     }); 
 }

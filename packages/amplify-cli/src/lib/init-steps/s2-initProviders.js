@@ -24,13 +24,13 @@ function run(context) {
 
   return providerQuestion
     .then((answers) => {
-      context.initInfo.projectConfig.providers = {};
+      context.exeInfo.projectConfig.providers = {};
       answers.selectedProviders.forEach((providerKey) => {
-        context.initInfo.projectConfig.providers[providerKey] =
+        context.exeInfo.projectConfig.providers[providerKey] =
                     providerPlugins[providerKey];
       });
     }).then(() => {
-      const { providers } = context.initInfo.projectConfig;
+      const { providers } = context.exeInfo.projectConfig;
       const initializationTasks = [];
       Object.keys(providers).forEach((providerKey) => {
         const provider = require(providers[providerKey]);

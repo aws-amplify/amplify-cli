@@ -3,7 +3,7 @@ const sequential = require('promise-sequential');
 const { print } = require('gluegun/print');
 
 function run(context) {
-  const { projectPath } = context.initInfo;
+  const { projectPath } = context.exeInfo;
   const { amplify } = context;
 
   const amplifyDirPath = amplify.pathManager.getAmplifyDirPath(projectPath);
@@ -16,22 +16,22 @@ function run(context) {
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
   const providerOnSuccessTasks = [];
-  const { providers } = context.initInfo.projectConfig;
+  const { providers } = context.exeInfo.projectConfig;
   Object.keys(providers).forEach((providerKey) => {
     const provider = require(providers[providerKey]);
     providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
   });
 
   return sequential(providerOnSuccessTasks).then(() => {
-    const handlerName = Object.keys(context.initInfo.projectConfig.frontendHandler)[0];
-    const frontendHandler = require(context.initInfo.projectConfig.frontendHandler[handlerName]);
+    const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
+    const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
     return frontendHandler.onInitSuccessful(context);
   }).then(() => {
-    let jsonString = JSON.stringify(context.initInfo.projectConfig, null, 4);
+    let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
     const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
     fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
 
-    jsonString = JSON.stringify(context.initInfo.metaData, null, 4);
+    jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
     const currentBackendMetaFilePath =
               amplify.pathManager.getCurentBackendCloudamplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
@@ -39,7 +39,7 @@ function run(context) {
     fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
 
 
-    jsonString = JSON.stringify(context.initInfo.rcData, null, 4);
+    jsonString = JSON.stringify(context.exeInfo.rcData, null, 4);
     const amplifyRcFilePath = amplify.pathManager.getAmplifyRcFilePath(projectPath);
     fs.writeFileSync(amplifyRcFilePath, jsonString, 'utf8');
 
