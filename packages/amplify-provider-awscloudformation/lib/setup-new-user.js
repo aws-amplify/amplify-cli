@@ -7,7 +7,7 @@ const awsRegions = require('./aws-regions.js').regions;
 const constants = require('./constants.js');
 const systemConfigManager = require('./system-config-manager'); 
 
-function setupNewUser(context){
+function run(context){
     let awsConfig = {
         accessKeyId: constants.DefaultAWSAccessKeyId, 
         secretAccessKey: constants.DefaultAWSSecretAccessKey,
@@ -76,9 +76,11 @@ function setupNewUser(context){
             systemConfigManager.setProfile(awsConfig, 'default'); 
             context.print.info('')
             context.print.info('Successfully set the aws configurations for the amplify-cli')
+            return context; 
         }else{
             context.print.info('')
             context.print.info('You did NOT enter valid keys.')
+            throw new Error('New user setup failed.')
         }
     })
 }
@@ -90,6 +92,6 @@ function validateAWSConfig(awsConfig){
 
 
 module.exports = {
-    setupNewUser
+    run
 }
   

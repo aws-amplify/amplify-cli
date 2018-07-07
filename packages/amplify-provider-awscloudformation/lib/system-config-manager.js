@@ -90,9 +90,42 @@ function getProfile(profileName){
     return awsConfig;
 }
 
+function getFullConfig(){
+    let awsConfigs; 
+    if(fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)){
+        const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8')); 
+        const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8')); 
+
+        awsConfigs = {}; 
+        
+        Object.keys(credentials).forEach(key=>{
+            const profileName = key.trim(); 
+            awsConfigs[profileName] = {
+                accessKeyId: credentials[key]['aws_access_key_id'];
+                secretAccessKey: credentials[key]['aws_secret_access_key'];
+            }
+        })
+    
+        Object.keys(config).forEach(key=>{
+            const profileName = key.replace('profile', '').trim(); 
+            if(awsConfigs[profileName]){
+                awsConfigs[profileName].region = config[key]['region'];
+            }
+        })
+
+        Object.keys(awsConfigs).forEach(key=>{
+            if(!awsConfigs[key].region){
+                delete awsConfigs[key];
+            }
+        })
+    }
+    return awsConfigs;
+}
+
 
 module.exports = {
     setProfile,
     getProfile,
+    getFullConfig,
 }
   

@@ -3,6 +3,8 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const awsRegions = require('./aws-regions');
 const constants = require('./constants');
+const configScanner = require('./configuration-scanner');
+const setupNewUser = require('./setup-new-user');
 
 function init(context) {
   context.projectConfigInfo = {};
@@ -300,8 +302,18 @@ function removeProjectConfig(context) {
   return context;
 }
 
-function loadProjectConfig(context, awsClient) {
+async function loadConfiguration(context, awsClient) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
+  const configSource = configScanner.run(context)
+  if(configSource === 'none'){
+    await setupNewUser.run(context)
+  }else if(configSource === 'project'){
+    logProjectSpecificConfg(context, awsClient);
+  }
+  return awsClient; 
+}
+
+function logProjectSpecificConfg(context, awsClient){
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
@@ -318,5 +330,5 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
-  loadProjectConfig,
+  loadConfiguration,
 };
