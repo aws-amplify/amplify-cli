@@ -92,8 +92,8 @@ The current set of commands supported by the amplify CLI are
 | Command              | Description |
 | --- | --- |
 | amplify init | Initializes a new project, sets up deployment resources in the cloud and makes your project Amplify ready|
-| amplify configure [aws] | Configures the aws access credentials and aws region for amplify-cli |
-| amplify configure project | Configures the attributes of your project for amplify-cli |
+| amplify awscloudformation configure | Configures the aws access credentials and aws region for amplify-cli |
+| amplify configure project | Configures the attributes of your project for amplify-cli  like switching frontend framework and adding/removing cloud-provider plugins |
 | amplify push | Provisions cloud resources with the latest local developments |
 | amplify publish | Executes awsmobile push, then builds and publishes client-side application to S3 and Cloud Front |
 | amplify serve | Executes awsmobile push, then executes the project's start command to test run the client-side application |
@@ -101,14 +101,13 @@ The current set of commands supported by the amplify CLI are
 | amplify delete | Deletes all the resources tied to the project from the cloud |
 | amplify help [cmd] | Displays help for [cmd] |
 
-
-Supported Categories:
-1. auth (Cognito)
-2. storage (S3 & DynamoDB)
-3. function (CloudLogic)
-4. api (AppSync & API Gateway)
-5. analytics (Pinpoint)
-6. hosting (S3 and CloudFront Distribution)
+Category specific commands
+1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
+2. [storage (S3 & DynamoDB)](packages/amplify-category-storage/Readme.md)
+3. [function (Lambda)](packages/amplify-category-function/Readme.md)
+4. [api (AppSync & API Gateway)](packages/amplify-category-api/Readme.md)
+5. [analytics (Pinpoint)](packages/amplify-category-analytics/Readme.md)
+6. [hosting (S3 and CloudFront Distribution)](packages/amplify-category-hosting/Readme.md)
 
 ## amplify configure
 
