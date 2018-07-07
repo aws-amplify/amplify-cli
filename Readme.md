@@ -95,8 +95,8 @@ The current set of commands supported by the amplify CLI are
 | amplify awscloudformation configure | Configures the aws access credentials and aws region for amplify-cli |
 | amplify configure project | Configures the attributes of your project for amplify-cli  like switching frontend framework and adding/removing cloud-provider plugins |
 | amplify push | Provisions cloud resources with the latest local developments |
-| amplify publish | Executes awsmobile push, then builds and publishes client-side application to S3 and Cloud Front |
-| amplify serve | Executes awsmobile push, then executes the project's start command to test run the client-side application |
+| amplify publish | Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front |
+| amplify serve | Executes amplify push, then executes the project's start command to test run the client-side application |
 | amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
 | amplify delete | Deletes all the resources tied to the project from the cloud |
 | amplify help [cmd] | Displays help for [cmd] |
