@@ -6,11 +6,12 @@ const constants = require('./constants');
 const configScanner = require('./configuration-scanner');
 const setupNewUser = require('./setup-new-user');
 
-function init(context) {
+async function init(context) {
   context.projectConfigInfo = {};
+  await newUserCheck(context);
   printInfo(context);
-  return comfirmProjectConfigSetup(context, true)
-    .then(carryOutConfigAction);
+  await comfirmProjectConfigSetup(context, true)
+  return carryOutConfigAction(context);
 }
 
 function configure(context) {
@@ -94,7 +95,8 @@ function remove(context) {
 
 function printInfo(context) {
   context.print.info('');
-  context.print.info('General configuration of the aws-cloudformation provider follow that of the aws-cli.');
+  context.print.info('Amplify-provider-awscloudformation uses two levels of configurations.');
+  context.print.info('General configuration is used by default for all projects.');
   context.print.info('You can also configure the provider specifically for this project.');
   context.print.info('Project specific configuration overrides the general configuration.');
   context.print.info('');
@@ -304,13 +306,25 @@ function removeProjectConfig(context) {
 
 async function loadConfiguration(context, awsClient) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
+  await newUserCheck(context);
+  return logProjectSpecificConfg(context, awsClient);
+}
+
+async function newUserCheck(context) {
   const configSource = configScanner.run(context)
   if(configSource === 'none'){
-    await setupNewUser.run(context)
-  }else if(configSource === 'project'){
-    logProjectSpecificConfg(context, awsClient);
+    context.print.info('AWS access credentials can not be resolved.')
+    const answer = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'setupNewUser',
+      message: 'Setup new user',
+      default: true,
+    }]); 
+    if(answer.setupNewUser){
+      await setupNewUser.run(context)
+    }
   }
-  return awsClient; 
+  return context; 
 }
 
 function logProjectSpecificConfg(context, awsClient){
@@ -324,6 +338,7 @@ function logProjectSpecificConfg(context, awsClient){
       awsClient.config.loadFromPath(configInfo.awsConfigFilePath);
     }
   }
+  return awsClient;
 }
 
 module.exports = {

@@ -101,8 +101,8 @@ function getFullConfig(){
         Object.keys(credentials).forEach(key=>{
             const profileName = key.trim(); 
             awsConfigs[profileName] = {
-                accessKeyId: credentials[key]['aws_access_key_id'];
-                secretAccessKey: credentials[key]['aws_secret_access_key'];
+                accessKeyId: credentials[key]['aws_access_key_id'],
+                secretAccessKey: credentials[key]['aws_secret_access_key']
             }
         })
     

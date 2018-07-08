@@ -73,9 +73,34 @@ function run(context){
         return awsConfig
     }).then(function(awsConfig){
         if(validateAWSConfig(awsConfig)){
-            systemConfigManager.setProfile(awsConfig, 'default'); 
+            let profileName = 'default';
+            
+            let answer = await inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'assignProfileName',
+                    message: "Assign a profile name for this user: ",
+                    default: false
+                }
+            ]); 
+
+            if(answer.assignProfileName){
+                answer = await inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'profileName',
+                        message: "Profile Name: ",
+                        default: 'default'
+                    }
+                ]); 
+                if(answer && answer.profileName){
+                    profileName = answer.profileName;
+                }
+            }
+
+            systemConfigManager.setProfile(awsConfig, profileName); 
             context.print.info('')
-            context.print.info('Successfully set the aws configurations for the amplify-cli')
+            context.print.info('Successfully setup the new user.')
             return context; 
         }else{
             context.print.info('')
