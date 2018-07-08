@@ -71,7 +71,7 @@ function run(context){
             awsConfig.secretAccessKey = answers.secretAccessKey.trim();
         }
         return awsConfig
-    }).then(function(awsConfig){
+    }).then(async function(awsConfig){
         if(validateAWSConfig(awsConfig)){
             let profileName = 'default';
             

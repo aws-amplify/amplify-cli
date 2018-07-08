@@ -40,7 +40,7 @@ function run(context) {
       return context;
     })
     .then((ctxt) => {
-      const handler = Object.values(context.exeInfo.projectConfig.frontendHandler)[0];
+      const handler = require(Object.values(context.exeInfo.projectConfig.frontendHandler)[0]);
       return handler.init(ctxt);
     });
 }

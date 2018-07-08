@@ -3,7 +3,7 @@ const sequential = require('promise-sequential');
 const { print } = require('gluegun/print');
 
 function run(context) {
-  const { projectPath } = context.exeInfo;
+  const { projectPath } = context.exeInfo.projectConfig;
   const { amplify } = context;
 
   const amplifyDirPath = amplify.pathManager.getAmplifyDirPath(projectPath);

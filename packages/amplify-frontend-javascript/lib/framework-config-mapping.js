@@ -37,20 +37,6 @@ const vueConfig = {
 	"StartCommand": npm + " run-script serve",
 }
 
-const androidConfig = {
-	"SourceDir": "app/src",
-	"DistributionDir": "app/build",
-	"BuildCommand": "./gradlew build",
-	"StartCommand": "",
-}
-
-const xcodeConfig = {
-	"SourceDir": "src",
-	"DistributionDir": "/",
-	"BuildCommand": "",
-	"StartCommand": "",
-}
-
 const defaultConfig = {
 	"SourceDir": "src",
 	"DistributionDir": "dist",
@@ -64,7 +50,5 @@ module.exports = {
 	'angular': angularConfig,
     'ionic': ionicConfig,
 	'vue': vueConfig, 
-	'android': androidConfig,
-	'xcode': xcodeConfig,
 	'none': defaultConfig
 }

@@ -1,3 +1,5 @@
+const path = require('path');
+
 function run(context) {
   return new Promise((resolve) => {
     const projectPath = process.cwd();

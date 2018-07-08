@@ -106,13 +106,13 @@ function comfirmProjectConfigSetup(context, isInit) {
   const configProjectComfirmation = {
     type: 'confirm',
     name: 'setProjectConfig',
-    message: 'Do you want to use the default AWS credentials set on your system or environment variables?',
+    message: 'Do you want to setup project specific configuration',
     default: false,
   };
   return inquirer.prompt(configProjectComfirmation)
     .then((answers) => {
       const initOrCreate = isInit ? 'init' : 'create';
-      context.projectConfigInfo.action = answers.setProjectConfig ? 'cancel' : initOrCreate;
+      context.projectConfigInfo.action = answers.setProjectConfig ? initOrCreate : 'cancel';
       return context;
     });
 }
