@@ -30,7 +30,7 @@
     "amplify-category-storage": "file:../amplify-category-storage",
     "amplify-frontend-android": "file:../amplify-frontend-android",
     "amplify-frontend-javascript": "file:../amplify-frontend-javascript",
-    "amplify-frontend-iOS": "file:../amplify-frontend-iOS",
+    "amplify-frontend-ios": "file:../amplify-frontend-ios",
     "amplify-provider-awscloudformation": "file:../amplify-provider-awscloudformation",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",
