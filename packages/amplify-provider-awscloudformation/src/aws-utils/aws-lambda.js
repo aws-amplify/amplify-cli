@@ -1,14 +1,14 @@
 const aws = require('./aws.js');
 
-class Cognito {
+class Lambda {
   constructor(context) {
     return aws.configureWithCreds(context)
       .then((awsItem) => {
         this.context = context;
-        this.cognito = new awsItem.CognitoIdentityServiceProvider();
+        this.lambda = new awsItem.Lambda();
         return this;
       });
   }
 }
 
-module.exports = Cognito;
+module.exports = Lambda;

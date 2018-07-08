@@ -1,5 +1,5 @@
 ---
-<%if (props.dependsOn) { %>
+<%if (props.dependsOn.length > 0) { %>
 Parameters:
 <% for(var i=0; i < props.dependsOn.length; i++) { %>
 <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
@@ -85,7 +85,11 @@ Resources:
               - 'dynamodb:UpdateItem'
             Resource:
               <% for(var i=0; i < props.dataSources.dynamoDb.length; i++) { %>
+              <%if (props.dataSources.dynamoDb[i].Arn) { %>
+              - <%= props.dataSources.dynamoDb[i].Arn %>
+              <% } else{ %>
               - !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Arn
+              <% } %>
               <% } %>
       Roles:
         - !Ref ServiceRole
@@ -104,7 +108,11 @@ Resources:
               - 'lambda:invokeFunction'
             Resource:
               <% for(var i=0; i < props.dataSources.lambda.length; i++) { %>
+              <%if (props.dataSources.lambda[i].Arn) { %>
+              - <%= props.dataSources.lambda[i].Arn %>
+              <% } else{ %>
               - !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Arn
+              <% } %>
               <% } %>
       Roles:
         - !Ref ServiceRole
@@ -116,12 +124,21 @@ Resources:
     Type: "AWS::AppSync::DataSource"
     Properties:
       ApiId: !GetAtt GraphQLApi.ApiId
+      <%if (props.dataSources.dynamoDb[i].Arn) { %>
+      Name: <%= props.dataSources.dynamoDb[i].resourceName %>
+      <% } else { %>
       Name: !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Name
+      <% } %>
       ServiceRoleArn:  !GetAtt ServiceRole.Arn
       Type: AMAZON_DYNAMODB
       DynamoDBConfig:
+        <%if (props.dataSources.dynamoDb[i].Arn) { %>
+        AwsRegion: <%= props.dataSources.dynamoDb[i].region %>
+        TableName: <%= props.dataSources.dynamoDb[i].TableName %>
+        <% } else { %>
         AwsRegion: <%= props.region %>
         TableName: !Ref <%= props.dataSources.dynamoDb[i].category %><%= props.dataSources.dynamoDb[i].resourceName %>Name
+        <% } %>
   <% } %>
   <% } %>
 
@@ -131,11 +148,19 @@ Resources:
     Type: "AWS::AppSync::DataSource"
     Properties:
       ApiId: !GetAtt GraphQLApi.ApiId
+      <%if (props.dataSources.lambda[i].Arn) { %>
+      Name: <%= props.dataSources.lambda[i].resourceName %>
+      <% } else { %>
       Name: !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Name
+      <% } %>
       ServiceRoleArn:  !GetAtt ServiceRole.Arn
       Type: AWS_LAMBDA
       LambdaConfig:
+       <%if (props.dataSources.lambda[i].Arn) { %>
+        LambdaFunctionArn: <%= props.dataSources.lambda[i].Arn %>
+        <% } else { %>
         LambdaFunctionArn: !Ref <%= props.dataSources.lambda[i].category %><%= props.dataSources.lambda[i].resourceName %>Arn
+        <% } %>
   <% } %>
   <% } %>
 
