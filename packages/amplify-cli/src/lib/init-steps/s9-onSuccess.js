@@ -50,7 +50,7 @@ function run(context) {
 
 function printWelcomeMessage() {
   print.info('');
-  print.info('Your project has been successfully initialized.');
+  print.success('Your project has been successfully initialized.');
   print.info('');
 }
 

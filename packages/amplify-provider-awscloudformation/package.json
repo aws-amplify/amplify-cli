@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
     "cfn-lint": "^1.7.2",
     "columnify": "^1.5.4",

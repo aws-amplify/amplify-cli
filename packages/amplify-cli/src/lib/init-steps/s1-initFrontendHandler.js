@@ -5,6 +5,7 @@ function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
   let suitableHandler;
   let fitToHandleScore = -1;
+
   Object.keys(frontendPlugins).forEach((key) => {
     const { scanProject } = require(frontendPlugins[key]);
     const newScore = scanProject(context.exeInfo.projectConfig.projectPath);
@@ -14,11 +15,20 @@ function run(context) {
     }
   });
 
+  const frontEndPluginMap = Object.keys(frontendPlugins).map((plugin) => {
+    const pluginSplit = plugin.split('-');
+    const frameWork = pluginSplit[2];
+    return {
+      name: frameWork,
+      value: plugin,
+    };
+  });
+
   const selectFrontendHandler = {
     type: 'list',
     name: 'selectedFrontendHandler',
-    message: 'Please select the proper frontend handler',
-    choices: frontendPlugins,
+    message: "Please choose the type of app that you're building",
+    choices: frontEndPluginMap,
     default: suitableHandler,
   };
 

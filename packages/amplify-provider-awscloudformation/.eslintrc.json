@@ -2,6 +2,7 @@
     "extends": "airbnb-base",
     "rules": {
     	"no-param-reassign": "off",
+        "no-shadow": "off",
     	"no-return-await" : "off",
     	"no-continue": "off",
     	"no-await-in-loop": "off",

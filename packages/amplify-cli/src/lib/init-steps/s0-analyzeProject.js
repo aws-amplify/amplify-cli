@@ -16,8 +16,6 @@ function run(context) {
     context.exeInfo.rcData = {
     };
 
-    scanWithFrontendHandlers(context);
-
     resolve(context);
   });
 }

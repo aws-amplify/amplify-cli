@@ -8,10 +8,18 @@ function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeS
   if (!lastPushTimeStamp) {
     return false;
   }
+  let lastModifiedDirTime;
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+  const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
   const dirStats = fs.statSync(resourceDir);
-  const lastModifiedDirTime = dirStats.atime;
+  if (fs.existsSync(srcDir)) {
+    const srcDirStats = fs.statSync(srcDir);
+    lastModifiedDirTime = new Date(srcDirStats.atime) > new Date(dirStats.atime) ?
+      srcDirStats.atime : dirStats.atime;
+  } else {
+    lastModifiedDirTime = dirStats.atime;
+  }
 
   if (new Date(lastModifiedDirTime) > new Date(lastPushTimeStamp)) {
     return true;
@@ -22,6 +30,32 @@ function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeS
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function getAllResources(amplifyMeta, category, resourceName) {
+  let resources = [];
+
+  Object.keys((amplifyMeta)).forEach((categoryName) => {
+    const categoryItem = amplifyMeta[categoryName];
+    Object.keys((categoryItem)).forEach((resource) => {
+      amplifyMeta[categoryName][resource].resourceName = resource;
+      amplifyMeta[categoryName][resource].category = categoryName;
+      resources.push(amplifyMeta[categoryName][resource]);
+    });
+  });
+
+  if (category !== undefined && resourceName !== undefined) {
+    // Create only specified resource in the cloud
+    resources = resources.filter(resource => resource.category === category &&
+        resource.resourceName === resourceName);
+  }
+
+  if (category !== undefined && !resourceName) {
+    // Create all the resources for the specified category in the cloud
+    resources = resources.filter(resource => resource.category === category);
+  }
+
+  return resources;
 }
 
 function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName) {
@@ -146,9 +180,17 @@ function getResourceStatus(category, resourceName) {
     resourceName,
   );
 
+  const allResources = getAllResources(
+    amplifyMeta,
+    category,
+    resourceName,
+  );
+
   resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.category !== 'provider');
 
-  return { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted };
+  return {
+    resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
+  };
 }
 
 function showResourceTable(category, resourceName) {

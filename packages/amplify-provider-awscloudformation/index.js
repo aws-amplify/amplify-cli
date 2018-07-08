@@ -1,5 +1,6 @@
 const initializer = require('./lib/initializer');
 const resourcePusher = require('./lib/push-resources');
+const resourceBuilder = require('./lib/build-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
@@ -21,12 +22,17 @@ function configure(context){
   return configManager.configure(context);
 }
 
+function buildResources(context, category, resourceName) {
+  return resourceBuilder.run(context, category, resourceName);
+}
+
 module.exports = {
   init,
   onInitSuccessful,
   configure,
   constants,
   pushResources,
+  buildResources,
   providerUtils,
   setupNewUser, 
 };
