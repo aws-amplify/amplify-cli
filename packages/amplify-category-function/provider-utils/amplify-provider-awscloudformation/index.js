@@ -21,7 +21,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     {
       dir: pluginDir,
       template: `cloudformation-templates/${cfnFilename}`,
-      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
+      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
     },
     {
       dir: pluginDir,

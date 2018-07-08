@@ -1,14 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const Table = require('cli-table2');
+const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 
-function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
+async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
   if (!lastPushTimeStamp) {
     return false;
   }
-  let lastModifiedDirTime;
+
+  /*let lastModifiedDirTime;
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
@@ -23,10 +25,43 @@ function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeS
 
   if (new Date(lastModifiedDirTime) > new Date(lastPushTimeStamp)) {
     return true;
+  }*/
+
+  const localBackendDir = path.normalize(path.join(
+      pathManager.getBackendDirPath(),
+      category,
+      resourceName,
+  ));
+
+  const cloudBackendDir = path.normalize(path.join(
+      pathManager.getCurrentCloudBackendDirPath(),
+      category,
+      resourceName,
+  ));
+
+  const localDirHash = await getHashForResourceDir(localBackendDir);
+  const cloudDirHash = await getHashForResourceDir(cloudBackendDir);
+
+
+  if(localDirHash !== cloudDirHash) {
+    return true;
   }
 
   return false;
 }
+
+
+function getHashForResourceDir(path) {
+  const options = {
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] }
+  };
+
+  return hashElement(path, options)
+    .then((result) => {
+      return result.hash;
+    });
+}
+
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -64,7 +99,10 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
   Object.keys((amplifyMeta)).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
     Object.keys((categoryItem)).forEach((resource) => {
-      if (!currentamplifyMeta[categoryName] || !currentamplifyMeta[categoryName][resource]) {
+      if ((!amplifyMeta[categoryName][resource].lastPushTimeStamp || 
+          !currentamplifyMeta[categoryName] || 
+          !currentamplifyMeta[categoryName][resource]) &&
+          categoryName !== "providers") {
         amplifyMeta[categoryName][resource].resourceName = resource;
         amplifyMeta[categoryName][resource].category = categoryName;
         resources.push(amplifyMeta[categoryName][resource]);
@@ -116,20 +154,22 @@ function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, reso
   return resources;
 }
 
-function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName) {
+async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName) {
   let resources = [];
 
-  Object.keys((amplifyMeta)).forEach((categoryName) => {
+  await asyncForEach(Object.keys((amplifyMeta)), async(categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
-    Object.keys((categoryItem)).forEach((resource) => {
+    await asyncForEach(Object.keys((categoryItem)), async(resource) => {
       if (currentamplifyMeta[categoryName]) {
         if (currentamplifyMeta[categoryName][resource] !== undefined &&
             amplifyMeta[categoryName][resource] !== undefined) {
-          if (isBackendDirModifiedSinceLastPush(
+          const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
             currentamplifyMeta[categoryName][resource].lastPushTimeStamp,
-          )) {
+          );
+
+          if (backendModified) {
             amplifyMeta[categoryName][resource].resourceName = resource;
             amplifyMeta[categoryName][resource].category = categoryName;
             resources.push(amplifyMeta[categoryName][resource]);
@@ -153,8 +193,14 @@ function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, reso
   return resources;
 }
 
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
 
-function getResourceStatus(category, resourceName) {
+
+async function getResourceStatus(category, resourceName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -167,7 +213,7 @@ function getResourceStatus(category, resourceName) {
     category,
     resourceName,
   );
-  const resourcesToBeUpdated = getResourcesToBeUpdated(
+  const resourcesToBeUpdated = await getResourcesToBeUpdated(
     amplifyMeta,
     currentamplifyMeta,
     category,
@@ -193,12 +239,13 @@ function getResourceStatus(category, resourceName) {
   };
 }
 
-function showResourceTable(category, resourceName) {
+async function showResourceTable(category, resourceName) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
-  } = getResourceStatus(category, resourceName);
+  } = await getResourceStatus(category, resourceName);
+
   const createOperationLabel = 'Create';
   const updateOperationLabel = 'Update';
   const deleteOperationLabel = 'Delete';
