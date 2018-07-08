@@ -123,7 +123,3 @@ When you run `amplify configure` outside of a valid Amplify project, it sets the
 
 When you run `amplify configure` inside a valid Amplify project, it sets the configuration for this project only. It does NOT change the general configuration or the configuration of other projects.
 
-## Usage
-
-Go to the [AWS Mobile Docs](http://docs.aws.amazon.com/aws-mobile/latest/developerguide/web-getting-started.html) to learn more about the usage of the amplify-cli and some sample codes to get your app up and running. 
-
