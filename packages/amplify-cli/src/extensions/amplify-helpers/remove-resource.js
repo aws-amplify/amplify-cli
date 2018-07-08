@@ -3,7 +3,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const pathManager = require('./path-manager');
 
-function removeResource(context, category) {
+async function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -33,7 +33,22 @@ function removeResource(context, category) {
       return context.prompt.confirm('Are you sure you want to delete the resource? This would delete all corresponding files related to this resource from the backend directory.')
         .then((confirm) => {
           if (confirm) {
-            return new Promise((resolve) => {
+            return new Promise(async (resolve) => {
+              const { allResources } = await context.amplify.getResourceStatus();
+
+              allResources.forEach((resourceItem) => {
+                if (resourceItem.dependsOn) {
+                  resourceItem.dependsOn.forEach((dependsOnItem) => {
+                    if (dependsOnItem.category === category &&
+                      dependsOnItem.resourceName === resourceName) {
+                      context.print.error('Resource cannot be removed since it has a dependency on another resource');
+                      context.print.error(`${resourceItem.service}:${resourceItem.resourceName}`);
+                      process.exit(1);
+                    }
+                  });
+                }
+              });
+
               if (amplifyMeta[category][resourceName] !== undefined) {
                 delete amplifyMeta[category][resourceName];
               }
