@@ -10,23 +10,6 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  /* let lastModifiedDirTime;
-  const backEndDir = pathManager.getBackendDirPath();
-  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-  const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-  const dirStats = fs.statSync(resourceDir);
-  if (fs.existsSync(srcDir)) {
-    const srcDirStats = fs.statSync(srcDir);
-    lastModifiedDirTime = new Date(srcDirStats.atime) > new Date(dirStats.atime) ?
-      srcDirStats.atime : dirStats.atime;
-  } else {
-    lastModifiedDirTime = dirStats.atime;
-  }
-
-  if (new Date(lastModifiedDirTime) > new Date(lastPushTimeStamp)) {
-    return true;
-  } */
-
   const localBackendDir = path.normalize(path.join(
     pathManager.getBackendDirPath(),
     category,
