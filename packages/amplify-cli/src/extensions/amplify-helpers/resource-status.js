@@ -102,6 +102,22 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
     resources = resources.filter(resource => resource.category === category);
   }
 
+  // Check for dependencies and add them
+
+  for (let i = 0; i < resources.length; i += 1) {
+    if (resources[i].dependsOn && resources[i].dependsOn.length > 0) {
+      for (let j = 0; j < resources[i].dependsOn.length; j += 1) {
+        const dependsOnCategory = resources[i].dependsOn[j].category;
+        const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
+        if ((!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          !currentamplifyMeta[dependsOnCategory] ||
+          !currentamplifyMeta[dependsOnCategory][dependsOnResourcename])) {
+          resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);
+        }
+      }
+    }
+  }
+
   return resources;
 }
 
@@ -161,13 +177,11 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
   });
 
   if (category !== undefined && resourceName !== undefined) {
-    // Deletes only specified resource in the cloud
     resources = resources.filter(resource => resource.category === category &&
         resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
-    // Deletes all the resources for the specified category in the cloud
     resources = resources.filter(resource => resource.category === category);
   }
 
