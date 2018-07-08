@@ -35,7 +35,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
     const targetDir = path.normalize(path.join(
       pathManager.getCurrentCloudBackendDirPath(),
       resources[i].category,
-      resources[i].resourceName
+      resources[i].resourceName,
     ));
 
     // If the directory structure does not exist, it is created
@@ -125,15 +125,13 @@ async function updateamplifyMetaAfterPush(resources) {
   moveBackendResourcesToCurrentCloudBackend(resources);
 }
 
-function getHashForResourceDir(path) {
+function getHashForResourceDir(dirPath) {
   const options = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] }
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
   };
 
-  return hashElement(path, options)
-    .then((result) => {
-      return result.hash;
-    });
+  return hashElement(dirPath, options)
+    .then(result => result.hash);
 }
 
 function updateamplifyMetaAfterBuild(resource) {

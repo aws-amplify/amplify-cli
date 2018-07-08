@@ -10,7 +10,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  /*let lastModifiedDirTime;
+  /* let lastModifiedDirTime;
   const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
@@ -25,25 +25,25 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
 
   if (new Date(lastModifiedDirTime) > new Date(lastPushTimeStamp)) {
     return true;
-  }*/
+  } */
 
   const localBackendDir = path.normalize(path.join(
-      pathManager.getBackendDirPath(),
-      category,
-      resourceName,
+    pathManager.getBackendDirPath(),
+    category,
+    resourceName,
   ));
 
   const cloudBackendDir = path.normalize(path.join(
-      pathManager.getCurrentCloudBackendDirPath(),
-      category,
-      resourceName,
+    pathManager.getCurrentCloudBackendDirPath(),
+    category,
+    resourceName,
   ));
 
   const localDirHash = await getHashForResourceDir(localBackendDir);
   const cloudDirHash = await getHashForResourceDir(cloudBackendDir);
 
 
-  if(localDirHash !== cloudDirHash) {
+  if (localDirHash !== cloudDirHash) {
     return true;
   }
 
@@ -51,15 +51,13 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
 }
 
 
-function getHashForResourceDir(path) {
+function getHashForResourceDir(dirPath) {
   const options = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] }
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
   };
 
-  return hashElement(path, options)
-    .then((result) => {
-      return result.hash;
-    });
+  return hashElement(dirPath, options)
+    .then(result => result.hash);
 }
 
 
@@ -99,10 +97,10 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
   Object.keys((amplifyMeta)).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
     Object.keys((categoryItem)).forEach((resource) => {
-      if ((!amplifyMeta[categoryName][resource].lastPushTimeStamp || 
-          !currentamplifyMeta[categoryName] || 
+      if ((!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
+          !currentamplifyMeta[categoryName] ||
           !currentamplifyMeta[categoryName][resource]) &&
-          categoryName !== "providers") {
+          categoryName !== 'providers') {
         amplifyMeta[categoryName][resource].resourceName = resource;
         amplifyMeta[categoryName][resource].category = categoryName;
         resources.push(amplifyMeta[categoryName][resource]);
@@ -157,9 +155,9 @@ function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, reso
 async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName) {
   let resources = [];
 
-  await asyncForEach(Object.keys((amplifyMeta)), async(categoryName) => {
+  await asyncForEach(Object.keys((amplifyMeta)), async (categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
-    await asyncForEach(Object.keys((categoryItem)), async(resource) => {
+    await asyncForEach(Object.keys((categoryItem)), async (resource) => {
       if (currentamplifyMeta[categoryName]) {
         if (currentamplifyMeta[categoryName][resource] !== undefined &&
             amplifyMeta[categoryName][resource] !== undefined) {
@@ -194,8 +192,8 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
 }
 
 async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
+  for (let index = 0; index < array.length; index += 1) {
+    await callback(array[index], index, array);
   }
 }
 
