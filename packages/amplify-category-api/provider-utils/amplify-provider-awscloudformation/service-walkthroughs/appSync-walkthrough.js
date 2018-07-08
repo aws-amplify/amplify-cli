@@ -226,8 +226,6 @@ async function askDataSourceQuestions(context, inputs) {
   // Ask data source related questions
 
   while (continueDataSourcesQuestion) {
-    console.log(dataSources.dynamoDb);
-    console.log(dependsOn);
 
     const dataSourceAnswer = await inquirer.prompt([dataSourceTypeQuestion]);
     switch (dataSourceAnswer[inputs[13].key]) {
