@@ -4,22 +4,23 @@ const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-pro
 
 function run(context) {
   const providerPlugins = getProviderPlugins(context);
+  const providerPluginNames = Object.keys(providerPlugins);
   const currentSelectedProviders = context.exeInfo.projectConfig['providers'];
 
   const providerSelection = {
     type: 'checkbox',
     name: 'selectedProviders',
     message: 'Please select the backend providers.',
-    choices: providerPlugins,
+    choices: providerPluginNames,
     default: currentSelectedProviders,
   };
 
-  const selectProviders = providerPluginList.length === 1 ?
-    Promise.resolve({ selectedProviders: providerPluginList }) :
+  const selectProviders = providerPluginNames.length === 1 ?
+    Promise.resolve({ selectedProviders: providerPluginNames }) :
     inquirer.prompt(providerSelection);
 
-  if (providerPluginList.length === 1) {
-    context.print.info(`Using default provider ${providerPluginList[0]}`);
+  if (providerPluginNames.length === 1) {
+    context.print.info(`Using default provider ${providerPluginNames[0]}`);
   }
 
   return selectProviders
@@ -33,8 +34,8 @@ function run(context) {
         const configTasks = []; 
         const initializationTasks = [];
         const onInitSuccessfulTasks = []; 
-        Object.keys(answers.selectedProviders).forEach((providerKey) => {
-            const provider = require(providers[providerKey]);
+        answers.selectedProviders.forEach((providerKey) => {
+            const provider = require(providerPlugins[providerKey]);
             if(currentSelectedProviders.hasOwnProperty(providerKey)){
                 configTasks.push(() => provider.configure(context));
             }else{
@@ -43,8 +44,8 @@ function run(context) {
             }
         });
         return sequential(configTasks)
-            .sequential(initializationTasks)
-            .sequential(onInitSuccessfulTasks)
+            .then(sequential(initializationTasks))
+            .then(sequential(onInitSuccessfulTasks))
             .then(() => context)
             .catch((err) => {
                 throw err;
