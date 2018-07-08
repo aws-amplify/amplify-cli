@@ -1,14 +1,14 @@
 const aws = require('./aws.js');
 
-class Cognito {
+class DynamoDB {
   constructor(context) {
     return aws.configureWithCreds(context)
       .then((awsItem) => {
         this.context = context;
-        this.cognito = new awsItem.CognitoIdentityServiceProvider();
+        this.dynamodb = new awsItem.DynamoDB();
         return this;
       });
   }
 }
 
-module.exports = Cognito;
+module.exports = DynamoDB;

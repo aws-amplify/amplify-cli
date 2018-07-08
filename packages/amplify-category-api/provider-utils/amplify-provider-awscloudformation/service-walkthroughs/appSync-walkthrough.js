@@ -8,7 +8,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
-
   const resourceQuestions = [
     {
       type: inputs[0].type,
@@ -227,34 +226,45 @@ async function askDataSourceQuestions(context, inputs) {
   // Ask data source related questions
 
   while (continueDataSourcesQuestion) {
+    console.log(dataSources.dynamoDb);
+    console.log(dependsOn);
+
     const dataSourceAnswer = await inquirer.prompt([dataSourceTypeQuestion]);
     switch (dataSourceAnswer[inputs[13].key]) {
       case 'DynamoDb': {
-        const resourceName = await askDynamoDBQuestions(context, inputs);
+        const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
+        Object.assign(dynamoAnswers, { category: 'storage' });
         if (!dataSources.dynamoDb) {
-          dataSources.dynamoDb = [{ category: 'storage', resourceName }];
+          dataSources.dynamoDb = [dynamoAnswers];
         } else {
-          dataSources.dynamoDb.push({ category: 'storage', resourceName });
+          dataSources.dynamoDb.push(dynamoAnswers);
         }
-        dependsOn.push({
-          category: 'storage',
-          resourceName,
-          attributes: ['Name', 'Arn'],
-        });
+        if (!dynamoAnswers.Arn) {
+          dependsOn.push({
+            category: 'storage',
+            resourceName: dynamoAnswers.resourceName,
+            attributes: ['Name', 'Arn'],
+          });
+        }
       }
         break;
       case 'Lambda': {
-        const resourceName = await askLambdaQuestions(context, inputs);
+        const lambdaAnswers = await askLambdaQuestions(context, inputs);
+        Object.assign(lambdaAnswers, { category: 'function' });
+
         if (!dataSources.lambda) {
-          dataSources.lambda = [{ category: 'function', resourceName }];
+          dataSources.lambda = [lambdaAnswers];
         } else {
-          dataSources.lambda.push({ category: 'function', resourceName });
+          dataSources.lambda.push(lambdaAnswers);
         }
-        dependsOn.push({
-          category: 'function',
-          resourceName,
-          attributes: ['Name', 'Arn'],
-        });
+
+        if (!lambdaAnswers.Arn) {
+          dependsOn.push({
+            category: 'function',
+            resourceName: lambdaAnswers.resourceName,
+            attributes: ['Name', 'Arn'],
+          });
+        }
       }
         break;
       default: context.print.error('Feature not yet implemented');
@@ -296,7 +306,7 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const dynamoResourceAnswer = await inquirer.prompt([dynamoResourceQuestion]);
 
-        return dynamoResourceAnswer[inputs[15].key];
+        return { resourceName: dynamoResourceAnswer[inputs[15].key] };
       }
       case 'newResource': {
         let add;
@@ -309,8 +319,47 @@ async function askDynamoDBQuestions(context, inputs) {
         return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
           .then((resourceName) => {
             context.print.success('Succesfully added DynamoDb table localy');
-            return resourceName;
+            return { resourceName };
           });
+      }
+      case 'cloudResource': {
+        const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+
+        const regionQuestion = {
+          type: inputs[4].type,
+          name: inputs[4].key,
+          message: inputs[4].question,
+          choices: regions,
+        };
+
+        const regionAnswer = await inquirer.prompt([regionQuestion]);
+
+        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[4].key] });
+
+        const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
+          value: {
+            resourceName: dynamodbTable.Name.replace(/[^0-9a-zA-Z]/gi, ''),
+            region: dynamodbTable.Region,
+            Arn: dynamodbTable.Arn,
+            TableName: dynamodbTable.Name,
+          },
+          name: `${dynamodbTable.Name} (${dynamodbTable.Arn})`,
+        }));
+
+        if (dynamodbOptions.length === 0) {
+          context.print.error('You do not have any DynamoDB tables configured for the selected region');
+          break;
+        }
+
+        const dynamoCloudOptionQuestion = {
+          type: inputs[19].type,
+          name: inputs[19].key,
+          message: inputs[19].question,
+          choices: dynamodbOptions,
+        };
+
+        const dynamoCloudOptionAnswer = await inquirer.prompt([dynamoCloudOptionQuestion]);
+        return dynamoCloudOptionAnswer[inputs[19].key];
       }
       default: context.print.error('Invalid option selected');
     }
@@ -348,7 +397,7 @@ async function askLambdaQuestions(context, inputs) {
 
         const lambdaResourceAnswer = await inquirer.prompt([lambdaResourceQuestion]);
 
-        return lambdaResourceAnswer[inputs[17].key];
+        return { resourceName: lambdaResourceAnswer[inputs[17].key] };
       }
       case 'newResource': {
         let add;
@@ -361,8 +410,46 @@ async function askLambdaQuestions(context, inputs) {
         return add(context, 'amplify-provider-awscloudformation', 'Lambda')
           .then((resourceName) => {
             context.print.success('Succesfully added Lambda table localy');
-            return resourceName;
+            return { resourceName };
           });
+      }
+      case 'cloudResource': {
+        const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+
+        const regionQuestion = {
+          type: inputs[4].type,
+          name: inputs[4].key,
+          message: inputs[4].question,
+          choices: regions,
+        };
+
+        const regionAnswer = await inquirer.prompt([regionQuestion]);
+
+        const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getLambdaFunctions', { region: regionAnswer[inputs[4].key] });
+
+        const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
+          value: {
+            resourceName: lambdaFunction.FunctionName.replace(/[^0-9a-zA-Z]/gi, ''),
+            Arn: lambdaFunction.FunctionArn,
+            FunctionName: lambdaFunction.FunctionName,
+          },
+          name: `${lambdaFunction.FunctionName} (${lambdaFunction.FunctionArn})`,
+        }));
+
+        if (lambdaOptions.length === 0) {
+          context.print.error('You do not have any lambda functions configured for the selected region');
+          break;
+        }
+
+        const lambdaCloudOptionQuestion = {
+          type: inputs[18].type,
+          name: inputs[18].key,
+          message: inputs[18].question,
+          choices: lambdaOptions,
+        };
+
+        const lambdaCloudOptionAnswer = await inquirer.prompt([lambdaCloudOptionQuestion]);
+        return lambdaCloudOptionAnswer[inputs[18].key];
       }
       default: context.print.error('Invalid option selected');
     }

@@ -146,8 +146,7 @@
 				"question": "Choose a data source you would like to add to your AppSync API",
 				"options": [
 			    	"DynamoDb",
-			    	"Lambda",
-			    	"Elasticsearch"
+			    	"Lambda"
 				]
 			},
 			{
@@ -165,7 +164,7 @@
 					},
 					{
 						"name": "Use a DynamoDB table already deployed on AWS",
-						"value": "deployedResource"
+						"value": "cloudResource"
 					}
 				]
 			},
@@ -190,7 +189,7 @@
 					},
 					{
 						"name": "Use a Lambda function already deployed on AWS",
-						"value": "deployedResource"
+						"value": "cloudResource"
 					}
 				]
 			},
@@ -199,6 +198,20 @@
 				"key": "lambdaResources",
 				"type": "list",
 				"question": "Choose from one of the already configured Lambda functions"
+			},
+			{
+
+				"key": "lambdaFunctionChoice",
+				"type": "list",
+				"question": "Please select a Lambda function:",
+				"required": true
+			},
+			{
+
+				"key": "dynamodbTableChoice",
+				"type": "list",
+				"question": "Please select a DynamoDB table:",
+				"required": true
 			}
 		],
 		"defaultValuesFilename": "appSync-defaults.js",
