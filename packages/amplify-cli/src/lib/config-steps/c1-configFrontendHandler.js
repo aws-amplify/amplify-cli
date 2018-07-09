@@ -29,6 +29,7 @@ function run(context) {
             context.exeInfo.projectConfig['frontendHandler'][answers.selectedFrontendHandler] =
                 frontendPlugins[answers.selectedFrontendHandler];
             delete context.exeInfo.projectConfig['frontendHandler'][currentHandlerName];
+            delete context.exeInfo.projectConfig[currentHandlerName];
             const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
             return handlerModule.init(context); 
         }else{

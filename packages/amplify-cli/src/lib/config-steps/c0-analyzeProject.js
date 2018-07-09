@@ -3,9 +3,9 @@ const fs = require('fs-extra');
 function run(context) {
   return new Promise((resolve, reject) => {
     context.exeInfo = {}; 
-    const projectCofnigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
-    if(fs.existsSync(projectCofnigFilePath)){
-      context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectCofnigFilePath)); 
+    const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
+    if(fs.existsSync(projectConfigFilePath)){
+      context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath)); 
     }
 
     if(context.exeInfo.projectConfig){

@@ -4,7 +4,7 @@ const resourceBuilder = require('./lib/build-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
-const { setupNewUser } = require('./lib/setup-new-user');
+const setupNewUser = require('./lib/setup-new-user');
 
 function init(context) {
   return initializer.run(context);

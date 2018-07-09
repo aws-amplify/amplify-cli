@@ -6,14 +6,10 @@ const constants = require('./constants');
 
 function init(context){
     context.print.info('Please tell us about your project'); 
-    context[constants.Label] = {
+    context.exeInfo.projectConfig[constants.Label] = {
         framework: guessFramework(context.exeInfo.projectConfig.projectPath)
     };
-    return promptForConfiguration(context)
-    .then(()=>{
-        context.exeInfo.projectConfig[constants.Label] = context[constants.Label]; 
-        return context; 
-    }); 
+    return promptForConfiguration(context);
 }
 
 function onInitSuccessful(context){
@@ -23,24 +19,16 @@ function onInitSuccessful(context){
 }
 
 function configure(context){
-    const projectConfig = context.amplify.getProjectConfig(); 
-
-    if(projectConfig[constants.Label]){
-        context[constants.Label] = projectConfig[constants.Label];
-    }else{
-        context[constants.Label] = {}; 
+    if(!context.exeInfo.projectConfig[constants.Label]){
+        context.exeInfo.projectConfig[constants.Label] = {}; 
     }
 
-    if(!context[constants.Label]['framework']){
-        context[constants.Label]['framework'] = guessFramework(projectConfig.projectPath)
+    if(!context.exeInfo.projectConfig[constants.Label]['framework']){
+        context.exeInfo.projectConfig[constants.Label]['framework'] = 
+            guessFramework(projectConfig.projectPath);
     }
 
-    return promptForConfiguration(context)
-    .then(()=>{
-        context.amplify.updateProjectConfig(projectConfig.projectPath, 
-            constants.Label, context[constants.Label]);
-        return context; 
-    }); 
+    return promptForConfiguration(context);
 }
 
 function promptForConfiguration(context){
@@ -54,25 +42,25 @@ function confirmFramework(context){
         name: 'framework',
         message: 'What javascript framework are you using',
         choices: Object.keys(frameworkConfigMapping),
-        default: context[constants.Label]['framework'],
+        default: context.exeInfo.projectConfig[constants.Label]['framework'],
     };
     return inquirer.prompt(frameworkComfirmation)
     .then((answers) => {
-        if(context[constants.Label]['framework'] !== answers.framework){
-            context[constants.Label]['framework'] = answers.framework; 
-            context[constants.Label]['config'] = 
-            frameworkConfigMapping[context[constants.Label]['framework']]; 
+        if(context.exeInfo.projectConfig[constants.Label]['framework'] !== answers.framework){
+            context.exeInfo.projectConfig[constants.Label]['framework'] = answers.framework; 
+            context.exeInfo.projectConfig[constants.Label]['config'] = 
+            frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label]['framework']]; 
         }
         return context;
     });
 }
 
 function confirmConfiguration(context){
-    if(!context[constants.Label]['config']){
-        context[constants.Label]['config'] = 
-            frameworkConfigMapping[context[constants.Label]['framework']]; 
+    if(!context.exeInfo.projectConfig[constants.Label]['config']){
+        context.exeInfo.projectConfig[constants.Label]['config'] = 
+        frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label]['framework']]; 
     }
-    const {config} = context[constants.Label];
+    const {config} = context.exeInfo.projectConfig[constants.Label];
     const configurationSettings = [
         {
             type: 'input',
