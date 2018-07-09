@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path'); 
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner'); 
+const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants'); 
 
 function scanProject(projectPath){
@@ -29,10 +30,15 @@ function onCategoryOutputsChange(data){
   }
 }
 
+function configure(context){
+  return configManager.configure(context);
+}
+
 module.exports = {
   constants,
   scanProject,
   init,
   onInitSuccessful, 
+  configure,
   onCategoryOutputsChange
 };

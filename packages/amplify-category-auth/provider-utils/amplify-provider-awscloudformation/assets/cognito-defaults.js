@@ -38,7 +38,7 @@ const userPoolDefaults = () => ({
     appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
-  allowUnauthenticatedIdentities: true,
+  allowUnauthenticatedIdentities: false,
   ...identityPoolDefaults(),
 });
 
