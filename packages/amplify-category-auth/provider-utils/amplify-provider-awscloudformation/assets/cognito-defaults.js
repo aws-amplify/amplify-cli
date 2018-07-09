@@ -55,7 +55,6 @@ const functionMap = {
 
 const getAllDefaults = () => {
   const target = general();
-  console.log(userPoolDefaults());
   const sources = [
     userPoolDefaults(),
     identityPoolDefaults(),
