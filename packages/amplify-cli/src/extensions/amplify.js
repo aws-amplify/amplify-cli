@@ -16,10 +16,11 @@ const { showResourceTable } = require('./amplify-helpers/resource-status');
 const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
 const pathManager = require('./amplify-helpers/path-manager');
-const nameManager = require('./amplify-helpers/name-manager');
+const { makeId } = require('./amplify-helpers/make-id');
 const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers/get-when-function');
 const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-prompt');
 const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
+const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2'); 
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -43,8 +44,9 @@ module.exports = (context) => {
     getCategoryOutputs,
     getWhen,
     inputValidation,
+    isRunningOnEC2,
     pathManager,
-    nameManager,
+    makeId,
     pressEnterToContinue,
     pushResources,
     removeResource,

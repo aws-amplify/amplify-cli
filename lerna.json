@@ -9,7 +9,7 @@
     "packages/amplify-category-cli",
     "packages/amplify-frontend-android",
     "packages/amplify-frontend-javascript",
-    "packages/amplify-frontend-iOS",
+    "packages/amplify-frontend-ios",
     "packages/amplify-provider-awscloudformation"
   ],
   "version": "0.0.0"

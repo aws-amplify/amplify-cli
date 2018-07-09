@@ -1,7 +1,7 @@
 module.exports = {
-  name: 'xcode',
+  name: 'ios',
   run: async (context) => {
     const {print} = context;
-    console.log("xcode///");
+    console.log("ios///");
   }
 }
