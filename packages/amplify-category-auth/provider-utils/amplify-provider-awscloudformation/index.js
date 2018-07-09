@@ -46,6 +46,7 @@ function addResource(context, category, service, configure) {
     stringMapFilename,
     serviceWalkthroughFilename,
   )
+
     .then((result) => {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */

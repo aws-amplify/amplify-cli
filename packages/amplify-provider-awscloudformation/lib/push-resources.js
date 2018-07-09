@@ -4,6 +4,7 @@ const cfnLint = require('cfn-lint');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
+const { buildResource } = require('./build-resources');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
@@ -18,10 +19,10 @@ function run(context, category, resourceName) {
 
   validateCfnTemplates(context, resources);
 
-  return updateS3Templates(context, resources, projectDetails.amplifyMeta)
+  return packageResources(context, resources)
+    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
       projectDetails = context.amplify.getProjectDetails();
-
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
           context,
@@ -60,6 +61,64 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
       }
     }
   }
+}
+
+function packageResources(context, resources) {
+  // Only build and package resources which are required
+  resources = resources.filter(resource => resource.build);
+
+  const packageResource = (context, resource) => {
+    let s3Key;
+    return buildResource(context, resource)
+      .then((result) => {
+        // Upload zip file to S3
+        s3Key = `amplify-builds/${result.zipFilename}`;
+        return new S3(context)
+          .then((s3) => {
+            const s3Params = {
+              Body: fs.createReadStream(result.zipFilePath),
+              Key: s3Key,
+            };
+            return s3.uploadFile(s3Params);
+          });
+      })
+      .then((s3Bucket) => {
+      // Update cfn template
+        const { category, resourceName } = resource;
+        const backEndDir = context.amplify.pathManager.getBackendDirPath();
+        const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+
+        const files = fs.readdirSync(resourceDir);
+        // Fetch all the Cloudformation templates for the resource (can be json or yml)
+        const cfnFiles = files.filter(file => ((file.indexOf('yml') !== -1) || (file.indexOf('json') !== -1)));
+
+        if (cfnFiles.length !== 1) {
+          context.print.error('There should be just one cloudformation template in the resource directory');
+          context.print.error(resourceDir);
+          throw new Error('There should be just one cloudformation template in the resource directory');
+        }
+
+        const cfnFile = cfnFiles[0];
+        const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
+
+        const cfnMeta = JSON.parse(fs.readFileSync(cfnFilePath));
+
+        cfnMeta.Resources.LambdaFunction.Properties.Code = {
+          S3Bucket: s3Bucket,
+          S3Key: s3Key,
+        };
+
+        const jsonString = JSON.stringify(cfnMeta, null, '\t');
+        fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+      });
+  };
+
+  const promises = [];
+  for (let i = 0; i < resources.length; i += 1) {
+    promises.push(packageResource(context, resources[i]));
+  }
+
+  return Promise.all(promises);
 }
 
 
@@ -114,12 +173,12 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     .then((s3) => {
       const s3Params = {
         Body: fs.createReadStream(filePath),
-        Key: cfnFile,
+        Key: `amplify-cfn-templates/${cfnFile}`,
       };
       return s3.uploadFile(s3Params);
     })
     .then((projectBucket) => {
-      const templateURL = `https://s3.amazonaws.com/${projectBucket}/${cfnFile}`;
+      const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
       const providerMetadata = amplifyMeta[category][resourceName].providerMetadata || {};
       providerMetadata.s3TemplateURL = templateURL;
       providerMetadata.logicalId = category + resourceName;

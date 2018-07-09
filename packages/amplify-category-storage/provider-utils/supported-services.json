@@ -72,7 +72,7 @@
 
 				"key": "attribute",
 				"type": "input",
-				"question": "Please provide an attribute for the table which would be used as a partition/sort key or used as a GSI:",
+				"question": "What would you like to name this column:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9_-]+$",
@@ -84,7 +84,7 @@
 
 				"key": "attributeType",
 				"type": "list",
-				"question": "Please choose a type for the attribute:",
+				"question": "Please choose the data type:",
 				"required": true
 			},
 			{

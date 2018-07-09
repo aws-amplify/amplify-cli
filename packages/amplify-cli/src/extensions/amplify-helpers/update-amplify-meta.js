@@ -89,6 +89,7 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
 function updateamplifyMetaAfterPush(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+
   const currentTimestamp = new Date();
 
   for (let i = 0; i < resources.length; i += 1) {
@@ -97,8 +98,37 @@ function updateamplifyMetaAfterPush(resources) {
     /* eslint-enable */
   }
 
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
   moveBackendResourcesToCurrentCloudBackend(resources);
 }
+
+function updateamplifyMetaAfterBuild(resource) {
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const currentTimestamp = new Date();
+  /*eslint-disable */
+  amplifyMeta[resource.category][resource.resourceName].lastBuildTimeStamp = currentTimestamp;
+  /* eslint-enable */
+
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+}
+
+function updateAmplifyMetaAfterPackage(resource, zipFilename) {
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const currentTimestamp = new Date();
+  /*eslint-disable */
+  amplifyMeta[resource.category][resource.resourceName].lastPackageTimeStamp = currentTimestamp;
+  amplifyMeta[resource.category][resource.resourceName].distZipFilename = zipFilename;
+  /* eslint-enable */
+
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+}
+
 
 function updateamplifyMetaAfterResourceDelete(category, resourceName) {
   const amplifyMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
@@ -125,5 +155,7 @@ module.exports = {
   updateamplifyMetaAfterResourceUpdate,
   updateamplifyMetaAfterResourceDelete,
   updateamplifyMetaAfterPush,
+  updateamplifyMetaAfterBuild,
   updateProvideramplifyMeta,
+  updateAmplifyMetaAfterPackage,
 };

@@ -12,7 +12,7 @@ function run(context) {
       const awscfn = getConfiguredAwsCfnClient(ctxt);
       const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
       const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
-      const stackName = normalizeStackName(ctxt.initInfo.projectName + timeStamp);
+      const stackName = normalizeStackName(ctxt.exeInfo.projectConfig.projectName + timeStamp);
       const deploymentBucketName = `${stackName}-deployment`;
       const authRoleName = `${stackName}-authRole`;
       const unauthRoleName = `${stackName}-unauthRole`;
@@ -53,7 +53,7 @@ function run(context) {
             spinner.fail('Root stack creation failed');
             return reject(waitErr);
           }
-          spinner.succeed('Successfully initialized project in the cloud.');
+          spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
           processStackCreationData(ctxt, waitData);
           resolve(ctxt);
         });
@@ -85,15 +85,15 @@ function processStackCreationData(context, stackDescriptiondata) {
     metaData[element.OutputKey] = element.OutputValue;
   });
 
-  if (!context.initInfo.metaData.providers) {
-    context.initInfo.metaData.providers = {};
+  if (!context.exeInfo.metaData.providers) {
+    context.exeInfo.metaData.providers = {};
   }
-  context.initInfo.metaData.providers[constants.ProviderName] = metaData;
+  context.exeInfo.metaData.providers[constants.ProviderName] = metaData;
 
-  if (!context.initInfo.rcData.providers) {
-    context.initInfo.rcData.providers = {};
+  if (!context.exeInfo.rcData.providers) {
+    context.exeInfo.rcData.providers = {};
   }
-  context.initInfo.rcData.providers[constants.ProviderName] = metaData;
+  context.exeInfo.rcData.providers[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {
@@ -104,7 +104,7 @@ function onInitSuccessful(context) {
 }
 
 function normalizeStackName(stackName) {
-  let result = stackName.replace(/[^-a-zA-Z0-9]/g, '');
+  let result = stackName.replace(/[^-a-z0-9]/g, '');
   if (/^[^a-zA-Z]/.test(result) || result.length === 0) {
     result = `a${result}`;
   }

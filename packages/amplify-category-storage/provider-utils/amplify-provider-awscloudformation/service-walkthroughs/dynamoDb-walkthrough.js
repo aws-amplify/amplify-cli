@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
-  const { amplify } = context;
+  const { amplify, print } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -40,9 +40,19 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     },
   ];
 
+  print.info('');
+  print.info('Welcome to NoSQL DynamoDB database wizard');
+  print.info('You will be asked a series of questions to help determine how to best construct your NoSQL database table.');
+  print.info('');
+
   // Ask resource and table name question
 
   const answers = await inquirer.prompt(resourceQuestions);
+
+
+  print.info('');
+  print.info('You can now add columns to the table.');
+  print.info('');
 
   // Ask attribute questions
 
@@ -80,10 +90,17 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
-    continueAttributeQuestion = await context.prompt.confirm('Do you want to add another attribute?');
+    continueAttributeQuestion = await context.prompt.confirm('Would you like to add another column?');
   }
   answers.AttributeDefinitions = attributeAnswers;
 
+
+  print.info('');
+  print.info("Before you create the database, you must specify how items in your table are uniquely organized. This is done by specifying a Primary key. The primary key uniquely identifies each item in the table, so that no two items can have the same key.This could be and individual column or a combination that has 'primary key' and a 'sort key'.");
+  print.info('');
+  print.info('To learn more about primary key:');
+  print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey');
+  print.info('');
   // Ask for primary key
 
   answers.KeySchema = [];
@@ -130,6 +147,12 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
 
   answers.KeySchema = answers.KeySchema;
+
+  print.info('');
+  print.info('You can optionally add global secondary indexes for this table. These are useful when running queries defined by a different column than the primary key.');
+  print.info('To learn more about indexes:');
+  print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes');
+  print.info('');
 
   // Ask for GSI's
 

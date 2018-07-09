@@ -18,7 +18,6 @@ async function serviceWalkthrough(
 
   const appClientInputs = inputs.filter(i => i.set === 'app-client');
 
-
   const coreQuestions = parseInputs(
     coreQuestionInputs,
     amplify,

@@ -11,5 +11,4 @@ class Cognito {
   }
 }
 
-
 module.exports = Cognito;
