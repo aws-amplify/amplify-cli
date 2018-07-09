@@ -3,14 +3,14 @@ const Cognito = require('../src/aws-utils/aws-cognito');
 
 module.exports = {
   getRegions: () => awsRegions.regions,
-  staticRoles: (context) => {
+  staticRoles: ((context) => {
     return {
       unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleName,
       authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleName,
       unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleArn,
       authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleArn,
-    }
-  },
+    };
+  }),
   getUserPools: (context, options) => new Cognito(context)
     .then(cognitoModel => cognitoModel.cognito.listUserPools({ MaxResults: 60 }).promise()
       .then((result) => {

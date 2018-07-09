@@ -42,7 +42,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask resource and table name question
 
-  let answers = await inquirer.prompt(resourceQuestions);
+  const answers = await inquirer.prompt(resourceQuestions);
 
   // Ask attribute questions
 
@@ -111,7 +111,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   if (await context.prompt.confirm('Do you want to add a sort key to your table?')) {
     // Ask for sort key
-    if (answers.AttributeDefinitions.length > 1){
+    if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
         type: inputs[5].type,
         name: inputs[5].key,
@@ -211,9 +211,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
-
-  
-  answers = Object.assign(answers, await inquirer.prompt(amplify.sharedQuestions.accessLevel('table')));
 
   return answers;
 }
