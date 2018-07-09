@@ -15,6 +15,7 @@ const { getCategoryOutputs } = require('./amplify-helpers/get-category-outputs')
 const { showResourceTable } = require('./amplify-helpers/resource-status');
 const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
+const { listCategories } = require('./amplify-helpers/list-categories');
 const pathManager = require('./amplify-helpers/path-manager');
 const nameManager = require('./amplify-helpers/name-manager');
 const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers/get-when-function');
@@ -43,6 +44,7 @@ module.exports = (context) => {
     getCategoryOutputs,
     getWhen,
     inputValidation,
+    listCategories,
     pathManager,
     nameManager,
     pressEnterToContinue,
