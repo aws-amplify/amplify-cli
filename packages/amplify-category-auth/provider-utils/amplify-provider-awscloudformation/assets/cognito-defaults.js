@@ -26,16 +26,16 @@ const userPoolDefaults = () => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes[2],
-    coreAttributes[10],
+    coreAttributes.find(a => a.name === 'Email').value,
+    coreAttributes.find(b => b.name === 'Phone Number').value,
   ],
   userpoolClientName: `<label>-app-client-${uuid()}`,
   userpoolClientAuthFlow: [authFlowMap[0]],
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [
-    appClientReadAttributes[2],
-    appClientReadAttributes[10],
+    appClientReadAttributes.find(c => c.name === 'Email').value,
+    appClientReadAttributes.find(d => d.name === 'Phone Number').value,
   ],
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: true,
@@ -55,6 +55,7 @@ const functionMap = {
 
 const getAllDefaults = () => {
   const target = general();
+  console.log(userPoolDefaults());
   const sources = [
     userPoolDefaults(),
     identityPoolDefaults(),
