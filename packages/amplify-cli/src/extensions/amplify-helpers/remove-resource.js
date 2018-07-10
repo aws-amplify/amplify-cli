@@ -31,25 +31,32 @@ function removeResource(context, category) {
         resourceName,
       ));
       return context.prompt.confirm('Are you sure you want to delete the resource? This would delete all corresponding files related to this resource from the backend directory.')
-        .then((confirm) => {
+        .then(async (confirm) => {
           if (confirm) {
-            return new Promise((resolve) => {
-              if (amplifyMeta[category][resourceName] !== undefined) {
-                delete amplifyMeta[category][resourceName];
+            const { allResources } = await context.amplify.getResourceStatus();
+            allResources.forEach((resourceItem) => {
+              if (resourceItem.dependsOn) {
+                resourceItem.dependsOn.forEach((dependsOnItem) => {
+                  if (dependsOnItem.category === category &&
+                      dependsOnItem.resourceName === resourceName) {
+                    context.print.error('Resource cannot be removed since it has a dependency on another resource');
+                    context.print.error(`Dependency: ${resourceItem.service}:${resourceItem.resourceName}`);
+                    throw new Error('Resource cannot be removed since it has a dependency on another resource');
+                  }
+                });
               }
-
-              const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-              fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-
-              // Remove resource directory from backend/
-              context.filesystem.remove(resourceDir);
-
-              resolve();
             });
+            if (amplifyMeta[category][resourceName] !== undefined) {
+              delete amplifyMeta[category][resourceName];
+            }
+
+            const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+            fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+            // Remove resource directory from backend/
+            context.filesystem.remove(resourceDir);
           }
-          process.exit(1);
-        })
-        .then(() => context.print.success('Successfully removed resource'));
+        });
     })
     .catch((err) => {
       context.print.info(err.stack);

@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const { filesystem } = require('gluegun/filesystem');
 const path = require('path');
+const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
@@ -21,18 +22,28 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 }
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
-  const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath()));
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
-    const sourceDir = path.normalize(
+    const sourceDir = path.normalize(path.join(
       pathManager.getBackendDirPath(),
       resources[i].category,
       resources[i].resourceName,
-    );
+    ));
+
+    const targetDir = path.normalize(path.join(
+      pathManager.getCurrentCloudBackendDirPath(),
+      resources[i].category,
+      resources[i].resourceName,
+    ));
+
+    // If the directory structure does not exist, it is created
+    fs.ensureDirSync(targetDir);
+
     fs.copySync(sourceDir, targetDir);
   }
+
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
 }
 
@@ -86,22 +97,41 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
   );
 }
 
-function updateamplifyMetaAfterPush(resources) {
+async function updateamplifyMetaAfterPush(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   const currentTimestamp = new Date();
+  let sourceDir;
 
   for (let i = 0; i < resources.length; i += 1) {
+    sourceDir = path.normalize(path.join(
+      pathManager.getBackendDirPath(),
+      resources[i].category,
+      resources[i].resourceName,
+    ));
+    const hashDir = await getHashForResourceDir(sourceDir);
+
     /*eslint-disable */
     amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+    amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
     /* eslint-enable */
   }
+
 
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   moveBackendResourcesToCurrentCloudBackend(resources);
+}
+
+function getHashForResourceDir(dirPath) {
+  const options = {
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
+  };
+
+  return hashElement(dirPath, options)
+    .then(result => result.hash);
 }
 
 function updateamplifyMetaAfterBuild(resource) {

@@ -5,7 +5,7 @@ const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-pro
 function run(context) {
   const providerPlugins = getProviderPlugins(context);
   const providerPluginNames = Object.keys(providerPlugins);
-  const currentSelectedProviders = context.exeInfo.projectConfig['providers'];
+  const currentSelectedProviders = context.exeInfo.projectConfig.providers;
 
   const providerSelection = {
     type: 'checkbox',
@@ -25,31 +25,31 @@ function run(context) {
 
   return selectProviders
     .then((answers) => {
-        context.exeInfo.projectConfig.providers = {};
-        answers.selectedProviders.forEach((providerKey) => {
-            context.exeInfo.projectConfig.providers[providerKey] =
+      context.exeInfo.projectConfig.providers = {};
+      answers.selectedProviders.forEach((providerKey) => {
+        context.exeInfo.projectConfig.providers[providerKey] =
                         providerPlugins[providerKey];
+      });
+
+      const configTasks = [];
+      const initializationTasks = [];
+      const onInitSuccessfulTasks = [];
+      answers.selectedProviders.forEach((providerKey) => {
+        const provider = require(providerPlugins[providerKey]);
+        if (currentSelectedProviders.hasOwnProperty(providerKey)) {
+          configTasks.push(() => provider.configure(context));
+        } else {
+          initializationTasks.push(() => provider.init(context));
+          onInitSuccessfulTasks.push(() => provider.onInitSuccessful(context));
+        }
+      });
+      return sequential(configTasks)
+        .then(sequential(initializationTasks))
+        .then(sequential(onInitSuccessfulTasks))
+        .then(() => context)
+        .catch((err) => {
+          throw err;
         });
-        
-        const configTasks = []; 
-        const initializationTasks = [];
-        const onInitSuccessfulTasks = []; 
-        answers.selectedProviders.forEach((providerKey) => {
-            const provider = require(providerPlugins[providerKey]);
-            if(currentSelectedProviders.hasOwnProperty(providerKey)){
-                configTasks.push(() => provider.configure(context));
-            }else{
-                initializationTasks.push(() => provider.init(context));
-                onInitSuccessfulTasks.push(() => provider.onInitSuccessful(context)); 
-            }
-        });
-        return sequential(configTasks)
-            .then(sequential(initializationTasks))
-            .then(sequential(onInitSuccessfulTasks))
-            .then(() => context)
-            .catch((err) => {
-                throw err;
-            });
     });
 }
 

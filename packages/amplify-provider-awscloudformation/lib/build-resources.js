@@ -3,8 +3,8 @@ const path = require('path');
 const moment = require('moment');
 const archiver = require('archiver');
 
-function run(context, category, resourceName) {
-  const { allResources } = context.amplify.getResourceStatus(category, resourceName);
+async function run(context, category, resourceName) {
+  const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
 
   const resources = allResources.filter(resource => resource.build);
   const buildPromises = [];

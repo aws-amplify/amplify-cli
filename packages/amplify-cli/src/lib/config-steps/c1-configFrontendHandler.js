@@ -3,8 +3,8 @@ const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-fro
 
 function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
-  const currentSelected = context.exeInfo.projectConfig['frontendHandler'];
-  const currentHandlerName = Object.keys(currentSelected)[0]; 
+  const currentSelected = context.exeInfo.projectConfig.frontendHandler;
+  const currentHandlerName = Object.keys(currentSelected)[0];
 
   const frontendPluginMaps = Object.keys(frontendPlugins).map((pluginName) => {
     const pluginSplit = pluginName.split('-');
@@ -25,17 +25,16 @@ function run(context) {
 
   return inquirer.prompt(selectFrontendHandler)
     .then((answers) => {
-        if(answers.selectedFrontendHandler !== currentHandlerName){
-            context.exeInfo.projectConfig['frontendHandler'][answers.selectedFrontendHandler] =
+      if (answers.selectedFrontendHandler !== currentHandlerName) {
+        context.exeInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] =
                 frontendPlugins[answers.selectedFrontendHandler];
-            delete context.exeInfo.projectConfig['frontendHandler'][currentHandlerName];
-            delete context.exeInfo.projectConfig[currentHandlerName];
-            const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
-            return handlerModule.init(context); 
-        }else{
-            const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
-            return handlerModule.configure(context); 
-        }
+        delete context.exeInfo.projectConfig.frontendHandler[currentHandlerName];
+        delete context.exeInfo.projectConfig[currentHandlerName];
+        const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
+        return handlerModule.init(context);
+      }
+      const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
+      return handlerModule.configure(context);
     });
 }
 

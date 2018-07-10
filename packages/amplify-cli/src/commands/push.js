@@ -1,6 +1,6 @@
 module.exports = {
   name: 'push',
   run: async (context) => {
-    context.amplify.pushResources(context);
+    await context.amplify.pushResources(context);
   },
 };

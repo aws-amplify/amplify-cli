@@ -5,11 +5,11 @@ function run(context) {
     const projectPath = process.cwd();
     const projectName = path.basename(projectPath);
 
-    context.exeInfo = {}; 
+    context.exeInfo = {};
 
     context.exeInfo.projectConfig = {
-        projectName,
-        projectPath
+      projectName,
+      projectPath,
     };
 
     context.exeInfo.metaData = {

@@ -8,12 +8,12 @@ const { buildResource } = require('./build-resources');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
-function run(context, category, resourceName) {
+async function run(context, category, resourceName) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
-  } = context.amplify.getResourceStatus(category, resourceName);
+  } = await context.amplify.getResourceStatus(category, resourceName);
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
