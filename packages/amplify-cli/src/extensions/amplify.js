@@ -10,6 +10,7 @@ const { pushResources } = require('./amplify-helpers/push-resources');
 const { buildResources } = require('./amplify-helpers/build-resources');
 const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
+const { getProjectMeta } = require('./amplify-helpers/get-project-meta'); 
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { getCategoryOutputs } = require('./amplify-helpers/get-category-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
@@ -40,6 +41,7 @@ module.exports = (context) => {
     executeProviderUtils,
     getProjectConfig,
     getProjectDetails,
+    getProjectMeta,
     getResourceStatus,
     getCategoryOutputs,
     getWhen,
