@@ -56,6 +56,30 @@
                     "Ref": "S3Bucket"
                 }
             }
+        },
+        "CloudFrontDistribution" : {
+            "Type" : "AWS::CloudFront::Distribution",
+            "DependsOn" : "S3Bucket",
+            "Properties" : {
+                "DistributionConfig" : {
+                    "Origins" : [ {
+                        "DomainName" :  {"Fn::GetAtt": ["S3Bucket", "DomainName"]},
+                        "Id" : "hostingS3Bucket",
+                        "S3OriginConfig" : {
+                        }
+                    }],
+                    "Enabled" : "true",
+                    "DefaultRootObject" :  {"Ref": "IndexDocument"},
+                    "DefaultCacheBehavior" : {
+                        "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+                        "TargetOriginId" : "hostingS3Bucket",
+                        "ForwardedValues" : {
+                            "QueryString" : "false"
+                        },
+                        "ViewerProtocolPolicy" : "allow-all"
+                    }
+                }
+            }
         }
     },
     "Outputs": {
@@ -84,6 +108,28 @@
                 ]
             },
             "Description": "Name of S3 bucket to hold website content"
+        }, 
+        "CloudFrontDistributionID": {
+            "Value": {"Ref": "CloudFrontDistribution"}
+        },
+        "CloudFrontDomainName": {
+            "Value": {"Fn::GetAtt": ["CloudFrontDistribution", "DomainName"]}
+        },
+        "CloudFrontSecureURL": {
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "CloudFrontDistribution",
+                                "DomainName"
+                            ]
+                        }
+                    ]
+                ]
+            }
         }
     }
 }
