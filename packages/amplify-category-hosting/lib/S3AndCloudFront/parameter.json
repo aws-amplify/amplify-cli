@@ -1,10 +1,10 @@
 [
     {
       "ParameterKey": "IndexDocument",
-      "ParameterValue": "index.html",
+      "ParameterValue": "index.html"
     },
     {
       "ParameterKey": "ErrorDocument",
-      "ParameterValue": "error.html",
+      "ParameterValue": "error.html"
     }
 ]
