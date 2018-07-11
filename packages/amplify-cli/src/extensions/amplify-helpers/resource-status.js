@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const Table = require('cli-table2');
+const { print } = require('gluegun/print');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
+const _ = require('lodash');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -118,7 +119,7 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
     }
   }
 
-  return resources;
+  return _.uniqWith(resources, _.isEqual);
 }
 
 function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName) {
@@ -239,36 +240,56 @@ async function showResourceTable(category, resourceName) {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
+    allResources,
   } = await getResourceStatus(category, resourceName);
+
+  let noChangeResources = _.differenceWith(
+    allResources,
+    resourcesToBeCreated.concat(resourcesToBeUpdated),
+    _.isEqual,
+  );
+  noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
 
   const createOperationLabel = 'Create';
   const updateOperationLabel = 'Update';
   const deleteOperationLabel = 'Delete';
-  const table = new Table({
-    head: ['Category', 'Resource name', 'Operation', 'Provider plugin'],
-  });
+  const noOperationLabel = 'No Change';
+  const tableOptions = [['Category', 'Resource name', 'Operation', 'Provider plugin']];
   for (let i = 0; i < resourcesToBeCreated.length; i += 1) {
-    table.push([
+    tableOptions.push([
       capitalize(resourcesToBeCreated[i].category),
       resourcesToBeCreated[i].resourceName,
       createOperationLabel,
       resourcesToBeCreated[i].providerPlugin]);
   }
   for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
-    table.push([
+    tableOptions.push([
       capitalize(resourcesToBeUpdated[i].category),
       resourcesToBeUpdated[i].resourceName,
       updateOperationLabel,
       resourcesToBeUpdated[i].providerPlugin]);
   }
   for (let i = 0; i < resourcesToBeDeleted.length; i += 1) {
-    table.push([
+    tableOptions.push([
       capitalize(resourcesToBeDeleted[i].category),
       resourcesToBeDeleted[i].resourceName,
       deleteOperationLabel,
       resourcesToBeDeleted[i].providerPlugin]);
   }
-  console.log(table.toString());
+  for (let i = 0; i < noChangeResources.length; i += 1) {
+    tableOptions.push([
+      capitalize(noChangeResources[i].category),
+      noChangeResources[i].resourceName,
+      noOperationLabel,
+      noChangeResources[i].providerPlugin]);
+  }
+
+  const { table } = print;
+
+  table(
+    tableOptions,
+    { format: 'markdown' },
+  );
 }
 
 module.exports = {
