@@ -85,12 +85,12 @@ const appClientReadAttributes = [
   },
 ];
 
-const getAllMaps = () => ({
+const getAllMaps = (() => ({
   authFlowMap,
   coreAttributes,
   authSelections,
   appClientReadAttributes,
-});
+}));
 
 module.exports = {
   authFlowMap,

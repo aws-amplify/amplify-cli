@@ -27,6 +27,13 @@
 				"required": true
 			},
 			{
+				"key": "allowUnauthenticatedIdentities",
+				"set": "core",
+				"question": "Do you want to allow unauthenticated logins?.",
+				"type": "confirm",
+				"required": true
+			},
+			{
 				"key": "userPoolName",
 				"set": "core",
 				"question": "Please provide a name for your user pool:",

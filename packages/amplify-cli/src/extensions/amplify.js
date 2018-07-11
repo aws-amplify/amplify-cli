@@ -13,6 +13,7 @@ const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { getCategoryOutputs } = require('./amplify-helpers/get-category-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
+const { sharedQuestions } = require( './amplify-helpers/shared-questions.js')
 const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
 const { listCategories } = require('./amplify-helpers/list-categories');
@@ -52,6 +53,7 @@ module.exports = (context) => {
     pressEnterToContinue,
     pushResources,
     removeResource,
+    sharedQuestions,
     showResourceTable,
     serviceSelectionPrompt,
     updateProjectConfig,

@@ -33,7 +33,7 @@ function addResource(context, category, service, options) {
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    .then((result) => {
+    .then(async (result) => {
       answers = result;
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(

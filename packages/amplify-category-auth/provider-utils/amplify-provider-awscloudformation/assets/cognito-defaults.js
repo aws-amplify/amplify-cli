@@ -1,8 +1,7 @@
 const uuid = require('uuid');
+const { authFlowMap, coreAttributes, appClientReadAttributes } = require('./string-maps');
 
 const [shortId] = uuid().split('-');
-
-const { authFlowMap, coreAttributes, appClientReadAttributes } = require('./string-maps');
 
 const general = () => ({
   resourceName: `cognito${shortId}`,
@@ -27,16 +26,16 @@ const userPoolDefaults = () => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes[2],
-    coreAttributes[10],
+    coreAttributes.find(a => a.name === 'Email').value,
+    coreAttributes.find(b => b.name === 'Phone Number').value,
   ],
   userpoolClientName: `<label>-app-client-${uuid()}`,
-  userpoolClientAuthFlow: [authFlowMap[0]],
+  userpoolClientAuthFlow: [authFlowMap.find(c => c.value === 'ADMIN_NO_SRP_AUTH').value],
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [
-    appClientReadAttributes[2],
-    appClientReadAttributes[10],
+    appClientReadAttributes.find(d => d.name === 'Email').value,
+    appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
   identityPoolName: `<label>_identitypool_${uuid().replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,

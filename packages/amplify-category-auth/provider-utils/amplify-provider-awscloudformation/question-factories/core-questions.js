@@ -18,7 +18,7 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
       when: amplify.getWhen(inputs[i]),
       validate: amplify.inputValidation(inputs[i]),
       default: (answers) => {
-        const defaultValue = getAllDefaults(amplify.getProjectDetails())[inputs[i].key];
+        const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[inputs[i].key];
 
         if (defaultValue && typeof defaultValue === 'string' && answers.resourceName) {
           return defaultValue.replace(/<label>/g, answers.resourceName);
@@ -35,12 +35,19 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
           choices: inputs[i].map ? getAllMaps()[inputs[i].map] : inputs[i].options,
         }, question);
       } else {
-        const requiredOptions = getAllMaps()[inputs[i].map].filter(x => currentAnswers[inputs[i].requiredOptions].includes(x.value));
-        const trueOptions = getAllMaps()[inputs[i].map].filter(x => !currentAnswers[inputs[i].requiredOptions].includes(x.value));
+        const requiredOptions = getAllMaps()[inputs[i].map]
+          .filter(x => currentAnswers[inputs[i].requiredOptions]
+            .includes(x.value));
+        const trueOptions = getAllMaps()[inputs[i].map]
+          .filter(x => !currentAnswers[inputs[i].requiredOptions]
+            .includes(x.value));
 
         question = Object.assign(question, {
           choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
-          filter: (input => input = input.concat(...requiredOptions.map(z => z.value))),
+          filter: ((input) => {
+            input = input.concat(...requiredOptions.map(z => z.value));
+            return input;
+          }),
         });
       }
     }
