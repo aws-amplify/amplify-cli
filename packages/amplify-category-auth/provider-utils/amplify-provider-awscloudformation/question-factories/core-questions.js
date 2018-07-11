@@ -18,6 +18,9 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
       when: amplify.getWhen(inputs[i]),
       validate: amplify.inputValidation(inputs[i]),
       default: (answers) => {
+        if (currentAnswers) {
+          answers = Object.assign(answers, currentAnswers);
+        }
         const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[inputs[i].key];
 
         if (defaultValue && typeof defaultValue === 'string' && answers.resourceName) {

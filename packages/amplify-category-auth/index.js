@@ -1,14 +1,12 @@
+const category = 'auth';
 const fs = require('fs');
 
-const subcommand = 'enable';
-const category = 'auth';
 let options;
 
 module.exports = {
-  name: subcommand,
-  run: async (context) => {
+  add: async (context) => {
     const { amplify } = context;
-    const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+    const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
 
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
@@ -22,7 +20,7 @@ module.exports = {
           service: result.service,
           providerPlugin: result.providerName,
         };
-        const providerController = require(`../../provider-utils/${result.providerName}/index`);
+        const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
           return;
