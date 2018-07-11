@@ -5,8 +5,9 @@ import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
 import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
 import {
-    DynamoDBMappingTemplate, ObjectNode, Expression,  print, str,
-    ref, obj, set, compoundExpression, qref
+    DynamoDBMappingTemplate,  print, str,
+    ref, obj, set, nul,
+    ifElse, compoundExpression, qref
 } from 'appsync-mapping-template'
 import { ResourceConstants, graphqlName, toUpper } from 'appsync-transformer-common'
 
@@ -309,10 +310,15 @@ export class ResourceFactory {
             TypeName: 'Query',
             RequestMappingTemplate: print(
                 compoundExpression([
+                    ifElse(
+                        ref('context.args.filter'),
+                        set(ref('filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')),
+                        set(ref('filter'), nul())
+                    ),
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
                     set(ref('token'), ref('util.defaultIfNullOrBlank("$context.args.token", "null")')),
                     DynamoDBMappingTemplate.listItem({
-                        filter: ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+                        filter: ref('filter'),
                         limit: ref('limit'),
                         nextToken: ref('token')
                     })
