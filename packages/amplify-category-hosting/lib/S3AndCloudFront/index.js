@@ -17,7 +17,7 @@ function enable(context) {
   fs.copySync(__dirname, serviceDirPath, {filter: (src)=>{return path.basename(src)!== 'index.js'}});
 
   return context.amplify.updateamplifyMetaAfterResourceAdd(
-    'hosting',
+    constants.CategoryName,
     serviceName,
     metaData,
   );

@@ -3,6 +3,8 @@ const path = require('path');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner'); 
 const configManager = require('./lib/configuration-manager');
+const server = require('./lib/server');
+const publisher = require('./lib/publisher'); 
 const constants = require('./lib/constants'); 
 
 function scanProject(projectPath){
@@ -34,11 +36,21 @@ function configure(context){
   return configManager.configure(context);
 }
 
+function publish(context){
+  return publisher.run(context); 
+}
+
+function serve(context){
+  return server.run(context); 
+}
+
 module.exports = {
   constants,
   scanProject,
   init,
   onInitSuccessful, 
   configure,
+  publish,
+  serve,
   onCategoryOutputsChange
 };

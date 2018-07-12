@@ -28,11 +28,21 @@ function configure(context){
   return configManager.configure(context);
 }
 
+function publish(context){
+  return context; 
+}
+
+function serve(context){
+  return context; 
+}
+
 module.exports = {
   constants,
   scanProject,
   init,
   onInitSuccessful, 
   configure,
+  publish,
+  serve,
   onCategoryOutputsChange
 };
