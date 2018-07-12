@@ -92,6 +92,8 @@ Resources:
         - Arn
       AppName: !Ref AppName
 Outputs:
+  Region:
+    Value: !Ref 'AWS::Region'
   Id:
     Value: !GetAtt 
       - PinpointFunctionOutputs

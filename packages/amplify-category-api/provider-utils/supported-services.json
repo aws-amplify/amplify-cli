@@ -68,7 +68,7 @@
 
 				"key": "cognitoUserPoolRegion",
 				"type": "list",
-				"question": "Please provide a user pool ID:"
+				"question": "Please select a region:"
 			},
 			{
 

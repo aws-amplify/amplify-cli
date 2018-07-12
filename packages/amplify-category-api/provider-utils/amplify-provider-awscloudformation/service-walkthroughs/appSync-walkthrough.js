@@ -1,5 +1,11 @@
 const inquirer = require('inquirer');
 const moment = require('moment');
+const securityTypeMapping = {
+  'apiKey' : 'API_KEY',
+  'iam': 'AWS_IAM',
+  'cognito': 'AMAZON_COGNITO_USER_POOLS',
+  'openId': 'OPENID_CONNECT'
+};
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
@@ -41,14 +47,14 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   Object.assign(allDefaultValues, resourceAnswers);
 
   if (resourceAnswers[inputs[2].key] === 'default') {
-    return allDefaultValues;
+    return {answers: allDefaultValues, output: {securityType: 'AWS_IAM'}};
   }
 
   return askCustomQuestions(context, inputs)
     .then((result) => {
       Object.assign(allDefaultValues, result.answers);
       allDefaultValues.customCfnFile = 'appSync-cloudformation-template-custom.yml.ejs';
-      return { answers: allDefaultValues, dependsOn: result.dependsOn };
+      return { answers: allDefaultValues, dependsOn: result.dependsOn, output: result.output };
     });
 }
 
@@ -57,6 +63,9 @@ async function askCustomQuestions(context, inputs) {
   let dependsOn = [];
 
   const securitySetting = await askSecurityQuestions(context, inputs);
+  const output = {
+    securityType: securityTypeMapping[securitySetting.type]
+  };
   Object.assign(answers, { securitySetting });
 
   if (await context.prompt.confirm('Do you want to add a data source to your AppSync API?')) {
@@ -66,7 +75,7 @@ async function askCustomQuestions(context, inputs) {
     Object.assign(answers, { dataSources });
     Object.assign(answers, { dependsOn });
   }
-  return { answers, dependsOn };
+  return { answers, dependsOn, output };
 }
 
 async function askSecurityQuestions(context, inputs) {

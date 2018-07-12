@@ -6,7 +6,7 @@
  * @param {any}   props          - The props to use for variable replacement.
  * @param {any}   opts           - Additional options
  */
-async function copyBatch(context, jobs, props) {
+async function copyBatch(context, jobs, props, force) {
   // grab some features
   const {
     template,
@@ -19,7 +19,7 @@ async function copyBatch(context, jobs, props) {
 
   // If the file exists
   const shouldGenerate = async (target) => {
-    if (!filesystem.exists(target)) return true;
+    if (!filesystem.exists(target) || force) return true;
     return await confirm(`overwrite ${target}`);
   };
 
@@ -31,7 +31,7 @@ async function copyBatch(context, jobs, props) {
       continue;
     }
     // generate the React component
-    if (await shouldGenerate(job.target)) {
+    if (await shouldGenerate(job.target, force)) {
       await template.generate({
         directory: job.dir,
         template: job.template,

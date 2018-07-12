@@ -1,5 +1,5 @@
 ---
-<%if (props.dependsOn.length > 0) { %>
+<%if (props.dependsOn && props.dependsOn.length > 0) { %>
 Parameters:
 <% for(var i=0; i < props.dependsOn.length; i++) { %>
 <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
@@ -165,6 +165,8 @@ Resources:
   <% } %>
 
 Outputs:
+  Region:
+    Value: !Ref 'AWS::Region'
   GraphQLApiARN:
     Description: The App ID of the GraphQL endpoint.
     Value: !Ref GraphQLApi
