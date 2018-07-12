@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "fs-extra": "^6.0.1",
-    "inquirer": "^6.0.0"
+    "inquirer": "^6.0.0",
+    "promise-sequential": "^1.1.1"
   }
 }
