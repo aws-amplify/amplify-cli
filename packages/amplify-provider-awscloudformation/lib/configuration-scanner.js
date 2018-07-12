@@ -1,4 +1,6 @@
 const systemConfigManager = require('./system-config-manager');
+const path = require('path');
+const fs = require('fs');
 
 const configSources = [
     'none',
@@ -31,6 +33,7 @@ function run(context){
           }
         }
     }catch(e){
+        console.log(e.stack);
     }
 
     return configSource; 

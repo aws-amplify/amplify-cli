@@ -2,7 +2,7 @@ module.exports = {
   name: 'javascript',
   alias: 'js',
   run: async (context) => {
-    const {print} = context;
-    console.log("js///");
-  }
-}
+    const { print } = context;
+    print.info('js///');
+  },
+};

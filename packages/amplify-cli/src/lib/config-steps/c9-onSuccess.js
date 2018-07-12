@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const sequential = require('promise-sequential');
 const { print } = require('gluegun/print');
 
 function run(context) {

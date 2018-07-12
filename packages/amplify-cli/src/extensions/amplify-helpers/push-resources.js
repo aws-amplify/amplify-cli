@@ -25,7 +25,7 @@ async function pushResources(context, category, resourceName) {
       process.exit(1);
     })
     .then(() => {
-      onCategoryOutputsChange();
+      onCategoryOutputsChange(context);
       spinner.succeed('All resources are updated in the cloud');
     })
     .catch((err) => {

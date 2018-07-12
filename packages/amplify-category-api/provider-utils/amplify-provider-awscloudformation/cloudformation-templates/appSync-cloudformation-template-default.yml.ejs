@@ -523,6 +523,8 @@ Resources:
             mutation: Mutation
         }
 Outputs:
+  Region:
+    Value: !Ref 'AWS::Region'
   GraphQLApiARN:
     Description: The App ID of the GraphQL endpoint.
     Value: !Ref GraphQLApi

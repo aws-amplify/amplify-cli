@@ -44,3 +44,5 @@ Outputs :
     Value: !Ref 'DynamoDBTable'
   Arn:
     Value: !GetAtt DynamoDBTable.Arn
+  Region:
+    Value: !Ref 'AWS::Region'
