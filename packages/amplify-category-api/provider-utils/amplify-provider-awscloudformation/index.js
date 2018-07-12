@@ -48,8 +48,6 @@ function addResource(context, category, service, options) {
         cfnFilename = answers.customCfnFile;
       }
 
-      console.log('whaaaaaaaat', options.output);
-
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
