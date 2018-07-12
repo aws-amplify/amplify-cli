@@ -18,7 +18,7 @@ function pushResources(context, category, resourceName) {
   return resourcePusher.run(context, category, resourceName);
 }
 
-function configure(context){
+function configure(context) {
   return configManager.configure(context);
 }
 
@@ -34,5 +34,5 @@ module.exports = {
   pushResources,
   buildResources,
   providerUtils,
-  setupNewUser, 
+  setupNewUser,
 };

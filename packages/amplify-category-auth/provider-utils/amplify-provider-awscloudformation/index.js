@@ -33,9 +33,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 }
 
 
-function addResource(context, category, service, configure) {
+function addResource(context, category, service) {
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const {
     cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
   } = serviceMetadata;
