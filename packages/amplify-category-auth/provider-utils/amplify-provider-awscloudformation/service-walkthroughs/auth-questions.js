@@ -16,7 +16,7 @@ async function serviceWalkthrough(
   const defaultPromptInputs = [
     {
       key: 'useDefault',
-      question: 'Do you want to use the default configuration?',
+      question: 'Do you want to use a default IAM user pool/identity pool template?',
       type: 'confirm',
       default: true,
     },
