@@ -1,10 +1,53 @@
 Resources:
+
+  FederatedLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: FederatedIDLambdaRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  FederatedIDLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const cognitoIdentity = new aws.CognitoIdentity();'
+            - 'exports.handler = function(event, context) {'
+            - '    const params = {'
+            - '     AllowUnauthenticatedIdentities: true,
+            - '     IdentityPoolId: "us-west-2:490a006b-7e67-4b25-ae9f-8a7cdefb3422",
+            - '     IdentityPoolName: "publicunauth_MOBILEHUB_815353433",
+            - '     SupportedLoginProviders: {
+            - '       "graph.facebook.com": "920671841435962"
+            - '     }'
+            - '    };'
+            - '     cognitoIdentity.updateIdentityPool(params, (err, res) => {
+            - '       callback(err, res);
+            - '     })
+            - '}
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - FederatedLambdaExecutionRole
+        - Arn
+    DependsOn: FederatedLambdaExecutionRole
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
       AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
-  
   IdentityPoolRoleMap:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
     Properties: 
@@ -103,6 +146,9 @@ Resources:
   <% } %> 
  
 Outputs :
+  Lambda:
+    Value: !GetAtt FederatedIDLambda.Arn
+    Description: Lambda Arn
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool

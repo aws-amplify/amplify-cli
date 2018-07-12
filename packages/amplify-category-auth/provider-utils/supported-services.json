@@ -15,6 +15,47 @@
 				"required": true
 			},
 			{
+				"key": "federatedIdentity",
+				"set": "core",
+				"question": "Do you want to enable federated identities in your identity pool?",
+				"type": "confirm",
+				"required": true
+			},
+			{
+				"key": "authProviders",
+				"set": "core",
+				"question": "Do you want to enable federated identities in your identity pool?",
+				"type": "multiselect",
+				"required": true,
+				"map": "authProviders"
+			},
+			{
+				"key": "facebookAppId",
+				"set": "core",
+				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
+				"question": "Enter your Facebook App ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "graph.facebook.com",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleClientId",
+				"set": "core",
+				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
+				"question": "Enter your Google Client ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "accounts.google.com",
+						"operator": "includes"
+					}
+				]
+			},
+			{
 				"key": "userPoolName",
 				"set": "core",
 				"question": "Please provide a name for your user pool:",
