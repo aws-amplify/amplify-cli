@@ -10,7 +10,6 @@ module.exports = {
   name: subcommand,
   run: async (context) => {
     const { amplify } = context;
-
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {

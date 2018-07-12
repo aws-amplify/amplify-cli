@@ -26,8 +26,8 @@ Resources:
       UserPoolConfig:
         AwsRegion: <%= props.securitySetting.options.cognitoUserPoolRegion %>
         UserPoolId: <%= props.securitySetting.options.cognitoUserPoolId %>
-        DefaultAction: <%= props.securitySetting.options.cognitoAction %>
-        <%if (props.securitySetting.options.appClientRegex) { %>
+        DefaultAction: <%= props.securitySetting.options.cognitoAction %>	
+        <%if (props.securitySetting.options.appClientRegex) { %>	
         AppIdClientRegex: <%= props.securitySetting.options.appClientRegex %>
         <% } %>
       <% } %>

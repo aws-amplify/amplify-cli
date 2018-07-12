@@ -1,0 +1,407 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    <% if (props.dependsOn) { %>
+    "Parameters": {
+        
+    <% for(var i=0; i < props.dependsOn.length; i++) { %>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+          "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
+            "Type": "String",
+            "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
+          }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
+        
+          <% } %>
+          <% } %>
+        },
+    <% } %>
+    "Resources": {
+        <%if (!props.privacy.open) { %>
+        "PolicyAPIGW<%= props.apiName %>": {
+            "DependsOn": [
+              "<%= props.apiName %>"
+            ],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": "PolicyAPIGW<%= props.apiName %>",
+              "Roles": [
+              <%if (props.privacy.protected) { %>
+                 "<%= props.privacy.unAuthRoleName %>",
+                 <% } %>  
+                "<%= props.privacy.authRoleName %>"
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "execute-api:Invoke"
+                    ],
+                    "Resource": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "<%= props.apiName %>"
+                          },
+                          "/Prod/*/*"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+        <% } %>
+      "<%= props.apiName %>": {
+        "Type": "AWS::ApiGateway::RestApi",
+        "Properties": {
+          "Description": "",
+          "Name": "<%= props.apiName %>",
+          "Body": {
+            "swagger": "2.0",
+            "info": {
+              "version": "2018-05-24T17:52:00Z",
+              "title": "<%= props.apiName %>"
+            },
+            "host": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "apigateway.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".amazonaws.com"
+                  ]
+                ]
+              },
+            "basePath": "/Prod",
+            "schemes": [
+              "https"
+            ],
+            "paths": {
+              <% for(var i=0; i < props.paths.length; i++) { %>
+              "<%= props.paths[i].name %>": {
+                "options": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "produces": [
+                    "application/json"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "200 response",
+                      "headers": {
+                        "Access-Control-Allow-Origin": {
+                          "type": "string"
+                        },
+                        "Access-Control-Allow-Methods": {
+                          "type": "string"
+                        },
+                        "Access-Control-Allow-Headers": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "x-amazon-apigateway-integration": {
+                    "responses": {
+                      "default": {
+                        "statusCode": "200",
+                        "responseParameters": {
+                          "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                          "method.response.header.Access-Control-Allow-Origin": "'*'"
+                        }
+                      }
+                    },
+                    "requestTemplates": {
+                      "application/json": "{\"statusCode\": 200}"
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "type": "mock"
+                  }
+                },
+                "x-amazon-apigateway-any-method": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "produces": [
+                    "application/json"
+                  ],
+                  "parameters": [
+                    {
+                      "in": "body",
+                      "name": "RequestSchema",
+                      "required": false,
+                      "schema": {
+                        "$ref": "#/definitions/RequestSchema"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "200 response",
+                      "schema": {
+                        "$ref": "#/definitions/ResponseSchema"
+                      }
+                    }
+                  },
+                  <%if (!props.privacy.open) { %>        
+                    "security": [
+                        {
+                          "sigv4": []
+                        }
+                      ],
+                  <% } %>
+                  "x-amazon-apigateway-integration": {
+                    "responses": {
+                      "default": {
+                        "statusCode": "200"
+                      }
+                    },
+                    "uri": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:apigateway:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":lambda:path/2015-03-31/functions/",
+                            <% if (props.paths[i].lambdaArn ) { %> 
+                            "<%= props.paths[i].lambdaArn %>", 
+                            <% } else { %>
+                            {
+                                
+                                "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
+                            },
+                            <% } %>
+                            "/invocations"
+                          ]
+                        ]
+                      },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "type": "aws_proxy"
+                  }
+                }
+              },
+              "<%= props.paths[i].name %>/{proxy+}": {
+                "options": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "produces": [
+                    "application/json"
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "200 response",
+                      "headers": {
+                        "Access-Control-Allow-Origin": {
+                          "type": "string"
+                        },
+                        "Access-Control-Allow-Methods": {
+                          "type": "string"
+                        },
+                        "Access-Control-Allow-Headers": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "x-amazon-apigateway-integration": {
+                    "responses": {
+                      "default": {
+                        "statusCode": "200",
+                        "responseParameters": {
+                          "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                          "method.response.header.Access-Control-Allow-Origin": "'*'"
+                        }
+                      }
+                    },
+                    "requestTemplates": {
+                      "application/json": "{\"statusCode\": 200}"
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "type": "mock"
+                  }
+                },
+                "x-amazon-apigateway-any-method": {
+                  "consumes": [
+                    "application/json"
+                  ],
+                  "produces": [
+                    "application/json"
+                  ],
+                  "parameters": [
+                    {
+                      "in": "body",
+                      "name": "RequestSchema",
+                      "required": false,
+                      "schema": {
+                        "$ref": "#/definitions/RequestSchema"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "200 response",
+                      "schema": {
+                        "$ref": "#/definitions/ResponseSchema"
+                      }
+                    }
+                  },
+                  <%if (!props.privacy.open) { %>        
+                    "security": [
+                        {
+                          "sigv4": []
+                        }
+                      ],
+                  <% } %>
+                  "x-amazon-apigateway-integration": {
+                    "responses": {
+                      "default": {
+                        "statusCode": "200"
+                      }
+                    },
+                    "uri": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:aws:apigateway:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":lambda:path/2015-03-31/functions/",
+                          <% if (props.paths[i].lambdaArn) { %> 
+                            "<%= props.paths[i].lambdaArn %>",
+                          <% } else { %>
+                          {
+                            
+                            "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
+                          },
+                          <% } %>
+                          "/invocations"
+                        ]
+                      ]
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "type": "aws_proxy"
+                  }
+                }
+              }
+              <% } %>
+            },
+            "securityDefinitions": {
+              "sigv4": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "x-amazon-apigateway-authtype": "awsSigv4"
+              }
+            },
+            "definitions": {
+              "RequestSchema": {
+                "type": "object",
+                "required": [
+                  "request"
+                ],
+                "properties": {
+                  "request": {
+                    "type": "string"
+                  }
+                },
+                "title": "Request Schema"
+              },
+              "ResponseSchema": {
+                "type": "object",
+                "required": [
+                  "response"
+                ],
+                "properties": {
+                  "response": {
+                    "type": "string"
+                  }
+                },
+                "title": "Response Schema"
+              }
+            }
+          },
+          "FailOnWarnings": true
+        }
+      },
+
+      <%if (props.functionArns) { %>            
+        <% for (var i=0; i < props.functionArns.length; i++) { %>
+        
+        "function<%= props.functionArns[i].lambdaFunction %>Permission<%= props.apiName %>": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": <% if (props.functionArns[i].lambdaArn) {%> "<%= props.functionArns[i].lambdaArn %>", <% } else { %>
+                    {
+                        "Ref":  "function<%= props.functionArns[i].lambdaFunction %>Name"
+                    },
+                    <% } %>
+                    "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "arn:aws:execute-api:",
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                                "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                                "Ref": "<%= props.apiName %>"
+                            },
+                            "/*/*/*"
+                        ]
+                    ]
+                }
+            }
+        },
+        <% } %>
+        <% } %>
+        
+        
+        
+      "DeploymentAPIGW<%= props.apiName %>": {
+        "Type": "AWS::ApiGateway::Deployment",
+        "Properties": {
+          "Description": "The Development stage deployment of your API.",
+          "StageName": "Prod",
+          "RestApiId": {
+            "Ref": "<%= props.apiName %>"
+          }
+        }
+      }
+    },
+    "Outputs": {
+        "RootUrl": {
+            "Description": "Root URL of the API gateway",
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "<%= props.apiName %>"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/Prod"]]}
+        }
+    }
+  }
