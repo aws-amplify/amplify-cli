@@ -22,7 +22,7 @@ function showAllHelp(context) {
     },
     {
       name: 'publish',
-      description: 'Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front',
+      description: 'Executes amplify push, then builds and publishes client-side application for hosting',
     },
     {
       name: 'serve',

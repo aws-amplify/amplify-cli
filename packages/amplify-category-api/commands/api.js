@@ -11,7 +11,7 @@ module.exports = {
       },
       {
         name: 'push',
-        description: `Provisions only ${featureName} cloud resources with the latest local developments`,
+        description: `Provisions ${featureName} cloud resources and it's dependencies with the latest local developments`,
       },
       {
         name: 'remove',
