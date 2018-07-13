@@ -416,7 +416,7 @@ async function askLambdaQuestions(context, inputs) {
         }
         return add(context, 'amplify-provider-awscloudformation', 'Lambda')
           .then((resourceName) => {
-            context.print.success('Succesfully added Lambda table locally');
+            context.print.success('Succesfully added Lambda function locally');
             return { resourceName };
           });
       }
