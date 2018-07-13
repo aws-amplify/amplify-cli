@@ -1,6 +1,7 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
-    DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode
+    DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode,
+    TypeSystemDefinitionNode, Kind
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
@@ -249,16 +250,30 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             ctx.setResource(`List${def.name.value}Resolver`, listResolver)
 
             // Create the Scalar filter inputs
-            const tableStringFilterInput = makeTableScalarFilterInputObject('String')
-            const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
-            const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
-            const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
-            const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
-            ctx.addInput(tableStringFilterInput)
-            ctx.addInput(tableIDFilterInput)
-            ctx.addInput(tableIntFilterInput)
-            ctx.addInput(tableFloatFilterInput)
-            ctx.addInput(tableBooleanFilterInput)
+            if (!this.typeExist('TableStringFilterInput', ctx)) {
+                const tableStringFilterInput = makeTableScalarFilterInputObject('String')
+                ctx.addInput(tableStringFilterInput)
+            }
+
+            if (!this.typeExist('TableIDFilterInput', ctx)) {
+                const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
+                ctx.addInput(tableIDFilterInput)
+            }
+
+            if (!this.typeExist('TableIntFilterInput', ctx)) {
+                const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
+                ctx.addInput(tableIntFilterInput)
+            }
+
+            if (!this.typeExist('TableFloatFilterInput', ctx)) {
+                const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
+                ctx.addInput(tableFloatFilterInput)
+            }
+
+            if (!this.typeExist('TableBooleanFilterInput', ctx)) {
+                const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
+                ctx.addInput(tableBooleanFilterInput)
+            }
 
             // Create the TableXFilterInput
             const tableXFilterInput = makeTableXFilterInputObject(def)
@@ -280,5 +295,9 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         }
 
         ctx.addObjectExtension(queryType)
+    }
+
+    private typeExist(type: string, ctx: TransformerContext): boolean {
+        return Boolean(type in ctx.nodeMap);
     }
 }

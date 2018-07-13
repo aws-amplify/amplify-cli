@@ -11,7 +11,13 @@ const validSchema = `type Post @model {
     percantageUp: Float
     comments: [String]
     isPublished: Boolean
-}`;
+}
+
+type User @model {
+    id: ID!
+    name: String!
+}
+`;
 
 const transformer = new GraphQLTransform({
     transformers: [new AppSyncDynamoDBTransformer()]

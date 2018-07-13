@@ -134,8 +134,8 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
 
 export function makeTableScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Table${type}FilterInput`)
-    let condition = getScalarCondition(type)
-    const fields: InputValueDefinitionNode[] = condition
+    let conditions = getScalarConditions(type)
+    const fields: InputValueDefinitionNode[] = conditions
         .map((condition: string) => ({
             kind: Kind.INPUT_VALUE_DEFINITION,
             name: { kind: "Name" as "Name", value: condition },
@@ -161,7 +161,7 @@ export function makeTableScalarFilterInputObject(type: string): InputObjectTypeD
     }
 }
 
-function getScalarCondition(type: string): string[] {
+function getScalarConditions(type: string): string[] {
     switch (type) {
         case 'String':
             return STRING_CONDITIONS
