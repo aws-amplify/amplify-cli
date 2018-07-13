@@ -73,17 +73,6 @@ amplify init
 Running this command enables your Amplify project with cloud resuorces required to provision and deploy your project. By default the Amplify CLI uses AWS Cloudformation as the cloud provider. The command also adds the [AWS Amplify](https://github.com/aws/aws-amplify#aws-amplify) JavaScript library to your app so you can easily integrate Analytics, as well as other features provided by AWS. These features can easily be added  using the amplify cli commands below.
 
 
-## Configuration
-
-* [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
-
-* Configure the CLI with your AWS credentials
-
-```
-amplify configure
-```
-
-Check [here](#amplify-configure) for more details about configuration
 
 ## Commands Summary
 
@@ -109,17 +98,16 @@ Category specific commands
 5. [analytics (Pinpoint)](packages/amplify-category-analytics/Readme.md)
 6. [hosting (S3 and CloudFront Distribution)](packages/amplify-category-hosting/Readme.md)
 
-## amplify configure
+
+## Configuration
+
+* [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
+
+* Configure the CLI with your AWS credentials
 
 ```
 amplify configure
 ```
 
-#### There are two levels in the aws credential and region configurations for the amplify-cli
-- general
-- per project
-
-When you run `amplify configure` outside of a valid Amplify project, it sets the general configuration. The general configuration is applied when you run `amplify init` command. And its values are copied as the initial per project configuration for the newly initialized project
-
-When you run `amplify configure` inside a valid Amplify project, it sets the configuration for this project only. It does NOT change the general configuration or the configuration of other projects.
+Check [here](#amplify-configure) for more details about configuration
 
