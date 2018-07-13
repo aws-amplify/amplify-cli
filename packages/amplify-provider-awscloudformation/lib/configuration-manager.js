@@ -10,7 +10,7 @@ async function init(context) {
   context.projectConfigInfo = {};
   await newUserCheck(context);
   printInfo(context);
-  await comfirmProjectConfigSetup(context, true)
+  await comfirmProjectConfigSetup(context, true);
   return carryOutConfigAction(context);
 }
 
@@ -171,23 +171,23 @@ function configProject(context) {
       type: 'input',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
-      default: projectConfigInfo.accessKeyId ? 
-      projectConfigInfo.accessKeyId : constants.DefaultAWSAccessKeyId,
+      default: projectConfigInfo.accessKeyId ?
+        projectConfigInfo.accessKeyId : constants.DefaultAWSAccessKeyId,
     },
     {
       type: 'input',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
-      default: projectConfigInfo.secretAccessKey ? 
-      projectConfigInfo.secretAccessKey : constants.DefaultAWSSecretAccessKey,
+      default: projectConfigInfo.secretAccessKey ?
+        projectConfigInfo.secretAccessKey : constants.DefaultAWSSecretAccessKey,
     },
     {
       type: 'list',
       name: 'region',
       message: 'region: ',
       choices: awsRegions.regions,
-      default: projectConfigInfo.region ? 
-      projectConfigInfo.region : constants.DefaultAWSRegion,
+      default: projectConfigInfo.region ?
+        projectConfigInfo.region : constants.DefaultAWSRegion,
     },
   ];
 
@@ -311,23 +311,23 @@ async function loadConfiguration(context, awsClient) {
 }
 
 async function newUserCheck(context) {
-  const configSource = configScanner.run(context)
-  if(configSource === 'none'){
-    context.print.info('AWS access credentials can not be resolved.')
+  const configSource = configScanner.run(context);
+  if (configSource === 'none') {
+    context.print.info('AWS access credentials can not be resolved.');
     const answer = await inquirer.prompt([{
       type: 'confirm',
       name: 'setupNewUser',
       message: 'Setup new user',
       default: true,
-    }]); 
-    if(answer.setupNewUser){
-      await setupNewUser.run(context)
+    }]);
+    if (answer.setupNewUser) {
+      await setupNewUser.run(context);
     }
   }
-  return context; 
+  return context;
 }
 
-function logProjectSpecificConfg(context, awsClient){
+function logProjectSpecificConfg(context, awsClient) {
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {

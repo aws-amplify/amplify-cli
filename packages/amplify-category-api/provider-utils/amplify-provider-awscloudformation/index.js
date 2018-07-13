@@ -41,7 +41,7 @@ function addResource(context, category, service, options) {
       } else {
         answers = result;
       }
-      if(result.output) {
+      if (result.output) {
         options.output = result.output;
       }
       if (answers.customCfnFile) {

@@ -13,7 +13,7 @@ const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { getResourceOutputs } = require('./amplify-helpers/get-resource-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
-const { sharedQuestions } = require( './amplify-helpers/shared-questions.js')
+const { sharedQuestions } = require('./amplify-helpers/shared-questions.js');
 const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
 const { listCategories } = require('./amplify-helpers/list-categories');
@@ -32,6 +32,7 @@ const {
   updateamplifyMetaAfterResourceUpdate,
   updateamplifyMetaAfterResourceDelete,
 } = require('./amplify-helpers/update-amplify-meta');
+const { showHelp } = require('./amplify-helpers/show-help');
 const { executeProviderUtils } = require('./amplify-helpers/execute-provider-utils');
 
 module.exports = (context) => {
@@ -48,12 +49,13 @@ module.exports = (context) => {
     inputValidation,
     isRunningOnEC2,
     listCategories,
-    pathManager,
     makeId,
+    pathManager,
     pressEnterToContinue,
     pushResources,
     removeResource,
     sharedQuestions,
+    showHelp,
     showResourceTable,
     serviceSelectionPrompt,
     updateProjectConfig,
