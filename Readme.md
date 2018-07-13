@@ -92,8 +92,7 @@ The current set of commands supported by the amplify CLI are
 | Command              | Description |
 | --- | --- |
 | amplify init | Initializes a new project, sets up deployment resources in the cloud and makes your project Amplify ready|
-| amplify awscloudformation configure | Configures the aws access credentials and aws region for amplify-cli |
-| amplify configure project | Configures the attributes of your project for amplify-cli  like switching frontend framework and adding/removing cloud-provider plugins |
+| amplify configure | Configures the aws access credentials, aws region and attributes of your project like switching frontend framework and adding/removing cloud-provider plugins for amplify-cli |
 | amplify push | Provisions cloud resources with the latest local developments |
 | amplify publish | Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front |
 | amplify serve | Executes amplify push, then executes the project's start command to test run the client-side application |
