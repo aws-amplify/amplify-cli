@@ -73,6 +73,32 @@ amplify init
 Running this command enables your Amplify project with cloud resuorces required to provision and deploy your project. By default the Amplify CLI uses AWS Cloudformation as the cloud provider. The command also adds the [AWS Amplify](https://github.com/aws/aws-amplify#aws-amplify) JavaScript library to your app so you can easily integrate Analytics, as well as other features provided by AWS. These features can easily be added  using the amplify cli commands below.
 
 
+
+## Commands Summary
+
+The current set of commands supported by the amplify CLI are
+
+| Command              | Description |
+| --- | --- |
+| amplify init | Initializes a new project, sets up deployment resources in the cloud and makes your project Amplify ready|
+| amplify configure | Configures the aws access credentials, aws region and attributes of your project like switching frontend framework and adding/removing cloud-provider plugins for amplify-cli |
+| amplify push | Provisions cloud resources with the latest local developments |
+| amplify publish | Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front |
+| amplify serve | Executes amplify push, then executes the project's start command to test run the client-side application |
+| amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
+| amplify delete | Deletes all the resources tied to the project from the cloud |
+| amplify help | Displays help for the core cli |
+| amplify <category> help | Displays help for the categories in the cli |
+
+Category specific commands
+1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
+2. [storage (S3 & DynamoDB)](packages/amplify-category-storage/Readme.md)
+3. [function (Lambda)](packages/amplify-category-function/Readme.md)
+4. [api (AppSync & API Gateway)](packages/amplify-category-api/Readme.md)
+5. [analytics (Pinpoint)](packages/amplify-category-analytics/Readme.md)
+6. [hosting (S3 and CloudFront Distribution)](packages/amplify-category-hosting/Readme.md)
+
+
 ## Configuration
 
 * [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
@@ -84,42 +110,4 @@ amplify configure
 ```
 
 Check [here](#amplify-configure) for more details about configuration
-
-## Commands Summary
-
-The current set of commands supported by the amplify CLI are
-
-| Command              | Description |
-| --- | --- |
-| amplify init | Initializes a new project, sets up deployment resources in the cloud and makes your project Amplify ready|
-| amplify awscloudformation configure | Configures the aws access credentials and aws region for amplify-cli |
-| amplify configure project | Configures the attributes of your project for amplify-cli  like switching frontend framework and adding/removing cloud-provider plugins |
-| amplify push | Provisions cloud resources with the latest local developments |
-| amplify publish | Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front |
-| amplify serve | Executes amplify push, then executes the project's start command to test run the client-side application |
-| amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
-| amplify delete | Deletes all the resources tied to the project from the cloud |
-| amplify help [cmd] | Displays help for [cmd] |
-
-Category specific commands
-1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
-2. [storage (S3 & DynamoDB)](packages/amplify-category-storage/Readme.md)
-3. [function (Lambda)](packages/amplify-category-function/Readme.md)
-4. [api (AppSync & API Gateway)](packages/amplify-category-api/Readme.md)
-5. [analytics (Pinpoint)](packages/amplify-category-analytics/Readme.md)
-6. [hosting (S3 and CloudFront Distribution)](packages/amplify-category-hosting/Readme.md)
-
-## amplify configure
-
-```
-amplify configure
-```
-
-#### There are two levels in the aws credential and region configurations for the amplify-cli
-- general
-- per project
-
-When you run `amplify configure` outside of a valid Amplify project, it sets the general configuration. The general configuration is applied when you run `amplify init` command. And its values are copied as the initial per project configuration for the newly initialized project
-
-When you run `amplify configure` inside a valid Amplify project, it sets the configuration for this project only. It does NOT change the general configuration or the configuration of other projects.
 

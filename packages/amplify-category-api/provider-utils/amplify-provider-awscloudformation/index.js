@@ -19,7 +19,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     {
       dir: pluginDir,
       template: `cloudformation-templates/${cfnFilename}`,
-      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
+      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
     },
   ];
 
@@ -41,10 +41,12 @@ function addResource(context, category, service, options) {
       } else {
         answers = result;
       }
+      if (result.output) {
+        options.output = result.output;
+      }
       if (answers.customCfnFile) {
         cfnFilename = answers.customCfnFile;
       }
-
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,

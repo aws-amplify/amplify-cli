@@ -2,7 +2,12 @@ const fs = require('fs');
 
 let serviceMetadata;
 
-function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename) {
+function serviceQuestions(
+  context,
+  defaultValuesFilename,
+  stringMapFilename,
+  serviceWalkthroughFilename,
+) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
@@ -28,22 +33,25 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 }
 
 
-function addResource(context, category, service, configure) {
+function addResource(context, category, service) {
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services${configure}.json`))[service];
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const {
     cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
   } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename)
+  return serviceQuestions(
+    context,
+    defaultValuesFilename,
+    stringMapFilename,
+    serviceWalkthroughFilename,
+  )
+
     .then((result) => {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const stringMapFileSrc = `${__dirname}/assets/${stringMapFilename}`;
       const { functionMap } = require(defaultValuesSrc);
-      const { authFlowMap, coreAttributes, appClientReadAttributes } = require(stringMapFileSrc);
-
 
       /* merge actual answers object into props object of defaults answers,
        * ensuring that manual entries override defaults */

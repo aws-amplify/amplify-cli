@@ -1,18 +1,13 @@
 const fs = require('fs');
 const pathManager = require('./path-manager');
-const { getCategoryOutputs } = require('./get-category-outputs');
+const { getResourceOutputs } = require('./get-resource-outputs');
 
-function onCategoryOutputsChange() {
+function onCategoryOutputsChange(context) {
   const projectConfigFilePath = pathManager.getProjectConfigFilePath();
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
   if (projectConfig.frontendHandler) {
     const frontendHandler = require(Object.values(projectConfig.frontendHandler)[0]);
-    const categoryOutputs = getCategoryOutputs();
-    const data = {
-      projectConfig,
-      categoryOutputs,
-    };
-    frontendHandler.onCategoryOutputsChange(data);
+    frontendHandler.createFrontendConfigs(context, getResourceOutputs());
   }
 }
 

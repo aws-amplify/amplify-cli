@@ -1,14 +1,13 @@
-const fs = require('fs');
-const path = require('path'); 
 const initializer = require('./lib/initializer');
-const projectScanner = require('./lib/project-scanner'); 
+const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const server = require('./lib/server');
 const publisher = require('./lib/publisher'); 
 const constants = require('./lib/constants'); 
+const { createAWSExports, createAmplifyConfig } = require('./lib/frontend-config-creator');
 
-function scanProject(projectPath){
-  return projectScanner.run(projectPath); 
+function scanProject(projectPath) {
+  return projectScanner.run(projectPath);
 }
 
 function init(context) {
@@ -19,20 +18,13 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function onCategoryOutputsChange(data){
-  const { projectConfig,  categoryOutputs } = data; 
-  if(projectConfig[constants.Label]){
-    const frontendConfig = projectConfig[constants.Label].config; 
-    const srcDirPath = path.join(projectConfig.projectPath,frontendConfig.SourceDir);
-    if(fs.existsSync(srcDirPath)){
-      const filePath = path.join(srcDirPath, constants.outputFileName); 
-      const jsonString = JSON.stringify(categoryOutputs, null, 4);
-      fs.writeFileSync(filePath, jsonString, 'utf8');
-    }
-  }
+function createFrontendConfigs(context, amplifyResources) {
+  const { outputsByProvider, outputsByCategory } = amplifyResources;
+  createAmplifyConfig(context, outputsByCategory);
+  createAWSExports(context, outputsByProvider['amplify-provider-awscloudformation']);
 }
 
-function configure(context){
+function configure(context) {
   return configManager.configure(context);
 }
 
@@ -48,9 +40,10 @@ module.exports = {
   constants,
   scanProject,
   init,
-  onInitSuccessful, 
+  onInitSuccessful,
   configure,
   publish,
   serve,
-  onCategoryOutputsChange
+  onCategoryOutputsChange,
+  createFrontendConfigs,
 };

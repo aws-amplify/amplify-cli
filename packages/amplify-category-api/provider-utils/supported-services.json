@@ -68,7 +68,7 @@
 
 				"key": "cognitoUserPoolRegion",
 				"type": "list",
-				"question": "Please provide a user pool ID:"
+				"question": "Please select a region:"
 			},
 			{
 
@@ -217,6 +217,32 @@
 		"defaultValuesFilename": "appSync-defaults.js",
 		"serviceWalkthroughFilename": "appSync-walkthrough.js",
 		"cfnFilename": "appSync-cloudformation-template-default.yml.ejs",
+		"provider": "amplify-provider-awscloudformation"
+	},
+	"API Gateway": {
+		"inputs": [
+			{
+				"key": "apiName",
+				"question": "Please provide a friendly name for your api?",
+				"required": true
+			},
+			{
+				"key": "pathName",
+				"question":"HTTP path name?",
+				"type": "input",
+				"required":"true"
+			},
+			{
+
+				"key": "lambdaFunction",
+				"question": "Select lambda function",
+				"required": true,
+				"type": "input"
+			}
+		],
+		"defaultValuesFilename": "apigw-defaults.js",
+		"serviceWalkthroughFilename": "apigw-walkthrough.js",
+		"cfnFilename": "apigw-cloudformation-template-default.json.ejs",
 		"provider": "amplify-provider-awscloudformation"
 	}
 }
