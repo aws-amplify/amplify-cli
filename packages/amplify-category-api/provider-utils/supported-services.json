@@ -180,7 +180,7 @@
 				"type": "list",
 				"question": "Choose a Lambda data source option",
 				"options": [{
-						"name": "Use a Lambda function configured in the current Amplify project",
+						"name": "Use a Lambda function already added in the current Amplify project",
 						"value": "currentProject"
 					},
 					{
