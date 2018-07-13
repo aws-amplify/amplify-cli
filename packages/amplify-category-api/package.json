@@ -9,8 +9,8 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-storage": "file:../amplify-category-storage",
-    "amplify-category-function": "file:../amplify-category-function",
+    "amplify-category-storage": "^0.1.0",
+    "amplify-category-function": "^0.1.0",
     "eslint": "^4.9.0",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
