@@ -3,9 +3,9 @@ Resources:
   FederatedLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: FederatedIDLambdaRole
+      RoleName: <%= `${props.identityPoolName}FederatedIDLambdaRole` %>
       AssumeRolePolicyDocument:
-        Version: 2012-10-17
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -24,18 +24,17 @@ Resources:
             - 'const aws = require(''aws-sdk'');'
             - 'const cognitoIdentity = new aws.CognitoIdentity();'
             - 'exports.handler = function(event, context) {'
-            - '    const params = {'
-            - '     AllowUnauthenticatedIdentities: true,
-            - '     IdentityPoolId: "us-west-2:490a006b-7e67-4b25-ae9f-8a7cdefb3422",
-            - '     IdentityPoolName: "publicunauth_MOBILEHUB_815353433",
-            - '     SupportedLoginProviders: {
-            - '       "graph.facebook.com": "920671841435962"
-            - '     }'
-            - '    };'
-            - '     cognitoIdentity.updateIdentityPool(params, (err, res) => {
-            - '       callback(err, res);
-            - '     })
-            - '}
+            - '   const providerMap = JSON.parse(event.ResourceProperties.supportedLoginProviders)'
+            - '   const params = {'
+            - '     AllowUnauthenticatedIdentities: true,'
+            - '     IdentityPoolId: event.ResourceProperties.identityPoolId,'
+            - '     IdentityPoolName: event.ResourceProperties.identityPoolName,'
+            - '     SupportedLoginProviders: providerMap'
+            - '   };'
+            - '   return cognitoIdentity.updateIdentityPool(params, (err, res) => {'
+            - '      callback(err, res);'
+            - '   })'
+            - '}'
       Handler: index.handler
       Runtime: nodejs6.10
       Timeout: '300'
@@ -43,6 +42,32 @@ Resources:
         - FederatedLambdaExecutionRole
         - Arn
     DependsOn: FederatedLambdaExecutionRole
+
+  LambdaFunctionOutputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt 
+        - FederatedIDLambda
+        - Arn
+      identityPoolId: !Ref IdentityPool
+      identityPoolName: !GetAtt IdentityPool.Name
+      supportedLoginProviders: <%= props.thirdPartyMap %>
+
+  LambdaIAMPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= `${props.identityPoolName}LambdaIAMPolicy` %>
+      Roles: 
+        - <%= `${props.identityPoolName}FederatedIDLambdaRole` %>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-identity:UpdateIdentityPool'
+            Resource: !GetAtt FederatedIDLambda.Arn
+    DependsOn: FederatedLambdaExecutionRole
+
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties: 

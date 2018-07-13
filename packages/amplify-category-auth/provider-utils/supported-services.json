@@ -15,19 +15,26 @@
 				"required": true
 			},
 			{
-				"key": "federatedIdentity",
+				"key": "thirdPartyAuth",
 				"set": "core",
-				"question": "Do you want to enable federated identities in your identity pool?",
+				"question": "Do you want to enable 3rd party authentication providers in your identity pool?",
 				"type": "confirm",
 				"required": true
 			},
 			{
 				"key": "authProviders",
 				"set": "core",
-				"question": "Do you want to enable federated identities in your identity pool?",
+				"question": "Select the 3rd party authentication providers that you want to enable: ",
 				"type": "multiselect",
 				"required": true,
-				"map": "authProviders"
+				"map": "authProviders",
+				"andConditions": [
+					{
+						"key": "thirdPartyAuth",
+						"value": true,
+						"operator": "="
+					}
+				]
 			},
 			{
 				"key": "facebookAppId",

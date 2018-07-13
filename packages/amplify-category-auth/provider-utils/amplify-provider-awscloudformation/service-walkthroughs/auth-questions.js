@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const thirdPartyMap = require('../assets/string-maps').authProviders;
 
 async function serviceWalkthrough(
   context,
@@ -84,6 +85,23 @@ async function serviceWalkthrough(
     roles = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
   }
 
+  /*
+    create key/value pairs of third party auth providers,
+    where key = name accepted by updateIdentityPool API call and value = id entered by user
+    TODO: evalutate need for abstracted version of this operation
+  */
+  if (coreAnswers.thirdPartyAuth) {
+    coreAnswers.thirdPartyMap = {};
+    thirdPartyMap.forEach((e) => {
+      if (coreAnswers[e.answerHashKey]) {
+        coreAnswers.thirdPartyMap[e.value] = coreAnswers[e.answerHashKey];
+      }
+    });
+    console.log('coreAnswers.thirdPartyMap', coreAnswers.thirdPartyMap);
+    // stringify for use in ejs template
+    coreAnswers.thirdPartyMap = JSON.stringify(coreAnswers.thirdPartyMap);
+  }
+
   return {
     ...defaultConfigAnswer,
     ...coreAnswers,
@@ -91,6 +109,5 @@ async function serviceWalkthrough(
     ...roles,
   };
 }
-
 
 module.exports = { serviceWalkthrough };

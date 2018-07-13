@@ -89,22 +89,27 @@ const authProviders = [
   {
     name: 'Facebook',
     value: 'graph.facebook.com',
+    answerHashKey: 'facebookAppId',
   },
   {
     name: 'Google',
     value: 'accounts.google.com',
+    answerHashKey: 'googleClientId',
   },
   {
     name: 'Amazon',
     value: 'www.amazon.com',
+    answerHashKey: 'amazonClientId',
   },
   {
     name: 'Twitter',
     value: 'api.twitter.com',
+    answerHashKey: 'twitterClientId',
   },
   {
     name: 'Digits',
     value: 'www.digits.com',
+    answerHashKey: 'digitsClientId',
   },
 ];
 
