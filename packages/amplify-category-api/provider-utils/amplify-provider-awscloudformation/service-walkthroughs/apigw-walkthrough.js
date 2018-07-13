@@ -118,21 +118,21 @@ async function askPaths(context) {
 
   const choices = [
     {
-      name: 'Create new function',
+      name: 'Create a new Lambda function',
       value: 'newFunction',
     },
   ];
 
   if (existingLambdaArns) {
     choices.push({
-      name: 'Arn',
+      name: 'Use a Lambda function already deployed on AWS',
       value: 'arn',
     });
   }
 
   if (existingFunctions) {
     choices.push({
-      name: 'Function category',
+      name: 'Use a Lambda function already added in the current Amplify project',
       value: 'projectFunction',
     });
   }
@@ -226,7 +226,7 @@ function newLambdaFunction(context) {
   }
   return add(context, 'amplify-provider-awscloudformation', 'Lambda')
     .then((resourceName) => {
-      context.print.success('Succesfully added Lambda function localy');
+      context.print.success('Succesfully added Lambda function locally');
       return { lambdaFunction: resourceName };
     });
 }
