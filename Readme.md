@@ -46,7 +46,6 @@ The Amplify CLI, provides a command line interface for frontend developers to se
 * [Getting Started](#getting-started)
 * [Configuration](#configuration)
 * [Commands Summary](#commands-summary)
-* [Usage](#usage)
 
 
 ## Installation
@@ -108,6 +107,4 @@ Category specific commands
 ```
 amplify configure
 ```
-
-Check [here](#amplify-configure) for more details about configuration
 
