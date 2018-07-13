@@ -11,7 +11,6 @@ async function run(argv) {
     .src(__dirname)
     .plugins(nodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
-    .help() // provides default for help, h, --help, -h
     .version() // provides default for version, v, --version, -v
     .create();
 
