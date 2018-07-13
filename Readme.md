@@ -87,7 +87,7 @@ The current set of commands supported by the amplify CLI are
 | amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
 | amplify delete | Deletes all the resources tied to the project from the cloud |
 | amplify help | Displays help for the core cli |
-| amplify <category> help | Displays help for the categories in the cli |
+| amplify `<category>` help | Displays help for the categories in the cli |
 
 Category specific commands
 1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
