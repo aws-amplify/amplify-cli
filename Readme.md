@@ -3,6 +3,7 @@
 To setup your local dev environment:
 
 - under dir `aws-amplify-staging/`<br />
+  execute `yarn config set workspaces-experimental true`
   execute `npm run setup-dev`
 <br />
 
