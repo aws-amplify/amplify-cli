@@ -1,18 +1,20 @@
 const builder = require('./builder'); 
+const constants = require('./constants');
+const hostingPlugin = 'amplify-category-hosting';
+const publishService = 'S3AndCloudFront';
 
 function run(context) {
-  if(amplifyMeta.hosting){
     return builder.run(context)
     .then(publishToHostingBucket)
     .then(onSuccess)
     .catch(onFailure); 
-  }else{
-    throw new Error('Hosting is not enabled');
-  }
 }
 
 function publishToHostingBucket(context){
-  return context;
+  const {projectConfig} = context.exeInfo;
+  const distributionDirPath = projectConfig[constants.Label]['config']['DistributionDir'];
+  const hostingPluginModule = require(context.amplify.getPlugin(hostingPlugin)); 
+  hostingPluginModule.publish(context, publishService, { distributionDirPath }); 
 }
 
 function onSuccess(context){

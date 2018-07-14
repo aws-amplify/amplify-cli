@@ -1,6 +1,6 @@
 const fs = require('fs-extra'); 
 const path = require('path');
-const inquirer = require('inquirer');
+const fileUPloader = require('./helpers/file-uploader'); 
 const constants = require('../constants'); 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = "amplify-provider-awscloudformation";
@@ -31,9 +31,8 @@ async function disable(context) {
   fs.removeSync(serviceDirPath);
 }
 
-function publish(context){
-  const {distDirPath} = context.exeInfo.distDirPath; 
-
+function publish(context, args){
+  return fileUPloader.run(context, args.distributionDirPath); 
 }
   
 module.exports = {

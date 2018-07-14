@@ -8,10 +8,10 @@ const publishIgnore = {
     FileList: []
 },
 
-function run(context){
+function run(context, distributionDirPath){
     const s3Client = getS3Client(context);
     const hostingBucketName = getHostingBucketName(context);
-    const distributionDirPath = getDistributionDirPath(context);
+    
     let fileList = fileScanner.scan(distributionDirPath, publishIgnore.DirectoryList, publishIgnore.FileList);
 
     let uploadFileTasks = [];
@@ -33,13 +33,6 @@ function getS3Client(context){
 function getHostingBucketName(context){
     const {amplifyMeta} = context.exeInfo; 
     return amplifyMeta[constants.CategoryName][serviceName]['output']['HostingBucketName'];
-}
-
-function getDistributionDirPath(context){
-    const {projectConfig} = context.exeInfo; 
-    const frontendHandler = require(Object.values(projectConfig.frontendHandler)[0]);
-    const {DistributionDir} = frontendHandler.getConfig(context);  
-    return DistributionDir;
 }
 
 function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath){

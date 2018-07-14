@@ -48,9 +48,9 @@ function getCategoryStatus(context){
     }; 
 }
 
-function runServiceAction(service, action, context){
+function runServiceAction(context, service, action, args){
     const serviceModule = require(path.join(__dirname, service + '/index.js'));
-    return serviceModule[action](context); 
+    return serviceModule[action](context, args); 
 }
 
 function removeCategory(context){
