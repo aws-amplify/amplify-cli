@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "lerna run -- lint",
     "lint-fix": "lerna run -- lint-fix",
-    "setup-dev": "lerna bootstrap && cd packages/amplify-cli && npm link"
+    "setup-dev": "lerna bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link"
   },
   "main": "index.js",
   "license": "Apache-2.0",
