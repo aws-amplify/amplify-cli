@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const moment = require('moment'); 
+const opn = require('opn');
+const chalk = require('chalk');
 const fileUPloader = require('./helpers/file-uploader'); 
 const constants = require('../constants'); 
 const serviceName = 'S3AndCloudFront';
@@ -71,7 +73,14 @@ async function disable(context) {
 }
 
 function publish(context, args){
-  return fileUPloader.run(context, args.distributionDirPath); 
+  return fileUPloader.run(context, args.distributionDirPath)
+  .then(()=>{
+    const { amplifyMeta } = context.exeInfo; 
+    const { WebsiteURL }= amplifyMeta[constants.CategoryName][serviceName]['output'];
+    context.print.info('Your app is published successfully');
+    context.print.info(chalk.green(WebsiteURL));
+    opn(WebsiteURL, { wait: false });
+  }); 
 }
   
 module.exports = {
