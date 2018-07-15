@@ -4,7 +4,7 @@ const getAllDefaults = (project) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
   const defaults = {
-    resourceName: `database${shortId}`,
+    resourceName: `dynamo${shortId}`,
     tableName: `${name}${uuid().replace(/-/g, '')}`,
   };
   return defaults;

@@ -325,7 +325,7 @@ async function askDynamoDBQuestions(context, inputs) {
         }
         return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
           .then((resourceName) => {
-            context.print.success('Succesfully added DynamoDb table localy');
+            context.print.success('Succesfully added DynamoDb table locally');
             return { resourceName };
           });
       }
@@ -416,7 +416,7 @@ async function askLambdaQuestions(context, inputs) {
         }
         return add(context, 'amplify-provider-awscloudformation', 'Lambda')
           .then((resourceName) => {
-            context.print.success('Succesfully added Lambda table localy');
+            context.print.success('Succesfully added Lambda function locally');
             return { resourceName };
           });
       }

@@ -3,6 +3,7 @@
 To setup your local dev environment:
 
 - under dir `aws-amplify-staging/`<br />
+  execute `yarn config set workspaces-experimental true` <br />
   execute `npm run setup-dev`
 <br />
 
@@ -46,7 +47,6 @@ The Amplify CLI, provides a command line interface for frontend developers to se
 * [Getting Started](#getting-started)
 * [Configuration](#configuration)
 * [Commands Summary](#commands-summary)
-* [Usage](#usage)
 
 
 ## Installation
@@ -88,7 +88,7 @@ The current set of commands supported by the amplify CLI are
 | amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
 | amplify delete | Deletes all the resources tied to the project from the cloud |
 | amplify help | Displays help for the core cli |
-| amplify <category> help | Displays help for the categories in the cli |
+| amplify `<category>` help | Displays help for the categories in the cli |
 
 Category specific commands
 1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
@@ -108,6 +108,4 @@ Category specific commands
 ```
 amplify configure
 ```
-
-Check [here](#amplify-configure) for more details about configuration
 

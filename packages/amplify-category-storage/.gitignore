@@ -4,4 +4,4 @@ npm-debug.log
 coverage
 .nyc_output
 yarn.lock
-package.lock
+package-lock.json

@@ -5,7 +5,7 @@
   "dependencies": {
     "eslint": "^4.19.1",
     "inquirer": "^3.2.1",
-    "uuid": "^2.0.3"
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "lint": "eslint .",
