@@ -50,7 +50,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const files = fs.readdirSync(resourceDir);
     // Fetch all the Cloudformation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file =>  file.indexOf('template') !== -1);
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {
@@ -90,7 +90,7 @@ function packageResources(context, resources) {
 
         const files = fs.readdirSync(resourceDir);
         // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file =>  file.indexOf('template') !== -1);
+        const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
 
         if (cfnFiles.length !== 1) {
           context.print.error('There should be just one cloudformation template in the resource directory');
@@ -189,7 +189,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails) {
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
-  const {projectConfig, amplifyMeta} = projectDetails; 
+  const { projectConfig, amplifyMeta } = projectDetails;
 
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'provider');
@@ -201,7 +201,7 @@ function formNestedStack(context, projectDetails) {
       const resourceKey = category + resource;
       let templateURL;
       if (resourceDetails.providerMetadata) {
-        const parameters =  getResourceParameters(context, projectConfig, category, resource);
+        const parameters = getResourceParameters(context, projectConfig, category, resource);
         const { dependsOn } = resourceDetails;
 
         if (dependsOn) {
@@ -231,16 +231,15 @@ function formNestedStack(context, projectDetails) {
   return nestedStack;
 }
 
-function getResourceParameters(context, projectConfig, category, resource)
-{
-  let parameters = {}; 
+function getResourceParameters(context, projectConfig, category, resource) {
+  let parameters = {};
   const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectConfig.projectPath);
-  const resourceDirPath = path.join(backendDirPath, category, resource); 
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json'); 
-  if(fs.existsSync(parametersFilePath)){
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath))
+  const resourceDirPath = path.join(backendDirPath, category, resource);
+  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
+  if (fs.existsSync(parametersFilePath)) {
+    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
   }
-  return parameters; 
+  return parameters;
 }
 
 module.exports = {

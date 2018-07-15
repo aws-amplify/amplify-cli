@@ -1,15 +1,18 @@
-const chalk = require('chalk'); 
+const fs = require('fs-extra');
+const path = require('path'); 
 const mime = require('mime-types');
+const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner'); 
+const constants = require('../../constants');
 const serviceName = 'S3AndCloudFront';
 const providerName = "amplify-provider-awscloudformation";
 const publishIgnore = {
     DirectoryList: [],
     FileList: []
-},
+};
 
-function run(context, distributionDirPath){
-    const s3Client = getS3Client(context);
+async function run(context, distributionDirPath){
+    const s3Client = await getS3Client(context);
     const hostingBucketName = getHostingBucketName(context);
     
     let fileList = fileScanner.scan(distributionDirPath, publishIgnore.DirectoryList, publishIgnore.FileList);
@@ -20,13 +23,13 @@ function run(context, distributionDirPath){
         uploadFileTasks.push(()=>uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
     });
 
-    return Promise.all(uploadFileTasks);
+    return sequential(uploadFileTasks);
 }
 
-function getS3Client(context){
+async function getS3Client(context){
     const {projectConfig} = context.exeInfo; 
     const provider = require(projectConfig.providers[providerName]);
-    const aws = provider.getConfiguredAWSClient(context); 
+    const aws = await provider.getConfiguredAWSClient(context); 
     return new aws.S3(); 
 }
 
@@ -36,6 +39,7 @@ function getHostingBucketName(context){
 }
 
 function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath){
+    console.log('/////uploading file/////////////', filePath);
     return new Promise((resolve, reject)=>{
         let relativeFilePath = path.relative(distributionDirPath, filePath);
                 

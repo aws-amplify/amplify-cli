@@ -1,9 +1,17 @@
-const index = require('../../index'); 
+const subcommand = 'remove';
+const category = 'hosting';
 
 module.exports = {
-    name: 'remove',
-    alias: ['disable'],
-    run: async (context) => {
-        return index.remove(context);
-    }
+  name: subcommand,
+  run: async (context) => {
+    const { amplify, parameters } = context;
+    const resourceName = parameters.first;
+
+    return amplify.removeResource(context, category, resourceName)
+      .then(() => context.print.success('Successfully removed resource'))
+      .catch((err) => {
+        context.print.info(err.stack);
+        context.print.error('There was an error removing the hosting resource');
+      });
+  },
 };

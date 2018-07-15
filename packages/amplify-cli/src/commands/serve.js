@@ -3,7 +3,7 @@ module.exports = {
     run: async (context) => {
         context.exeInfo = context.amplify.getProjectDetails();
         await context.amplify.pushResources(context);
-        const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler.values[0]);
+        const frontendHandler = require(Object.values(context.exeInfo.projectConfig.frontendHandler)[0]);
         frontendHandler.serve(context); 
     },
 };

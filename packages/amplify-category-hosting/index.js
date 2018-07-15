@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
-const categoryManager = require('../../lib/category-manager');
+const categoryManager = require('./lib/category-manager');
 
-function add(context){
+async function add(context){
     const {
         availableServices,
         enabledServices,
@@ -23,7 +23,7 @@ function add(context){
             }); 
             return sequential(tasks);
         }else if(disabledServices.length == 1){
-            categoryManager.runServiceAction(context, disabledServices[0], 'enable'); 
+            return categoryManager.runServiceAction(context, disabledServices[0], 'enable'); 
         }else{
             throw new Error('Hosting is already fully enabled.')
         }
@@ -32,7 +32,7 @@ function add(context){
     }
 }
 
-function remove(context){
+async function remove(context){
     const {
       availableServices,
       enabledServices,
@@ -72,7 +72,7 @@ function publish(context, service, args){
 
     if(enabledServices.length > 0){
         if(enabledServices.includes(service)){
-            return categoryManager.runServiceAction(context, service, 'pubish', args);
+            return categoryManager.runServiceAction(context, service, 'publish', args);
         }else{
             throw new Error('Hosting service ' + service + ' is NOT enabled.');
         }
