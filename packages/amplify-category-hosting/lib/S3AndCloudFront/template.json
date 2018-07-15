@@ -2,6 +2,11 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description" : "Stack for static web hosting",
     "Parameters":{
+        "HostingBucketName":{
+            "Description": "Name of the hosting bucket",
+            "Type": "String",
+            "Default": "HostingBucket"
+        },
         "IndexDocument":{
             "Description": "index doc",
             "Type": "String",
@@ -17,6 +22,7 @@
         "S3Bucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
+                "BucketName": {"Ref": "HostingBucketName"},
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
                     "IndexDocument": {"Ref": "IndexDocument"},
@@ -85,7 +91,7 @@
     "Outputs": {
         "HostingBucketName": {
             "Description": "Hosting bucket name", 
-            "Value": {"Ref": "S3Bucket"}
+            "Value": {"Ref": "HostingBucketName"}
         },
         "WebsiteURL": {
             "Value": {
