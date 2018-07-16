@@ -32,43 +32,40 @@ async function add(context){
     }
 }
 
-async function remove(context){
-    const {
-      availableServices,
-      enabledServices,
-      disabledServices
-    } = categoryManager.getCategoryStatus(context);
-
-    if(enabledServices.length > 1){
-        const answers = await inquirer.prompt({
-            type: 'checkbox',
-            name: 'selectedServices',
-            message: 'Please the service(s) to remove.',
-            choices: enabledServices,
-            default: enabledServices[0],
-        });
-        if(answers.selectedServices.length < enabledServices.length){
-          const tasks = []; 
-          answers.selectedServices.forEach(service => {
-            tasks.push(()=>categoryManager.runServiceAction(context, service, 'disable'));
-          }); 
-          return sequential(tasks);
-        }else{
-          return categoryManager.removeCategory(context); 
-        }
-    }else if(enabledServices.length == 1){
-        return categoryManager.removeCategory(context); 
-    }else{
-        throw new Error('No hosting service is enabled.')
-    }
-}
-
-function publish(context, service, args){
+async function configure(context){
     const {
         availableServices,
         enabledServices,
         disabledServices
     } = categoryManager.getCategoryStatus(context);
+
+    if(availableServices.length > 0){
+        if(enabledServices.length > 1){
+            const answers = await inquirer.prompt({
+                type: 'checkbox',
+                name: 'selectedServices',
+                message: 'Please select the service(s) to configure.',
+                choices: enabledServices,
+                default: enabledServices[0],
+            });
+            answers.selectedServices.forEach(service => {
+                tasks.push(()=>categoryManager.runServiceAction(context, service, 'configure'));
+            }); 
+            return sequential(tasks);
+        }else if(enabledServices.length == 1){
+            return categoryManager.runServiceAction(context, enabledServices[0], 'configure'); 
+        }else{
+            throw new Error('No hosting service is enabled.')
+        }
+    }else{
+        throw new Error('Hosting is not available from enabled providers.')
+    }
+}
+
+function publish(context, service, args){
+    const {
+        enabledServices
+    } = getCategoryStatus(context);
 
     if(enabledServices.length > 0){
         if(enabledServices.includes(service)){
@@ -83,6 +80,6 @@ function publish(context, service, args){
 
 module.exports = {
     add,
-    remove,
+    configure,
     publish
 }

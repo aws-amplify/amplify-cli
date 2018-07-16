@@ -1,5 +1,0 @@
-{
-    "HostingBucketName": "hosting-bucket",
-    "IndexDocument": "index.html",
-    "ErrorDocument": "error.html"
-}

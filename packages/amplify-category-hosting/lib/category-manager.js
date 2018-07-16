@@ -53,14 +53,7 @@ function runServiceAction(context, service, action, args){
     return serviceModule[action](context, args); 
 }
 
-function removeCategory(context){
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath(); 
-    const categoryDirPath = path.join(projectBackendDirPath, constants.CategoryName); 
-    fs.removeSync(categoryDirPath);
-}
-
 module.exports = {
     getCategoryStatus,
-    runServiceAction,
-    removeCategory
+    runServiceAction
 }

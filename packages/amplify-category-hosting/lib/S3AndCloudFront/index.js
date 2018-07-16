@@ -12,19 +12,54 @@ const providerPlugin = "amplify-provider-awscloudformation";
 const templateFileName = 'hosting-s3andcloudfront-template.json'; 
 const parametersFileName = 'parameters.json'; 
 
+let parameters = {
+  "HostingBucketName": "hosting-bucket",
+  "IndexDocument": "index.html",
+  "ErrorDocument": "error.html"
+}
+
 function enable(context) {
+  return configure(context)
+  .then(()=>{
+    const metaData = {
+      "service": serviceName,
+      "providerPlugin": providerPlugin
+    }; 
+    return context.amplify.updateamplifyMetaAfterResourceAdd(
+      constants.CategoryName,
+      serviceName,
+      metaData,
+    );
+  });
+}
+
+function configure(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath(); 
   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
   fs.ensureDirSync(serviceDirPath); 
-  
-  fs.copySync(path.join(__dirname, 'template.json'), path.join(serviceDirPath, templateFileName));
 
-  const parameters = JSON.parse(fs.readFileSync(path.join(__dirname, 'parameters.json'))); 
+  const templateFilePath = path.join(serviceDirPath, templateFileName);
+  if(!fs.existsSync(templateFilePath)){
+    fs.copySync(path.join(__dirname, 'template.json'), templateFilePath);
+  }
 
-  const { projectConfig } = context.exeInfo; 
-  const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}-`;
-  const bucketName = projectConfig.projectName + timeStamp + parameters['HostingBucketName'];
-  parameters['HostingBucketName'] = bucketName.replace(/[^-a-z0-9]/g, '');
+  let currentParameters;
+  const parametersFilePath = path.join(serviceDirPath, parametersFileName);
+  if(fs.existsSync(parametersFilePath)){
+    try{
+      currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    }catch(e){
+    }
+  }
+
+  if(currentParameters){
+    parameters = currentParameters;
+  }else{
+    const { projectConfig } = context.exeInfo; 
+    const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}-`;
+    const bucketName = projectConfig.projectName + timeStamp + parameters['HostingBucketName'];
+    parameters['HostingBucketName'] = bucketName.replace(/[^-a-z0-9]/g, '');  
+  }
 
   const parameterQuestions = [
     {
@@ -46,30 +81,12 @@ function enable(context) {
       default: parameters['ErrorDocument']
     },
   ];
-
   return inquirer.prompt(parameterQuestions)
   .then((answers) => {
     const jsonString = JSON.stringify(answers, null, 4);
-    const parametersFilePath = path.join(serviceDirPath, parametersFileName);
     fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
     return answers;
-  }).then(()=>{
-    const metaData = {
-      "service": serviceName,
-      "providerPlugin": providerPlugin
-    }; 
-    return context.amplify.updateamplifyMetaAfterResourceAdd(
-      constants.CategoryName,
-      serviceName,
-      metaData,
-    );
   });
-}
-
-async function disable(context) {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath(); 
-  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
-  fs.removeSync(serviceDirPath);
 }
 
 function publish(context, args){
@@ -85,7 +102,7 @@ function publish(context, args){
   
 module.exports = {
   enable,
-  disable,
+  configure,
   publish
 };
   
