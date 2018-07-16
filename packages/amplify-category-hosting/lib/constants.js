@@ -1,5 +1,4 @@
 module.exports = {
-    Label: 'amplify-category-hosting',
-    CategoryName: 'hosting'
+  Label: 'amplify-category-hosting',
+  CategoryName: 'hosting',
 };
-  

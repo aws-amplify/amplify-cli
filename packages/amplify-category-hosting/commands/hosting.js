@@ -1,6 +1,4 @@
 module.exports = {
   name: 'hosting',
-  run: async (context) => {
-    return context; 
-  },
+  run: async context => context,
 };
