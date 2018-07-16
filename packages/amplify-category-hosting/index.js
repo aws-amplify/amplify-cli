@@ -65,7 +65,7 @@ async function configure(context){
 function publish(context, service, args){
     const {
         enabledServices
-    } = getCategoryStatus(context);
+    } = categoryManager.getCategoryStatus(context);
 
     if(enabledServices.length > 0){
         if(enabledServices.includes(service)){
