@@ -307,7 +307,7 @@ export class ResourceFactory {
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
-            TypeName: 'Query',
+            TypeName: 'Scan',
             RequestMappingTemplate: print(
                 compoundExpression([
                     ifElse(

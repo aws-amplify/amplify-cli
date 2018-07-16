@@ -1,17 +1,17 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode, FieldDefinitionNode, Kind
+    InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
     isScalar, getBaseType
 } from 'appsync-transformer-common'
 
-const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
-const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
-const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
-const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
-const BOOLEAN_CONDITIONS = ['ne', 'eq']
+const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or']
+const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or']
+const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or']
+const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or']
+const BOOLEAN_CONDITIONS = ['ne', 'eq', 'and', 'or']
 
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
@@ -102,15 +102,15 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Table${obj.name.value}FilterInput`)
+export function makeTableXScanFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${obj.name.value}ScanFilterInput`)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: makeNamedType('Table' + getBaseType(field.type) + 'FilterInput'),
+                type: makeNamedType('Table' + getBaseType(field.type) + 'ScanFilterInput'),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
@@ -132,15 +132,14 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
     }
 }
 
-export function makeTableScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Table${type}FilterInput`)
+export function makeTableScalarScanFilterInputObject(type: string): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${type}ScanFilterInput`)
     let conditions = getScalarConditions(type)
     const fields: InputValueDefinitionNode[] = conditions
         .map((condition: string) => ({
             kind: Kind.INPUT_VALUE_DEFINITION,
             name: { kind: "Name" as "Name", value: condition },
-            type: condition === 'between' ?
-                makeListType(makeNamedType(type)) : makeNamedType(type),
+            type: getScalarFilterInputType(condition, type, name),
             // TODO: Service does not support new style descriptions so wait.
             // description: field.description,
             directives: []
@@ -158,6 +157,18 @@ export function makeTableScalarFilterInputObject(type: string): InputObjectTypeD
         },
         fields,
         directives: []
+    }
+}
+
+function getScalarFilterInputType(condition: string, type: string, filterInputName: string): TypeNode {
+    switch (condition) {
+        case 'between':
+            return makeListType(makeNamedType(type))
+        case 'and':
+        case 'or':
+            return makeNamedType(filterInputName)
+        default:
+            return makeNamedType(type)
     }
 }
 

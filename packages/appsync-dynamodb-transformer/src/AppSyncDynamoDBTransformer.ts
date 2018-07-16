@@ -6,7 +6,7 @@ import {
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
-    makeTableScalarFilterInputObject, makeTableXFilterInputObject
+    makeTableScalarScanFilterInputObject, makeTableXScanFilterInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
@@ -250,34 +250,34 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             ctx.setResource(`List${def.name.value}Resolver`, listResolver)
 
             // Create the Scalar filter inputs
-            if (!this.typeExist('TableStringFilterInput', ctx)) {
-                const tableStringFilterInput = makeTableScalarFilterInputObject('String')
-                ctx.addInput(tableStringFilterInput)
+            if (!this.typeExist('TableStringScanFilterInput', ctx)) {
+                const tableStringScanFilterInput = makeTableScalarScanFilterInputObject('String')
+                ctx.addInput(tableStringScanFilterInput)
             }
 
-            if (!this.typeExist('TableIDFilterInput', ctx)) {
-                const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
-                ctx.addInput(tableIDFilterInput)
+            if (!this.typeExist('TableIDScanFilterInput', ctx)) {
+                const tableIDScanFilterInput = makeTableScalarScanFilterInputObject('ID')
+                ctx.addInput(tableIDScanFilterInput)
             }
 
-            if (!this.typeExist('TableIntFilterInput', ctx)) {
-                const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
-                ctx.addInput(tableIntFilterInput)
+            if (!this.typeExist('TableIntScanFilterInput', ctx)) {
+                const tableIntScanFilterInput = makeTableScalarScanFilterInputObject('Int')
+                ctx.addInput(tableIntScanFilterInput)
             }
 
-            if (!this.typeExist('TableFloatFilterInput', ctx)) {
-                const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
-                ctx.addInput(tableFloatFilterInput)
+            if (!this.typeExist('TableFloatScanFilterInput', ctx)) {
+                const tableFloatScanFilterInput = makeTableScalarScanFilterInputObject('Float')
+                ctx.addInput(tableFloatScanFilterInput)
             }
 
-            if (!this.typeExist('TableBooleanFilterInput', ctx)) {
-                const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
-                ctx.addInput(tableBooleanFilterInput)
+            if (!this.typeExist('TableBooleanScanFilterInput', ctx)) {
+                const tableBooleanScanFilterInput = makeTableScalarScanFilterInputObject('Boolean')
+                ctx.addInput(tableBooleanScanFilterInput)
             }
 
             // Create the TableXFilterInput
-            const tableXFilterInput = makeTableXFilterInputObject(def)
-            ctx.addInput(tableXFilterInput)
+            const tableXScanFilterInput = makeTableXScanFilterInputObject(def)
+            ctx.addInput(tableXScanFilterInput)
 
             // Extend the query type to include listX
             queryType = extensionWithFields(
@@ -285,7 +285,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 [makeField(
                     listResolver.Properties.FieldName,
                     [
-                        makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
+                        makeArg('filter', makeNamedType(`Table${def.name.value}ScanFilterInput`)),
                         makeArg('limit', makeNamedType('Int')),
                         makeArg('nextToken', makeNamedType('String'))
                     ],

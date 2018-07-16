@@ -132,22 +132,22 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     expectFields(queryType, ['listPost'])
     expectFields(queryType, ['listUser'])
     
-    const stringInputType = getInputType(parsed, 'TableStringFilterInput')
+    const stringInputType = getInputType(parsed, 'TableStringScanFilterInput')
     expect(stringInputType).toBeDefined()
-    const booleanInputType = getInputType(parsed, 'TableBooleanFilterInput')
+    const booleanInputType = getInputType(parsed, 'TableBooleanScanFilterInput')
     expect(booleanInputType).toBeDefined()
-    const intInputType = getInputType(parsed, 'TableIntFilterInput')
+    const intInputType = getInputType(parsed, 'TableIntScanFilterInput')
     expect(intInputType).toBeDefined()
-    const floatInputType = getInputType(parsed, 'TableFloatFilterInput')
+    const floatInputType = getInputType(parsed, 'TableFloatScanFilterInput')
     expect(floatInputType).toBeDefined()
-    const idInputType = getInputType(parsed, 'TableIDFilterInput')
+    const idInputType = getInputType(parsed, 'TableIDScanFilterInput')
     expect(idInputType).toBeDefined()
 
-    verifyInputCount(parsed, 'TableStringFilterInput', 1);
-    verifyInputCount(parsed, 'TableBooleanFilterInput', 1);
-    verifyInputCount(parsed, 'TableIntFilterInput', 1);
-    verifyInputCount(parsed, 'TableFloatilterInput', 1);
-    verifyInputCount(parsed, 'TableIDFilterInput', 1);
+    verifyInputCount(parsed, 'TableStringScanFilterInput', 1);
+    verifyInputCount(parsed, 'TableBooleanScanFilterInput', 1);
+    verifyInputCount(parsed, 'TableIntScanFilterInput', 1);
+    verifyInputCount(parsed, 'TableFloatScanFilterInput', 1);
+    verifyInputCount(parsed, 'TableIDScanFilterInput', 1);
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
