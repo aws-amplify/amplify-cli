@@ -32,7 +32,7 @@ function publish(context) {
   return publisher.run(context);
 }
 
-function serve(context) {
+function run(context) {
   return server.run(context);
 }
 
@@ -43,6 +43,6 @@ module.exports = {
   onInitSuccessful,
   configure,
   publish,
-  serve,
+  run,
   createFrontendConfigs,
 };
