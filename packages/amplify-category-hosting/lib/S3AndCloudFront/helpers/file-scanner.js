@@ -66,7 +66,7 @@ function recursiveScan(dir, filelist, ignoredDirs, ignoredFiles) {
   files.forEach((file) => {
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
       if (ignoredDirs.indexOf(file) < 0) {
-        filelist = recursiveScan(path.join(dir, file), filelist);
+        filelist = recursiveScan(path.join(dir, file), filelist, ignoredDirs, ignoredFiles);
       }
     } else if (ignoredFiles.indexOf(file) < 0) {
       filelist.push(path.join(dir, file));
