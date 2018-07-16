@@ -5,6 +5,7 @@ const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
+const aws = require('./src/aws-utils/aws');
 
 function init(context) {
   return initializer.run(context);
@@ -26,6 +27,10 @@ function buildResources(context, category, resourceName) {
   return resourceBuilder.run(context, category, resourceName);
 }
 
+function getConfiguredAWSClient(context) {
+  return aws.configureWithCreds(context);
+}
+
 module.exports = {
   init,
   onInitSuccessful,
@@ -35,4 +40,5 @@ module.exports = {
   buildResources,
   providerUtils,
   setupNewUser,
+  getConfiguredAWSClient,
 };

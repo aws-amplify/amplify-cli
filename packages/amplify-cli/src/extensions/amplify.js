@@ -8,8 +8,10 @@ const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue'
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
 const { buildResources } = require('./amplify-helpers/build-resources');
+const { getPlugin } = require('./amplify-helpers/get-plugin');
 const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
+const { getProjectMeta } = require('./amplify-helpers/get-project-meta');
 const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { getResourceOutputs } = require('./amplify-helpers/get-resource-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
@@ -41,8 +43,10 @@ module.exports = (context) => {
     constants,
     copyBatch,
     executeProviderUtils,
+    getPlugin,
     getProjectConfig,
     getProjectDetails,
+    getProjectMeta,
     getResourceStatus,
     getResourceOutputs,
     getWhen,

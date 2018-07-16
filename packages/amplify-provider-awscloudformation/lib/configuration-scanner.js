@@ -1,6 +1,6 @@
-const systemConfigManager = require('./system-config-manager');
+const fs = require('fs-extra');
 const path = require('path');
-const fs = require('fs');
+const systemConfigManager = require('./system-config-manager');
 
 /* const configSources = [
   'none',
@@ -34,7 +34,7 @@ function run(context) {
       }
     }
   } catch (e) {
-    console.log(e.stack);
+    // no need to do anything, configuSource stays the same as determined by previous steps.
   }
 
   return configSource;

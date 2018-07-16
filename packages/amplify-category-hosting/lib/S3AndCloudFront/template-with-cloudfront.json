@@ -1,0 +1,145 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description" : "Stack for static web hosting",
+    "Parameters":{
+        "HostingBucketName":{
+            "Description": "Name of the hosting bucket",
+            "Type": "String",
+            "Default": "HostingBucket"
+        },
+        "IndexDocument":{
+            "Description": "index doc",
+            "Type": "String",
+            "Default": "index.html"
+        },
+        "ErrorDocument":{
+            "Description": "error doc",
+            "Type": "String",
+            "Default": "error.html"
+        }
+    }, 
+    "Resources": {
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref": "HostingBucketName"},
+                "AccessControl": "PublicRead",
+                "WebsiteConfiguration": {
+                    "IndexDocument": {"Ref": "IndexDocument"},
+                    "ErrorDocument": {"Ref": "ErrorDocument"}
+                }
+            },
+            "DeletionPolicy": "Retain"
+        },
+        "BucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "MyPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "PublicReadForGetBucketObjects",
+                            "Effect": "Allow",
+                            "Principal": "*",
+                            "Action": "s3:GetObject",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "S3Bucket"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Bucket": {
+                    "Ref": "S3Bucket"
+                }
+            }
+        },
+        "CloudFrontDistribution" : {
+            "Type" : "AWS::CloudFront::Distribution",
+            "DependsOn" : "S3Bucket",
+            "Properties" : {
+                "DistributionConfig" : {
+                    "Origins" : [ {
+                        "DomainName" :  {"Fn::GetAtt": ["S3Bucket", "DomainName"]},
+                        "Id" : "hostingS3Bucket",
+                        "S3OriginConfig" : {
+                        }
+                    }],
+                    "Enabled" : "true",
+                    "DefaultRootObject" :  {"Ref": "IndexDocument"},
+                    "DefaultCacheBehavior" : {
+                        "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+                        "TargetOriginId" : "hostingS3Bucket",
+                        "ForwardedValues" : {
+                            "QueryString" : "false"
+                        },
+                        "ViewerProtocolPolicy" : "allow-all"
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "HostingBucketName": {
+            "Description": "Hosting bucket name", 
+            "Value": {"Ref": "HostingBucketName"}
+        },
+        "WebsiteURL": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "S3Bucket",
+                    "WebsiteURL"
+                ]
+            },
+            "Description": "URL for website hosted on S3"
+        },
+        "S3BucketSecureURL": {
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "S3Bucket",
+                                "DomainName"
+                            ]
+                        }
+                    ]
+                ]
+            },
+            "Description": "Name of S3 bucket to hold website content"
+        }, 
+        "CloudFrontDistributionID": {
+            "Value": {"Ref": "CloudFrontDistribution"}
+        },
+        "CloudFrontDomainName": {
+            "Value": {"Fn::GetAtt": ["CloudFrontDistribution", "DomainName"]}
+        },
+        "CloudFrontSecureURL": {
+            "Value": {
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {
+                            "Fn::GetAtt": [
+                                "CloudFrontDistribution",
+                                "DomainName"
+                            ]
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}

@@ -44,7 +44,8 @@
     "moment": "^2.22.2",
     "optionator": "^0.8.2",
     "ora": "^2.1.0",
-    "promise-sequential": "^1.1.1"
+    "promise-sequential": "^1.1.1",
+    "util": "^0.11.0"
   },
   "devDependencies": {
     "ava": "^0.22.0",
