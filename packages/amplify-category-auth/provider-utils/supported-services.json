@@ -5,7 +5,12 @@
 				"key": "identityPoolName",
 				"set": "core",
 				"question": "Please enter a name for your identity pool.",
-				"required": true
+				"required": true,
+				"validation": {
+					"operator": "regex",
+					"value": "^.{1,128}$",
+					"onErrorMsg": "The identity pool name must be at least 1 character and no more than 128."
+				}
 			},
 			{
 				"key": "allowUnauthenticatedIdentities",
@@ -58,6 +63,44 @@
 					{
 						"key": "authProviders",
 						"value": "accounts.google.com",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "amazonAppId",
+				"set": "core",
+				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+				"question": "Enter your Amazon App ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "www.amazon.com",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "twitterConsumerKey",
+				"set": "core",
+				"prefix": " \n You've opted to allow users to authenticate via Twitter.  If you haven't already, you'll need to create a Twitter Consumer Key and a Twitter Consumer Secret. \n",
+				"question": "Enter your Twitter Consumer Key: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "api.twitter.com",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "twitterConsumerSecret",
+				"set": "core",
+				"question": "Enter your Twitter Consumer Secret: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "api.twitter.com",
 						"operator": "includes"
 					}
 				]
@@ -245,7 +288,7 @@
 				"validation": {
 					"operator": "regex",
 					"value": "^.{1,128}$",
-					"onErrorMsg": "App Client Name must be at least 1 character and no more than 128."
+					"onErrorMsg": "The user pool name must be at least 1 character and no more than 128."
 				},
 				"andConditions": [
 					{

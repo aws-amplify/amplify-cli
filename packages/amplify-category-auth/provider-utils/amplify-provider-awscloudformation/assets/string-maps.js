@@ -99,17 +99,13 @@ const authProviders = [
   {
     name: 'Amazon',
     value: 'www.amazon.com',
-    answerHashKey: 'amazonClientId',
+    answerHashKey: 'amazonAppId',
   },
   {
     name: 'Twitter',
     value: 'api.twitter.com',
-    answerHashKey: 'twitterClientId',
-  },
-  {
-    name: 'Digits',
-    value: 'www.digits.com',
-    answerHashKey: 'digitsClientId',
+    answerHashKey: 'twitterConsumerKey',
+    concatKeys: ['twitterConsumerSecret'],
   },
 ];
 

@@ -91,15 +91,22 @@ async function serviceWalkthrough(
     TODO: evalutate need for abstracted version of this operation
   */
   if (coreAnswers.thirdPartyAuth) {
-    coreAnswers.thirdPartyMap = {};
+    coreAnswers.selectedParties = {};
     thirdPartyMap.forEach((e) => {
       if (coreAnswers[e.answerHashKey]) {
-        coreAnswers.thirdPartyMap[e.value] = coreAnswers[e.answerHashKey];
+        coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
+      }
+      /*
+        certain third party providers (such as Twitter) require multiple values,
+        which Cognito requires to be a concatenated string -
+        so here we build the string using 'concatKeys' defined in the thirdPartyMap
+      */
+      if (coreAnswers[e.answerHashKey] && e.concatKeys) {
+        e.concatKeys.forEach((i) => {
+          coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
+        });
       }
     });
-    console.log('coreAnswers.thirdPartyMap', coreAnswers.thirdPartyMap);
-    // stringify for use in ejs template
-    coreAnswers.thirdPartyMap = JSON.stringify(coreAnswers.thirdPartyMap);
   }
 
   return {

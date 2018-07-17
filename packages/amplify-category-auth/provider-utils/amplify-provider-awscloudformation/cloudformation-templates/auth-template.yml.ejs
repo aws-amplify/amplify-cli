@@ -1,9 +1,10 @@
 Resources:
 
+  <%if (props.authProviders.length > 0) { %>
   FederatedLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: <%= `${props.identityPoolName}FederatedIDLambdaRole` %>
+      RoleName: <%= props.federatedIDLambdaRole %>
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -13,6 +14,17 @@ Resources:
                 - lambda.amazonaws.com
             Action:
               - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: <%= props.federatedIdLogPolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
   FederatedIDLambda:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -23,18 +35,24 @@ Resources:
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const cognitoIdentity = new aws.CognitoIdentity();'
-            - 'exports.handler = function(event, context) {'
-            - '   const providerMap = JSON.parse(event.ResourceProperties.supportedLoginProviders)'
+            - 'exports.handler = (event, context, callback) => {'
+            - ' const providerMap = JSON.parse(event.ResourceProperties.supportedLoginProviders);'
             - '   const params = {'
             - '     AllowUnauthenticatedIdentities: true,'
             - '     IdentityPoolId: event.ResourceProperties.identityPoolId,'
             - '     IdentityPoolName: event.ResourceProperties.identityPoolName,'
             - '     SupportedLoginProviders: providerMap'
             - '   };'
-            - '   return cognitoIdentity.updateIdentityPool(params, (err, res) => {'
-            - '      callback(err, res);'
-            - '   })'
-            - '}'
+            - '   cognitoIdentity.updateIdentityPool(params).promise()'
+            - '     .then((res) => {'
+            - '       response.send(event, context, response.SUCCESS, {res: res});'   
+            - '     })'
+            - '     .catch((err) => {'
+            - '       response.send(event, context, response.FAILURE, {err: err});'
+            - '       throw err;'
+            - '     });'
+
+            - '};'
       Handler: index.handler
       Runtime: nodejs6.10
       Timeout: '300'
@@ -43,30 +61,32 @@ Resources:
         - Arn
     DependsOn: FederatedLambdaExecutionRole
 
-  LambdaFunctionOutputs:
+  LambdaFunctionInputs:
     Type: 'Custom::LambdaCallout'
     Properties:
-      ServiceToken: !GetAtt 
-        - FederatedIDLambda
-        - Arn
+      ServiceToken: !GetAtt FederatedIDLambda.Arn
       identityPoolId: !Ref IdentityPool
       identityPoolName: !GetAtt IdentityPool.Name
-      supportedLoginProviders: <%= props.thirdPartyMap %>
+      supportedLoginProviders: '<%- JSON.stringify(props.selectedParties) %>'
+    DependsOn: LambdaIAMPolicy
 
   LambdaIAMPolicy:
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= `${props.identityPoolName}LambdaIAMPolicy` %>
+      PolicyName: <%= props.lambdaIAMPolicy %>
       Roles: 
-        - <%= `${props.identityPoolName}FederatedIDLambdaRole` %>
+        - <%= props.federatedIDLambdaRole %>
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Action:
               - 'cognito-identity:UpdateIdentityPool'
-            Resource: !GetAtt FederatedIDLambda.Arn
+            Resource: !Sub
+              - arn:aws:cognito-identity:${region}:${account}:identitypool/${idpool}
+              - { region: !Ref "AWS::Region", account: !Ref "AWS::AccountId", idpool: !Ref IdentityPool}
     DependsOn: FederatedLambdaExecutionRole
+  <% } %>
 
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
@@ -83,6 +103,7 @@ Resources:
         <% } %>
           authenticated: <%= props.authRoleArn %>
     DependsOn: IdentityPool
+
 
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   SNSRole: 
@@ -171,6 +192,7 @@ Resources:
   <% } %> 
  
 Outputs :
+
   Lambda:
     Value: !GetAtt FederatedIDLambda.Arn
     Description: Lambda Arn
