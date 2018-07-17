@@ -5,6 +5,7 @@ const inquirer = require('inquirer');
 const awsRegions = require('./aws-regions.js').regions;
 const constants = require('./constants.js');
 const systemConfigManager = require('./system-config-manager');
+const obfuscationUtil = require('./utility-obfuscate');
 
 function run(context) {
   const awsConfig = {
@@ -55,12 +56,14 @@ function run(context) {
           name: 'accessKeyId',
           message: 'accessKeyId: ',
           default: awsConfig.accessKeyId,
+          transformer: obfuscationUtil.transform,
         },
         {
           type: 'input',
           name: 'secretAccessKey',
           message: 'secretAccessKey: ',
           default: awsConfig.secretAccessKey,
+          transformer: obfuscationUtil.transform,
         },
       ]);
     })

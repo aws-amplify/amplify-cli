@@ -5,6 +5,7 @@ const awsRegions = require('./aws-regions');
 const constants = require('./constants');
 const configScanner = require('./configuration-scanner');
 const setupNewUser = require('./setup-new-user');
+const obfuscateUtil = require('./utility-obfuscate');
 
 async function init(context) {
   context.projectConfigInfo = {};
@@ -151,7 +152,9 @@ function confirmProjectConfigRemoval(context) {
 }
 
 function configProject(context) {
-  const { projectConfigInfo } = context;
+  const {
+    projectConfigInfo,
+  } = context;
   const useProfileConfirmation = {
     type: 'confirm',
     name: 'useProfile',
@@ -172,14 +175,17 @@ function configProject(context) {
       name: 'accessKeyId',
       message: 'accessKeyId: ',
       default: projectConfigInfo.accessKeyId ?
-        projectConfigInfo.accessKeyId : constants.DefaultAWSAccessKeyId,
+        obfuscateUtil.obfuscate(projectConfigInfo.accessKeyId) : constants.DefaultAWSAccessKeyId,
+      transformer: obfuscateUtil.transform,
     },
     {
       type: 'input',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
       default: projectConfigInfo.secretAccessKey ?
-        projectConfigInfo.secretAccessKey : constants.DefaultAWSSecretAccessKey,
+        obfuscateUtil.obfuscate(projectConfigInfo.secretAccessKey)
+        : constants.DefaultAWSSecretAccessKey,
+      transformer: obfuscateUtil.transform,
     },
     {
       type: 'list',
@@ -203,8 +209,12 @@ function configProject(context) {
       }
       return inquirer.prompt(configurationSettings)
         .then((asws) => {
-          projectConfigInfo.accessKeyId = asws.accessKeyId;
-          projectConfigInfo.secretAccessKey = asws.secretAccessKey;
+          if (!obfuscateUtil.isObfuscated(asws.accessKeyId)) {
+            projectConfigInfo.accessKeyId = asws.accessKeyId;
+          }
+          if (!obfuscateUtil.isObfuscated(asws.secretAccessKey)) {
+            projectConfigInfo.secretAccessKey = asws.secretAccessKey;
+          }
           projectConfigInfo.region = asws.region;
           return context;
         });
@@ -220,10 +230,10 @@ function validateConfig(context) {
     }
   } else {
     projectConfigInfo.configValidated = projectConfigInfo.accessKeyId &&
-            projectConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId &&
-            projectConfigInfo.secretAccessKey &&
-            projectConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
-            projectConfigInfo.region && awsRegions.regions.includes(projectConfigInfo.region);
+      projectConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId &&
+      projectConfigInfo.secretAccessKey &&
+      projectConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
+      projectConfigInfo.region && awsRegions.regions.includes(projectConfigInfo.region);
   }
   return context;
 }
@@ -260,7 +270,9 @@ function createProjectConfig(context) {
 }
 
 function getProjectConfig(context) {
-  const { projectConfigInfo } = context;
+  const {
+    projectConfigInfo,
+  } = context;
   projectConfigInfo.projectConfigExists = false;
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
