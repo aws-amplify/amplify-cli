@@ -132,22 +132,28 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     expectFields(queryType, ['listPost'])
     expectFields(queryType, ['listUser'])
     
-    const stringInputType = getInputType(parsed, 'TableStringScanFilterInput')
+    const stringInputType = getInputType(parsed, 'TableStringFilterInput')
     expect(stringInputType).toBeDefined()
-    const booleanInputType = getInputType(parsed, 'TableBooleanScanFilterInput')
+    const booleanInputType = getInputType(parsed, 'TableBooleanFilterInput')
     expect(booleanInputType).toBeDefined()
-    const intInputType = getInputType(parsed, 'TableIntScanFilterInput')
+    const intInputType = getInputType(parsed, 'TableIntFilterInput')
     expect(intInputType).toBeDefined()
-    const floatInputType = getInputType(parsed, 'TableFloatScanFilterInput')
+    const floatInputType = getInputType(parsed, 'TableFloatFilterInput')
     expect(floatInputType).toBeDefined()
-    const idInputType = getInputType(parsed, 'TableIDScanFilterInput')
+    const idInputType = getInputType(parsed, 'TableIDFilterInput')
     expect(idInputType).toBeDefined()
+    const postInputType = getInputType(parsed, 'TablePostFilterInput')
+    expect(postInputType).toBeDefined()
+    const userInputType = getInputType(parsed, 'TableUserFilterInput')
+    expect(userInputType).toBeDefined()
 
-    verifyInputCount(parsed, 'TableStringScanFilterInput', 1);
-    verifyInputCount(parsed, 'TableBooleanScanFilterInput', 1);
-    verifyInputCount(parsed, 'TableIntScanFilterInput', 1);
-    verifyInputCount(parsed, 'TableFloatScanFilterInput', 1);
-    verifyInputCount(parsed, 'TableIDScanFilterInput', 1);
+    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
@@ -177,6 +183,6 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
     ) as InputObjectTypeDefinitionNode | undefined
 }
 
-function verifyInputCount(doc: DocumentNode, type: string, count: number): number {
-    return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length;
+function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
+    return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
 }

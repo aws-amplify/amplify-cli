@@ -102,15 +102,15 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeTableXScanFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Table${obj.name.value}ScanFilterInput`)
+export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${obj.name.value}FilterInput`)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: makeNamedType('Table' + getBaseType(field.type) + 'ScanFilterInput'),
+                type: makeNamedType('Table' + getBaseType(field.type) + 'FilterInput'),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
@@ -132,8 +132,8 @@ export function makeTableXScanFilterInputObject(obj: ObjectTypeDefinitionNode): 
     }
 }
 
-export function makeTableScalarScanFilterInputObject(type: string): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Table${type}ScanFilterInput`)
+export function makeTableScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Table${type}FilterInput`)
     let conditions = getScalarConditions(type)
     const fields: InputValueDefinitionNode[] = conditions
         .map((condition: string) => ({
