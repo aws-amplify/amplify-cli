@@ -306,28 +306,28 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         // Create the Scalar filter inputs
         if (!this.typeExist('TableStringFilterInput', ctx)) {
-            const tableStringScanFilterInput = makeTableScalarFilterInputObject('String')
-            ctx.addInput(tableStringScanFilterInput)
+            const tableStringFilterInput = makeTableScalarFilterInputObject('String')
+            ctx.addInput(tableStringFilterInput)
         }
 
         if (!this.typeExist('TableIDFilterInput', ctx)) {
-            const tableIDScanFilterInput = makeTableScalarFilterInputObject('ID')
-            ctx.addInput(tableIDScanFilterInput)
+            const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
+            ctx.addInput(tableIDFilterInput)
         }
 
         if (!this.typeExist('TableIntFilterInput', ctx)) {
-            const tableIntScanFilterInput = makeTableScalarFilterInputObject('Int')
-            ctx.addInput(tableIntScanFilterInput)
+            const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
+            ctx.addInput(tableIntFilterInput)
         }
 
         if (!this.typeExist('TableFloatFilterInput', ctx)) {
-            const tableFloatScanFilterInput = makeTableScalarFilterInputObject('Float')
-            ctx.addInput(tableFloatScanFilterInput)
+            const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
+            ctx.addInput(tableFloatFilterInput)
         }
 
         if (!this.typeExist('TableBooleanFilterInput', ctx)) {
-            const tableBooleanScanFilterInput = makeTableScalarFilterInputObject('Boolean')
-            ctx.addInput(tableBooleanScanFilterInput)
+            const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
+            ctx.addInput(tableBooleanFilterInput)
         }
 
         // Create the TableXFilterInput

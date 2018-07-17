@@ -7,11 +7,11 @@ import {
     isScalar, getBaseType
 } from 'appsync-transformer-common'
 
-const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or']
-const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or']
-const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or']
-const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or']
-const BOOLEAN_CONDITIONS = ['ne', 'eq', 'and', 'or']
+const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or', 'not']
+const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or', 'not']
+const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or', 'not']
+const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or', 'not']
+const BOOLEAN_CONDITIONS = ['ne', 'eq', 'and', 'or', 'not']
 
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
