@@ -295,6 +295,45 @@ export class ResourceFactory {
     }
 
     /**
+     * Create a resolver that queries an item in DynamoDB.
+     * @param type
+     */
+    public makeQueryResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName(`query${toUpper(type)}`)
+        const defaultPageLimit = 10
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            FieldName: fieldName,
+            TypeName: 'Query',
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    ifElse(
+                        ref('context.args.filter'),
+                        set(ref('filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')),
+                        set(ref('filter'), nul())
+                    ),
+                    set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+                    set(ref('token'), ref('util.defaultIfNullOrBlank("$context.args.token", "null")')),
+                    DynamoDBMappingTemplate.query({
+                        key: obj({
+                            '__typename': obj({ S: str(type) }),
+                            id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)')
+                        }),
+                        filter: ref('filter'),
+                        limit: ref('limit'),
+                        nextToken: ref('token')
+                    })
+                ])
+            ),
+            ResponseMappingTemplate: print(
+                DynamoDBMappingTemplate.paginatedResponse()
+            )
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+
+    /**
      * Create a resolver that lists items in DynamoDB.
      * TODO: actually fill out the right filter expression. This is a placeholder only.
      * @param type
@@ -325,7 +364,7 @@ export class ResourceFactory {
                 ])
             ),
             ResponseMappingTemplate: print(
-                ref('util.toJson($context.result)')
+                DynamoDBMappingTemplate.paginatedResponse()
             )
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }

@@ -209,6 +209,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         if (shouldMakeGet) {
             const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
             ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+
             queryType = extensionWithFields(
                 queryType,
                 [makeField(
@@ -218,34 +219,29 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 )]
             )
 
+            this.generateTableXConnectionType(ctx, def)
+
+            const queryResolver = this.resources.makeQueryResolver(def.name.value, getFieldNameOverride)
+            ctx.setResource(`Query${def.name.value}Resolver`, queryResolver)
+
+            queryType = extensionWithFields(
+                queryType,
+                [makeField(
+                    queryResolver.Properties.FieldName,
+                    [
+                        makeArg('id', makeNonNullType(makeNamedType('ID'))),
+                        makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
+                    ],
+                    makeNamedType(`Table${def.name.value}Connection`)
+                )]
+            )
+
             this.generateFilterInputs(ctx, def)
         }
 
         if (shouldMakeList) {
-            // Create the TableXConnection
-            const tableXConnectionName = `Table${def.name.value}Connection`
-            const connectionType = blankObject(tableXConnectionName)
-            ctx.addObject(connectionType)
 
-            // Create TableXConnection type with items and nextToken
-            let connectionTypeExtension = blankObjectExtension(tableXConnectionName)
-            connectionTypeExtension = extensionWithFields(
-                connectionTypeExtension,
-                [makeField(
-                    'items',
-                    [],
-                    makeListType(makeNamedType(def.name.value))
-                )]
-            )
-            connectionTypeExtension = extensionWithFields(
-                connectionTypeExtension,
-                [makeField(
-                    'nextToken',
-                    [],
-                    makeNamedType('String')
-                )]
-            )
-            ctx.addObjectExtension(connectionTypeExtension)
+            this.generateTableXConnectionType(ctx, def)
 
             // Create the list resolver
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride)
@@ -263,7 +259,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                         makeArg('limit', makeNamedType('Int')),
                         makeArg('nextToken', makeNamedType('String'))
                     ],
-                    makeNamedType(tableXConnectionName)
+                    makeNamedType(`Table${def.name.value}Connection`)
                 )]
             )
         }
@@ -273,6 +269,37 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
     private typeExist(type: string, ctx: TransformerContext): boolean {
         return Boolean(type in ctx.nodeMap);
+    }
+
+    private generateTableXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+        const tableXConnectionName = `Table${def.name.value}Connection`
+        if (this.typeExist(tableXConnectionName, ctx)) {
+            return
+        }
+
+        // Create the TableXConnection
+        const connectionType = blankObject(tableXConnectionName)
+        ctx.addObject(connectionType)
+
+        // Create TableXConnection type with items and nextToken
+        let connectionTypeExtension = blankObjectExtension(tableXConnectionName)
+        connectionTypeExtension = extensionWithFields(
+            connectionTypeExtension,
+            [makeField(
+                'items',
+                [],
+                makeListType(makeNamedType(def.name.value))
+            )]
+        )
+        connectionTypeExtension = extensionWithFields(
+            connectionTypeExtension,
+            [makeField(
+                'nextToken',
+                [],
+                makeNamedType('String')
+            )]
+        )
+        ctx.addObjectExtension(connectionTypeExtension)
     }
 
     private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {

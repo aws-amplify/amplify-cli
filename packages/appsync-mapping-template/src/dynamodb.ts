@@ -39,6 +39,26 @@ export class DynamoDBMappingTemplate {
     }
 
     /**
+     * Create a query resolver template.
+     * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
+     */
+    public static query({ key, filter, limit, nextToken }: {
+        key: ObjectNode;
+        filter: ObjectNode | Expression;
+        limit: Expression;
+        nextToken?: Expression; 
+    }): ObjectNode {
+        return obj({
+            version: str('2017-02-28'),
+            operation: str('Query'),
+            key,
+            filter,
+            limit,
+            nextToken
+        })
+    }
+
+    /**
      * Create a list item resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
@@ -167,5 +187,12 @@ export class DynamoDBMappingTemplate {
                 ['B', { kind: 'Quotes', expr: value }]
             ]
         };
+    }
+
+    public static paginatedResponse(): ObjectNode {
+        return obj({
+            items: ref('util.toJson($ctx.result.items)'),
+            nextToken: ref('util.toJson($util.defaultIfNullOrBlank($context.result.nextToken, null))')
+        })
     }
 }
