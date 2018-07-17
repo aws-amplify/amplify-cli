@@ -308,21 +308,30 @@ export class ResourceFactory {
             TypeName: 'Query',
             RequestMappingTemplate: print(
                 compoundExpression([
-                    ifElse(
-                        ref('context.args.filter'),
-                        set(ref('filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')),
-                        set(ref('filter'), nul())
-                    ),
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
-                    set(ref('token'), ref('util.defaultIfNullOrBlank("$context.args.token", "null")')),
                     DynamoDBMappingTemplate.query({
-                        key: obj({
-                            '__typename': obj({ S: str(type) }),
-                            id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)')
+                        query: obj({
+                            'expression' : str('#typename = :typename'),
+                            'expressionNames' : obj({
+                                '#typename' : str('__typename')
+                            }),
+                            'expressionValues' : obj({
+                                ':typename' : obj({
+                                    'S' : str(type)
+                                })
+                            })
                         }),
-                        filter: ref('filter'),
+                        filter: ifElse(
+                            ref('context.args.filter'),
+                            ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+                            nul()
+                        ),
                         limit: ref('limit'),
-                        nextToken: ref('token')
+                        nextToken: ifElse(
+                            ref('context.args.nextToken'),
+                            str('$context.args.nextToken'),
+                            nul()
+                        )
                     })
                 ])
             ),
@@ -346,20 +355,22 @@ export class ResourceFactory {
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
-            TypeName: 'Scan',
+            TypeName: 'Query',
             RequestMappingTemplate: print(
                 compoundExpression([
-                    ifElse(
-                        ref('context.args.filter'),
-                        set(ref('filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')),
-                        set(ref('filter'), nul())
-                    ),
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
-                    set(ref('token'), ref('util.defaultIfNullOrBlank("$context.args.token", "null")')),
                     DynamoDBMappingTemplate.listItem({
-                        filter: ref('filter'),
+                        filter: ifElse(
+                            ref('context.args.filter'),
+                            ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+                            nul()
+                        ),
                         limit: ref('limit'),
-                        nextToken: ref('token')
+                        nextToken: ifElse(
+                            ref('context.args.nextToken'),
+                            str('$context.args.nextToken'),
+                            nul()
+                        )
                     })
                 ])
             ),

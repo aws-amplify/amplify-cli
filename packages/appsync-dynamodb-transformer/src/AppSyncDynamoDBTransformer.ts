@@ -229,7 +229,6 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 [makeField(
                     queryResolver.Properties.FieldName,
                     [
-                        makeArg('id', makeNonNullType(makeNamedType('ID'))),
                         makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
                     ],
                     makeNamedType(`Table${def.name.value}Connection`)
