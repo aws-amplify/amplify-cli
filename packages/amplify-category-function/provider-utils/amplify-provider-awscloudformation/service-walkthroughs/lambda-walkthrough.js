@@ -25,13 +25,28 @@ function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
       default: answers => answers.resourceName,
-    },
+    }
   ];
+
+  const pathDetails = {
+    path: "/items"
+  };
+
+  if (context.api) {
+    Object.assign(pathDetails, context.api);
+  } else {
+    resourceQuestions.push({
+      type: inputs[4].type,
+      name: inputs[4].key,
+      message: inputs[4].question,
+      choices: inputs[4].options
+    });
+  }
 
   return inquirer.prompt(resourceQuestions)
     .then((answers) => {
       const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-      Object.assign(allDefaultValues, answers);
+      Object.assign(allDefaultValues, pathDetails, answers);
       return allDefaultValues;
     });
 }

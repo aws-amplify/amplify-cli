@@ -40,6 +40,26 @@
 					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
+			},
+			{
+				"key": "functionTemplate",
+				"question": "Please select the function template you want to use:",
+				"type": "list",
+				"options": [
+					{
+						"name": "Hello world function",
+						"value": "helloWorld"
+					},
+					{
+						"name": "Serverless express function (Integration with Amazon API Gateway)",
+						"value": "serverless"
+					},
+					{
+						"name": "CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)",
+						"value": "crud"
+					}
+				],
+				"required": true
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",
