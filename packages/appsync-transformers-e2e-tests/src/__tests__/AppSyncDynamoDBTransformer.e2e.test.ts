@@ -2,6 +2,7 @@ import {
     ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
     Kind
 } from 'graphql'
+import { ResourceConstants } from 'appsync-transformer-common'
 import GraphQLTransform from 'graphql-transform'
 import AppSyncDynamoDBTransformer from 'appsync-dynamodb-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
@@ -46,8 +47,8 @@ beforeAll(async () => {
         await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
-        const getApiEndpoint = outputValueSelector('GraphQLAPIEndpoint')
-        const getApiKey = outputValueSelector('GraphQLAPIKey')
+        const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         const endpoint = getApiEndpoint(finishedStack.Outputs)
         const apiKey = getApiKey(finishedStack.Outputs)
         expect(apiKey).toBeDefined()
