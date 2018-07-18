@@ -192,3 +192,137 @@ test('Test getPost query', async () => {
     }
 })
 
+test('Test listPost query', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test List" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual('Test List')
+        const listResponse = await GRAPHQL_CLIENT.query(`query {
+            listPost {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(listResponse, null, 4))
+        expect(listResponse.data.listPost.items).toBeDefined
+        const items = listResponse.data.listPost.items
+        expect(items.length).toBeGreaterThan(0)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test listPost query with filter', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test List with filter" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual('Test List with filter')
+        const listWithFilterResponse = await GRAPHQL_CLIENT.query(`query {
+            listPost(filter: {
+                title: {
+                    contains: "List with filter"
+                }
+            }) {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(listWithFilterResponse, null, 4))
+        expect(listWithFilterResponse.data.listPost.items).toBeDefined
+        const items = listWithFilterResponse.data.listPost.items
+        expect(items.length).toEqual(1)
+        expect(items[0].title).toEqual('Test List with filter')
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test queryPost query', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test Query" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual('Test Query')
+        const queryResponse = await GRAPHQL_CLIENT.query(`query {
+            queryPost {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(queryResponse, null, 4))
+        expect(queryResponse.data.queryPost.items).toBeDefined
+        const items = queryResponse.data.queryPost.items
+        expect(items.length).toBeGreaterThan(0)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test queryPost query with filter', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test Query with filter" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual('Test Query with filter')
+        const queryWithFilterResponse = await GRAPHQL_CLIENT.query(`query {
+            queryPost(filter: {
+                title: {
+                    contains: "Query with filter"
+                }
+            }) {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(queryWithFilterResponse, null, 4))
+        expect(queryWithFilterResponse.data.queryPost.items).toBeDefined
+        const items = queryWithFilterResponse.data.queryPost.items
+        expect(items.length).toEqual(1)
+        expect(items[0].title).toEqual('Test Query with filter')
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
