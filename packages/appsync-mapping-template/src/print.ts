@@ -3,7 +3,7 @@ import {
     ParensNode, EqualsNode, NotEqualsNode, ForEachNode,
     StringNode, IntNode, NullNode, ReferenceNode, QuietReferenceNode,
     ObjectNode, ListNode, FloatNode, QuotesNode, RawNode, SetNode, CompoundExpressionNode,
-    CommentNode, ToJsonNode
+    CommentNode, ToJsonNode, BooleanNode
 } from './ast';
 
 const TAB = '  ';
@@ -58,6 +58,10 @@ function printForEach(node: ForEachNode, indent: string = ''): string {
 
 function printString(node: StringNode): string {
     return `"${node.value}"`;
+}
+
+function printBool(node: BooleanNode): string {
+    return `${node.value}`;
 }
 
 function printRaw(node: RawNode): string {
@@ -146,6 +150,8 @@ function printExpr(expr: Expression, indent: string = ''): string {
             return printFloat(expr);
         case 'Int':
             return printInt(expr);
+        case 'Boolean':
+            return printBool(expr);
         case 'Null':
             return printNull(expr);
         case 'Reference':

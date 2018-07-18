@@ -12,7 +12,8 @@ import {
     NamedTypeNode,
     DocumentNode,
     Kind,
-    parse
+    parse,
+    EnumTypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 
@@ -203,5 +204,16 @@ export default class TransformerContext {
             throw new Error(`Conflicting input type '${inp.name.value}' found.`)
         }
         this.nodeMap[inp.name.value] = inp
+    }
+
+    /**
+     * Add an enum type definition node to the context.
+     * @param en The enum type definition node to add.
+     */
+    public addEnum(en: EnumTypeDefinitionNode) {
+        if (this.nodeMap[en.name.value]) {
+            throw new Error(`Conflicting enum type '${en.name.value}' found.`)
+        }
+        this.nodeMap[en.name.value] = en
     }
 }

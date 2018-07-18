@@ -7,7 +7,7 @@ import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
 import {
     DynamoDBMappingTemplate,  print, str,
     ref, obj, set, nul,
-    ifElse, compoundExpression, qref
+    ifElse, compoundExpression, qref, bool, equals
 } from 'appsync-mapping-template'
 import { ResourceConstants, graphqlName, toUpper } from 'appsync-transformer-common'
 
@@ -321,6 +321,15 @@ export class ResourceFactory {
                                 })
                             })
                         }),
+                        scanIndexForward: ifElse(
+                            ref('context.args.sortDirection'),
+                            ifElse(
+                                equals(ref('context.args.sortDirection'),str('ASC')),
+                                bool(true),
+                                bool(false)
+                            ),
+                            bool(true)
+                        ),
                         filter: ifElse(
                             ref('context.args.filter'),
                             ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),

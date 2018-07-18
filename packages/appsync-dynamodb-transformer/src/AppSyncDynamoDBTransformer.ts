@@ -6,7 +6,7 @@ import {
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
-    makeTableScalarFilterInputObject, makeTableXFilterInputObject
+    makeTableScalarFilterInputObject, makeTableXFilterInputObject, makeTableSortDirectionEnumObject
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
@@ -230,10 +230,16 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                     queryResolver.Properties.FieldName,
                     [
                         makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
+                        makeArg('sortDirection', makeNamedType('TableSortDirection')),
                     ],
                     makeNamedType(`Table${def.name.value}Connection`)
                 )]
             )
+
+            if (!this.typeExist('TableSortDirection', ctx)) {
+                const tableSortDirection = makeTableSortDirectionEnumObject()
+                ctx.addEnum(tableSortDirection)
+            }
 
             this.generateFilterInputs(ctx, def)
         }

@@ -199,6 +199,20 @@ export function int(value: number): IntNode {
 }
 
 /**
+ * A literal boolean that should be printed in the template.
+ */
+export interface BooleanNode {
+    kind: 'Boolean';
+    value: boolean;
+}
+export function bool(value: boolean): BooleanNode {
+    return {
+        kind: 'Boolean',
+        value
+    }
+}
+
+/**
  * A literal null to be printed in the template.
  */
 export interface NullNode {
@@ -340,6 +354,7 @@ export type Expression =
     | QuotesNode
     | FloatNode
     | IntNode
+    | BooleanNode
     | NullNode
     | ReferenceNode
     | QuietReferenceNode

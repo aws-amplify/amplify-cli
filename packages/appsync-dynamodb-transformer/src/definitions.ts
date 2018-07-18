@@ -1,6 +1,7 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode
+    InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode,
+    EnumTypeDefinitionNode
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
@@ -128,6 +129,30 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
             value: name
         },
         fields,
+        directives: []
+    }
+}
+
+export function makeTableSortDirectionEnumObject(): EnumTypeDefinitionNode {
+    const name = graphqlName('TableSortDirection')
+    return {
+        kind: Kind.ENUM_TYPE_DEFINITION,
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        values: [
+            {
+                kind: Kind.ENUM_VALUE_DEFINITION,
+                name: { kind: 'Name', value: 'ASC' },
+                directives: []
+            },
+            {
+                kind: Kind.ENUM_VALUE_DEFINITION,
+                name: { kind: 'Name', value: 'DESC' },
+                directives: []
+            }
+        ],
         directives: []
     }
 }
