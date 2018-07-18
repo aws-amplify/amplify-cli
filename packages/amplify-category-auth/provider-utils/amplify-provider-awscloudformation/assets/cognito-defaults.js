@@ -39,6 +39,10 @@ const userPoolDefaults = () => ({
   ],
   identityPoolName: `<label>_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
+  totpLambdaRole: `<label>_totp_lambda_role_${sharedId}`,
+  totpLambdaLogPolicy: `<label>_totp_lambda_log_policy_${sharedId}`,
+  totpPassRolePolicy: `<label>_totp_pass_role_policy_${sharedId}`,
+  totpLambdaIAMPolicy: `<label>_totp_lambda_iam_policy_${sharedId}`,
   ...identityPoolDefaults(),
 });
 
@@ -46,10 +50,9 @@ const identityPoolDefaults = () => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `<label>_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
-  federatedIDLambdaRole: `lambda_role_${sharedId}`,
-  federatedIdLogPolicy: `lambda_log_policy_${sharedId}`,
-  lambdaIAMPolicy: `lambda_iam_policy_${sharedId}`,
-
+  lambdaLogPolicy: `<label>_lambda_log_policy_${sharedId}`,
+  federatedIDLambdaRole: `<label>_federated_lambda_role_${sharedId}`,
+  federatedLambdaIAMPolicy: `<label>_federated_lambda_iam_policy_${sharedId}`,
 });
 
 const functionMap = {

@@ -137,6 +137,29 @@
 				]
 			},
 			{
+				"key": "mfaTypes",
+				"set": "core",
+				"question": "Do you want to use SMS Text Message MFA or Time-Based One-time Password (TOTP) MFA?",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					"SMS Text Message",
+					"TOTP"
+				],
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					}
+				]
+			},
+			{
 				"key": "smsAuthenticationMessage",
 				"set": "core",
 				"question": "Please specify an SMS authentication message:",
@@ -157,6 +180,11 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
 					}
 				]
 			},
@@ -181,6 +209,11 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
 					}
 				]
 			},

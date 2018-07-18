@@ -73,7 +73,6 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
         type: 'input',
       }, question);
     }
-
     questions.push(question);
   }
 

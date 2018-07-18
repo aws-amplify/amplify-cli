@@ -1,6 +1,121 @@
 Resources:
 
-  <%if (props.authProviders.length > 0) { %>
+  <%if (props.mfaConfiguration != 'OFF') { %>
+  MFALambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: <%= props.totpLambdaRole %>      
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: <%= props.totpLambdaLogPolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
+      - PolicyName: <%= props.totpPassRolePolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'iam:PassRole'
+              Resource: '*'
+    DependsOn: UserPool
+
+  MFALambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - '   const params = {'
+            - '     UserPoolId: event.ResourceProperties.userPoolId,'
+            - '     MfaConfiguration: event.ResourceProperties.mfaConfiguration,'
+            - '     SmsConfiguration: {'
+            - '       SnsCallerArn: event.ResourceProperties.snsCallArn,'
+            - '       ExternalId: event.ResourceProperties.snsExternalId'
+            - '     },'
+            - '     SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,'
+            - '     SmsVerificationMessage: event.ResourceProperties.smsVerificationMessage,'
+            - '   };'
+            - '   identity.updateUserPool(params).promise()'
+            - '     .then((updateUserPoolResponse) => {'
+            - '       const totpParams = {'
+            - '         UserPoolId: event.ResourceProperties.userPoolId,'
+            - '         SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled}'
+            - '       }'
+            - '       identity.setUserPoolMfaConfig(totpParams).promise()'
+            - '         .then((setUserPoolMfaConfigResponse) => {'
+            - '           response.send(event, context, response.SUCCESS, {updateUserPoolResponse, setUserPoolMfaConfigResponse});'   
+            - '         })'
+            - '     })'
+            - '     .catch((err) => {'
+            - '       response.send(event, context, response.FAILURE, {err: err});'
+            - '       throw err;'
+            - '     });'
+            - '};'
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - MFALambdaExecutionRole
+        - Arn
+    DependsOn: MFALambdaExecutionRole
+
+
+  MFALambdaIAMPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.totpLambdaIAMPolicy %>
+      Roles: 
+        - <%= props.totpLambdaRole %>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:UpdateUserPool'
+              - 'cognito-idp:SetUserPoolMfaConfig'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: MFALambda
+
+
+  MFALambdaFunctionInputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt MFALambda.Arn
+      userPoolId: !Ref UserPool
+      mfaConfiguration: '<%= props.mfaConfiguration %>'
+      totpEnabled: <%= props.mfaTypes.includes('TOTP')  %>
+      <%if (props.mfaConfiguration != 'OFF' && props.mfaTypes.includes('SMS Text Message')) { %>
+      snsCallArn: !GetAtt SNSRole.Arn
+      snsExternalId: <%= props.roleExternalId %>
+      smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
+      smsVerificationMessage: <%= props.smsVerificationMessage %>
+      <% } %>
+    DependsOn: MFALambdaIAMPolicy
+
+  <% } %>
+
+  <%if (props.authProviders && props.authProviders.length > 0) { %>
   FederatedLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -15,7 +130,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: <%= props.federatedIdLogPolicy %>
+      - PolicyName: <%= props.lambdaLogPolicy %>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -61,19 +176,10 @@ Resources:
         - Arn
     DependsOn: FederatedLambdaExecutionRole
 
-  LambdaFunctionInputs:
-    Type: 'Custom::LambdaCallout'
-    Properties:
-      ServiceToken: !GetAtt FederatedIDLambda.Arn
-      identityPoolId: !Ref IdentityPool
-      identityPoolName: !GetAtt IdentityPool.Name
-      supportedLoginProviders: '<%- JSON.stringify(props.selectedParties) %>'
-    DependsOn: LambdaIAMPolicy
-
-  LambdaIAMPolicy:
+  FederatedLambdaIAMPolicy:
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.lambdaIAMPolicy %>
+      PolicyName: <%= props.federatedLambdaIAMPolicy %>
       Roles: 
         - <%= props.federatedIDLambdaRole %>
       PolicyDocument:
@@ -85,7 +191,17 @@ Resources:
             Resource: !Sub
               - arn:aws:cognito-identity:${region}:${account}:identitypool/${idpool}
               - { region: !Ref "AWS::Region", account: !Ref "AWS::AccountId", idpool: !Ref IdentityPool}
-    DependsOn: FederatedLambdaExecutionRole
+    DependsOn: FederatedIDLambda
+
+  FederatedLambdaFunctionInputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt FederatedIDLambda.Arn
+      identityPoolId: !Ref IdentityPool
+      identityPoolName: !GetAtt IdentityPool.Name
+      supportedLoginProviders: '<%- JSON.stringify(props.selectedParties) %>'
+    DependsOn: FederatedLambdaIAMPolicy
+
   <% } %>
 
   IdentityPool:
@@ -153,14 +269,6 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
-      MfaConfiguration: '<%= props.mfaConfiguration %>'
-      <%if (props.mfaConfiguration != 'OFF') { %>
-      SmsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
-      SmsVerificationMessage: <%= props.smsVerificationMessage %>
-      SmsConfiguration: 
-        SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: <%= props.roleExternalId %>  
-      <% } %>
     <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
@@ -193,9 +301,11 @@ Resources:
  
 Outputs :
 
+  <%if (props.authProviders && props.authProviders.length > 0) { %>
   Lambda:
     Value: !GetAtt FederatedIDLambda.Arn
     Description: Lambda Arn
+  <% } %>
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
