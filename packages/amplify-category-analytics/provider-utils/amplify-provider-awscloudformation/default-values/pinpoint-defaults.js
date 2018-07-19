@@ -5,7 +5,7 @@ const getAllDefaults = (project) => {
   const [shortId] = uuid().split('-');
   const defaults = {
     appName,
-    resourceName: `analytics${shortId}`,
+    resourceName: `pinpoint${shortId}`,
     roleName: `pinpointLambdaRole${shortId}`,
     cloudWatchPolicyName: `cloudWatchPolicy${shortId}`,
     pinpointPolicyName: `pinpointPolicy${shortId}`,

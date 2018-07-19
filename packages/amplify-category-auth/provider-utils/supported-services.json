@@ -247,6 +247,11 @@
 						"key": "defaultPasswordPolicy",
 						"value": false,
 						"operator": "="
+					},
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
@@ -267,16 +272,7 @@
 						"key": "defaultPasswordPolicy",
 						"value": false,
 						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "editRequiredAttributes",
-				"set": "core",
-				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these as required?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolAndUserPool",
@@ -287,14 +283,14 @@
 			{
 				"key": "requiredAttributes",
 				"set": "core",
-				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Do you want to mark any of these are required?",
+				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Mark the required attributes below:",
 				"required": true,
 				"type": "multiselect",
 				"map": "coreAttributes",
 				"andConditions": [
 					{
-						"key": "editRequiredAttributes",
-						"value": true,
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
 						"operator": "="
 					}
 				]

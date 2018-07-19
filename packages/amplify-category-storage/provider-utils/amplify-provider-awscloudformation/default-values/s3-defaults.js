@@ -4,7 +4,7 @@ const getAllDefaults = (project) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
   const defaults = {
-    resourceName: `storage${shortId}`,
+    resourceName: `s3${shortId}`,
     bucketName: `${name}${uuid().replace(/-/g, '')}`,
     bucketPolicy: 'Private',
   };
