@@ -12,7 +12,6 @@ class CloudFormation {
       Promise.resolve(awsClientWithCreds) : aws.configureWithCreds(context);
     return initializeAwsClient
       .then((awsItem) => {
-        console.log(initializeAwsClient);
         this.cfn = new awsItem.CloudFormation();
         this.context = context;
         return this;
