@@ -3,12 +3,13 @@ const moment = require('moment');
 const path = require('path');
 const fs = require('fs-extra');
 const ora = require('ora');
+const Cloudformation = require('../src/aws-utils/aws-cfn');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 
 function run(context) {
   return configurationManager.init(context)
-    .then(ctxt => new Promise((resolve, reject) => {
+    .then((ctxt) => {
       const awscfn = getConfiguredAwsCfnClient(ctxt);
       const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
       const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
@@ -36,29 +37,20 @@ function run(context) {
         ],
       };
 
-      const spinner = ora('Creating root stack');
-      spinner.start();
-      awscfn.createStack(params, (err) => {
-        if (err) {
-          spinner.fail('Root stack creation failed');
-          return reject(err);
-        }
-
-        const waitParams = {
-          StackName: stackName,
-        };
-        spinner.start('Initializing project in the cloud...');
-        awscfn.waitFor('stackCreateComplete', waitParams, (waitErr, waitData) => {
-          if (waitErr) {
-            spinner.fail('Root stack creation failed');
-            return reject(waitErr);
-          }
-          spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+      const spinner = ora();
+      spinner.start('Initializing project in the cloud...');
+      return new Cloudformation(ctxt, awscfn)
+        .then(cfnItem => cfnItem.createResourceStack(params))
+        .then((waitData) => {
           processStackCreationData(ctxt, waitData);
-          resolve(ctxt);
+          spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+          return ctxt;
+        })
+        .catch((e) => {
+          spinner.fail('Root stack creation failed');
+          throw e;
         });
-      });
-    }));
+    });
 }
 
 function getConfiguredAwsCfnClient(context) {
@@ -75,7 +67,7 @@ function getConfiguredAwsCfnClient(context) {
       });
     }
   }
-  return new aws.CloudFormation();
+  return aws;
 }
 
 function processStackCreationData(context, stackDescriptiondata) {

@@ -7,9 +7,12 @@ const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 
 class CloudFormation {
-  constructor(context) {
-    return aws.configureWithCreds(context)
+  constructor(context, awsClientWithCreds) {
+    const initializeAwsClient = awsClientWithCreds ?
+      Promise.resolve(awsClientWithCreds) : aws.configureWithCreds(context);
+    return initializeAwsClient
       .then((awsItem) => {
+        console.log(initializeAwsClient);
         this.cfn = new awsItem.CloudFormation();
         this.context = context;
         return this;
@@ -27,22 +30,25 @@ class CloudFormation {
     self.eventStartTime = new Date();
 
     return new Promise((resolve, reject) => {
-      cfnModel.createStack(cfnParentStackParams, (createErr, data) => {
+      cfnModel.createStack(cfnParentStackParams, (createErr) => {
         this.readStackEvents(cfnParentStackParams.StackName);
         if (createErr) {
           context.print.error('Error creating cloudformation stack');
           reject(createErr);
         }
-        cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr) => {
-          if (self.pollForEvents) {
-            clearInterval(self.pollForEvents);
-          }
-          if (completeErr) {
-            context.print.error('Error creating cloudformation stack');
-            reject(completeErr);
-          }
-          resolve(data);
-        });
+        cfnModel.waitFor(
+          cfnCompleteStatus, cfnStackCheckParams,
+          (completeErr, waitForStackdata) => {
+            if (self.pollForEvents) {
+              clearInterval(self.pollForEvents);
+            }
+            if (completeErr) {
+              context.print.error('Error creating cloudformation stack');
+              reject(completeErr);
+            }
+            resolve(waitForStackdata);
+          },
+        );
       });
     });
   }
