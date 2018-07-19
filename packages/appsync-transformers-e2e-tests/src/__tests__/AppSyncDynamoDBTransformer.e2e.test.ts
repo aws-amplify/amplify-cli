@@ -212,7 +212,6 @@ test('Test listPost query', async () => {
                 }
             }
         }`, {})
-        console.log(JSON.stringify(listResponse, null, 4))
         expect(listResponse.data.listPost.items).toBeDefined
         const items = listResponse.data.listPost.items
         expect(items.length).toBeGreaterThan(0)
@@ -247,7 +246,6 @@ test('Test listPost query with filter', async () => {
                 }
             }
         }`, {})
-        console.log(JSON.stringify(listWithFilterResponse, null, 4))
         expect(listWithFilterResponse.data.listPost.items).toBeDefined
         const items = listWithFilterResponse.data.listPost.items
         expect(items.length).toEqual(1)
@@ -279,7 +277,6 @@ test('Test queryPost query', async () => {
                 }
             }
         }`, {})
-        console.log(JSON.stringify(queryResponse, null, 4))
         expect(queryResponse.data.queryPost.items).toBeDefined
         const items = queryResponse.data.queryPost.items
         expect(items.length).toBeGreaterThan(0)
@@ -314,11 +311,57 @@ test('Test queryPost query with filter', async () => {
                 }
             }
         }`, {})
-        console.log(JSON.stringify(queryWithFilterResponse, null, 4))
         expect(queryWithFilterResponse.data.queryPost.items).toBeDefined
         const items = queryWithFilterResponse.data.queryPost.items
         expect(items.length).toEqual(1)
         expect(items[0].title).toEqual('Test Query with filter')
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test queryPost query with filter with sort direction', async () => {
+    try {
+        const createResponseOne = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test Query with filter with sort 1" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponseOne.data.createPost.id).toBeDefined()
+        expect(createResponseOne.data.createPost.title).toEqual('Test Query with filter with sort 1')
+
+        const createResponseTwo = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test Query with filter with sort 2" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        expect(createResponseTwo.data.createPost.id).toBeDefined()
+        expect(createResponseTwo.data.createPost.title).toEqual('Test Query with filter with sort 2')
+
+        const queryWithFilterResponse = await GRAPHQL_CLIENT.query(`query {
+            queryPost(sortDirection: ASC, filter: {
+                title: {
+                    contains: "with sort"
+                }
+            }) {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(queryWithFilterResponse.data.queryPost.items).toBeDefined
+        const items = queryWithFilterResponse.data.queryPost.items
+        expect(items.length).toEqual(2)
+        expect(items[0].id < items[1].id).toBeTruthy
     } catch (e) {
         console.error(e)
         // fail
