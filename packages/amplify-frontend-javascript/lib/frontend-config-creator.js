@@ -128,7 +128,7 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 }
 
 function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
-  // There can only be one appsync resource
+  // There can only be one hosting resource fpr S3AndCloudFront service
   const s3AndCloudfrontResource = s3AndCloudfrontResources[0];
 
   return {
