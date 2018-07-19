@@ -231,6 +231,8 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                     [
                         makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
                         makeArg('sortDirection', makeNamedType('TableSortDirection')),
+                        makeArg('limit', makeNamedType('Int')),
+                        makeArg('nextToken', makeNamedType('String'))
                     ],
                     makeNamedType(`Table${def.name.value}Connection`)
                 )]
