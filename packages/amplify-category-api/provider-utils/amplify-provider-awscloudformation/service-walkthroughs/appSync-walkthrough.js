@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
 const moment = require('moment');
+
 const securityTypeMapping = {
-  'apiKey' : 'API_KEY',
-  'iam': 'AWS_IAM',
-  'cognito': 'AMAZON_COGNITO_USER_POOLS',
-  'openId': 'OPENID_CONNECT'
+  apiKey: 'API_KEY',
+  iam: 'AWS_IAM',
+  cognito: 'AMAZON_COGNITO_USER_POOLS',
+  openId: 'OPENID_CONNECT',
 };
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
@@ -47,7 +48,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   Object.assign(allDefaultValues, resourceAnswers);
 
   if (resourceAnswers[inputs[2].key] === 'default') {
-    return {answers: allDefaultValues, output: {securityType: 'AWS_IAM'}};
+    return { answers: allDefaultValues, output: { securityType: 'AWS_IAM' } };
   }
 
   return askCustomQuestions(context, inputs)
@@ -64,7 +65,7 @@ async function askCustomQuestions(context, inputs) {
 
   const securitySetting = await askSecurityQuestions(context, inputs);
   const output = {
-    securityType: securityTypeMapping[securitySetting.type]
+    securityType: securityTypeMapping[securitySetting.type],
   };
   Object.assign(answers, { securitySetting });
 
@@ -324,7 +325,7 @@ async function askDynamoDBQuestions(context, inputs) {
         }
         return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
           .then((resourceName) => {
-            context.print.success('Succesfully added DynamoDb table localy');
+            context.print.success('Succesfully added DynamoDb table locally');
             return { resourceName };
           });
       }
@@ -415,7 +416,7 @@ async function askLambdaQuestions(context, inputs) {
         }
         return add(context, 'amplify-provider-awscloudformation', 'Lambda')
           .then((resourceName) => {
-            context.print.success('Succesfully added Lambda table localy');
+            context.print.success('Succesfully added Lambda function locally');
             return { resourceName };
           });
       }

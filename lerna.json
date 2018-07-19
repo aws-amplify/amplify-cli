@@ -1,16 +1,7 @@
 {
   "lerna": "2.11.0",
   "packages": [
-    "packages/amplify-category-analytics",
-    "packages/amplify-category-api",
-    "packages/amplify-category-auth",
-    "packages/amplify-category-function",
-    "packages/amplify-category-storage",
-    "packages/amplify-category-cli",
-    "packages/amplify-frontend-android",
-    "packages/amplify-frontend-javascript",
-    "packages/amplify-frontend-ios",
-    "packages/amplify-provider-awscloudformation"
+    "packages/*"
   ],
-  "version": "0.0.0"
+  "version": "0.1.0"
 }
