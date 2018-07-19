@@ -46,31 +46,17 @@ Resources:
             - 'const aws = require(''aws-sdk'');'
             - 'const identity = new aws.CognitoIdentityServiceProvider();'
             - 'exports.handler = (event, context, callback) => {'
-            - '   const params = {'
+            - '   const totpParams = {'
             - '     UserPoolId: event.ResourceProperties.userPoolId,'
-            - '     MfaConfiguration: event.ResourceProperties.mfaConfiguration,'
-            - '     SmsConfiguration: {'
-            - '       SnsCallerArn: event.ResourceProperties.snsCallArn,'
-            - '       ExternalId: event.ResourceProperties.snsExternalId'
-            - '     },'
-            - '     SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,'
-            - '     SmsVerificationMessage: event.ResourceProperties.smsVerificationMessage,'
-            - '   };'
-            - '   identity.updateUserPool(params).promise()'
-            - '     .then((updateUserPoolResponse) => {'
-            - '       const totpParams = {'
-            - '         UserPoolId: event.ResourceProperties.userPoolId,'
-            - '         SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled}'
-            - '       }'
-            - '       identity.setUserPoolMfaConfig(totpParams).promise()'
-            - '         .then((setUserPoolMfaConfigResponse) => {'
-            - '           response.send(event, context, response.SUCCESS, {updateUserPoolResponse, setUserPoolMfaConfigResponse});'   
-            - '         })'
+            - '     SoftwareTokenMfaConfiguration: {Enabled: true}'
+            - '   }'
+            - '   identity.setUserPoolMfaConfig(totpParams).promise()'
+            - '     .then((res) => {'
+            - '       response.send(event, context, response.SUCCESS, {res});'   
             - '     })'
             - '     .catch((err) => {'
-            - '       response.send(event, context, response.FAILURE, {err: err});'
-            - '       throw err;'
-            - '     });'
+            - '       response.send(event, context, response.FAILURE, {err});'
+            - '     })'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
@@ -103,14 +89,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt MFALambda.Arn
       userPoolId: !Ref UserPool
-      mfaConfiguration: '<%= props.mfaConfiguration %>'
-      totpEnabled: <%= props.mfaTypes.includes('TOTP')  %>
-      <%if (props.mfaConfiguration != 'OFF' && props.mfaTypes.includes('SMS Text Message')) { %>
-      snsCallArn: !GetAtt SNSRole.Arn
-      snsExternalId: <%= props.roleExternalId %>
-      smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
-      smsVerificationMessage: <%= props.smsVerificationMessage %>
-      <% } %>
+      totpEnabled: true
     DependsOn: MFALambdaIAMPolicy
 
   <% } %>
@@ -269,7 +248,12 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
+
+      MfaConfiguration: '<%= props.mfaConfiguration %>'
     <%if (props.mfaConfiguration != 'OFF') { %>
+      SmsConfiguration: 
+        SnsCallerArn: !GetAtt SNSRole.Arn
+        ExternalId: <%= props.roleExternalId %>  
     DependsOn: SNSRole
     <% } %>
 
