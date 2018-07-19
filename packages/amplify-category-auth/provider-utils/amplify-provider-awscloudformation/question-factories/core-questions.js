@@ -15,6 +15,7 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
     let question = {
       name: inputs[i].key,
       message: inputs[i].question,
+      prefix: inputs[i].prefix,
       when: amplify.getWhen(inputs[i]),
       validate: amplify.inputValidation(inputs[i]),
       default: (answers) => {

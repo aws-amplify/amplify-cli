@@ -85,11 +85,36 @@ const appClientReadAttributes = [
   },
 ];
 
+const authProviders = [
+  {
+    name: 'Facebook',
+    value: 'graph.facebook.com',
+    answerHashKey: 'facebookAppId',
+  },
+  {
+    name: 'Google',
+    value: 'accounts.google.com',
+    answerHashKey: 'googleClientId',
+  },
+  {
+    name: 'Amazon',
+    value: 'www.amazon.com',
+    answerHashKey: 'amazonAppId',
+  },
+  {
+    name: 'Twitter',
+    value: 'api.twitter.com',
+    answerHashKey: 'twitterConsumerKey',
+    concatKeys: ['twitterConsumerSecret'],
+  },
+];
+
 const getAllMaps = (() => ({
   authFlowMap,
   coreAttributes,
   authSelections,
   appClientReadAttributes,
+  authProviders,
 }));
 
 module.exports = {
@@ -98,4 +123,5 @@ module.exports = {
   appClientReadAttributes,
   authSelections,
   getAllMaps,
+  authProviders,
 };
