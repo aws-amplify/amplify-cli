@@ -13,11 +13,14 @@ const general = () => ({
 const userPoolDefaults = () => ({
   userPoolName: `<label>-userpool-${sharedId}`,
   mfaConfiguration: 'ON',
+  mfaTypes: ['SMS Text Message'],
   roleName: `<label>-sns-role-${sharedId}`,
   roleExternalId: sharedId,
   policyName: `<label>-sns-policy-${sharedId}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
+  emailVerificationSubject: 'Your verification code',
+  emailVerificationMessage: 'Your verification code is {####}',
   passwordPolicyMinLength: 8,
   passwordPolicyCharacters: [
     'Requires Lowercase',
