@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-cli function plugin",
   "dependencies": {
+    "amplify-category-storage": "^0.1.0",
     "eslint": "^4.19.1",
     "grunt": "^1.0.3",
     "grunt-aws-lambda": "^0.13.0",

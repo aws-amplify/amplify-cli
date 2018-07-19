@@ -68,11 +68,28 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       ]);
       break;
     default:
-      copyJobs.push({
+    copyJobs.push(...[
+      {
         dir: pluginDir,
-        template: 'function-template-dir/index.js',
+        template: 'function-template-dir/crud-index.js',
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-      });
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-app.js.ejs',
+        target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-package.json.ejs',
+        target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-event.json',
+        target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+      }
+    ]);
       break;
   }
 
@@ -87,8 +104,13 @@ function addResource(context, category, service, options) {
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
-      answers = result;
-      console.log(answers);
+      if (result.answers) {
+        ({ answers } = result);
+        options.dependsOn = result.dependsOn;
+      } else {
+        answers = result;
+      }
+      
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
