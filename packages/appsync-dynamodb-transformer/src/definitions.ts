@@ -8,11 +8,11 @@ import {
     isScalar, getBaseType
 } from 'appsync-transformer-common'
 
-const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or', 'not']
-const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith', 'and', 'or', 'not']
-const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or', 'not']
-const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'and', 'or', 'not']
-const BOOLEAN_CONDITIONS = ['ne', 'eq', 'and', 'or', 'not']
+const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
+const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
+const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
     const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
@@ -117,6 +117,43 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                 directives: []
             })
         )
+    
+        fields.push(
+            {
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: {
+                        kind: 'Name',
+                        value: 'and'
+                    },
+                    type: makeNamedType(name),
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+            },
+            {
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: {
+                        kind: 'Name',
+                        value: 'or'
+                    },
+                    type: makeNamedType(name),
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+            },
+            {
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: {
+                        kind: 'Name',
+                        value: 'not'
+                    },
+                    type: makeNamedType(name),
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+            }
+        )
+
     return {
         kind: 'InputObjectTypeDefinition',
         // TODO: Service does not support new style descriptions so wait.
