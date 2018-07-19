@@ -94,6 +94,11 @@
                 ]
             },
             "Description": "Name of S3 bucket to hold website content"
+        },
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
         }
     }
 }

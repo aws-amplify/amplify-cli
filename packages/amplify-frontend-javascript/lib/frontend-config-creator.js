@@ -45,7 +45,9 @@ function createAWSExports(context, amplifyResources) {
         break;
       case 'DynamoDB': Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
         break;
-      default: context.print.error(`No outputs generated for:${service}`);
+      case 'S3AndCloudFront': Object.assign(configOutput, getS3AndCloudFrontConfig(serviceResourceMapping[service], projectRegion));
+        break;
+      default: break;
     }
   });
   generateAWSExportsFile(context, configOutput);
@@ -123,6 +125,17 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
     });
   }
   return dynamoDBConfig;
+}
+
+function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
+  // There can only be one appsync resource
+  const s3AndCloudfrontResource = s3AndCloudfrontResources[0];
+
+  return {
+    aws_content_delivery_bucket: s3AndCloudfrontResource.output.HostingBucketName,
+    aws_content_delivery_bucket_region: s3AndCloudfrontResource.output.Region,
+    aws_content_delivery_url: s3AndCloudfrontResource.output.S3BucketSecureURL,
+  };
 }
 
 
