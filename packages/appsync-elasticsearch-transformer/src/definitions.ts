@@ -63,7 +63,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
                     kind: 'Name',
                     value: 'and'
                 },
-                type: makeNamedType(name),
+                type: makeListType(makeNamedType(name)),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
@@ -74,7 +74,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
                     kind: 'Name',
                     value: 'or'
                 },
-                type: makeNamedType(name),
+                type: makeListType(makeNamedType(name)),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
@@ -85,7 +85,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
                     kind: 'Name',
                     value: 'not'
                 },
-                type: makeNamedType(name),
+                type: makeListType(makeNamedType(name)),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
