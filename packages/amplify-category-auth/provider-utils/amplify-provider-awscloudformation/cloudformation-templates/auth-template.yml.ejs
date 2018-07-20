@@ -65,9 +65,7 @@ Resources:
         ExternalId: <%= props.roleExternalId %>  
     DependsOn: SNSRole
     <% } %>
-  <% } %>
 
-  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -92,6 +90,100 @@ Resources:
       RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
+
+  UserPoolClientExecutionRole:
+  # Created to execute Lambda which gets userpool app client config values
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: <%= props.userpoolClientLambdaRole %>      
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: <%= props.userpoolClientLogPolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
+    DependsOn: UserPoolClient
+
+  UserPoolClientLambda:
+  # Lambda which gets userpool app client config values
+  # Depends on UserPool for id
+  # Depends on UserPoolClientExecutionRole for role ARN
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - '   const params = {'
+            - '     ClientId: event.ResourceProperties.clientId,'
+            - '     UserPoolId: event.ResourceProperties.userpoolId'
+            - '   }'
+            - '   identity.describeUserPoolClient(params).promise()'
+            - '     .then((res) => {'
+            - '       console.log("res", res);'
+            - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
+            - '     })'
+            - '     .catch((err) => {'
+            - '       response.send(event, context, response.FAILURE, {err});'
+            - '     })'
+            - '};'
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - UserPoolClientExecutionRole
+        - Arn
+    DependsOn: UserPoolClientExecutionRole
+
+
+  UserPoolClietLambdaIAMPolicy:
+  # Sets policy for the role that executes the Userpool Client Lambda
+  # Depends on UserPool for Arn
+  # Marked as depending on UserPoolClientExecutionRole for easier to understand CFN sequencing
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.userpoolClientLambdaIamPolicy %>
+      Roles: 
+        - <%= props.userpoolClientLambdaRole %>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:DescribeUserPoolClient'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: UserPoolClientExecutionRole
+
+  UserPoolLambdaFunctionInputs:
+  # Values passed to Userpool client Lambda
+  # Depends on UserPool for Id
+  # Depends on UserPoolClient for Id
+  # Marked as depending on UserPoolClietLambdaIAMPolicy for easier to understand CFN sequencing
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt UserPoolClientLambda.Arn
+      clientId: !Ref UserPoolClient
+      userpoolId: !Ref UserPool
+    DependsOn: UserPoolClietLambdaIAMPolicy
+  
   <% } %> 
 
 
@@ -128,8 +220,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: '*'
-    DependsOn: UserPoolClient
+              Resource: <%= `arn:aws:iam:::role/${props.totpLambdaRole}` %>
 
   MFALambda:
   # Lambda which sets MFA config values
@@ -176,7 +267,7 @@ Resources:
   MFALambdaIAMPolicy:
   # Sets policy for the role that executes the MFA Lambda
   # Depends on Userpool for Arn
-  # Marked as depending on MFALambdaExecutionRole for easier to understand CFN sequencing
+  # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%= props.totpLambdaIAMPolicy %>
@@ -189,7 +280,7 @@ Resources:
             Action:
               - 'cognito-idp:SetUserPoolMfaConfig'
             Resource: !GetAtt UserPool.Arn
-    DependsOn: MFALambdaExecutionRole
+    DependsOn: MFALambda
 
 
   MFALambdaFunctionInputs:
@@ -351,6 +442,8 @@ Outputs :
   AppClientID:
     Value: !Ref 'UserPoolClient'
     Description: The user pool app client id
+  AppClientSecret:
+    Value: !GetAtt UserPoolLambdaFunctionInputs.appSecret
   <% } %>
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole: 
