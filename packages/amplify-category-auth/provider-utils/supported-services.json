@@ -192,7 +192,7 @@
 				"key": "autoVerifiedAttributes",
 				"set": "core",
 				"question": "Do you want to require verification of emails or phone numbers?",
-				"suffix": "Verification requires users to retrieve a code from their email or phone to confirm ownership. Verification of a phone or email is necessary to automatically confirm users and enable recovery from forgotten passwords",
+				"prefix": "\n Verification requires users to retrieve a code from their email or phone to confirm ownership. Verification of a phone or email is necessary to automatically confirm users and enable recovery from forgotten passwords.\n ",
 				"required": true,
 				"type": "multiselect",
 				"options": [
@@ -389,23 +389,9 @@
 				]
 			},
 			{
-				"key": "createUserpoolClient",
-				"set": "app-client",
-				"question": "Do you want to create an App Client for your Userpool?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
-					}
-				]
-			},
-			{
 				"key": "userpoolClientName",
 				"set": "app-client",
-				"question": "Provide a name for the App Client: ",
+				"question": "A userpool app client will allow your application access to the userpool.  Please provide a name for the app client:",
 				"required": true,
 				"validation": {
 					"operator": "regex",

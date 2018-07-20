@@ -347,7 +347,10 @@ Outputs :
   <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPoolName:
     Value: !Ref 'UserPool'
-    Description:  name for the user pool
+    Description:  Name for the user pool
+  AppClientID:
+    Value: !Ref 'UserPoolClient'
+    Description: The user pool app client id
   <% } %>
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole: 
