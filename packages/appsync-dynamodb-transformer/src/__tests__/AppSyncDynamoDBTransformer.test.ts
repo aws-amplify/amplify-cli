@@ -25,7 +25,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
 });
 
 test('Test AppSyncDynamoDBTransformer with query overrides', () => {
-    const validSchema = `type Post @model(queries: { get: "customGetPost" }) {
+    const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost", query: "customQueryPost" }) {
         id: ID!
         title: String!
         createdAt: String
@@ -47,6 +47,8 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
     expectFields(queryType, ['customGetPost'])
+    expectFields(queryType, ['customListPost'])
+    expectFields(queryType, ['customQueryPost'])
 });
 
 test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {

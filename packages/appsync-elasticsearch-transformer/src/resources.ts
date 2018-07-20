@@ -351,34 +351,6 @@ export class ResourceFactory {
     }
 
     /**
-     * Create the ElasticSearch get resolver.
-     */
-    public makeGetResolver(type: string, nameOverride?: string) {
-        const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
-        const ddbTableName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
-        return new AppSync.Resolver({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
-            FieldName: fieldName,
-            TypeName: 'Query',
-            RequestMappingTemplate: Fn.Sub(
-                print(
-                    compoundExpression([
-                        set(ref('indexPath'), str(`/${ddbTableName}` + '/${context.arguments.id}')),
-                        ElasticSearchMappingTemplate.getItem({
-                            path: ref('indexPath')
-                        })
-                    ]),
-                ),
-                { '__ES_INDEX': Fn.Ref(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID) }
-            ),
-            ResponseMappingTemplate: print(
-                toJson(ref('context.result.get("source")'))
-            )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
-    }
-
-    /**
      * Create the ElasticSearch search resolver.
      */
     public makeSearchResolver(type: string, nameOverride?: string) {
@@ -389,19 +361,16 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
-            RequestMappingTemplate: Fn.Sub(
-                print(
-                    compoundExpression([
-                        set(ref('indexPath'), str(`/${ddbTableName}/_search`)),
-                        ElasticSearchMappingTemplate.searchItem({
-                            path: ref('indexPath'),
-                            size: ref('context.args.size'),
-                            from: ref('context.args.from'),
-                            query: ref('util.transform.toElasticsearchQueryObject($ctx.args.query)')
-                        })
-                    ]),
-                ),
-                { '__ES_INDEX': Fn.Ref(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID) }
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('indexPath'), str(`/${ddbTableName}/_search`)),
+                    ElasticSearchMappingTemplate.searchItem({
+                        path: ref('indexPath'),
+                        size: ref('context.args.size'),
+                        from: ref('context.args.from'),
+                        query: ref('util.transform.toElasticsearchQueryObject($ctx.args.query)')
+                    })
+                ]),
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([

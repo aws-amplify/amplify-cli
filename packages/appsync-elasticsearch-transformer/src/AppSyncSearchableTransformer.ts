@@ -17,7 +17,6 @@ import {
 } from "appsync-transformer-common";
 
 interface QueryNameMap {
-    get?: string;
     search?: string;
 }
 
@@ -36,7 +35,7 @@ export class AppSyncSearchableTransformer extends Transformer {
             `AppSyncSearchableTransformer`,
             `directive @searchable(queries: ElasticsearchSearchMap) on OBJECT`,
             `
-                input ElasticsearchSearchMap { get: String, search: String }
+                input ElasticsearchSearchMap { search: String }
             `
         );
         this.resources = new ResourceFactory();
@@ -61,21 +60,13 @@ export class AppSyncSearchableTransformer extends Transformer {
     ): void => {
 
         const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
-
-        let shouldMakeGet = true;
-        let shouldMakeList = true;
-        let getFieldNameOverride = undefined;
+        let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;
 
         // Figure out which queries to make and if they have name overrides.
         if (directiveArguments.queries) {
-            if (!directiveArguments.queries.get) {
-                shouldMakeGet = false;
-            } else {
-                getFieldNameOverride = directiveArguments.queries.get
-            }
             if (!directiveArguments.queries.search) {
-                shouldMakeList = false;
+                shouldMakeSearch = false;
             } else {
                 searchFieldNameOverride = directiveArguments.queries.search
             }
@@ -83,29 +74,8 @@ export class AppSyncSearchableTransformer extends Transformer {
 
         let queryType = blankObjectExtension('Query')
 
-        // Create getX
-        if (shouldMakeGet) {
-            this.generateSearchableInputs(ctx, def)
-            this.generateSearchableXConnectionType(ctx, def)
-
-            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
-            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
-            queryType = extensionWithFields(
-                queryType,
-                [
-                    makeField(
-                        getResolver.Properties.FieldName,
-                        [
-                            makeArg('id', makeNonNullType(makeNamedType('ID')))
-                        ],
-                        makeNamedType(def.name.value)
-                    )
-                ]
-            )
-        }
-
         // Create listX
-        if (shouldMakeList) {
+        if (shouldMakeSearch) {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 

@@ -27,7 +27,7 @@ test('Test AppSyncSearchableTransformer validation happy case', () => {
 });
 
 test('Test AppSyncSearchableTransformer with query overrides', () => {
-    const validSchema = `type Post @model @searchable(queries: { get: "customGetPost" }) {
+    const validSchema = `type Post @model @searchable(queries: { search: "customSearchPost" }) {
         id: ID!
         title: String!
         createdAt: String
@@ -49,7 +49,7 @@ test('Test AppSyncSearchableTransformer with query overrides', () => {
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
-    expectFields(queryType, ['customGetPost'])
+    expectFields(queryType, ['customSearchPost'])
 });
 
 test('Test AppSyncSearchableTransformer with only create mutations', () => {
@@ -127,13 +127,13 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     const userInputType = getInputType(parsed, 'SearchableUserFilterInput')
     expect(userInputType).toBeDefined()
 
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 0)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableUserFilterInput', 0)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
     
     expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;

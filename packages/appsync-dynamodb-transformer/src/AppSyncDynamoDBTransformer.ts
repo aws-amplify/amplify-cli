@@ -17,6 +17,7 @@ import {
 interface QueryNameMap {
     get?: string;
     list?: string;
+    query?: string;
 }
 
 interface MutationNameMap {
@@ -55,7 +56,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             `directive @model(queries: DynamoDBQueryMap, mutations: DynamoDBMutationMap) on OBJECT`,
             `
                 input DynamoDBMutationMap { create: String, update: String, delete: String }
-                input DynamoDBQueryMap { get: String }
+                input DynamoDBQueryMap { get: String, list: String, query: String }
             `
         )
         this.resources = new ResourceFactory();
@@ -121,12 +122,14 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         let shouldMakeUpdate = true;
         let shouldMakeDelete = true;
         let shouldMakeGet = true;
+        let shouldMakeQuery = true;
         let shouldMakeList = true;
         let createFieldNameOverride = undefined;
         let updateFieldNameOverride = undefined;
         let deleteFieldNameOverride = undefined;
         let getFieldNameOverride = undefined;
         let listFieldNameOverride = undefined;
+        let queryFieldNameOverride = undefined;
 
         // Figure out which queries to make and if they have name overrides.
         if (directiveArguments.queries) {
@@ -134,6 +137,11 @@ export class AppSyncDynamoDBTransformer extends Transformer {
                 shouldMakeGet = false;
             } else {
                 getFieldNameOverride = directiveArguments.queries.get
+            }
+            if (!directiveArguments.queries.query) {
+                shouldMakeQuery = false;
+            } else {
+                queryFieldNameOverride = directiveArguments.queries.query
             }
             if (!directiveArguments.queries.list) {
                 shouldMakeList = false;
@@ -205,27 +213,11 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         }
         ctx.addObjectExtension(mutationType)
 
-        const searchableExist = ctx.inputDocument.definitions
-                .filter((n: ObjectTypeDefinitionNode) => n.directives
-                    .filter((d: DirectiveNode) => d.name.value === 'searchable'))
-
-        // Create the queries
-        if (shouldMakeGet && !searchableExist) {
-            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
-            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
-
-            queryType = extensionWithFields(
-                queryType,
-                [makeField(
-                    getResolver.Properties.FieldName,
-                    [makeArg('id', makeNonNullType(makeNamedType('ID')))],
-                    makeNamedType(def.name.value)
-                )]
-            )
-
+        // Create query queries
+        if (shouldMakeQuery) {
             this.generateTableXConnectionType(ctx, def)
 
-            const queryResolver = this.resources.makeQueryResolver(def.name.value, getFieldNameOverride)
+            const queryResolver = this.resources.makeQueryResolver(def.name.value, queryFieldNameOverride)
             ctx.setResource(`Query${def.name.value}Resolver`, queryResolver)
 
             queryType = extensionWithFields(
@@ -248,9 +240,24 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             }
 
             this.generateFilterInputs(ctx, def)
+        }        
+
+        // Create get queries
+        if (shouldMakeGet) {
+            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
+            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+
+            queryType = extensionWithFields(
+                queryType,
+                [makeField(
+                    getResolver.Properties.FieldName,
+                    [makeArg('id', makeNonNullType(makeNamedType('ID')))],
+                    makeNamedType(def.name.value)
+                )]
+            )
         }
 
-        if (shouldMakeList && !searchableExist) {
+        if (shouldMakeList) {
 
             this.generateTableXConnectionType(ctx, def)
 

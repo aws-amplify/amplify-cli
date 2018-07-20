@@ -3,7 +3,7 @@ import { AppSyncDynamoDBTransformer } from "./AppSyncDynamoDBTransformer";
 
 import fs = require('fs');
 
-const validSchema = `type Post @model {
+const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost", query: "customQueryPost" }) {
     id: ID!
     title: String!
     upvotes: Int
