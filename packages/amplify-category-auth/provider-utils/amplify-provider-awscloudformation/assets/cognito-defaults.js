@@ -10,13 +10,13 @@ const general = () => ({
   ],
 });
 
-const userPoolDefaults = name => ({
-  userPoolName: `${name}-userpool-${sharedId}`,
+const userPoolDefaults = projectName => ({
+  userPoolName: `${projectName}-userpool-${sharedId}`,
   mfaConfiguration: 'ON',
   mfaTypes: ['SMS Text Message'],
-  roleName: `${name}-sns-role-${sharedId}`,
+  roleName: `${projectName}-sns-role-${sharedId}`,
   roleExternalId: sharedId,
-  policyName: `${name}-sns-policy-${sharedId}`,
+  policyName: `${projectName}-sns-policy-${sharedId}`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
   emailVerificationSubject: 'Your verification code',
@@ -32,7 +32,7 @@ const userPoolDefaults = name => ({
     coreAttributes.find(a => a.name === 'Email').value,
     coreAttributes.find(b => b.name === 'Phone Number').value,
   ],
-  userpoolClientName: `${name}-app-client-${sharedId}`,
+  userpoolClientName: `${projectName}-app-client-${sharedId}`,
   userpoolClientAuthFlow: [authFlowMap.find(c => c.value === 'ADMIN_NO_SRP_AUTH').value],
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
@@ -40,25 +40,25 @@ const userPoolDefaults = name => ({
     appClientReadAttributes.find(d => d.name === 'Email').value,
     appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
-  identityPoolName: `${name}_identitypool_${sharedId.replace(/-/g, '_')}`,
+  identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
-  totpLambdaRole: `${name}_totp_lambda_role_${sharedId}`,
-  totpLambdaLogPolicy: `${name}_totp_lambda_log_policy_${sharedId}`,
-  totpPassRolePolicy: `${name}_totp_pass_role_policy_${sharedId}`,
-  totpLambdaIAMPolicy: `${name}_totp_lambda_iam_policy_${sharedId}`,
-  userpoolClientLambdaRole: `${name}_userpool_client_lambda_role_${sharedId}`,
-  userpoolClientLogPolicy: `${name}_userpoolclient_lambda_log_policy_${sharedId}`,
-  userpoolClientLambdaIamPolicy: `${name}_userpoolclient_lambda_iam_policy_${sharedId}`,
+  totpLambdaRole: `${projectName}_totp_lambda_role_${sharedId}`,
+  totpLambdaLogPolicy: `${projectName}_totp_lambda_log_policy_${sharedId}`,
+  totpPassRolePolicy: `${projectName}_totp_pass_role_policy_${sharedId}`,
+  totpLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy_${sharedId}`,
+  userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
+  userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
+  userpoolClientLambdaIamPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
   ...identityPoolDefaults(),
 });
 
-const identityPoolDefaults = name => ({
+const identityPoolDefaults = projectName => ({
   // replace dashes with underscores for id pool regex constraint
-  identityPoolName: `${name}_identitypool_${sharedId.replace(/-/g, '_')}`,
+  identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
-  lambdaLogPolicy: `${name}_lambda_log_policy_${sharedId}`,
-  federatedIDLambdaRole: `${name}_federated_lambda_role_${sharedId}`,
-  federatedLambdaIAMPolicy: `${name}_federated_lambda_iam_policy_${sharedId}`,
+  lambdaLogPolicy: `${projectName}_lambda_log_policy_${sharedId}`,
+  federatedIDLambdaRole: `${projectName}_federated_lambda_role_${sharedId}`,
+  federatedLambdaIAMPolicy: `${projectName}_federated_lambda_iam_policy_${sharedId}`,
 });
 
 const functionMap = {

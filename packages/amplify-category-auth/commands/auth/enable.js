@@ -10,7 +10,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
-    const existingAuth = amplify.getProjectDetails(amplify).amplifyMeta.auth || {};
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (Object.keys(existingAuth).length > 0) {
       return context.print.warning('Auth has already been "enabled" for this project.');

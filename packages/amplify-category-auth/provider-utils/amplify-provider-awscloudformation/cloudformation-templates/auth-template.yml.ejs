@@ -140,7 +140,6 @@ Resources:
             - '   }'
             - '   identity.describeUserPoolClient(params).promise()'
             - '     .then((res) => {'
-            - '       console.log("res", res);'
             - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
             - '     })'
             - '     .catch((err) => {'
