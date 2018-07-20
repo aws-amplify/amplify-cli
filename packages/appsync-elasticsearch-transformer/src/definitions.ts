@@ -55,6 +55,42 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
                 directives: []
             })
         )
+
+    fields.push(
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: 'and'
+                },
+                type: makeNamedType(name),
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
+                directives: []
+        },
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: 'or'
+                },
+                type: makeNamedType(name),
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
+                directives: []
+        },
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: 'not'
+                },
+                type: makeNamedType(name),
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
+                directives: []
+        }
+    )
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
         name: {
