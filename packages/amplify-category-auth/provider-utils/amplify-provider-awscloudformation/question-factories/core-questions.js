@@ -19,15 +19,13 @@ function parseInputs(inputs, amplify, defaultValuesFilename, stringMapsFilename,
       suffix: inputs[i].suffix,
       when: amplify.getWhen(inputs[i]),
       validate: amplify.inputValidation(inputs[i]),
-      default: (answers) => {
+      default: (answers) => { // eslint-disable-line no-unused-vars
         if (currentAnswers) {
           answers = Object.assign(answers, currentAnswers);
         }
         const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[inputs[i].key];
 
-        if (defaultValue && typeof defaultValue === 'string' && answers.resourceName) {
-          return defaultValue.replace(/<label>/g, answers.resourceName);
-        } else if (defaultValue) {
+        if (defaultValue) {
           return defaultValue;
         }
         return undefined;

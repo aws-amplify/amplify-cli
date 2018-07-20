@@ -1,5 +1,4 @@
 Resources:
-
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -187,7 +186,7 @@ Resources:
   <% } %> 
 
 
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   MFALambdaExecutionRole:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
@@ -301,7 +300,6 @@ Resources:
 
   <% } %>
 
-
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
@@ -312,6 +310,12 @@ Resources:
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+      <%if (props.selectedParties && props.selectedParties.length >0) { %>
+      SupportedLoginProviders: 
+        <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
+          <%= Object.keys(props.selectedParties)[i] %>: '<%= Object.values(props.selectedParties)[i]%>'
+        <% } %> 
+      <% } %>
       AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
     
   IdentityPoolRoleMap:
@@ -326,117 +330,10 @@ Resources:
         <% } %>
           authenticated: <%= props.authRoleArn %>
     DependsOn: IdentityPool
-
-
-  <%if (props.authProviders && props.authProviders.length > 0) { %>
-  FederatedLambdaExecutionRole:
-  # Created to execute Lambda which sets 3rd Party ID Providers (Facebook, Amazon, etc)
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: <%= props.federatedIDLambdaRole %>
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Policies:
-      - PolicyName: <%= props.lambdaLogPolicy %>
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'logs:CreateLogGroup'
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: 'arn:aws:logs:*:*:*'
-
-  FederatedIDLambda:
-  # Lambda which sets 3rd Party ID Providers (Facebook, Amazon, etc)
-  # Depends on FederatedLambdaExecutionRole for role ARN
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Code:
-        ZipFile: !Join 
-          - |+
-
-          - - 'const response = require(''cfn-response'');'
-            - 'const aws = require(''aws-sdk'');'
-            - 'const cognitoIdentity = new aws.CognitoIdentity();'
-            - 'exports.handler = (event, context, callback) => {'
-            - ' const providerMap = JSON.parse(event.ResourceProperties.supportedLoginProviders);'
-            - '   const params = {'
-            - '     AllowUnauthenticatedIdentities: true,'
-            - '     IdentityPoolId: event.ResourceProperties.identityPoolId,'
-            - '     IdentityPoolName: event.ResourceProperties.identityPoolName,'
-            - '     SupportedLoginProviders: providerMap'
-            - '   };'
-            - '   cognitoIdentity.updateIdentityPool(params).promise()'
-            - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {res: res});'   
-            - '     })'
-            - '     .catch((err) => {'
-            - '       response.send(event, context, response.FAILURE, {err: err});'
-            - '       throw err;'
-            - '     });'
-
-            - '};'
-      Handler: index.handler
-      Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - FederatedLambdaExecutionRole
-        - Arn
-    DependsOn: FederatedLambdaExecutionRole
-
-  FederatedLambdaIAMPolicy:
-  # Sets policy for the role that executes the 3rd Party Auth Lambda
-  # Depends on Identity Pool for Arn
-  # Marked as depending on FederatedIDLambda for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: <%= props.federatedLambdaIAMPolicy %>
-      Roles: 
-        - <%= props.federatedIDLambdaRole %>
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'cognito-identity:UpdateIdentityPool'
-            Resource: !Sub
-              - arn:aws:cognito-identity:${region}:${account}:identitypool/${idpool}
-              - { region: !Ref "AWS::Region", account: !Ref "AWS::AccountId", idpool: !Ref IdentityPool}
-    DependsOn: FederatedIDLambda
-
-  FederatedLambdaFunctionInputs:
-  # Values passed to 3rd Party ID Lambda
-  # Depends on Identity Pool for Name and ID
-  # Depends on FederatedIDLambda for Arn
-  # Marked as depending on FederatedLambdaIAMPolicy for easier to understand CFN sequencing
-    Type: 'Custom::LambdaCallout'
-    Properties:
-      ServiceToken: !GetAtt FederatedIDLambda.Arn
-      identityPoolId: !Ref IdentityPool
-      identityPoolName: !GetAtt IdentityPool.Name
-      supportedLoginProviders: '<%- JSON.stringify(props.selectedParties) %>'
-    DependsOn: FederatedLambdaIAMPolicy
-
-  <% } %>
-
-
  
 Outputs :
 
-  <%if (props.authProviders && props.authProviders.length > 0) { %>
-  Lambda:
-    Value: !GetAtt FederatedIDLambda.Arn
-    Description: Lambda Arn
-  <% } %>
+
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
