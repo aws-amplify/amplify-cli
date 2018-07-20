@@ -1,5 +1,6 @@
 Resources:
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
@@ -31,6 +32,7 @@ Resources:
   <% } %>
   
   <%if (props.authSelections === 'identityPoolAndUserPool') { %>
+  # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
   # Depends on SNS Role for Arn if MFA is enabled
@@ -90,6 +92,7 @@ Resources:
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
 
+  # BEGIN USER POOL LAMBDA RESOURCES
   UserPoolClientExecutionRole:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
@@ -152,7 +155,6 @@ Resources:
         - Arn
     DependsOn: UserPoolClientExecutionRole
 
-
   UserPoolClietLambdaIAMPolicy:
   # Sets policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
@@ -182,11 +184,10 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClietLambdaIAMPolicy
-  
   <% } %> 
 
-
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  # BEGIN MFA LAMBDA RESOURCES
   MFALambdaExecutionRole:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
@@ -262,7 +263,6 @@ Resources:
         - Arn
     DependsOn: MFALambdaExecutionRole
 
-
   MFALambdaIAMPolicy:
   # Sets policy for the role that executes the MFA Lambda
   # Depends on Userpool for Arn
@@ -281,7 +281,6 @@ Resources:
             Resource: !GetAtt UserPool.Arn
     DependsOn: MFALambda
 
-
   MFALambdaFunctionInputs:
   # Values passed to MFA Lambda
   # Depends on UserPool for Arn
@@ -297,9 +296,9 @@ Resources:
       smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
       smsConfigExternalId: <%= props.roleExternalId %>  
     DependsOn: MFALambdaIAMPolicy
-
   <% } %>
 
+  # BEGIN IDENTITY POOL RESOURCES
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
@@ -317,7 +316,7 @@ Resources:
         <% } %> 
       <% } %>
       AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
-    
+  
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
   # Depends on Identity Pool for ID ref
@@ -332,8 +331,6 @@ Resources:
     DependsOn: IdentityPool
  
 Outputs :
-
-
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
