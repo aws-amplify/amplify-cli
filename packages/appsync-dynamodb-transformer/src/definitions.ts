@@ -125,7 +125,7 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                         kind: 'Name',
                         value: 'and'
                     },
-                    type: makeNamedType(name),
+                    type: makeListType(makeNamedType(name)),
                     // TODO: Service does not support new style descriptions so wait.
                     // description: field.description,
                     directives: []
@@ -136,7 +136,7 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                         kind: 'Name',
                         value: 'or'
                     },
-                    type: makeNamedType(name),
+                    type: makeListType(makeNamedType(name)),
                     // TODO: Service does not support new style descriptions so wait.
                     // description: field.description,
                     directives: []
@@ -147,7 +147,7 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                         kind: 'Name',
                         value: 'not'
                     },
-                    type: makeNamedType(name),
+                    type: makeListType(makeNamedType(name)),
                     // TODO: Service does not support new style descriptions so wait.
                     // description: field.description,
                     directives: []
