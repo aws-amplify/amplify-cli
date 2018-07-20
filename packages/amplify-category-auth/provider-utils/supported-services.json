@@ -137,6 +137,29 @@
 				]
 			},
 			{
+				"key": "mfaTypes",
+				"set": "core",
+				"question": "Do you want to use SMS Text Message MFA or Time-Based One-time Password (TOTP) MFA?",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					"SMS Text Message",
+					"TOTP"
+				],
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					}
+				]
+			},
+			{
 				"key": "smsAuthenticationMessage",
 				"set": "core",
 				"question": "Please specify an SMS authentication message:",
@@ -157,6 +180,36 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "autoVerifiedAttributes",
+				"set": "core",
+				"question": "Do you want to require verification of emails or phone numbers?",
+				"prefix": "\n Verification requires users to retrieve a code from their email or phone to confirm ownership. Verification of a phone or email is necessary to automatically confirm users and enable recovery from forgotten passwords.\n ",
+				"required": true,
+				"type": "multiselect",
+				"options": [
+					{
+						"name": "Email",
+						"value": "email"
+					},
+					{
+						"name": "Phone Number",
+						"value": "phone_number"
+					}
+				],
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
@@ -181,6 +234,79 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
+					},
+					{
+						"key": "autoVerifiedAttributes",
+						"value": "phone_number",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "emailVerificationSubject",
+				"set": "core",
+				"question": "Please specify an email verification subject:",
+				"required": true,
+				"type": "input",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
+					},
+					{
+						"key": "autoVerifiedAttributes",
+						"value": "email",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "emailVerificationMessage",
+				"set": "core",
+				"question": "Please specify an Email verification message:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "includes",
+					"value": "{####}",
+					"onErrorMsg": "Your email verification message must include '{####}' representing the verification code that the user will receive."
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"operator": "!="
+					},
+					{
+						"key": "mfaTypes",
+						"value": "SMS Text Message",
+						"operator": "includes"
+					},
+					{
+						"key": "autoVerifiedAttributes",
+						"value": "email",
+						"operator": "includes"
 					}
 				]
 			},
@@ -263,23 +389,9 @@
 				]
 			},
 			{
-				"key": "createUserpoolClient",
-				"set": "app-client",
-				"question": "Do you want to create an App Client for your Userpool?",
-				"required": true,
-				"type": "confirm",
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
-					}
-				]
-			},
-			{
 				"key": "userpoolClientName",
 				"set": "app-client",
-				"question": "Provide a name for the App Client: ",
+				"question": "A userpool app client will allow your application access to the userpool.  Please provide a name for the app client:",
 				"required": true,
 				"validation": {
 					"operator": "regex",

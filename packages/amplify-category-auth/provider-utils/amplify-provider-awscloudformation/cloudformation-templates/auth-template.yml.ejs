@@ -1,112 +1,8 @@
 Resources:
-
-  <%if (props.authProviders.length > 0) { %>
-  FederatedLambdaExecutionRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: <%= props.federatedIDLambdaRole %>
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Policies:
-      - PolicyName: <%= props.federatedIdLogPolicy %>
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'logs:CreateLogGroup'
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: 'arn:aws:logs:*:*:*'
-  FederatedIDLambda:
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Code:
-        ZipFile: !Join 
-          - |+
-
-          - - 'const response = require(''cfn-response'');'
-            - 'const aws = require(''aws-sdk'');'
-            - 'const cognitoIdentity = new aws.CognitoIdentity();'
-            - 'exports.handler = (event, context, callback) => {'
-            - ' const providerMap = JSON.parse(event.ResourceProperties.supportedLoginProviders);'
-            - '   const params = {'
-            - '     AllowUnauthenticatedIdentities: true,'
-            - '     IdentityPoolId: event.ResourceProperties.identityPoolId,'
-            - '     IdentityPoolName: event.ResourceProperties.identityPoolName,'
-            - '     SupportedLoginProviders: providerMap'
-            - '   };'
-            - '   cognitoIdentity.updateIdentityPool(params).promise()'
-            - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {res: res});'   
-            - '     })'
-            - '     .catch((err) => {'
-            - '       response.send(event, context, response.FAILURE, {err: err});'
-            - '       throw err;'
-            - '     });'
-
-            - '};'
-      Handler: index.handler
-      Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - FederatedLambdaExecutionRole
-        - Arn
-    DependsOn: FederatedLambdaExecutionRole
-
-  LambdaFunctionInputs:
-    Type: 'Custom::LambdaCallout'
-    Properties:
-      ServiceToken: !GetAtt FederatedIDLambda.Arn
-      identityPoolId: !Ref IdentityPool
-      identityPoolName: !GetAtt IdentityPool.Name
-      supportedLoginProviders: '<%- JSON.stringify(props.selectedParties) %>'
-    DependsOn: LambdaIAMPolicy
-
-  LambdaIAMPolicy:
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: <%= props.lambdaIAMPolicy %>
-      Roles: 
-        - <%= props.federatedIDLambdaRole %>
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'cognito-identity:UpdateIdentityPool'
-            Resource: !Sub
-              - arn:aws:cognito-identity:${region}:${account}:identitypool/${idpool}
-              - { region: !Ref "AWS::Region", account: !Ref "AWS::AccountId", idpool: !Ref IdentityPool}
-    DependsOn: FederatedLambdaExecutionRole
-  <% } %>
-
-  IdentityPool:
-    Type: AWS::Cognito::IdentityPool
-    Properties: 
-      IdentityPoolName: <%= props.identityPoolName %>
-      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
-  IdentityPoolRoleMap:
-    Type: AWS::Cognito::IdentityPoolRoleAttachment
-    Properties: 
-      IdentityPoolId: !Ref 'IdentityPool'
-      Roles:
-        <%if (props.allowUnauthenticatedIdentities) { %>
-          unauthenticated: <%= props.unAuthRoleArn %>
-        <% } %>
-          authenticated: <%= props.authRoleArn %>
-    DependsOn: IdentityPool
-
-
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  # BEGIN SNS ROLE RESOURCE
   SNSRole: 
+  # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
       RoleName: <%=props.roleName %>
@@ -136,7 +32,10 @@ Resources:
   <% } %>
   
   <%if (props.authSelections === 'identityPoolAndUserPool') { %>
+  # BEGIN USER POOL RESOURCES
   UserPool:
+  # Created upon user selection
+  # Depends on SNS Role for Arn if MFA is enabled
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: <%= props.userPoolName %>
@@ -146,6 +45,12 @@ Resources:
           Name: <%= props.requiredAttributes[i] %>
           Required: true
         <% } %>
+      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
+      AutoVerifiedAttributes:
+        <% for(var i=0; i < props.autoVerifiedAttributes.length; i++) { %>
+        - <%= props.autoVerifiedAttributes[i] %>
+        <% } %> 
+      <% } %>       
       Policies:
         PasswordPolicy:
           MinimumLength: <%= props.passwordPolicyMinLength %>
@@ -153,21 +58,18 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
+
       MfaConfiguration: '<%= props.mfaConfiguration %>'
-      <%if (props.mfaConfiguration != 'OFF') { %>
-      SmsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
-      SmsVerificationMessage: <%= props.smsVerificationMessage %>
+    <%if (props.mfaConfiguration != 'OFF') { %>
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%= props.roleExternalId %>  
-      <% } %>
-    <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
 
-  <% } %>
-  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPoolClient:
+  # Created provide application access to user pool
+  # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
       ClientName: <%= props.userpoolClientName %>
@@ -189,20 +91,257 @@ Resources:
       RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
+
+  # BEGIN USER POOL LAMBDA RESOURCES
+  UserPoolClientExecutionRole:
+  # Created to execute Lambda which gets userpool app client config values
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: <%= props.userpoolClientLambdaRole %>      
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: <%= props.userpoolClientLogPolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
+    DependsOn: UserPoolClient
+
+  UserPoolClientLambda:
+  # Lambda which gets userpool app client config values
+  # Depends on UserPool for id
+  # Depends on UserPoolClientExecutionRole for role ARN
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - '   const params = {'
+            - '     ClientId: event.ResourceProperties.clientId,'
+            - '     UserPoolId: event.ResourceProperties.userpoolId'
+            - '   }'
+            - '   identity.describeUserPoolClient(params).promise()'
+            - '     .then((res) => {'
+            - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
+            - '     })'
+            - '     .catch((err) => {'
+            - '       response.send(event, context, response.FAILURE, {err});'
+            - '     })'
+            - '};'
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - UserPoolClientExecutionRole
+        - Arn
+    DependsOn: UserPoolClientExecutionRole
+
+  UserPoolClietLambdaIAMPolicy:
+  # Sets policy for the role that executes the Userpool Client Lambda
+  # Depends on UserPool for Arn
+  # Marked as depending on UserPoolClientExecutionRole for easier to understand CFN sequencing
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.userpoolClientLambdaIamPolicy %>
+      Roles: 
+        - <%= props.userpoolClientLambdaRole %>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:DescribeUserPoolClient'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: UserPoolClientExecutionRole
+
+  UserPoolLambdaFunctionInputs:
+  # Values passed to Userpool client Lambda
+  # Depends on UserPool for Id
+  # Depends on UserPoolClient for Id
+  # Marked as depending on UserPoolClietLambdaIAMPolicy for easier to understand CFN sequencing
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt UserPoolClientLambda.Arn
+      clientId: !Ref UserPoolClient
+      userpoolId: !Ref UserPool
+    DependsOn: UserPoolClietLambdaIAMPolicy
   <% } %> 
+
+  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  # BEGIN MFA LAMBDA RESOURCES
+  MFALambdaExecutionRole:
+  # Created to execute Lambda which sets MFA config values
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: <%= props.totpLambdaRole %>      
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+      - PolicyName: <%= props.totpLambdaLogPolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:CreateLogGroup'
+                - 'logs:CreateLogStream'
+                - 'logs:PutLogEvents'
+              Resource: 'arn:aws:logs:*:*:*'
+      - PolicyName: <%= props.totpPassRolePolicy %>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'iam:PassRole'
+              Resource: <%= `arn:aws:iam:::role/${props.totpLambdaRole}` %>
+
+  MFALambda:
+  # Lambda which sets MFA config values
+  # Depends on MFALambdaExecutionRole for role ARN
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - '   const totpParams = {'
+            - '     UserPoolId: event.ResourceProperties.userPoolId,'
+            - '     MfaConfiguration: event.ResourceProperties.mfaConfiguration,'
+            - '     SmsMfaConfiguration: {'
+            - '       SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,'
+            - '       SmsConfiguration: {'
+            - '       SnsCallerArn: event.ResourceProperties.smsConfigCaller,'
+            - '       ExternalId: event.ResourceProperties.smsConfigExternalId'
+            - '       }'
+            - '     },'
+            - '     SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === "true" ? true : false}'
+            - '   }'
+            - '   identity.setUserPoolMfaConfig(totpParams).promise()'
+            - '     .then((res) => {'
+            - '       response.send(event, context, response.SUCCESS, {res});'   
+            - '     })'
+            - '     .catch((err) => {'
+            - '       response.send(event, context, response.FAILURE, {err});'
+            - '     })'
+            - '};'
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - MFALambdaExecutionRole
+        - Arn
+    DependsOn: MFALambdaExecutionRole
+
+  MFALambdaIAMPolicy:
+  # Sets policy for the role that executes the MFA Lambda
+  # Depends on Userpool for Arn
+  # Marked as depending on MFALambda for easier to understand CFN sequencing
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.totpLambdaIAMPolicy %>
+      Roles: 
+        - <%= props.totpLambdaRole %>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:SetUserPoolMfaConfig'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: MFALambda
+
+  MFALambdaFunctionInputs:
+  # Values passed to MFA Lambda
+  # Depends on UserPool for Arn
+  # Depends on MFALambda for Arn
+  # Marked as depending on MFALambdaIAMPolicy for easier to understand CFN sequencing
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt MFALambda.Arn
+      userPoolId: !Ref UserPool
+      mfaConfiguration: '<%= props.mfaConfiguration %>'
+      totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
+      smsConfigCaller: !GetAtt SNSRole.Arn
+      smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
+      smsConfigExternalId: <%= props.roleExternalId %>  
+    DependsOn: MFALambdaIAMPolicy
+  <% } %>
+
+  # BEGIN IDENTITY POOL RESOURCES
+  IdentityPool:
+  # Always created
+    Type: AWS::Cognito::IdentityPool
+    Properties: 
+      IdentityPoolName: <%= props.identityPoolName %>
+      CognitoIdentityProviders:
+        - ClientId:  !Ref UserPoolClient
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+      <%if (props.selectedParties && props.selectedParties.length >0) { %>
+      SupportedLoginProviders: 
+        <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
+          <%= Object.keys(props.selectedParties)[i] %>: '<%= Object.values(props.selectedParties)[i]%>'
+        <% } %> 
+      <% } %>
+      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
+  
+  IdentityPoolRoleMap:
+  # Created to map Auth and Unauth roles to the identity pool
+  # Depends on Identity Pool for ID ref
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties: 
+      IdentityPoolId: !Ref 'IdentityPool'
+      Roles:
+        <%if (props.allowUnauthenticatedIdentities) { %>
+          unauthenticated: <%= props.unAuthRoleArn %>
+        <% } %>
+          authenticated: <%= props.authRoleArn %>
+    DependsOn: IdentityPool
  
 Outputs :
-
-  Lambda:
-    Value: !GetAtt FederatedIDLambda.Arn
-    Description: Lambda Arn
   IdentityPoolName:
     Value: !Ref 'IdentityPool'
     Description:  name for the identity pool
   <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   UserPoolName:
     Value: !Ref 'UserPool'
-    Description:  name for the user pool
+    Description:  Name for the user pool
+  AppClientID:
+    Value: !Ref 'UserPoolClient'
+    Description: The user pool app client id
+  AppClientSecret:
+    Value: !GetAtt UserPoolLambdaFunctionInputs.appSecret
   <% } %>
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole: 

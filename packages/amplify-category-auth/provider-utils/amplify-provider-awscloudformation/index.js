@@ -58,15 +58,6 @@ function addResource(context, category, service) {
 
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
 
-      /* make sure that resource name populates '<label'>
-       * placeholder from default if it hasn't already */
-      // TODO: improve this
-      Object.keys(props).forEach((el) => {
-        if (typeof props[el] === 'string') {
-          props[el] = props[el].replace(/<label>/g, props.resourceName);
-        }
-      });
-
       copyCfnTemplate(context, category, props, cfnFilename);
     })
     .then(() => props.resourceName);
