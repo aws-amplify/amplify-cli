@@ -307,6 +307,11 @@ Resources:
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
+      CognitoIdentityProviders:
+        - ClientId:  !Ref UserPoolClient
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
     
   IdentityPoolRoleMap:
