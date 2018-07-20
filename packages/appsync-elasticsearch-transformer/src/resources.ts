@@ -6,16 +6,17 @@ import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } fro
 import {
     ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, ifElse, list, raw,
-    forEach, compoundExpression, qref, toJson
+    forEach, compoundExpression, qref, toJson,
 } from 'appsync-mapping-template'
 import { toUpper, graphqlName, ResourceConstants } from 'appsync-transformer-common'
+import { isContext } from 'vm';
 
 export class ResourceFactory {
 
     public makeParams() {
         return {
             [ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName]: new StringParameter({
-                Description: 'The name of the IAM role assumed by AppSync.',
+                Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
                 Default: 'AppSyncElasticSearchAccess'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName]: new StringParameter({
@@ -121,7 +122,7 @@ export class ResourceFactory {
                 [ResourceConstants.OUTPUTS.ElasticSearchAccessIAMRoleArn]: this.makeElasticsearchIAMRoleOutput()
             }
         }
-    }
+    } 
 
     /**
      * Given the name of a data source and optional logical id return a CF
@@ -350,10 +351,11 @@ export class ResourceFactory {
     }
 
     /**
-     * Create the ElasticSearch search resolver.
+     * Create the ElasticSearch get resolver.
      */
-    public makeSearchResolver(type: string, fieldsToSearch: string[]) {
-        const fieldName = graphqlName('search' + toUpper(type))
+    public makeGetResolver(type: string) {
+        const fieldName = graphqlName('get' + toUpper(type))
+        const ddbTableName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
@@ -362,70 +364,40 @@ export class ResourceFactory {
             RequestMappingTemplate: Fn.Sub(
                 print(
                     compoundExpression([
-                        set(ref('body'), obj({
-                            size: ref('util.defaultIfNull($ctx.args.first, 20)'),
-                            sort: list([
-                                obj({ createdAt: str('asc') }),
-                                obj({ _id: str('desc') })
-                            ])
-                        })),
-                        ifElse(
-                            ref('util.isNull($ctx.args.query)'),
-                            set(
-                                ref('query'),
-                                obj({
-                                    bool: obj({
-                                        filter: obj({
-                                            term: obj({
-                                                '__typename.keyword': str(type)
-                                            })
-                                        }),
-                                        must: list([
-                                            obj({
-                                                match_all: obj({})
-                                            })
-                                        ])
-                                    })
-                                })
-                            ),
-                            set(
-                                ref('query'),
-                                obj({
-                                    bool: obj({
-                                        filter: obj({
-                                            term: obj({
-                                                '__typename.keyword': str(type)
-                                            })
-                                        }),
-                                        must: list([
-                                            obj({
-                                                multi_match: obj({
-                                                    query: str('$ctx.args.query'),
-                                                    fields: list(fieldsToSearch.map((s: string) => str(s))),
-                                                    type: str('best_fields')
-                                                })
-                                            })
-                                        ])
-                                    })
-                                })
-                            )
-                        ),
-                        qref('$body.put("query", $query)'),
-                        iff(
-                            raw('!$util.isNullOrEmpty($ctx.args.after)'),
-                            compoundExpression([
-                                set(ref('split'), ref('ctx.args.after.split("/")')),
-                                set(
-                                    ref('afterToken'),
-                                    list([ref('split.get(0)'), ref('split.get(1)')])
-                                ),
-                                qref('$body.put("search_after", $afterToken)')
-                            ])
-                        ),
-                        set(ref('indexPath'), str('/${__ES_INDEX}/_search')),
-                        ElasticSearchMappingTemplate.search({
-                            body: ref('util.toJson($body)'),
-                            pathRef: 'indexPath'
+                        set(ref('indexPath'), str(`/${ddbTableName}` + '/${context.arguments.id}')),
+                        ElasticSearchMappingTemplate.getItem({
+                            path: ref('indexPath')
+                        })
+                    ]),
+                ),
+                { '__ES_INDEX': Fn.Ref(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID) }
+            ),
+            ResponseMappingTemplate: print(
+                toJson(ref('context.result.get("source")'))
+            )
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+    /**
+     * Create the ElasticSearch search resolver.
+     */
+    public makeSearchResolver(type: string) {
+        const fieldName = graphqlName('search' + toUpper(type))
+        const ddbTableName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
+            FieldName: fieldName,
+            TypeName: 'Query',
+            RequestMappingTemplate: Fn.Sub(
+                print(
+                    compoundExpression([
+                        set(ref('indexPath'), str(`/${ddbTableName}/_search`)),
+                        ElasticSearchMappingTemplate.searchItem({
+                            path: ref('indexPath'),
+                            size: ref('context.args.size'),
+                            from: ref('context.args.from'),
+                            query: ref('util.transform.toElasticsearchQueryObject($ctx.args.query)')
                         })
                     ]),
                 ),

@@ -1,115 +1,58 @@
 import {
     ObjectTypeDefinitionNode, InputValueDefinitionNode, InputObjectTypeDefinitionNode,
-    FieldDefinitionNode, NamedTypeNode, Kind
+    FieldDefinitionNode, Kind, TypeNode
 } from 'graphql'
 import {
-    toUpper, graphqlName, makeField, makeNamedType, unwrapNonNull, isScalar
+    graphqlName, makeNamedType, isScalar,
+    makeListType, getBaseType
 } from 'appsync-transformer-common'
 
-const searchableStringQueryInputName = 'SearchableStringQueryInput';
-const searchableIntQueryInputName = 'searchableIntQueryInput';
-const searchableFloatQueryInputName = 'searchableFloatQueryInput'
+const STRING_CONDITIONS = ['eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
+const ID_CONDITIONS = ['eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
+const INT_CONDITIONS = ['gt', 'lt', 'gte', 'lte', 'eq', 'range']
+const FLOAT_CONDITIONS = ['gt', 'lt', 'gte', 'lte', 'eq', 'range']
+const BOOLEAN_CONDITIONS = ['eq', 'ne']
 
-export function makeSearchableStringQueryInput(): ObjectTypeDefinitionNode {
+export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Searchable${type}FilterInput`)
+    let conditions = getScalarConditions(type)
+    const fields: InputValueDefinitionNode[] = conditions
+        .map((condition: string) => ({
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: { kind: "Name" as "Name", value: condition },
+            type: getScalarFilterInputType(condition, type, name),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: []
+        }))
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
         name: {
             kind: 'Name',
-            value: searchableStringQueryInputName
+            value: name
         },
-        fields: [
-            makeField("eq", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }),
-
-            // The standard query for performing full text queries, including fuzzy matching and phrase or proximity queries.
-            makeField("match", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }),
-
-            // Like the match query but used for matching exact phrases or word proximity matches.
-            makeField("matchPhrase", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } }),
-
-            // Find documents where the field specified contains any non-null value.
-            makeField("exists", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Boolean' } }),
-
-            // Find documents where the field specified contains terms which match the regular expression specified.
-            makeField("regexp", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } })
-        ],
-        directives: [],
-        interfaces: []
+        fields,
+        directives: []
     }
 }
 
-export function makeSearchableIntQueryInput(): ObjectTypeDefinitionNode {
-    return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-            kind: 'Name',
-            value: searchableIntQueryInputName
-        },
-        fields: [
-            makeField("gt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
-            makeField("lt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
-            makeField("gte", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
-            makeField("lte", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
-        ],
-        directives: [],
-        interfaces: []
-    }
-}
-
-export function makeSearchableFloatQueryInput(): ObjectTypeDefinitionNode {
-    return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-            kind: 'Name',
-            value: searchableFloatQueryInputName
-        },
-        fields: [
-            makeField("gt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } }),
-            makeField("lt", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } }),
-            makeField("gte", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } }),
-            makeField("lte", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } }),
-        ],
-        directives: [],
-        interfaces: []
-    }
-}
-
-export function makeStaticFields(): ReadonlyArray<ObjectTypeDefinitionNode> {
-    return new Array(
-        makeSearchableStringQueryInput(),
-        makeSearchableIntQueryInput(),
-        makeSearchableFloatQueryInput()
-    );
-}
-
-export function getSearchableNamedType(namedType: NamedTypeNode): NamedTypeNode {
-    switch (namedType.name.value) {
-        case 'String':
-            return makeNamedType(searchableStringQueryInputName);
-        case 'Int':
-        return makeNamedType(searchableIntQueryInputName);
-        case 'Float':
-        return makeNamedType(searchableFloatQueryInputName);
-        case 'Boolean':
-            return makeNamedType('Boolean') // TODO
-        default:
-            throw `Found ${namedType.name.value}. Valid types are String, Int, Float, Boolean`
-    }
-}
-
-export function makeSearchInputObject(obj: NamedTypeNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName('Searchable' + toUpper(obj.name.value) + 'QueryInput')
-    // const pluckFieldName = (field: FieldDefinitionNode) => field.name.value
-    const fields: InputValueDefinitionNode[] = (obj.fields || [])
+export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+    const name = graphqlName(`Searchable${obj.name.value}FilterInput`)
+    const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
-        .filter((field: FieldDefinitionNode) => field.name.value !== 'id')
-        .filter((field: FieldDefinitionNode) => unwrapNonNull(field.type).kind !== 'ListType') // TODO: Need to support String[]
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: getSearchableNamedType(unwrapNonNull(field.type)),
-                directives: [],
-                interfaces: []
+                type: makeNamedType('Searchable' + getBaseType(field.type) + 'FilterInput'),
+                // TODO: Service does not support new style descriptions so wait.
+                // description: field.description,
+                directives: []
             })
         )
     return {
@@ -119,24 +62,38 @@ export function makeSearchInputObject(obj: NamedTypeNode): InputObjectTypeDefini
             value: name
         },
         fields,
-        directives: [],
-        interfaces: []
+        directives: []
     }
 }
 
-export function makeSearchConnection(type: NamedTypeNode): ObjectTypeDefinitionNode {
-    return {
-        kind: 'ObjectTypeDefinition',
-        name: {
-            kind: 'Name',
-            value: graphqlName(`${toUpper(type.name.value)}SearchConnection`)
-        },
-        fields: [
-            makeField("items", [], { kind: 'ListType', type: type }),
-            makeField("total", [], { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } }),
-            makeField("nextToken", [], { kind: 'NamedType', name: { kind: 'Name', value: 'String' } })
-        ],
-        directives: [],
-        interfaces: []
+function getScalarFilterInputType(condition: string, type: string, filterInputName: string): TypeNode {
+    switch (condition) {
+        case 'range':
+            return makeListType(makeNamedType(type))
+        case 'exists':
+            return makeNamedType('Boolean')
+        case 'and':
+        case 'or':
+            return makeNamedType(filterInputName)
+        default:
+            return makeNamedType(type)
     }
 }
+
+function getScalarConditions(type: string): string[] {
+    switch (type) {
+        case 'String':
+            return STRING_CONDITIONS
+        case 'ID':
+            return ID_CONDITIONS
+        case 'Int':
+            return INT_CONDITIONS
+        case 'Float':
+            return FLOAT_CONDITIONS
+        case 'Boolean':
+            return BOOLEAN_CONDITIONS
+        default:
+            throw 'Valid types are String, ID, Int, Float, Boolean'
+    }
+}
+

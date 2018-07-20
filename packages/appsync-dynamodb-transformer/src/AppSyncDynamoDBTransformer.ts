@@ -205,8 +205,12 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         }
         ctx.addObjectExtension(mutationType)
 
+        const searchableExist = ctx.inputDocument.definitions
+                .filter((n: ObjectTypeDefinitionNode) => n.directives
+                    .filter((d: DirectiveNode) => d.name.value === 'searchable'))
+
         // Create the queries
-        if (shouldMakeGet) {
+        if (shouldMakeGet && !searchableExist) {
             const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
             ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
 
@@ -246,7 +250,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             this.generateFilterInputs(ctx, def)
         }
 
-        if (shouldMakeList) {
+        if (shouldMakeList && !searchableExist) {
 
             this.generateTableXConnectionType(ctx, def)
 

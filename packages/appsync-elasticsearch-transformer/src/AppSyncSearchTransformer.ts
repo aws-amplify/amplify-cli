@@ -4,7 +4,7 @@ import {
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    makeSearchConnection
+    
 } from './definitions'
 import {
     makeNamedType, blankObjectExtension, makeArg, makeField, makeNonNullType,
@@ -51,37 +51,5 @@ export class AppSyncSearchTransformer extends Transformer {
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
 
-        // Create the connection object type.
-        const connection = makeSearchConnection(makeNamedType(def.name.value))
-        ctx.addObject(connection)
-
-        let queryType = blankObjectExtension('Query')
-
-        // Todo: The @search directive in the current setup should really be a field transform.
-        // This object transform should create the search filter & sort inputs as well as the
-        // updated searchX query field and associated resolver
-        const isSearchable = (field: FieldDefinitionNode) => field.directives.find(
-            (dir: DirectiveNode) => dir.name.value === 'search'
-        )
-        const pluckName = (field: FieldDefinitionNode) => field.name.value
-        const searchableFields = (def.fields || []).filter(isSearchable).map(pluckName)
-        const searchResolver = this.resources.makeSearchResolver(
-            def.name.value,
-            searchableFields
-        )
-        ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
-        queryType = extensionWithFields(
-            queryType,
-            [makeField(
-                searchResolver.Properties.FieldName,
-                [
-                    makeArg('query', makeNonNullType(makeNamedType('String'))),
-                    makeArg('first', makeNamedType('Int')),
-                    makeArg('after', makeNamedType('String'))
-                ],
-                makeNamedType(connection.name.value)
-            )]
-        )
-        ctx.addObjectExtension(queryType)
     }
 }
