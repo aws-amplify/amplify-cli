@@ -1,10 +1,11 @@
 import GraphQLTransform from "graphql-transform";
 import { AppSyncSearchableTransformer } from "./";
+import { AppSyncDynamoDBTransformer } from "appsync-dynamodb-transformer";
 
 import fs = require('fs');
 
 const validSchema = `
-type Post @searchable {
+type Post @model @searchable {
     id: ID!
     title: String!
     upvotes: Int
@@ -15,7 +16,7 @@ type Post @searchable {
 }`;
 
 const transformer = new GraphQLTransform({
-    transformers: [new AppSyncSearchableTransformer()]
+    transformers: [new AppSyncDynamoDBTransformer(), new AppSyncSearchableTransformer()]
 });
 const out = transformer.transform(validSchema);
 fs.writeFile('cf.out.json', JSON.stringify(out, null, 4), (err) => {
