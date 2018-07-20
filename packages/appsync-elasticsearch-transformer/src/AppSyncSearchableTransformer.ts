@@ -16,6 +16,15 @@ import {
     makeNonNullType
 } from "appsync-transformer-common";
 
+interface QueryNameMap {
+    get?: string;
+    search?: string;
+}
+
+interface ModelDirectiveArgs {
+    queries?: QueryNameMap
+}
+
 /**
  * Handles the @searchable directive on OBJECT types.
  */
@@ -25,7 +34,11 @@ export class AppSyncSearchableTransformer extends Transformer {
     constructor() {
         super(
             `AppSyncSearchableTransformer`,
-            `directive @searchable on OBJECT`);
+            `directive @searchable(queries: ElasticsearchSearchMap) on OBJECT`,
+            `
+                input ElasticsearchSearchMap { get: String, search: String }
+            `
+        );
         this.resources = new ResourceFactory();
     }
 
@@ -46,44 +59,73 @@ export class AppSyncSearchableTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-        this.generateSearchableInputs(ctx, def)
-        this.generateSearchableXConnectionType(ctx, def)
+
+        const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
+
+        let shouldMakeGet = true;
+        let shouldMakeList = true;
+        let getFieldNameOverride = undefined;
+        let searchFieldNameOverride = undefined;
+
+        // Figure out which queries to make and if they have name overrides.
+        if (directiveArguments.queries) {
+            if (!directiveArguments.queries.get) {
+                shouldMakeGet = false;
+            } else {
+                getFieldNameOverride = directiveArguments.queries.get
+            }
+            if (!directiveArguments.queries.search) {
+                shouldMakeList = false;
+            } else {
+                searchFieldNameOverride = directiveArguments.queries.search
+            }
+        }
 
         let queryType = blankObjectExtension('Query')
 
         // Create getX
-        const getResolver = this.resources.makeGetResolver(def.name.value)
-        ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
-        queryType = extensionWithFields(
-            queryType,
-            [
-                makeField(
-                    getResolver.Properties.FieldName,
-                    [
-                        makeArg('id', makeNonNullType(makeNamedType('ID')))
-                    ],
-                    makeNamedType(def.name.value)
-                )
-            ]
-        )
+        if (shouldMakeGet) {
+            this.generateSearchableInputs(ctx, def)
+            this.generateSearchableXConnectionType(ctx, def)
+
+            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
+            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+            queryType = extensionWithFields(
+                queryType,
+                [
+                    makeField(
+                        getResolver.Properties.FieldName,
+                        [
+                            makeArg('id', makeNonNullType(makeNamedType('ID')))
+                        ],
+                        makeNamedType(def.name.value)
+                    )
+                ]
+            )
+        }
 
         // Create listX
-        const searchResolver = this.resources.makeSearchResolver(def.name.value)
-        ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
-        queryType = extensionWithFields(
-            queryType,
-            [
-                makeField(
-                    searchResolver.Properties.FieldName,
-                    [
-                        makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
-                        makeArg('limit', makeNamedType('Int')),
-                        makeArg('nextToken', makeNamedType('String'))
-                    ],
-                    makeNamedType(`Searchable${def.name.value}Connection`)
-                )
-            ]
-        )
+        if (shouldMakeList) {
+            this.generateSearchableInputs(ctx, def)
+            this.generateSearchableXConnectionType(ctx, def)
+
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
+            ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
+            queryType = extensionWithFields(
+                queryType,
+                [
+                    makeField(
+                        searchResolver.Properties.FieldName,
+                        [
+                            makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
+                            makeArg('limit', makeNamedType('Int')),
+                            makeArg('nextToken', makeNamedType('String'))
+                        ],
+                        makeNamedType(`Searchable${def.name.value}Connection`)
+                    )
+                ]
+            )
+        }
 
         ctx.addObjectExtension(queryType)
     };

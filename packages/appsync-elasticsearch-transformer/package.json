@@ -4,7 +4,7 @@
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "jest",
     "build": "tsc",
     "clean": "rm -rf ./lib",
     "lint": "tslint -p ./tslint.json"
@@ -19,6 +19,7 @@
   "dependencies": {
     "graphql": "^0.13.2",
     "appsync-mapping-template": "1.0",
+    "appsync-dynamodb-transformer": "1.0",
     "cloudform": "2.0.1",
     "graphql-transform": "1.0",
     "appsync-transformer-common": "1.0"
@@ -26,6 +27,9 @@
   "devDependencies": {
     "@types/node": "^10.3.4",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^2.8.3",
+    "@types/jest": "^23.1.1",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6"
   }
 }

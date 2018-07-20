@@ -353,8 +353,8 @@ export class ResourceFactory {
     /**
      * Create the ElasticSearch get resolver.
      */
-    public makeGetResolver(type: string) {
-        const fieldName = graphqlName('get' + toUpper(type))
+    public makeGetResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
         const ddbTableName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -381,8 +381,8 @@ export class ResourceFactory {
     /**
      * Create the ElasticSearch search resolver.
      */
-    public makeSearchResolver(type: string) {
-        const fieldName = graphqlName('search' + toUpper(type))
+    public makeSearchResolver(type: string, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName('search' + toUpper(type))
         const ddbTableName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
