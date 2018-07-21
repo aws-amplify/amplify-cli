@@ -37,9 +37,13 @@ function createAWSExports(context, amplifyResources) {
 
   Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
+      case 'Cognito': Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
+        break;
       case 'S3': Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
         break;
       case 'AppSync': Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
+        break;
+      case 'API Gateway': Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'Pinpoint': Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
         break;
@@ -79,6 +83,18 @@ function generateAWSExportsFile(context, configOutput) {
   }
 }
 
+function getCognitoConfig(cognitoResources, projectRegion) {
+  // There can only be one cognito resource
+  const cognitoResource = cognitoResources[0];
+
+  return {
+    aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolName,
+    aws_cognito_region: projectRegion,
+    aws_user_pools_id: cognitoResource.output.UserPoolName,
+    aws_user_pools_web_client_id: cognitoResource.output.AppClientID,
+  };
+}
+
 function getS3Config(s3Resources) {
   // There can only be one s3 resource - user files
   const s3Resource = s3Resources[0];
@@ -97,6 +113,22 @@ function getAppSyncConfig(appsyncResources) {
     aws_appsync_region: appsyncResource.output.Region,
     aws_appsync_authenticationType: appsyncResource.output.securityType,
   };
+}
+
+function getAPIGWConfig(apigwResources, projectRegion) {
+  // There can be multiple api gateway resource
+
+  const apigwConfig = {
+    aws_cloud_logic_custom: [],
+  };
+
+  for (let i = 0; i < apigwResources.length; i += 1) {
+    apigwConfig.aws_cloud_logic_custom.push({
+      endpoint: apigwResources[i].output.RootUrl,
+      region: projectRegion,
+    });
+  }
+  return apigwConfig;
 }
 
 function getPinpointConfig(pinpointResources) {

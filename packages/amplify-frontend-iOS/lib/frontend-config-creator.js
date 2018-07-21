@@ -29,6 +29,8 @@ function createAWSConfig(context, amplifyResources) {
 
   Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
+      case 'Cognito': Object.assign(configOutput, getCognitoConfig(serviceResourceMapping[service], projectRegion));
+        break;
       case 'S3': Object.assign(configOutput, getS3Config(serviceResourceMapping[service], projectRegion));
         break;
       case 'Pinpoint': Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
@@ -53,6 +55,31 @@ function generateAWSConfigFile(context, configOutput) {
     const jsonString = JSON.stringify(configOutput, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
   }
+}
+
+function getCognitoConfig(cognitoResources, projectRegion) {
+  // There can only be one cognito instance
+
+  const cognitoResource = cognitoResources[0];
+
+  return {
+    CredentialsProvider: {
+      CognitoIdentity: {
+        Default: {
+          PoolId: cognitoResource.output.IdentityPoolName,
+          Region: projectRegion,
+        },
+      },
+    },
+    CognitoUserPool: {
+      Default: {
+        PoolId: cognitoResource.output.UserPoolName,
+        AppClientId: cognitoResource.output.AppClientID,
+        AppClientSecret: cognitoResource.output.AppClientSecret,
+        Region: projectRegion,
+      },
+    },
+  };
 }
 
 function getS3Config(s3Resources) {
