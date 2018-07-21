@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli",
-  "version": "2.0.0",
+  "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
     "lint": "lerna run -- lint",
@@ -10,6 +10,7 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "amplify-cli": "file:packages/amplify-cli",
     "amplify-category-analytics": "file:packages/amplify-category-analytics",
     "amplify-category-api": "file:packages/amplify-category-api",
     "amplify-category-auth": "file:packages/amplify-category-auth",
