@@ -20,7 +20,7 @@ function createAmplifyConfig(context, amplifyResources) {
 function createAWSConfig(context, amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
-    UserAgent: 'MobileHub/1.0',
+    UserAgent: 'aws-amplify/cli',
     Version: '1.0',
     IdentityManager: {
       Default: {},
