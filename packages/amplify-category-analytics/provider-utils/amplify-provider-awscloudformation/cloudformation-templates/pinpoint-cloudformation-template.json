@@ -1,0 +1,183 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Pinpoint app creation from Amplify CLI",
+    "Parameters": {
+        "appName": {
+            "Type": "String"
+        },
+        "roleName": {
+            "Type": "String"
+        },
+        "cloudWatchPolicyName": {
+            "Type": "String"
+        },
+        "pinpointPolicyName": {
+            "Type": "String"
+        }
+    },
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Creating pinpoint app"
+                    },
+                    "Parameters": [
+                        "appName"
+                    ]
+                }
+            ]
+        }
+    },
+    "Resources": {
+        "LambdaExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {
+                    "Ref": "roleName"
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Ref": "cloudWatchPolicyName"
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "arn:aws:logs:*:*:*"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": {
+                            "Ref": "pinpointPolicyName"
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "mobileanalytics:*",
+                                        "mobiletargeting:*"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "PinpointFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "ZipFile": {
+                        "Fn::Join": [
+                            "\n",
+                            [
+                                "const response = require('cfn-response');",
+                                "const aws = require('aws-sdk');",
+                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01' });",
+                                "exports.handler = function(event, context) {",
+                                "    if (event.RequestType == 'Delete') {",
+                                "        response.send(event, context, response.SUCCESS);",
+                                "        return;",
+                                "    }",
+                                "    const appName = event.ResourceProperties.appName;",
+                                "    let responseData = {};",
+                                "    const params = {",
+                                "        CreateApplicationRequest: {",
+                                "            Name: appName",
+                                "        }",
+                                "    };",
+                                "    return pinpoint.createApp(params).promise()",
+                                "        .then((res) => {",
+                                "            responseData = res.ApplicationResponse;",
+                                "            response.send(event, context, response.SUCCESS, responseData);",
+                                "         }).catch((err) => {",
+                                "            console.log(err.stack);",
+                                "            responseData = {Error: err};",
+                                "            response.send(event, context, response.FAILED, responseData);",
+                                "            throw err;",
+                                "        });",
+                                "};"
+                            ]
+                        ]
+                    }
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs6.10",
+                "Timeout": "300",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRole",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "PinpointFunctionOutputs": {
+            "Type": "Custom::LambdaCallout",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "PinpointFunction",
+                        "Arn"
+                    ]
+                },
+                "appName": {
+                    "Ref": "appName"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        },
+        "Id": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "PinpointFunctionOutputs",
+                    "Id"
+                ]
+            }
+        },
+        "appName": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "PinpointFunctionOutputs",
+                    "Name"
+                ]
+            }
+        }
+    }
+}

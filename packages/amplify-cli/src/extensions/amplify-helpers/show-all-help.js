@@ -37,24 +37,24 @@ function showAllHelp(context) {
       description: 'Deletes all the resources tied to the project from the cloud',
     },
     {
-      name: 'add <category>',
+      name: '<category> add',
       description: 'Adds resource for an amplify category in your local backend',
     },
     {
-      name: 'update <category>',
+      name: '<category> update',
       description: 'Update resource for an amplify category in your local backend',
     },
     {
-      name: 'push <category>',
+      name: '<category> push',
       description: 'Provisions all cloud resources in a category with the latest local developments',
     },
     {
-      name: 'remove <category>',
+      name: '<category> remove',
       description: 'Removes resource for an amplify category in your local backend',
     },
     {
       name: '<category>',
-      description: 'Contains subcommands of the specified amplify category',
+      description: 'Displays subcommands of the specified amplify category',
     },
 
   ];

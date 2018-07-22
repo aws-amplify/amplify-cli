@@ -3,7 +3,17 @@
 		"inputs": [
 			{
 				"key": "resourceName",
-				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"question": "Provide a friendly resource name:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			},
+			{
+				"key": "appName",
+				"question": "Provide your pinpoint resource name:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9]+$",
