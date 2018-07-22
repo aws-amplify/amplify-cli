@@ -2,7 +2,6 @@
   "name": "amplify-cli",
   "version": "0.1.0",
   "description": "Amplify CLI",
-  "private": true,
   "bin": {
     "amplify": "bin/amplify"
   },
@@ -13,14 +12,7 @@
     "watch": "ava --watch",
     "coverage": "nyc ava"
   },
-  "files": [
-    "LICENSE",
-    "readme.md",
-    "docs",
-    "bin",
-    "src"
-  ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "^0.1.0",
     "amplify-category-auth": "^0.1.0",
