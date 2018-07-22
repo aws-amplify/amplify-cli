@@ -6,6 +6,7 @@ let options;
 
 module.exports = {
   name: subcommand,
+  alias: ['add'],
   run: async (context) => {
     const { amplify } = context;
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
