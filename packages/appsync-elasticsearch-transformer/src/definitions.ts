@@ -85,7 +85,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
                     kind: 'Name',
                     value: 'not'
                 },
-                type: makeListType(makeNamedType(name)),
+                type: makeNamedType(name),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []
@@ -108,9 +108,6 @@ function getScalarFilterInputType(condition: string, type: string, filterInputNa
             return makeListType(makeNamedType(type))
         case 'exists':
             return makeNamedType('Boolean')
-        case 'and':
-        case 'or':
-            return makeNamedType(filterInputName)
         default:
             return makeNamedType(type)
     }

@@ -147,7 +147,7 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                         kind: 'Name',
                         value: 'not'
                     },
-                    type: makeListType(makeNamedType(name)),
+                    type: makeNamedType(name),
                     // TODO: Service does not support new style descriptions so wait.
                     // description: field.description,
                     directives: []
