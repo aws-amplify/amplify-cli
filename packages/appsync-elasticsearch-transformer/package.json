@@ -19,8 +19,7 @@
   "dependencies": {
     "graphql": "^0.13.2",
     "appsync-mapping-template": "1.0",
-    "appsync-dynamodb-transformer": "1.0",
-    "cloudform": "2.0.1",
+    "cloudform": "^2.2.1",
     "graphql-transform": "1.0",
     "appsync-transformer-common": "1.0"
   },

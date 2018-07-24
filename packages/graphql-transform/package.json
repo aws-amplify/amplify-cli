@@ -19,13 +19,13 @@
   "devDependencies": {
     "@types/graphql": "^0.13.1",
     "@types/jest": "^23.1.0",
-    "tslint": "^5.10.0",
-    "ts-jest": "^22.4.6",
     "jest": "^23.0.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "cloudform": "^2.0.1",
+    "cloudform": "^2.2.1",
     "graphql": "^0.13.2"
   },
   "jest": {
