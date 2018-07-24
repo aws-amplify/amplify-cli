@@ -6,7 +6,7 @@ import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } fro
 import {
     ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, ifElse, list, raw,
-    forEach, compoundExpression, qref, toJson,
+    forEach, compoundExpression, qref, toJson, bool,
 } from 'appsync-mapping-template'
 import { toUpper, graphqlName, ResourceConstants } from 'appsync-transformer-common'
 import { isContext } from 'vm';
@@ -370,11 +370,14 @@ export class ResourceFactory {
                         from: ref('context.args.from'),
                         query: ref('util.transform.toElasticsearchQueryDSL($ctx.args.query)'),
                         sort: list([
-                            obj({
-                                "$context.args.sort.field" : obj({
-                                    "order" : str('$context.args.sort.direction')
+                            iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
+                                obj({
+                                    "$context.args.sort.field" : obj({
+                                        "order" : str('$context.args.sort.direction')
+                                    })
                                 })
-                            })
+                            ),
+                            str('_doc')
                         ])
                     })
                 ]),
