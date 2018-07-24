@@ -1,7 +1,7 @@
 const uuid = require('uuid');
 
 const getAllDefaults = (project) => {
-  const appName = project.projectConfig.projectName.toLowerCase();
+  const appName = project.projectConfig.projectName.toLowerCase().replace(/[^0-9a-zA-Z]/gi, '');
   const [shortId] = uuid().split('-');
   const resourceName = `${appName}${shortId}`;
 

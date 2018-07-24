@@ -56,8 +56,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   Object.assign(allDefaultValues, pathDetails, answers);
   if (answers.functionTemplate === "crud") {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
-    Object.assign(dynamoAnswers, { category: 'storage' });
-    console.log(context.amplify.getProjectDetails().amplifyMeta.storage[dynamoAnswers.resourceName]);
+    Object.assign(dynamoAnswers,
+      { category: 'storage' },
+      context.amplify.getProjectDetails().amplifyMeta.storage[dynamoAnswers.resourceName]);
     Object.assign(allDefaultValues, { database: dynamoAnswers });
 
     if (!dynamoAnswers.Arn) {
