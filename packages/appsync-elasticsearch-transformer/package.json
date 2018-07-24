@@ -29,6 +29,7 @@
     "typescript": "^2.8.3",
     "@types/jest": "^23.1.1",
     "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "ts-jest": "^22.4.6",
+    "appsync-dynamodb-transformer": "1.0"
   }
 }
