@@ -6,7 +6,7 @@ const getAllDefaults = (project) => {
   const defaults = {
     resourceName: `s3${shortId}`,
     bucketName: `${name}${uuid().replace(/-/g, '')}`,
-    bucketPolicy: 'Private',
+    policy: 'Private',
   };
 
   return defaults;

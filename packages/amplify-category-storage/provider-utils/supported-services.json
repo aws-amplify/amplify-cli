@@ -58,7 +58,7 @@
 			},
 			{
 
-				"key": "TableName",
+				"key": "tableName",
 				"type": "input",
 				"question": "Please provide table name:",
 				"validation": {

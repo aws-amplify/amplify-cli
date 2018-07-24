@@ -3,12 +3,16 @@ const featureName = 'analytics';
 module.exports = {
   name: featureName,
   run: async (context) => {
-    const header = `amplify ${featureName} <subcommands>`;
+    const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [
       {
         name: 'add',
-        description: `Takes you through a CLI flow to add a ${featureName} resource to your local backend`,
+        description: `Takes you through a CLI flow to add an ${featureName} resource to your local backend`,
+      },
+      {
+        name: 'update',
+        description: `Takes you through a CLI flow to update an ${featureName} resource`,
       },
       {
         name: 'push',

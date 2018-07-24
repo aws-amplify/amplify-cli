@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "eslint": "^4.19.1",
+    "fs-extra": "^7.0.0",
     "inquirer": "^3.2.1",
     "uuid": "^2.0.3"
   },

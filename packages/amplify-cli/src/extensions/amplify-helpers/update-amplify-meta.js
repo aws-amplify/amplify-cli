@@ -55,14 +55,13 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
-    amplifyMeta[category][resourceName] = {};
-  } else if (!amplifyMeta[category][resourceName]) {
-    amplifyMeta[category][resourceName] = {};
   }
-
-  amplifyMeta[category][resourceName] = options;
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  if (!amplifyMeta[category][resourceName]) {
+    amplifyMeta[category][resourceName] = {};
+    amplifyMeta[category][resourceName] = options;
+    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  }
 }
 
 function updateProvideramplifyMeta(providerName, options) {
