@@ -4,7 +4,7 @@ import {
     ObjectTypeDefinitionNode
 } from "graphql";
 import { ResourceFactory } from "./resources";
-import { makeSearchableScalarInputObject, makeSearchableXFilterInputObject } from "./definitions";
+import { makeSearchableScalarInputObject, makeSearchableXFilterInputObject, makeSearchableSortDirectionEnumObject, makeSearchableXSortableFieldsEnumObject, makeSearchableXSortInputObject } from "./definitions";
 import {
     makeNamedType,
     blankObjectExtension,
@@ -72,6 +72,7 @@ export class AppSyncSearchableTransformer extends Transformer {
             }
         }
 
+        //SearchablePostSortableFields
         let queryType = blankObjectExtension('Query')
 
         // Create listX
@@ -88,6 +89,7 @@ export class AppSyncSearchableTransformer extends Transformer {
                         searchResolver.Properties.FieldName,
                         [
                             makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
+                            makeArg('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
                             makeArg('limit', makeNamedType('Int')),
                             makeArg('nextToken', makeNamedType('String'))
                         ],
@@ -163,10 +165,24 @@ export class AppSyncSearchableTransformer extends Transformer {
             ctx.addInput(searchableBooleanFilterInput)
         }
 
-        // Create the SearchableXFilterInput
         if (!this.typeExist(`Searchable${def.name.value}FilterInput`, ctx)) {
             const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def)
             ctx.addInput(searchableXQueryFilterInput)
+        }
+
+        if (!this.typeExist('SearchableSortDirection', ctx)) {
+            const searchableSortDirection = makeSearchableSortDirectionEnumObject()
+            ctx.addEnum(searchableSortDirection)
+        }
+
+        if (!this.typeExist(`Searchable${def.name.value}SortableFields`, ctx)) {
+            const searchableXSortableFieldsDirection = makeSearchableXSortableFieldsEnumObject(def)
+            ctx.addEnum(searchableXSortableFieldsDirection)
+        }
+
+        if (!this.typeExist(`Searchable${def.name.value}SortInput`, ctx)) {
+            const searchableXSortableInputDirection = makeSearchableXSortInputObject(def)
+            ctx.addInput(searchableXSortableInputDirection)
         }
     }
 }

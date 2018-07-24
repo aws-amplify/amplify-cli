@@ -26,8 +26,9 @@ export class ElasticSearchMappingTemplate {
      * @param from the next token
      * @param query the query
      */
-    public static searchItem({ query, size, from, path }: {
+    public static searchItem({ query, size, from, path, sort }: {
         path: Expression,
+        sort: Expression | ObjectNode,
         query: ObjectNode | Expression,
         size: Expression,
         from?: Expression
@@ -40,25 +41,10 @@ export class ElasticSearchMappingTemplate {
                 body: obj({
                     from,
                     size,
+                    sort,
                     query
                 })
             })
-        })
-    }
-
-    /**
-     * Create a get item resolver template.
-     * @param params Params to pass to the mapping template
-     * @param path The resource path
-     */
-    public static getItem({ path }: {
-        path: Expression,
-    }): ObjectNode {
-        return obj({
-            version: str('2017-02-28'),
-            operation: str('GET'),
-            path,
-            params: obj({})
         })
     }
 }

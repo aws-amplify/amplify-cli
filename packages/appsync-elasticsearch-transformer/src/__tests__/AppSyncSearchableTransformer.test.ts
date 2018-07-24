@@ -144,6 +144,65 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     expect(verifyInputCount(parsed, 'SearchableUserFilterInput', 1)).toBeTruthy;
 });
 
+test('Test AppSyncSearchableTransformer with sort fields', () => {
+    const validSchema = `
+    type Post @model @searchable {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncSearchableTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).toBeDefined()
+    expectFields(queryType, ['searchPost'])
+    
+    const stringInputType = getInputType(parsed, 'SearchableStringFilterInput')
+    expect(stringInputType).toBeDefined()
+    const booleanInputType = getInputType(parsed, 'SearchableBooleanFilterInput')
+    expect(booleanInputType).toBeDefined()
+    const intInputType = getInputType(parsed, 'SearchableIntFilterInput')
+    expect(intInputType).toBeDefined()
+    const floatInputType = getInputType(parsed, 'SearchableFloatFilterInput')
+    expect(floatInputType).toBeDefined()
+    const idInputType = getInputType(parsed, 'SearchableIDFilterInput')
+    expect(idInputType).toBeDefined()
+    const postInputType = getInputType(parsed, 'SearchablePostFilterInput')
+    expect(postInputType).toBeDefined()
+    const sortInputType = getInputType(parsed, 'SearchablePostSortInput')
+    expect(sortInputType).toBeDefined()
+
+
+    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
+    
+    expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'SearchableIntFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'SearchableFloatFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'SearchablePostFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'SearchablePostSortInput', 1)).toBeTruthy;
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)

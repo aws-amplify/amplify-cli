@@ -368,7 +368,14 @@ export class ResourceFactory {
                         path: ref('indexPath'),
                         size: ref('context.args.size'),
                         from: ref('context.args.from'),
-                        query: ref('util.transform.toElasticsearchQueryObject($ctx.args.query)')
+                        query: ref('util.transform.toElasticsearchQueryDSL($ctx.args.query)'),
+                        sort: list([
+                            obj({
+                                "$context.args.sort.field" : obj({
+                                    "order" : str('$context.args.sort.direction')
+                                })
+                            })
+                        ])
                     })
                 ]),
             ),
