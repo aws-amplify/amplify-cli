@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
+const serviceName = 'DynamoDB';
 const templateFileName = 'dynamoDb-cloudformation-template.json.ejs';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
@@ -15,12 +16,20 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
-  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
+  const dynamoDbResources = {};
+
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+    if (amplifyMeta[category][resourceName].service === serviceName) {
+      dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
+    }
+  });
+  console.log('im here!');
+  if (!amplifyMeta[category] || Object.keys(dynamoDbResources).length === 0) {
     context.print.error('No resources to update. Please add a resource first');
     process.exit(0);
     return;
   }
-  const resources = Object.keys(amplifyMeta[category]);
+  const resources = Object.keys(dynamoDbResources);
   const question = [{
     name: 'resourceName',
     message: 'Please select the resource you would want to update',
