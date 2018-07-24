@@ -303,11 +303,13 @@ Resources:
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
+       <%if (props.authSelections === 'identityPoolAndUserPool') { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+      <% } %>
       <%if (props.selectedParties && props.selectedParties.length >0) { %>
       SupportedLoginProviders: 
         <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
