@@ -55,8 +55,8 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
-    amplifyMeta[category][resourceName] = {};
-  } else if (!amplifyMeta[category][resourceName]) {
+  }
+  if (!amplifyMeta[category][resourceName]) {
     amplifyMeta[category][resourceName] = {};
     amplifyMeta[category][resourceName] = options;
     const jsonString = JSON.stringify(amplifyMeta, null, '\t');

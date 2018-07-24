@@ -1,10 +1,51 @@
 const inquirer = require('inquirer');
+const path = require('path');
+const fs = require('fs-extra');
 
-async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+const category = 'storage';
+const parametersFileName = 'parameters.json';
+const templateFileName = 'dynamoDb-cloudformation-template.json.ejs';
+
+async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+  return configure(context, defaultValuesFilename, serviceMetadata);
+}
+
+function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+  // const resourceName = resourceAlreadyExists(context);
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+
+  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
+    context.print.error('No resources to update. Please add a resource first');
+    process.exit(0);
+    return;
+  }
+  const resources = Object.keys(amplifyMeta[category]);
+  const question = [{
+    name: 'resourceName',
+    message: 'Please select the resource you would want to update',
+    type: 'list',
+    choices: resources,
+  }];
+
+  return inquirer.prompt(question)
+    .then(answer => configure(
+      context, defaultValuesFilename,
+      serviceMetadata, answer.resourceName,
+    ));
+}
+
+
+async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify, print } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
+
+  const defaultValues = getAllDefaults(amplify.getProjectDetails());
+
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+
 
   const attributeTypes = {
     string: { code: 'S', indexable: true },
@@ -20,6 +61,20 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   };
   let usedAttributeDefinitions = new Set();
 
+
+  if (resourceName) {
+    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    let parameters;
+    try {
+      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    } catch (e) {
+      parameters = {};
+    }
+    parameters.resourceName = resourceName;
+    Object.assign(defaultValues, parameters);
+  }
+
   const resourceQuestions = [
     {
       type: inputs[0].type,
@@ -27,7 +82,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       message: inputs[0].question,
       validate: amplify.inputValidation(inputs[0]),
       default: () => {
-        const defaultValue = getAllDefaults(amplify.getProjectDetails())[inputs[0].key];
+        const defaultValue = defaultValues[inputs[0].key];
         return defaultValue;
       },
     },
@@ -36,7 +91,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       name: inputs[1].key,
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
-      default: answers => answers.resourceName,
+      default: (answers) => {
+        const defaultValue = defaultValues[inputs[1].key];
+        return answers.resourceName || defaultValue;
+      },
     },
   ];
 
@@ -47,8 +105,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ask resource and table name question
 
-  const answers = await inquirer.prompt(resourceQuestions);
+  let answers = {};
 
+  if (!resourceName) {
+    answers = await inquirer.prompt(resourceQuestions);
+  }
 
   print.info('');
   print.info('You can now add columns to the table.');
@@ -71,6 +132,19 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   let continueAttributeQuestion = true;
   const attributeAnswers = [];
+  if (resourceName) {
+    attributeAnswers.push(
+      {
+        AttributeName: defaultValues.partitionKeyName,
+        AttributeType: defaultValues.partitionKeyType,
+      },
+      {
+        AttributeName: defaultValues.sortKeyName,
+        AttributeType: defaultValues.sortKeyType,
+      },
+    );
+    continueAttributeQuestion = await context.prompt.confirm('Would you like to add another column?');
+  }
   const indexableAttributeList = [];
 
   while (continueAttributeQuestion) {
@@ -104,29 +178,56 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   // Ask for primary key
 
   answers.KeySchema = [];
+  let partitionKeyName;
+  let partitionKeyType;
 
-  const primaryKeyQuestion = {
-    type: inputs[4].type,
-    name: inputs[4].key,
-    message: inputs[4].question,
-    validate: amplify.inputValidation(inputs[3]),
-    choices: indexableAttributeList,
-  };
+  if (resourceName) {
+    ({ partitionKeyName } = defaultValues);
+    ({ partitionKeyType } = defaultValues);
+  } else {
+    const primaryKeyQuestion = {
+      type: inputs[4].type,
+      name: inputs[4].key,
+      message: inputs[4].question,
+      validate: amplify.inputValidation(inputs[3]),
+      choices: indexableAttributeList,
+    };
 
-  const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
+    const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
+    partitionKeyName = partitionKeyAnswer[inputs[4].key];
+  }
+
   answers.KeySchema.push({
-    AttributeName: partitionKeyAnswer[inputs[4].key],
+    AttributeName: partitionKeyName,
     KeyType: 'HASH',
   });
 
-  const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyAnswer[inputs[4].key]);
+  // Get the type for primary index
+
+  const primaryAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr =>
+    attr.AttributeName === partitionKeyName);
+  partitionKeyType = answers.AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
+
+  const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyName);
 
   if (primaryKeyAttrIndex > -1) {
     indexableAttributeList.splice(primaryKeyAttrIndex, 1);
   }
-  usedAttributeDefinitions.add(partitionKeyAnswer[inputs[4].key]);
+  usedAttributeDefinitions.add(partitionKeyName);
 
-  if (await context.prompt.confirm('Do you want to add a sort key to your table?')) {
+  let sortKeyName;
+  let sortKeyType;
+
+  if (resourceName) {
+    ({ sortKeyName } = defaultValues);
+    if (sortKeyName) {
+      answers.KeySchema.push({
+        AttributeName: sortKeyName,
+        KeyType: 'RANGE',
+      });
+      usedAttributeDefinitions.add(sortKeyName);
+    }
+  } else if (await context.prompt.confirm('Do you want to add a sort key to your table?')) {
     // Ask for sort key
     if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
@@ -136,14 +237,21 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
         choices: indexableAttributeList,
       };
       const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+      sortKeyName = sortKeyAnswer[inputs[5].key];
       answers.KeySchema.push({
-        AttributeName: sortKeyAnswer[inputs[5].key],
+        AttributeName: sortKeyName,
         KeyType: 'RANGE',
       });
-      usedAttributeDefinitions.add(sortKeyAnswer[inputs[5].key]);
+      usedAttributeDefinitions.add(sortKeyName);
     } else {
       context.print.error('You must add additional keys in order to select a sort key.');
     }
+  }
+  if (sortKeyName) {
+    // Get the type for primary index
+    const sortKeyAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr =>
+      attr.AttributeName === sortKeyName);
+    sortKeyType = answers.AttributeDefinitions[sortKeyAttrTypeIndex].AttributeType;
   }
 
   answers.KeySchema = answers.KeySchema;
@@ -235,7 +343,48 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
 
-  return answers;
+
+  Object.assign(defaultValues, answers);
+  const resource = defaultValues.resourceName;
+  const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+  delete defaultValues.resourceName;
+  fs.ensureDirSync(resourceDirPath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+
+  // Copy just the table name as parameters
+  const parameters = {
+    tableName: defaultValues.tableName,
+    partitionKeyName,
+    partitionKeyType,
+  };
+  if (sortKeyName) {
+    Object.assign(parameters, { sortKeyName, sortKeyType });
+  }
+
+  const jsonString = JSON.stringify(parameters, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+  await copyCfnTemplate(context, category, resource, defaultValues);
+  return resource;
 }
 
-module.exports = { serviceWalkthrough };
+
+function copyCfnTemplate(context, categoryName, resourceName, options) {
+  const { amplify } = context;
+  const targetDir = amplify.pathManager.getBackendDirPath();
+  const pluginDir = __dirname;
+
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: `../cloudformation-templates/${templateFileName}`,
+      target: `${targetDir}/${categoryName}/${resourceName}/${resourceName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  return context.amplify.copyBatch(context, copyJobs, options);
+}
+
+
+module.exports = { addWalkthrough, updateWalkthrough };

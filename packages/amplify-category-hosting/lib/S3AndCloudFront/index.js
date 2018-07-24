@@ -94,7 +94,7 @@ function configure(context) {
 function publish(context, args) {
   return fileUPloader.run(context, args.distributionDirPath)
     .then(() => {
-      const { amplifyMeta } = context.exeInfo;
+      const { amplifyMeta } = context.amplify.getProjectDetails();
       const { WebsiteURL } = amplifyMeta[constants.CategoryName][serviceName].output;
       context.print.info('Your app is published successfully');
       context.print.info(chalk.green(WebsiteURL));

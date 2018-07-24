@@ -1,0 +1,38 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "S3 storage creation from Amplify CLI",
+    "Parameters": {
+        "policy": {
+            "Type": "String"
+        },
+        "bucketName": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "AccessControl": {
+                	"Ref": "policy"
+            	},
+                "BucketName": {
+                	"Ref": "bucketName"
+            	}
+            }
+        }
+    },
+    "Outputs": {
+        "BucketName": {
+            "Value": {
+                "Ref": "S3Bucket"
+            },
+            "Description": "Bucket name for the S3 bucket"
+        },
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        }
+    }
+}
