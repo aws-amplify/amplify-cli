@@ -54,11 +54,11 @@ function printWelcomeMessage() {
   print.info('');
   print.success('Some next steps:');
   print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
-  print.info("\"amplify <category> add\" will allow you to add features like user login or a backend API");
-  print.info("\"amplify publish\" will build your local resources and provision everything configured in the cloud");
+  print.info('"amplify <category> add" will allow you to add features like user login or a backend API');
+  print.info('"amplify publish" will build your local resources and provision everything configured in the cloud');
   print.info('');
   print.success('Pro tip:');
-  print.info("Try \"amplify add api\" to create a backend API and then \"amplify publish\" to deploy everything");
+  print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
   print.info('');
 }
 

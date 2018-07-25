@@ -226,8 +226,8 @@ function newLambdaFunction(context, path) {
   }
   context.api = {
     path,
-    functionTemplate: "serverless"
-  }
+    functionTemplate: 'serverless',
+  };
   return add(context, 'amplify-provider-awscloudformation', 'Lambda')
     .then((resourceName) => {
       context.print.success('Succesfully added Lambda function locally');

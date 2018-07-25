@@ -32,11 +32,11 @@ module.exports = {
       })
       .then((resourceName) => {
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-        const {print} = context;
+        const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
         print.success('Some next steps:');
-        print.info(`"amplify publish" will build all your local resources and provision everything configured in the cloud`);
+        print.info('"amplify publish" will build all your local resources and provision everything configured in the cloud');
         print.info('');
       })
       .catch((err) => {
