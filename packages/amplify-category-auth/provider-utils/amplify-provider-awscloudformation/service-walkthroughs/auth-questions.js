@@ -17,21 +17,22 @@ async function serviceWalkthrough(
   const defaultPromptInputs = [
     {
       key: 'useDefault',
-      question: 'Do you want to use a default IAM user pool/identity pool template?',
+      prefix: '\n The current configured provider is Amazon Cognito. \n',
+      question: 'Do you want to use default authentication and security configuration?',
       type: 'confirm',
       default: true,
     },
     {
       key: 'authSelections',
-      question: 'Select the authentication/authorization services that you want to use:',
+      question: '“What functionality will your application require:',
       required: true,
       type: 'list',
-      map: 'authSelections',
+      map: 'authSelectionMap',
     },
     {
       key: 'resourceName',
       set: 'core',
-      question: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+      question: 'Provide a friendly name for auth tagging in this project',
       validation: {
         operator: 'regex',
         value: '^[a-zA-Z0-9]+$',

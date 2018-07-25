@@ -1,22 +1,46 @@
-const authFlowMap = [
+const mfaOptions = [
   {
-    name: 'Enable sign-in API for server-based authentication',
-    value: 'ADMIN_NO_SRP_AUTH',
-  }, {
-    name: 'Only allow Custom Authentication',
-    value: 'CUSTOM_AUTH_FLOW_ONLY',
-  }, {
-    name: 'Enable username-password (non-SRP) flow for app-based authentication',
-    value: 'USER_PASSWORD_AUTH',
+    name: 'OFF',
+    value: 'OFF',
+  },
+  {
+    name: 'ON (Required for all logins, can not be enabled later)',
+    value: 'ON',
+  },
+  {
+    name: 'OPTIONAL (Individual users can use MFA)',
+    value: 'OPTIONAL',
   },
 ];
 
-const authSelections = [
+const mfaMethods = [
   {
-    name: 'Identity Pool and User Pool',
+    name: 'SMS Text Message',
+    value: 'SMS Text Message',
+  },
+  {
+    name: 'Time-Based One-Time Password (TOTP)',
+    value: 'TOTP',
+  },
+];
+
+const emailRegistration = [
+  {
+    name: 'Enabled (Requires per-user email entry at registration)',
+    value: ['email', 'phone_number'],
+  },
+  {
+    name: 'Disabled (Uses SMS/TOTP as an alternative)',
+    value: ['phone_number'],
+  },
+];
+
+const authSelectionMap = [
+  {
+    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   }, {
-    name: 'Identity Pool Only',
+    name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
     value: 'identityPoolOnly',
   },
 ];
@@ -110,18 +134,22 @@ const authProviders = [
 ];
 
 const getAllMaps = (() => ({
-  authFlowMap,
   coreAttributes,
-  authSelections,
+  authSelectionMap,
   appClientReadAttributes,
   authProviders,
+  mfaOptions,
+  mfaMethods,
+  emailRegistration,
 }));
 
 module.exports = {
-  authFlowMap,
   coreAttributes,
   appClientReadAttributes,
-  authSelections,
+  authSelectionMap,
   getAllMaps,
   authProviders,
+  mfaOptions,
+  mfaMethods,
+  emailRegistration,
 };

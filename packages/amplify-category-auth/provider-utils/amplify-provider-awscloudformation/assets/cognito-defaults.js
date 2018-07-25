@@ -1,13 +1,11 @@
 const uuid = require('uuid');
-const { authFlowMap, coreAttributes, appClientReadAttributes } = require('./string-maps');
+const { coreAttributes, appClientReadAttributes } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
 const general = () => ({
   resourceName: `cognito${sharedId}`,
-  authSelections: [
-    'Cognito Identity Pool Only',
-  ],
+  authSelections: ['identityPoolAndUserPool'],
 });
 
 const userPoolDefaults = projectName => ({
@@ -29,11 +27,9 @@ const userPoolDefaults = projectName => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes.find(a => a.name === 'Email').value,
     coreAttributes.find(b => b.name === 'Phone Number').value,
   ],
   userpoolClientName: `${projectName}-app-client-${sharedId}`,
-  userpoolClientAuthFlow: [authFlowMap.find(c => c.value === 'ADMIN_NO_SRP_AUTH').value],
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [

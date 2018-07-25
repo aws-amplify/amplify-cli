@@ -15,7 +15,7 @@
 			{
 				"key": "allowUnauthenticatedIdentities",
 				"set": "core",
-				"question": "Do you want to allow unauthenticated logins?.",
+				"question": "Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM)",
 				"type": "confirm",
 				"required": true
 			},
@@ -121,13 +121,10 @@
 			{
 				"key": "mfaConfiguration",
 				"set": "core",
-				"question": "Please choose a multifactor authentication (MFA) configuration:",
+				"question": "Multifactor authentication (MFA) user login options:",
 				"required": true,
 				"type": "list",
-				"options": [
-					"ON",
-					"OFF",
-					"OPTIONAL"],
+				"map": "mfaOptions",
 				"andConditions": [
 					{
 						"key": "authSelections",
@@ -139,13 +136,10 @@
 			{
 				"key": "mfaTypes",
 				"set": "core",
-				"question": "Do you want to use SMS Text Message MFA or Time-Based One-time Password (TOTP) MFA?",
+				"question": "For user login, select the MFA types:",
 				"required": true,
 				"type": "multiselect",
-				"options": [
-					"SMS Text Message",
-					"TOTP"
-				],
+				"map": "mfaMethods",
 				"andConditions": [
 					{
 						"key": "authSelections",
@@ -180,36 +174,6 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
-					},
-					{
-						"key": "mfaTypes",
-						"value": "SMS Text Message",
-						"operator": "includes"
-					}
-				]
-			},
-			{
-				"key": "autoVerifiedAttributes",
-				"set": "core",
-				"question": "Do you want to require verification of emails or phone numbers?",
-				"prefix": "\n Verification requires users to retrieve a code from their email or phone to confirm ownership. Verification of a phone or email is necessary to automatically confirm users and enable recovery from forgotten passwords.\n ",
-				"required": true,
-				"type": "multiselect",
-				"options": [
-					{
-						"name": "Email",
-						"value": "email"
-					},
-					{
-						"name": "Phone Number",
-						"value": "phone_number"
-					}
-				],
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
 					}
 				]
 			},
@@ -234,16 +198,21 @@
 						"key": "mfaConfiguration",
 						"value": "OFF",
 						"operator": "!="
-					},
+					}
+				]
+			},
+			{
+				"key": "autoVerifiedAttributes",
+				"set": "core",
+				"question": "Email based user registration/forgot password:",
+				"required": true,
+				"type": "list",
+				"map": "emailRegistration",
+				"andConditions": [
 					{
-						"key": "mfaTypes",
-						"value": "SMS Text Message",
-						"operator": "includes"
-					},
-					{
-						"key": "autoVerifiedAttributes",
-						"value": "phone_number",
-						"operator": "includes"
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
 					}
 				]
 			},
@@ -391,28 +360,13 @@
 			{
 				"key": "userpoolClientName",
 				"set": "app-client",
-				"question": "A userpool app client will allow your application access to the userpool.  Please provide a name for the app client:",
+				"question": "An app client controls access on a per-application basis. Amplify creates separate clients for web or native platforms. Please provide a name for the app client:",
 				"required": true,
 				"validation": {
 					"operator": "regex",
 					"value": "^.{1,128}$",
 					"onErrorMsg": "The user pool name must be at least 1 character and no more than 128."
 				},
-				"andConditions": [
-					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "userpoolClientAuthFlow",
-				"set": "app-client",
-				"question": "Select the authentication flow you want to use:",
-				"required": true,
-				"type": "multiselect",
-				"map": "authFlowMap",
 				"andConditions": [
 					{
 						"key": "createUserpoolClient",
