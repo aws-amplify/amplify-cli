@@ -1,9 +1,21 @@
 const path = require('path');
+const inquirer = require('inquirer');
 
-function run(context) {
-  return new Promise((resolve) => {
+async function run(context) {
+  return new Promise(async (resolve) => {
     const projectPath = process.cwd();
-    const projectName = path.basename(projectPath);
+    let projectName = path.basename(projectPath);
+
+    if (projectName.length > 10) {
+      const projectNameQuestion = {
+        type: 'input',
+        name: 'projectName',
+        message: 'Please enter a name for the project',
+        validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 3) ? reject(new Error('Project name should be less than 10 charecters and greater than 3 charecters')) : resolvePromise(true))),
+      };
+
+      ({ projectName } = await inquirer.prompt(projectNameQuestion));
+    }
 
     context.exeInfo = {};
 
