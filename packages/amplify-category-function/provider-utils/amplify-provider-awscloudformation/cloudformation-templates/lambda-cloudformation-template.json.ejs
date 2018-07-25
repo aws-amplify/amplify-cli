@@ -1,4 +1,17 @@
 {
+    <% if (props.dependsOn) { %>
+    "Parameters": {
+        
+    <% for(var i=0; i < props.dependsOn.length; i++) { %>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+        "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
+            "Type": "String",
+            "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
+            }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
+        <% } %>
+        <% } %>
+    },
+    <% } %>
     "Resources": {
         "LambdaFunction": {
           "Type": "AWS::Lambda::Function",
@@ -31,7 +44,31 @@
                     ]
                 }
             }
+        },
+        <% if (props.database.resourceName) { %>
+        "lambdaexecutionpolicy": {
+            "DependsOn": ["LambdaExecutionRole"],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "lambda-execution-policy",
+                "Roles": [{ "Ref": "LambdaExecutionRole" }],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow","Action":["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],"Resource": "arn:aws:logs:*:*:*"
+                        },
+                        {
+                            "Effect": "Allow", "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
+                            "Resource": [
+                                { "Ref": "storage<%= props.database.resourceName %>Arn" }
+                            ]
+                        }
+                    ]
+                }
+            }
         }
+        <% } %>
     },
     "Outputs": {
         "Name": {

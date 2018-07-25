@@ -17,28 +17,81 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
 
-  const copyJobs = [
-    {
-      dir: pluginDir,
-      template: `cloudformation-templates/${cfnFilename}`,
-      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
-    },
-    {
-      dir: pluginDir,
-      template: 'function-template-dir/index.js',
-      target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-    },
-    {
-      dir: pluginDir,
-      template: 'function-template-dir/event.json',
-      target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-    },
-    {
-      dir: pluginDir,
-      template: 'function-template-dir/package.json.ejs',
-      target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-    },
-  ];
+  const copyJobs = [{
+    dir: pluginDir,
+    template: `cloudformation-templates/${cfnFilename}`,
+    target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
+  }];
+
+  switch (options.functionTemplate) {
+    case "helloWorld":
+      copyJobs.push(...[
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/index.js',
+          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/event.json',
+          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/package.json.ejs',
+          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+        },
+      ]);
+      break;
+    case "serverless":
+      copyJobs.push(...[
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/serverless-index.js',
+          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/serverless-app.js.ejs',
+          target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/serverless-package.json.ejs',
+          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/serverless-event.json',
+          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+        }
+      ]);
+      break;
+    default:
+    copyJobs.push(...[
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-index.js',
+        target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-app.js.ejs',
+        target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-package.json.ejs',
+        target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/crud-event.json',
+        target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+      }
+    ]);
+      break;
+  }
 
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, options);
@@ -51,7 +104,13 @@ function addResource(context, category, service, options) {
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
-      answers = result;
+      if (result.answers) {
+        ({ answers } = result);
+        options.dependsOn = result.dependsOn;
+      } else {
+        answers = result;
+      }
+      
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
@@ -91,7 +150,7 @@ async function invoke(context, category, service, resourceName) {
   // Run grunt for invoking lambda function
 
   const grunt = require('grunt');
-  grunt.task.init = function () {};
+  grunt.task.init = function () { };
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
 

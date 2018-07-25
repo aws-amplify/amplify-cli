@@ -161,7 +161,7 @@ async function askPaths(context) {
     let path = { name: answer.name };
     let lambda;
     do {
-      lambda = await askLambdaSource(context, answer.functionType);
+      lambda = await askLambdaSource(context, answer.functionType, answer.name);
     } while (!lambda);
     path = { ...path, ...lambda };
     paths.push(path);
@@ -208,21 +208,25 @@ function functionsExist(context) {
   return true;
 }
 
-async function askLambdaSource(context, functionType) {
+async function askLambdaSource(context, functionType, path) {
   switch (functionType) {
     case 'arn': return askLambdaArn(context);
     case 'projectFunction': return askLambdaFromProject(context);
-    case 'newFunction': return newLambdaFunction(context);
+    case 'newFunction': return newLambdaFunction(context, path);
     default: throw new Error('Type not supported');
   }
 }
 
-function newLambdaFunction(context) {
+function newLambdaFunction(context, path) {
   let add;
   try {
     ({ add } = require('amplify-category-function'));
   } catch (e) {
     throw new Error('Function plugin not installed in the CLI. Please install it to use this feature');
+  }
+  context.api = {
+    path,
+    functionTemplate: "serverless"
   }
   return add(context, 'amplify-provider-awscloudformation', 'Lambda')
     .then((resourceName) => {

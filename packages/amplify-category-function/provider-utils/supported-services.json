@@ -40,6 +40,64 @@
 					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
+			},
+			{
+				"key": "functionTemplate",
+				"question": "Please select the function template you want to use:",
+				"type": "list",
+				"options": [
+					{
+						"name": "Hello world function",
+						"value": "helloWorld"
+					},
+					{
+						"name": "Serverless express function (Integration with Amazon API Gateway)",
+						"value": "serverless"
+					},
+					{
+						"name": "CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)",
+						"value": "crud"
+					}
+				],
+				"required": true
+			},
+			{
+
+				"key": "dynamoDbType",
+				"type": "list",
+				"question": "Choose a DynamoDB data source option",
+				"options": [{
+						"name": "Use DynamoDB table configured in the current Amplify project",
+						"value": "currentProject"
+					},
+					{
+						"name": "Create a new DynamoDB table",
+						"value": "newResource"
+					},
+					{
+						"name": "Use a DynamoDB table already deployed on AWS",
+						"value": "cloudResource"
+					}
+				]
+			},
+			{
+
+				"key": "dynamoDbResources",
+				"type": "list",
+				"question": "Choose from one of the already configured DynamoDB tables"
+			},
+			{
+
+				"key": "dynamodbTableChoice",
+				"type": "list",
+				"question": "Please select a DynamoDB table:",
+				"required": true
+			},
+			{
+
+				"key": "dynamoRegion",
+				"type": "list",
+				"question": "Please select a region:"
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",
