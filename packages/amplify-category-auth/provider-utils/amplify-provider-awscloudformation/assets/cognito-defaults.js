@@ -10,6 +10,7 @@ const general = () => ({
 
 const userPoolDefaults = projectName => ({
   userPoolName: `${projectName}-userpool-${sharedId}`,
+  autoVerifiedAttributes: ['phone_number'],
   mfaConfiguration: 'ON',
   mfaTypes: ['SMS Text Message'],
   roleName: `${projectName}-sns-role-${sharedId}`,
