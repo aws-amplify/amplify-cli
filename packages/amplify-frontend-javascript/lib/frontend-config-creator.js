@@ -125,6 +125,7 @@ function getAPIGWConfig(apigwResources, projectRegion) {
 
   for (let i = 0; i < apigwResources.length; i += 1) {
     apigwConfig.aws_cloud_logic_custom.push({
+      name: apigwResources[i].output.ApiName,
       endpoint: apigwResources[i].output.RootUrl,
       region: projectRegion,
     });
