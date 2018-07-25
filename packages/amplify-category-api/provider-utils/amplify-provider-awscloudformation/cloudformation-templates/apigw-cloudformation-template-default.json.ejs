@@ -402,6 +402,10 @@
         "RootUrl": {
             "Description": "Root URL of the API gateway",
             "Value": {"Fn::Join": ["", ["https://", {"Ref": "<%= props.apiName %>"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/Prod"]]}
+        },
+        "ApiName": {
+          "Description": "Api Friendly name",
+          "Value": "<%= props.resourceName %>"
         }
     }
   }
