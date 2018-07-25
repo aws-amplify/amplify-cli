@@ -27,7 +27,7 @@ async function serviceWalkthrough(
       question: '“What functionality will your application require:',
       required: true,
       type: 'list',
-      map: 'authSelections',
+      map: 'authSelectionMap',
     },
     {
       key: 'resourceName',

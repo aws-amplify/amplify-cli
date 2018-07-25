@@ -5,9 +5,7 @@ const [sharedId] = uuid().split('-');
 
 const general = () => ({
   resourceName: `cognito${sharedId}`,
-  authSelections: [
-    'Cognito Identity Pool Only',
-  ],
+  authSelections: ['identityPoolAndUserPool'],
 });
 
 const userPoolDefaults = projectName => ({
@@ -29,7 +27,6 @@ const userPoolDefaults = projectName => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes.find(a => a.name === 'Email').value,
     coreAttributes.find(b => b.name === 'Phone Number').value,
   ],
   userpoolClientName: `${projectName}-app-client-${sharedId}`,

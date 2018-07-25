@@ -1,17 +1,3 @@
-const authFlowMap = [
-  {
-    name: 'Enable sign-in API for server-based authentication',
-    value: 'ADMIN_NO_SRP_AUTH',
-  }, {
-    name: 'Only allow Custom Authentication',
-    value: 'CUSTOM_AUTH_FLOW_ONLY',
-  }, {
-    name: 'Enable username-password (non-SRP) flow for app-based authentication',
-    value: 'USER_PASSWORD_AUTH',
-  },
-];
-
-
 const mfaOptions = [
   {
     name: 'OFF',
@@ -38,7 +24,7 @@ const mfaMethods = [
   },
 ];
 
-const emailRegistration = [ 
+const emailRegistration = [
   {
     name: 'Enabled (Requires per-user email entry at registration)',
     value: ['email', 'phone_number'],
@@ -49,7 +35,7 @@ const emailRegistration = [
   },
 ];
 
-const authSelections = [
+const authSelectionMap = [
   {
     name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
@@ -148,9 +134,8 @@ const authProviders = [
 ];
 
 const getAllMaps = (() => ({
-  authFlowMap,
   coreAttributes,
-  authSelections,
+  authSelectionMap,
   appClientReadAttributes,
   authProviders,
   mfaOptions,
@@ -159,10 +144,9 @@ const getAllMaps = (() => ({
 }));
 
 module.exports = {
-  authFlowMap,
   coreAttributes,
   appClientReadAttributes,
-  authSelections,
+  authSelectionMap,
   getAllMaps,
   authProviders,
   mfaOptions,
