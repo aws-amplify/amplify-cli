@@ -73,10 +73,6 @@ Resources:
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
       ClientName: <%= props.userpoolClientName %>Web
-      ExplicitAuthFlows: 
-        <% for(var i=0; i < props.userpoolClientAuthFlow.length; i++) { %>
-        - <%= props.userpoolClientAuthFlow[i] %>
-        <% } %>
       <%if (props.userpoolClientSetAttributes) { %>
       ReadAttributes:
         <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
