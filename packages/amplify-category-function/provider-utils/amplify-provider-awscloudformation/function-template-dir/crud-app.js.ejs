@@ -17,10 +17,10 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 let tableName = "<%= props.database.resourceName %>";
 
 const userIdPresent = false; // TODO: update in case is required to use that definition
-const partitionKeyName = "<%= props.database.tableDefinition.hashKey %>";
-const partitionKeyType = "<%= props.database.tableDefinition.hashType %>";
-const sortKeyName = "<%= props.database.tableDefinition.rangeKey %>";
-const sortKeyType = "<%= props.database.tableDefinition.rangeType %>";
+const partitionKeyName = "<%= props.database.tableDefinition.partitionKeyName %>";
+const partitionKeyType = "<%= props.database.tableDefinition.partitionKeyType %>";
+const sortKeyName = "<%= props.database.tableDefinition.sortKeyName %>";
+const sortKeyType = "<%= props.database.tableDefinition.sortKeyType %>";
 const hasSortKey = sortKeyName !== "";
 const path = "<%= props.path %>";
 const UNAUTH = 'UNAUTH';

@@ -1,4 +1,6 @@
+const fs = require('fs-extra');
 const inquirer = require('inquirer');
+const path = require('path');
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
@@ -6,7 +8,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   let dependsOn = [];
+  const parametersFileName = 'parameters.json';
   // Ask resource and Lambda function name
 
   const resourceQuestions = [
@@ -56,9 +60,18 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   Object.assign(allDefaultValues, pathDetails, answers);
   if (answers.functionTemplate === "crud") {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
+
+    const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    let parameters;
+    try {
+      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    } catch (e) {
+      parameters = {};
+    }
     Object.assign(dynamoAnswers,
       { category: 'storage' },
-      context.amplify.getProjectDetails().amplifyMeta.storage[dynamoAnswers.resourceName]);
+      { tableDefinition: { ...parameters } });
     Object.assign(allDefaultValues, { database: dynamoAnswers });
 
     if (!dynamoAnswers.Arn) {
@@ -68,6 +81,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
         attributes: ['Name', 'Arn'],
       });
     }
+    allDefaultValues.dependsOn = dependsOn;
   }
   return { answers: allDefaultValues, dependsOn };
 

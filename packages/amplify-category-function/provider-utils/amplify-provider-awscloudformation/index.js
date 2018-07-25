@@ -110,7 +110,7 @@ function addResource(context, category, service, options) {
       } else {
         answers = result;
       }
-      console.log(answers);
+      
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
