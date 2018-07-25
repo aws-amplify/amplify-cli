@@ -11,12 +11,50 @@ const authFlowMap = [
   },
 ];
 
+
+const mfaOptions = [
+  {
+    name: 'OFF',
+    value: 'OFF',
+  },
+  {
+    name: 'ON (Required for all logins, can not be enabled later)',
+    value: 'ON',
+  },
+  {
+    name: 'OPTIONAL (Individual users can use MFA)',
+    value: 'OPTIONAL',
+  },
+];
+
+const mfaMethods = [
+  {
+    name: 'SMS Text Message',
+    value: 'SMS Text Message',
+  },
+  {
+    name: 'Time-Based One-Time Password (TOTP)',
+    value: 'TOTP',
+  },
+];
+
+const emailRegistration = [ 
+  {
+    name: 'Enabled (Requires per-user email entry at registration)',
+    value: ['email', 'phone_number'],
+  },
+  {
+    name: 'Disabled (Uses SMS/TOTP as an alternative)',
+    value: ['phone_number'],
+  },
+];
+
 const authSelections = [
   {
-    name: 'Identity Pool and User Pool',
+    name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
   }, {
-    name: 'Identity Pool Only',
+    name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
     value: 'identityPoolOnly',
   },
 ];
@@ -115,6 +153,9 @@ const getAllMaps = (() => ({
   authSelections,
   appClientReadAttributes,
   authProviders,
+  mfaOptions,
+  mfaMethods,
+  emailRegistration,
 }));
 
 module.exports = {
@@ -124,4 +165,7 @@ module.exports = {
   authSelections,
   getAllMaps,
   authProviders,
+  mfaOptions,
+  mfaMethods,
+  emailRegistration,
 };
