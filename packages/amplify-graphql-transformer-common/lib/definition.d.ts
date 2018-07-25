@@ -1,0 +1,15 @@
+import { ObjectTypeDefinitionNode, InputValueDefinitionNode, FieldDefinitionNode, TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode, ObjectTypeExtensionNode, NamedTypeNode, NonNullTypeNode, ListTypeNode } from 'graphql';
+export declare function isScalar(type: TypeNode): any;
+export declare function getBaseType(type: TypeNode): any;
+export declare function unwrapNonNull(type: TypeNode): any;
+export declare function wrapNonNull(type: TypeNode): NonNullTypeNode;
+export declare function makeOperationType(operation: OperationTypeNode, type: string): OperationTypeDefinitionNode;
+export declare function makeSchema(operationTypes: OperationTypeDefinitionNode[]): SchemaDefinitionNode;
+export declare function blankObject(name: string): ObjectTypeDefinitionNode;
+export declare function blankObjectExtension(name: string): ObjectTypeExtensionNode;
+export declare function extensionWithFields(object: ObjectTypeExtensionNode, fields: FieldDefinitionNode[]): ObjectTypeExtensionNode;
+export declare function makeField(name: string, args: InputValueDefinitionNode[], type: TypeNode): FieldDefinitionNode;
+export declare function makeArg(name: string, type: TypeNode): InputValueDefinitionNode;
+export declare function makeNamedType(name: string): NamedTypeNode;
+export declare function makeNonNullType(type: NamedTypeNode | ListTypeNode): NonNullTypeNode;
+export declare function makeListType(type: TypeNode): TypeNode;
