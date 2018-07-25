@@ -24,7 +24,14 @@ module.exports = {
 
         return providerController.addResource(context, category, result.service, options);
       })
-      .then(() => context.print.success('Successfully added resource'))
+      .then((resourceName) => { 
+        const {print} = context;
+        print.success(`Successfully added resource ${resourceName} locally`);
+        print.info('');
+        print.success('Some next steps:');
+        print.info(`"amplify publish" will build all your local resources and provision everything configured in the cloud`);
+        print.info('');
+      })
       .catch((err) => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the API resource');
