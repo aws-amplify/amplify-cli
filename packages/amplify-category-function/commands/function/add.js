@@ -33,7 +33,8 @@ module.exports = {
         print.info(`Checkout sample function code generated in <project-dir>/amplify/backend/${resourceName}/src`);
         print.info('"amplify function build" will build all your functions currently in the project');
         print.info(`"amplify function invoke ${resourceName}" will allow you to test a function locally`);
-        print.info('"amplify publish" will build all your local resources and provision everything configured in the cloud');
+        print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
+        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
         print.info('');
       })
       .catch((err) => {

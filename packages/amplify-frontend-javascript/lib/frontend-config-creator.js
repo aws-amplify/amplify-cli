@@ -34,7 +34,7 @@ function createAWSExports(context, amplifyResources) {
   const configOutput = {};
 
   const projectRegion = amplifyResources.metadata.Region;
-  configOutput.aws_project_region  = projectRegion;
+  configOutput.aws_project_region = projectRegion;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {

@@ -50,12 +50,13 @@ function run(context) {
 
 function printWelcomeMessage() {
   print.info('');
-  print.success('Your project has been successfully initialized and connexted to the cloud!');
+  print.success('Your project has been successfully initialized and connected to the cloud!');
   print.info('');
   print.success('Some next steps:');
   print.info("\"amplify status\" will show you what you've added already and if it's locally configured or deployed");
   print.info('"amplify <category> add" will allow you to add features like user login or a backend API');
-  print.info('"amplify publish" will build your local resources and provision everything configured in the cloud');
+  print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
+  print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
   print.info('');
   print.success('Pro tip:');
   print.info('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything');
