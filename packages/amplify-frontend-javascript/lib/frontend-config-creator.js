@@ -34,6 +34,7 @@ function createAWSExports(context, amplifyResources) {
   const configOutput = {};
 
   const projectRegion = amplifyResources.metadata.Region;
+  configOutput.aws_project_region  = projectRegion;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
     switch (service) {
@@ -91,7 +92,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolName,
     aws_cognito_region: projectRegion,
     aws_user_pools_id: cognitoResource.output.UserPoolName,
-    aws_user_pools_web_client_id: cognitoResource.output.AppClientID,
+    aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
   };
 }
 

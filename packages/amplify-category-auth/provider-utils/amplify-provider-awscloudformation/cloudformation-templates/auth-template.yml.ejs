@@ -67,6 +67,30 @@ Resources:
     DependsOn: SNSRole
     <% } %>
 
+  UserPoolClientWeb:
+  # Created provide application access to user pool
+  # Depends on UserPool for ID reference
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: <%= props.userpoolClientName %>Web
+      ExplicitAuthFlows: 
+        <% for(var i=0; i < props.userpoolClientAuthFlow.length; i++) { %>
+        - <%= props.userpoolClientAuthFlow[i] %>
+        <% } %>
+      <%if (props.userpoolClientSetAttributes) { %>
+      ReadAttributes:
+        <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
+        - "<%= props.userpoolClientReadAttributes[i] %>"
+        <% } %>
+      WriteAttributes:
+        <% for(var i=0; i < props.userpoolClientWriteAttributes.length; i++) { %>
+        - "<%= props.userpoolClientWriteAttributes[i] %>"
+        <% } %>
+      <% } %>
+      RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
+      UserPoolId: !Ref UserPool
+    DependsOn: UserPool
+
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -335,6 +359,9 @@ Outputs :
   UserPoolName:
     Value: !Ref 'UserPool'
     Description:  Name for the user pool
+  AppClientIDWeb:
+    Value: !Ref 'UserPoolClientWeb'
+    Description: The user pool app client id for web
   AppClientID:
     Value: !Ref 'UserPoolClient'
     Description: The user pool app client id
