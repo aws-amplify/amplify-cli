@@ -1,0 +1,44 @@
+{
+    "name": "appsync-mapping-template",
+    "version": "1.0.0",
+    "description": "An AST wrapper around AWS AppSync resolvers",
+    "main": "lib/index.js",
+    "scripts": {
+        "test": "jest",
+        "build": "tsc",
+        "clean": "rm -rf ./lib",
+        "lint": "tslint -p ./tslint.json"
+    },
+    "keywords": [
+        "graphql",
+        "appsync",
+        "cloudformation",
+        "aws"
+    ],
+    "dependencies": {
+        "cloudform": "^2.2.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^22.2.3",
+        "jest": "^23.0.0",
+        "ts-jest": "^22.4.6",
+        "tslint": "^5.10.0",
+        "typescript": "^2.8.3"
+    },
+    "author": "Michael Paris",
+    "license": "MIT",
+    "jest": {
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ]
+    }
+}

@@ -1,0 +1,1 @@
+test('TODO: AppSyncOwnerAuthTransformer tests', () => expect(true).toEqual(true))

@@ -1,0 +1,9 @@
+type Post @model @searchable {
+    id: ID!
+    title: String!
+    upvotes: Int
+    downvotes: Int
+    percantageUp: Float
+    comments: [String]
+    isPublished: Boolean
+}
