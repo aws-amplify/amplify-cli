@@ -238,7 +238,6 @@ Resources:
               Action:
                 - 'iam:PassRole'
               Resource: <%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>
-
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -247,7 +246,6 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
-
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const identity = new aws.CognitoIdentityServiceProvider();'
@@ -279,7 +277,6 @@ Resources:
         - MFALambdaRole
         - Arn
     DependsOn: MFALambdaRole
-
   MFALambdaPolicy:
   # Sets policy for the role that executes the MFA Lambda
   # Depends on Userpool for Arn
@@ -297,8 +294,6 @@ Resources:
               - 'cognito-idp:SetUserPoolMfaConfig'
             Resource: !GetAtt UserPool.Arn
     DependsOn: MFALambda
-
-
   MFALogPolicy:
   # Sets log policy for the role that executes the MFA Lambda
   # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
@@ -319,7 +314,6 @@ Resources:
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref MFALambda}
     DependsOn: MFALambdaPolicy  
-
   MFALambdaInputs:
   # Values passed to MFA Lambda
   # Depends on UserPool for Arn
