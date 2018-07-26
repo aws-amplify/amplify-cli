@@ -186,7 +186,7 @@ Resources:
             Action:
               - 'cognito-idp:DescribeUserPoolClient'
             Resource: !GetAtt UserPool.Arn
-    DependsOn: UserPoolClientExecutionRole
+    DependsOn: UserPoolClientLambda
 
   UserPoolLambdaFunctionInputs:
   # Values passed to Userpool client Lambda
