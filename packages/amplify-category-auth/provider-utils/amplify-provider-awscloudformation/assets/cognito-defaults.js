@@ -37,7 +37,6 @@ const userPoolDefaults = projectName => ({
     appClientReadAttributes.find(d => d.name === 'Email').value,
     appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
-  identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
   totpLambdaRole: `${projectName}_totp_lambda_role_${sharedId}`,
   totpLambdaLogPolicy: `${projectName}_totp_lambda_log_policy_${sharedId}`,
@@ -46,7 +45,7 @@ const userPoolDefaults = projectName => ({
   userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
   userpoolClientLambdaIamPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
-  ...identityPoolDefaults(),
+  ...identityPoolDefaults(projectName),
 });
 
 const identityPoolDefaults = projectName => ({
