@@ -248,7 +248,7 @@
 			{
 				"key": "emailVerificationMessage",
 				"set": "core",
-				"question": "Please specify an Email verification message:",
+				"question": "Please specify an email verification message:",
 				"required": true,
 				"type": "input",
 				"validation": {

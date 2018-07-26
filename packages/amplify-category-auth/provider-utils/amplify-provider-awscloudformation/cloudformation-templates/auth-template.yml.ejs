@@ -89,7 +89,7 @@ Resources:
     DependsOn: UserPool
 
   # BEGIN USER POOL LAMBDA RESOURCES
-  UserPoolClientExecutionRole:
+  UserPoolClientRole:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
@@ -103,23 +103,12 @@ Resources:
                 - lambda.amazonaws.com
             Action:
               - 'sts:AssumeRole'
-      Policies:
-      - PolicyName: <%= props.userpoolClientLogPolicy %>
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'logs:CreateLogGroup'
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: 'arn:aws:logs:*:*:*'
     DependsOn: UserPoolClient
 
   UserPoolClientLambda:
   # Lambda which gets userpool app client config values
   # Depends on UserPool for id
-  # Depends on UserPoolClientExecutionRole for role ARN
+  # Depends on UserPoolClientRole for role ARN
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
@@ -146,17 +135,17 @@ Resources:
       Runtime: nodejs6.10
       Timeout: '300'
       Role: !GetAtt 
-        - UserPoolClientExecutionRole
+        - UserPoolClientRole
         - Arn
-    DependsOn: UserPoolClientExecutionRole
+    DependsOn: UserPoolClientRole
 
-  UserPoolClietLambdaIAMPolicy:
-  # Sets policy for the role that executes the Userpool Client Lambda
+  UserPoolClientLambdaPolicy:
+  # Sets userpool policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
-  # Marked as depending on UserPoolClientExecutionRole for easier to understand CFN sequencing
+  # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.userpoolClientLambdaIamPolicy %>
+      PolicyName: <%= props.userpoolClientLambdaPolicy %>
       Roles: 
         - <%= props.userpoolClientLambdaRole %>
       PolicyDocument:
@@ -168,26 +157,48 @@ Resources:
             Resource: !GetAtt UserPool.Arn
     DependsOn: UserPoolClientLambda
 
-  UserPoolLambdaFunctionInputs:
+  UserPoolClientLogPolicy:
+  # Sets log policy for the role that executes the Userpool Client Lambda
+  # Depends on UserPool for Arn
+  # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.userpoolClientLogPolicy %>
+      Roles: 
+        - <%= props.userpoolClientLambdaRole %>
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub  
+              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
+              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref UserPoolClientLambda}
+    DependsOn: UserPoolClientLambdaPolicy  
+
+  UserPoolClientInputs:
   # Values passed to Userpool client Lambda
   # Depends on UserPool for Id
   # Depends on UserPoolClient for Id
-  # Marked as depending on UserPoolClietLambdaIAMPolicy for easier to understand CFN sequencing
+  # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'Custom::LambdaCallout'
     Properties:
       ServiceToken: !GetAtt UserPoolClientLambda.Arn
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
-    DependsOn: UserPoolClietLambdaIAMPolicy
+    DependsOn: UserPoolClientLogPolicy
   <% } %> 
 
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
-  MFALambdaExecutionRole:
+  MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: <%= props.totpLambdaRole %>      
+      RoleName: <%= props.mfaLambdaRole %>      
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -198,28 +209,18 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: <%= props.totpLambdaLogPolicy %>
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'logs:CreateLogGroup'
-                - 'logs:CreateLogStream'
-                - 'logs:PutLogEvents'
-              Resource: 'arn:aws:logs:*:*:*'
-      - PolicyName: <%= props.totpPassRolePolicy %>
+      - PolicyName: <%= props.mfaPassRolePolicy %>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: <%= `arn:aws:iam:::role/${props.totpLambdaRole}` %>
+              Resource: <%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>
 
   MFALambda:
   # Lambda which sets MFA config values
-  # Depends on MFALambdaExecutionRole for role ARN
+  # Depends on MFALambdaRole for role ARN
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
@@ -254,19 +255,19 @@ Resources:
       Runtime: nodejs6.10
       Timeout: '300'
       Role: !GetAtt 
-        - MFALambdaExecutionRole
+        - MFALambdaRole
         - Arn
-    DependsOn: MFALambdaExecutionRole
+    DependsOn: MFALambdaRole
 
-  MFALambdaIAMPolicy:
+  MFALambdaPolicy:
   # Sets policy for the role that executes the MFA Lambda
   # Depends on Userpool for Arn
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.totpLambdaIAMPolicy %>
+      PolicyName: <%= props.mfaLambdaIAMPolicy %>
       Roles: 
-        - <%= props.totpLambdaRole %>
+        - <%= props.mfaLambdaRole %>
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -276,11 +277,33 @@ Resources:
             Resource: !GetAtt UserPool.Arn
     DependsOn: MFALambda
 
-  MFALambdaFunctionInputs:
+
+  MFALogPolicy:
+  # Sets log policy for the role that executes the MFA Lambda
+  # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: <%= props.mfaLambdaLogPolicy %>
+      Roles: 
+        - <%= props.mfaLambdaRole %>
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub  
+              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
+              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref MFALambda}
+    DependsOn: MFALambdaPolicy  
+
+  MFALambdaInputs:
   # Values passed to MFA Lambda
   # Depends on UserPool for Arn
   # Depends on MFALambda for Arn
-  # Marked as depending on MFALambdaIAMPolicy for easier to understand CFN sequencing
+  # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
     Type: 'Custom::LambdaCallout'
     Properties:
       ServiceToken: !GetAtt MFALambda.Arn
@@ -290,7 +313,7 @@ Resources:
       smsConfigCaller: !GetAtt SNSRole.Arn
       smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
       smsConfigExternalId: <%= props.roleExternalId %>  
-    DependsOn: MFALambdaIAMPolicy
+    DependsOn: MFALogPolicy
   <% } %>
 
   # BEGIN IDENTITY POOL RESOURCES
@@ -321,9 +344,7 @@ Resources:
     Properties: 
       IdentityPoolId: !Ref 'IdentityPool'
       Roles:
-        <%if (props.allowUnauthenticatedIdentities) { %>
           unauthenticated: <%= props.unAuthRoleArn %>
-        <% } %>
           authenticated: <%= props.authRoleArn %>
     DependsOn: IdentityPool
  
@@ -339,7 +360,7 @@ Outputs :
     Value: !Ref 'UserPoolClient'
     Description: The user pool app client id
   AppClientSecret:
-    Value: !GetAtt UserPoolLambdaFunctionInputs.appSecret
+    Value: !GetAtt UserPoolClientInputs.appSecret
   <% } %>
   <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole: 
