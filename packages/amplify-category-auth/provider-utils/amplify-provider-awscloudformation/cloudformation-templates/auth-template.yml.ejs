@@ -1,5 +1,5 @@
 Resources:
-  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -60,12 +60,10 @@ Resources:
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
 
       MfaConfiguration: '<%= props.mfaConfiguration %>'
-    <%if (props.mfaConfiguration != 'OFF') { %>
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%= props.roleExternalId %>  
     DependsOn: SNSRole
-    <% } %>
 
   UserPoolClient:
   # Created provide application access to user pool
@@ -237,8 +235,8 @@ Resources:
             - '     SmsMfaConfiguration: {'
             - '       SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,'
             - '       SmsConfiguration: {'
-            - '       SnsCallerArn: event.ResourceProperties.smsConfigCaller,'
-            - '       ExternalId: event.ResourceProperties.smsConfigExternalId'
+            - '         SnsCallerArn: event.ResourceProperties.smsConfigCaller,'
+            - '         ExternalId: event.ResourceProperties.smsConfigExternalId'
             - '       }'
             - '     },'
             - '     SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === "true" ? true : false}'
@@ -329,7 +327,7 @@ Resources:
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } %>
-      <%if (props.selectedParties && props.selectedParties.length >0) { %>
+      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
       SupportedLoginProviders: 
         <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
           <%= Object.keys(props.selectedParties)[i] %>: '<%= Object.values(props.selectedParties)[i]%>'
