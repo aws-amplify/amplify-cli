@@ -23,7 +23,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
-  
+
   if (!amplifyMeta[category] || Object.keys(dynamoDbResources).length === 0) {
     context.print.error('No resources to update. Please add a resource first');
     process.exit(0);

@@ -26,7 +26,7 @@ function showAllHelp(context) {
     },
     {
       name: 'serve',
-      description: "Executes amplify push, then executes the project's start command to test run the client-side application",
+      description: "Executes amplify push, then executes the project's start command to test run the client-side application locally",
     },
     {
       name: 'status',
