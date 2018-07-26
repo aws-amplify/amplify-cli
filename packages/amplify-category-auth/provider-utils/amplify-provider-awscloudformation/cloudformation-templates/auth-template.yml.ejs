@@ -325,6 +325,10 @@ Resources:
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+        - ClientId:  !Ref UserPoolClientWeb
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } %>
       <%if (props.selectedParties && props.selectedParties.length >0) { %>
       SupportedLoginProviders: 

@@ -24,7 +24,27 @@
             "Properties": {
                 "BucketName": {
                 	"Ref": "bucketName"
-            	}
+            	},
+            	"CorsConfiguration": {
+                    "CorsRules": [
+                        {
+                            "AllowedHeaders": [
+                                "*"
+                            ],
+                            "AllowedMethods": [
+                                "GET", "HEAD", "PUT", "POST", "DELETE"
+                            ],
+                            "AllowedOrigins": [
+                                "*"
+                            ],
+                            "ExposedHeaders": [
+                                "x-amz-server-side-encryption", "x-amz-request-id", "x-amz-id-2"
+                            ],
+                            "Id": "S3CORSRuleId1",
+                            "MaxAge": "3000"
+                        }
+                    ]
+                }
             }
         },
         "S3UnauthPolicy": {
@@ -35,7 +55,7 @@
             "Properties": {
               "PolicyName": {"Ref": "authPolicyName" },
               "Roles": [ 
-                {"Ref": "authRoleName" }
+                {"Ref": "unauthRoleName" }
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -148,7 +168,7 @@
             "Properties": {
               "PolicyName": {"Ref": "authPolicyName" },
               "Roles": [ 
-                {"Ref": "unauthRoleName" }
+                {"Ref": "authRoleName" }
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
