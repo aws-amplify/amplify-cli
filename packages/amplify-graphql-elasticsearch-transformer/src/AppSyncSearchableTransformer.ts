@@ -45,7 +45,6 @@ export class AppSyncSearchableTransformer extends Transformer {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources);
         ctx.mergeParameters(template.Parameters);
-        ctx.mergeOutputs(template.Outputs);
     };
 
     /**
