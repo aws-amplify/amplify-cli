@@ -13,6 +13,21 @@
         },
         "pinpointPolicyName": {
             "Type": "String"
+        },
+        "authPolicyName": {
+            "Type": "String"
+        },
+        "unauthPolicyName": {
+            "Type": "String"
+        },
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
+        },
+        "IAMPrefix": {
+            "Type":  "String"
         }
     },
     "Metadata": {
@@ -154,6 +169,110 @@
                 "appName": {
                     "Ref": "appName"
                 }
+            }
+        },
+        "CognitoUnauthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": {"Ref": "unauthPolicyName" },
+              "Roles": [ 
+                {"Ref": "unauthRoleName" }
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                        "mobileanalytics:PutEvents"
+                    ],
+                    "Resource": [
+                        "*"
+                    ]
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                        "mobiletargeting:UpdateEndpoint"
+                    ],
+                    "Resource": [
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:mobiletargeting:*:",
+                                  {
+                                    "Ref": "IAMPrefix"
+                                  },
+                                  ":apps/",
+                                  {
+                                    "Fn::GetAtt": [
+                                        "PinpointFunctionOutputs",
+                                        "Id"
+                                    ]
+                                  },
+                                  "*"
+                                ]
+                            ]
+                        }
+                
+                    ]
+                  }
+                ]
+              }
+            }
+        },
+        "CognitoAuthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": {"Ref": "authPolicyName" },
+              "Roles": [ 
+                {"Ref": "authRoleName" }
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                        "mobileanalytics:PutEvents"
+                    ],
+                    "Resource": [
+                        "*"
+                    ]
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                        "mobiletargeting:UpdateEndpoint"
+                    ],
+                    "Resource": [
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:mobiletargeting:*:",
+                                  {
+                                    "Ref": "IAMPrefix"
+                                  },
+                                  ":apps/",
+                                  {
+                                    "Fn::GetAtt": [
+                                        "PinpointFunctionOutputs",
+                                        "Id"
+                                    ]
+                                  },
+                                  "*"
+                                ]
+                            ]
+                        }
+                
+                    ]
+                  }
+                ]
+              }
             }
         }
     },
