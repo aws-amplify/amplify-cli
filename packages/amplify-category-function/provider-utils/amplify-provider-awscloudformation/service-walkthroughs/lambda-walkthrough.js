@@ -38,13 +38,14 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   };
 
   if (context.api) {
+    inputs[4].options.splice(0, 1);
     Object.assign(pathDetails, context.api);
     resourceQuestions.push({
       type: inputs[4].type,
       name: inputs[4].key,
       message: inputs[4].question,
       choices: inputs[4].options,
-      default: 'serverless',
+      default: 'crud',
     });
   } else {
     resourceQuestions.push({
