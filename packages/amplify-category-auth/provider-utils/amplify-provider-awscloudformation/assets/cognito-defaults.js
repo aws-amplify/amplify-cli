@@ -38,13 +38,13 @@ const userPoolDefaults = projectName => ({
     appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
   allowUnauthenticatedIdentities: false,
-  totpLambdaRole: `${projectName}_totp_lambda_role_${sharedId}`,
-  totpLambdaLogPolicy: `${projectName}_totp_lambda_log_policy_${sharedId}`,
-  totpPassRolePolicy: `${projectName}_totp_pass_role_policy_${sharedId}`,
-  totpLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy_${sharedId}`,
+  mfaLambdaRole: `${projectName}_totp_lambda_role_${sharedId}`,
+  mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy_${sharedId}`,
+  mfaPassRolePolicy: `${projectName}_totp_pass_role_policy_${sharedId}`,
+  mfaLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy_${sharedId}`,
   userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
-  userpoolClientLambdaIamPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
+  userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
   ...identityPoolDefaults(projectName),
 });
 
@@ -53,8 +53,6 @@ const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
   lambdaLogPolicy: `${projectName}_lambda_log_policy_${sharedId}`,
-  federatedIDLambdaRole: `${projectName}_federated_lambda_role_${sharedId}`,
-  federatedLambdaIAMPolicy: `${projectName}_federated_lambda_iam_policy_${sharedId}`,
 });
 
 const functionMap = {
