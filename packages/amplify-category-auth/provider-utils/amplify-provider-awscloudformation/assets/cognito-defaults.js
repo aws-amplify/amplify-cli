@@ -45,19 +45,19 @@ const userPoolDefaults = projectName => ({
   userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
   userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
-  ...identityPoolDefaults(projectName),
 });
 
-const identityPoolDefaults = projectName => ({
+const identityAndUserPoolDefaults = projectName => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
   lambdaLogPolicy: `${projectName}_lambda_log_policy_${sharedId}`,
+  ...userPoolDefaults(projectName),
 });
 
 const functionMap = {
-  identityPoolOnly: identityPoolDefaults,
-  identityPoolAndUserPool: userPoolDefaults,
+  userPoolOnly: userPoolDefaults,
+  identityPoolAndUserPool: identityAndUserPoolDefaults,
 };
 
 const getAllDefaults = (amplify) => {
@@ -65,7 +65,7 @@ const getAllDefaults = (amplify) => {
   const target = general();
   const sources = [
     userPoolDefaults(projectName),
-    identityPoolDefaults(projectName),
+    identityAndUserPoolDefaults(projectName),
   ];
 
   return Object.assign(target, ...sources);
