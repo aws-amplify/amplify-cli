@@ -193,11 +193,6 @@
 						"key": "authSelections",
 						"value": "identityPoolAndUserPool",
 						"operator": "="
-					},
-					{
-						"key": "mfaConfiguration",
-						"value": "OFF",
-						"operator": "!="
 					}
 				]
 			},

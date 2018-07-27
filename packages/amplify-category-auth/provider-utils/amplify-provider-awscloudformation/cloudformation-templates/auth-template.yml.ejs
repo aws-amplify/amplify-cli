@@ -50,7 +50,11 @@ Resources:
         <% for(var i=0; i < props.autoVerifiedAttributes.length; i++) { %>
         - <%= props.autoVerifiedAttributes[i] %>
         <% } %> 
-      <% } %>       
+      <% } %>    
+      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      EmailVerificationMessage: '<%= props.emailVerificationMessage %>'
+      EmailVerificationSubject: '<%= props.emailVerificationSubject %>'
+      <% } %>      
       Policies:
         PasswordPolicy:
           MinimumLength: <%= props.passwordPolicyMinLength %>
@@ -58,8 +62,8 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
-
       MfaConfiguration: '<%= props.mfaConfiguration %>'
+      SmsVerificationMessage: '<%= props.smsVerificationMessage %>' 
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%= props.roleExternalId %>  
@@ -329,7 +333,7 @@ Resources:
       mfaConfiguration: '<%= props.mfaConfiguration %>'
       totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
       smsConfigCaller: !GetAtt SNSRole.Arn
-      smsAuthenticationMessage: <%= props.smsAuthenticationMessage %>
+      smsAuthenticationMessage: '<%= props.smsAuthenticationMessage %>'
       smsConfigExternalId: <%= props.roleExternalId %>  
     DependsOn: MFALogPolicy
   <% } %>
