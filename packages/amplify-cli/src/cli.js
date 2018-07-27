@@ -14,11 +14,32 @@ async function run(argv) {
     .version() // provides default for version, v, --version, -v
     .create();
 
+  normalizeArgv(cli, argv);
+
   // and run it
   const context = await cli.run(argv);
 
   // send it back (for testing, mostly)
   return context;
+}
+
+function normalizeArgv(cli, argv) {
+  const pluginNames = cli.plugins.map((plugin) => {
+    const strs = plugin.name.split('-');
+    return strs[strs.length - 1];
+  });
+
+  if (argv.length > 3) {
+    if ((!pluginNames.includes(argv[2])) && pluginNames.includes(argv[3])) {
+      /*eslint-disable */
+      const temp = argv[2];
+      argv[2] = argv[3];
+      argv[3] = temp;
+      /* eslint-enable */
+    }
+  }
+
+  return argv;
 }
 
 module.exports = { run };
