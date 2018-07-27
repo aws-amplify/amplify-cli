@@ -377,13 +377,17 @@ Resources:
 
 Outputs :
   <%if (props.authSelections !== 'userPoolOnly') { %>
-  IdentityPoolName:
+  IdentityPoolId:
     Value: !Ref 'IdentityPool'
-    Description:  name for the identity pool
+    Description:  Id for the identity pool
+  IdentityPoolName:
+    Value: !GetAtt IdentityPool.Name
   <% } %>
-  UserPoolName:
+  UserPoolId:
     Value: !Ref 'UserPool'
-    Description:  Name for the user pool
+    Description:  Id for the user pool
+  UserPoolName:
+    Value: <%= props.userPoolName %>
   AppClientIDWeb:
     Value: !Ref 'UserPoolClientWeb'
     Description: The user pool app client id for web
