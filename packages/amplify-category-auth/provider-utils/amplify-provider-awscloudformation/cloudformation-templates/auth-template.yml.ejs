@@ -50,7 +50,7 @@ Resources:
         <% for(var i=0; i < props.autoVerifiedAttributes.length; i++) { %>
         - <%= props.autoVerifiedAttributes[i] %>
         <% } %> 
-      <% } %>    
+      <% } %>
       <%if (props.autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: '<%= props.emailVerificationMessage %>'
       EmailVerificationSubject: '<%= props.emailVerificationSubject %>'
