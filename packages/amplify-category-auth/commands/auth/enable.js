@@ -14,7 +14,7 @@ module.exports = {
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (Object.keys(existingAuth).length > 0) {
-      return context.print.warning('Auth has already been "enabled" for this project.');
+      return context.print.warning('Auth has already been added to this project.');
     }
 
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
@@ -32,8 +32,14 @@ module.exports = {
       })
       .then((resourceName) => {
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+        const { print } = context;
+        print.success(`Successfully added resource ${resourceName} locally`);
+        print.info('');
+        print.success('Some next steps:');
+        print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
+        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+        print.info('');
       })
-      .then(() => context.print.success('Successfully added resource'))
       .catch((err) => {
         context.print.info(err.stack);
         context.print.error('There was an error adding the auth resource');

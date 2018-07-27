@@ -24,7 +24,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   }];
 
   switch (options.functionTemplate) {
-    case "helloWorld":
+    case 'helloWorld':
       copyJobs.push(...[
         {
           dir: pluginDir,
@@ -43,7 +43,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
         },
       ]);
       break;
-    case "serverless":
+    case 'serverless':
       copyJobs.push(...[
         {
           dir: pluginDir,
@@ -64,32 +64,32 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           dir: pluginDir,
           template: 'function-template-dir/serverless-event.json',
           target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-        }
+        },
       ]);
       break;
     default:
-    copyJobs.push(...[
-      {
-        dir: pluginDir,
-        template: 'function-template-dir/crud-index.js',
-        target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-      },
-      {
-        dir: pluginDir,
-        template: 'function-template-dir/crud-app.js.ejs',
-        target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
-      },
-      {
-        dir: pluginDir,
-        template: 'function-template-dir/crud-package.json.ejs',
-        target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-      },
-      {
-        dir: pluginDir,
-        template: 'function-template-dir/crud-event.json',
-        target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-      }
-    ]);
+      copyJobs.push(...[
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/crud-index.js',
+          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/crud-app.js.ejs',
+          target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/crud-package.json.ejs',
+          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+        },
+        {
+          dir: pluginDir,
+          template: 'function-template-dir/crud-event.json',
+          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+        },
+      ]);
       break;
   }
 
@@ -110,7 +110,7 @@ function addResource(context, category, service, options) {
       } else {
         answers = result;
       }
-      
+
       copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,

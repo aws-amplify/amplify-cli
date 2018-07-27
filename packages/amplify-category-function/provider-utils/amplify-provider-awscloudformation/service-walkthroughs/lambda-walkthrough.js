@@ -9,7 +9,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  let dependsOn = [];
+  const dependsOn = [];
   const parametersFileName = 'parameters.json';
   // Ask resource and Lambda function name
 
@@ -30,11 +30,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
       default: answers => answers.resourceName,
-    }
+    },
   ];
 
   const pathDetails = {
-    path: "/items"
+    path: '/items',
   };
 
   if (context.api) {
@@ -44,7 +44,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       name: inputs[4].key,
       message: inputs[4].question,
       choices: inputs[4].options,
-      default: "serverless"
+      default: 'serverless',
     });
   } else {
     resourceQuestions.push({
@@ -55,10 +55,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     });
   }
 
-  const answers = await inquirer.prompt(resourceQuestions)
+  const answers = await inquirer.prompt(resourceQuestions);
 
   Object.assign(allDefaultValues, pathDetails, answers);
-  if (answers.functionTemplate === "crud") {
+  if (answers.functionTemplate === 'crud') {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
 
     const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
@@ -69,9 +69,11 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     } catch (e) {
       parameters = {};
     }
-    Object.assign(dynamoAnswers,
+    Object.assign(
+      dynamoAnswers,
       { category: 'storage' },
-      { tableDefinition: { ...parameters } });
+      { tableDefinition: { ...parameters } },
+    );
     Object.assign(allDefaultValues, { database: dynamoAnswers });
 
     if (!dynamoAnswers.Arn) {
@@ -84,7 +86,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     allDefaultValues.dependsOn = dependsOn;
   }
   return { answers: allDefaultValues, dependsOn };
-
 }
 
 async function askDynamoDBQuestions(context, inputs) {

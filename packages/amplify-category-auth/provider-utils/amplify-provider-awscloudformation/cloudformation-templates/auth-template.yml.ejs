@@ -65,6 +65,26 @@ Resources:
         ExternalId: <%= props.roleExternalId %>  
     DependsOn: SNSRole
 
+  UserPoolClientWeb:
+  # Created provide application access to user pool
+  # Depends on UserPool for ID reference
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: <%= props.userpoolClientName %>Web
+      <%if (props.userpoolClientSetAttributes) { %>
+      ReadAttributes:
+        <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
+        - "<%= props.userpoolClientReadAttributes[i] %>"
+        <% } %>
+      WriteAttributes:
+        <% for(var i=0; i < props.userpoolClientWriteAttributes.length; i++) { %>
+        - "<%= props.userpoolClientWriteAttributes[i] %>"
+        <% } %>
+      <% } %>
+      RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
+      UserPoolId: !Ref UserPool
+    DependsOn: UserPool
+
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -326,6 +346,10 @@ Resources:
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+        - ClientId:  !Ref UserPoolClientWeb
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } %>
       <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
       SupportedLoginProviders: 
@@ -354,6 +378,9 @@ Outputs :
   UserPoolName:
     Value: !Ref 'UserPool'
     Description:  Name for the user pool
+  AppClientIDWeb:
+    Value: !Ref 'UserPoolClientWeb'
+    Description: The user pool app client id for web
   AppClientID:
     Value: !Ref 'UserPoolClient'
     Description: The user pool app client id
