@@ -79,34 +79,53 @@ async function askApiNames(context, defaults) {
   return answer;
 }
 
-async function askPrivacy() {
-  const answer = await inquirer.prompt({
-    name: 'privacy',
-    type: 'list',
-    message: 'Which kind of privacy your API should have?',
-    choices: [
-      {
-        name: 'Open (No security)',
-        value: 'open',
-      },
-      {
-        name: 'Protected (AWS_IAM restricted to guest and sign-in users)',
-        value: 'protected',
-      },
-      {
-        name: 'Private (AWS_IAM restricted to sign-in users only)',
-        value: 'private',
-      },
-    ],
-  });
+async function askPrivacy(context) {
+  while (true) {
+    const answer = await inquirer.prompt({
+      name: 'privacy',
+      type: 'list',
+      message: 'Which kind of privacy your API should have?',
+      choices: [
+        {
+          name: 'Open (No security)',
+          value: 'open',
+        },
+        {
+          name: 'Authenticated - AWS IAM (Signature Version 4 signing)',
+          value: 'private',
+        },
+        {
+          name: 'Authenticated and Guest users (AWS_IAM with Cognito Identity)',
+          value: 'protected',
+        },
+      ],
+    });
 
-  const privacy = {};
-  privacy[answer.privacy] = true;
-  const roles = { unAuthRoleName: 'unauth-role-name', authRoleName: 'auth-role-name' };// await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
-  privacy.unAuthRoleName = roles.unAuthRoleName;
-  privacy.authRoleName = roles.authRoleName;
+    const privacy = {};
+    privacy[answer.privacy] = true;
+    const roles = { unAuthRoleName: 'unauth-role-name', authRoleName: 'auth-role-name' };// await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
+    privacy.unAuthRoleName = roles.unAuthRoleName;
+    privacy.authRoleName = roles.authRoleName;
 
-  return privacy;
+    if (answer.privacy === 'open') { return privacy; }
+
+    if (!checkIfAuthExists(context)) {
+      if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
+        try {
+          const { add } = require('amplify-category-auth');
+          context.api = {
+            privacy: answer.privacy
+          }
+          await add(context);
+          return privacy;
+        } catch (e) {
+          context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+        }
+      }
+    } else {
+      return privacy;
+    }
+  }
 }
 
 async function askPaths(context) {
@@ -293,5 +312,24 @@ async function askLambdaArn(context) {
 
   return { lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, lambdaFunction: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, '') };
 }
+
+function checkIfAuthExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let authExists = false;
+  const authServiceName = 'Cognito';
+  const authCategory = 'auth';
+
+  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+    const categoryResources = amplifyMeta[authCategory];
+    Object.keys(categoryResources).forEach((resource) => {
+      if (categoryResources[resource].service === authServiceName) {
+        authExists = true;
+      }
+    });
+  }
+  return authExists;
+}
+
 
 module.exports = { serviceWalkthrough };
