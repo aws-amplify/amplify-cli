@@ -1,5 +1,5 @@
 Resources:
-  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
+  <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -30,8 +30,7 @@ Resources:
                   - "sns:Publish"
                 Resource: "*"
   <% } %>
-  
-  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
+
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -67,7 +66,9 @@ Resources:
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%= props.roleExternalId %>  
+    <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
+    <% } %>
 
   UserPoolClientWeb:
   # Created provide application access to user pool
@@ -212,9 +213,9 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
-  <% } %> 
 
-  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+
+  <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
@@ -338,13 +339,13 @@ Resources:
     DependsOn: MFALogPolicy
   <% } %>
 
+  <%if (props.authSelections !== 'userPoolOnly') { %>
   # BEGIN IDENTITY POOL RESOURCES
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
-       <%if (props.authSelections === 'identityPoolAndUserPool') { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -354,7 +355,6 @@ Resources:
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
-      <% } %>
       <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
       SupportedLoginProviders: 
         <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
@@ -373,15 +373,21 @@ Resources:
           unauthenticated: <%= props.unAuthRoleArn %>
           authenticated: <%= props.authRoleArn %>
     DependsOn: IdentityPool
- 
+  <% } %>
+
 Outputs :
-  IdentityPoolName:
+  <%if (props.authSelections !== 'userPoolOnly') { %>
+  IdentityPoolId:
     Value: !Ref 'IdentityPool'
-    Description:  name for the identity pool
-  <%if (props.authSelections === 'identityPoolAndUserPool') { %>
-  UserPoolName:
+    Description:  Id for the identity pool
+  IdentityPoolName:
+    Value: !GetAtt IdentityPool.Name
+  <% } %>
+  UserPoolId:
     Value: !Ref 'UserPool'
-    Description:  Name for the user pool
+    Description:  Id for the user pool
+  UserPoolName:
+    Value: <%= props.userPoolName %>
   AppClientIDWeb:
     Value: !Ref 'UserPoolClientWeb'
     Description: The user pool app client id for web
@@ -390,8 +396,7 @@ Outputs :
     Description: The user pool app client id
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
-  <% } %>
-  <%if (props.authSelections === 'identityPoolAndUserPool' && props.mfaConfiguration != 'OFF') { %>
+  <%if (props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole: 
     Value: !GetAtt SNSRole.Arn
     Description: role arn
