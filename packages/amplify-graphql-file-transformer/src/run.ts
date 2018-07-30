@@ -18,8 +18,7 @@ const validSchema = `type Post @model {
 const transformer = new GraphQLTransform({
     transformers: [
         new AppSyncFileTransformer('./fileTest///'),
-        new AppSyncDynamoDBTransformer(),
-        new AppSyncSearchableTransformer()
+        new AppSyncDynamoDBTransformer()
     ]
 });
 const out = transformer.transform(validSchema);
