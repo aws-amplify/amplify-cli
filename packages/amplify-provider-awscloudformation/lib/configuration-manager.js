@@ -96,7 +96,7 @@ function remove(context) {
 
 function printInfo(context) {
   context.print.info('');
-  context.print.info('Amplify-provider-awscloudformation uses two levels of configurations.');
+  context.print.info('amplify-provider-awscloudformation uses two levels of configurations.');
   context.print.info('General configuration is used by default for all projects.');
   context.print.info('You can also configure the provider specifically for this project.');
   context.print.info('Project specific configuration overrides the general configuration.');
