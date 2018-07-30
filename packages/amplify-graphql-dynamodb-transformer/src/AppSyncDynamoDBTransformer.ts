@@ -83,16 +83,6 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
-    public after = (ctx: TransformerContext): void => {
-        const built = buildASTSchema({
-            kind: 'Document',
-            definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
-        })
-        const SDL = printSchema(built)
-        const schemaResource = this.resources.makeAppSyncSchema(SDL)
-        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
-    }
-
     /**
      * Given the initial input and context manipulate the context to handle this object directive.
      * @param initial The input passed to the transform.

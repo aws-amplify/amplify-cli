@@ -15,6 +15,21 @@ var ResourceFactory = /** @class */ (function () {
                 Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
                 Default: 'AppSyncElasticSearchAccess'
             }),
+            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket] = new cloudform_1.StringParameter({
+                Description: 'S3 bucket containing the DynamoDB streaming lambda code.'
+            }),
+            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key] = new cloudform_1.StringParameter({
+                Description: 'S3 key containing the DynamoDB streaming lambda code.'
+            }),
+            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version] = new cloudform_1.StringParameter({
+                Description: 'S3 key containing the DynamoDB lambda code version.'
+            }),
+            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName] = new cloudform_1.StringParameter({
+                Description: 'The name of the lambda handler.'
+            }),
+            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime] = new cloudform_1.StringParameter({
+                Description: 'The lambda runtime'
+            }),
             _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName] = new cloudform_1.StringParameter({
                 Description: 'The name of the streaming lambda function.',
                 Default: 'DynamoDBToElasticSearchFunction'
@@ -61,60 +76,23 @@ var ResourceFactory = /** @class */ (function () {
                 Description: 'The size in GB of the EBS volumes that contain our data.',
                 Default: 20
             }),
-            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket] = new cloudform_1.StringParameter({
-                Description: 'S3 bucket containing the DynamoDB streaming lambda code.',
-                Default: 'sr-lambda-blueprints'
-            }),
-            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key] = new cloudform_1.StringParameter({
-                Description: 'S3 key containing the DynamoDB streaming lambda code.',
-                Default: 'streaming-lambda.zip'
-            }),
-            _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version] = new cloudform_1.StringParameter({
-                Description: 'S3 key containing the DynamoDB lambda code version.',
-                Default: 'n9NaP2A0v3G3BzPXDkrs3rbrkLq2O4qJ'
-            }),
             _a;
-    };
-    /**
-     * Outputs
-     */
-    ResourceFactory.prototype.makeLambdaIAMRoleOutput = function () {
-        return {
-            Description: "Your lambda function Arn that will stream data from the DynamoDB table to the Elasticsearch Index",
-            Value: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
-            Export: {
-                Name: cloudform_1.Fn.Join(':', [cloudform_1.Refs.StackName, "ElasticSearchStreamingLambdaIAMRoleArn"])
-            }
-        };
-    };
-    ResourceFactory.prototype.makeElasticsearchIAMRoleOutput = function () {
-        return {
-            Description: "The IAM Role used to execute queries against the ElasticSearch index.",
-            Value: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn'),
-            Export: {
-                Name: cloudform_1.Fn.Join(':', [cloudform_1.Refs.StackName, "ElasticSearchAccessIAMRoleArn"])
-            }
-        };
     };
     /**
      * Creates the barebones template for an application.
      */
     ResourceFactory.prototype.initTemplate = function () {
-        var _a, _b;
+        var _a;
         return {
             Parameters: this.makeParams(),
             Resources: (_a = {},
-                _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID] = this.makeIAMRole(),
+                _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID] = this.makeElasticsearchAccessIAMRole(),
                 _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID] = this.makeElasticSearchDataSource(),
                 _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID] = this.makeElasticSearchDomain(),
                 _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID] = this.makeStreamingLambdaIAMRole(),
                 _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID] = this.makeDynamoDBStreamingFunction(),
                 _a[amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaEventSourceMappingLogicalID] = this.makeDynamoDBStreamEventSourceMapping(),
-                _a),
-            Outputs: (_b = {},
-                _b[amplify_graphql_transformer_common_1.ResourceConstants.OUTPUTS.ElasticSearchStreamingLambdaIAMRoleArn] = this.makeLambdaIAMRoleOutput(),
-                _b[amplify_graphql_transformer_common_1.ResourceConstants.OUTPUTS.ElasticSearchAccessIAMRoleArn] = this.makeElasticsearchIAMRoleOutput(),
-                _b)
+                _a)
         };
     };
     /**
@@ -131,7 +109,7 @@ var ResourceFactory = /** @class */ (function () {
             Type: 'AMAZON_ELASTICSEARCH',
             ServiceRoleArn: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn'),
             ElasticsearchConfig: {
-                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'DomainArn'))),
+                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'Arn'))),
                 Endpoint: cloudform_1.Fn.Join('', [
                     'https://',
                     cloudform_1.Fn.GetAtt(logicalName, 'DomainEndpoint')
@@ -151,13 +129,16 @@ var ResourceFactory = /** @class */ (function () {
                 S3ObjectVersion: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version)
             },
             FunctionName: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
-            Handler: 'python_streaming_function.lambda_handler',
+            Handler: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName),
             Role: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
-            Runtime: 'python3.6',
+            Runtime: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime),
             Environment: {
                 Variables: {
-                    ES_ENDPOINT: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainEndpoint'),
-                    ES_REGION: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainArn'))),
+                    ES_ENDPOINT: cloudform_1.Fn.Join('', [
+                        'https://',
+                        cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainEndpoint')
+                    ]),
+                    ES_REGION: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'))),
                     DEBUG: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDebugStreamingLambda)
                 }
             }
@@ -165,11 +146,11 @@ var ResourceFactory = /** @class */ (function () {
     };
     ResourceFactory.prototype.makeDynamoDBStreamEventSourceMapping = function () {
         return new cloudform_1.Lambda.EventSourceMapping({
-            BatchSize: 100,
+            BatchSize: 1,
             Enabled: true,
             EventSourceArn: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'StreamArn'),
             FunctionName: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
-            StartingPosition: 'TRIM_HORIZON'
+            StartingPosition: 'LATEST'
         });
     };
     /**
@@ -177,7 +158,7 @@ var ResourceFactory = /** @class */ (function () {
      * transform.
      * @param name  The name of the IAM role to create.
      */
-    ResourceFactory.prototype.makeIAMRole = function () {
+    ResourceFactory.prototype.makeElasticsearchAccessIAMRole = function () {
         return new iam_1.default.Role({
             RoleName: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
             AssumeRolePolicyDocument: {
@@ -209,7 +190,7 @@ var ResourceFactory = /** @class */ (function () {
                                 ],
                                 Effect: "Allow",
                                 Resource: cloudform_1.Fn.Join('/', [
-                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainArn'),
+                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
                                     '*'
                                 ])
                             }
@@ -256,7 +237,7 @@ var ResourceFactory = /** @class */ (function () {
                                 ],
                                 Effect: "Allow",
                                 Resource: cloudform_1.Fn.Join('/', [
-                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainArn'),
+                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
                                     '*'
                                 ])
                             }
@@ -277,7 +258,7 @@ var ResourceFactory = /** @class */ (function () {
                                 ],
                                 Effect: "Allow",
                                 Resource: [
-                                    cloudform_1.Fn.Join('/', [cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), 'stream', '*'])
+                                    cloudform_1.Fn.Join('/', [cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), '*'])
                                 ]
                             }
                         ]
@@ -310,7 +291,30 @@ var ResourceFactory = /** @class */ (function () {
         return new cloudform_1.Elasticsearch.Domain({
             DomainName: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDomainName),
             ElasticsearchVersion: '6.2',
+            AccessPolicies: {
+                Version: "2012-10-17",
+                Statement: {
+                    Effect: "Allow",
+                    Action: [
+                        "es:ESHttpDelete",
+                        "es:ESHttpHead",
+                        "es:ESHttpGet",
+                        "es:ESHttpPost",
+                        "es:ESHttpPut"
+                    ],
+                    Principal: {
+                        AWS: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn')
+                    },
+                    Resource: [
+                        cloudform_1.Fn.Join('/', [
+                            cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
+                            '*'
+                        ])
+                    ]
+                }
+            },
             ElasticsearchClusterConfig: {
+                ZoneAwarenessEnabled: false,
                 InstanceCount: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchInstanceCount),
                 InstanceType: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchInstanceType)
             },

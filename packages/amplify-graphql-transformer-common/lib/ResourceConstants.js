@@ -39,15 +39,15 @@ var ResourceConstants = /** @class */ (function () {
         ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
         ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
         ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
-        ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version'
+        ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version',
+        ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
+        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime'
     };
     ResourceConstants.MAPPINGS = {};
     ResourceConstants.CONDITIONS = {};
     ResourceConstants.OUTPUTS = {
         GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
-        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput',
-        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
-        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn'
+        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput'
     };
     ResourceConstants.METADATA = {};
     return ResourceConstants;

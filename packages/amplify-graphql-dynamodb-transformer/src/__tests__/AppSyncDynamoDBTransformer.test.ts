@@ -5,6 +5,7 @@ import {
 import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from '../AppSyncDynamoDBTransformer'
+import { AppSyncFileTransformer } from 'amplify-graphql-file-transformer'
 
 test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     const validSchema = `
@@ -17,6 +18,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -34,6 +36,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -61,6 +64,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -86,6 +90,7 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -118,6 +123,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -168,6 +174,7 @@ test('Test AppSyncDynamoDBTransformer with query filter', () => {
     }`
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })

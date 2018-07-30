@@ -1,7 +1,6 @@
 import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
 import Template from 'cloudform/types/template'
-import Output from 'cloudform/types/output'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
 import {
     ElasticSearchMappingTemplate,
@@ -19,16 +18,13 @@ export class ResourceFactory {
                 Default: 'AppSyncElasticSearchAccess'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket]: new StringParameter({
-                Description: 'S3 bucket containing the DynamoDB streaming lambda code.',
-                Default: 'sr-lambda-blueprints'
+                Description: 'S3 bucket containing the DynamoDB streaming lambda code.'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key]: new StringParameter({
-                Description: 'S3 key containing the DynamoDB streaming lambda code.',
-                Default: 'streaming-lambda.zip'
+                Description: 'S3 key containing the DynamoDB streaming lambda code.'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version]: new StringParameter({
-                Description: 'S3 key containing the DynamoDB lambda code version.',
-                Default: 'n9NaP2A0v3G3BzPXDkrs3rbrkLq2O4qJ'
+                Description: 'S3 key containing the DynamoDB lambda code version.'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.'

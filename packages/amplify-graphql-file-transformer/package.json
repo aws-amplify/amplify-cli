@@ -1,0 +1,53 @@
+{
+    "name": "amplify-graphql-file-transformer",
+    "version": "1.0.0",
+    "description": "An AppSync model transform that takes a cloudformation document and writes mapping templates,lambda function, and schema if a path is specified.",
+    "main": "lib/index.js",
+    "scripts": {
+      "test": "jest",
+      "build": "tsc",
+      "clean": "rm -rf ./lib",
+      "lint": "tslint -p ./tslint.json"
+    },
+    "keywords": [
+      "graphql",
+      "appsync",
+      "aws"
+    ],
+    "author": "Lisa Shon",
+    "license": "MIT",
+    "dependencies": {
+      "graphql": "^0.13.2",
+      "amplify-graphql-mapping-template": "1.0",
+      "cloudform": "^2.2.1",
+      "amplify-graphql-transform": "1.0",
+      "amplify-graphql-transformer-common": "1.0",
+      "amplify-graphql-file-transformer": "1.0",
+      "amplify-graphql-dynamodb-transformer": "1.0",
+      "amplify-graphql-elasticsearch-transformer": "1.0"
+    },
+    "devDependencies": {
+      "@types/node": "^10.3.4",
+      "tslint": "^5.10.0",
+      "typescript": "^2.8.3",
+      "@types/jest": "^23.1.1",
+      "jest": "^23.1.0",
+      "ts-jest": "^22.4.6",
+      "amplify-graphql-dynamodb-transformer": "1.0"
+    },
+    "jest": {
+      "transform": {
+        "^.+\\.tsx?$": "ts-jest"
+      },
+      "testURL": "http://localhost",
+      "testRegex": "(src/__tests__/.*.test.*)$",
+      "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "node"
+      ]
+    }
+  }
