@@ -102,8 +102,17 @@ function publish(context, args) {
     });
 }
 
+function console(context){
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const bucketName = amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
+  const region = amplifyMeta[constants.CategoryName][serviceName].output.Region;
+  const consoleUrl = `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/?region=${region}&tab=overview`;
+  opn(consoleUrl, { wait: false });
+}
+
 module.exports = {
   enable,
   configure,
   publish,
+  console
 };
