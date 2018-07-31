@@ -3,5 +3,5 @@ module.exports = {
   ProjectScanBaseScore: 0,
   ProjectScanMaxScore: 100,
   awsConfigFilename: 'awsconfiguration.json',
-  amplifyConfigFilename: 'amplify-config.json',
+  amplifyConfigFilename: 'amplifyconfig.json',
 };
