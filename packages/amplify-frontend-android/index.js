@@ -2,7 +2,7 @@ const initializer = require('./lib/initializer');
 const configManager = require('./lib/configuration-manager');
 const projectScanner = require('./lib/project-scanner');
 const constants = require('./lib/constants');
-const { createAWSConfig, createAmplifyConfig } = require('./lib/frontend-config-creator');
+const { createAWSConfig } = require('./lib/frontend-config-creator');
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -18,7 +18,7 @@ function onInitSuccessful(context) {
 
 function createFrontendConfigs(context, amplifyResources) {
   const { outputsByProvider, outputsByCategory } = amplifyResources;
-  createAmplifyConfig(context, outputsByCategory);
+  // createAmplifyConfig(context, outputsByCategory);
   createAWSConfig(context, outputsByProvider['amplify-provider-awscloudformation']);
 }
 
