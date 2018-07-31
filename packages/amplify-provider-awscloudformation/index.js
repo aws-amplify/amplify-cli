@@ -31,7 +31,12 @@ function getConfiguredAWSClient(context) {
   return aws.configureWithCreds(context);
 }
 
+function console(context) {
+  context.print.info('to be implemented: ' + awscloudformation + ' console');
+}
+
 module.exports = {
+  console,
   init,
   onInitSuccessful,
   configure,
