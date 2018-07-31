@@ -64,14 +64,14 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     CredentialsProvider: {
       CognitoIdentity: {
         Default: {
-          PoolId: cognitoResource.output.IdentityPoolName,
+          PoolId: cognitoResource.output.IdentityPoolId,
           Region: projectRegion,
         },
       },
     },
     CognitoUserPool: {
       Default: {
-        PoolId: cognitoResource.output.UserPoolName,
+        PoolId: cognitoResource.output.UserPoolId,
         AppClientId: cognitoResource.output.AppClientID,
         AppClientSecret: cognitoResource.output.AppClientSecret,
         Region: projectRegion,

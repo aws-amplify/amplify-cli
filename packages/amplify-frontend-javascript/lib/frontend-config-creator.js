@@ -89,9 +89,9 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   const cognitoResource = cognitoResources[0];
 
   return {
-    aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolName,
+    aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
     aws_cognito_region: projectRegion,
-    aws_user_pools_id: cognitoResource.output.UserPoolName,
+    aws_user_pools_id: cognitoResource.output.UserPoolId,
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
   };
 }
