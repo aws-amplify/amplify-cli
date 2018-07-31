@@ -9,7 +9,7 @@ const templateFileName = 'pinpoint-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   while (!checkIfAuthExists(context)) {
-    if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
+    if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding analytics for user files. Do you want to add auth now?')) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);

@@ -11,7 +11,7 @@ async function run(context) {
         type: 'input',
         name: 'projectName',
         message: 'Please enter a name for the project',
-        validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 3) ? reject(new Error('Project name should be less than 10 charecters and greater than 3 charecters')) : resolvePromise(true))),
+        validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 3) ? reject(new Error('Project name should be less than 10 characters and greater than 3 characters')) : resolvePromise(true))),
       };
 
       ({ projectName } = await inquirer.prompt(projectNameQuestion));
