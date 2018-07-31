@@ -1,0 +1,421 @@
+import {
+    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
+    Kind
+} from 'graphql'
+import Amplify, { Auth } from 'aws-amplify';
+import { ResourceConstants } from 'amplify-graphql-transformer-common'
+import GraphQLTransform from 'amplify-graphql-transform'
+import AppSyncDynamoDBTransformer from 'amplify-graphql-dynamodb-transformer'
+import AppSyncAuthTransformer from 'amplify-graphql-auth-transformer'
+import { CloudFormationClient } from '../CloudFormationClient'
+import { Output } from 'aws-sdk/clients/cloudformation'
+import TestStorage from '../TestStorage'
+import { GraphQLClient } from '../GraphQLClient'
+
+// to deal with bug in cognito-identity-js
+(global as any).fetch = require("node-fetch");
+
+jest.setTimeout(200000);
+
+const cf = new CloudFormationClient('us-west-2')
+const STACK_NAME = 'TestAppSyncAuthTransformerTest'
+
+let GRAPHQL_ENDPOINT = undefined;
+let GRAPHQL_CLIENT_1 = undefined;
+let GRAPHQL_CLIENT_2 = undefined;
+
+const USERNAME1 = 'testuser'
+const USERPASSWORD1 = '9S^tp^nv5wWJ2jIv'
+
+const USERNAME2 = 'invaliduser'
+const USERPASSWORD2 = 'HbD*D94xS86%ymhc'
+
+function outputValueSelector(key: string) {
+    return (outputs: Output[]) => {
+        const output = outputs.find((o: Output) => o.OutputKey === key)
+        return output ? output.OutputValue : null
+    }
+}
+
+beforeAll(async () => {
+    // Create a stack for the post model with auth enabled.
+    const validSchema = `
+    type Post @model @auth(allow: owner) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        owner: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncAuthTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    try {
+        console.log('Creating Stack ' + STACK_NAME)
+        const userPoolId = 'us-west-2_21A7JBDkX'
+        const createStackResponse = await cf.createStack(out, STACK_NAME, userPoolId)
+        expect(createStackResponse).toBeDefined()
+        const finishedStack = await cf.waitForStack(STACK_NAME)
+        // Arbitrary wait to make sure everything is ready.
+        await cf.wait(10, () => Promise.resolve())
+        console.log('Successfully created stack ' + STACK_NAME)
+        expect(finishedStack).toBeDefined()
+        const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
+        // const getUserPoolId = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput)
+        const getUserPoolClientID = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolJSClientOutput)
+        GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
+        const apiKey = getApiKey(finishedStack.Outputs)
+        const userPoolClientId = getUserPoolClientID(finishedStack.Outputs)
+        console.log(`UserPoolId: ${userPoolId}. UserPoolClientId: ${userPoolClientId}`)
+        expect(apiKey).toBeDefined()
+        expect(GRAPHQL_ENDPOINT).toBeDefined()
+        expect(userPoolId).toBeDefined()
+        expect(userPoolClientId).toBeDefined()
+        Amplify.configure({
+            Auth: {
+                // REQUIRED - Amazon Cognito Region
+                region: 'us-west-2',
+                userPoolId: userPoolId,
+                userPoolWebClientId: userPoolClientId,
+                storage: new TestStorage()
+            }
+        })
+        console.log(`Signing in as ${USERNAME1}`)
+        await Auth.signIn(USERNAME1, USERPASSWORD1)
+        const session = await Auth.currentSession()
+        const idToken = session.getIdToken().getJwtToken()
+        console.log("USER TOKEN!")
+        console.log(idToken)
+        GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
+
+        console.log(`Signing in as ${USERNAME2}`)
+        await Auth.signIn(USERNAME2, USERPASSWORD2)
+        const session2 = await Auth.currentSession()
+        const idToken2 = session2.getIdToken().getJwtToken()
+        console.log("USER TOKEN 2!")
+        console.log(idToken2)
+        GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 })
+        console.log(`Signing up for pool ${userPoolId} w/ client ${userPoolClientId}`)
+
+        // Wait for any propagation to avoid random
+        // "The security token included in the request is invalid" errors
+        await new Promise((res) => setTimeout(() => res(), 5000))
+    } catch (e) {
+        console.error(e)
+        expect(true).toEqual(false)
+    }
+});
+
+afterAll(async () => {
+    try {
+        console.log('Deleting stack ' + STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
+        console.log('Successfully deleted stack ' + STACK_NAME)
+    } catch (e) {
+        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+            // The stack was deleted. This is good.
+            expect(true).toEqual(true)
+            console.log('Successfully deleted stack ' + STACK_NAME)
+        } else {
+            console.error(e)
+            expect(true).toEqual(false)
+        }
+    }
+})
+
+/**
+ * Test queries below
+ */
+test('Test createPost mutation', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test getPost query when authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const getResponse = await GRAPHQL_CLIENT_1.query(`query {
+            getPost(id: "${response.data.createPost.id}") {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        expect(getResponse.data.getPost.id).toBeDefined()
+        expect(getResponse.data.getPost.title).toEqual('Hello, World!')
+        expect(getResponse.data.getPost.createdAt).toBeDefined()
+        expect(getResponse.data.getPost.updatedAt).toBeDefined()
+        expect(getResponse.data.getPost.owner).toBeDefined()
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test getPost query when not authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const getResponse = await GRAPHQL_CLIENT_2.query(`query {
+            getPost(id: "${response.data.createPost.id}") {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        expect(getResponse.data.getPost).toEqual(null)
+        expect(getResponse.errors.length).toEqual(1)
+        expect((getResponse.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test updatePost mutation when authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const updateResponse = await GRAPHQL_CLIENT_1.query(`mutation {
+            updatePost(input: { id: "${response.data.createPost.id}", title: "Bye, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(updateResponse, null, 4))
+        expect(updateResponse.data.updatePost.id).toEqual(response.data.createPost.id)
+        expect(updateResponse.data.updatePost.title).toEqual('Bye, World!')
+        expect(updateResponse.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true)
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test updatePost mutation when not authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const updateResponse = await GRAPHQL_CLIENT_2.query(`mutation {
+            updatePost(input: { id: "${response.data.createPost.id}", title: "Bye, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(updateResponse, null, 4))
+        expect(updateResponse.data.updatePost).toEqual(null)
+        expect(updateResponse.errors.length).toEqual(1)
+        expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test deletePost mutation when authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const deleteResponse = await GRAPHQL_CLIENT_1.query(`mutation {
+            deletePost(input: { id: "${response.data.createPost.id}" }) {
+                id
+            }
+        }`, {})
+        console.log(JSON.stringify(deleteResponse, null, 4))
+        expect(deleteResponse.data.deletePost.id).toEqual(response.data.createPost.id)
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test deletePost mutation when not authorized', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(response.data, null, 4))
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Hello, World!')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.owner).toBeDefined()
+        const deleteResponse = await GRAPHQL_CLIENT_2.query(`mutation {
+            deletePost(input: { id: "${response.data.createPost.id}" }) {
+                id
+            }
+        }`, {})
+        console.log(JSON.stringify(deleteResponse, null, 4))
+        expect(deleteResponse.data.deletePost).toEqual(null)
+        expect(deleteResponse.errors.length).toEqual(1)
+        expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test listPost mutation when authorized', async () => {
+    try {
+        const firstPost = await GRAPHQL_CLIENT_1.query(`mutation {
+            createPost(input: { title: "testing list" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(JSON.stringify(firstPost.data, null, 4))
+        expect(firstPost.data.createPost.id).toBeDefined()
+        expect(firstPost.data.createPost.title).toEqual('testing list')
+        expect(firstPost.data.createPost.createdAt).toBeDefined()
+        expect(firstPost.data.createPost.updatedAt).toBeDefined()
+        expect(firstPost.data.createPost.owner).toBeDefined()
+        const secondPost = await GRAPHQL_CLIENT_2.query(`mutation {
+            createPost(input: { title: "testing list" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        // There are two posts but only 1 created by me.
+        const listResponse = await GRAPHQL_CLIENT_1.query(`query {
+            listPost(filter: { title: { eq: "testing list" } }, limit: 25) {
+                items {
+                    id
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(listResponse, null, 4))
+        expect(listResponse.data.listPost.items.length).toEqual(1)
+    } catch (e) {
+        console.error(e)
+        console.error(JSON.stringify(e.response.data))
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
