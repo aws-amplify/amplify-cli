@@ -1,7 +1,7 @@
 
-function getWhen(input) {
+function getWhen(input, answers) {
   // TODO: Promisify
-  const conditionParser = (answers) => {
+  const conditionParser = () => {
     let andConditions = true;
     let orConditions = true;
 
