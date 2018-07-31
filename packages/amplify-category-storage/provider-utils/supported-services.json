@@ -21,21 +21,6 @@
 					"onErrorMsg": "Bucket name can only use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
-			},
-			{
-			    "key": "policy",
-			    "type": "list",
-			    "question": "Please provide a bucket policy:",
-			    "required": true,
-			    "options": [
-			    	"AuthenticatedRead", 
-			    	"AwsExecRead", 
-			    	"BucketOwnerRead", 
-			    	"BucketOwnerFullControl", 
-			    	"LogDeliveryWrite", 
-			    	"Private", 
-			    	"PublicRead", 
-			    	"PublicReadWrite"]
 			}
 		],
 		"defaultValuesFilename": "s3-defaults.js",

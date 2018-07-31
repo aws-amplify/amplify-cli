@@ -51,13 +51,14 @@
 						"value": "helloWorld"
 					},
 					{
-						"name": "Serverless express function (Integration with Amazon API Gateway)",
-						"value": "serverless"
-					},
-					{
 						"name": "CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)",
 						"value": "crud"
+					},
+					{
+						"name": "Serverless express function (Integration with Amazon API Gateway)",
+						"value": "serverless"
 					}
+					
 				],
 				"required": true
 			},

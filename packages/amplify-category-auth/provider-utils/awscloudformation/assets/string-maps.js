@@ -41,7 +41,7 @@ const authSelectionMap = [
     value: 'identityPoolAndUserPool',
   }, {
     name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
-    value: 'identityPoolOnly',
+    value: 'userPoolOnly',
   },
 ];
 

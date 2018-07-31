@@ -14,7 +14,7 @@ async function serviceWalkthrough(
   let coreAnswers = {};
   let appClientAnswers = {};
 
-  const defaultPromptInputs = [
+  let defaultPromptInputs = [
     {
       key: 'useDefault',
       prefix: '\n The current configured provider is Amazon Cognito. \n',
@@ -42,6 +42,16 @@ async function serviceWalkthrough(
     },
   ];
 
+  
+  let defaultConfigAnswer = {};
+  if (context.api && (context.api.privacy === 'protected' || context.api.privacy === 'private')) {
+    defaultConfigAnswer.authSelections = 'identityPoolAndUserPool';
+    defaultPromptInputs.splice(1, 1);
+    if (context.api.privacy === 'protected') {
+      defaultConfigAnswer.allowUnauthenticatedIdentities = true;
+    }
+  }
+  
   const coreQuestionInputs = inputs.filter(i => i.set === 'core');
 
   const appClientInputs = inputs.filter(i => i.set === 'app-client');
@@ -52,8 +62,7 @@ async function serviceWalkthrough(
     defaultValuesFilename,
     stringMapsFilename,
   );
-
-  const defaultConfigAnswer = await inquirer.prompt(defaultQuestions);
+  defaultConfigAnswer = { ...defaultConfigAnswer, ...(await inquirer.prompt(defaultQuestions)) };
 
   const coreQuestions = parseInputs(
     coreQuestionInputs,

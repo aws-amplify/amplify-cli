@@ -14,7 +14,7 @@ module.exports = {
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (Object.keys(existingAuth).length > 0) {
-      return context.print.warning('Auth has already been "enabled" for this project.');
+      return context.print.warning('Auth has already been added to this project.');
     }
 
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)

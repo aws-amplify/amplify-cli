@@ -44,9 +44,9 @@
                     ]
                 }
             }
-        },
-        <% if (props.database.resourceName) { %>
-        "lambdaexecutionpolicy": {
+        }
+        <% if (props.database && props.database.resourceName) { %>
+        ,"lambdaexecutionpolicy": {
             "DependsOn": ["LambdaExecutionRole"],
             "Type": "AWS::IAM::Policy",
             "Properties": {

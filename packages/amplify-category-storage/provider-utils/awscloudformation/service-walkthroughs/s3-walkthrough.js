@@ -8,27 +8,27 @@ const serviceName = 'S3';
 const templateFileName = 's3-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+  while (!checkIfAuthExists(context)) {
+    if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
+      try {
+        const { add } = require('amplify-category-auth');
+        await add(context);
+      } catch (e) {
+        context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+        break;
+      }
+      break;
+    } else {
+      process.exit(0);
+    }
+  }
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    const continueAnswer = await context.prompt.confirm("You've already added Storage to your project. Do you want to update the configurations?");
-    if (continueAnswer) {
-      return configure(context, defaultValuesFilename, serviceMetadata, resourceName);
-    }
+    context.print.warning('You have S3 storage already added to your project.');
     process.exit(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);
-  }
-}
-
-function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
-  const resourceName = resourceAlreadyExists(context);
-
-  if (!resourceName) {
-    context.print.error('No resources to update. Please add a resource first');
-    process.exit(0);
-  } else {
-    return configure(context, defaultValuesFilename, serviceMetadata, resourceName);
   }
 }
 
@@ -125,4 +125,22 @@ function resourceAlreadyExists(context) {
   return resourceName;
 }
 
-module.exports = { addWalkthrough, updateWalkthrough };
+function checkIfAuthExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let authExists = false;
+  const authServiceName = 'Cognito';
+  const authCategory = 'auth';
+
+  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+    const categoryResources = amplifyMeta[authCategory];
+    Object.keys(categoryResources).forEach((resource) => {
+      if (categoryResources[resource].service === authServiceName) {
+        authExists = true;
+      }
+    });
+  }
+  return authExists;
+}
+
+module.exports = { addWalkthrough };

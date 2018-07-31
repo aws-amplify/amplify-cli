@@ -17,13 +17,9 @@ function addResource(context, category, service, options) {
     });
 }
 
-function updateResource(context, category, service) {
-  const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { updateWalkthrough } = require(serviceWalkthroughSrc);
-
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
+function updateResource(context) {
+  context.print.warning('You can only add or remove a S3 resource.');
+  process.exit(0);
 }
 
 
