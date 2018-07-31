@@ -20,7 +20,6 @@
     "amplify-frontend-ios": "file:packages/amplify-frontend-iOS",
     "amplify-frontend-javascript": "file:packages/amplify-frontend-javascript",
     "amplify-provider-awscloudformation": "file:packages/amplify-provider-awscloudformation",
-    "chalk-pipe": "^1.2.0",
     "lerna": "^2.11.0"
   }
 }
