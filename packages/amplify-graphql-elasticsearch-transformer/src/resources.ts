@@ -26,8 +26,7 @@ export class ResourceFactory {
                 Description: 'S3 key containing the DynamoDB streaming lambda code.'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version]: new StringParameter({
-                Description: 'S3 version of the DynamoDB lstreaming lambda code version.',
-                Default: '$LATEST'
+                Description: 'S3 version of the DynamoDB streaming lambda code version.'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
