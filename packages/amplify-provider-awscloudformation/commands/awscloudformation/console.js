@@ -1,8 +1,8 @@
-const index = require('../../index');
+const consoleCommand = require('../../lib/console');
 
 module.exports = {
   name: 'console',
   run: async (context) => {
-    return index.console(context);
+    return consoleCommand.run(context); 
   },
 };

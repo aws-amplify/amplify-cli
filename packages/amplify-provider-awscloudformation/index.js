@@ -6,6 +6,7 @@ const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
 const aws = require('./src/aws-utils/aws');
+const consoleCommand = require('./lib/console');
 
 function init(context) {
   return initializer.run(context);
@@ -32,7 +33,7 @@ function getConfiguredAWSClient(context) {
 }
 
 function console(context) {
-  context.print.info('to be implemented: awscloudformation console');
+  return consoleCommand.run(context);
 }
 
 module.exports = {

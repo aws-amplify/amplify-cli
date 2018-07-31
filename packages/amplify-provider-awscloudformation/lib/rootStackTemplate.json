@@ -81,18 +81,18 @@
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-Region"}
             }
         }, 
-        "StackId": {
+        "StackName": {
             "Description": "CloudFormation provider root stack id", 
             "Value": {"Ref": "AWS::StackName"},
             "Export": {
-                "Name" : { "Fn::Sub" : "${AWS::StackName}-StackId"}
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-StackName"}
             }
         }, 
-        "StackName": {
+        "StackId": {
             "Description": "CloudFormation provider root stack name", 
             "Value": {"Ref": "AWS::StackId"},
             "Export": {
-                "Name" : { "Fn::Sub" : "${AWS::StackName}-StackName"}
+                "Name" : { "Fn::Sub" : "${AWS::StackName}-StackId"}
             }
         },
         "DeploymentBucketName": {
