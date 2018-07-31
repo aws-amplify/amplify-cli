@@ -114,8 +114,8 @@ async function askPrivacy(context) {
         try {
           const { add } = require('amplify-category-auth');
           context.api = {
-            privacy: answer.privacy
-          }
+            privacy: answer.privacy,
+          };
           await add(context);
           return privacy;
         } catch (e) {

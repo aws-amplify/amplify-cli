@@ -39,8 +39,6 @@ function createAWSConfig(context, amplifyResources) {
         break;
       case 'DynamoDB': Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
         break;
-      case 'S3AndCloudFront': Object.assign(configOutput, getS3AndCloudFrontConfig(serviceResourceMapping[service], projectRegion));
-        break;
       default: break;
     }
   });
@@ -91,12 +89,6 @@ function getS3Config(s3Resources) {
   const s3Resource = s3Resources[0];
 
   return {
-    UserFileManager: {
-      Default: {
-        Bucket: s3Resource.output.BucketName,
-        Region: s3Resource.output.Region,
-      },
-    },
     S3TransferUtility: {
       Default: {
         Bucket: s3Resource.output.BucketName,
@@ -133,20 +125,5 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
   };
 }
 
-function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
-  // There can only be one hosting resource fpr S3AndCloudFront service
-  const s3AndCloudfrontResource = s3AndCloudfrontResources[0];
-
-  return {
-    ContentManager: {
-      Default: {
-        Bucket: s3AndCloudfrontResource.output.HostingBucketName,
-        Region: s3AndCloudfrontResource.output.Region,
-        // Will need to change once we have cloudfrontURL
-        CloudFrontURL: s3AndCloudfrontResource.output.S3BucketSecureURL,
-      },
-    },
-  };
-}
 
 module.exports = { createAWSConfig, createAmplifyConfig };

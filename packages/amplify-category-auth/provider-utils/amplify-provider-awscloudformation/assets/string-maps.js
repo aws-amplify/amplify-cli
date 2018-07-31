@@ -1,3 +1,17 @@
+const defaultPrompMap = [
+  {
+    name: 'Yes, use the default configuration.',
+    value: 'default'
+  },
+  {
+    name: 'No, I will set up my own configuration.',
+    value: 'manual',
+  }, {
+    name: 'I want to learn more about these options.',
+    value: 'learnMore'
+  }
+]
+
 const mfaOptions = [
   {
     name: 'OFF',
@@ -41,7 +55,7 @@ const authSelectionMap = [
     value: 'identityPoolAndUserPool',
   }, {
     name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
-    value: 'identityPoolOnly',
+    value: 'userPoolOnly',
   },
 ];
 
@@ -141,6 +155,7 @@ const getAllMaps = (() => ({
   mfaOptions,
   mfaMethods,
   emailRegistration,
+  defaultPrompMap,
 }));
 
 module.exports = {
@@ -152,4 +167,5 @@ module.exports = {
   mfaOptions,
   mfaMethods,
   emailRegistration,
+  defaultPrompMap,
 };

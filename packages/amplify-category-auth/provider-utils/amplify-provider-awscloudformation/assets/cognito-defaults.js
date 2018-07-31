@@ -3,7 +3,7 @@ const { coreAttributes, appClientReadAttributes } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
-const general = () => ({
+const generalDefaults = () => ({
   resourceName: `cognito${sharedId}`,
   authSelections: ['identityPoolAndUserPool'],
 });
@@ -11,7 +11,7 @@ const general = () => ({
 const userPoolDefaults = projectName => ({
   userPoolName: `${projectName}-userpool-${sharedId}`,
   autoVerifiedAttributes: ['phone_number'],
-  mfaConfiguration: 'ON',
+  mfaConfiguration: 'OFF',
   mfaTypes: ['SMS Text Message'],
   roleName: `${projectName}-sns-role-${sharedId}`,
   roleExternalId: sharedId,
@@ -45,27 +45,27 @@ const userPoolDefaults = projectName => ({
   userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
   userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
-  ...identityPoolDefaults(projectName),
 });
 
-const identityPoolDefaults = projectName => ({
+const identityAndUserPoolDefaults = projectName => ({
   // replace dashes with underscores for id pool regex constraint
   identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
   allowUnauthenticatedIdentities: false,
   lambdaLogPolicy: `${projectName}_lambda_log_policy_${sharedId}`,
+  ...userPoolDefaults(projectName),
 });
 
 const functionMap = {
-  identityPoolOnly: identityPoolDefaults,
-  identityPoolAndUserPool: userPoolDefaults,
+  userPoolOnly: userPoolDefaults,
+  identityPoolAndUserPool: identityAndUserPoolDefaults,
 };
 
 const getAllDefaults = (amplify) => {
   const projectName = amplify.projectConfig.projectName.toLowerCase();
-  const target = general();
+  const target = generalDefaults();
   const sources = [
     userPoolDefaults(projectName),
-    identityPoolDefaults(projectName),
+    identityAndUserPoolDefaults(projectName),
   ];
 
   return Object.assign(target, ...sources);
@@ -74,4 +74,5 @@ const getAllDefaults = (amplify) => {
 module.exports = {
   getAllDefaults,
   functionMap,
+  generalDefaults,
 };
