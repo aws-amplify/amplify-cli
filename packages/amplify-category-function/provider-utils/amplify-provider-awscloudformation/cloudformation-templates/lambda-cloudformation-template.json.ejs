@@ -61,7 +61,11 @@
                         {
                             "Effect": "Allow", "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
+                            <% if (props.database && props.database.Arn) { %>
+                                "<%= props.database.Arn %>"
+                            <% } else { %>
                                 { "Ref": "storage<%= props.database.resourceName %>Arn" }
+                            <% } %>
                             ]
                         }
                     ]
