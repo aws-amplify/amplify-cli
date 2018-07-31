@@ -21,11 +21,11 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
 
   if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
     context.amplify.getProjectDetails().amplifyMeta.providers &&
-    context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation']
+    context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation']
   ) {
     // TODO: read from utility functions (Dustin PR)
     const { amplifyMeta } = context.amplify.getProjectDetails();
-    const providerInfo = amplifyMeta.providers['amplify-provider-awscloudformation'];
+    const providerInfo = amplifyMeta.providers['awscloudformation'];
 
     answers.privacy.authRoleName = providerInfo.AuthRoleName;
     answers.privacy.unAuthRoleName = providerInfo.UnauthRoleName;
@@ -102,7 +102,7 @@ async function askPrivacy() {
 
   const privacy = {};
   privacy[answer.privacy] = true;
-  const roles = { unAuthRoleName: 'unauth-role-name', authRoleName: 'auth-role-name' };// await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
+  const roles = { unAuthRoleName: 'unauth-role-name', authRoleName: 'auth-role-name' };// await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
   privacy.unAuthRoleName = roles.unAuthRoleName;
   privacy.authRoleName = roles.authRoleName;
 
@@ -228,7 +228,7 @@ function newLambdaFunction(context, path) {
     path,
     functionTemplate: 'serverless',
   };
-  return add(context, 'amplify-provider-awscloudformation', 'Lambda')
+  return add(context, 'awscloudformation', 'Lambda')
     .then((resourceName) => {
       context.print.success('Succesfully added Lambda function locally');
       return { lambdaFunction: resourceName };
@@ -255,7 +255,7 @@ async function askLambdaFromProject(context) {
 }
 
 async function askLambdaArn(context) {
-  const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+  const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
   const regionQuestion = {
     type: 'list',
@@ -266,7 +266,7 @@ async function askLambdaArn(context) {
 
   const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getLambdaFunctions', { region: regionAnswer.region });
+  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', { region: regionAnswer.region });
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
     value: {

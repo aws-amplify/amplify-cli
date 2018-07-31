@@ -453,6 +453,6 @@
 		"defaultValuesFilename": "cognito-defaults.js",
 		"serviceWalkthroughFilename": "auth-questions.js",
 		"stringMapFilename": "string-maps.js",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	}
 }

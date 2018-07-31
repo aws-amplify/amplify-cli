@@ -21,7 +21,7 @@ function onInitSuccessful(context) {
 function createFrontendConfigs(context, amplifyResources) {
   const { outputsByProvider, outputsByCategory } = amplifyResources;
   createAmplifyConfig(context, outputsByCategory);
-  createAWSExports(context, outputsByProvider['amplify-provider-awscloudformation']);
+  createAWSExports(context, outputsByProvider['awscloudformation']);
 }
 
 function configure(context) {

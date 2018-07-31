@@ -133,14 +133,14 @@ async function askDynamoDBQuestions(context, inputs) {
           context.print.error('Storage plugin not installed in the CLI. Please install it to use this feature');
           break;
         }
-        return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
+        return add(context, 'awscloudformation', 'DynamoDB')
           .then((resourceName) => {
             context.print.success('Succesfully added DynamoDb table locally');
             return { resourceName };
           });
       }
       case 'cloudResource': {
-        const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+        const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
         const regionQuestion = {
           type: inputs[8].type,
@@ -151,7 +151,7 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[8].key] });
+        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[8].key] });
 
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {

@@ -6,10 +6,10 @@ const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 module.exports = {
   getRegions: () => awsRegions.regions,
   staticRoles: context => ({
-    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleName,
-    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleName,
-    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].UnauthRoleArn,
-    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['amplify-provider-awscloudformation'].AuthRoleArn,
+    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'].UnauthRoleName,
+    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'].AuthRoleName,
+    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'].UnauthRoleArn,
+    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'].AuthRoleArn,
   }),
   getUserPools: (context, options) => new Cognito(context)
     .then(cognitoModel => cognitoModel.cognito.listUserPools({ MaxResults: 60 }).promise()

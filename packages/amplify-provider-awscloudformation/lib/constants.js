@@ -1,6 +1,6 @@
 module.exports = {
-  ProviderName: 'amplify-provider-awscloudformation',
-  Label: 'amplify-provider-awscloudformation',
+  ProviderName: 'awscloudformation',
+  Label: 'awscloudformation',
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',
   DefaultAWSSecretAccessKey: '<YOUR_SECRET_ACCESS_KEY>',
   DefaultAWSRegion: 'us-east-1',

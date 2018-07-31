@@ -107,7 +107,7 @@ async function serviceWalkthrough(
     });
   }
 
-  const roles = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'staticRoles');
+  const roles = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
 
 
   return {

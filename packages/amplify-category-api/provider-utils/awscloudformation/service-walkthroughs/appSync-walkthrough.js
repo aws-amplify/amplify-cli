@@ -111,7 +111,7 @@ async function askSecurityQuestions(context, inputs) {
 async function askCognitoQuestions(context, inputs) {
   const { amplify } = context;
 
-  const regions = await amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+  const regions = await amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
   const regionQuestion = {
     type: inputs[4].type,
@@ -122,7 +122,7 @@ async function askCognitoQuestions(context, inputs) {
 
   const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-  const userPools = await amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getUserPools', { region: regionAnswer[inputs[4].key] });
+  const userPools = await amplify.executeProviderUtils(context, 'awscloudformation', 'getUserPools', { region: regionAnswer[inputs[4].key] });
 
   const userPoolOptions = userPools.map(userPool => ({
     value: userPool.Id,
@@ -323,14 +323,14 @@ async function askDynamoDBQuestions(context, inputs) {
           context.print.error('Storage plugin not installed in the CLI. Please install it to use this feature');
           break;
         }
-        return add(context, 'amplify-provider-awscloudformation', 'DynamoDB')
+        return add(context, 'awscloudformation', 'DynamoDB')
           .then((resourceName) => {
             context.print.success('Succesfully added DynamoDb table locally');
             return { resourceName };
           });
       }
       case 'cloudResource': {
-        const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+        const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
         const regionQuestion = {
           type: inputs[4].type,
@@ -341,7 +341,7 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[4].key] });
+        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[4].key] });
 
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
@@ -414,14 +414,14 @@ async function askLambdaQuestions(context, inputs) {
           context.print.error('Function plugin not installed in the CLI. Please install it to use this feature');
           break;
         }
-        return add(context, 'amplify-provider-awscloudformation', 'Lambda')
+        return add(context, 'awscloudformation', 'Lambda')
           .then((resourceName) => {
             context.print.success('Succesfully added Lambda function locally');
             return { resourceName };
           });
       }
       case 'cloudResource': {
-        const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+        const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
         const regionQuestion = {
           type: inputs[4].type,
@@ -432,7 +432,7 @@ async function askLambdaQuestions(context, inputs) {
 
         const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-        const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getLambdaFunctions', { region: regionAnswer[inputs[4].key] });
+        const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', { region: regionAnswer[inputs[4].key] });
 
         const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
           value: {
