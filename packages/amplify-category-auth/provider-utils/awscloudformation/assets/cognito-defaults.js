@@ -3,7 +3,7 @@ const { coreAttributes, appClientReadAttributes } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
-const general = () => ({
+const generalDefaults = () => ({
   resourceName: `cognito${sharedId}`,
   authSelections: ['identityPoolAndUserPool'],
 });
@@ -11,7 +11,7 @@ const general = () => ({
 const userPoolDefaults = projectName => ({
   userPoolName: `${projectName}-userpool-${sharedId}`,
   autoVerifiedAttributes: ['phone_number'],
-  mfaConfiguration: 'ON',
+  mfaConfiguration: 'OFF',
   mfaTypes: ['SMS Text Message'],
   roleName: `${projectName}-sns-role-${sharedId}`,
   roleExternalId: sharedId,
@@ -62,7 +62,7 @@ const functionMap = {
 
 const getAllDefaults = (amplify) => {
   const projectName = amplify.projectConfig.projectName.toLowerCase();
-  const target = general();
+  const target = generalDefaults();
   const sources = [
     userPoolDefaults(projectName),
     identityAndUserPoolDefaults(projectName),
@@ -74,4 +74,5 @@ const getAllDefaults = (amplify) => {
 module.exports = {
   getAllDefaults,
   functionMap,
+  generalDefaults,
 };

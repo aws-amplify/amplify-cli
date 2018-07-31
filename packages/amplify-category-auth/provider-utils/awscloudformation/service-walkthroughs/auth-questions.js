@@ -1,4 +1,6 @@
 const inquirer = require('inquirer');
+const chalk = require('chalk');
+const chalkpipe = require('chalk-pipe')
 const thirdPartyMap = require('../assets/string-maps').authProviders;
 
 async function serviceWalkthrough(
@@ -12,85 +14,53 @@ async function serviceWalkthrough(
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
 
   let coreAnswers = {};
-  let appClientAnswers = {};
+  const coreQuestionInputs = inputs;
 
-  let defaultPromptInputs = [
-    {
-      key: 'useDefault',
-      prefix: '\n The current configured provider is Amazon Cognito. \n',
-      question: 'Do you want to use default authentication and security configuration?',
-      type: 'confirm',
-      default: true,
-    },
-    {
-      key: 'authSelections',
-      question: '“What functionality will your application require:',
-      required: true,
-      type: 'list',
-      map: 'authSelectionMap',
-    },
-    {
-      key: 'resourceName',
-      set: 'core',
-      question: 'Provide a friendly name for auth tagging in this project',
-      validation: {
-        operator: 'regex',
-        value: '^[a-zA-Z0-9]+$',
-        onErrorMsg: 'Resource name should be alphanumeric',
-      },
-      required: true,
-    },
-  ];
+  for (let i=0; i < coreQuestionInputs.length; i ++) {
+    // If we are on the second or higher question, we first check to see if the user selected 'learn more' and if learn more text is present on the question object.
+    if (i > 0 && new RegExp(/learn/i).test(coreAnswers[coreQuestionInputs[i-1].key]) && coreQuestionInputs[i-1].learnMore) {
+      // To support line breaks between paragraphs for readability, we splut up the string and joint with template string hard returns
+      const helpTextArray = coreQuestionInputs[i-1].learnMore.split("\n");
+      // !IMPORTANT! Do no change indentation or carriage returns in template string. !IMPORTANT!
+      const helpText = `
+${helpTextArray.join(
+`
+        
+`
+      )}
+      
+`;
+      coreQuestionInputs[i-1].prefix = chalkpipe(null, chalk.magenta)(helpText);  // Assign prefix text with chalkpipe 
+      i-- // Decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
 
-  
+<<<<<<< 11a516f47e5b17f18d65f964641de0986b34d7e0
+    };
+
+    // If user selected default, jump out of the loop
+    if (coreAnswers['useDefault'] === 'default'){
+      break;
+=======
   let defaultConfigAnswer = {};
   if (context.api && (context.api.privacy === 'protected' || context.api.privacy === 'private')) {
     defaultConfigAnswer.authSelections = 'identityPoolAndUserPool';
     defaultPromptInputs.splice(1, 1);
     if (context.api.privacy === 'protected') {
       defaultConfigAnswer.allowUnauthenticatedIdentities = true;
+>>>>>>> Remove extra line
     }
-  }
-  
-  const coreQuestionInputs = inputs.filter(i => i.set === 'core');
 
-  const appClientInputs = inputs.filter(i => i.set === 'app-client');
-
-  const defaultQuestions = parseInputs(
-    defaultPromptInputs,
-    amplify,
-    defaultValuesFilename,
-    stringMapsFilename,
-  );
-  defaultConfigAnswer = { ...defaultConfigAnswer, ...(await inquirer.prompt(defaultQuestions)) };
-
-  const coreQuestions = parseInputs(
-    coreQuestionInputs,
-    amplify,
-    defaultValuesFilename,
-    stringMapsFilename,
-    {
-      ...defaultConfigAnswer,
-    },
-  );
-
-  if (defaultConfigAnswer.useDefault === false) {
-    coreAnswers = await inquirer.prompt(coreQuestions);
-
-    if (defaultConfigAnswer.authSelections === 'identityPoolAndUserPool') {
-      const appClientQuestions = parseInputs(
-        appClientInputs,
+    let q = parseInputs(
+        coreQuestionInputs[i],
         amplify,
         defaultValuesFilename,
         stringMapsFilename,
-        {
-          ...defaultConfigAnswer,
-          ...coreAnswers,
-        },
-      );
-      appClientAnswers = await inquirer.prompt(appClientQuestions);
-    }
-  }
+        coreAnswers,
+        context
+    );
+
+    // Update core answers with spreading of previous values and those returning from new question prompt
+    coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) }
+  };
 
   /*
     create key/value pairs of third party auth providers,
@@ -120,9 +90,7 @@ async function serviceWalkthrough(
 
 
   return {
-    ...defaultConfigAnswer,
     ...coreAnswers,
-    ...appClientAnswers,
     ...roles,
   };
 }

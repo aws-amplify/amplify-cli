@@ -51,7 +51,13 @@ function addResource(context, category, service) {
       /* for each auth selection made by user,
        * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap } = require(defaultValuesSrc);
+      const { functionMap, generalDefaults } = require(defaultValuesSrc);
+
+      /* if user has used the default configuration,
+       * we populate base choices like authSelections and resourceName for them */
+      if (!result.authSelections) {
+        result = Object.assign(generalDefaults(), result)
+      }
 
       /* merge actual answers object into props object of defaults answers,
        * ensuring that manual entries override defaults */
