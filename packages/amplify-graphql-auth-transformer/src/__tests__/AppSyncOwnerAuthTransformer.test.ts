@@ -5,9 +5,9 @@ import {
 import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from 'amplify-graphql-dynamodb-transformer'
-import { AppSyncOwnerAuthTransformer } from '../AppSyncOwnerAuthTransformer'
+import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
 
-test('Test AppSyncOwnerAuthTransformer validation happy case', () => {
+test('Test AppSyncAuthTransformer validation happy case', () => {
     const validSchema = `
     type Post @auth(allow: owner) {
         id: ID!
@@ -19,7 +19,7 @@ test('Test AppSyncOwnerAuthTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncDynamoDBTransformer(),
-            new AppSyncOwnerAuthTransformer()
+            new AppSyncAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema)

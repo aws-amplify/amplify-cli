@@ -1,3 +1,3 @@
-import { AppSyncOwnerAuthTransformer } from './AppSyncOwnerAuthTransformer'
-export * from './AppSyncOwnerAuthTransformer'
-export default AppSyncOwnerAuthTransformer
+import { AppSyncAuthTransformer } from './AppSyncAuthTransformer'
+export * from './AppSyncAuthTransformer'
+export default AppSyncAuthTransformer
