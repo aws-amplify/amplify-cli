@@ -101,7 +101,6 @@ function cleanUpFiles(directory) {
     for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
         var file = files_1[_i];
         var dir = path.join(directory, file);
-        console.log(file);
         if (!fs.lstatSync(dir).isDirectory()) {
             fs.unlinkSync(dir);
         }

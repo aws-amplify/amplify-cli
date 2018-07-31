@@ -22,13 +22,16 @@ var ResourceFactory = /** @class */ (function () {
                 Description: 'S3 key containing the DynamoDB streaming lambda code.'
             }),
             _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version] = new cloudform_1.StringParameter({
-                Description: 'S3 key containing the DynamoDB lambda code version.'
+                Description: 'S3 version of the DynamoDB lstreaming lambda code version.',
+                Default: '$LATEST'
             }),
             _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName] = new cloudform_1.StringParameter({
-                Description: 'The name of the lambda handler.'
+                Description: 'The name of the lambda handler.',
+                Default: 'DynamoDBToElasticsearchStream'
             }),
             _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime] = new cloudform_1.StringParameter({
-                Description: 'The lambda runtime'
+                Description: 'The lambda runtime (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
+                Default: 'python3.6'
             }),
             _a[amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName] = new cloudform_1.StringParameter({
                 Description: 'The name of the streaming lambda function.',
@@ -109,13 +112,13 @@ var ResourceFactory = /** @class */ (function () {
             Type: 'AMAZON_ELASTICSEARCH',
             ServiceRoleArn: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn'),
             ElasticsearchConfig: {
-                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'Arn'))),
+                AwsRegion: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(logicalName, 'DomainArn'))),
                 Endpoint: cloudform_1.Fn.Join('', [
                     'https://',
                     cloudform_1.Fn.GetAtt(logicalName, 'DomainEndpoint')
                 ])
             }
-        });
+        }).dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID);
     };
     /**
      * Deploy a lambda function that will stream data from our DynamoDB table
@@ -138,11 +141,13 @@ var ResourceFactory = /** @class */ (function () {
                         'https://',
                         cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainEndpoint')
                     ]),
-                    ES_REGION: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'))),
+                    ES_REGION: cloudform_1.Fn.Select(3, cloudform_1.Fn.Split(':', cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainArn'))),
                     DEBUG: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDebugStreamingLambda)
                 }
             }
-        });
+        })
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID)
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID);
     };
     ResourceFactory.prototype.makeDynamoDBStreamEventSourceMapping = function () {
         return new cloudform_1.Lambda.EventSourceMapping({
@@ -151,7 +156,9 @@ var ResourceFactory = /** @class */ (function () {
             EventSourceArn: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'StreamArn'),
             FunctionName: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
-        });
+        })
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID)
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID);
     };
     /**
      * Create a single role that has access to all the resources created by the
@@ -189,9 +196,14 @@ var ResourceFactory = /** @class */ (function () {
                                     "es:ESHttpPut"
                                 ],
                                 Effect: "Allow",
-                                Resource: cloudform_1.Fn.Join('/', [
-                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
-                                    '*'
+                                Resource: cloudform_1.Fn.Join('', [
+                                    "arn:aws:es:",
+                                    cloudform_1.Refs.Region,
+                                    ":",
+                                    cloudform_1.Refs.AccountId,
+                                    ":domain/",
+                                    cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                                    "/*"
                                 ])
                             }
                         ]
@@ -236,9 +248,14 @@ var ResourceFactory = /** @class */ (function () {
                                     "es:ESHttpPut"
                                 ],
                                 Effect: "Allow",
-                                Resource: cloudform_1.Fn.Join('/', [
-                                    cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
-                                    '*'
+                                Resource: cloudform_1.Fn.Join('', [
+                                    "arn:aws:es:",
+                                    cloudform_1.Refs.Region,
+                                    ":",
+                                    cloudform_1.Refs.AccountId,
+                                    ":domain/",
+                                    cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                                    "/*"
                                 ])
                             }
                         ]
@@ -282,7 +299,7 @@ var ResourceFactory = /** @class */ (function () {
                     }
                 })
             ]
-        });
+        }).dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID);
     };
     /**
      * Create the elasticsearch domain.
@@ -306,9 +323,14 @@ var ResourceFactory = /** @class */ (function () {
                         AWS: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn')
                     },
                     Resource: [
-                        cloudform_1.Fn.Join('/', [
-                            cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'Arn'),
-                            '*'
+                        cloudform_1.Fn.Join('', [
+                            "arn:aws:es:",
+                            cloudform_1.Refs.Region,
+                            ":",
+                            cloudform_1.Refs.AccountId,
+                            ":domain/",
+                            cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                            "/*"
                         ])
                     ]
                 }
@@ -323,40 +345,42 @@ var ResourceFactory = /** @class */ (function () {
                 VolumeType: 'gp2',
                 VolumeSize: cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.ElasticSearchEBSVolumeGB)
             }
-        });
+        })
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID);
     };
     /**
      * Create the ElasticSearch search resolver.
      */
     ResourceFactory.prototype.makeSearchResolver = function (type, nameOverride) {
         var fieldName = nameOverride ? nameOverride : amplify_graphql_transformer_common_1.graphqlName('search' + amplify_graphql_transformer_common_1.toUpper(type));
-        var ddbTableName = amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID;
         return new appSync_1.default.Resolver({
             ApiId: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: cloudform_1.Fn.GetAtt(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
-            RequestMappingTemplate: amplify_graphql_mapping_template_1.print(amplify_graphql_mapping_template_1.compoundExpression([
-                amplify_graphql_mapping_template_1.set(amplify_graphql_mapping_template_1.ref('indexPath'), amplify_graphql_mapping_template_1.str("/" + ddbTableName + "/_search")),
+            RequestMappingTemplate: cloudform_1.Fn.Sub(amplify_graphql_mapping_template_1.print(amplify_graphql_mapping_template_1.compoundExpression([
+                amplify_graphql_mapping_template_1.set(amplify_graphql_mapping_template_1.ref('indexPath'), amplify_graphql_mapping_template_1.str('/${ddbTableName}/doc/_search')),
                 amplify_graphql_mapping_template_1.ElasticSearchMappingTemplate.searchItem({
-                    path: amplify_graphql_mapping_template_1.ref('indexPath'),
-                    size: amplify_graphql_mapping_template_1.ref('context.args.size'),
-                    from: amplify_graphql_mapping_template_1.ref('context.args.from'),
-                    query: amplify_graphql_mapping_template_1.ref('util.transform.toElasticsearchQueryDSL($ctx.args.query)'),
-                    sort: amplify_graphql_mapping_template_1.list([
+                    path: amplify_graphql_mapping_template_1.str('$indexPath'),
+                    size: amplify_graphql_mapping_template_1.ifElse(amplify_graphql_mapping_template_1.ref('context.args.size'), amplify_graphql_mapping_template_1.ref('context.args.size'), amplify_graphql_mapping_template_1.int(10)),
+                    from: amplify_graphql_mapping_template_1.ifElse(amplify_graphql_mapping_template_1.ref('context.args.from'), amplify_graphql_mapping_template_1.ref('context.args.from'), amplify_graphql_mapping_template_1.int(0)),
+                    query: amplify_graphql_mapping_template_1.ifElse(amplify_graphql_mapping_template_1.ref('context.args.query'), amplify_graphql_mapping_template_1.ref('util.transform.toElasticsearchQueryDSL($ctx.args.query)'), amplify_graphql_mapping_template_1.obj({
+                        'match_all': amplify_graphql_mapping_template_1.obj({})
+                    })),
+                    sort: amplify_graphql_mapping_template_1.ifElse(amplify_graphql_mapping_template_1.ref('context.args.sort'), amplify_graphql_mapping_template_1.list([
                         amplify_graphql_mapping_template_1.iff(amplify_graphql_mapping_template_1.raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'), amplify_graphql_mapping_template_1.obj({
                             "$context.args.sort.field": amplify_graphql_mapping_template_1.obj({
                                 "order": amplify_graphql_mapping_template_1.str('$context.args.sort.direction')
                             })
                         })),
                         amplify_graphql_mapping_template_1.str('_doc')
-                    ])
+                    ]), amplify_graphql_mapping_template_1.list([]))
                 })
-            ])),
+            ])), { 'ddbTableName': cloudform_1.Fn.Ref(amplify_graphql_transformer_common_1.ResourceConstants.PARAMETERS.DynamoDBModelTableName) }),
             ResponseMappingTemplate: amplify_graphql_mapping_template_1.print(amplify_graphql_mapping_template_1.compoundExpression([
                 amplify_graphql_mapping_template_1.set(amplify_graphql_mapping_template_1.ref('items'), amplify_graphql_mapping_template_1.list([])),
                 amplify_graphql_mapping_template_1.forEach(amplify_graphql_mapping_template_1.ref('entry'), amplify_graphql_mapping_template_1.ref('context.result.hits.hits'), [
-                    amplify_graphql_mapping_template_1.iff(amplify_graphql_mapping_template_1.raw('!$foreach.hasNext'), amplify_graphql_mapping_template_1.set(amplify_graphql_mapping_template_1.ref('nextToken'), amplify_graphql_mapping_template_1.str('$entry.sort.get(0)/$entry.sort.get(1)'))),
+                    amplify_graphql_mapping_template_1.iff(amplify_graphql_mapping_template_1.raw('!$foreach.hasNext'), amplify_graphql_mapping_template_1.set(amplify_graphql_mapping_template_1.ref('nextToken'), amplify_graphql_mapping_template_1.str('$entry.sort.get(0)'))),
                     amplify_graphql_mapping_template_1.qref('$items.add($entry.get("_source"))')
                 ]),
                 amplify_graphql_mapping_template_1.toJson(amplify_graphql_mapping_template_1.obj({
@@ -365,7 +389,9 @@ var ResourceFactory = /** @class */ (function () {
                     "nextToken": amplify_graphql_mapping_template_1.ref('nextToken')
                 }))
             ]))
-        }).dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
+        })
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+            .dependsOn(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID);
     };
     return ResourceFactory;
 }());

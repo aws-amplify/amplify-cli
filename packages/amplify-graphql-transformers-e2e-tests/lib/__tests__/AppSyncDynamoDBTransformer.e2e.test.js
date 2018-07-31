@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var amplify_graphql_transformer_common_1 = require("amplify-graphql-transformer-common");
 var amplify_graphql_transform_1 = require("amplify-graphql-transform");
 var amplify_graphql_dynamodb_transformer_1 = require("amplify-graphql-dynamodb-transformer");
+var amplify_graphql_file_transformer_1 = require("amplify-graphql-file-transformer");
 var CloudFormationClient_1 = require("../CloudFormationClient");
 var GraphQLClient_1 = require("../GraphQLClient");
 jest.setTimeout(200000);
@@ -59,6 +60,7 @@ beforeAll(function () { return __awaiter(_this, void 0, void 0, function () {
                 validSchema = "\n    type Post @model {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
                 transformer = new amplify_graphql_transform_1.default({
                     transformers: [
+                        new amplify_graphql_file_transformer_1.default(),
                         new amplify_graphql_dynamodb_transformer_1.default()
                     ]
                 });

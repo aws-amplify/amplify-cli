@@ -1,5 +1,7 @@
 import {
-    obj, Expression, str, ObjectNode
+    obj, Expression, str, ObjectNode, iff, ifElse,
+    ref, raw, int, CompoundExpressionNode, compoundExpression,
+    set, qref
 } from './ast';
 
 export class ElasticSearchMappingTemplate {
@@ -10,7 +12,7 @@ export class ElasticSearchMappingTemplate {
     public static genericTemplte({ operation, path, params }: {
         operation: Expression,
         path: Expression,
-        params: Expression | ObjectNode
+        params: Expression | ObjectNode | CompoundExpressionNode
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
@@ -28,9 +30,9 @@ export class ElasticSearchMappingTemplate {
      */
     public static searchItem({ query, size, from, path, sort }: {
         path: Expression,
-        sort: Expression | ObjectNode,
-        query: ObjectNode | Expression,
-        size: Expression,
+        sort?: Expression | ObjectNode,
+        query?: ObjectNode | Expression,
+        size?: Expression,
         from?: Expression
     }): ObjectNode {
         return obj({
@@ -48,4 +50,3 @@ export class ElasticSearchMappingTemplate {
         })
     }
 }
-
