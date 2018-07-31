@@ -33,20 +33,11 @@ ${helpTextArray.join(
       coreQuestionInputs[i-1].prefix = chalkpipe(null, chalk.magenta)(helpText);  // Assign prefix text with chalkpipe 
       i-- // Decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
 
-<<<<<<< 11a516f47e5b17f18d65f964641de0986b34d7e0
     };
 
     // If user selected default, jump out of the loop
     if (coreAnswers['useDefault'] === 'default'){
       break;
-=======
-  let defaultConfigAnswer = {};
-  if (context.api && (context.api.privacy === 'protected' || context.api.privacy === 'private')) {
-    defaultConfigAnswer.authSelections = 'identityPoolAndUserPool';
-    defaultPromptInputs.splice(1, 1);
-    if (context.api.privacy === 'protected') {
-      defaultConfigAnswer.allowUnauthenticatedIdentities = true;
->>>>>>> Remove extra line
     }
 
     let q = parseInputs(
