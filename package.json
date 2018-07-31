@@ -10,16 +10,17 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-cli": "file:packages/amplify-cli",
     "amplify-category-analytics": "file:packages/amplify-category-analytics",
     "amplify-category-api": "file:packages/amplify-category-api",
     "amplify-category-auth": "file:packages/amplify-category-auth",
     "amplify-category-hosting": "file:packages/amplify-category-hosting",
     "amplify-category-storage": "file:packages/amplify-category-storage",
+    "amplify-cli": "file:packages/amplify-cli",
     "amplify-frontend-android": "file:packages/amplify-frontend-android",
     "amplify-frontend-ios": "file:packages/amplify-frontend-iOS",
     "amplify-frontend-javascript": "file:packages/amplify-frontend-javascript",
     "amplify-provider-awscloudformation": "file:packages/amplify-provider-awscloudformation",
+    "chalk-pipe": "^1.2.0",
     "lerna": "^2.11.0"
   }
 }

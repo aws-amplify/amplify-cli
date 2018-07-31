@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
+const chalk = require('chalk');
+const chalkpipe = require('chalk-pipe')
 const thirdPartyMap = require('../assets/string-maps').authProviders;
+const inputTest = require('../assets/input-tests.js').inputTest;
 
 async function serviceWalkthrough(
   context,
@@ -12,85 +15,50 @@ async function serviceWalkthrough(
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
 
   let coreAnswers = {};
-  let appClientAnswers = {};
+  const coreQuestionInputs = inputs;
 
-  let defaultPromptInputs = [
-    {
-      key: 'useDefault',
-      prefix: '\n The current configured provider is Amazon Cognito. \n',
-      question: 'Do you want to use default authentication and security configuration?',
-      type: 'confirm',
-      default: true,
-    },
-    {
-      key: 'authSelections',
-      question: '“What functionality will your application require:',
-      required: true,
-      type: 'list',
-      map: 'authSelectionMap',
-    },
-    {
-      key: 'resourceName',
-      set: 'core',
-      question: 'Provide a friendly name for auth tagging in this project',
-      validation: {
-        operator: 'regex',
-        value: '^[a-zA-Z0-9]+$',
-        onErrorMsg: 'Resource name should be alphanumeric',
-      },
-      required: true,
-    },
-  ];
 
-  
-  let defaultConfigAnswer = {};
-  if (context.api && (context.api.privacy === 'protected' || context.api.privacy === 'private')) {
-    defaultConfigAnswer.authSelections = 'identityPoolAndUserPool';
-    defaultPromptInputs.splice(1, 1);
-    if (context.api.privacy === 'protected') {
-      defaultConfigAnswer.allowUnauthenticatedIdentities = true;
+  /* Begin looping through questions */
+  for (let i=0; i < coreQuestionInputs.length; i ++) {
+
+    /* 
+      If we are on the second or higher question, we first check to see if the user selected 'learn more',
+      and if they did we append the learn more text as a chalk-styled suffix to the last question
+      and decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
+      */
+    if (i > 0 && new RegExp(/learn/i).test(coreAnswers[coreQuestionInputs[i-1].key]) && coreQuestionInputs[i-1].learnMore) {
+     
+// !IMPORTANT! Do no change indentation in template string.
+      const helpTextArray = coreQuestionInputs[i-1].learnMore.split("\n");
+      const helpText = `
+${helpTextArray.join(
+`
+        
+`
+      )}
+      
+`;
+      
+      coreQuestionInputs[i-1].prefix = chalkpipe(null, chalk.magenta)(helpText);
+      i--
+
+    };
+
+    if (coreAnswers['useDefault'] === 'default'){
+      break;
     }
-  }
-  
-  const coreQuestionInputs = inputs.filter(i => i.set === 'core');
 
-  const appClientInputs = inputs.filter(i => i.set === 'app-client');
-
-  const defaultQuestions = parseInputs(
-    defaultPromptInputs,
-    amplify,
-    defaultValuesFilename,
-    stringMapsFilename,
-  );
-  defaultConfigAnswer = { ...defaultConfigAnswer, ...(await inquirer.prompt(defaultQuestions)) };
-
-  const coreQuestions = parseInputs(
-    coreQuestionInputs,
-    amplify,
-    defaultValuesFilename,
-    stringMapsFilename,
-    {
-      ...defaultConfigAnswer,
-    },
-  );
-
-  if (defaultConfigAnswer.useDefault === false) {
-    coreAnswers = await inquirer.prompt(coreQuestions);
-
-    if (defaultConfigAnswer.authSelections === 'identityPoolAndUserPool') {
-      const appClientQuestions = parseInputs(
-        appClientInputs,
+    let q = parseInputs(
+        coreQuestionInputs[i],
         amplify,
         defaultValuesFilename,
         stringMapsFilename,
-        {
-          ...defaultConfigAnswer,
-          ...coreAnswers,
-        },
-      );
-      appClientAnswers = await inquirer.prompt(appClientQuestions);
-    }
-  }
+        coreAnswers,
+        context
+    );
+
+    coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) }
+  };
 
   /*
     create key/value pairs of third party auth providers,
@@ -120,9 +88,7 @@ async function serviceWalkthrough(
 
 
   return {
-    ...defaultConfigAnswer,
     ...coreAnswers,
-    ...appClientAnswers,
     ...roles,
   };
 }

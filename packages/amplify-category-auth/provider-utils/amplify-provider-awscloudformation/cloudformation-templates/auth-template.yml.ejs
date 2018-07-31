@@ -1,5 +1,4 @@
 Resources:
-  <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -29,7 +28,6 @@ Resources:
                 Action: 
                   - "sns:Publish"
                 Resource: "*"
-  <% } %>
 
   # BEGIN USER POOL RESOURCES
   UserPool:
