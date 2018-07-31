@@ -7,7 +7,7 @@ import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
 import {
     DynamoDBMappingTemplate, print, str,
     ref, obj, set, nul,
-    ifElse, compoundExpression, qref, bool, equals
+    ifElse, compoundExpression, qref, bool, equals, iff, raw, comment
 } from 'amplify-graphql-mapping-template'
 import { ResourceConstants, graphqlName, toUpper } from 'amplify-graphql-transformer-common'
 
@@ -216,15 +216,16 @@ export class ResourceFactory {
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
                 compoundExpression([
-                    set(ref('value'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])')),
-                    qref('$value.put("createdAt", "$util.time.nowISO8601()")'),
-                    qref('$value.put("updatedAt", "$util.time.nowISO8601()")'),
+                    comment('Prepare the DynamoDB PutItem request.'),
+                    iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
+                    qref('$input.put("createdAt", $util.time.nowISO8601())'),
+                    qref('$input.put("updatedAt", $util.time.nowISO8601())'),
                     DynamoDBMappingTemplate.putItem({
                         key: obj({
                             '__typename': obj({ S: str(type) }),
                             id: obj({ S: str(`$util.autoId()`) })
                         }),
-                        attributeValues: ref('util.dynamodb.toMapValuesJson($value)'),
+                        attributeValues: ref('util.dynamodb.toMapValuesJson($input)'),
                         condition: obj({
                             expression: str(`attribute_not_exists(#type) AND attribute_not_exists(#id)`),
                             expressionNames: obj({
@@ -249,19 +250,34 @@ export class ResourceFactory {
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
-                DynamoDBMappingTemplate.updateItem({
-                    key: obj({
-                        '__typename': obj({ S: str(type) }),
-                        id: obj({ S: str('$context.args.input.id') })
-                    }),
-                    condition: obj({
-                        expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
-                        expressionNames: obj({
-                            "#type": str("__typename"),
-                            "#id": str("id")
-                        })
+                compoundExpression([
+                    ifElse(
+                        ref(ResourceConstants.SNIPPETS.AuthCondition),
+                        compoundExpression([
+                            set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
+                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#type) AND attribute_exists(#id)")'),
+                            qref('$condition.expressionNames.put("#type", "__typename")'),
+                            qref('$condition.expressionNames.put("#id", "id")')
+                        ]),
+                        set(ref('condition'), obj({
+                            expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
+                            expressionNames: obj({
+                                "#type": str("__typename"),
+                                "#id": str("id")
+                            })
+                        }))
+                    ),
+                    iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
+                    comment('Automatically set the updatedAt timestamp.'),
+                    qref('$input.put("updatedAt", $util.time.nowISO8601())'),
+                    DynamoDBMappingTemplate.updateItem({
+                        key: obj({
+                            '__typename': obj({ S: str(type) }),
+                            id: obj({ S: str('$context.args.input.id') })
+                        }),
+                        condition: ref('util.toJson($condition)')
                     })
-                })
+                ])
             ),
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
@@ -345,7 +361,10 @@ export class ResourceFactory {
                 ])
             ),
             ResponseMappingTemplate: print(
-                DynamoDBMappingTemplate.paginatedResponse()
+                compoundExpression([
+                    iff(raw('!$result'), set(ref('result'), ref('ctx.result'))),
+                    raw('$util.toJson($result)')
+                ])
             )
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
@@ -384,7 +403,7 @@ export class ResourceFactory {
                 ])
             ),
             ResponseMappingTemplate: print(
-                DynamoDBMappingTemplate.paginatedResponse()
+                raw('$util.toJson($ctx.result)')
             )
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
@@ -402,12 +421,31 @@ export class ResourceFactory {
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
-                DynamoDBMappingTemplate.deleteItem({
-                    key: obj({
-                        '__typename': obj({ S: str(type) }),
-                        id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)')
+                compoundExpression([
+                    ifElse(
+                        ref(ResourceConstants.SNIPPETS.AuthCondition),
+                        compoundExpression([
+                            set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
+                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#type) AND attribute_exists(#id)")'),
+                            qref('$condition.expressionNames.put("#type", "__typename")'),
+                            qref('$condition.expressionNames.put("#id", "id")')
+                        ]),
+                        set(ref('condition'), obj({
+                            expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
+                            expressionNames: obj({
+                                "#type": str("__typename"),
+                                "#id": str("id")
+                            })
+                        }))
+                    ),
+                    DynamoDBMappingTemplate.deleteItem({
+                        key: obj({
+                            '__typename': obj({ S: str(type) }),
+                            id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)')
+                        }),
+                        condition: ref('util.toJson($condition)')
                     })
-                })
+                ])
             ),
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')

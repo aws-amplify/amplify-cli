@@ -1,6 +1,7 @@
 import Template from 'cloudform/types/template'
 import Resource from 'cloudform/types/resource'
 import Parameter from 'cloudform/types/parameter'
+import { Condition } from 'cloudform/types/dataTypes'
 import Output from 'cloudform/types/output'
 import {
     TypeSystemDefinitionNode,
@@ -77,6 +78,18 @@ export default class TransformerContext {
             }
         }
         this.template.Parameters = { ...this.template.Parameters, ...params }
+    }
+
+    public mergeConditions(conditions: { [key: string]: Condition }) {
+        if (!this.template.Conditions) {
+            this.template.Conditions = {}
+        }
+        for (const conditionName of Object.keys(conditions)) {
+            if (this.template.Conditions[conditionName]) {
+                throw new Error(`Conflicting CloudFormation condition name: ${conditionName}`)
+            }
+        }
+        this.template.Conditions = { ...this.template.Conditions, ...conditions }
     }
 
     public getResource(resource: string): Resource {

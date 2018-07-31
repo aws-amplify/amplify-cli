@@ -13,6 +13,7 @@ import {
     makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
     extensionWithFields, ResourceConstants, makeListType
 } from 'amplify-graphql-transformer-common'
+import { ResolverResourceIDs } from 'amplify-graphql-transformer-common'
 
 interface QueryNameMap {
     get?: string;
@@ -112,7 +113,8 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         let shouldMakeUpdate = true;
         let shouldMakeDelete = true;
         let shouldMakeGet = true;
-        let shouldMakeQuery = true;
+        // TODO: Re-enable this if needed but its redundant as of now.
+        let shouldMakeQuery = false;
         let shouldMakeList = true;
         let createFieldNameOverride = undefined;
         let updateFieldNameOverride = undefined;
@@ -161,11 +163,12 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         const queryNameMap: QueryNameMap = directiveArguments.queries
         const mutationNameMap: MutationNameMap = directiveArguments.mutations
+        const typeName = def.name.value
 
         // Create the mutations.
         if (shouldMakeCreate) {
             const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
-            ctx.setResource(`Create${def.name.value}Resolver`, createResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName), createResolver)
             mutationType = extensionWithFields(
                 mutationType,
                 [makeField(
@@ -178,7 +181,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         if (shouldMakeUpdate) {
             const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
-            ctx.setResource(`Update${def.name.value}Resolver`, updateResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName), updateResolver)
             mutationType = extensionWithFields(
                 mutationType,
                 [makeField(
@@ -191,7 +194,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         if (shouldMakeDelete) {
             const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
-            ctx.setResource(`Delete${def.name.value}Resolver`, deleteResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName), deleteResolver)
             mutationType = extensionWithFields(
                 mutationType,
                 [makeField(
@@ -208,7 +211,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             this.generateTableXConnectionType(ctx, def)
 
             const queryResolver = this.resources.makeQueryResolver(def.name.value, queryFieldNameOverride)
-            ctx.setResource(`Query${def.name.value}Resolver`, queryResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBQueryResolverResourceID(typeName), queryResolver)
 
             queryType = extensionWithFields(
                 queryType,
@@ -230,12 +233,12 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             }
 
             this.generateFilterInputs(ctx, def)
-        }        
+        }
 
         // Create get queries
         if (shouldMakeGet) {
             const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
-            ctx.setResource(`Get${def.name.value}Resolver`, getResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName), getResolver)
 
             queryType = extensionWithFields(
                 queryType,
@@ -253,7 +256,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
             // Create the list resolver
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride)
-            ctx.setResource(`List${def.name.value}Resolver`, listResolver)
+            ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
             this.generateFilterInputs(ctx, def)
 

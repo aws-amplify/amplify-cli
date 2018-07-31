@@ -1,4 +1,7 @@
 export class ResourceConstants {
+
+    public static NONE = "NONE"
+
     public static readonly RESOURCES = {
         // AppSync
         GraphQLAPILogicalID: 'GraphQLAPI',
@@ -16,7 +19,12 @@ export class ResourceConstants {
         ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
         ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
         ElasticSearchStreamingLambdaEventSourceMappingLogicalID: 'ElasticSearchStreamingLambdaEventSourceMapping',
-        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource'
+        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource',
+
+        // Auth
+        AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
+        AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
+        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient'
     }
     public static PARAMETERS = {
         // AppSync
@@ -41,13 +49,39 @@ export class ResourceConstants {
         ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
         ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version',
         ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
-        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime' 
+        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime'
+
+        // Auth
+        AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
+        AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
+        AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
+        AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
+        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity',
+        AuthOwnerAttributeName: 'AuthOwnerAttributeName'
     }
     public static MAPPINGS = {}
-    public static CONDITIONS = {}
+    public static CONDITIONS = {
+        // Auth
+        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
+    }
     public static OUTPUTS = {
+
+        // AppSync
         GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
-        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput'
+        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput',
+
+        // Elasticsearch
+        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
+        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn',
+
+        // Auth
+        AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
+        AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
+        AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId'
     }
     public static METADATA = {}
+
+    public static readonly SNIPPETS = {
+        AuthCondition: "authCondition"
+    }
 }

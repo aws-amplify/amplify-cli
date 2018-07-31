@@ -24,6 +24,7 @@
     "amplify-graphql-transformer-common": "1.0"
   },
   "devDependencies": {
+    "amplify-graphql-dynamodb-transformer": "1.0",
     "@types/graphql": "^0.13.1",
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",

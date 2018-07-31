@@ -47,7 +47,7 @@ export class DynamoDBMappingTemplate {
         scanIndexForward: Expression;
         filter: ObjectNode | Expression;
         limit: Expression;
-        nextToken?: Expression; 
+        nextToken?: Expression;
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
@@ -82,13 +82,15 @@ export class DynamoDBMappingTemplate {
      * Create a delete item resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
-    public static deleteItem({ key }: {
-        key: ObjectNode
+    public static deleteItem({ key, condition }: {
+        key: ObjectNode,
+        condition: ObjectNode | ReferenceNode
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
             operation: str('DeleteItem'),
-            key
+            key,
+            condition,
         })
     }
 
@@ -98,10 +100,13 @@ export class DynamoDBMappingTemplate {
      */
     public static updateItem({ key, condition }: {
         key: ObjectNode,
-        condition: ObjectNode
+        condition: ObjectNode | ReferenceNode
     }): CompoundExpressionNode {
         const keyNames = key.attributes.map((attr: [string, Expression]) => attr[0])
+        // Auto timestamp
+        // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
         return compoundExpression([
+            iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
             set(ref('expNames'), obj({})),
             set(ref('expValues'), obj({})),
             set(ref('expSet'), obj({})),
@@ -109,18 +114,18 @@ export class DynamoDBMappingTemplate {
             set(ref('expRemove'), list([])),
             forEach(
                 ref('entry'),
-                ref(`util.map.copyAndRemoveAllKeys($ctx.args.input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
+                ref(`util.map.copyAndRemoveAllKeys($input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
                 [
                     ifElse(
                         ref('util.isNull($entry.value)'),
                         compoundExpression([
-                            set(ref('discard'), ref('expRemove.add("#${entry.key}")')),
-                            qref('$expNames.put("#${entry.key}", "${entry.key}")')
+                            set(ref('discard'), ref('expRemove.add("#$entry.key")')),
+                            qref('$expNames.put("#$entry.key", "$entry.key")')
                         ]),
                         compoundExpression([
-                            qref('$expSet.put("#${entry.key}", ":${entry.key}")'),
-                            qref('$expNames.put("#${entry.key}", "${entry.key}")'),
-                            qref('$expValues.put(":${entry.key}", $util.dynamodb.toDynamoDB($entry.value))')
+                            qref('$expSet.put("#$entry.key", ":$entry.key")'),
+                            qref('$expNames.put("#$entry.key", "$entry.key")'),
+                            qref('$expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value))')
                         ])
                     )
                 ]
@@ -134,14 +139,14 @@ export class DynamoDBMappingTemplate {
                 ])
             ])),
             iff(raw('!$expAdd.isEmpty()'), compoundExpression([
-                set(ref('expression'), str('${expression} ADD')),
+                set(ref('expression'), str('$expression ADD')),
                 forEach(ref('entry'), ref('expAdd.entrySet()'), [
                     set(ref('expression'), str('$expression $entry.key $entry.value')),
                     iff(ref('foreach.hasNext()'), set(ref('expression'), str('$expression,')))
                 ])
             ])),
             iff(raw('!$expRemove.isEmpty()'), compoundExpression([
-                set(ref('expression'), str('${expression} REMOVE')),
+                set(ref('expression'), str('$expression REMOVE')),
                 forEach(ref('entry'), ref('expRemove'), [
                     set(ref('expression'), str('$expression $entry')),
                     iff(ref('foreach.hasNext()'), set(ref('expression'), str('$expression,')))
@@ -150,11 +155,11 @@ export class DynamoDBMappingTemplate {
             set(ref('update'), obj({})),
             qref('$update.put("expression", "$expression")'),
             iff(
-                raw('!${expNames.isEmpty()}'),
+                raw('!$expNames.isEmpty()'),
                 qref('$update.put("expressionNames", $expNames)')
             ),
             iff(
-                raw('!${expValues.isEmpty()}'),
+                raw('!$expValues.isEmpty()'),
                 qref('$update.put("expressionValues", $expValues)')
             ),
             obj({

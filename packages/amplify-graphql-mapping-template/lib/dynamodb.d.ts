@@ -1,4 +1,4 @@
-import { Expression, ObjectNode, CompoundExpressionNode } from './ast';
+import { Expression, ReferenceNode, ObjectNode, CompoundExpressionNode } from './ast';
 export declare class DynamoDBMappingTemplate {
     /**
      * Create a put item resolver template.
@@ -40,8 +40,9 @@ export declare class DynamoDBMappingTemplate {
      * Create a delete item resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
-    static deleteItem({ key }: {
+    static deleteItem({ key, condition }: {
         key: ObjectNode;
+        condition: ObjectNode | ReferenceNode;
     }): ObjectNode;
     /**
      * Create an update item resolver template.
@@ -49,7 +50,7 @@ export declare class DynamoDBMappingTemplate {
      */
     static updateItem({ key, condition }: {
         key: ObjectNode;
-        condition: ObjectNode;
+        condition: ObjectNode | ReferenceNode;
     }): CompoundExpressionNode;
     static stringAttributeValue(value: Expression): ObjectNode;
     static numericAttributeValue(value: Expression): ObjectNode;

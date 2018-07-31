@@ -19,6 +19,16 @@ export class InvalidDirectiveDefinitionError extends Error {
     }
 }
 
+export class InvalidDirectiveError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "InvalidDirectiveError";
+        if ((Error as any).captureStackTrace) {
+            (Error as any).captureStackTrace(this, InvalidDirectiveError)
+        }
+    }
+}
+
 export class UnknownDirectiveError extends Error {
     constructor(message: string) {
         super(message);

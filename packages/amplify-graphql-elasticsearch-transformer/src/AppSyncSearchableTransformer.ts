@@ -4,7 +4,11 @@ import {
     ObjectTypeDefinitionNode
 } from "graphql";
 import { ResourceFactory } from "./resources";
-import { makeSearchableScalarInputObject, makeSearchableXFilterInputObject, makeSearchableSortDirectionEnumObject, makeSearchableXSortableFieldsEnumObject, makeSearchableXSortInputObject } from "./definitions";
+import {
+    makeSearchableScalarInputObject, makeSearchableXFilterInputObject,
+    makeSearchableSortDirectionEnumObject, makeSearchableXSortableFieldsEnumObject,
+    makeSearchableXSortInputObject
+} from "./definitions";
 import {
     makeNamedType,
     blankObjectExtension,
@@ -15,6 +19,7 @@ import {
     makeArg,
     makeNonNullType
 } from "amplify-graphql-transformer-common";
+import { ResolverResourceIDs } from 'amplify-graphql-transformer-common'
 
 interface QueryNameMap {
     search?: string;
@@ -80,7 +85,7 @@ export class AppSyncSearchableTransformer extends Transformer {
             this.generateSearchableXConnectionType(ctx, def)
 
             const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
-            ctx.setResource(`Search${def.name.value}Resolver`, searchResolver)
+            ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
             queryType = extensionWithFields(
                 queryType,
                 [
