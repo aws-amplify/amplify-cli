@@ -6,9 +6,9 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   const { getAllDefaults } = require(defaultValuesSrc);
   const { getAllMaps } = require(stringMapsSrc);
 
-    // Can have a cool question builder function here based on input json - will iterate on this
-    // Can also have some validations here based on the input json
-    // Uncool implementation here
+  // Can have a cool question builder function here based on input json - will iterate on this
+  // Can also have some validations here based on the input json
+  // Uncool implementation here
 
   let question = {
     name: input.key,
@@ -75,7 +75,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       type: 'input',
     }, question);
   }
-  
+
 
   return question;
 }

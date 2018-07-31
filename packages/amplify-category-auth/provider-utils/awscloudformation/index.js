@@ -56,7 +56,7 @@ function addResource(context, category, service) {
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
       if (!result.authSelections) {
-        result = Object.assign(generalDefaults(), result)
+        result = Object.assign(generalDefaults(), result);
       }
 
       /* merge actual answers object into props object of defaults answers,

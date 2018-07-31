@@ -102,11 +102,11 @@ function publish(context, args) {
     });
 }
 
-function console(context){
+function console(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
-  const {HostingBucketName: bucket, Region: region} = 
+  const { HostingBucketName: bucket, Region: region } =
         amplifyMeta[constants.CategoryName][serviceName].output;
-  const consoleUrl = 
+  const consoleUrl =
         `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
   opn(consoleUrl, { wait: false });
 }
@@ -115,5 +115,5 @@ module.exports = {
   enable,
   configure,
   publish,
-  console
+  console,
 };

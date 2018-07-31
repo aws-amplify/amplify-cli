@@ -1,16 +1,16 @@
 const defaultPrompMap = [
   {
     name: 'Yes, use the default configuration.',
-    value: 'default'
+    value: 'default',
   },
   {
     name: 'No, I will set up my own configuration.',
     value: 'manual',
   }, {
     name: 'I want to learn more about these options.',
-    value: 'learnMore'
-  }
-]
+    value: 'learnMore',
+  },
+];
 
 const mfaOptions = [
   {
