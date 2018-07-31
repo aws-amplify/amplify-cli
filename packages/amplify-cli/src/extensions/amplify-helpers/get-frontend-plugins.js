@@ -3,8 +3,8 @@ function getFrontendPlugins(context) {
   context.runtime.plugins.forEach((plugin) => {
     if (plugin.name.includes('frontend')) {
       const strs = plugin.name.split('-'); 
-      const providerName = strs[strs.length -1]; 
-      frontendPlugins[providerName] = plugin.directory;
+      const frontendName = strs[strs.length -1]; 
+      frontendPlugins[frontendName] = plugin.directory;
     }
   });
   return frontendPlugins;

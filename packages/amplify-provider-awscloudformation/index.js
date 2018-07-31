@@ -32,7 +32,7 @@ function getConfiguredAWSClient(context) {
 }
 
 function console(context) {
-  context.print.info('to be implemented: ' + awscloudformation + ' console');
+  context.print.info('to be implemented: awscloudformation console');
 }
 
 module.exports = {
