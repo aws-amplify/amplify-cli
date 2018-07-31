@@ -16,19 +16,12 @@ async function serviceWalkthrough(
   let coreAnswers = {};
   const coreQuestionInputs = inputs;
 
-
-  /* Begin looping through questions */
   for (let i=0; i < coreQuestionInputs.length; i ++) {
-
-    /* 
-      If we are on the second or higher question, we first check to see if the user selected 'learn more',
-      and if they did we append the learn more text as a chalk-styled suffix to the last question
-      and decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
-      */
+    // If we are on the second or higher question, we first check to see if the user selected 'learn more' and if learn more text is present on the question object.
     if (i > 0 && new RegExp(/learn/i).test(coreAnswers[coreQuestionInputs[i-1].key]) && coreQuestionInputs[i-1].learnMore) {
-     
-// !IMPORTANT! Do no change indentation in template string.
+      // To support line breaks between paragraphs for readability, we splut up the string and joint with template string hard returns
       const helpTextArray = coreQuestionInputs[i-1].learnMore.split("\n");
+      // !IMPORTANT! Do no change indentation or carriage returns in template string. !IMPORTANT!
       const helpText = `
 ${helpTextArray.join(
 `
@@ -37,12 +30,12 @@ ${helpTextArray.join(
       )}
       
 `;
-      
-      coreQuestionInputs[i-1].prefix = chalkpipe(null, chalk.magenta)(helpText);
-      i--
+      coreQuestionInputs[i-1].prefix = chalkpipe(null, chalk.magenta)(helpText);  // Assign prefix text with chalkpipe 
+      i-- // Decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
 
     };
 
+    // If user selected default, jump out of the loop
     if (coreAnswers['useDefault'] === 'default'){
       break;
     }
@@ -56,6 +49,7 @@ ${helpTextArray.join(
         context
     );
 
+    // Update core answers with spreading of previous values and those returning from new question prompt
     coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) }
   };
 
