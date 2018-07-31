@@ -19,6 +19,17 @@
 				"map": "authSelectionMap"
 			},
 			{
+				"key": "resourceName",
+				"set": "core",
+				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			},
+			{
 				"key": "identityPoolName",
 				"question": "Please enter a name for your identity pool.",
 				"required": true,
@@ -27,7 +38,14 @@
 					"operator": "regex",
 					"value": "^.{1,128}$",
 					"onErrorMsg": "The identity pool name must be at least 1 character and no more than 128."
-				}
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolAndUserPool",
+						"operator": "="
+					}
+				]
 			},
 			{
 				"key": "allowUnauthenticatedIdentities",

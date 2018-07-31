@@ -27,9 +27,9 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         return defaultValue;
       }
 
-      if (context.api.privacy === 'protected' && input.key === 'allowUnauthenticatedIdentities') {
-        return true;
-      }
+      // if (context.api.privacy === 'protected' && input.key === 'allowUnauthenticatedIdentities') {
+      //   return true;
+      // }
 
       return undefined;
     },
