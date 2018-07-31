@@ -5,10 +5,12 @@ var amplify_graphql_transform_1 = require("amplify-graphql-transform");
 var amplify_graphql_transformer_common_1 = require("amplify-graphql-transformer-common");
 var amplify_graphql_dynamodb_transformer_1 = require("amplify-graphql-dynamodb-transformer");
 var AppSyncSearchableTransformer_1 = require("../AppSyncSearchableTransformer");
+var amplify_graphql_file_transformer_1 = require("amplify-graphql-file-transformer");
 test('Test AppSyncSearchableTransformer validation happy case', function () {
     var validSchema = "\n    type Post @model @searchable {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new amplify_graphql_dynamodb_transformer_1.default(),
             new AppSyncSearchableTransformer_1.AppSyncSearchableTransformer()
         ]
@@ -20,6 +22,7 @@ test('Test AppSyncSearchableTransformer with query overrides', function () {
     var validSchema = "type Post @model @searchable(queries: { search: \"customSearchPost\" }) {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new amplify_graphql_dynamodb_transformer_1.default(),
             new AppSyncSearchableTransformer_1.AppSyncSearchableTransformer()
         ]
@@ -39,6 +42,7 @@ test('Test AppSyncSearchableTransformer with only create mutations', function ()
     var validSchema = "type Post @model(mutations: { create: \"customCreatePost\" }) @searchable { \n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new amplify_graphql_dynamodb_transformer_1.default(),
             new AppSyncSearchableTransformer_1.AppSyncSearchableTransformer()
         ]
@@ -59,6 +63,7 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     var validSchema = "\n    type Post @model @searchable {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n\n    type User @model @searchable {\n        id: ID!\n        name: String!\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new amplify_graphql_dynamodb_transformer_1.default(),
             new AppSyncSearchableTransformer_1.AppSyncSearchableTransformer()
         ]
@@ -107,6 +112,7 @@ test('Test AppSyncSearchableTransformer with sort fields', function () {
     var validSchema = "\n    type Post @model @searchable {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new amplify_graphql_dynamodb_transformer_1.default(),
             new AppSyncSearchableTransformer_1.AppSyncSearchableTransformer()
         ]

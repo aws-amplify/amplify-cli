@@ -21,7 +21,8 @@
     "amplify-graphql-mapping-template": "1.0",
     "cloudform": "^2.2.1",
     "amplify-graphql-transform": "1.0",
-    "amplify-graphql-transformer-common": "1.0"
+    "amplify-graphql-transformer-common": "1.0",
+    "amplify-graphql-file-transformer": "1.0"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",

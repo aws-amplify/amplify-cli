@@ -1,4 +1,4 @@
-import { Expression, ObjectNode } from './ast';
+import { Expression, ObjectNode, CompoundExpressionNode } from './ast';
 export declare class ElasticSearchMappingTemplate {
     /**
      * Create a mapping template for ES.
@@ -6,7 +6,7 @@ export declare class ElasticSearchMappingTemplate {
     static genericTemplte({ operation, path, params }: {
         operation: Expression;
         path: Expression;
-        params: Expression | ObjectNode;
+        params: Expression | ObjectNode | CompoundExpressionNode;
     }): ObjectNode;
     /**
      * Create a search item resolver template.
@@ -16,9 +16,9 @@ export declare class ElasticSearchMappingTemplate {
      */
     static searchItem({ query, size, from, path, sort }: {
         path: Expression;
-        sort: Expression | ObjectNode;
-        query: ObjectNode | Expression;
-        size: Expression;
+        sort?: Expression | ObjectNode;
+        query?: ObjectNode | Expression;
+        size?: Expression;
         from?: Expression;
     }): ObjectNode;
 }

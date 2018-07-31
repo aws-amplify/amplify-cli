@@ -4,10 +4,12 @@ var graphql_1 = require("graphql");
 var amplify_graphql_transform_1 = require("amplify-graphql-transform");
 var amplify_graphql_transformer_common_1 = require("amplify-graphql-transformer-common");
 var AppSyncDynamoDBTransformer_1 = require("../AppSyncDynamoDBTransformer");
+var amplify_graphql_file_transformer_1 = require("amplify-graphql-file-transformer");
 test('Test AppSyncDynamoDBTransformer validation happy case', function () {
     var validSchema = "\n    type Post @model {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });
@@ -18,6 +20,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', function () {
     var validSchema = "type Post @model(queries: { get: \"customGetPost\", list: \"customListPost\", query: \"customQueryPost\" }) {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });
@@ -38,6 +41,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', function () {
     var validSchema = "type Post @model(mutations: { create: \"customCreatePost\", update: \"customUpdatePost\", delete: \"customDeletePost\" }) { \n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });
@@ -56,6 +60,7 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', function () {
     var validSchema = "type Post @model(mutations: { create: \"customCreatePost\" }) { \n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });
@@ -75,6 +80,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', function 
     var validSchema = "\n    type Post @model {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }\n\n    type User @model {\n        id: ID!\n        name: String!\n    }\n    ";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });
@@ -115,6 +121,7 @@ test('Test AppSyncDynamoDBTransformer with query filter', function () {
     var validSchema = "\n    type Post @model {\n        id: ID!\n        title: String!\n        createdAt: String\n        updatedAt: String\n    }";
     var transformer = new amplify_graphql_transform_1.default({
         transformers: [
+            new amplify_graphql_file_transformer_1.AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer_1.AppSyncDynamoDBTransformer()
         ]
     });

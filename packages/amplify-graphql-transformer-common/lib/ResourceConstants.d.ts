@@ -30,14 +30,14 @@ export declare class ResourceConstants {
         ElasticSearchStreamingLambdaCodeS3Bucket: string;
         ElasticSearchStreamingLambdaCodeS3Key: string;
         ElasticSearchStreamingLambdaCodeS3Version: string;
+        ElasticSearchStreamingLambdaHandlerName: string;
+        ElasticSearchStreamingLambdaRuntime: string;
     };
     static MAPPINGS: {};
     static CONDITIONS: {};
     static OUTPUTS: {
         GraphQLAPIEndpointOutput: string;
         GraphQLAPIApiKeyOutput: string;
-        ElasticSearchStreamingLambdaIAMRoleArn: string;
-        ElasticSearchAccessIAMRoleArn: string;
     };
     static METADATA: {};
 }

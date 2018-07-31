@@ -25,7 +25,6 @@ var AppSyncSearchableTransformer = /** @class */ (function (_super) {
             var template = _this.resources.initTemplate();
             ctx.mergeResources(template.Resources);
             ctx.mergeParameters(template.Parameters);
-            ctx.mergeOutputs(template.Outputs);
         };
         /**
          * Given the initial input and context manipulate the context to handle this object directive.

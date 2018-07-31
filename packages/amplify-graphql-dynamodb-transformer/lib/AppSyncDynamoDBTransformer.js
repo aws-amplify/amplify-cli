@@ -11,7 +11,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var amplify_graphql_transform_1 = require("amplify-graphql-transform");
-var graphql_1 = require("graphql");
 var resources_1 = require("./resources");
 var definitions_1 = require("./definitions");
 var amplify_graphql_transformer_common_1 = require("amplify-graphql-transformer-common");
@@ -51,15 +50,6 @@ var AppSyncDynamoDBTransformer = /** @class */ (function (_super) {
             // Some downstream resources depend on this so put a placeholder in and
             // overwrite it in the after
             var schemaResource = _this.resources.makeAppSyncSchema('placeholder');
-            ctx.setResource(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource);
-        };
-        _this.after = function (ctx) {
-            var built = graphql_1.buildASTSchema({
-                kind: 'Document',
-                definitions: Object.keys(ctx.nodeMap).map(function (k) { return ctx.nodeMap[k]; })
-            });
-            var SDL = graphql_1.printSchema(built);
-            var schemaResource = _this.resources.makeAppSyncSchema(SDL);
             ctx.setResource(amplify_graphql_transformer_common_1.ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource);
         };
         /**

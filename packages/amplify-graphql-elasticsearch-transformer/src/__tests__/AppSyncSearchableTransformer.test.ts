@@ -6,6 +6,7 @@ import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import AppSyncDynamoDBTransformer from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncSearchableTransformer } from '../AppSyncSearchableTransformer'
+import { AppSyncFileTransformer } from 'amplify-graphql-file-transformer'
 
 test('Test AppSyncSearchableTransformer validation happy case', () => {
     const validSchema = `
@@ -18,6 +19,7 @@ test('Test AppSyncSearchableTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -36,6 +38,7 @@ test('Test AppSyncSearchableTransformer with query overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -62,6 +65,7 @@ test('Test AppSyncSearchableTransformer with only create mutations', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -95,6 +99,7 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -155,6 +160,7 @@ test('Test AppSyncSearchableTransformer with sort fields', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncFileTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]

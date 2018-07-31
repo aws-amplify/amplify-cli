@@ -62,6 +62,7 @@ export default class Transformer {
         extraDefs?: string
     ) {
         this.name = name
+        
         const doc = parse(directiveDef);
         if (doc.definitions.length !== 1) {
             throw new InvalidDirectiveDefinitionError('Transformers must specify exactly one directive definition.')
@@ -70,7 +71,7 @@ export default class Transformer {
         if (def.kind !== Kind.DIRECTIVE_DEFINITION) {
             throw new InvalidDirectiveDefinitionError(`Transformers must specify a directive definition not a definition of kind '${def.kind}'.`)
         }
-        this.directive = def
+        this.directive = def 
 
         // Transformers can define extra shapes that can be used by the directive
         // and validated. TODO: Validation.
