@@ -75,6 +75,8 @@ module.exports = {
               Name: allTables[i].Table.TableName,
               Arn: allTables[i].Table.TableArn,
               Region: region,
+              KeySchema: allTables[i].Table.KeySchema,
+              AttributeDefinitions: allTables[i].Table.AttributeDefinitions,
             });
           }
         }

@@ -52,29 +52,9 @@ async function askApiNames(context, defaults) {
         required: true,
       }),
     },
-    {
-      name: 'apiName',
-      type: 'input',
-      message: 'Please provide an API name',
-      default: defaults.apiName,
-      validate(value) {
-        const pass = value.length > 0;
-
-        // TODO: check names with existing apis
-        // let yamlDef = cloudLogicDefinition.projectDefinition.yamlDefinition;
-
-        // // Check if API already exists
-        // if (yamlDef.features.cloudlogic && yamlDef.features.cloudlogic.components &&
-        //   yamlDef.features.cloudlogic.components[value]) {
-        //   return 'API ' + value + ' already exists';
-        // }
-        if (pass) {
-          return true;
-        }
-        return 'Please enter a valid API name';
-      },
-    },
   ]);
+
+  answer.apiName = defaults.apiName;
 
   return answer;
 }

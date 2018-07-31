@@ -57,23 +57,16 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
 
   const answers = await inquirer.prompt(resourceQuestions);
-
+  
   Object.assign(allDefaultValues, pathDetails, answers);
   if (answers.functionTemplate === 'crud') {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
 
-    const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    let parameters;
-    try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
-    } catch (e) {
-      parameters = {};
-    }
+    const tableParameters = await getTableParameters(context, dynamoAnswers);
     Object.assign(
       dynamoAnswers,
       { category: 'storage' },
-      { tableDefinition: { ...parameters } },
+      { tableDefinition: { ...tableParameters } },
     );
     Object.assign(allDefaultValues, { database: dynamoAnswers });
 
@@ -87,6 +80,35 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     allDefaultValues.dependsOn = dependsOn;
   }
   return { answers: allDefaultValues, dependsOn };
+}
+
+async function getTableParameters(context, dynamoAnswers) {
+  if (dynamoAnswers.Arn) { // Looking for table parameters on DynamoDB public API
+
+    const hashKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'HASH') || {};
+    const hashType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === hashKey.AttributeName) || {};
+    const rangeKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'RANGE') || {};
+    const rangeType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === rangeKey.AttributeName) || {};
+    return {
+      "tableName": dynamoAnswers.TableName,
+      "partitionKeyName": hashKey.AttributeName,
+      "partitionKeyType": hashType.AttributeType,
+      "sortKeyName": rangeKey.AttributeName,
+      "sortKeyType": rangeType.AttributeType,
+    };
+  } else { // Looking for table parameters on local configuration
+
+    const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    let parameters;
+    try {
+      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    } catch (e) {
+      parameters = {};
+    }
+
+    return parameters;
+  }
 }
 
 async function askDynamoDBQuestions(context, inputs) {
@@ -156,10 +178,12 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
-            resourceName: dynamodbTable.Name.replace(/[^0-9a-zA-Z]/gi, ''),
+            resourceName: dynamodbTable.Name,
             region: dynamodbTable.Region,
             Arn: dynamodbTable.Arn,
             TableName: dynamodbTable.Name,
+            KeySchema: dynamodbTable.KeySchema,
+            AttributeDefinitions: dynamodbTable.AttributeDefinitions,
           },
           name: `${dynamodbTable.Name} (${dynamodbTable.Arn})`,
         }));
