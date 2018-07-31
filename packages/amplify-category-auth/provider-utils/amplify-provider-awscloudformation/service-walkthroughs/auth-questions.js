@@ -2,7 +2,6 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe')
 const thirdPartyMap = require('../assets/string-maps').authProviders;
-const inputTest = require('../assets/input-tests.js').inputTest;
 
 async function serviceWalkthrough(
   context,
