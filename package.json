@@ -5,21 +5,12 @@
   "scripts": {
     "lint": "lerna run -- lint",
     "lint-fix": "lerna run -- lint-fix",
-    "setup-dev": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link"
+    "setup-dev": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link",
+    "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
   },
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-category-analytics": "file:packages/amplify-category-analytics",
-    "amplify-category-api": "file:packages/amplify-category-api",
-    "amplify-category-auth": "file:packages/amplify-category-auth",
-    "amplify-category-hosting": "file:packages/amplify-category-hosting",
-    "amplify-category-storage": "file:packages/amplify-category-storage",
-    "amplify-cli": "file:packages/amplify-cli",
-    "amplify-frontend-android": "file:packages/amplify-frontend-android",
-    "amplify-frontend-ios": "file:packages/amplify-frontend-iOS",
-    "amplify-frontend-javascript": "file:packages/amplify-frontend-javascript",
-    "awscloudformation": "file:packages/awscloudformation",
     "lerna": "^2.11.0"
   }
 }
