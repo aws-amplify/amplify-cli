@@ -118,7 +118,7 @@
                             [
                                 "const response = require('cfn-response');",
                                 "const aws = require('aws-sdk');",
-                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01' });",
+                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: 'us-east-1' });",
                                 "exports.handler = function(event, context) {",
                                 "    if (event.RequestType == 'Delete') {",
                                 "        response.send(event, context, response.SUCCESS);",
