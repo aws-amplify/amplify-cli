@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const categoryManager = require('./lib/category-manager');
+const consoleCommand = require('./lib/console');
 
 async function add(context) {
   const {
@@ -75,8 +76,34 @@ function publish(context, service, args) {
   }
 }
 
+async function console(context) {
+  const {
+    availableServices,
+    enabledServices,
+  } = categoryManager.getCategoryStatus(context);
+
+  if (availableServices.length > 0) {
+    if (enabledServices.length > 1) {
+      const answer = await inquirer.prompt({
+        type: 'list',
+        name: 'selectedService',
+        message: 'Please select the service.',
+        choices: enabledServices,
+        default: enabledServices[0],
+      });
+      return categoryManager.runServiceAction(context, answer.selectedService, 'console');
+    } else if (enabledServices.length === 1) {
+      return categoryManager.runServiceAction(context, enabledServices[0], 'console');
+    }
+    throw new Error('No hosting service is enabled.');
+  } else {
+    throw new Error('Hosting is not available from enabled providers.');
+  }
+}
+
 module.exports = {
   add,
   configure,
   publish,
+  console,
 };

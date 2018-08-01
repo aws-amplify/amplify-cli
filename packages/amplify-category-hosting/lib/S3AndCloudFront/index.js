@@ -8,7 +8,7 @@ const fileUPloader = require('./helpers/file-uploader');
 const constants = require('../constants');
 
 const serviceName = 'S3AndCloudFront';
-const providerPlugin = 'amplify-provider-awscloudformation';
+const providerPlugin = 'awscloudformation';
 
 const templateFileName = 'hosting-s3andcloudfront-template.json';
 const parametersFileName = 'parameters.json';
@@ -102,8 +102,18 @@ function publish(context, args) {
     });
 }
 
+function console(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const { HostingBucketName: bucket, Region: region } =
+        amplifyMeta[constants.CategoryName][serviceName].output;
+  const consoleUrl =
+        `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
+  opn(consoleUrl, { wait: false });
+}
+
 module.exports = {
   enable,
   configure,
   publish,
+  console,
 };

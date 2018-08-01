@@ -11,7 +11,7 @@ function run(context) {
     name: 'selectedProviders',
     message: 'Please select the backend providers.',
     choices: providerPluginList,
-    default: ['amplify-provider-awscloudformation'],
+    default: ['awscloudformation'],
   };
 
   const providerQuestion = providerPluginList.length === 1 ?

@@ -26,7 +26,7 @@
 		"defaultValuesFilename": "s3-defaults.js",
 		"serviceWalkthroughFilename": "s3-walkthrough.js",
 		"cfnFilename": "s3-cloudformation-template.yml.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	},
 	"DynamoDB": {
 		"inputs": [
@@ -114,6 +114,6 @@
 		"defaultValuesFilename": "dynamoDb-defaults.js",
 		"serviceWalkthroughFilename": "dynamoDb-walkthrough.js",
 		"cfnFilename": "dynamoDb-cloudformation-template.yml.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	}
 }

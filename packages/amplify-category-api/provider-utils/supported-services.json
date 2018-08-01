@@ -217,7 +217,7 @@
 		"defaultValuesFilename": "appSync-defaults.js",
 		"serviceWalkthroughFilename": "appSync-walkthrough.js",
 		"cfnFilename": "appSync-cloudformation-template-default.yml.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	},
 	"API Gateway": {
 		"inputs": [
@@ -243,6 +243,6 @@
 		"defaultValuesFilename": "apigw-defaults.js",
 		"serviceWalkthroughFilename": "apigw-walkthrough.js",
 		"cfnFilename": "apigw-cloudformation-template-default.json.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	}
 }

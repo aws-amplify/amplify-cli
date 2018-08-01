@@ -1,5 +1,5 @@
 module.exports = {
-  Label: 'amplify-frontend-javascript',
+  Label: 'javascript',
   ProjectScanBaseScore: 10,
   ProjectScanMaxScore: 90,
   configFilename: 'amplify-config.js',

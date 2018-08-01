@@ -25,6 +25,6 @@
 		"defaultValuesFilename": "pinpoint-defaults.js",
 		"serviceWalkthroughFilename": "pinpoint-walkthrough.js",
 		"cfnFilename": "pinpoint-cloudformation-template.yml.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	}
 }

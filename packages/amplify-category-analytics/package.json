@@ -2,6 +2,7 @@
   "name": "amplify-category-analytics",
   "version": "0.1.0",
   "description": "amplify-cli analytics plugin",
+  "main": "index.js",
   "dependencies": {
     "amplify-category-auth": "^0.1.0",
     "eslint": "^4.19.1",

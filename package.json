@@ -19,7 +19,7 @@
     "amplify-frontend-android": "file:packages/amplify-frontend-android",
     "amplify-frontend-ios": "file:packages/amplify-frontend-iOS",
     "amplify-frontend-javascript": "file:packages/amplify-frontend-javascript",
-    "amplify-provider-awscloudformation": "file:packages/amplify-provider-awscloudformation",
+    "awscloudformation": "file:packages/awscloudformation",
     "lerna": "^2.11.0"
   }
 }

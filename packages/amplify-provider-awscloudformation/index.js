@@ -6,6 +6,7 @@ const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
 const aws = require('./src/aws-utils/aws');
+const consoleCommand = require('./lib/console');
 
 function init(context) {
   return initializer.run(context);
@@ -31,7 +32,12 @@ function getConfiguredAWSClient(context) {
   return aws.configureWithCreds(context);
 }
 
+function console(context) {
+  return consoleCommand.run(context);
+}
+
 module.exports = {
+  console,
   init,
   onInitSuccessful,
   configure,

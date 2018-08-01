@@ -7,7 +7,7 @@ const fileScanner = require('./file-scanner');
 const constants = require('../../constants');
 
 const serviceName = 'S3AndCloudFront';
-const providerName = 'amplify-provider-awscloudformation';
+const providerName = 'awscloudformation';
 const publishIgnore = {
   DirectoryList: [],
   FileList: [],

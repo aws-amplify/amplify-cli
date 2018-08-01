@@ -104,6 +104,6 @@
 		"defaultValuesFilename": "lambda-defaults.js",
 		"serviceWalkthroughFilename": "lambda-walkthrough.js",
 		"cfnFilename": "lambda-cloudformation-template.json.ejs",
-		"provider": "amplify-provider-awscloudformation"
+		"provider": "awscloudformation"
 	}
 }
