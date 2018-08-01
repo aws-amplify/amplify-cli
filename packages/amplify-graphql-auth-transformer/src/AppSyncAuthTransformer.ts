@@ -20,7 +20,7 @@ const nManyTruthy = (n: number) => (objs: any[]) => {
 /**
  * Implements the AppSyncAuthTransformer.
  *
- * Usage:
+ * Owner Auth Usage:
  *
  * type Post @auth(allow: owner) {
  *   id: ID!
@@ -38,9 +38,25 @@ const nManyTruthy = (n: number) => (objs: any[]) => {
  * deletePost - Conditional expression checking that the owner === $ctx.identity.sub
  *
  * Note: The name of the "owner" field may be configured via the CF paramaters.
- * 
- * 
  *
+ * type Post @auth(allow: groups, groups: ["Admin", "Dev"]) {
+ *   id: ID!
+ *   title: String
+ *   createdAt: String
+ *   updatedAt: String
+ * }
+ *
+ * Impact:
+ *
+ * getPost - Update req template to look for the groups in the identity.
+ * listPost - Update req template to look for the groups in the identity.
+ * createPost - Update req template to look for the groups in the identity.
+ * updatePost - Update req template to look for the groups in the identity.
+ * deletePost - Update req template to look for the groups in the identity.
+ *
+ * TODO: In the future we will support validating groups dynamically against
+ * attributes of the records using conditional expressions. This will likely
+ * be via a new argument such as "groupsField".
  */
 export class AppSyncAuthTransformer extends Transformer {
 
@@ -51,12 +67,14 @@ export class AppSyncAuthTransformer extends Transformer {
             'AppSyncAuthTransformer',
             `directive @auth(
                 allow: AuthStrategy!,
+                ownerField: String = "owner",
                 groups: [String],
+                groupsField: String,
                 queries: [TableQuery],
                 mutations: [TableMutation]
             ) on OBJECT`,
             `
-                enum AuthStrategy { owner group }
+                enum AuthStrategy { owner groups }
                 enum TableQuery { get list search }
                 enum TableMutation { create update delete }
             `
@@ -135,7 +153,12 @@ export class AppSyncAuthTransformer extends Transformer {
         return ids
     }
 
-    private ownerProtectQueryResolvers = (ctx: TransformerContext, queries: string[], ids: string[]): void => {
+    private ownerProtectQueryResolvers = (
+        ctx: TransformerContext,
+        queries: string[],
+        ids: string[],
+        ownerField: string,
+    ): void => {
         for (let i = 0; i < queries.length; i++) {
             const id = ids[i]
             const query = queries[i]
@@ -143,9 +166,9 @@ export class AppSyncAuthTransformer extends Transformer {
             if (resolver) {
                 // Update the resolver with the auth check.
                 if (query === 'get') {
-                    ctx.setResource(id, this.resources.ownerProtectGetResolver(resolver as Resolver))
+                    ctx.setResource(id, this.resources.ownerProtectGetResolver(resolver as Resolver, ownerField))
                 } else if (query === 'list') {
-                    ctx.setResource(id, this.resources.ownerProtectListResolver(resolver as Resolver))
+                    ctx.setResource(id, this.resources.ownerProtectListResolver(resolver as Resolver, ownerField))
                 }
                 // TODO: Renable if query is added back
                 // else if (query === 'query') {
@@ -155,19 +178,113 @@ export class AppSyncAuthTransformer extends Transformer {
         }
     }
 
-    private ownerProtectMutationResolvers = (ctx: TransformerContext, mutations: string[], ids: string[]): void => {
+    private ownerProtectMutationResolvers = (
+        ctx: TransformerContext,
+        mutations: string[],
+        ids: string[],
+        ownerField: string,
+    ): void => {
         for (let i = 0; i < mutations.length; i++) {
             const id = ids[i]
             const mutation = mutations[i]
             const resolver = ctx.getResource(id)
             if (resolver) {
                 if (mutation === 'create') {
-                    ctx.setResource(id, this.resources.ownerProtectCreateResolver(resolver as Resolver))
+                    ctx.setResource(id, this.resources.ownerProtectCreateResolver(resolver as Resolver, ownerField))
                 } else if (mutation === 'update') {
-                    ctx.setResource(id, this.resources.ownerProtectUpdateResolver(resolver as Resolver))
+                    ctx.setResource(id, this.resources.ownerProtectUpdateResolver(resolver as Resolver, ownerField))
                 } else if (mutation === 'delete') {
-                    ctx.setResource(id, this.resources.ownerProtectDeleteResolver(resolver as Resolver))
+                    ctx.setResource(id, this.resources.ownerProtectDeleteResolver(resolver as Resolver, ownerField))
                 }
+            }
+        }
+    }
+
+    public staticGroupsProtectQueryResolvers = (
+        ctx: TransformerContext,
+        mutations: string[],
+        ids: string[],
+        groups: string[],
+    ): void => {
+        for (let i = 0; i < mutations.length; i++) {
+            const id = ids[i]
+            const mutation = mutations[i]
+            const resolver = ctx.getResource(id)
+            if (resolver) {
+                if (mutation === 'create') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                } else if (mutation === 'update') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                } else if (mutation === 'delete') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                }
+            }
+        }
+    }
+
+    public staticGroupsProtectMutationResolvers = (
+        ctx: TransformerContext,
+        mutations: string[],
+        ids: string[],
+        groups: string[],
+    ): void => {
+        for (let i = 0; i < mutations.length; i++) {
+            const id = ids[i]
+            const mutation = mutations[i]
+            const resolver = ctx.getResource(id)
+            if (resolver) {
+                if (mutation === 'create') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                } else if (mutation === 'update') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                } else if (mutation === 'delete') {
+                    ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
+                }
+            }
+        }
+    }
+
+    public dynamicGroupsProtectQueryResolvers = (
+        ctx: TransformerContext,
+        mutations: string[],
+        ids: string[],
+        groupsField: string,
+    ): void => {
+        for (let i = 0; i < mutations.length; i++) {
+            const id = ids[i]
+            const mutation = mutations[i]
+            const resolver = ctx.getResource(id)
+            if (resolver) {
+                // if (mutation === 'create') {
+                //     ctx.setResource(id, this.resources.dynamicGroupProtectCreateResolver(resolver as Resolver, groupsField))
+                // } else if (mutation === 'update') {
+                //     ctx.setResource(id, this.resources.dynamicGroupProtectUpdateResolver(resolver as Resolver, groupsField))
+                // } else if (mutation === 'delete') {
+                //     ctx.setResource(id, this.resources.dynamicGroupProtectDeleteResolver(resolver as Resolver, groupsField))
+                // }
+            }
+        }
+    }
+
+    public dynamicGroupsProtectMutationResolvers = (
+        ctx: TransformerContext,
+        mutations: string[],
+        ids: string[],
+        groupsField: string,
+    ): void => {
+        for (let i = 0; i < mutations.length; i++) {
+            const id = ids[i]
+            const mutation = mutations[i]
+            const resolver = ctx.getResource(id)
+            if (resolver) {
+                if (mutation === 'create') {
+                    ctx.setResource(id, this.resources.dynamicGroupProtectCreateResolver(resolver as Resolver, groupsField))
+                } else if (mutation === 'update') {
+                    ctx.setResource(id, this.resources.dynamicGroupProtectUpdateResolver(resolver as Resolver, groupsField))
+                }
+                // else if (mutation === 'delete') {
+                //     ctx.setResource(id, this.resources.dynamicGroupProtectDeleteResolver(resolver as Resolver, groupsField))
+                // }
             }
         }
     }
@@ -177,23 +294,52 @@ export class AppSyncAuthTransformer extends Transformer {
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
+        const getArg = (arg: string, dflt?: any) => {
+            const argument = directive.arguments.find(get(arg))
+            return argument ? valueFromASTUntyped(argument.value) : dflt
+        }
+
+        const modelDirective = def.directives.find((dir) => dir.name.value === 'model')
+        if (!modelDirective) {
+            throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.')
+        }
+
+        // Get the auth strategy for this transformer
+        const authStrategy = getArg('allow')
 
         // Protect only those specified else all of them.
-        const queriesArgument = directive.arguments.find(get('queries'))
-        const queriesToProtect = queriesArgument ? valueFromASTUntyped(queriesArgument.value) : ['get', 'list', 'search']
+        const queriesToProtect = getArg('queries', ['get', 'list', 'search'])
 
         // Protect only those specified else all of them.
-        const mutationsArgument = directive.arguments.find(get('mutations'))
-        const mutationsToProtect = mutationsArgument ? valueFromASTUntyped(mutationsArgument.value) : ['create', 'update', 'delete']
+        const mutationsToProtect = getArg('mutations', ['create', 'update', 'delete'])
 
         // Map from the enums to the actual resource ids in the context
         const typeName = def.name.value
         const queryResolverResourceIds = this.getQueryResolverResourceIds(typeName, queriesToProtect)
         const mutationResolverResourceIds = this.getMutationResolverResourceIds(typeName, mutationsToProtect)
 
-        // If there exists a resolver that needs to be protected then protect it.
-        this.ownerProtectQueryResolvers(ctx, queriesToProtect, queryResolverResourceIds)
-        this.ownerProtectMutationResolvers(ctx, mutationsToProtect, mutationResolverResourceIds)
+        if (authStrategy === 'owner') {
+            // If there exists a resolver that needs to be protected then protect it.
+            const ownerField = getArg('ownerField')
+            this.ownerProtectQueryResolvers(ctx, queriesToProtect, queryResolverResourceIds, ownerField)
+            this.ownerProtectMutationResolvers(ctx, mutationsToProtect, mutationResolverResourceIds, ownerField)
+        } else if (authStrategy === 'groups') {
+            // If there exists a resolver that needs to be protected then protect it.
+            const groupsField = getArg('groupsField')
+            const groups = getArg('groups')
+            if (
+                (groups && groupsField) || (!groups && !groupsField)
+            ) {
+                throw new InvalidDirectiveError(`The @auth directive takes exactly one of [groups, groupsField]`)
+            }
+            if (groups) {
+                this.staticGroupsProtectQueryResolvers(ctx, queriesToProtect, queryResolverResourceIds, groups)
+                this.staticGroupsProtectMutationResolvers(ctx, mutationsToProtect, mutationResolverResourceIds, groups)
+            } else {
+                this.dynamicGroupsProtectQueryResolvers(ctx, queriesToProtect, queryResolverResourceIds, groupsField)
+                this.dynamicGroupsProtectMutationResolvers(ctx, mutationsToProtect, mutationResolverResourceIds, groupsField)
+            }
+        }
     }
 
 }

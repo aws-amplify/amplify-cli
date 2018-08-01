@@ -6,23 +6,26 @@ import Resolver from 'cloudform/types/appSync/resolver'
 import { Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform'
 import {
     DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
-    print, str, ref, obj, set, iff, ifElse, list, raw,
+    print, str, ref, obj, set, iff, ifElse, list, raw, printBlock,
     forEach, compoundExpression, qref, toJson, notEquals, comment
 } from 'amplify-graphql-mapping-template'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 
-const ownerCreateResolverRequestMappingTemplateSnippet = print(
+/**
+ * Owner auth
+ * @param ownerAttribute The name of the owner attribute.
+ */
+const ownerCreateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Inject Ownership Information')(
     compoundExpression([
         comment('If there is no subject, throw an unauthorized exception.'),
         iff(raw('$util.isNullOrBlank($ctx.identity.sub)'), raw('$util.unauthorized()')),
         iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
         comment(`Automatically inject the ownership attribute.`),
-        comment(`Change the name of this attribute by updating in the ${
-            ResourceConstants.PARAMETERS.AuthOwnerAttributeName} CloudFormation parameter.`),
-        qref(`$input.put("\${ownerAttribute}", $ctx.identity.sub)`)
+        comment(`You may change this by passing a "ownerField" to the @auth directive.`),
+        qref(`$input.put("${ownerAttribute}", $ctx.identity.sub)`)
     ])
 )
-const ownerUpdateResolverRequestMappingTemplateSnippet = print(
+const ownerUpdateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Prepare Ownership Condition')(
     compoundExpression([
         comment('Create the ownership condition for the DynamoDB update request.'),
         set(
@@ -30,7 +33,7 @@ const ownerUpdateResolverRequestMappingTemplateSnippet = print(
             obj({
                 expression: str("#owner = :sub"),
                 expressionNames: obj({
-                    "#owner": str("${ownerAttribute}")
+                    "#owner": str(`${ownerAttribute}`)
                 }),
                 expressionValues: obj({
                     ":sub": obj({
@@ -41,7 +44,7 @@ const ownerUpdateResolverRequestMappingTemplateSnippet = print(
         )
     ])
 )
-const ownerDeleteResolverRequestMappingTemplateSnippet = print(
+const ownerDeleteResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Prepare Ownership Condition')(
     compoundExpression([
         comment('Create the ownership condition for the DynamoDB delete request.'),
         set(
@@ -49,7 +52,7 @@ const ownerDeleteResolverRequestMappingTemplateSnippet = print(
             obj({
                 expression: str("#owner = :sub"),
                 expressionNames: obj({
-                    "#owner": str("${ownerAttribute}")
+                    "#owner": str(`${ownerAttribute}`)
                 }),
                 expressionValues: obj({
                     ":sub": obj({
@@ -61,25 +64,103 @@ const ownerDeleteResolverRequestMappingTemplateSnippet = print(
     ])
 )
 
-const ownerGetResolverResponseMappingTemplateSnippet = print(
-    iff(notEquals(ref(`ctx.result.\${ownerAttribute}`), ref('ctx.identity.sub')), raw('$util.unauthorized()'))
+const ownerGetResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Validate Ownership')(
+    iff(notEquals(ref(`ctx.result.${ownerAttribute}`), ref('ctx.identity.sub')), raw('$util.unauthorized()'))
 )
-const ownerListResolverResponseMappingTemplateSnippet = print(
+const ownerListResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock("Filter Owned Items")(
     compoundExpression([
         set(ref('items'), list([])),
         forEach(ref('item'), ref('ctx.result.items'), [
-            iff(raw(`$item.\${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
+            iff(raw(`$item.${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
         ]),
         set(ref('ctx.result.items'), ref('items'))
     ])
 )
-const ownerQueryResolverResponseMappingTemplateSnippet = print(
+const ownerQueryResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Filter Owned Items')(
     compoundExpression([
         set(ref('items'), list([])),
         forEach(ref('item'), ref('ctx.result.items'), [
-            iff(raw(`$item.\${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
+            iff(raw(`$item.${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
         ]),
         set(ref('ctx.result.items'), ref('items'))
+    ])
+)
+
+/**
+ * Static group auth conditions
+ */
+const staticGroupAuthorizationRequestMappingTemplate = (groups: string[]) => printBlock('Static Group Authorization')(
+    compoundExpression([
+        set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
+        set(ref('allowedGroups'), list(groups.map(s => str(s)))),
+        set(ref('isAuthenticated'), raw('false')),
+        forEach(ref('userGroup'), ref('userGroups'), [
+            forEach(ref('allowedGroup'), ref('allowedGroups'), [
+                iff(
+                    raw('$allowedGroup == $userGroup'),
+                    set(ref('isAuthenticated'), raw('true'))
+                )
+            ])
+        ]),
+        iff(raw('!$isAuthenticated'), raw('$util.unauthorized()')),
+    ])
+)
+
+/**
+ * Dynamic Group Auth Conditions.
+ */
+const dynamicGroupCreateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
+    compoundExpression([
+        comment('If the user has no groups, throw an unauthorized exception.'),
+        set(ref("userGroups"), ref('ctx.identity.claims.get("cognito:groups")')),
+        iff(raw('!$userGroups'), raw('$util.unauthorized()')),
+        comment('Only allow the user to create objects if they have access to the correct role.'),
+        set(ref('isAuthorized'), raw('false')),
+        forEach(ref('userGroup'), ref('userGroups'), [
+            iff(
+                raw(`$util.isList($ctx.args.input.${groupsAttribute})`),
+                iff(raw(`$ctx.args.input.${groupsAttribute}.contains($userGroup)`), set(ref('isAuthorized'), raw('true'))),
+            ),
+            iff(
+                raw(`$util.isString($ctx.args.input.${groupsAttribute})`),
+                iff(raw(`$ctx.args.input.${groupsAttribute} == $userGroup`), set(ref('isAuthorized'), raw('true'))),
+            )
+        ]),
+        iff(raw('!$isAuthorized'), raw('$util.unauthorized()'))
+    ])
+)
+const dynamicGroupUpdateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
+    compoundExpression([
+        comment('Create the group authorization condition for the DynamoDB update request.'),
+        set(ref('groupAuthExpression'), str('')),
+        set(ref('groupAuthExpressionValues'), obj({})),
+        // Add the new auth expression and values
+        forEach(ref('userGroup'), ref('userGroups'), [
+            set(ref('groupAuthExpression'), str(`$groupAuthExpression contains(#groupsAttribute, :group$foreach.count)`)),
+            raw(`$util.qr($groupAuthExpressionValues.put(":group$foreach.count", { "S": $userGroup }))`),
+            iff(ref('foreach.hasNext'), set(ref('groupAuthExpression'), str(`$groupAuthExpression OR`)))
+        ]),
+        // If there is no auth condition, initialize it.
+        ifElse(
+            raw(`!$${ResourceConstants.SNIPPETS.AuthCondition}`),
+            set(
+                ref(ResourceConstants.SNIPPETS.AuthCondition),
+                obj({
+                    expression: ref('groupAuthExpression'),
+                    expressionNames: obj({ groupsAttribute: str(groupsAttribute) }),
+                    expressionValues: ref('groupAuthExpressionValues')
+                })
+            ),
+            compoundExpression([
+                comment("Update the auth condition."),
+                set(
+                    ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
+                    raw(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
+                ),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("groupsAttribute", "${groupsAttribute}"))`),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`),
+            ])
+        )
     ])
 )
 
@@ -106,10 +187,6 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity]: new NumberParameter({
                 Description: 'The time limit, in days, after which the refresh token is no longer valid.',
                 Default: 30
-            }),
-            [ResourceConstants.PARAMETERS.AuthOwnerAttributeName]: new StringParameter({
-                Description: 'The name of the attribute that will be injected for ownership authorization checks.',
-                Default: 'owner'
             })
         }
     }
@@ -245,87 +322,92 @@ export class ResourceFactory {
      * Update a create resolver to inject the $ctx.identity.sub as the "_owner"
      * in the dynamodb table.
      */
-    public ownerProtectCreateResolver(resource: Resolver): Resolver {
+    public ownerProtectCreateResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let requestMappingTemplate = resource.Properties.RequestMappingTemplate
         if (requestMappingTemplate) {
-            requestMappingTemplate = Fn.Sub(
-                ownerCreateResolverRequestMappingTemplateSnippet + '\n' + requestMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            requestMappingTemplate = ownerCreateResolverRequestMappingTemplateSnippet(ownerAttribute) + '\n\n' + requestMappingTemplate
         }
         resource.Properties.RequestMappingTemplate = requestMappingTemplate
         return resource
     }
 
-    public ownerProtectUpdateResolver(resource: Resolver): Resolver {
+    public ownerProtectUpdateResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let requestMappingTemplate = resource.Properties.RequestMappingTemplate
         if (requestMappingTemplate) {
-            requestMappingTemplate = Fn.Sub(
-                ownerUpdateResolverRequestMappingTemplateSnippet + '\n' + requestMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            requestMappingTemplate = ownerUpdateResolverRequestMappingTemplateSnippet(ownerAttribute) + '\n\n' + requestMappingTemplate
         }
         resource.Properties.RequestMappingTemplate = requestMappingTemplate
         return resource
     }
 
-    public ownerProtectDeleteResolver(resource: Resolver): Resolver {
+    public ownerProtectDeleteResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let requestMappingTemplate = resource.Properties.RequestMappingTemplate
         if (requestMappingTemplate) {
-            requestMappingTemplate = Fn.Sub(
-                ownerDeleteResolverRequestMappingTemplateSnippet + '\n' + requestMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            requestMappingTemplate = ownerDeleteResolverRequestMappingTemplateSnippet(ownerAttribute) + '\n\n' + requestMappingTemplate
         }
         resource.Properties.RequestMappingTemplate = requestMappingTemplate
         return resource
     }
 
-    public ownerProtectGetResolver(resource: Resolver): Resolver {
+    public ownerProtectGetResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let responseMappingTemplate = resource.Properties.ResponseMappingTemplate
         if (responseMappingTemplate) {
-            responseMappingTemplate = Fn.Sub(
-                ownerGetResolverResponseMappingTemplateSnippet + '\n' + responseMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            responseMappingTemplate = ownerGetResolverResponseMappingTemplateSnippet(ownerAttribute) + '\n\n' + responseMappingTemplate
         }
         resource.Properties.ResponseMappingTemplate = responseMappingTemplate
         return resource
     }
 
-    public ownerProtectListResolver(resource: Resolver): Resolver {
+    public ownerProtectListResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let responseMappingTemplate = resource.Properties.ResponseMappingTemplate
         if (responseMappingTemplate) {
-            responseMappingTemplate = Fn.Sub(
-                ownerListResolverResponseMappingTemplateSnippet + '\n' + responseMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            responseMappingTemplate = ownerListResolverResponseMappingTemplateSnippet(ownerAttribute) + '\n\n' + responseMappingTemplate
         }
         resource.Properties.ResponseMappingTemplate = responseMappingTemplate
         return resource
     }
 
-    public ownerProtectQueryResolver(resource: Resolver): Resolver {
+    public ownerProtectQueryResolver(resource: Resolver, ownerAttribute: string): Resolver {
         let responseMappingTemplate = resource.Properties.ResponseMappingTemplate
         if (responseMappingTemplate) {
-            responseMappingTemplate = Fn.Sub(
-                ownerQueryResolverResponseMappingTemplateSnippet + '\n' + responseMappingTemplate,
-                {
-                    ownerAttribute: Fn.Ref(ResourceConstants.PARAMETERS.AuthOwnerAttributeName)
-                }
-            )
+            responseMappingTemplate = ownerQueryResolverResponseMappingTemplateSnippet(ownerAttribute) + '\n\n' + responseMappingTemplate
         }
         resource.Properties.ResponseMappingTemplate = responseMappingTemplate
+        return resource
+    }
+
+    /**
+     * Static Group Auth
+     */
+    public staticGroupProtectResolver(resource: Resolver, allowedGroups: string[]): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate = staticGroupAuthorizationRequestMappingTemplate(allowedGroups) + '\n\n' + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
+        return resource
+    }
+
+    /**
+     * Dynamic Group Auth.
+     * @param resource The resolver to update.
+     * @param groupsAttribute The name of the group attribute on each record.
+     */
+    public dynamicGroupProtectCreateResolver(resource: Resolver, groupsAttribute: string): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate = dynamicGroupCreateResolverRequestMappingTemplateSnippet(groupsAttribute) + '\n\n' + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
+        return resource
+    }
+
+    public dynamicGroupProtectUpdateResolver(resource: Resolver, groupsAttribute: string): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate = dynamicGroupUpdateResolverRequestMappingTemplateSnippet(groupsAttribute) + '\n\n' + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
         return resource
     }
 

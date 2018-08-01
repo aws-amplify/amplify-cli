@@ -56,8 +56,7 @@ export class ResourceConstants {
         AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
         AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
         AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
-        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity',
-        AuthOwnerAttributeName: 'AuthOwnerAttributeName'
+        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity'
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {

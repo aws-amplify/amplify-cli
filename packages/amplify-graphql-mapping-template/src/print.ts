@@ -3,7 +3,7 @@ import {
     ParensNode, EqualsNode, NotEqualsNode, ForEachNode,
     StringNode, IntNode, NullNode, ReferenceNode, QuietReferenceNode,
     ObjectNode, ListNode, FloatNode, QuotesNode, RawNode, SetNode, CompoundExpressionNode,
-    CommentNode, ToJsonNode, BooleanNode
+    CommentNode, ToJsonNode, BooleanNode, compoundExpression, comment
 } from './ast';
 
 const TAB = '  ';
@@ -177,4 +177,15 @@ function printExpr(expr: Expression, indent: string = ''): string {
 
 export function print(expr: Expression): string {
     return printExpr(expr);
+}
+
+export function printBlock(name: string) {
+    return (expr: Expression): string => {
+        const wrappedExpr = compoundExpression([
+            comment(`START: ${name}.`),
+            expr,
+            comment(`END: ${name}.`)
+        ])
+        return printExpr(wrappedExpr);
+    }
 }

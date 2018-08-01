@@ -5,7 +5,7 @@ import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
 import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
 import {
-    DynamoDBMappingTemplate, print, str,
+    DynamoDBMappingTemplate, printBlock, str, print,
     ref, obj, set, nul,
     ifElse, compoundExpression, qref, bool, equals, iff, raw, comment
 } from 'amplify-graphql-mapping-template'
@@ -214,9 +214,8 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
-            RequestMappingTemplate: print(
+            RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
                 compoundExpression([
-                    comment('Prepare the DynamoDB PutItem request.'),
                     iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
                     qref('$input.put("createdAt", $util.time.nowISO8601())'),
                     qref('$input.put("updatedAt", $util.time.nowISO8601())'),
@@ -233,7 +232,7 @@ export class ResourceFactory {
                                 "#id": str('id'),
                             })
                         })
-                    })
+                    }),
                 ])
             ),
             ResponseMappingTemplate: print(

@@ -21,7 +21,15 @@ const cf = new CloudFormationClient('us-west-2')
 const STACK_NAME = 'TestAppSyncAuthTransformerTest'
 
 let GRAPHQL_ENDPOINT = undefined;
+
+/**
+ * Client 1 is logged in as testuser who is is the Admin and Dev groups.
+ */
 let GRAPHQL_CLIENT_1 = undefined;
+
+/**
+ * Client 2 is logged in as invaliduser who is is the Dev group.
+ */
 let GRAPHQL_CLIENT_2 = undefined;
 
 const USERNAME1 = 'testuser'
@@ -37,6 +45,17 @@ function outputValueSelector(key: string) {
     }
 }
 
+// type Membership @model @auth(allow: groups, groupsField: "group") {
+//     id: ID!
+//     member: String
+//     group: String
+// }
+// type Editable @model @auth(allow: groups, groupsField: "groups") {
+//     id: ID!
+//     content: String
+//     groups: [String]
+// }
+
 beforeAll(async () => {
     // Create a stack for the post model with auth enabled.
     const validSchema = `
@@ -46,6 +65,20 @@ beforeAll(async () => {
         createdAt: String
         updatedAt: String
         owner: String
+    }
+    type Salary @model @auth(allow: groups, groups: ["Admin"]) {
+        id: ID!
+        wage: Int
+    }
+    type ManyGroupProtected @model @auth(allow: groups, groupsField: "groups") {
+        id: ID!
+        value: Int
+        groups: [String]
+    }
+    type SingleGroupProtected @model @auth(allow: groups, groupsField: "group") {
+        id: ID!
+        value: Int
+        group: String
     }
     `
     const transformer = new GraphQLTransform({
@@ -115,8 +148,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -144,14 +177,12 @@ test('Test createPost mutation', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
         expect(response.data.createPost.owner).toBeDefined()
     } catch (e) {
-        console.error(e)
         console.error(JSON.stringify(e.response.data))
         // fail
         expect(e).toBeUndefined()
@@ -169,7 +200,6 @@ test('Test getPost query when authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -208,7 +238,6 @@ test('Test getPost query when not authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -245,7 +274,6 @@ test('Test updatePost mutation when authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -260,7 +288,6 @@ test('Test updatePost mutation when authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(updateResponse, null, 4))
         expect(updateResponse.data.updatePost.id).toEqual(response.data.createPost.id)
         expect(updateResponse.data.updatePost.title).toEqual('Bye, World!')
         expect(updateResponse.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true)
@@ -283,7 +310,6 @@ test('Test updatePost mutation when not authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -298,7 +324,6 @@ test('Test updatePost mutation when not authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(updateResponse, null, 4))
         expect(updateResponse.data.updatePost).toEqual(null)
         expect(updateResponse.errors.length).toEqual(1)
         expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
@@ -321,7 +346,6 @@ test('Test deletePost mutation when authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -332,7 +356,6 @@ test('Test deletePost mutation when authorized', async () => {
                 id
             }
         }`, {})
-        console.log(JSON.stringify(deleteResponse, null, 4))
         expect(deleteResponse.data.deletePost.id).toEqual(response.data.createPost.id)
     } catch (e) {
         console.error(e)
@@ -353,7 +376,6 @@ test('Test deletePost mutation when not authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(response.data, null, 4))
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -364,7 +386,6 @@ test('Test deletePost mutation when not authorized', async () => {
                 id
             }
         }`, {})
-        console.log(JSON.stringify(deleteResponse, null, 4))
         expect(deleteResponse.data.deletePost).toEqual(null)
         expect(deleteResponse.errors.length).toEqual(1)
         expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
@@ -387,7 +408,6 @@ test('Test listPost mutation when authorized', async () => {
                 owner
             }
         }`, {})
-        console.log(JSON.stringify(firstPost.data, null, 4))
         expect(firstPost.data.createPost.id).toBeDefined()
         expect(firstPost.data.createPost.title).toEqual('testing list')
         expect(firstPost.data.createPost.createdAt).toBeDefined()
@@ -416,6 +436,134 @@ test('Test listPost mutation when authorized', async () => {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
         // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+/**
+ * Static Group Auth
+ */
+test(`Test createSalary w/ Admin group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 10 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(10)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test createSalary w/ Admin group protection not unauthorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createSalary(input: { wage: 10 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary).toEqual(null)
+        expect(req.errors.length).toEqual(1)
+        expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        expect(e).toBeUndefined()
+    }
+})
+
+/**
+ * Dynamic Group Auth
+ */
+test(`Test createManyGroupProtected w/ dynamic group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createManyGroupProtected(input: { value: 10, groups: ["Admin"] }) {
+                id
+                value
+                groups
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createManyGroupProtected.id).toBeDefined()
+        expect(req.data.createManyGroupProtected.value).toEqual(10)
+        expect(req.data.createManyGroupProtected.groups).toEqual(["Admin"])
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test createManyGroupProtected w/ dynamic group protection when not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createManyGroupProtected(input: { value: 10, groups: ["Admin"] }) {
+                id
+                value
+                groups
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createManyGroupProtected).toEqual(null)
+        expect(req.errors.length).toEqual(1)
+        expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test createSingleGroupProtected w/ dynamic group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSingleGroupProtected(input: { value: 10, group: "Admin" }) {
+                id
+                value
+                group
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSingleGroupProtected.id).toBeDefined()
+        expect(req.data.createSingleGroupProtected.value).toEqual(10)
+        expect(req.data.createSingleGroupProtected.group).toEqual("Admin")
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test createSingleGroupProtected w/ dynamic group protection when not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createSingleGroupProtected(input: { value: 10, group: "Admin" }) {
+                id
+                value
+                group
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSingleGroupProtected).toEqual(null)
+        expect(req.errors.length).toEqual(1)
+        expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
         expect(e).toBeUndefined()
     }
 })

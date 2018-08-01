@@ -9,7 +9,7 @@ import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
 
 test('Test AppSyncAuthTransformer validation happy case', () => {
     const validSchema = `
-    type Post @auth(allow: owner) {
+    type Post @model @auth(allow: owner) {
         id: ID!
         title: String!
         createdAt: String
