@@ -1,0 +1,86 @@
+export class ResourceConstants {
+
+    public static NONE = "NONE"
+
+    public static readonly RESOURCES = {
+        // AppSync
+        GraphQLAPILogicalID: 'GraphQLAPI',
+        GraphQLSchemaLogicalID: 'GraphQLSchema',
+        APIKeyLogicalID: 'GraphQLAPIKey',
+
+        // DynamoDB
+        DynamoDBModelTableLogicalID: 'DynamoDBModelTable',
+        DynamoDBModelTableAccessIAMRoleLogicalID: 'DynamoDBModelTableAccessIAMRole',
+        DynamoDBModelTableDataSourceLogicalID: 'DynamoDBModelTableDataSource',
+
+        // ElasticSearch
+        ElasticSearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
+        ElasticSearchDomainLogicalID: 'ElasticSearchDomain',
+        ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
+        ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
+        ElasticSearchStreamingLambdaEventSourceMappingLogicalID: 'ElasticSearchStreamingLambdaEventSourceMapping',
+        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource',
+
+        // Auth
+        AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
+        AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
+        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient'
+    }
+    public static PARAMETERS = {
+        // AppSync
+        AppSyncApiName: 'AppSyncApiName',
+
+        // DynamoDB
+        DynamoDBModelTableName: 'DynamoDBModelTableName',
+        DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
+        DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+        DynamoDBModelTableAccessIAMRoleName: 'DynamoDBModelTableAccessIAMRoleName',
+
+        // ElasticSearch
+        ElasticSearchDomainName: 'ElasticSearchDomainName',
+        ElasticSearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
+        ElasticSearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
+        ElasticSearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
+        ElasticSearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
+        ElasticSearchInstanceCount: 'ElasticSearchInstanceCount',
+        ElasticSearchInstanceType: 'ElasticSearchInstanceType',
+        ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
+        ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
+        ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
+        ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version',
+        ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
+        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
+
+        // Auth
+        AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
+        AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
+        AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
+        AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
+        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity'
+    }
+    public static MAPPINGS = {}
+    public static CONDITIONS = {
+        // Auth
+        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
+    }
+    public static OUTPUTS = {
+
+        // AppSync
+        GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
+        GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput',
+
+        // Elasticsearch
+        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
+        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn',
+
+        // Auth
+        AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
+        AuthCognitoUserPoolNativeClientOutput: 'AuthCognitoUserPoolNativeClientId',
+        AuthCognitoUserPoolJSClientOutput: 'AuthCognitoUserPoolJSClientId'
+    }
+    public static METADATA = {}
+
+    public static readonly SNIPPETS = {
+        AuthCondition: "authCondition"
+    }
+}
