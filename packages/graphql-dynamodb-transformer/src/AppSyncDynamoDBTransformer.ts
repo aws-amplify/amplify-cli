@@ -54,10 +54,10 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncDynamoDBTransformer',
-            `directive @model(queries: DynamoDBQueryMap, mutations: DynamoDBMutationMap) on OBJECT`,
+            `directive @model(queries: ModelQueryMap, mutations: ModelMutationMap) on OBJECT`,
             `
-                input DynamoDBMutationMap { create: String, update: String, delete: String }
-                input DynamoDBQueryMap { get: String, list: String }
+                input ModelMutationMap { create: String, update: String, delete: String }
+                input ModelQueryMap { get: String, list: String }
             `
         )
         this.resources = new ResourceFactory();

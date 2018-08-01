@@ -1,4 +1,4 @@
-type Post @model @searchable {
+type Post @model @auth(allow: owner) {
     id: ID!
     title: String!
     upvotes: Int

@@ -1,11 +1,83 @@
 # Amplify GraphQL Transform
 
+# Getting Started (8/01/2018)
+
+The simplest way to get started is to use the transform cli to compile your schema's into
+a cloudformation doc and then using the AWS console to create a stack from that template.
+Using the console will allow you to see all the parameters the template makes available
+for customization.
+
+First clone this repo and checkout the amplify-graphql (or mp-dev if we have yet to merge)
+
+```
+git clone https://github.com/aws/aws-amplify-staging.git
+cd aws-amplify-staging
+git checkout amplify-graphql
+```
+
+You will need to have lerna installed to build the project. From the root directory run
+
+```
+lerna bootstrap
+lerna run build
+cd packages/graphql-transform-cli
+```
+
+From this repo you can then compile the schema in `schema.graphql` using this command.
+
+```
+node lib/index.js compile schema.graphql cftemplate.json
+```
+
+You can then take that cloud formation template and upload it to the CloudFormation console.
+
+# Directive Statuses
+
+**The following directives have complete or near complete support**
+
+```graphql
+# When applied to a type, stores that object data in DynamoDB.
+# Use the "queries" and "mutations" arguments to override default
+# query/mutation names or to omit certain operations all together.
+directive @model(
+    queries: ModelQueryMap, 
+    mutations: ModelMutationMap
+) on OBJECT
+input ModelMutationMap { create: String, update: String, delete: String }
+input ModelQueryMap { get: String, list: String }
+
+# When applied to a type, augments the application with
+# owner and group based authorization rules.
+directive @auth(
+    allow: AuthStrategy!,
+    ownerField: String = "owner",
+    groupsField: String,
+    groups: [String],
+    queries: [ModelQuery],
+    mutations: [ModelMutation]
+) on OBJECT
+
+enum AuthStrategy { owner groups }
+enum ModelQuery { get list }
+enum ModelMutation { create update delete }
+```
+
+**The following directives are in progress**
+
+```graphql
+directive @searchable(queries: SearchableQueryMap) on OBJECT
+
+input SearchableQueryMap { search: String }
+```
+
+
+
 **What is the Amplify GraphQL Transform** 
 
 The Amplify GraphQL Transform is a set of libraries committed to simplifying the process of developing, deploying, and maintaining APIs on AWS. 
 With it, you define your API using the GraphQL Schema Definition Language (SDL) and then pass it to this library where it is expanded and transformed into a fully descriptive cloudformation template that implements your API's data model.
 
-For example, you might define a data model for a blog:
+For example, you might define the data model for an app like this:
 
 ```graphql
 type Blog @model @searchable {

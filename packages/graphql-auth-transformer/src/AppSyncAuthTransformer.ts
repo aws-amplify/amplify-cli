@@ -54,7 +54,7 @@ const nManyTruthy = (n: number) => (objs: any[]) => {
  * updatePost - Update req template to look for the groups in the identity.
  * deletePost - Update req template to look for the groups in the identity.
  *
- * TODO: In the future we will support validating groups dynamically against
+ * TODO: Document support for dynamic group authorization against
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
@@ -70,13 +70,13 @@ export class AppSyncAuthTransformer extends Transformer {
                 ownerField: String = "owner",
                 groupsField: String,
                 groups: [String],
-                queries: [TableQuery],
-                mutations: [TableMutation]
+                queries: [ModelQuery],
+                mutations: [ModelMutation]
             ) on OBJECT`,
             `
                 enum AuthStrategy { owner groups }
-                enum TableQuery { get list search }
-                enum TableMutation { create update delete }
+                enum ModelQuery { get list }
+                enum ModelMutation { create update delete }
             `
         )
         this.resources = new ResourceFactory();

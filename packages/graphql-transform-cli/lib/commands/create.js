@@ -24,7 +24,6 @@ const clime_1 = require("clime");
 const File_1 = require("../types/File");
 const graphql_transform_1 = require("graphql-transform");
 const graphql_dynamodb_transformer_1 = require("graphql-dynamodb-transformer");
-const graphql_elasticsearch_transformer_1 = require("graphql-elasticsearch-transformer");
 const graphql_auth_transformer_1 = require("graphql-auth-transformer");
 const log_1 = require("../log");
 const aws_sdk_1 = require("aws-sdk");
@@ -68,7 +67,6 @@ let default_1 = class default_1 extends clime_1.Command {
                 transformers: [
                     new graphql_appsync_transformer_1.default(),
                     new graphql_dynamodb_transformer_1.default(),
-                    new graphql_elasticsearch_transformer_1.AppSyncSearchableTransformer(),
                     new graphql_auth_transformer_1.default()
                 ]
             });
