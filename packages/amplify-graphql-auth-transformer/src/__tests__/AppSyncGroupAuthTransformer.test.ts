@@ -6,6 +6,7 @@ import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 test('Test AppSyncAuthTransformer validation happy case w/ static groups', () => {
     const validSchema = `
@@ -18,6 +19,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ static groups', () =>
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]
@@ -39,6 +41,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () =
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]
@@ -60,6 +63,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () =>
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]
@@ -83,6 +87,7 @@ test('Test AppSyncAuthTransformer validation @auth on non @model. Should fail.',
         `
         const transformer = new GraphQLTransform({
             transformers: [
+                new AppSyncTransformer(),
                 new AppSyncDynamoDBTransformer(),
                 new AppSyncAuthTransformer()
             ]

@@ -1,5 +1,5 @@
 import GraphQLTransform from "amplify-graphql-transform";
-import { AppSyncFileTransformer } from "./AppSyncFileTransformer";
+import { AppSyncTransformer } from "./AppSyncTransformer";
 import { AppSyncDynamoDBTransformer } from "amplify-graphql-dynamodb-transformer";
 import { AppSyncSearchableTransformer } from "amplify-graphql-elasticsearch-transformer";
 
@@ -17,7 +17,7 @@ const validSchema = `type Post @model {
 
 const transformer = new GraphQLTransform({
     transformers: [
-        new AppSyncFileTransformer('./fileTest///'),
+        new AppSyncTransformer('./fileTest///'),
         new AppSyncDynamoDBTransformer()
     ]
 });

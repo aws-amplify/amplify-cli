@@ -23,7 +23,7 @@
     "graphql": "^0.13.2",
     "amplify-graphql-transform": "1.0",
     "amplify-graphql-transformer-common": "1.0",
-    "amplify-graphql-file-transformer": "1.0"
+    "amplify-graphql-appsync-transformer": "1.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

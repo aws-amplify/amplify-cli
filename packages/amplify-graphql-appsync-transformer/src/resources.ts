@@ -9,11 +9,11 @@ import Resource from "../../amplify-graphql-transform/node_modules/cloudform/typ
 export class ResourceFactory {
 
     public makeResolverParam(name: string): Template {
-        return { 
-            Parameters:  {
-                    [this.removeDotsAndCamelcase(name)]: new StringParameter({
-                        Description: `The S3 location for the Resolver: ${name}`,
-                    })
+        return {
+            Parameters: {
+                [this.removeDotsAndCamelcase(name)]: new StringParameter({
+                    Description: `The S3 location for the Resolver: ${name}`,
+                })
             }
         }
     }
@@ -30,11 +30,11 @@ export class ResourceFactory {
     }
 
     public makeSchemaParam(): Template {
-        return { 
-            Parameters:  {
-                    [this.removeDotsAndCamelcase('schema.graphql')]: new StringParameter({
-                        Description: `The S3 location for the Schema: schema.graphql`,
-                    })
+        return {
+            Parameters: {
+                [this.removeDotsAndCamelcase('schema.graphql')]: new StringParameter({
+                    Description: `The S3 location for the Schema: schema.graphql`,
+                })
             }
         }
     }
@@ -56,10 +56,10 @@ export class ResourceFactory {
         var nameCopy = name
         for (var i = 0; i < name.length; i++) {
             if (name[i] == '.') {
-                nameCopy = nameCopy.substr(0, i + 1) + nameCopy.charAt(i+1).toUpperCase() + nameCopy.slice(i+2)
+                nameCopy = nameCopy.substr(0, i + 1) + nameCopy.charAt(i + 1).toUpperCase() + nameCopy.slice(i + 2)
             }
         }
-        return nameCopy.replace(/\./g,'')
+        return nameCopy.replace(/\./g, '')
     }
 
 }

@@ -1,7 +1,7 @@
 {
-  "name": "amplify-graphql-auth-transformer",
+  "name": "amplify-graphql-appsync-transformer",
   "version": "1.0.0",
-  "description": "Implements the @auth directive for the appsync model transform.",
+  "description": "An AppSync model transform that takes a cloudformation document and writes mapping templates,lambda function, and schema if a path is specified.",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
@@ -14,7 +14,7 @@
     "appsync",
     "aws"
   ],
-  "author": "Michael Paris",
+  "author": "Lisa Shon",
   "license": "MIT",
   "dependencies": {
     "graphql": "^0.13.2",
@@ -24,20 +24,21 @@
     "amplify-graphql-transformer-common": "1.0"
   },
   "devDependencies": {
-    "amplify-graphql-dynamodb-transformer": "1.0",
-    "amplify-graphql-appsync-transformer": "1.0",
-    "@types/graphql": "^0.13.1",
-    "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "@types/jest": "^23.1.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "amplify-graphql-dynamodb-transformer": "1.0",
+    "amplify-graphql-elasticsearch-transformer": "1.0",
+    "amplify-graphql-appsync-transformer": "1.0"
   },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
     "moduleFileExtensions": [
       "ts",

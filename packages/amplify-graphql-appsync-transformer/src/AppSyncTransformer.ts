@@ -5,45 +5,55 @@ import {
 } from "graphql";
 
 import { ResourceFactory } from "./resources";
-import { ResourceConstants } from "../node_modules/amplify-graphql-transformer-common/lib";
+import { ResourceConstants, blankObject, makeSchema, makeOperationType } from "amplify-graphql-transformer-common";
 import Resource from "../../amplify-graphql-transform/node_modules/cloudform/types/resource";
 
 import fs = require('fs');
 import { normalize } from "path";
 
-export class AppSyncFileTransformer extends Transformer {
+export class AppSyncTransformer extends Transformer {
 
     resources: ResourceFactory
-    filePath: string
+    outputPath: string
 
-    constructor(filePath?: string) {
+    constructor(outputPath?: string) {
         super(
-            'AppSyncFileTransformer',
-            'directive @file on OBJECT'  // TODO: this not a real directive
+            'AppSyncTransformer',
+            'directive @ignore on OBJECT'  // TODO: this not a real directive
         )
         this.resources = new ResourceFactory();
 
-        if (filePath) {
-            this.filePath = normalize(filePath)
+        if (outputPath) {
+            this.outputPath = normalize(outputPath)
         }
     }
 
     public before = (ctx: TransformerContext): void => {
-        if (!this.filePath) {
-            return;
-        }
+        const queryType = blankObject('Query')
+        const mutationType = blankObject('Mutation')
+        ctx.addObject(mutationType)
+        ctx.addObject(queryType)
+        const schema = makeSchema([
+            makeOperationType('query', 'Query'),
+            makeOperationType('mutation', 'Mutation')
+        ])
+        ctx.addSchema(schema)
+
+        // Some downstream resources depend on this so put a placeholder in and
+        // overwrite it in the after
+        const schemaResource = this.resources.makeAppSyncSchema('placeholder')
+        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
     public after = (ctx: TransformerContext): void => {
-        
-        if (!this.filePath) {
+        if (!this.outputPath) {
             this.printWithoutFilePath(ctx);
         } else {
             this.printWithFilePath(ctx);
         }
     }
 
-    private buildSchema(ctx: TransformerContext) : string {
+    private buildSchema(ctx: TransformerContext): string {
         const built = buildASTSchema({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
@@ -51,42 +61,42 @@ export class AppSyncFileTransformer extends Transformer {
         const SDL = printSchema(built)
         return SDL;
     }
-    
 
-    private printWithoutFilePath(ctx: TransformerContext) : void {
+
+    private printWithoutFilePath(ctx: TransformerContext): void {
         const SDL = this.buildSchema(ctx)
         const schemaResource = this.resources.makeAppSyncSchema(SDL)
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
-    private printWithFilePath(ctx: TransformerContext) : void {
+    private printWithFilePath(ctx: TransformerContext): void {
 
-        if (!fs.existsSync(this.filePath)){
-            fs.mkdirSync(this.filePath);
+        if (!fs.existsSync(this.outputPath)) {
+            fs.mkdirSync(this.outputPath);
         }
 
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
-        
+
         for (const resourceName of Object.keys(templateResources)) {
             const resource: Resource = templateResources[resourceName]
-            if (resource.Type == 'AWS::AppSync::Resolver') {
+            if (resource.Type === 'AWS::AppSync::Resolver') {
                 this.writeResolverToFile(resourceName, ctx)
-            } else if (resource.Type == 'AWS::Lambda::Function') {
+            } else if (resource.Type === 'AWS::Lambda::Function') {
                 this.writeLamdbaFunctionToFile(resourceName, ctx)
-            } else if (resource.Type == 'AWS::AppSync::GraphQLSchema') {
+            } else if (resource.Type === 'AWS::AppSync::GraphQLSchema') {
                 this.writeSchemaToFile(resourceName, ctx)
             }
         }
     }
 
-    private writeResolverToFile(resourceName: string, ctx: TransformerContext) : void {
-        const resolverFilePath = normalize(this.filePath + '/resolver')
-        if (!fs.existsSync(resolverFilePath)){
+    private writeResolverToFile(resourceName: string, ctx: TransformerContext): void {
+        const resolverFilePath = normalize(this.outputPath + '/resolver')
+        if (!fs.existsSync(resolverFilePath)) {
             fs.mkdirSync(resolverFilePath);
         }
 
         const resolverResource = ctx.template.Resources[resourceName]
-        
+
         const requestMappingTemplate = resolverResource.Properties.RequestMappingTemplate
         const reqType = resolverResource.Properties.TypeName
         const reqFieldName = resolverResource.Properties.FieldName
@@ -109,29 +119,29 @@ export class AppSyncFileTransformer extends Transformer {
         ctx.setResource(resourceName, updatedResolverResource)
     }
 
-    private writeSchemaToFile(resourceName: string, ctx: TransformerContext) : void {
+    private writeSchemaToFile(resourceName: string, ctx: TransformerContext): void {
 
         const SDL = this.buildSchema(ctx)
-        const schemaPath = normalize(this.filePath + '/schema.graphql')
+        const schemaPath = normalize(this.outputPath + '/schema.graphql')
         fs.writeFileSync(schemaPath, SDL)
 
         const schemaParam = this.resources.makeSchemaParam()
         ctx.mergeParameters(schemaParam.Parameters)
-        
+
         const schemaResource = this.resources.makeAppSyncSchema()
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
-    private writeLamdbaFunctionToFile(resourceName: string, ctx: TransformerContext) : void {
+    private writeLamdbaFunctionToFile(resourceName: string, ctx: TransformerContext): void {
 
-        const functionPath = normalize(this.filePath + '/function')
-        if (!fs.existsSync(functionPath)){
+        const functionPath = normalize(this.outputPath + '/function')
+        if (!fs.existsSync(functionPath)) {
             fs.mkdirSync(functionPath);
         }
-        const sourcePath = normalize(`${__dirname}/../node_modules/amplify-graphql-elasticsearch-transformer/streaming-lambda/python_streaming_function.py`)
-        const destPath = normalize(`${this.filePath}/function/python_streaming_function.py`)
-        fs.copyFileSync(
-            sourcePath,
-            destPath)
+        const sourcePath = normalize(
+            `${__dirname}/../node_modules/amplify-graphql-elasticsearch-transformer/streaming-lambda/python_streaming_function.py`)
+        const destPath = normalize(`${this.outputPath}/function/python_streaming_function.py`)
+        const lambdaCode = fs.readFileSync(sourcePath, 'utf8')
+        fs.writeFileSync(destPath, lambdaCode, 'utf8')
     }
 }

@@ -6,12 +6,12 @@ import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncSearchableTransformer } from 'amplify-graphql-elasticsearch-transformer'
-import { AppSyncFileTransformer } from '../AppSyncFileTransformer'
+import { AppSyncTransformer } from '../AppSyncTransformer'
 
 import fs = require('fs');
 import path = require('path');
 
-test('Test AppSyncFileTransformer validation happy case', () => {
+test('Test AppSyncTransformer validation happy case', () => {
     const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -23,7 +23,7 @@ test('Test AppSyncFileTransformer validation happy case', () => {
     const directory = './fileTest';
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(directory + '//'),
+            new AppSyncTransformer(directory + '//'),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
 
@@ -42,7 +42,7 @@ test('Test AppSyncFileTransformer validation happy case', () => {
     cleanUpFiles(directory)
 });
 
-test('Test AppSyncFileTransformer with multiple model directives', () => {
+test('Test AppSyncTransformer with multiple model directives', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -60,7 +60,7 @@ test('Test AppSyncFileTransformer with multiple model directives', () => {
     const directory = './fileTestTwo'
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(directory),
+            new AppSyncTransformer(directory),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -79,10 +79,10 @@ test('Test AppSyncFileTransformer with multiple model directives', () => {
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
     expectFields(queryType, ['listPost'])
-    expectFields(queryType, ['queryPost'])
+    // expectFields(queryType, ['queryPost'])
     expectFields(queryType, ['listUser'])
-    expectFields(queryType, ['queryUser'])
-    
+    // expectFields(queryType, ['queryUser'])
+
     expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;

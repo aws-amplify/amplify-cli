@@ -5,7 +5,7 @@ import {
 import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from '../AppSyncDynamoDBTransformer'
-import { AppSyncFileTransformer } from 'amplify-graphql-file-transformer'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     const validSchema = `
@@ -18,7 +18,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -27,7 +27,7 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
 });
 
 test('Test AppSyncDynamoDBTransformer with query overrides', () => {
-    const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost", query: "customQueryPost" }) {
+    const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost" }) {
         id: ID!
         title: String!
         createdAt: String
@@ -36,7 +36,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -51,7 +51,6 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     expect(queryType).toBeDefined()
     expectFields(queryType, ['customGetPost'])
     expectFields(queryType, ['customListPost'])
-    expectFields(queryType, ['customQueryPost'])
 });
 
 test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
@@ -64,7 +63,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -90,7 +89,7 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -123,7 +122,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -139,7 +138,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     expect(queryType).toBeDefined()
     expectFields(queryType, ['listPost'])
     expectFields(queryType, ['listUser'])
-    
+
     const stringInputType = getInputType(parsed, 'TableStringFilterInput')
     expect(stringInputType).toBeDefined()
     const booleanInputType = getInputType(parsed, 'TableBooleanFilterInput')
@@ -155,16 +154,16 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     const userInputType = getInputType(parsed, 'TableUserFilterInput')
     expect(userInputType).toBeDefined()
 
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
+    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy();
 });
 
-test('Test AppSyncDynamoDBTransformer with query filter', () => {
+test('Test AppSyncDynamoDBTransformer with filter', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -174,7 +173,7 @@ test('Test AppSyncDynamoDBTransformer with query filter', () => {
     }`
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer()
         ]
     })
@@ -189,17 +188,16 @@ test('Test AppSyncDynamoDBTransformer with query filter', () => {
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
     expectFields(queryType, ['listPost'])
-    expectFields(queryType, ['queryPost'])
-    
-    const connectionType = getObjectType(parsed, 'TablePostConnectionType')
-    expect(connectionType).toBeDefined
 
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
+    const connectionType = getObjectType(parsed, 'TablePostConnection')
+    expect(connectionType).toBeDefined()
+
+    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy();
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

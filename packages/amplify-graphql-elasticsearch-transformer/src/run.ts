@@ -1,7 +1,7 @@
 import GraphQLTransform from "amplify-graphql-transform";
 import { AppSyncSearchableTransformer } from "./";
 import { AppSyncDynamoDBTransformer } from "amplify-graphql-dynamodb-transformer";
-import { AppSyncFileTransformer } from "amplify-graphql-file-transformer";
+import { AppSyncTransformer } from "amplify-graphql-appsync-transformer";
 
 import fs = require('fs');
 
@@ -18,7 +18,7 @@ type Post @model @searchable {
 
 const transformer = new GraphQLTransform({
     transformers: [
-        new AppSyncFileTransformer(),
+        new AppSyncTransformer(),
         new AppSyncDynamoDBTransformer(),
         new AppSyncSearchableTransformer()]
 });

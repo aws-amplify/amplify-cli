@@ -49,7 +49,7 @@ export class ResourceConstants {
         ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
         ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version',
         ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
-        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime'
+        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',

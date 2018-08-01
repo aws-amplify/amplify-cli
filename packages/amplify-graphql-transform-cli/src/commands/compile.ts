@@ -3,6 +3,7 @@ import File from '../types/File';
 import GraphQLTransform from 'amplify-graphql-transform';
 import DynamoDBTransformer from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncSearchableTransformer } from 'amplify-graphql-elasticsearch-transformer'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 @command({
     description: 'Deploy an AppSync API from your schema.graphql file',
@@ -22,6 +23,7 @@ export default class extends Command {
     ) {
         const transformer = new GraphQLTransform({
             transformers: [
+                new AppSyncTransformer(),
                 new DynamoDBTransformer(),
                 new AppSyncSearchableTransformer()
             ]

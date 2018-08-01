@@ -11,6 +11,7 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -83,6 +84,7 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]
@@ -148,8 +150,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        // await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {

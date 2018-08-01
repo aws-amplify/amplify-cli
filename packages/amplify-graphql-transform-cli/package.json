@@ -25,7 +25,8 @@
     "amplify-graphql-dynamodb-transformer": "1.0",
     "amplify-graphql-elasticsearch-transformer": "1.0",
     "amplify-graphql-auth-transformer": "1.0",
-    "amplify-graphql-transformer-common": "1.0"
+    "amplify-graphql-transformer-common": "1.0",
+    "amplify-graphql-appsync-transformer": "1.0"
   },
   "devDependencies": {
     "@types/node": "^10.1.2",

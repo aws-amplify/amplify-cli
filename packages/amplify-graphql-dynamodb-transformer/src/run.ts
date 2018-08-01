@@ -1,5 +1,6 @@
 import GraphQLTransform from "amplify-graphql-transform";
 import { AppSyncDynamoDBTransformer } from "./AppSyncDynamoDBTransformer";
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer';
 
 import fs = require('fs');
 
@@ -20,7 +21,10 @@ type User @model {
 `;
 
 const transformer = new GraphQLTransform({
-    transformers: [new AppSyncDynamoDBTransformer()]
+    transformers: [
+        new AppSyncTransformer(),
+        new AppSyncDynamoDBTransformer()
+    ]
 });
 const out = transformer.transform(validSchema);
 fs.writeFile('cf.out.json', JSON.stringify(out, null, 4), (err) => {

@@ -6,6 +6,7 @@ import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import { AppSyncDynamoDBTransformer } from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 test('Test AppSyncAuthTransformer validation happy case', () => {
     const validSchema = `
@@ -18,6 +19,7 @@ test('Test AppSyncAuthTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]

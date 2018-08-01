@@ -6,7 +6,7 @@ import GraphQLTransform from 'amplify-graphql-transform'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
 import AppSyncDynamoDBTransformer from 'amplify-graphql-dynamodb-transformer'
 import { AppSyncSearchableTransformer } from '../AppSyncSearchableTransformer'
-import { AppSyncFileTransformer } from 'amplify-graphql-file-transformer'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 test('Test AppSyncSearchableTransformer validation happy case', () => {
     const validSchema = `
@@ -19,7 +19,7 @@ test('Test AppSyncSearchableTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -38,7 +38,7 @@ test('Test AppSyncSearchableTransformer with query overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -65,7 +65,7 @@ test('Test AppSyncSearchableTransformer with only create mutations', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -99,7 +99,7 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -116,7 +116,7 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     expect(queryType).toBeDefined()
     expectFields(queryType, ['searchPost'])
     expectFields(queryType, ['searchUser'])
-    
+
     const stringInputType = getInputType(parsed, 'SearchableStringFilterInput')
     expect(stringInputType).toBeDefined()
     const booleanInputType = getInputType(parsed, 'SearchableBooleanFilterInput')
@@ -139,7 +139,7 @@ test('Test AppSyncSearchableTransformer with multiple model searchable directive
     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
-    
+
     expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'SearchableIntFilterInput', 1)).toBeTruthy;
@@ -160,7 +160,7 @@ test('Test AppSyncSearchableTransformer with sort fields', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
+            new AppSyncTransformer(),
             new AppSyncDynamoDBTransformer(),
             new AppSyncSearchableTransformer()
         ]
@@ -176,7 +176,7 @@ test('Test AppSyncSearchableTransformer with sort fields', () => {
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
     expectFields(queryType, ['searchPost'])
-    
+
     const stringInputType = getInputType(parsed, 'SearchableStringFilterInput')
     expect(stringInputType).toBeDefined()
     const booleanInputType = getInputType(parsed, 'SearchableBooleanFilterInput')
@@ -199,7 +199,7 @@ test('Test AppSyncSearchableTransformer with sort fields', () => {
     expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
-    
+
     expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;
     expect(verifyInputCount(parsed, 'SearchableIntFilterInput', 1)).toBeTruthy;

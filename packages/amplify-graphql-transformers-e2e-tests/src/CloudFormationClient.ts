@@ -31,7 +31,7 @@ export class CloudFormationClient {
         this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
     }
 
-    async createStack(template: any, name: string) {
+    async createStack(template: any, name: string, upArn?: string) {
         const params = [
             {
                 ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
@@ -46,6 +46,13 @@ export class CloudFormationClient {
                 ParameterValue: name + 'Role'
             }
         ]
+        if (upArn) {
+            console.log(`Setting User Pool Arn: ${upArn}.`)
+            params.push({
+                ParameterKey: ResourceConstants.PARAMETERS.AuthCognitoUserPoolId,
+                ParameterValue: upArn
+            })
+        }
         // const paramOverrides = Object.keys(params).map((k: string) => `${k}=${params[k]}`).join(' ')
         return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
             this.client.createStack,

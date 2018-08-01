@@ -57,7 +57,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             `directive @model(queries: DynamoDBQueryMap, mutations: DynamoDBMutationMap) on OBJECT`,
             `
                 input DynamoDBMutationMap { create: String, update: String, delete: String }
-                input DynamoDBQueryMap { get: String, list: String, query: String }
+                input DynamoDBQueryMap { get: String, list: String }
             `
         )
         this.resources = new ResourceFactory();
@@ -68,20 +68,6 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
-        const queryType = blankObject('Query')
-        const mutationType = blankObject('Mutation')
-        ctx.addObject(mutationType)
-        ctx.addObject(queryType)
-        const schema = makeSchema([
-            makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation')
-        ])
-        ctx.addSchema(schema)
-
-        // Some downstream resources depend on this so put a placeholder in and
-        // overwrite it in the after
-        const schemaResource = this.resources.makeAppSyncSchema('placeholder')
-        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
     /**

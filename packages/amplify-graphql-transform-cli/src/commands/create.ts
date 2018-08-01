@@ -7,6 +7,7 @@ import AuthTransformer from 'amplify-graphql-auth-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'
 import { ResourceConstants } from 'amplify-graphql-transformer-common'
+import AppSyncTransformer from 'amplify-graphql-appsync-transformer'
 
 async function createStack(template: any, name: string, region: string) {
     const cloudformation = new CloudFormation({ apiVersion: '2010-05-15', region });
@@ -74,6 +75,7 @@ export default class extends Command {
     ) {
         const transformer = new GraphQLTransform({
             transformers: [
+                new AppSyncTransformer(),
                 new DynamoDBTransformer(),
                 new AppSyncSearchableTransformer(),
                 new AuthTransformer()
