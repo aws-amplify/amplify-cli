@@ -1,0 +1,55 @@
+{
+  "name": "graphql-transformers-e2e-tests",
+  "version": "1.0.0",
+  "description": "End to end functional tests for appsync supported transformers.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "clean": "rm -rf ./lib",
+    "lint": "tslint -p ./tslint.json"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "author": "Michael Paris",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-mapping-template": "1.0",
+    "axios": "^0.18.0",
+    "cloudform": "^2.2.1",
+    "graphql": "^0.13.2",
+    "graphql-transform": "1.0",
+    "graphql-transformer-common": "1.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/graphql": "^0.13.1",
+    "@types/jest": "^23.1.1",
+    "@types/node": "^10.3.4",
+    "graphql-appsync-transformer": "1.0",
+    "graphql-dynamodb-transformer": "1.0.0",
+    "graphql-auth-transformer": "1.0.0",
+    "aws-sdk": "^2.259.1",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
