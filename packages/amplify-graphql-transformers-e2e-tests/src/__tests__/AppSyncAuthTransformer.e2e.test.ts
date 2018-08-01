@@ -481,6 +481,247 @@ test(`Test createSalary w/ Admin group protection not unauthorized`, async () =>
     }
 })
 
+test(`Test updateSalary w/ Admin group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 11 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(11)
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            updateSalary(input: { id: "${req.data.createSalary.id}", wage: 12 }) {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.updateSalary.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.updateSalary.wage).toEqual(12)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test updateSalary w/ Admin group protection not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 13 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(13)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            updateSalary(input: { id: "${req.data.createSalary.id}", wage: 14 }) {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.updateSalary).toEqual(null)
+        expect(req2.errors.length).toEqual(1)
+        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test deleteSalary w/ Admin group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 15 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(15)
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            deleteSalary(input: { id: "${req.data.createSalary.id}" }) {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.deleteSalary.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.deleteSalary.wage).toEqual(15)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 16 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(16)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            deleteSalary(input: { id: "${req.data.createSalary.id}" }) {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.deleteSalary).toEqual(null)
+        expect(req2.errors.length).toEqual(1)
+        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test getSalary w/ Admin group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 15 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(15)
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        query {
+            getSalary(id: "${req.data.createSalary.id}") {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.getSalary.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.getSalary.wage).toEqual(15)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test getSalary w/ Admin group protection not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 16 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(16)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
+        query {
+            getSalary(id: "${req.data.createSalary.id}") {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.getSalary).toEqual(null)
+        expect(req2.errors.length).toEqual(1)
+        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test listSalary w/ Admin group protection authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 101 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(101)
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        query {
+            listSalary(filter: { wage: { eq: 101 }}) {
+                items {
+                    id
+                    wage
+                }
+            }
+        }
+        `)
+        expect(req2.data.listSalary.items.length).toEqual(1)
+        expect(req2.data.listSalary.items[0].id).toEqual(req.data.createSalary.id)
+        expect(req2.data.listSalary.items[0].wage).toEqual(101)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test listSalary w/ Admin group protection not authorized`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createSalary(input: { wage: 102 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(102)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
+        query {
+            listSalary(filter: { wage: { eq: 102 }}) {
+                items {
+                    id
+                    wage
+                }
+            }
+        }
+        `)
+        expect(req2.data.listSalary).toEqual(null)
+        expect(req2.errors.length).toEqual(1)
+        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
 /**
  * Dynamic Group Auth
  */
