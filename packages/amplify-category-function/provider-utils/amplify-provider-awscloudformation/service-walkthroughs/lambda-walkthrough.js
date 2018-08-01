@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
+const parametersFileName = 'parameters.json';
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const { amplify } = context;
@@ -10,7 +11,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const dependsOn = [];
-  const parametersFileName = 'parameters.json';
   // Ask resource and Lambda function name
 
   const resourceQuestions = [
@@ -97,7 +97,7 @@ async function getTableParameters(context, dynamoAnswers) {
       "sortKeyType": rangeType.AttributeType,
     };
   } else { // Looking for table parameters on local configuration
-
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     let parameters;
