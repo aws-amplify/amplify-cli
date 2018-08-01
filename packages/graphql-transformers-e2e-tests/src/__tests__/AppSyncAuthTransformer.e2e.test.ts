@@ -92,7 +92,14 @@ beforeAll(async () => {
     const out = transformer.transform(validSchema);
     try {
         console.log('Creating Stack ' + STACK_NAME)
-        const userPoolId = 'us-west-2_21A7JBDkX'
+        const userPoolId = process.env.GRAPHQL_TRANSFORM_AUTH_USER_POOL_ID
+        if (!userPoolId) {
+            throw new Error(
+                `Could not find env var "GRAPHQL_TRANSFORM_AUTH_USER_POOL_ID".
+Set it to the id of a valid cognito user pool to continue tests. Also make sure you have two
+users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w/ ${USERPASSWORD2} in groups [Dev]`
+            )
+        }
         const createStackResponse = await cf.createStack(out, STACK_NAME, userPoolId)
         expect(createStackResponse).toBeDefined()
         const finishedStack = await cf.waitForStack(STACK_NAME)
