@@ -8,4 +8,4 @@ yarn.lock
 package-lock.json
 packages/amplify-cli/amplify/.config/
 .vscode
-packages/amplify-graphql*/lib
+packages/graphql*/lib

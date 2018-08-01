@@ -83,23 +83,6 @@ export class AppSyncAuthTransformer extends Transformer {
     }
 
     /**
-     * Validates the input directive. Throws a transform error if there is an issue.
-     * At most one of owner, ownerPath, group, groupPath can be provided.
-     * None, either or both of queries/mutations can be specified.
-     */
-    // private validateDirective = (dir: DirectiveNode): void => {
-    //     const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
-    //     const ownerArg = dir.arguments.find(get('owner'))
-    //     const ownerPathArg = dir.arguments.find(get('ownerPath'))
-    //     const groupArg = dir.arguments.find(get('group'))
-    //     const groupPathArg = dir.arguments.find(get('groupPath'))
-    //     const oneIsTruthy = nManyTruthy(1)
-    //     if (!oneIsTruthy([ownerArg, ownerPathArg, groupArg, groupPathArg])) {
-    //         throw new InvalidDirectiveError("@auth expects exactly one of [owner, ownerPath, group, groupPath].")
-    //     }
-    // }
-
-    /**
      * Updates the GraphQL API record to use user pool auth.
      */
     private updateAPIForUserPools = (ctx: TransformerContext): void => {
