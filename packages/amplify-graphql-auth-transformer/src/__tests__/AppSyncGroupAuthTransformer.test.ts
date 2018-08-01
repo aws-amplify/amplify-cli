@@ -50,7 +50,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () =
 
 test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () => {
     const validSchema = `
-    type Post @model @auth(allow: groups, groupsField: "groups") {
+    type Post @model @auth(allow: groups, groupsField: "group") {
         id: ID!
         title: String!
         group: String

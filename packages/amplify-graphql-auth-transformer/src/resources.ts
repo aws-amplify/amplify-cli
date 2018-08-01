@@ -17,17 +17,14 @@ import { ResourceConstants } from 'amplify-graphql-transformer-common'
  */
 const ownerCreateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Inject Ownership Information')(
     compoundExpression([
-        comment('If there is no subject, throw an unauthorized exception.'),
         iff(raw('$util.isNullOrBlank($ctx.identity.sub)'), raw('$util.unauthorized()')),
         iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
-        comment(`Automatically inject the ownership attribute.`),
-        comment(`You may change this by passing a "ownerField" to the @auth directive.`),
+        comment(`You may change this by changing the "ownerField" passed to the @auth directive.`),
         qref(`$input.put("${ownerAttribute}", $ctx.identity.sub)`)
     ])
 )
 const ownerUpdateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Prepare Ownership Condition')(
     compoundExpression([
-        comment('Create the ownership condition for the DynamoDB update request.'),
         set(
             ref(ResourceConstants.SNIPPETS.AuthCondition),
             obj({
@@ -46,7 +43,6 @@ const ownerUpdateResolverRequestMappingTemplateSnippet = (ownerAttribute: string
 )
 const ownerDeleteResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Prepare Ownership Condition')(
     compoundExpression([
-        comment('Create the ownership condition for the DynamoDB delete request.'),
         set(
             ref(ResourceConstants.SNIPPETS.AuthCondition),
             obj({
@@ -111,10 +107,8 @@ const staticGroupAuthorizationRequestMappingTemplate = (groups: string[]) => pri
  */
 const dynamicGroupCreateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
     compoundExpression([
-        comment('If the user has no groups, throw an unauthorized exception.'),
         set(ref("userGroups"), ref('ctx.identity.claims.get("cognito:groups")')),
         iff(raw('!$userGroups'), raw('$util.unauthorized()')),
-        comment('Only allow the user to create objects if they have access to the correct role.'),
         set(ref('isAuthorized'), raw('false')),
         forEach(ref('userGroup'), ref('userGroups'), [
             iff(
@@ -129,9 +123,8 @@ const dynamicGroupCreateResolverRequestMappingTemplateSnippet = (groupsAttribute
         iff(raw('!$isAuthorized'), raw('$util.unauthorized()'))
     ])
 )
-const dynamicGroupUpdateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
+const dynamicGroupUpdateAndDeleteResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
     compoundExpression([
-        comment('Create the group authorization condition for the DynamoDB update request.'),
         set(ref('groupAuthExpression'), str('')),
         set(ref('groupAuthExpressionValues'), obj({})),
         // Add the new auth expression and values
@@ -152,7 +145,6 @@ const dynamicGroupUpdateResolverRequestMappingTemplateSnippet = (groupsAttribute
                 })
             ),
             compoundExpression([
-                comment("Update the auth condition."),
                 set(
                     ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
                     raw(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
@@ -161,6 +153,47 @@ const dynamicGroupUpdateResolverRequestMappingTemplateSnippet = (groupsAttribute
                 raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`),
             ])
         )
+    ])
+)
+
+const dynamicGroupGetResolverResponseMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
+    compoundExpression([
+        set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
+        set(ref('allowedGroups'), ref(`ctx.result.${groupsAttribute}`)),
+        set(ref('isAuthenticated'), raw('false')),
+        forEach(ref('userGroup'), ref('userGroups'), [
+            iff(
+                raw('$util.isList($allowedGroups)'),
+                iff(raw(`$allowedGroups.contains($userGroup)`), set(ref('isAuthorized'), raw('true'))),
+            ),
+            iff(
+                raw(`$util.isString($allowedGroups)`),
+                iff(raw(`$allowedGroups == $userGroup`), set(ref('isAuthorized'), raw('true'))),
+            )
+        ]),
+        iff(raw('!$isAuthenticated'), raw('$util.unauthorized()')),
+    ])
+)
+
+const dynamicGroupListResolverResponseMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
+    compoundExpression([
+        set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
+        set(ref('items'), list([])),
+        forEach(ref('item'), ref('ctx.result.items'), [
+            set(ref('isAuthenticated'), raw('false')),
+            set(ref('allowedGroups'), ref(`item.${groupsAttribute}`)),
+            forEach(ref('userGroup'), ref('userGroups'), [
+                iff(
+                    raw('$util.isList($allowedGroups)'),
+                    iff(raw(`$allowedGroups.contains($userGroup)`), set(ref('isAuthorized'), raw('true'))),
+                ),
+                iff(
+                    raw(`$util.isString($allowedGroups)`),
+                    iff(raw(`$allowedGroups == $userGroup`), set(ref('isAuthorized'), raw('true'))),
+                )
+            ]),
+            iff(raw('$isAuthenticated'), raw('$util.qr($items.add($item))')),
+        ])
     ])
 )
 
@@ -405,7 +438,46 @@ export class ResourceFactory {
     public dynamicGroupProtectUpdateResolver(resource: Resolver, groupsAttribute: string): Resolver {
         let requestMappingTemplate = resource.Properties.RequestMappingTemplate
         if (requestMappingTemplate) {
-            requestMappingTemplate = dynamicGroupUpdateResolverRequestMappingTemplateSnippet(groupsAttribute) + '\n\n' + requestMappingTemplate
+            requestMappingTemplate =
+                dynamicGroupUpdateAndDeleteResolverRequestMappingTemplateSnippet(groupsAttribute)
+                + '\n\n'
+                + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
+        return resource
+    }
+
+    public dynamicGroupProtectDeleteResolver(resource: Resolver, groupsAttribute: string): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate =
+                dynamicGroupUpdateAndDeleteResolverRequestMappingTemplateSnippet(groupsAttribute)
+                + '\n\n'
+                + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
+        return resource
+    }
+
+    public dynamicGroupProtectGetResolver(resource: Resolver, groupsAttribute: string): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate =
+                dynamicGroupGetResolverResponseMappingTemplateSnippet(groupsAttribute)
+                + '\n\n'
+                + requestMappingTemplate
+        }
+        resource.Properties.RequestMappingTemplate = requestMappingTemplate
+        return resource
+    }
+
+    public dynamicGroupProtectListResolver(resource: Resolver, groupsAttribute: string): Resolver {
+        let requestMappingTemplate = resource.Properties.RequestMappingTemplate
+        if (requestMappingTemplate) {
+            requestMappingTemplate =
+                dynamicGroupListResolverResponseMappingTemplateSnippet(groupsAttribute)
+                + '\n\n'
+                + requestMappingTemplate
         }
         resource.Properties.RequestMappingTemplate = requestMappingTemplate
         return resource

@@ -68,8 +68,8 @@ export class AppSyncAuthTransformer extends Transformer {
             `directive @auth(
                 allow: AuthStrategy!,
                 ownerField: String = "owner",
-                groups: [String],
                 groupsField: String,
+                groups: [String],
                 queries: [TableQuery],
                 mutations: [TableMutation]
             ) on OBJECT`,
@@ -170,8 +170,7 @@ export class AppSyncAuthTransformer extends Transformer {
                 } else if (query === 'list') {
                     ctx.setResource(id, this.resources.ownerProtectListResolver(resolver as Resolver, ownerField))
                 }
-                // TODO: Renable if query is added back
-                // else if (query === 'query') {
+                // else if (query === 'search') {
                 //     ctx.setResource(id, this.resources.ownerProtectQueryResolver(resolver as Resolver))
                 // }
             }
@@ -202,20 +201,21 @@ export class AppSyncAuthTransformer extends Transformer {
 
     public staticGroupsProtectQueryResolvers = (
         ctx: TransformerContext,
-        mutations: string[],
+        queries: string[],
         ids: string[],
         groups: string[],
     ): void => {
-        for (let i = 0; i < mutations.length; i++) {
+        for (let i = 0; i < queries.length; i++) {
             const id = ids[i]
-            const mutation = mutations[i]
+            const query = queries[i]
             const resolver = ctx.getResource(id)
             if (resolver) {
-                if (mutation === 'create') {
+                if (query === 'get') {
                     ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
-                } else if (mutation === 'update') {
+                } else if (query === 'list') {
                     ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
-                } else if (mutation === 'delete') {
+                } else if (query === 'search') {
+                    // TODO: Test this when @searchable is ready
                     ctx.setResource(id, this.resources.staticGroupProtectResolver(resolver as Resolver, groups))
                 }
             }
@@ -246,20 +246,21 @@ export class AppSyncAuthTransformer extends Transformer {
 
     public dynamicGroupsProtectQueryResolvers = (
         ctx: TransformerContext,
-        mutations: string[],
+        queries: string[],
         ids: string[],
         groupsField: string,
     ): void => {
-        for (let i = 0; i < mutations.length; i++) {
+        for (let i = 0; i < queries.length; i++) {
             const id = ids[i]
-            const mutation = mutations[i]
+            const query = queries[i]
             const resolver = ctx.getResource(id)
             if (resolver) {
-                // if (mutation === 'create') {
-                //     ctx.setResource(id, this.resources.dynamicGroupProtectCreateResolver(resolver as Resolver, groupsField))
-                // } else if (mutation === 'update') {
-                //     ctx.setResource(id, this.resources.dynamicGroupProtectUpdateResolver(resolver as Resolver, groupsField))
-                // } else if (mutation === 'delete') {
+                if (query === 'get') {
+                    ctx.setResource(id, this.resources.dynamicGroupProtectGetResolver(resolver as Resolver, groupsField))
+                } else if (query === 'list') {
+                    ctx.setResource(id, this.resources.dynamicGroupProtectListResolver(resolver as Resolver, groupsField))
+                }
+                // else if (query === 'search') {
                 //     ctx.setResource(id, this.resources.dynamicGroupProtectDeleteResolver(resolver as Resolver, groupsField))
                 // }
             }
@@ -281,10 +282,9 @@ export class AppSyncAuthTransformer extends Transformer {
                     ctx.setResource(id, this.resources.dynamicGroupProtectCreateResolver(resolver as Resolver, groupsField))
                 } else if (mutation === 'update') {
                     ctx.setResource(id, this.resources.dynamicGroupProtectUpdateResolver(resolver as Resolver, groupsField))
+                } else if (mutation === 'delete') {
+                    ctx.setResource(id, this.resources.dynamicGroupProtectDeleteResolver(resolver as Resolver, groupsField))
                 }
-                // else if (mutation === 'delete') {
-                //     ctx.setResource(id, this.resources.dynamicGroupProtectDeleteResolver(resolver as Resolver, groupsField))
-                // }
             }
         }
     }
