@@ -134,7 +134,7 @@ export class ResourceFactory {
      */
     public makeIAMRole(tableId: string) {
         return new IAM.Role({
-            RoleName: `AppSyncAccess${tableId}`,
+            RoleName: Fn.Join('-', [Refs.StackName, tableId, 'role']),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
