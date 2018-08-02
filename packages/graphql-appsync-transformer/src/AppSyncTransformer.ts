@@ -90,7 +90,7 @@ export class AppSyncTransformer extends Transformer {
     }
 
     private writeResolverToFile(resourceName: string, ctx: TransformerContext): void {
-        const resolverFilePath = normalize(this.outputPath + '/resolver')
+        const resolverFilePath = normalize(this.outputPath + '/resolvers')
         if (!fs.existsSync(resolverFilePath)) {
             fs.mkdirSync(resolverFilePath);
         }
@@ -134,13 +134,13 @@ export class AppSyncTransformer extends Transformer {
 
     private writeLamdbaFunctionToFile(resourceName: string, ctx: TransformerContext): void {
 
-        const functionPath = normalize(this.outputPath + '/function')
+        const functionPath = normalize(this.outputPath + '/functions')
         if (!fs.existsSync(functionPath)) {
             fs.mkdirSync(functionPath);
         }
         const sourcePath = normalize(
             `${__dirname}/../node_modules/graphql-elasticsearch-transformer/streaming-lambda/python_streaming_function.py`)
-        const destPath = normalize(`${this.outputPath}/function/python_streaming_function.py`)
+        const destPath = normalize(`${this.outputPath}/functions/python_streaming_function.py`)
         const lambdaCode = fs.readFileSync(sourcePath, 'utf8')
         fs.writeFileSync(destPath, lambdaCode, 'utf8')
     }

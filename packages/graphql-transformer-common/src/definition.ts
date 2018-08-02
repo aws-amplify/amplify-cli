@@ -22,7 +22,7 @@ export function isScalar(type: TypeNode) {
     }
 }
 
-export function getBaseType(type: TypeNode) {
+export function getBaseType(type: TypeNode): string {
     if (type.kind === Kind.NON_NULL_TYPE) {
         return getBaseType(type.type)
     } else if (type.kind === Kind.LIST_TYPE) {
