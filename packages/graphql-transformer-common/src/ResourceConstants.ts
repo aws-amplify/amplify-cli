@@ -8,17 +8,11 @@ export class ResourceConstants {
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
 
-        // DynamoDB
-        DynamoDBModelTableLogicalID: 'DynamoDBModelTable',
-        DynamoDBModelTableAccessIAMRoleLogicalID: 'DynamoDBModelTableAccessIAMRole',
-        DynamoDBModelTableDataSourceLogicalID: 'DynamoDBModelTableDataSource',
-
         // ElasticSearch
         ElasticSearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
         ElasticSearchDomainLogicalID: 'ElasticSearchDomain',
         ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
         ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
-        ElasticSearchStreamingLambdaEventSourceMappingLogicalID: 'ElasticSearchStreamingLambdaEventSourceMapping',
         ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
         // Auth
@@ -31,10 +25,8 @@ export class ResourceConstants {
         AppSyncApiName: 'AppSyncApiName',
 
         // DynamoDB
-        DynamoDBModelTableName: 'DynamoDBModelTableName',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
-        DynamoDBModelTableAccessIAMRoleName: 'DynamoDBModelTableAccessIAMRoleName',
 
         // ElasticSearch
         ElasticSearchDomainName: 'ElasticSearchDomainName',

@@ -17,10 +17,6 @@ async function updateStack(template: any, name: string, region: string) {
             UsePreviousValue: true
         },
         {
-            ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
-            UsePreviousValue: true
-        },
-        {
             ParameterKey: ResourceConstants.PARAMETERS.ElasticSearchDomainName,
             UsePreviousValue: true
         },

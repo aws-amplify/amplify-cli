@@ -7,16 +7,19 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transform'
 import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
 import AppSyncAuthTransformer from 'graphql-auth-transformer'
+import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
 import AppSyncTransformer from 'graphql-appsync-transformer'
+import { S3Client } from '../s3client2';
+import * as path from 'path'
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
 
-jest.setTimeout(200000);
+jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
 const STACK_NAME = 'TestAppSyncAuthTransformerTest'
@@ -46,19 +49,61 @@ function outputValueSelector(key: string) {
     }
 }
 
-// type Membership @model @auth(allow: groups, groupsField: "group") {
-//     id: ID!
-//     member: String
-//     group: String
-// }
-// type Editable @model @auth(allow: groups, groupsField: "groups") {
-//     id: ID!
-//     content: String
-//     groups: [String]
-// }
+async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string) {
+    let s3LocationMap = {}
+    const files = fs.readdirSync(directory)
+    for (const file of files) {
+        const contentPath = path.join(directory, file)
+        const s3Location = path.join(key, file)
+        if (fs.lstatSync(contentPath).isDirectory()) {
+            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location)
+            s3LocationMap = { ...recMap, ...s3LocationMap }
+        } else {
+            await client.uploadFile(bucket, contentPath, s3Location)
+            const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
+            s3LocationMap[formattedName] = 's3://' + path.join(bucket, s3Location)
+        }
+    }
+    return s3LocationMap
+}
+
+async function cleanupBucket(client: S3Client, directory: string, bucket: string, key: string) {
+    const files = fs.readdirSync(directory)
+    for (const file of files) {
+        const contentPath = path.join(directory, file)
+        const s3Location = path.join(key, file)
+        if (fs.lstatSync(contentPath).isDirectory()) {
+            await cleanupBucket(client, contentPath, bucket, s3Location)
+        } else {
+            await client.deleteFile(bucket, s3Location)
+        }
+    }
+}
+
+function deleteDirectory(directory: string) {
+    const files = fs.readdirSync(directory)
+    for (const file of files) {
+        const contentPath = path.join(directory, file)
+        if (fs.lstatSync(contentPath).isDirectory()) {
+            deleteDirectory(contentPath)
+            fs.rmdirSync(contentPath)
+        } else {
+            fs.unlinkSync(contentPath)
+        }
+    }
+}
+
+const TMP_ROOT = '/tmp/graphql_transform_tests/'
+
+const BUCKET_NAME = 'appsync-auth-transformer-test-assets-bucket'
+
+const ROOT_KEY = ''
 
 beforeAll(async () => {
     // Create a stack for the post model with auth enabled.
+    if (!fs.existsSync(TMP_ROOT)) {
+        fs.mkdirSync(TMP_ROOT);
+    }
     const validSchema = `
     type Post @model @auth(allow: owner) {
         id: ID!
@@ -84,15 +129,26 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
+            new AppSyncTransformer(TMP_ROOT),
             new AppSyncDynamoDBTransformer(),
             new AppSyncAuthTransformer()
         ]
     })
-    const out = transformer.transform(validSchema);
+    const s3Client = new S3Client('us-west-2')
     try {
+        // Clean the bucket
+        await cleanupBucket(s3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
+        deleteDirectory(TMP_ROOT)
+        const out = transformer.transform(validSchema)
+        console.log('GOT TEMPLATE')
+        console.log(JSON.stringify(out, null, 4))
+        console.log('UPLOADING ASSETS')
+        const uploadedKeys = await uploadDirectory(s3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
+        console.log('DONE UPLOADING')
+        console.log(uploadedKeys)
         console.log('Creating Stack ' + STACK_NAME)
-        const userPoolId = process.env.GRAPHQL_TRANSFORM_AUTH_USER_POOL_ID
+        const userPoolId = 'us-west-2_21A7JBDkX'
+        console.log(`USING USER POOL ID: ${userPoolId}`)
         if (!userPoolId) {
             throw new Error(
                 `Could not find env var "GRAPHQL_TRANSFORM_AUTH_USER_POOL_ID".
@@ -100,9 +156,18 @@ Set it to the id of a valid cognito user pool to continue tests. Also make sure 
 users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w/ ${USERPASSWORD2} in groups [Dev]`
             )
         }
-        const createStackResponse = await cf.createStack(out, STACK_NAME, userPoolId)
+        const createStackResponse = await cf.createStack(
+            out,
+            STACK_NAME,
+            {
+                [ResourceConstants.PARAMETERS.AuthCognitoUserPoolId]: userPoolId,
+                ...uploadedKeys
+            }
+        )
         expect(createStackResponse).toBeDefined()
         const finishedStack = await cf.waitForStack(STACK_NAME)
+        console.log('FINISHED STACK')
+        console.log(JSON.stringify(finishedStack, null, 4))
         // Arbitrary wait to make sure everything is ready.
         await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
@@ -157,8 +222,8 @@ users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {

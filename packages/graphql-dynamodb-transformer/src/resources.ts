@@ -9,7 +9,7 @@ import {
     ref, obj, set, nul,
     ifElse, compoundExpression, qref, bool, equals, iff, raw, comment
 } from 'graphql-mapping-template'
-import { ResourceConstants, graphqlName, toUpper } from 'graphql-transformer-common'
+import { ResourceConstants, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common'
 
 export class ResourceFactory {
 
@@ -19,10 +19,6 @@ export class ResourceFactory {
                 Description: 'The name of the AppSync API',
                 Default: 'AppSyncSimpleTransform'
             }),
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableName]: new StringParameter({
-                Description: 'The name of the DynamoDB table backing your API.',
-                Default: 'AppSyncSimpleTransformTable'
-            }),
             [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5
@@ -30,10 +26,6 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
                 Description: 'The number of write IOPS the table should support.',
                 Default: 5
-            }),
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName]: new StringParameter({
-                Description: 'The name of the IAM role assumed by AppSync.',
-                Default: 'AppSyncSimpleTransformRole'
             })
         }
     }
@@ -46,9 +38,6 @@ export class ResourceFactory {
             Parameters: this.makeParams(),
             Resources: {
                 [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
-                [ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID]: this.makeDynamoDBTable(),
-                [ResourceConstants.RESOURCES.DynamoDBModelTableAccessIAMRoleLogicalID]: this.makeIAMRole(),
-                [ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID]: this.makeDynamoDBDataSource(),
                 [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
             },
             Outputs: {
@@ -108,23 +97,57 @@ export class ResourceFactory {
      * Create the DynamoDB table that will hold all objects for our application.
      * @param name The name of the DynamoDB table to use.
      */
-    public makeDynamoDBTable() {
-        return new DynamoDB.Table({
-            TableName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableName),
-            KeySchema: [{
-                AttributeName: '__typename',
+    // public makeDynamoDBTable() {
+    //     return new DynamoDB.Table({
+    //         TableName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableName),
+    //         KeySchema: [{
+    //             AttributeName: '__typename',
+    //             KeyType: 'HASH'
+    //         }, {
+    //             AttributeName: 'id',
+    //             KeyType: 'RANGE'
+    //         }],
+    //         AttributeDefinitions: [{
+    //             AttributeName: '__typename',
+    //             AttributeType: 'S'
+    //         }, {
+    //             AttributeName: 'id',
+    //             AttributeType: 'S'
+    //         }],
+    //         ProvisionedThroughput: {
+    //             ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+    //             WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+    //         },
+    //         StreamSpecification: {
+    //             StreamViewType: 'NEW_AND_OLD_IMAGES'
+    //         }
+    //     })
+    // }
+
+    /**
+     * Create a DynamoDB table for a specific type.
+     */
+    public makeModelTable(typeName: string, hashKey: string = 'id', rangeKey?: string) {
+        const keySchema = hashKey && rangeKey ? [
+            {
+                AttributeName: hashKey,
                 KeyType: 'HASH'
             }, {
-                AttributeName: 'id',
+                AttributeName: rangeKey,
                 KeyType: 'RANGE'
-            }],
-            AttributeDefinitions: [{
-                AttributeName: '__typename',
+            }] : [{ AttributeName: hashKey, KeyType: 'HASH' }]
+        const attributeDefinitions = hashKey && rangeKey ? [
+            {
+                AttributeName: hashKey,
                 AttributeType: 'S'
             }, {
-                AttributeName: 'id',
+                AttributeName: rangeKey,
                 AttributeType: 'S'
-            }],
+            }] : [{ AttributeName: hashKey, AttributeType: 'S' }]
+        return new DynamoDB.Table({
+            TableName: Fn.Join('-', [Refs.StackName, typeName]),
+            KeySchema: keySchema,
+            AttributeDefinitions: attributeDefinitions,
             ProvisionedThroughput: {
                 ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
                 WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
@@ -140,9 +163,9 @@ export class ResourceFactory {
      * transform.
      * @param name  The name of the IAM role to create.
      */
-    public makeIAMRole() {
+    public makeIAMRole(tableId: string) {
         return new IAM.Role({
-            RoleName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName),
+            RoleName: `AppSyncAccess${tableId}`,
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -174,8 +197,8 @@ export class ResourceFactory {
                                     'dynamodb:UpdateItem'
                                 ],
                                 Resource: [
-                                    Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'),
-                                    Fn.Join('/', [Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), '*'])
+                                    Fn.GetAtt(tableId, 'Arn'),
+                                    Fn.Join('/', [Fn.GetAtt(tableId, 'Arn'), '*'])
                                 ]
                             }
                         ]
@@ -189,16 +212,15 @@ export class ResourceFactory {
      * Given the name of a data source and optional logical id return a CF
      * spec for a data source pointing to the dynamodb table.
      */
-    public makeDynamoDBDataSource() {
-        const logicalName = ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID
+    public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string) {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Name: logicalName,
+            Name: tableId,
             Type: 'AMAZON_DYNAMODB',
-            ServiceRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableAccessIAMRoleLogicalID, 'Arn'),
+            ServiceRoleArn: Fn.GetAtt(iamRoleLogicalID, 'Arn'),
             DynamoDBConfig: {
-                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(logicalName, 'Arn'))),
-                TableName: Fn.Ref(logicalName)
+                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(tableId, 'Arn'))),
+                TableName: Fn.Ref(tableId)
             }
         })
     }
@@ -211,7 +233,7 @@ export class ResourceFactory {
         const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
@@ -219,17 +241,16 @@ export class ResourceFactory {
                     iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
                     qref('$input.put("createdAt", $util.time.nowISO8601())'),
                     qref('$input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref(`$input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
                         key: obj({
-                            '__typename': obj({ S: str(type) }),
                             id: obj({ S: str(`$util.autoId()`) })
                         }),
                         attributeValues: ref('util.dynamodb.toMapValuesJson($input)'),
                         condition: obj({
-                            expression: str(`attribute_not_exists(#type) AND attribute_not_exists(#id)`),
+                            expression: str(`attribute_not_exists(#id)`),
                             expressionNames: obj({
-                                "#type": str('__typename'),
-                                "#id": str('id'),
+                                "#id": str('id')
                             })
                         })
                     }),
@@ -245,7 +266,7 @@ export class ResourceFactory {
         const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
@@ -254,14 +275,12 @@ export class ResourceFactory {
                         ref(ResourceConstants.SNIPPETS.AuthCondition),
                         compoundExpression([
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
-                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#type) AND attribute_exists(#id)")'),
-                            qref('$condition.expressionNames.put("#type", "__typename")'),
+                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                             qref('$condition.expressionNames.put("#id", "id")')
                         ]),
                         set(ref('condition'), obj({
-                            expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
+                            expression: str("attribute_exists(#id)"),
                             expressionNames: obj({
-                                "#type": str("__typename"),
                                 "#id": str("id")
                             })
                         }))
@@ -269,9 +288,9 @@ export class ResourceFactory {
                     iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
                     comment('Automatically set the updatedAt timestamp.'),
                     qref('$input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref(`$input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.updateItem({
                         key: obj({
-                            '__typename': obj({ S: str(type) }),
                             id: obj({ S: str('$context.args.input.id') })
                         }),
                         condition: ref('util.toJson($condition)')
@@ -292,13 +311,12 @@ export class ResourceFactory {
         const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
                     key: obj({
-                        '__typename': obj({ S: str(type) }),
                         id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)')
                     })
                 })
@@ -318,7 +336,7 @@ export class ResourceFactory {
         const defaultPageLimit = 10
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
             RequestMappingTemplate: print(
@@ -380,7 +398,7 @@ export class ResourceFactory {
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Query',
             RequestMappingTemplate: print(
@@ -416,7 +434,7 @@ export class ResourceFactory {
         const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
             TypeName: 'Mutation',
             RequestMappingTemplate: print(
@@ -425,21 +443,18 @@ export class ResourceFactory {
                         ref(ResourceConstants.SNIPPETS.AuthCondition),
                         compoundExpression([
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
-                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#type) AND attribute_exists(#id)")'),
-                            qref('$condition.expressionNames.put("#type", "__typename")'),
+                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
                             qref('$condition.expressionNames.put("#id", "id")')
                         ]),
                         set(ref('condition'), obj({
-                            expression: str("attribute_exists(#type) AND attribute_exists(#id)"),
+                            expression: str("attribute_exists(#id)"),
                             expressionNames: obj({
-                                "#type": str("__typename"),
                                 "#id": str("id")
                             })
                         }))
                     ),
                     DynamoDBMappingTemplate.deleteItem({
                         key: obj({
-                            '__typename': obj({ S: str(type) }),
                             id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)')
                         }),
                         condition: ref('util.toJson($condition)')

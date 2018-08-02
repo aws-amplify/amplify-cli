@@ -65,9 +65,12 @@ enum ModelMutation { create update delete }
 **The following directives are in progress**
 
 ```graphql
+# Streams data from dynamodb into elasticsearch and exposes search capabilities.
 directive @searchable(queries: SearchableQueryMap) on OBJECT
-
 input SearchableQueryMap { search: String }
+
+# Automatically wires connections between two @model types
+directive @connection(name: String)
 ```
 
 
