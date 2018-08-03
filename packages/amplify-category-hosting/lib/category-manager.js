@@ -49,7 +49,7 @@ function getCategoryStatus(context) {
 }
 
 function runServiceAction(context, service, action, args) {
-  context.exeInfo = amplify.getProjectDetails();
+  context.exeInfo = context.amplify.getProjectDetails();
   if(context.exeInfo.amplifyMeta){
     context.exeInfo.categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];  
     if(context.exeInfo.categoryMeta){

@@ -1,32 +1,15 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description" : "Stack for static web hosting",
-    "Parameters":{
-        "HostingBucketName":{
-            "Description": "Name of the hosting bucket",
-            "Type": "String",
-            "Default": "HostingBucket"
-        },
-        "IndexDocument":{
-            "Description": "index doc",
-            "Type": "String",
-            "Default": "index.html"
-        },
-        "ErrorDocument":{
-            "Description": "error doc",
-            "Type": "String",
-            "Default": "error.html"
-        }
-    }, 
     "Resources": {
         "S3Bucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": {"Ref": "HostingBucketName"},
+                "BucketName": "HostingBucket",
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
-                    "IndexDocument": {"Ref": "IndexDocument"},
-                    "ErrorDocument": {"Ref": "ErrorDocument"}
+                    "IndexDocument": "index.html",
+                    "ErrorDocument": "error.html"
                 },
                 "CorsConfiguration": {
                     "CorsRules" : [ {
