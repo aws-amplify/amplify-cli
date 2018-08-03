@@ -30,7 +30,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
-                Default: 'DynamoDBToElasticsearchStream'
+                Default: 'python_streaming_function.lambda_handler'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime]: new StringParameter({
                 Description: 'The lambda runtime (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
