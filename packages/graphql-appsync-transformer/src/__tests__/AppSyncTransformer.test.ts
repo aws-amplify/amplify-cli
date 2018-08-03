@@ -37,7 +37,7 @@ test('Test AppSyncTransformer validation happy case', () => {
     expect(fs.existsSync('./fileTest/resolver/Mutation.createPost.response')).toBeTruthy
     expect(fs.existsSync('./fileTest/resolver/Query.getPost.request')).toBeTruthy
     expect(fs.existsSync('./fileTest/resolver/Query.getPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTest/function/python_streaming_function.py')).toBeTruthy
+    expect(fs.existsSync('./fileTest/function/python_streaming_function.zip')).toBeTruthy
 
     cleanUpFiles(directory)
 });

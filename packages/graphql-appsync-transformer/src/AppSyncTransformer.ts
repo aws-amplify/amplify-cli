@@ -139,9 +139,8 @@ export class AppSyncTransformer extends Transformer {
             fs.mkdirSync(functionPath);
         }
         const sourcePath = normalize(
-            `${__dirname}/../node_modules/graphql-elasticsearch-transformer/streaming-lambda/python_streaming_function.py`)
-        const destPath = normalize(`${this.outputPath}/functions/python_streaming_function.py`)
-        const lambdaCode = fs.readFileSync(sourcePath, 'utf8')
-        fs.writeFileSync(destPath, lambdaCode, 'utf8')
+            `${__dirname}/../node_modules/graphql-elasticsearch-transformer/streaming-lambda.zip`)
+        const destPath = normalize(`${this.outputPath}/function/python_streaming_function.zip`)
+        fs.copyFileSync(sourcePath, destPath)
     }
 }
