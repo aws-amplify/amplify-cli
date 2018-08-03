@@ -32,6 +32,8 @@
     "graphql-appsync-transformer": "1.0",
     "graphql-dynamodb-transformer": "1.0.0",
     "graphql-auth-transformer": "1.0.0",
+    "graphql-elasticsearch-transformer": "1.0.0",
+    "aws-amplify" :"^1.0.4",
     "aws-sdk": "^2.259.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
@@ -42,6 +44,7 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
+    "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
     "moduleFileExtensions": [
       "ts",
