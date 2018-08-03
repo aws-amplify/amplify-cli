@@ -27,6 +27,16 @@
                 "WebsiteConfiguration": {
                     "IndexDocument": {"Ref": "IndexDocument"},
                     "ErrorDocument": {"Ref": "ErrorDocument"}
+                },
+                "CorsConfiguration": {
+                    "CorsRules" : [ {
+                        "AllowedHeaders" : [ "*" ],
+                        "AllowedMethods" : [ "GET", "PUT", "HEAD", "POST", "DELETE" ],
+                        "AllowedOrigins" : [ "*" ],
+                        "ExposedHeaders" : [ ],
+                        "Id" : "default-CorsRules",
+                        "MaxAge" : 1000
+                    } ]
                 }
             },
             "DeletionPolicy": "Retain"

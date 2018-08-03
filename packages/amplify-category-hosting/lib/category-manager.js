@@ -49,6 +49,13 @@ function getCategoryStatus(context) {
 }
 
 function runServiceAction(context, service, action, args) {
+  context.exeInfo = amplify.getProjectDetails();
+  if(context.exeInfo.amplifyMeta){
+    context.exeInfo.categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];  
+    if(context.exeInfo.categoryMeta){
+      context.exeInfo.serviceMeta = context.exeInfo.categoryMeta[service]
+    }
+  }
   const serviceModule = require(path.join(__dirname, `${service}/index.js`));
   return serviceModule[action](context, args);
 }

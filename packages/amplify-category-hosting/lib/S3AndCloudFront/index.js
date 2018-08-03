@@ -5,6 +5,7 @@ const moment = require('moment');
 const opn = require('opn');
 const chalk = require('chalk');
 const fileUPloader = require('./helpers/file-uploader');
+const cloudFrontManager = require('./helpers/cloudfront-manager');
 const constants = require('../constants');
 
 const serviceName = 'S3AndCloudFront';
@@ -93,9 +94,9 @@ function configure(context) {
 
 function publish(context, args) {
   return fileUPloader.run(context, args.distributionDirPath)
+    .then(cloudFrontManager.checkValidation(context))
     .then(() => {
-      const { amplifyMeta } = context.amplify.getProjectDetails();
-      const { WebsiteURL } = amplifyMeta[constants.CategoryName][serviceName].output;
+      const { WebsiteURL } = context.serviceMeta.output;
       context.print.info('Your app is published successfully');
       context.print.info(chalk.green(WebsiteURL));
       opn(WebsiteURL, { wait: false });

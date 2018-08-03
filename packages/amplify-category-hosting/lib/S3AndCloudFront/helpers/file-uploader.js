@@ -47,8 +47,7 @@ async function getS3Client(context) {
 }
 
 function getHostingBucketName(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+  const { amplifyMeta } = context.exeInfo; 
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 
