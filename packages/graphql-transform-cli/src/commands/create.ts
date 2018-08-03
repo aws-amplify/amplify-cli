@@ -15,11 +15,7 @@ async function createStack(template: any, name: string, region: string) {
         {
             ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
             ParameterValue: name
-        },
-        {
-            ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
-            ParameterValue: name + 'Table'
-        },
+        }
         // {
         //     ParameterKey: 'ElasticSearchDomainName',
         //     ParameterValue: name.toLowerCase()

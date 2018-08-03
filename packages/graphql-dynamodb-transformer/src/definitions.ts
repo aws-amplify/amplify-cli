@@ -117,42 +117,42 @@ export function makeTableXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
                 directives: []
             })
         )
-    
-        fields.push(
-            {
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                    name: {
-                        kind: 'Name',
-                        value: 'and'
-                    },
-                    type: makeListType(makeNamedType(name)),
-                    // TODO: Service does not support new style descriptions so wait.
-                    // description: field.description,
-                    directives: []
+
+    fields.push(
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+                kind: 'Name',
+                value: 'and'
             },
-            {
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                    name: {
-                        kind: 'Name',
-                        value: 'or'
-                    },
-                    type: makeListType(makeNamedType(name)),
-                    // TODO: Service does not support new style descriptions so wait.
-                    // description: field.description,
-                    directives: []
+            type: makeListType(makeNamedType(name)),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: []
+        },
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+                kind: 'Name',
+                value: 'or'
             },
-            {
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                    name: {
-                        kind: 'Name',
-                        value: 'not'
-                    },
-                    type: makeNamedType(name),
-                    // TODO: Service does not support new style descriptions so wait.
-                    // description: field.description,
-                    directives: []
-            }
-        )
+            type: makeListType(makeNamedType(name)),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: []
+        },
+        {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+                kind: 'Name',
+                value: 'not'
+            },
+            type: makeNamedType(name),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: []
+        }
+    )
 
     return {
         kind: 'InputObjectTypeDefinition',

@@ -55,7 +55,7 @@ export class ResourceFactory {
     public removeDotsAndCamelcase(name: string) {
         var nameCopy = name
         for (var i = 0; i < name.length; i++) {
-            if (name[i] == '.') {
+            if (name[i] === '.') {
                 nameCopy = nameCopy.substr(0, i + 1) + nameCopy.charAt(i + 1).toUpperCase() + nameCopy.slice(i + 2)
             }
         }

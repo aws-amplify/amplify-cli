@@ -31,29 +31,19 @@ export class CloudFormationClient {
         this.client = new CloudFormation({ apiVersion: '2010-05-15', region: this.region });
     }
 
-    async createStack(template: any, name: string, upArn?: string) {
+    async createStack(template: any, name: string, defParams: any = {}) {
         const params = [
             {
                 ParameterKey: ResourceConstants.PARAMETERS.AppSyncApiName,
                 ParameterValue: name
-            },
-            {
-                ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableName,
-                ParameterValue: name + 'Table'
-            },
-            {
-                ParameterKey: ResourceConstants.PARAMETERS.DynamoDBModelTableAccessIAMRoleName,
-                ParameterValue: name + 'Role'
             }
         ]
-        if (upArn) {
-            console.log(`Setting User Pool Arn: ${upArn}.`)
+        for (const key of Object.keys(defParams)) {
             params.push({
-                ParameterKey: ResourceConstants.PARAMETERS.AuthCognitoUserPoolId,
-                ParameterValue: upArn
+                ParameterKey: key,
+                ParameterValue: defParams[key]
             })
         }
-        // const paramOverrides = Object.keys(params).map((k: string) => `${k}=${params[k]}`).join(' ')
         return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
             this.client.createStack,
             {

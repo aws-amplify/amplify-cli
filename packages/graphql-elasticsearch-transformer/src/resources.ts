@@ -9,7 +9,7 @@ import {
     nul,
     int
 } from 'graphql-mapping-template'
-import { toUpper, graphqlName, ResourceConstants } from 'graphql-transformer-common'
+import { toUpper, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
 
 export class ResourceFactory {
 
@@ -96,11 +96,10 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID]: this.makeElasticSearchDataSource(),
                 [ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID]: this.makeElasticSearchDomain(),
                 [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-                [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction(),
-                [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaEventSourceMappingLogicalID]: this.makeDynamoDBStreamEventSourceMapping()
+                [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction()
             }
         }
-    } 
+    }
 
     /**
      * Given the name of a data source and optional logical id return a CF
@@ -152,20 +151,20 @@ export class ResourceFactory {
                 }
             }
         })
-        .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID)
-        .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID)
+            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID)
+            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID)
     }
 
-    public makeDynamoDBStreamEventSourceMapping() {
+    public makeDynamoDBStreamEventSourceMapping(typeName: string) {
         return new Lambda.EventSourceMapping({
             BatchSize: 1,
             Enabled: true,
-            EventSourceArn: Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'StreamArn'),
+            EventSourceArn: Fn.GetAtt(ModelResourceIDs.ModelTableResourceID(typeName), 'StreamArn'),
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
         })
-        .dependsOn(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID)
-        .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID)
+            .dependsOn(ModelResourceIDs.ModelTableResourceID(typeName))
+            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID)
     }
 
     /**
@@ -290,10 +289,12 @@ export class ResourceFactory {
                                 ],
                                 Effect: "Allow",
                                 Resource: [
-                                    Fn.Join(
-                                        '/',
-                                        [Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), '*']
-                                    )
+                                    "*"
+                                    // TODO: Scope this to each table individually.
+                                    // Fn.Join(
+                                    //     '/',
+                                    //     [Fn.GetAtt(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID, 'Arn'), '*']
+                                    // )
                                 ]
                             }
                         ]
@@ -317,7 +318,8 @@ export class ResourceFactory {
                     }
                 })
             ]
-        }).dependsOn(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID)
+        })
+        // .dependsOn(ResourceConstants.RESOURCES.DynamoDBModelTableLogicalID)
     }
 
     /**
@@ -368,9 +370,9 @@ export class ResourceFactory {
                 VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchEBSVolumeGB)
             }
         })
-        .dependsOn(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID)
+            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID)
     }
-    
+
     /**
      * Create the ElasticSearch search resolver.
      */
@@ -406,8 +408,8 @@ export class ResourceFactory {
                                 list([
                                     iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
                                         obj({
-                                            "$context.args.sort.field" : obj({
-                                                "order" : str('$context.args.sort.direction')
+                                            "$context.args.sort.field": obj({
+                                                "order": str('$context.args.sort.direction')
                                             })
                                         })
                                     ),
@@ -416,7 +418,7 @@ export class ResourceFactory {
                                 list([]))
                         })
                     ])
-                ), { 'ddbTableName': Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableName) }
+                ), { 'ddbTableName': Fn.Ref(ModelResourceIDs.ModelTableResourceID(type)) }
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([
@@ -440,7 +442,7 @@ export class ResourceFactory {
                 ])
             )
         })
-        .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
-        .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID)
+            .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID)
     }
 }

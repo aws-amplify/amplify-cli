@@ -13,7 +13,7 @@ import {
     makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
     extensionWithFields, ResourceConstants, makeListType
 } from 'graphql-transformer-common'
-import { ResolverResourceIDs } from 'graphql-transformer-common'
+import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 
 interface QueryNameMap {
     get?: string;
@@ -54,7 +54,10 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncDynamoDBTransformer',
-            `directive @model(queries: ModelQueryMap, mutations: ModelMutationMap) on OBJECT`,
+            `directive @model(
+                queries: ModelQueryMap,
+                mutations: ModelMutationMap
+            ) on OBJECT`,
             `
                 input ModelMutationMap { create: String, update: String, delete: String }
                 input ModelQueryMap { get: String, list: String }
@@ -78,6 +81,24 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Create the object type.
         ctx.addObject(def)
+
+        // Create the dynamodb table to hold the @model type
+        // TODO: Handle types with more than a single "id" hash key
+        const typeName = def.name.value
+        const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName)
+        const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
+        ctx.setResource(
+            tableLogicalID,
+            this.resources.makeModelTable(typeName)
+        )
+        ctx.setResource(
+            iamRoleLogicalID,
+            this.resources.makeIAMRole(tableLogicalID)
+        )
+        ctx.setResource(
+            ModelResourceIDs.ModelTableDataSourceID(typeName),
+            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID)
+        )
 
         // Create the input types.
         const createInput = makeCreateInputObject(def)
@@ -149,7 +170,6 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         const queryNameMap: QueryNameMap = directiveArguments.queries
         const mutationNameMap: MutationNameMap = directiveArguments.mutations
-        const typeName = def.name.value
 
         // Create the mutations.
         if (shouldMakeCreate) {

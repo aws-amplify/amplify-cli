@@ -19,7 +19,7 @@ import {
     makeArg,
     makeNonNullType
 } from "graphql-transformer-common";
-import { ResolverResourceIDs } from 'graphql-transformer-common'
+import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
 
 interface QueryNameMap {
     search?: string;
@@ -75,6 +75,12 @@ export class AppSyncSearchableTransformer extends Transformer {
                 searchFieldNameOverride = directiveArguments.queries.search
             }
         }
+
+        const typeName = def.name.value
+        ctx.setResource(
+            SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
+            this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
+        )
 
         //SearchablePostSortableFields
         let queryType = blankObjectExtension('Query')

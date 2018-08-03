@@ -20,9 +20,6 @@ ES_ENDPOINT = os.environ['ES_ENDPOINT']
 ES_REGION = os.environ['ES_REGION']
 DEBUG = True if os.environ['DEBUG'] is not None else False
 
-# The following parameters can be optionally customized
-# Python formatter to generate index name from the DynamoDB table name
-DOC_TABLE_FORMAT = '{}'
 # ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
 DOC_TYPE = 'doc'
 ES_MAX_RETRIES = 3              # Max number of retries for exponential backoff
@@ -42,7 +39,7 @@ class StreamTypeDeserializer(TypeDeserializer):
 
 
 class ES_Exception(Exception):
-    '''Exception capturing status_code from Client Request'''
+    '''Capture status_code from request'''
     status_code = 0
     payload = ''
 
@@ -153,8 +150,7 @@ def _lambda_handler(event, context):
             continue
 
         # Compute DynamoDB table, type and index for item
-        doc_table = DOC_TABLE_FORMAT.format(
-            ddb_table_name.lower())  # Use formatter
+        doc_table = ddb_table_name.lower()
         doc_type = DOC_TYPE
 
         # Dispatch according to event TYPE
@@ -190,17 +186,9 @@ def _lambda_handler(event, context):
 
             doc_index = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
                 ddb['Keys'], ddb_deserializer)
-            logger.debug('doc_index=%s', doc_index)
-
-            # Add metadata
-            # doc_fields['@timestamp'] = now.isoformat()
-            # doc_fields['@SequenceNumber'] = doc_seq
-
-            logger.debug('doc_fields: %s', doc_fields)
 
             # Generate JSON payload
             doc_json = json.dumps(doc_fields)
-            logger.debug('doc_json: %s', doc_json)
 
             # Generate ES payload for item
             action = {'index': {'_index': doc_table,
@@ -218,11 +206,8 @@ def _lambda_handler(event, context):
     # Prepare bulk payload
     es_actions.append('')  # Add one empty line to force final \n
     es_payload = '\n'.join(es_actions)
-    logger.debug('Payload: %s', es_payload)
-
     logger.info('Posting to ES: inserts=%s updates=%s deletes=%s, total_lines=%s, bytes_total=%s',
                 cnt_insert, cnt_modify, cnt_remove, len(es_actions) - 1, len(es_payload))
-
     post_to_es(es_payload)  # Post to ES with exponential backoff
 
 
