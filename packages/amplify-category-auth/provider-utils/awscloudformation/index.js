@@ -2,6 +2,7 @@ const fs = require('fs');
 
 let serviceMetadata;
 
+
 function serviceQuestions(
   context,
   defaultValuesFilename,
@@ -24,12 +25,12 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       dir: pluginDir,
       template: `cloudformation-templates/${cfnFilename}`,
       target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
+      paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
     },
   ];
 
   // copy over the files
-
-  return context.amplify.copyBatch(context, copyJobs, options);
+  return context.amplify.copyBatch(context, copyJobs, options, null, options);
 }
 
 
@@ -69,4 +70,35 @@ function addResource(context, category, service) {
     .then(() => props.resourceName);
 }
 
-module.exports = { addResource };
+function updateResource(context, category, service) {
+  let props = {};
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const {
+    cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
+  } = serviceMetadata;
+
+  return serviceQuestions(
+    context,
+    defaultValuesFilename,
+    stringMapFilename,
+    serviceWalkthroughFilename,
+  )
+
+    .then((result) => {
+      /* if user has used the default configuration,
+       * we populate base choices like authSelections and resourceName for them */
+      if (!result.authSelections) {
+        result = Object.assign(context.updatingAuth, result);
+      }
+
+      /* merge actual answers object into props object of previous answers,
+       * ensuring that manual entries override previous */
+
+      props = Object.assign(context.updatingAuth, result);
+
+      copyCfnTemplate(context, category, props, cfnFilename);
+    })
+    .then(() => props.resourceName);
+}
+
+module.exports = { addResource, updateResource };
