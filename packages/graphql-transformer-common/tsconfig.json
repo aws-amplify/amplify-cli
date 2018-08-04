@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir": "lib",
+        "declaration": true,
+        "lib": [
+            "es2015",
+            "es2016.array.include",
+            "esnext.asynciterable",
+            "dom"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
+}

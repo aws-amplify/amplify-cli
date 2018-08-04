@@ -7,3 +7,5 @@ coverage
 yarn.lock
 package-lock.json
 packages/amplify-cli/amplify/.config/
+.vscode
+packages/graphql*/lib
