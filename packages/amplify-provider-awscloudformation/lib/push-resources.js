@@ -5,6 +5,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
+const { uploadAppSyncFiles } = require('./upload-appsync-files');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
@@ -20,6 +21,7 @@ async function run(context, category, resourceName) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
+    .then(() => uploadAppSyncFiles(context, resources))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
       projectDetails = context.amplify.getProjectDetails();

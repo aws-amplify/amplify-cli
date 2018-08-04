@@ -3,7 +3,7 @@
 		"inputs": [{
 				"key": "resourceName",
 				"type": "input",
-				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"question": "Provide a friendly name for your resource that will be used to label this category in the project:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9]+$",
@@ -15,202 +15,86 @@
 
 				"key": "apiName",
 				"type": "input",
-				"question": "Please provide API name:",
+				"question": "Provide API name:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9._-]+$",
 					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
 				},
+				"required": true
+			},
+			{
+
+				"key": "apiCreationChoice",
+				"type": "confirm",
+				"question": "Do you have an annotated graphQL schema?",
+				"required": true
+			},
+			{
+
+				"key": "schemaFilePath",
+				"type": "input",
+				"question": "Provide your schema file path:",
 				"required": true
 			},
 			{
 
 				"key": "templateSelection",
 				"type": "list",
-				"question": "Choose from one of the options below",
+				"question": "What best describes your project:",
 				"options": [{
-						"name": "Use sample AppSync-DynamoDB example cloudformation template",
-						"value": "default"
+						"name": "Single object with fields (e.g. “Todo” with ID, name, description)",
+						"value": "single-relationship-schema.graphql"
 					},
 					{
-						"name": "Create an AppSync API from scratch",
-						"value": "custom"
+						"name": "One to many relationship (e.g. “Blogs” with “Comments”)",
+						"value": "many-relationship-schema.graphql"
 					}
 				],
 				"required": true
 			},
 			{
 
-				"key": "authType",
+				"key": "editSchemaChoice",
+				"type": "confirm",
+				"question": "Do you want to edit the schema now?",
+				"required": true
+			},
+			{
+
+				"key": "editorSelection",
 				"type": "list",
-				"question": "Choose an authorization type for the API",
+				"question": "Chose the editor you would want to open the schema in:",
 				"options": [{
-						"name": "API key",
-						"value": "apiKey"
+						"name": "Sublime Text",
+						"value": "sublime"
 					},
 					{
-						"name": "AWS Identity and Access Management (IAM)",
-						"value": "iam"
+						"name": "Atom Editor",
+						"value": "atom"
 					},
 					{
-						"name": "Amazon Cognito User Pool",
-						"value": "cognito"
+						"name": "Visual Studio Code",
+						"value": "code"
 					},
 					{
-						"name": "OpenID Connect",
-						"value": "openId"
+						"name": "IDEA 14 CE",
+						"value": "idea14ce"
+					},
+					{
+						"name": "Vim (via Terminal, Mac OS only)",
+						"value": "vim"
+					},
+					{
+						"name": "Emacs (via Terminal, Mac OS only)",
+						"value": "emacs"
+					},
+					{
+						"name": "None - Use my env variables to open my default editor",
+						"value": "none"
 					}
 
 				],
-				"required": true
-			},
-			{
-
-				"key": "cognitoUserPoolRegion",
-				"type": "list",
-				"question": "Please select a region:"
-			},
-			{
-
-				"key": "cognitoUserPoolId",
-				"type": "list",
-				"question": "Please select a user pool ID:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
-				},
-				"required": true
-			},
-			{
-
-				"key": "cognitoAction",
-				"type": "list",
-				"question": "Select the default permission for requests to your API",
-				"options": [
-					"ALLOW",
-					"DENY"
-				]
-			},
-			{
-
-				"key": "appClientRegex",
-				"type": "input",
-				"question": "Type a regular expression to allow or block requests to this API (Optional)"
-			},
-			{
-
-				"key": "openIdUrl",
-				"type": "input",
-				"question": "Please provide the URL of your OpenID Connect provider used for discovery:",
-				"required": true
-			},
-			{
-
-				"key": "clientId",
-				"type": "input",
-				"question": "Please provide a client id from your OpenID Client Connect application to only allow tokens from that application(Optional):"
-			},
-			{
-
-				"key": "issueTTL",
-				"type": "input",
-				"question": "Please provide the number of milliseconds a token is valid for after being issued to a user. Set to 0 to disable(Optional):",
-				"validation": {
-					"operator": "regex",
-					"value": "^[0-9]+$",
-					"onErrorMsg": "Value entered can only be numeric"
-				}
-			},
-			{
-
-				"key": "authTTL",
-				"type": "input",
-				"question": "Please provide the number of milliseconds a token is valid for after being authenticated. Set to 0 to disable(Optional):",
-				"validation": {
-					"operator": "regex",
-					"value": "^[0-9]+$",
-					"onErrorMsg": "Value entered can only be numeric"
-				}
-			},
-			{
-
-				"key": "apiKeyExpiryDays",
-				"type": "input",
-				"question": "Please provide the days after which the api key would be invalid (with a minimum of 1 day and a maximum of 365 days):"
-			},
-			{
-
-				"key": "dataSourceType",
-				"type": "list",
-				"question": "Choose a data source you would like to add to your AppSync API",
-				"options": [
-			    	"DynamoDb",
-			    	"Lambda"
-				]
-			},
-			{
-
-				"key": "dynamoDbType",
-				"type": "list",
-				"question": "Choose a DynamoDB data source option",
-				"options": [{
-						"name": "Use DynamoDB table configured in the current Amplify project",
-						"value": "currentProject"
-					},
-					{
-						"name": "Create a new DynamoDB table",
-						"value": "newResource"
-					},
-					{
-						"name": "Use a DynamoDB table already deployed on AWS",
-						"value": "cloudResource"
-					}
-				]
-			},
-			{
-
-				"key": "dynamoDbResources",
-				"type": "list",
-				"question": "Choose from one of the already configured DynamoDB tables"
-			},
-			{
-
-				"key": "lambdaType",
-				"type": "list",
-				"question": "Choose a Lambda data source option",
-				"options": [{
-						"name": "Use a Lambda function already added in the current Amplify project",
-						"value": "currentProject"
-					},
-					{
-						"name": "Create a new Lambda function",
-						"value": "newResource"
-					},
-					{
-						"name": "Use a Lambda function already deployed on AWS",
-						"value": "cloudResource"
-					}
-				]
-			},
-			{
-
-				"key": "lambdaResources",
-				"type": "list",
-				"question": "Choose from one of the already configured Lambda functions"
-			},
-			{
-
-				"key": "lambdaFunctionChoice",
-				"type": "list",
-				"question": "Please select a Lambda function:",
-				"required": true
-			},
-			{
-
-				"key": "dynamodbTableChoice",
-				"type": "list",
-				"question": "Please select a DynamoDB table:",
 				"required": true
 			}
 		],

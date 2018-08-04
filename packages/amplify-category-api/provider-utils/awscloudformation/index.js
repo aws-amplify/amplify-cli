@@ -44,10 +44,12 @@ function addResource(context, category, service, options) {
       if (result.output) {
         options.output = result.output;
       }
-      if (answers.customCfnFile) {
-        cfnFilename = answers.customCfnFile;
+      if(!result.noCfnFile) {
+        if (answers.customCfnFile) {
+          cfnFilename = answers.customCfnFile;
+        }
+        copyCfnTemplate(context, category, answers, cfnFilename);
       }
-      copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
         answers.resourceName,

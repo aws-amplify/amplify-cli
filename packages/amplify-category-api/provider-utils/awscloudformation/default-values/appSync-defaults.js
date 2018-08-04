@@ -9,6 +9,7 @@ const getAllDefaults = (project) => {
     apiName: `${name}${shortId}`,
     serviceRoleName: `serviceRole${shortId}`,
     servicePolicyName: `servicePolicy${shortId}`,
+    apiCreationChoice: false,
     region,
     defaultTableName: `Posts${shortId}`,
   };
