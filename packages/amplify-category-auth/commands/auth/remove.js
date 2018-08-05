@@ -9,8 +9,7 @@ module.exports = {
 
     return amplify.removeResource(context, category, resourceName)
       .then(() => {
-        context.print.success('Successfully removed resource')
-        
+        context.print.success('Successfully removed resource');
       })
       .catch((err) => {
         context.print.info(err.stack);

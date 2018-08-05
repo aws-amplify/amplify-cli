@@ -230,7 +230,6 @@ function formNestedStack(context, projectDetails) {
             parameters[keys[a]] = values[a].join();
           }
           if (Object.prototype.toString.call(values[a]) === '[object Object]') {
-
             delete parameters[keys[a]];
           }
         }
