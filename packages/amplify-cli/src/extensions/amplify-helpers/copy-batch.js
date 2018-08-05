@@ -8,7 +8,7 @@ const fs = require('fs');
  * @param {any}   props          - The props to use for variable replacement.
  * @param {any}   opts           - Additional options
  */
-async function copyBatch(context, jobs, props, force, params) {
+async function copyBatch(context, jobs, props, force, writeParams) {
   // grab some features
   const {
     template,
@@ -42,8 +42,8 @@ async function copyBatch(context, jobs, props, force, params) {
         props,
       });
 
-      if (params && job.paramsFile) {
-        const jsonString = JSON.stringify(params, null, 4);
+      if (writeParams && job.paramsFile) {
+        const jsonString = JSON.stringify(props, null, 4);
         fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
       }
     }

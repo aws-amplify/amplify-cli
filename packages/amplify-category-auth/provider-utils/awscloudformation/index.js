@@ -30,7 +30,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, null, options);
+  return context.amplify.copyBatch(context, copyJobs, options, null, true);
 }
 
 
@@ -40,6 +40,8 @@ function addResource(context, category, service) {
   const {
     cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
   } = serviceMetadata;
+  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+
 
   return serviceQuestions(
     context,
@@ -49,18 +51,16 @@ function addResource(context, category, service) {
   )
 
     .then((result) => {
-      /* for each auth selection made by user,
-       * populate defaults associated with the choice into props object */
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, generalDefaults } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
       if (!result.authSelections) {
-        result = Object.assign(generalDefaults(), result);
+        result = Object.assign(result, generalDefaults(projectName));
       }
 
-      /* merge actual answers object into props object of defaults answers,
+      /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
 
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
@@ -85,16 +85,28 @@ function updateResource(context, category, service) {
   )
 
     .then((result) => {
+      const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
+      const { functionMap, entityKeys } = require(defaultValuesSrc);
+
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
       if (!result.authSelections) {
-        result = Object.assign(context.updatingAuth, result);
+        result.authSelections = 'identityPoolAndUserPool';
+      }
+
+      const previousKeys = Object.keys(context.updatingAuth);
+
+      if (result.authSelections === 'userPoolOnly') {
+        previousKeys.forEach((k) => {
+          if (entityKeys.identityPoolKeys.includes(k)) {
+            delete context.updatingAuth[k];
+          }
+        });
       }
 
       /* merge actual answers object into props object of previous answers,
        * ensuring that manual entries override previous */
-
-      props = Object.assign(context.updatingAuth, result);
+      props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
 
       copyCfnTemplate(context, category, props, cfnFilename);
     })

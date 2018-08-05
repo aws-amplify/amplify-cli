@@ -223,6 +223,18 @@ function formNestedStack(context, projectDetails) {
           }
         }
 
+        const values = Object.values(parameters);
+        const keys = Object.keys(parameters);
+        for (let a = 0; a < values.length; a += 1) {
+          if (Array.isArray(values[a])) {
+            parameters[keys[a]] = values[a].join();
+          }
+          if (Object.prototype.toString.call(values[a]) === '[object Object]') {
+
+            delete parameters[keys[a]];
+          }
+        }
+
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         nestedStack.Resources[resourceKey] = {
           Type: 'AWS::CloudFormation::Stack',

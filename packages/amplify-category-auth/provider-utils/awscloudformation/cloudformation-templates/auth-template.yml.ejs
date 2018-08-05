@@ -1,10 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  <% for(var i=0; i < Object.keys(props).length; i++) { -%>
+  <% if (typeof Object.values(props)[i] === 'string') { %>
+  <%=Object.keys(props)[i]%>:
+    Type: String
+  <% } -%>
+  <% if (typeof Object.values(props)[i] === 'boolean') { %>
+  <%=Object.keys(props)[i]%>:
+    Type: String
+  <% } -%>
+  <% if (typeof Object.values(props)[i] === 'number') { %>
+  <%=Object.keys(props)[i]%>:
+    Type: Number
+  <% } -%>
+  <% if (Array.isArray(Object.values(props)[i])) { %>
+  <%=Object.keys(props)[i]%>:
+    Type: CommaDelimitedList
+  <% } -%>
+  <% } -%>
+
 Resources:
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: <%=props.roleName %>
+      RoleName: !Ref roleName
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -16,10 +38,10 @@ Resources:
               - "sts:AssumeRole"
             Condition: 
               StringEquals:
-                sts:ExternalId: <%= props.roleExternalId %>
+                sts:ExternalId: !Ref roleExternalId
       Policies: 
         - 
-          PolicyName: <%= props.policyName %>
+          PolicyName: !Ref policyName
           PolicyDocument: 
             Version: "2012-10-17"
             Statement: 
@@ -35,7 +57,7 @@ Resources:
   # Depends on SNS Role for Arn if MFA is enabled
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: <%= props.userPoolName %>
+      UserPoolName: !Ref userPoolName
       Schema: 
         <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
         -
@@ -43,27 +65,24 @@ Resources:
           Required: true
         <% } %>
       <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
-      AutoVerifiedAttributes:
-        <% for(var i=0; i < props.autoVerifiedAttributes.length; i++) { %>
-        - <%= props.autoVerifiedAttributes[i] %>
-        <% } %> 
+      AutoVerifiedAttributes: !Ref autoVerifiedAttributes
       <% } %>
       <%if (props.autoVerifiedAttributes.includes('email')) { %>
-      EmailVerificationMessage: '<%= props.emailVerificationMessage %>'
-      EmailVerificationSubject: '<%= props.emailVerificationSubject %>'
+      EmailVerificationMessage: !Ref emailVerificationMessage
+      EmailVerificationSubject: !Ref emailVerificationSubject
       <% } %>      
       Policies:
         PasswordPolicy:
-          MinimumLength: <%= props.passwordPolicyMinLength %>
+          MinimumLength: !Ref passwordPolicyMinLength
           RequireLowercase: <%= props.passwordPolicyCharacters.includes('Requires Lowercase') %>
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
-      MfaConfiguration: '<%= props.mfaConfiguration %>'
-      SmsVerificationMessage: '<%= props.smsVerificationMessage %>' 
+      MfaConfiguration: !Ref mfaConfiguration
+      SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: <%= props.roleExternalId %>  
+        ExternalId: !Ref roleExternalId 
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
@@ -75,16 +94,10 @@ Resources:
     Properties:
       ClientName: <%= props.userpoolClientName %>Web
       <%if (props.userpoolClientSetAttributes) { %>
-      ReadAttributes:
-        <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
-        - "<%= props.userpoolClientReadAttributes[i] %>"
-        <% } %>
-      WriteAttributes:
-        <% for(var i=0; i < props.userpoolClientWriteAttributes.length; i++) { %>
-        - "<%= props.userpoolClientWriteAttributes[i] %>"
-        <% } %>
+      ReadAttributes: !Ref userpoolClientReadAttributes
+      WriteAttributes: !Ref userpoolClientWriteAttributes
       <% } %>
-      RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
+      RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
 
@@ -93,19 +106,13 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: <%= props.userpoolClientName %>
+      ClientName: !Ref userpoolClientName
       <%if (props.userpoolClientSetAttributes) { %>
-      ReadAttributes:
-        <% for(var i=0; i < props.userpoolClientReadAttributes.length; i++) { %>
-        - "<%= props.userpoolClientReadAttributes[i] %>"
-        <% } %>
-      WriteAttributes:
-        <% for(var i=0; i < props.userpoolClientWriteAttributes.length; i++) { %>
-        - "<%= props.userpoolClientWriteAttributes[i] %>"
-        <% } %>
+      ReadAttributes: !Ref userpoolClientReadAttributes
+      WriteAttributes: !Ref userpoolClientWriteAttributes
       <% } %>
-      GenerateSecret: <%= props.userpoolClientGenerateSecret %>
-      RefreshTokenValidity: <%= props.userpoolClientRefreshTokenValidity %>
+      GenerateSecret: !Ref userpoolClientGenerateSecret
+      RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
 
@@ -114,7 +121,7 @@ Resources:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: <%= props.userpoolClientLambdaRole %>      
+      RoleName: !Ref userpoolClientLambdaRole     
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -166,9 +173,9 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.userpoolClientLambdaPolicy %>
+      PolicyName: !Ref userpoolClientLambdaPolicy
       Roles: 
-        - <%= props.userpoolClientLambdaRole %>
+        - !Ref userpoolClientLambdaRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -184,9 +191,9 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.userpoolClientLogPolicy %>
+      PolicyName: !Ref userpoolClientLogPolicy
       Roles: 
-        - <%= props.userpoolClientLambdaRole %>
+        - !Ref userpoolClientLambdaRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -219,7 +226,7 @@ Resources:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: <%= props.mfaLambdaRole %>      
+      RoleName: !Ref mfaLambdaRole     
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -230,7 +237,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: <%= props.mfaPassRolePolicy %>
+      - PolicyName: !Ref mfaPassRolePolicy
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -283,9 +290,9 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.mfaLambdaIAMPolicy %>
+      PolicyName: !Ref mfaLambdaIAMPolicy
       Roles: 
-        - <%= props.mfaLambdaRole %>
+        - !Ref mfaLambdaRole
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -299,9 +306,9 @@ Resources:
   # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: <%= props.mfaLambdaLogPolicy %>
+      PolicyName: !Ref mfaLambdaLogPolicy
       Roles: 
-        - <%= props.mfaLambdaRole %>
+        - !Ref mfaLambdaRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -323,11 +330,11 @@ Resources:
     Properties:
       ServiceToken: !GetAtt MFALambda.Arn
       userPoolId: !Ref UserPool
-      mfaConfiguration: '<%= props.mfaConfiguration %>'
+      mfaConfiguration: !Ref mfaConfiguration
       totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
       smsConfigCaller: !GetAtt SNSRole.Arn
-      smsAuthenticationMessage: '<%= props.smsAuthenticationMessage %>'
-      smsConfigExternalId: <%= props.roleExternalId %>  
+      smsAuthenticationMessage: !Ref smsAuthenticationMessage
+      smsConfigExternalId: !Ref roleExternalId 
     DependsOn: MFALogPolicy
   <% } %>
 
@@ -337,7 +344,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: <%= props.identityPoolName %>
+      IdentityPoolName: !Ref identityPoolName
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -353,7 +360,7 @@ Resources:
           <%= Object.keys(props.selectedParties)[i] %>: '<%= Object.values(props.selectedParties)[i]%>'
         <% } %> 
       <% } %>
-      AllowUnauthenticatedIdentities: <%= props.allowUnauthenticatedIdentities %>
+      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
   
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
@@ -362,8 +369,8 @@ Resources:
     Properties: 
       IdentityPoolId: !Ref 'IdentityPool'
       Roles:
-          unauthenticated: <%= props.unAuthRoleArn %>
-          authenticated: <%= props.authRoleArn %>
+          unauthenticated: !Ref unAuthRoleArn
+          authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
   <% } %>
 
@@ -379,7 +386,7 @@ Outputs :
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
   UserPoolName:
-    Value: <%= props.userPoolName %>
+    Value: !Ref userPoolName
   AppClientIDWeb:
     Value: !Ref 'UserPoolClientWeb'
     Description: The user pool app client id for web
