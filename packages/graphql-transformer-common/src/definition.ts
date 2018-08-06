@@ -1,7 +1,8 @@
 import {
     ObjectTypeDefinitionNode, InputValueDefinitionNode, FieldDefinitionNode,
     TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
-    ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode
+    ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode,
+    valueFromASTUntyped, ArgumentNode, DirectiveNode
 } from 'graphql'
 
 const SCALARS = {
@@ -30,6 +31,22 @@ export function getBaseType(type: TypeNode): string {
     } else {
         return type.name.value;
     }
+}
+
+export function isListType(type: TypeNode): boolean {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isListType(type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return true
+    } else {
+        return false;
+    }
+}
+
+export const getDirectiveArgument = (directive: DirectiveNode) => (arg: string, dflt?: any) => {
+    const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
+    const argument = directive.arguments.find(get(arg))
+    return argument ? valueFromASTUntyped(argument.value) : dflt
 }
 
 export function unwrapNonNull(type: TypeNode) {

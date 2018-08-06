@@ -69,7 +69,6 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () =>
         ]
     })
     const out = transformer.transform(validSchema)
-    console.log(JSON.stringify(out, null, 4))
     expect(out).toBeDefined()
     expect(out.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS')
 });

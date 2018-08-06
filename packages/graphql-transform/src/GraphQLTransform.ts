@@ -237,15 +237,21 @@ export default class GraphQLTransform {
         }
         for (const field of def.fields) {
             for (const fDir of field.directives) {
-                this.transformField(transformer, field, fDir, context)
+                this.transformField(transformer, def, field, fDir, context)
             }
         }
     }
 
-    private transformField(transformer: Transformer, def: FieldDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
+    private transformField(
+        transformer: Transformer,
+        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        def: FieldDefinitionNode,
+        dir: DirectiveNode,
+        context: TransformerContext
+    ) {
         if (matchFieldDirective(transformer.directive, dir, def)) {
             if (isFunction(transformer.field)) {
-                transformer.field(def, dir, context)
+                transformer.field(parent, def, dir, context)
             } else {
                 throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
             }
@@ -277,7 +283,7 @@ export default class GraphQLTransform {
         }
         for (const field of def.fields) {
             for (const fDir of field.directives) {
-                this.transformField(transformer, field, fDir, context)
+                this.transformField(transformer, def, field, fDir, context)
             }
         }
     }

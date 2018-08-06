@@ -143,21 +143,18 @@ var AppSyncDynamoDBTransformer = /** @class */ (function (_super) {
                 mutationType = graphql_transformer_common_1.extensionWithFields(mutationType, [graphql_transformer_common_1.makeField(deleteResolver.Properties.FieldName, [graphql_transformer_common_1.makeArg('input', graphql_transformer_common_1.makeNonNullType(graphql_transformer_common_1.makeNamedType(deleteInput.name.value)))], graphql_transformer_common_1.makeNamedType(def.name.value))]);
             }
             ctx.addObjectExtension(mutationType);
-            // Create query queries
-            if (shouldMakeQuery) {
-                _this.generateTableXConnectionType(ctx, def);
-                var queryResolver = _this.resources.makeQueryResolver(def.name.value, queryFieldNameOverride);
-                ctx.setResource(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBQueryResolverResourceID(typeName), queryResolver);
-                queryType = graphql_transformer_common_1.extensionWithFields(queryType, [graphql_transformer_common_1.makeField(queryResolver.Properties.FieldName, [
-                        graphql_transformer_common_1.makeArg('filter', graphql_transformer_common_1.makeNamedType("Table" + def.name.value + "FilterInput")),
-                        graphql_transformer_common_1.makeArg('sortDirection', graphql_transformer_common_1.makeNamedType('TableSortDirection')),
-                        graphql_transformer_common_1.makeArg('limit', graphql_transformer_common_1.makeNamedType('Int')),
-                        graphql_transformer_common_1.makeArg('nextToken', graphql_transformer_common_1.makeNamedType('String'))
-                    ], graphql_transformer_common_1.makeNamedType("Table" + def.name.value + "Connection"))]);
-                if (!_this.typeExist('TableSortDirection', ctx)) {
-                    var tableSortDirection = definitions_1.makeTableSortDirectionEnumObject();
+            if (shouldMakeQuery || shouldMakeList) {
+                if (!_this.typeExist('ModelSortDirection', ctx)) {
+                    var tableSortDirection = definitions_1.makeModelSortDirectionEnumObject();
                     ctx.addEnum(tableSortDirection);
                 }
+            }
+            // Create query queries
+            if (shouldMakeQuery) {
+                _this.generateModelXConnectionType(ctx, def);
+                var queryResolver = _this.resources.makeQueryResolver(def.name.value, queryFieldNameOverride);
+                ctx.setResource(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBQueryResolverResourceID(typeName), queryResolver);
+                queryType = graphql_transformer_common_1.extensionWithFields(queryType, [definitions_1.makeModelConnectionField(queryResolver.Properties.FieldName, def.name.value)]);
                 _this.generateFilterInputs(ctx, def);
             }
             // Create get queries
@@ -167,17 +164,13 @@ var AppSyncDynamoDBTransformer = /** @class */ (function (_super) {
                 queryType = graphql_transformer_common_1.extensionWithFields(queryType, [graphql_transformer_common_1.makeField(getResolver.Properties.FieldName, [graphql_transformer_common_1.makeArg('id', graphql_transformer_common_1.makeNonNullType(graphql_transformer_common_1.makeNamedType('ID')))], graphql_transformer_common_1.makeNamedType(def.name.value))]);
             }
             if (shouldMakeList) {
-                _this.generateTableXConnectionType(ctx, def);
+                _this.generateModelXConnectionType(ctx, def);
                 // Create the list resolver
                 var listResolver = _this.resources.makeListResolver(def.name.value, listFieldNameOverride);
                 ctx.setResource(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver);
                 _this.generateFilterInputs(ctx, def);
                 // Extend the query type to include listX
-                queryType = graphql_transformer_common_1.extensionWithFields(queryType, [graphql_transformer_common_1.makeField(listResolver.Properties.FieldName, [
-                        graphql_transformer_common_1.makeArg('filter', graphql_transformer_common_1.makeNamedType("Table" + def.name.value + "FilterInput")),
-                        graphql_transformer_common_1.makeArg('limit', graphql_transformer_common_1.makeNamedType('Int')),
-                        graphql_transformer_common_1.makeArg('nextToken', graphql_transformer_common_1.makeNamedType('String'))
-                    ], graphql_transformer_common_1.makeNamedType("Table" + def.name.value + "Connection"))]);
+                queryType = graphql_transformer_common_1.extensionWithFields(queryType, [definitions_1.makeModelConnectionField(listResolver.Properties.FieldName, def.name.value)]);
             }
             ctx.addObjectExtension(queryType);
         };
@@ -187,45 +180,27 @@ var AppSyncDynamoDBTransformer = /** @class */ (function (_super) {
     AppSyncDynamoDBTransformer.prototype.typeExist = function (type, ctx) {
         return Boolean(type in ctx.nodeMap);
     };
-    AppSyncDynamoDBTransformer.prototype.generateTableXConnectionType = function (ctx, def) {
-        var tableXConnectionName = "Table" + def.name.value + "Connection";
+    AppSyncDynamoDBTransformer.prototype.generateModelXConnectionType = function (ctx, def) {
+        var tableXConnectionName = definitions_1.makeModelConnectionTypeName(def.name.value);
         if (this.typeExist(tableXConnectionName, ctx)) {
             return;
         }
-        // Create the TableXConnection
+        // Create the ModelXConnection
         var connectionType = graphql_transformer_common_1.blankObject(tableXConnectionName);
         ctx.addObject(connectionType);
-        // Create TableXConnection type with items and nextToken
-        var connectionTypeExtension = graphql_transformer_common_1.blankObjectExtension(tableXConnectionName);
-        connectionTypeExtension = graphql_transformer_common_1.extensionWithFields(connectionTypeExtension, [graphql_transformer_common_1.makeField('items', [], graphql_transformer_common_1.makeListType(graphql_transformer_common_1.makeNamedType(def.name.value)))]);
-        connectionTypeExtension = graphql_transformer_common_1.extensionWithFields(connectionTypeExtension, [graphql_transformer_common_1.makeField('nextToken', [], graphql_transformer_common_1.makeNamedType('String'))]);
-        ctx.addObjectExtension(connectionTypeExtension);
+        ctx.addObjectExtension(definitions_1.makeModelConnectionType(def.name.value));
     };
     AppSyncDynamoDBTransformer.prototype.generateFilterInputs = function (ctx, def) {
-        // Create the Scalar filter inputs
-        if (!this.typeExist('TableStringFilterInput', ctx)) {
-            var tableStringFilterInput = definitions_1.makeTableScalarFilterInputObject('String');
-            ctx.addInput(tableStringFilterInput);
+        var scalarFilters = definitions_1.makeScalarFilterInputs();
+        for (var _i = 0, scalarFilters_1 = scalarFilters; _i < scalarFilters_1.length; _i++) {
+            var filter = scalarFilters_1[_i];
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter);
+            }
         }
-        if (!this.typeExist('TableIDFilterInput', ctx)) {
-            var tableIDFilterInput = definitions_1.makeTableScalarFilterInputObject('ID');
-            ctx.addInput(tableIDFilterInput);
-        }
-        if (!this.typeExist('TableIntFilterInput', ctx)) {
-            var tableIntFilterInput = definitions_1.makeTableScalarFilterInputObject('Int');
-            ctx.addInput(tableIntFilterInput);
-        }
-        if (!this.typeExist('TableFloatFilterInput', ctx)) {
-            var tableFloatFilterInput = definitions_1.makeTableScalarFilterInputObject('Float');
-            ctx.addInput(tableFloatFilterInput);
-        }
-        if (!this.typeExist('TableBooleanFilterInput', ctx)) {
-            var tableBooleanFilterInput = definitions_1.makeTableScalarFilterInputObject('Boolean');
-            ctx.addInput(tableBooleanFilterInput);
-        }
-        // Create the TableXFilterInput
-        if (!this.typeExist("Table" + def.name.value + "FilterInput", ctx)) {
-            var tableXQueryFilterInput = definitions_1.makeTableXFilterInputObject(def);
+        // Create the ModelXFilterInput
+        var tableXQueryFilterInput = definitions_1.makeModelXFilterInputObject(def);
+        if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput);
         }
     };

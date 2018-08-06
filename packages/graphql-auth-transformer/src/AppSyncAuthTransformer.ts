@@ -2,9 +2,8 @@ import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-
 import GraphQLAPI from 'cloudform/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'
-import { ResourceConstants } from 'graphql-transformer-common'
+import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
 import { valueFromASTUntyped } from 'graphql'
-import { ResolverResourceIDs } from 'graphql-transformer-common'
 import Resolver from '../node_modules/cloudform/types/appSync/resolver';
 
 const nManyTruthy = (n: number) => (objs: any[]) => {
