@@ -99,7 +99,7 @@ function run(context) {
             },
           ]);
           if (answer && answer.profileName) {
-            ({ profileName } = answer);
+            profileName = answer.profileName;
           }
         }
 
