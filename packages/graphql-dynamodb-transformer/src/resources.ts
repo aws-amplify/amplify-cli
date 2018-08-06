@@ -114,7 +114,7 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }] : [{ AttributeName: hashKey, AttributeType: 'S' }]
         return new DynamoDB.Table({
-            TableName: Fn.Join('-', [Refs.StackName, typeName]),
+            TableName: Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
             KeySchema: keySchema,
             AttributeDefinitions: attributeDefinitions,
             ProvisionedThroughput: {
@@ -134,7 +134,7 @@ export class ResourceFactory {
      */
     public makeIAMRole(tableId: string) {
         return new IAM.Role({
-            RoleName: Fn.Join('-', [Refs.StackName, tableId, 'role']),
+            RoleName: Fn.Join('-', [tableId, 'role', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
