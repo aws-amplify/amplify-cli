@@ -196,7 +196,7 @@ async function updateWalkthrough(context) {
   try {
     parameters = JSON.parse(fs.readFileSync(parametersFilePath));
   } catch (e) {
-    context.print.error('Paramters file not found');
+    context.print.error('Parameters file not found');
     context.print.info(e.stack);
   }
 
