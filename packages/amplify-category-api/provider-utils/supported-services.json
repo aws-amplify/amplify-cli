@@ -64,7 +64,7 @@
 
 				"key": "editorSelection",
 				"type": "list",
-				"question": "Chose the editor you would want to open the schema in:",
+				"question": "Choose the editor you would want to open the schema in:",
 				"options": [{
 						"name": "Sublime Text",
 						"value": "sublime"
