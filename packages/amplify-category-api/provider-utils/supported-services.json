@@ -27,7 +27,7 @@
 
 				"key": "apiCreationChoice",
 				"type": "confirm",
-				"question": "Do you have an annotated graphQL schema?",
+				"question": "Do you have an annotated GraphQL schema?",
 				"required": true
 			},
 			{
@@ -117,6 +117,7 @@
 				]
 			}
 		],
+		"alias": "GraphQL",
 		"defaultValuesFilename": "appSync-defaults.js",
 		"serviceWalkthroughFilename": "appSync-walkthrough.js",
 		"cfnFilename": "appSync-cloudformation-template-default.yml.ejs",
@@ -143,6 +144,7 @@
 				"type": "input"
 			}
 		],
+		"alias": "REST",
 		"defaultValuesFilename": "apigw-defaults.js",
 		"serviceWalkthroughFilename": "apigw-walkthrough.js",
 		"cfnFilename": "apigw-cloudformation-template-default.json.ejs",
