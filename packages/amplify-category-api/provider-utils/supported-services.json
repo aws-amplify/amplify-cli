@@ -96,6 +96,25 @@
 
 				],
 				"required": true
+			},
+			{
+
+				"key": "dynamoDbType",
+				"type": "list",
+				"question": "Choose a DynamoDB data source option",
+				"options": [{
+						"name": "Use DynamoDB table configured in the current Amplify project",
+						"value": "currentProject"
+					},
+					{
+						"name": "Create a new DynamoDB table",
+						"value": "newResource"
+					},
+					{
+						"name": "Use a DynamoDB table already deployed on AWS",
+						"value": "cloudResource"
+					}
+				]
 			}
 		],
 		"defaultValuesFilename": "appSync-defaults.js",

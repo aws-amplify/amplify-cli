@@ -1,6 +1,6 @@
 const category = 'function';
 
-async function add(context, providerName, service){
+async function add(context, providerName, service) {
   const options = {
     service,
     providerPlugin: providerName,
@@ -15,10 +15,10 @@ async function add(context, providerName, service){
 }
 
 async function console(context) {
-  context.print.info('to be implemented: ' + category + ' console');
+  context.print.info(`to be implemented: ${category} console`);
 }
- 
+
 module.exports = {
   add,
-  console
+  console,
 };

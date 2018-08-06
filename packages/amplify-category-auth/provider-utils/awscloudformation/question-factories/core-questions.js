@@ -1,6 +1,10 @@
 const inquirer = require('inquirer');
 
-function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) {
+function parseInputs(
+  input, amplify,
+  defaultValuesFilename,
+  stringMapsFilename, currentAnswers, context,
+) {
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -47,7 +51,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       const trueOptions = getAllMaps()[input.map]
         .filter(x => !currentAnswers[input.requiredOptions]
           .includes(x.value));
-
+      /*eslint-disable*/
       question = Object.assign(question, {
         choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
         filter: ((input) => {
@@ -55,6 +59,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
           return input;
         }),
       });
+      /* eslint-enable */
     }
   }
 

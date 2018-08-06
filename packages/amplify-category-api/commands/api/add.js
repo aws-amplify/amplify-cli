@@ -9,22 +9,6 @@ let options;
 module.exports = {
   name: subcommand,
   run: async (context) => {
-
-
-    /*const transformer = new GraphQLTransform({
-      transformers: [
-          new AppSyncTransformer('/Users/kaustavg/my-app'),
-          new AppSyncDynamoDBTransformer(),
-          new AppSyncAuthTransformer(),
-
-      ]
-    });
-    const cfdoc = transformer.transform(fs.readFileSync('/Users/kaustavg/my-app/schematransform.graphql', 'utf8'));
-    console.log(cfdoc);
-    
-
-    return;*/
-
     const { amplify } = context;
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
@@ -32,7 +16,8 @@ module.exports = {
           service: result.service,
           providerPlugin: result.providerName,
         };
-        const providerController = require(`../../provider-utils/${result.providerName}/index`);
+        const providerController =
+          require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
           return;

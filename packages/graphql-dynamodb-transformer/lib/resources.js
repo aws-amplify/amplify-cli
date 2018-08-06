@@ -85,36 +85,6 @@ var ResourceFactory = /** @class */ (function () {
         };
     };
     /**
-     * Create the DynamoDB table that will hold all objects for our application.
-     * @param name The name of the DynamoDB table to use.
-     */
-    // public makeDynamoDBTable() {
-    //     return new DynamoDB.Table({
-    //         TableName: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableName),
-    //         KeySchema: [{
-    //             AttributeName: '__typename',
-    //             KeyType: 'HASH'
-    //         }, {
-    //             AttributeName: 'id',
-    //             KeyType: 'RANGE'
-    //         }],
-    //         AttributeDefinitions: [{
-    //             AttributeName: '__typename',
-    //             AttributeType: 'S'
-    //         }, {
-    //             AttributeName: 'id',
-    //             AttributeType: 'S'
-    //         }],
-    //         ProvisionedThroughput: {
-    //             ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-    //             WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
-    //         },
-    //         StreamSpecification: {
-    //             StreamViewType: 'NEW_AND_OLD_IMAGES'
-    //         }
-    //     })
-    // }
-    /**
      * Create a DynamoDB table for a specific type.
      */
     ResourceFactory.prototype.makeModelTable = function (typeName, hashKey, rangeKey) {
@@ -157,7 +127,7 @@ var ResourceFactory = /** @class */ (function () {
      */
     ResourceFactory.prototype.makeIAMRole = function (tableId) {
         return new iam_1.default.Role({
-            RoleName: "AppSyncAccess" + tableId,
+            RoleName: cloudform_1.Fn.Join('-', [cloudform_1.Refs.StackName, tableId, 'role']),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
