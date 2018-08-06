@@ -68,7 +68,7 @@ async function updateResource(context, category, service) {
 
   if (!updateWalkthrough) {
     context.print.error('Update functionaility not available for this option');
-    return;
+    process.exit(0);
   }
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);

@@ -26,16 +26,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const resourceQuestions = [
     {
-      type: inputs[0].type,
-      name: inputs[0].key,
-      message: inputs[0].question,
-      validate: amplify.inputValidation(inputs[0]),
-      default: () => {
-        const defaultValue = allDefaultValues[inputs[0].key];
-        return defaultValue;
-      },
-    },
-    {
       type: inputs[1].type,
       name: inputs[1].key,
       message: inputs[1].question,
@@ -44,9 +34,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     },
   ];
 
-  // Ask resource and API name question
+  // API name question
 
   const resourceAnswers = await inquirer.prompt(resourceQuestions);
+  resourceAnswers[inputs[0].key] = resourceAnswers[inputs[1].key];
 
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
