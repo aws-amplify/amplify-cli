@@ -74,6 +74,26 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
       });
     }
 
+
+    // TODO: Replace with a function that checks after edit, and offers undo. Remove triple loop.
+    if (constraints) {
+      constraints.forEach((c) => {
+        const plugins = Object.keys(c);
+        plugins.forEach((p) => {
+          const resources = Object.keys(c[p]);
+          resources.forEach((r) => {
+            if (allMetadata[p][r] && Object.keys(c[p][r]).includes(inputs[i].key)) {
+              const overRideWarning = chalkpipe(null, chalk.red)(`
+
+Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
+`);
+              q.suffix = q.suffix ? q.suffix.concat(overRideWarning) : overRideWarning;
+            }
+          });
+        });
+      });
+    }
+
     // Update answers with spreading of previous values and those returning from question prompt
     coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) };
   }

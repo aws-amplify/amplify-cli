@@ -356,8 +356,8 @@ Resources:
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
       SupportedLoginProviders: 
-        <% for(var i=0; i < Object.keys(props.selectedParties).length; i++) { %>
-          <%= Object.keys(props.selectedParties)[i] %>: '<%= Object.values(props.selectedParties)[i]%>'
+        <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
+          <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
         <% } %> 
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities

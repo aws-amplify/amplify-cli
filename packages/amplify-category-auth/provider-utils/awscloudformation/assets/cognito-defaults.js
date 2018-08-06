@@ -1,12 +1,15 @@
+const uuid = require('uuid');
 const { coreAttributes, appClientReadAttributes } = require('./string-maps');
 
+const [sharedId] = uuid().split('-');
+
 const generalDefaults = projectName => ({
-  resourceName: `cognito${projectName}`,
+  resourceName: projectName,
   authSelections: ['identityPoolAndUserPool'],
 });
 
 const userPoolDefaults = projectName => ({
-  userPoolName: `${projectName}_userpool`,
+  userPoolName: `${projectName}_userpool_${sharedId}`,
   autoVerifiedAttributes: ['phone_number'],
   mfaConfiguration: 'OFF',
   mfaTypes: ['SMS Text Message'],
@@ -45,7 +48,7 @@ const userPoolDefaults = projectName => ({
 });
 
 const identityPoolDefaults = projectName => ({
-  identityPoolName: `${projectName}_identitypool`,
+  identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: false,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
 });
@@ -66,8 +69,8 @@ const entityKeys = {
   userPoolKeys: Object.keys(userPoolDefaults('')),
 };
 
-const getAllDefaults = (amplify) => {
-  const projectName = amplify.projectConfig.projectName.toLowerCase();
+const getAllDefaults = (name) => {
+  const projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase()}_${sharedId}` : name;
   const target = generalDefaults(projectName);
   const sources = [
     userPoolDefaults(projectName),

@@ -86,7 +86,7 @@ function updateResource(context, category, service) {
 
     .then((result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, entityKeys } = require(defaultValuesSrc);
+      const { functionMap, getAllDefaults, entityKeys } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
@@ -96,6 +96,8 @@ function updateResource(context, category, service) {
 
       const previousKeys = Object.keys(context.updatingAuth);
 
+      /* if the user changes their auth selection during an edit,
+      *  we should remove remove all the identity pool specfic keys from the parameters */
       if (result.authSelections === 'userPoolOnly') {
         previousKeys.forEach((k) => {
           if (entityKeys.identityPoolKeys.includes(k)) {
@@ -104,9 +106,18 @@ function updateResource(context, category, service) {
         });
       }
 
-      /* merge actual answers object into props object of previous answers,
-       * ensuring that manual entries override previous */
-      props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
+      if (result.useDefault && result.useDefault === 'default') {
+        /* if the user elects to use defaults during an edit,
+         * we simply grab all of the static defaults
+         * but make sure to pass existing resource name so we don't create a 2nd auth resource */
+        props = getAllDefaults(context.updatingAuth.resourceName);
+      } else {
+        /* if the user does NOT choose defaults during an edit,
+         * we merge actual answers object into props object of previous answers,
+         * and in turn merge these into the defaults
+         * ensuring that manual entries override previous which then override defaults */
+        props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
+      }
 
       copyCfnTemplate(context, category, props, cfnFilename);
     })

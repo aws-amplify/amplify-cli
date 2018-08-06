@@ -16,7 +16,7 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
   answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
   ({ dependsOn } = pathsAnswer);
 
-  const privacy = await askPrivacy(context);
+  const privacy = await askPrivacy(context, answers);
   answers = { ...answers, privacy, dependsOn };
 
   if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
@@ -59,7 +59,7 @@ async function askApiNames(context, defaults) {
   return answer;
 }
 
-async function askPrivacy(context) {
+async function askPrivacy(context, answers) {
   while (true) {
     const answer = await inquirer.prompt({
       name: 'privacy',
@@ -92,14 +92,14 @@ async function askPrivacy(context) {
     if (!checkIfAuthExists(context)) {
       if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
         try {
-          const { add } = require('amplify-category-auth');
+          const { checkRequirements } = require('amplify-category-auth');
           context.api = {
             privacy: answer.privacy,
           };
-          await add(context);
+          await checkRequirements({ authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true }, context, 'api', answers.resourceName);
           return privacy;
         } catch (e) {
-          context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+          context.print.error(e);
         }
       }
     } else {

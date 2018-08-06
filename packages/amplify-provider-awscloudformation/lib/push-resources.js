@@ -229,9 +229,6 @@ function formNestedStack(context, projectDetails) {
           if (Array.isArray(values[a])) {
             parameters[keys[a]] = values[a].join();
           }
-          if (Object.prototype.toString.call(values[a]) === '[object Object]') {
-            delete parameters[keys[a]];
-          }
         }
 
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
