@@ -28,8 +28,9 @@ async function add(context) {
     })
     .then((resourceName) => {
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+      context.print.success('Successfully added auth resource');
+      return resourceName;
     })
-    .then(() => context.print.success('Successfully added resource'))
     .catch((err) => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');

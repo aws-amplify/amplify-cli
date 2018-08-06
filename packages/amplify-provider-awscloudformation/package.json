@@ -5,6 +5,13 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
+    "amplify-category-storage": "0.1.0",
+    "graphql-transform": "1.0",
+    "graphql-dynamodb-transformer": "1.0",
+    "graphql-elasticsearch-transformer": "1.0",
+    "graphql-auth-transformer": "1.0",
+    "graphql-transformer-common": "1.0",
+    "graphql-appsync-transformer": "1.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
     "cfn-lint": "^1.7.2",

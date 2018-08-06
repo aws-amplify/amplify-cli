@@ -5,7 +5,7 @@ const getAllDefaults = (project) => {
   const [shortId] = uuid().split('-');
 
   const { amplifyMeta } = project;
-  const providerInfo = amplifyMeta.providers['awscloudformation'];
+  const providerInfo = amplifyMeta.providers.awscloudformation;
 
   const authRoleName = providerInfo.AuthRoleName;
   const unauthRoleName = providerInfo.UnauthRoleName;

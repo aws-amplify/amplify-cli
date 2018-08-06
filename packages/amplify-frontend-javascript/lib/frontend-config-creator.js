@@ -106,13 +106,14 @@ function getS3Config(s3Resources) {
   };
 }
 
-function getAppSyncConfig(appsyncResources) {
+function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
   return {
-    aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLApiEndpoint,
-    aws_appsync_region: appsyncResource.output.Region,
+    aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
+    aws_appsync_region: projectRegion,
     aws_appsync_authenticationType: appsyncResource.output.securityType,
+    aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput,
   };
 }
 

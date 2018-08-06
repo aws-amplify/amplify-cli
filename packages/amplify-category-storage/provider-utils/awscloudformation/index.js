@@ -18,7 +18,7 @@ function addResource(context, category, service, options) {
 }
 
 function updateResource(context) {
-  context.print.warning('You can only add or remove a S3 resource.');
+  context.print.warning('You can only add or remove a storage resource.');
   process.exit(0);
 }
 

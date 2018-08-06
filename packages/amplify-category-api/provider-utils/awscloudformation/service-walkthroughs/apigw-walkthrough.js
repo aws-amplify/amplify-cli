@@ -21,11 +21,11 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
 
   if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
     context.amplify.getProjectDetails().amplifyMeta.providers &&
-    context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation']
+    context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
   ) {
     // TODO: read from utility functions (Dustin PR)
     const { amplifyMeta } = context.amplify.getProjectDetails();
-    const providerInfo = amplifyMeta.providers['awscloudformation'];
+    const providerInfo = amplifyMeta.providers.awscloudformation;
 
     answers.privacy.authRoleName = providerInfo.AuthRoleName;
     answers.privacy.unAuthRoleName = providerInfo.UnauthRoleName;
