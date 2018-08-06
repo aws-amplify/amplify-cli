@@ -67,7 +67,7 @@ async function updateResource(context, category, service) {
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
-    context.print.error('Update functionaility not available for this option');
+    context.print.error('Update functionality not available for this option');
     process.exit(0);
   }
 
