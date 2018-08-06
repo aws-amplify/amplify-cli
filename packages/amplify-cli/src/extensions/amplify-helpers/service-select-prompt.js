@@ -10,6 +10,7 @@ function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
         service,
         providerPlugin: providerPlugins[supportedServices[service].provider],
         providerName: supportedServices[service].provider,
+        alias: supportedServices[service].alias,
       });
     }
   });
@@ -21,8 +22,9 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
   const options = [];
 
   for (let i = 0; i < supportedServices.length; i += 1) {
+    const optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
     options.push({
-      name: `${supportedServices[i].providerName}:${supportedServices[i].service}`,
+      name: optionName,
       value: {
         provider: supportedServices[i].providerPlugin,
         service: supportedServices[i].service,

@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
+
 const parametersFileName = 'parameters.json';
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
@@ -9,7 +10,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const dependsOn = [];
   // Ask resource and Lambda function name
 
@@ -57,7 +57,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
 
   const answers = await inquirer.prompt(resourceQuestions);
-  
+
   Object.assign(allDefaultValues, pathDetails, answers);
   if (answers.functionTemplate === 'crud') {
     const dynamoAnswers = await askDynamoDBQuestions(context, inputs);
@@ -84,31 +84,32 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
 async function getTableParameters(context, dynamoAnswers) {
   if (dynamoAnswers.Arn) { // Looking for table parameters on DynamoDB public API
-
     const hashKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'HASH') || {};
-    const hashType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === hashKey.AttributeName) || {};
-    const rangeKey = dynamoAnswers.KeySchema.find(attr => attr.KeyType === 'RANGE') || {};
-    const rangeType = dynamoAnswers.AttributeDefinitions.find(attr => attr.AttributeName === rangeKey.AttributeName) || {};
+    const hashType = dynamoAnswers.AttributeDefinitions.find(attr =>
+      attr.AttributeName === hashKey.AttributeName) || {};
+    const rangeKey = dynamoAnswers.KeySchema.find(attr =>
+      attr.KeyType === 'RANGE') || {};
+    const rangeType = dynamoAnswers.AttributeDefinitions.find(attr =>
+      attr.AttributeName === rangeKey.AttributeName) || {};
     return {
-      "tableName": dynamoAnswers.TableName,
-      "partitionKeyName": hashKey.AttributeName,
-      "partitionKeyType": hashType.AttributeType,
-      "sortKeyName": rangeKey.AttributeName,
-      "sortKeyType": rangeType.AttributeType,
+      tableName: dynamoAnswers.TableName,
+      partitionKeyName: hashKey.AttributeName,
+      partitionKeyType: hashType.AttributeType,
+      sortKeyName: rangeKey.AttributeName,
+      sortKeyType: rangeType.AttributeType,
     };
-  } else { // Looking for table parameters on local configuration
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    let parameters;
-    try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
-    } catch (e) {
-      parameters = {};
-    }
-
-    return parameters;
+  } // Looking for table parameters on local configuration
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, 'storage', dynamoAnswers.resourceName);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  let parameters;
+  try {
+    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+  } catch (e) {
+    parameters = {};
   }
+
+  return parameters;
 }
 
 async function askDynamoDBQuestions(context, inputs) {

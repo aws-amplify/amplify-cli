@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const categoryManager = require('./lib/category-manager');
-const consoleCommand = require('./lib/console');
 
 async function add(context) {
   const {

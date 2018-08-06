@@ -44,10 +44,12 @@ function addResource(context, category, service, options) {
       if (result.output) {
         options.output = result.output;
       }
-      if (answers.customCfnFile) {
-        cfnFilename = answers.customCfnFile;
+      if (!result.noCfnFile) {
+        if (answers.customCfnFile) {
+          cfnFilename = answers.customCfnFile;
+        }
+        copyCfnTemplate(context, category, answers, cfnFilename);
       }
-      copyCfnTemplate(context, category, answers, cfnFilename);
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
         answers.resourceName,
@@ -57,4 +59,19 @@ function addResource(context, category, service, options) {
     });
 }
 
-module.exports = { addResource };
+
+async function updateResource(context, category, service) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+
+  if (!updateWalkthrough) {
+    context.print.error('Update functionaility not available for this option');
+    process.exit(0);
+  }
+
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
+}
+
+module.exports = { addResource, updateResource };

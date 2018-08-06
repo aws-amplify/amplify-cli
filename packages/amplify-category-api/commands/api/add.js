@@ -16,7 +16,8 @@ module.exports = {
           service: result.service,
           providerPlugin: result.providerName,
         };
-        const providerController = require(`../../provider-utils/${result.providerName}/index`);
+        const providerController =
+          require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
           return;

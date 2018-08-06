@@ -2,15 +2,20 @@ const awsRegions = require('./aws-regions');
 const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
+const { transformGraphQLSchema } = require('./transform-graphql-schema');
+
 
 module.exports = {
+  compileSchema: (context, options) => transformGraphQLSchema(context, options),
   getRegions: () => awsRegions.regions,
+  /*eslint-disable*/
   staticRoles: context => ({
     unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleName,
     authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleName,
     unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleArn,
     authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleArn,
   }),
+  /* eslint-enable */
   getUserPools: (context, options) => new Cognito(context)
     .then(cognitoModel => cognitoModel.cognito.listUserPools({ MaxResults: 60 }).promise()
       .then((result) => {

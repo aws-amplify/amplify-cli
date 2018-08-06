@@ -4,11 +4,16 @@ This tutorial will walk you through using the AWS Amplify CLI with a React appli
 
 
 # Installation
-- An AWS Account and credentials are necessary. See [LINK]().
+
+**NOTE** The steps below will change slightly once the CLI is released publicly.
+
+If you're using Windows, we recommend the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+- An AWS Account and credentials are necessary. If you're unfamiliar with finding credentials see the following [LINK](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html).
 - Ensure you have NodeJS installed
   - Examples below use `yarn` but `npm` works as well.
-- Download [LINK](https://amplify-cli-beta-3dd89264-8c7c-11e8-9eb6-529269fb1459.s3.amazonaws.com/amplify-cli-0.1.0.tgz?AWSAccessKeyId=AKIAIFBGMKZSDB7FRP7A&Signature=l8ieJ9wqXDJN8TJ02D63Taxmgjo%3D&Expires=1533366622)
-- Navigate into the unpacked directory and run `npm run setup-dev`
+- Download the Amplify CLI from [HERE](https://s3.amazonaws.com/amplify-cli-beta-3dd89264-8c7c-11e8-9eb6-529269fb1459/amplify-cli-0.1.0.tgz)
+- Navigate into the unpacked directory (usually called `package`) and run `npm run setup-dev`
 - Ensure you have [Create React App](https://github.com/facebook/create-react-app) installed and create a new project:
 ```
 yarn create-react-app -g
@@ -39,7 +44,7 @@ You can see the changes are not deployed by running `amplify status` and then si
 
 # Add User Registration and Sign-In
 
-Now that your app is in the cloud, you can add some features like allowing users to register for your site and login. Run `amplify add auth` and select the **Default**
+Now that your app is in the cloud, you can add some features like allowing users to register for your site and login. Run `amplify add auth` and select the **Default configuration**.
 
 Next, add the Amplify library to your application:
 ```
@@ -70,7 +75,7 @@ A login screen is nice but now is the time to add some features, like tracking a
 Edit your `App.js` file in the React project again and modify your imports so that the `Analytics` and `Storage` categories are included as well as the `S3Album` component, which will be used for uploading and downloading photos.
 
 ```
-import { Analytics, Storage } from 'aws-amplify';
+import Amplify, { Analytics, Storage } from 'aws-amplify';
 import { withAuthenticator, S3Album } from 'aws-amplify-react';
 ```
 
@@ -108,27 +113,28 @@ Finally, modify the `render` method so that you can upload files and also view a
     );
   }
 ```
-Refresh the web page manually to see the uploaded image in your app.
 
-Save your changes and run `amplify publish`. Since you already pushed the changes earlier just the local build will be created and uploaded to the hosting bucket. Login as before if necessary and you'll be able to upload photos, which are protected by user. You can also refresh the page to view them.
+Save your changes and run `amplify publish`. Since you already pushed the changes earlier just the local build will be created and uploaded to the hosting bucket. Login as before if necessary and you'll be able to upload photos, which are protected by user. You can refresh the page to view them after uploading.
 
 
 # Add REST API calls to a database
 
-Now that your application is setup, the final piece is to add a backend API with data that can be peristed in a database. For this example we will use a REST backend with a NoSQL database. Run `amplify add api` and follow the prompts, giving your API a friendly name such as **myapi** or something else that you remember. Use the default `/items` path and select **Create a new lambda function**. Select the option titled **CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)** when prompted. This will create an architecture of Amazon API Gateway with Express running in a Lambda function that reads and writes to Amazon DynamoDB. You'll be able to later modify the routes in the Lambda function to meet your needs and update it in the cloud. 
+Now that your application is setup, the final piece is to add a backend API with data that can be peristed in a database. For this example we will use a REST backend with a NoSQL database. Run `amplify add api` and follow the prompts, select the **API Gateway** provider, giving your API a friendly name such as **myapi** or something else that you remember. Use the default `/items` path and select **Create a new lambda function**. Select the option titled **CRUD function for Amazon DynamoDB table (Integration with Amazon API Gateway and Amazon DynamoDB)** when prompted. This will create an architecture of Amazon API Gateway with Express running in a Lambda function that reads and writes to Amazon DynamoDB. You'll be able to later modify the routes in the Lambda function to meet your needs and update it in the cloud. 
 
-Since you do not have a database provisioned yet, the CLI workflow will prompt you for this. Alternatively, you could have run `amplify add storage` beforehand to create a DynamoDB table and use it in this setup. When the CLI asks you for the Primary Key structure use an attribute named `id` of type `String`.
-Next, you would need to select the security type for the API. Select **Authenticated - AWS IAM (Signature Version 4 signing** option.
+Since you do not have a database provisioned yet, the CLI workflow will prompt you for this. Alternatively, you could have run `amplify add storage` beforehand to create a DynamoDB table and use it in this setup. When the CLI asks you for the Primary Key structure use an attribute named `id` of type `String`. Don't select any other options like Sort keys or GSIs.
+
+Next, you would need to select the security type for the API. Select **Authenticated - AWS IAM (Signature Version 4 signing)** option.
 
 
 Edit your `App.js` file in the React project again and modify your imports so that the `API` category is included as well to make API calls from the app.
 
 ```
-import { Analytics, Storage, API } from 'aws-amplify';
+import Amplify, { Analytics, Storage, API } from 'aws-amplify';
 ```
 
 
 In `App.js` add in the following code before the `render()` method, update **myapi** if you used an alternative name during setup:
+
 ```
   post = async () => {
     console.log('calling api');
@@ -150,9 +156,10 @@ In `App.js` add in the following code before the `render()` method, update **mya
     const response = await API.get('myapi', '/items/1');
     alert(JSON.stringify(response, null, 2));
   }
-  ```
+```
 
 Update the `render()` method to include calls to these three methods:
+
 ```
   render() {
     return (
@@ -167,8 +174,19 @@ Update the `render()` method to include calls to these three methods:
       </div>
     );
   }
-  ```
+```
 
 Save the file and run `amplify publish`. After the API is deployed along with the Lambda function and database table, your app will be built and updated in the cloud. You can then add a record to the database by clicking **POST** and use **GET** or **LIST** to retrieve the record, which has been hard coded in this simple example.
 
 In your project directory, open `./amplify/backend/function` and you will see the Lambda function that you created. The `app.js` file runs the Express function and all of the HTTP method routes are available for you to manipulate. For instance the `API.post()` in your React app corresponded to the `app.post(path, function(req, res){...})` code in this Lambda function. If you choose to customize the Lambda you can always update it in the cloud with `amplify push`. 
+
+
+# Testing your Function
+
+Amplify CLI supports local testing of Lambda functions. Run `amplfiy status` to get the resource name of the Lambda function created earlier, and execute:
+
+```
+amplify function invoke <resourcename>
+```
+
+Notice that the function runs but doesn't exit, this is because this Lambda example starts an Express server which you need to manually close when testing from the CLI. `ctrl-c` to close and open the `./amplify/backend/function/resourcename` directory to see the local structure that is packaged for Lambda invocation from API Gateway. Inside the `src` directory is the Lambda function itself, as well as an `event.json` which is used for the `amplify function invoke` command testing you just ran. Also in this directory is `index.js` which is the main entry point for the Serverless Express library that echoed out the test event and instantiated the server inside `app.js`. Since the Express routes defined in `app.js` doesn't have a path that was called via the test event, it responded with a basic 404 message. The details of Express route modifications are left as an exercise to the reader. For more info on it, checkout - https://github.com/awslabs/aws-serverless-express
