@@ -105,6 +105,12 @@ export class AppSyncConnectionTransformer extends Transformer {
             }
         )
 
+        if (connectionName && !associatedConnectionField) {
+            throw new InvalidDirectiveError(
+                `Found one half of connection "${connectionName}" at ${parentTypeName}.${fieldName} but no related field on type ${relatedTypeName}`
+            )
+        }
+
         connectionName = connectionName || `${parentTypeName}.${fieldName}`
         const leftConnectionIsList = isListType(field.type)
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
@@ -116,8 +122,6 @@ export class AppSyncConnectionTransformer extends Transformer {
         // 3. {} to []
         // 4. [] to ?
         // 5. {} to ?
-        console.log(`Connecting ${parent.name.value}.${field.name.value} to type ${relatedTypeName}`)
-        console.log(`LeftIsList: ${leftConnectionIsList}. RightIsList: ${rightConnectionIsList}`)
         if (leftConnectionIsList && rightConnectionIsList) {
             // 1. TODO.
             // Use an intermediary table or other strategy like embedded string sets for many to many.
@@ -212,7 +216,6 @@ export class AppSyncConnectionTransformer extends Transformer {
         field: FieldDefinitionNode,
         returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
     ) {
-        console.log(`Extending type with connection ${parent.name.value}.${field.name.value}: ${returnType.name.value}`)
         this.generateModelXConnectionType(ctx, returnType)
 
         // Extensions are not allowed to redeclare fields so we must replace

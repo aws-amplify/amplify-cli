@@ -31,6 +31,16 @@ test('Test AppSyncConnectionTransformer simple one to many happy case', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+
+    // Post.comments field
+    const postType = getObjectType(schemaDoc, 'Post')
+    expectFields(postType, ['comments'])
+    const commentField = postType.fields.find(f => f.name.value === 'comments')
+    expect(commentField.arguments.length).toEqual(4)
+    expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
+    expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
 });
 
 test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
@@ -59,10 +69,83 @@ test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'post')]).toBeTruthy()
     const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
     const postType = getObjectType(schemaDoc, 'Post')
+    const commentType = getObjectType(schemaDoc, 'Comment')
+
+    // Check Post.comments field
     expectFields(postType, ['comments'])
     const commentField = postType.fields.find(f => f.name.value === 'comments')
     expect(commentField.arguments.length).toEqual(4)
     expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
+    expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check Comment.post field
+    const postField = commentType.fields.find(f => f.name.value === 'post')
+    expect(postField.arguments.length).toEqual(0)
+    expect(postField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((postField.type as any).name.value).toEqual('Post')
+});
+
+test('Test AppSyncConnectionTransformer many to many should fail', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "ManyToMany")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+        posts: [Post] @connection(name: "ManyToMany")
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncConnectionTransformer()
+        ]
+    })
+    try {
+        transformer.transform(validSchema);
+        expect(true).toEqual(false)
+    } catch (e) {
+        // Should throw bc we don't let support many to many
+        expect(e).toBeTruthy()
+        expect(e.name).toEqual('InvalidDirectiveError')
+    }
+});
+
+test('Test AppSyncConnectionTransformer many to many should fail due to missing other "name"', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "ManyToMany")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # This is meant to be the other half of "ManyToMany" but I forgot.
+        posts: [Post] @connection
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncConnectionTransformer()
+        ]
+    })
+    try {
+        transformer.transform(validSchema);
+        expect(true).toEqual(false)
+    } catch (e) {
+        // Should throw bc we check both halves when name is given
+        expect(e).toBeTruthy()
+        expect(e.name).toEqual('InvalidDirectiveError')
+    }
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
