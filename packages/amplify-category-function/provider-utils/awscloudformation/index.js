@@ -4,7 +4,7 @@ const inquirer = require('inquirer');
 
 let serviceMetadata;
 
-function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
+async function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
@@ -97,30 +97,30 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-function addResource(context, category, service, options) {
+async function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    .then(async (result) => {
-      if (result.answers) {
-        ({ answers } = result);
-        options.dependsOn = result.dependsOn;
-      } else {
-        answers = result;
-      }
+  const result = await serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
+    
+  if (result.answers) {
+    ({ answers } = result);
+    options.dependsOn = result.dependsOn;
+  } else {
+    answers = result;
+  }
 
-      copyCfnTemplate(context, category, answers, cfnFilename);
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        category,
-        answers.resourceName,
-        options,
-      );
+  copyCfnTemplate(context, category, answers, cfnFilename);
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    category,
+    answers.resourceName,
+    options,
+  );
 
-      await openEditor(context, category, answers);
-    })
-    .then(() => answers.resourceName);
+  await openEditor(context, category, answers);
+    
+  return answers.resourceName;
 }
 
 async function openEditor(context, category, options) {
