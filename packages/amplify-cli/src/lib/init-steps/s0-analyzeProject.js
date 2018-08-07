@@ -1,5 +1,6 @@
 const path = require('path');
 const inquirer = require('inquirer');
+const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
 
 async function run(context) {
   return new Promise(async (resolve) => {
@@ -17,11 +18,14 @@ async function run(context) {
       ({ projectName } = await inquirer.prompt(projectNameQuestion));
     }
 
+    const defaultEditor = await editorSelection();
+
     context.exeInfo = {};
 
     context.exeInfo.projectConfig = {
       projectName,
       projectPath,
+      defaultEditor,
     };
 
     context.exeInfo.metaData = {

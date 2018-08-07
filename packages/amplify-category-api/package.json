@@ -16,7 +16,6 @@
     "fs-extra": "^6.0.1",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
-    "open-in-editor": "^2.2.0",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
