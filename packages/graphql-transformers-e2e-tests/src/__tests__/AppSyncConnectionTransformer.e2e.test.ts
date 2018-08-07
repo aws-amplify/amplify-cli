@@ -11,7 +11,7 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
 
-jest.setTimeout(200000);
+jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
 const STACK_NAME = 'AppSyncConnectionTransformerTest'
@@ -73,8 +73,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
