@@ -44,6 +44,7 @@ export class CloudFormationClient {
                 ParameterValue: defParams[key]
             })
         }
+
         return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
             this.client.createStack,
             {
@@ -97,8 +98,8 @@ export class CloudFormationClient {
         poll: StackStatus[] = [
             "CREATE_IN_PROGRESS", "ROLLBACK_IN_PROGRESS", "UPDATE_IN_PROGRESS", "REVIEW_IN_PROGRESS", "DELETE_IN_PROGRESS",
             "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS", "UPDATE_ROLLBACK_IN_PROGRESS"],
-        maxPolls: number = 100,
-        pollInterval: number = 5,
+        maxPolls: number = 300,
+        pollInterval: number = 10,
     ): Promise<CloudFormation.Stack> {
         const stack = await this.describeStack(name);
         if (success.includes(stack.StackStatus)) {

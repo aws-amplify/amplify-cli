@@ -54,6 +54,21 @@ export class S3Client {
         )
     }
 
+    async uploadZIPFile(bucketName: string, filePath: string, s3key: string, contentType: string = 'application/zip') {
+        const fileContent = this.readZIPFile(filePath)
+
+        return await promisify<S3.Types.PutObjectRequest, S3.Types.PutObjectOutput>(
+            this.client.putObject,
+            {
+                Bucket: bucketName,
+                Key: s3key,
+                Body: fileContent,
+                ContentType: contentType
+            },
+            this.client
+        ) 
+    }
+
     async uploadFile(bucketName: string, filePath: string, s3key: string) {
 
         const fileContent = this.readFile(filePath)
@@ -120,11 +135,14 @@ export class S3Client {
         )
     }
 
-    async setUpS3Resources(bucketName: string, filePath: string, s3key: string) {
+    async setUpS3Resources(bucketName: string, filePath: string, s3key: string, zip?: boolean) {
         await this.createBucket(bucketName)
         await this.putBucketVersioning(bucketName)
-        await this.uploadFile(bucketName, filePath, s3key)
-
+        if (zip) {
+            await this.uploadZIPFile(bucketName, filePath, s3key)
+        } else {
+            await this.uploadFile(bucketName, filePath, s3key)
+        }
         return await this.getFileVersion(bucketName, s3key)
     }
 
@@ -135,5 +153,9 @@ export class S3Client {
     
     private readFile(filePath: string) {
         return fs.readFileSync(filePath, "utf8")
+    }
+
+    private readZIPFile(filePath: string) {
+        return fs.createReadStream(filePath)
     }
 }
