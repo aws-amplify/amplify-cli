@@ -298,7 +298,7 @@
 			},
 			{
 				"key": "defaultPasswordPolicy",
-				"question": "Do you want to use the default password policy for this User Pool?",
+				"question": "Do you want to override the default password policy for this User Pool?",
 				"temp": true,
 				"required": true,
 				"type": "confirm",
@@ -323,12 +323,7 @@
 				"andConditions": [
 					{
 						"key": "defaultPasswordPolicy",
-						"value": false,
-						"operator": "="
-					},
-					{
-						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
+						"value": true,
 						"operator": "="
 					}
 				]
@@ -347,7 +342,7 @@
 				"andConditions": [
 					{
 						"key": "defaultPasswordPolicy",
-						"value": false,
+						"value": true,
 						"operator": "="
 					},
 					{
