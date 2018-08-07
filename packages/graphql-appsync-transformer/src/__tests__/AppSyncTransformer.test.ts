@@ -4,8 +4,6 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncDynamoDBTransformer } from 'graphql-dynamodb-transformer'
-import { AppSyncSearchableTransformer } from 'graphql-elasticsearch-transformer'
 import { AppSyncTransformer } from '../AppSyncTransformer'
 
 import fs = require('fs');
@@ -23,81 +21,14 @@ test('Test AppSyncTransformer validation happy case', () => {
     const directory = './fileTest';
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(directory + '//'),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncSearchableTransformer()
+            new AppSyncTransformer(directory + '//')
 
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 
-    expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy
-    expect(fs.existsSync('./fileTest/resolver/Mutation.createPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTest/resolver/Mutation.createPost.response')).toBeTruthy
-    expect(fs.existsSync('./fileTest/resolver/Query.getPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTest/resolver/Query.getPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTest/function/python_streaming_function.zip')).toBeTruthy
-
-    cleanUpFiles(directory)
-});
-
-test('Test AppSyncTransformer with multiple model directives', () => {
-    const validSchema = `
-    type Post @model {
-        id: ID!
-        title: String!
-        createdAt: String
-        updatedAt: String
-    }
-
-    type User @model {
-        id: ID!
-        name: String!
-    }
-    `
-
-    const directory = './fileTestTwo'
-    const transformer = new GraphQLTransform({
-        transformers: [
-            new AppSyncTransformer(directory),
-            new AppSyncDynamoDBTransformer()
-        ]
-    })
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined()
-
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definitionS3Location = schema.Properties.DefinitionS3Location
-    expect(definitionS3Location).toBeDefined()
-
-    const schemaDefinition = readFile(directory + '/schema.graphql')
-    expect(schemaDefinition).toBeDefined()
-
-    const parsed = parse(schemaDefinition);
-    const queryType = getObjectType(parsed, 'Query')
-    expect(queryType).toBeDefined()
-    expectFields(queryType, ['listPost'])
-    // expectFields(queryType, ['queryPost'])
-    expectFields(queryType, ['listUser'])
-    // expectFields(queryType, ['queryUser'])
-
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
-    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
-
-    expect(fs.existsSync('./fileTestTwo/schema.graphql')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Mutation.createPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Mutation.createPost.response')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Mutation.createUser.request')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Mutation.createUser.response')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Query.getPost.request')).toBeTruthy
-    expect(fs.existsSync('./fileTestTwo/resolver/Query.getPost.request')).toBeTruthy
+    expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
 
     cleanUpFiles(directory)
 });

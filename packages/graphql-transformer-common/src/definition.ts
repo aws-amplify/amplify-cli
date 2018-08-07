@@ -1,16 +1,52 @@
 import {
     ObjectTypeDefinitionNode, InputValueDefinitionNode, FieldDefinitionNode,
     TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
-    ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode
+    ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode,
+    valueFromASTUntyped, ArgumentNode, DirectiveNode, EnumTypeDefinitionNode
 } from 'graphql'
 
-const SCALARS = {
+export const STANDARD_SCALARS = {
     String: true,
     Int: true,
     Float: true,
     Boolean: true,
     ID: true
-}
+};
+
+const OTHER_SCALARS = {
+    BigInt: true,
+    Double: true
+};
+
+export const APPSYNC_DEFINED_SCALARS: { [k: string]: string } = {
+    AWSDate: 'String',
+    AWSTime: 'String',
+    AWSDateTime: 'String',
+    AWSTimestamp: 'Int',
+    AWSEmail: 'String',
+    AWSJSON: 'String',
+    AWSURL: 'String',
+    AWSPhone: 'String',
+    AWSIPAddress: 'String'
+};
+
+export const DEFAULT_SCALARS: { [k: string]: boolean } = {
+    ...STANDARD_SCALARS,
+    ...OTHER_SCALARS,
+    ...APPSYNC_DEFINED_SCALARS
+};
+
+export const NUMERIC_SCALARS: { [k: string]: boolean } = {
+    BigInt: true,
+    Int: true,
+    Float: true,
+    Double: true,
+    AWSTimestamp: true
+};
+
+export const MAP_SCALARS: { [k: string]: boolean } = {
+    AWSJSON: true
+};
 
 export function isScalar(type: TypeNode) {
     if (type.kind === Kind.NON_NULL_TYPE) {
@@ -18,7 +54,24 @@ export function isScalar(type: TypeNode) {
     } else if (type.kind === Kind.LIST_TYPE) {
         return isScalar(type.type)
     } else {
-        return Boolean(SCALARS[type.name.value])
+        return Boolean(DEFAULT_SCALARS[type.name.value])
+    }
+}
+
+export function isScalarOrEnum(enums: EnumTypeDefinitionNode[]) {
+    return (type: TypeNode) => {
+        if (type.kind === Kind.NON_NULL_TYPE) {
+            return isScalar(type.type)
+        } else if (type.kind === Kind.LIST_TYPE) {
+            return isScalar(type.type)
+        } else {
+            for (const e of enums) {
+                if (e.name.value === type.name.value) {
+                    return true
+                }
+            }
+            return Boolean(DEFAULT_SCALARS[type.name.value])
+        }
     }
 }
 
@@ -30,6 +83,22 @@ export function getBaseType(type: TypeNode): string {
     } else {
         return type.name.value;
     }
+}
+
+export function isListType(type: TypeNode): boolean {
+    if (type.kind === Kind.NON_NULL_TYPE) {
+        return isListType(type.type)
+    } else if (type.kind === Kind.LIST_TYPE) {
+        return true
+    } else {
+        return false;
+    }
+}
+
+export const getDirectiveArgument = (directive: DirectiveNode) => (arg: string, dflt?: any) => {
+    const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
+    const argument = directive.arguments.find(get(arg))
+    return argument ? valueFromASTUntyped(argument.value) : dflt
 }
 
 export function unwrapNonNull(type: TypeNode) {

@@ -1,5 +1,5 @@
 {
-  "name": "graphql-transformer-cli",
+  "name": "graphql-transform-cli",
   "version": "1.0.0",
   "description": "CLI for AWS AppSync",
   "main": "lib/index.js",

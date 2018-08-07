@@ -14,7 +14,6 @@ var graphql_transform_1 = require("graphql-transform");
 var resources_1 = require("./resources");
 var graphql_transformer_common_1 = require("graphql-transformer-common");
 var graphql_1 = require("graphql");
-var graphql_transformer_common_2 = require("graphql-transformer-common");
 var nManyTruthy = function (n) { return function (objs) {
     var numTruthy = 0;
     for (var _i = 0, objs_1 = objs; _i < objs_1.length; _i++) {
@@ -92,13 +91,13 @@ var AppSyncAuthTransformer = /** @class */ (function (_super) {
                 var queryEnum = queryEnums_1[_i];
                 switch (queryEnum) {
                     case 'get':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName));
                         break;
                     case 'list':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBListResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.DynamoDBListResolverResourceID(typeName));
                         break;
                     case 'search':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.ElasticsearchSearchResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.ElasticsearchSearchResolverResourceID(typeName));
                         break;
                 }
             }
@@ -110,13 +109,13 @@ var AppSyncAuthTransformer = /** @class */ (function (_super) {
                 var mutEnum = mutationEnums_1[_i];
                 switch (mutEnum) {
                     case 'create':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName));
                         break;
                     case 'update':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName));
                         break;
                     case 'delete':
-                        ids.push(graphql_transformer_common_2.ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName));
+                        ids.push(graphql_transformer_common_1.ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName));
                         break;
                 }
             }

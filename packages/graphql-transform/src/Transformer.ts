@@ -62,7 +62,7 @@ export default class Transformer {
         extraDefs?: string
     ) {
         this.name = name
-        
+
         const doc = parse(directiveDef);
         if (doc.definitions.length !== 1) {
             throw new InvalidDirectiveDefinitionError('Transformers must specify exactly one directive definition.')
@@ -71,7 +71,7 @@ export default class Transformer {
         if (def.kind !== Kind.DIRECTIVE_DEFINITION) {
             throw new InvalidDirectiveDefinitionError(`Transformers must specify a directive definition not a definition of kind '${def.kind}'.`)
         }
-        this.directive = def 
+        this.directive = def
 
         // Transformers can define extra shapes that can be used by the directive
         // and validated. TODO: Validation.
@@ -112,7 +112,11 @@ export default class Transformer {
      * A transformer implements a single function per location that its directive can be applied.
      * This method handles transforming directives on object for field definitions.
      */
-    field?: (definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
+    field?: (
+        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        definition: FieldDefinitionNode,
+        directive: DirectiveNode,
+        acc: TransformerContext) => void
 
     /**
      * A transformer implements a single function per location that its directive can be applied.

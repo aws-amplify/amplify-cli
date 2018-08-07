@@ -1,51 +1,62 @@
-# Amplify GraphQL Transform
+# GraphQL Transform
 
-# Getting Started (8/01/2018)
+# Reference Documentation
 
-The simplest way to get started is to use the transform cli to compile your schema's into
-a cloudformation doc and then using the AWS console to create a stack from that template.
-Using the console will allow you to see all the parameters the template makes available
-for customization.
+### @model
 
-First clone this repo and checkout the amplify-graphql (or mp-dev if we have yet to merge)
+Object types that are annotated with `@model` are top level entities in the
+generated API. Objects annotated with `@model` are stored in DynamoDB and are
+capable of being protected via `@auth`, related to other objects via `@connection`,
+and streamed into Elasticsearch via `@searchable`.
 
-```
-git clone https://github.com/aws/aws-amplify-staging.git
-cd aws-amplify-staging
-git checkout amplify-graphql
-```
-
-You will need to have lerna installed to build the project. From the root directory run
-
-```
-lerna bootstrap
-lerna run build
-cd packages/graphql-transform-cli
-```
-
-From this repo you can then compile the schema in `schema.graphql` using this command.
-
-```
-node lib/index.js compile schema.graphql cftemplate.json
-```
-
-You can then take that cloud formation template and upload it to the CloudFormation console.
-
-# Directive Statuses
-
-**The following directives have complete or near complete support**
+#### Definition
 
 ```graphql
-# When applied to a type, stores that object data in DynamoDB.
-# Use the "queries" and "mutations" arguments to override default
-# query/mutation names or to omit certain operations all together.
 directive @model(
     queries: ModelQueryMap, 
     mutations: ModelMutationMap
 ) on OBJECT
 input ModelMutationMap { create: String, update: String, delete: String }
 input ModelQueryMap { get: String, list: String }
+```
 
+#### Usage
+
+Define a GraphQL object type and annotate it with the `@model` directive to store
+objects of that type in DynamoDB and automatically configure CRUDL queries and
+mutations.
+
+```graphql
+type Post @model {
+    id: ID! # id: ID! is a required attribute.
+    title: String!
+    tags: [String!]!
+}
+```
+
+You may also override the names of any generated queries and mutations as well
+as remove operations entirely.
+
+```graphql
+type Post @model(queries: { get: "post" }, mutations: null) {
+    id: ID!
+    title: String!
+    tags: [String!]!
+}
+```
+
+This would create and configure a single query field `post(id: ID!): Post` and
+no mutation fields.
+
+### @auth
+
+Object types that are annotated with `@auth` are protected by one of the
+supported authorization strategies. Types that are annotated with `@auth`
+must also be annotated with `@model`.
+
+#### Definition
+
+```graphql
 # When applied to a type, augments the application with
 # owner and group based authorization rules.
 directive @auth(
@@ -62,18 +73,226 @@ enum ModelQuery { get list }
 enum ModelMutation { create update delete }
 ```
 
-**The following directives are in progress**
+#### Authorization Strategies
+
+##### Owner Authorization
+
+```graphql
+# The simplest case
+type Post @model @auth(allow: owner) {
+  id: ID!
+  title: String!
+}
+
+# The long form way
+type Post @model @auth(allow: owner, ownerField: "owner", mutations: [create, update, delete], queries: [get, list]) {
+  id: ID!
+  title: String!
+  owner: String
+}
+```
+
+Owner authorization specifies that a user (or set of user's) can access an object. To
+do so, each object has an *ownerField* (by default "owner") that stores ownership information
+and is verified in various ways during resolver execution.
+
+You may use the *queries* and *mutations* arguments to specify which operations are augmented:
+
+**get**: If the record's owner is not the same as the logged in user (via `$ctx.identity.username`), throw `$util.unauthorized()`.
+**list**: Filter `$ctx.result.items` for owned items.
+**create**: Inject the logged in user's `$ctx.identity.username` as the *ownerField* automatically.
+**update**: Add conditional update that checks the stored *ownerField* is the same as `$ctx.identity.username`.
+**delete**: Add conditional update that checks the stored *ownerField* is the same as `$ctx.identity.username`.
+
+**IN PROGRESS**
+
+```graphql
+# TODO: (WORK IN PROGRESS) Does not yet support multi-owner
+type Post @model @auth(allow: owner, ownerField: "owners", mutations: [create, update, delete], queries: [get, list]) {
+  id: ID!
+  title: String!
+  owners: [String]
+}
+```
+
+##### Group Authorization
+
+**Static Group Auth**
+
+```graphql
+# Static group auth
+type Post @model @auth(allow: groups, groups: ["Admin"]) {
+  id: ID!
+  title: String
+}
+```
+
+If the user credential (as specified by the resolver's `$ctx.identity`) is not
+enrolled in the *Admin* group, throw an unauthorized error via `$util.unauthorized()`.
+
+**Dynamic Group Auth**
+
+```graphql
+# Dynamic group auth with multiple groups
+type Post @model @auth(allow: groups, groupsField: "groups") {
+  id: ID!
+  title: String
+  groups: [String]
+}
+
+# Dynamic group auth with a single group
+type Post @model @auth(allow: groups, groupsField: "group") {
+  id: ID!
+  title: String
+  group: String
+}
+```
+
+With dynamic group authorization, each record contains an attribute specifying
+what groups should be able to access it. Use the *groupsField* argument to
+specify which attribute in the underlying data store holds this group
+information. To specify that a single group should have access use a field of
+type `String`. To specify that multiple groups should have access use a field of
+type `[String]`.
+
+### @connection
+
+The `@connection` directive allows you to specify relationships between `@model` object types.
+Currently this supports one-to-one, one-to-many, and many-to-one relationships. An error
+will be thrown when trying to configure a many-to-many relationship.
+
+#### Definition
+
+```graphql
+directive @connection(name: String) on FIELD_DEFINITION
+```
+
+#### Usage
+
+Relationships are specified by annotating fields on an `@model` object type with
+the `@connection` directive. 
+
+##### Unnamed Connections
+
+In the simplest case, you may define a one-to-one connection:
+
+```graphql
+type Project @model {
+    id: ID!
+    name: String
+    team: Team @connection
+}
+type Team @model {
+    id: ID!
+    name: String!
+}
+```
+
+Once transformed you would then be able to create projects with a team via:
+
+```graphql
+mutation CreateProject {
+    createProject(input: { name: "New Project", projectTeamId: "a-team-id"}) {
+        id
+        name
+        team {
+            id
+            name
+        }
+    }
+}
+```
+
+> Note: The **Project.team** resolver will be preconfigured to work with the defined connection.
+
+Likewise you may make a simple one-to-many connection:
+
+```graphql
+type Post {
+    id: ID!
+    title: String!
+    comments: [Comment] @connection
+}
+type Comment {
+    id: ID!
+    content: String!
+}
+```
+
+One transformed, you would create comments with a post via:
+
+```graphql
+mutation CreateCommentOnPost {
+    createComment(input: { content: "A comment", postCommentsId: "a-post-id"}) {
+        id
+        content
+    }
+}
+```
+
+> Note: The "postCommentsId" field on the input may seem like a strange name and it is. In the one-to-many case without a provided "name" argument there is only partial information to work with resulting in the strange name. To fix this, provide a value for the @connection's *name* argument and complete the bi-directional relationship by adding a corresponding @connection field to the **Comment** type.
+
+##### Named Connections
+
+The **name** arguments specifies a name for the
+connection and is used to create bi-directional relationships that reference
+the same underlying foreign key. 
+
+For example, if you wanted your `Post.comments`
+and `Comment.post` fields to refer to opposite sides of the same relationship
+you would provide a name.
+
+```graphql
+type Post {
+    id: ID!
+    title: String!
+    comments: [Comment] @connection(name: "PostComments")
+}
+type Comment {
+    id: ID!
+    content: String!
+    post: Post @connection(name: "PostComments")
+}
+```
+
+One transformed, you would create comments with a post via:
+
+```graphql
+mutation CreateCommentOnPost {
+    createComment(input: { content: "A comment", commentPostId: "a-post-id"}) {
+        id
+        content
+        post {
+            id
+            title
+            comments {
+                id
+                # and so on...
+            }
+        }
+    }
+}
+```
+
+#### Performance
+
+In order to keep connection queries fast and efficient, the graphql transform manages
+GSIs on the generated tables on your behalf. We bake in best practices to keep
+your queries efficient but this also comes with additional cost.
+
+
+### @searchable
+
+The `@searchable` directive handles streaming the data of an `@model` object type to
+Elasticsearch and configures search resolvers that search that information.
+
+#### Definition
 
 ```graphql
 # Streams data from dynamodb into elasticsearch and exposes search capabilities.
 directive @searchable(queries: SearchableQueryMap) on OBJECT
 input SearchableQueryMap { search: String }
-
-# Automatically wires connections between two @model types
-directive @connection(name: String)
 ```
-
-
 
 **What is the Amplify GraphQL Transform** 
 
@@ -86,12 +305,13 @@ For example, you might define the data model for an app like this:
 type Blog @model @searchable {
     id: ID!
     name: String!
-    posts: [Post] @connection
+    posts: [Post] @connection(name: "BlogPosts")
 }
 type Post @model @searchable {
     id: ID!
     title: String!
     tags: [String]
+    blog: Blog @connection(name: "BlogPosts")
     comments: [Comment] @connection
     createdAt: String
     updatedAt: String
@@ -105,16 +325,21 @@ type Comment @model {
 And then pass the schema to an instance of the `GraphQLTransform` class with the DynamoDB, Elasticsearch, and Connection transformers enabled:
 
 ```javascript
-// From amplify-graphql-transform-cli/src/commands/create.ts
-import GraphQLTransform from 'amplify-graphql-transform'
-import AmplifyDynamoDBTransformer, { AmplifyDynamoDBConnectionTransformer } from 'amplify-graphql-dynamodb-transformer'
-import AmplifyElasticsearchTransformer from 'amplify-graphql-elasticsearch-transformer'
+// From graphql-transform-cli/src/commands/create.ts
+import GraphQLTransform from 'graphql-transform'
+import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
+import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer'
+import AppSyncConnectionTransformer from 'graphql-connection-transformer'
+import AppSyncAuthTransformer from 'graphql-auth-transformer'
+import AppSyncTransformer from 'graphql-appsync-transformer'
 
 const transformer = new GraphQLTransform({
     transformers: [
-        new AmplifyDynamoDBTransformer(),
-        new AmplifyDynamoDBConnectionTransformer(),
-        new AmplifyElasticsearchTransformer()
+        new AppSyncTransformer(),
+        new AppSyncDynamoDBTransformer(),
+        new AppSyncElasticsearchTransformer(),
+        new AppSyncAuthTransformer(),
+        new AppSyncConnectionTransformer()
     ]
 })
 const cfdoc = transformer.transform(schema.readSync());
@@ -132,33 +357,64 @@ a number of minimally scoped IAM roles,
 
 The code is contained in a mono-repo that includes a number of packages that are related to the transform and a number of packages that are not. The related packages are broken up as follows
 
-**amplify-graphql-transform**
+**graphql-transform**
 
 The package contains the core of the library and acts as the entry point to the transform. The core class `GraphQLTransform` takes as config a list of transformers and handles the logic that parses the input SDL, walks the AST, and routes directives to transformers.
 
-**amplify-graphql-dynamodb-transformer**
+**graphql-dynamodb-transformer**
 
 This package implements a number of directives that deal with DynamoDB. Out of the box, this implements the **@model** and **connection** directives.
 
-**amplify-graphql-elasticsearch-transformer**
+**graphql-elasticsearch-transformer**
 
 This package implements any directives that deal with Elasticsearch. Out of the box, this implements the **@searchable** directive.
 
-**amplify-graphql-auth-transformer**
+**graphql-auth-transformer**
 
 This package implements any directives related to authN or authZ workflows. Out of the box, it configures an *Amazon Cognito UserPool* and implements the **@auth** directive.
 
-**amplify-graphql-transform-cli**
+**graphql-transform-cli**
 
 This package implements a bare bones and easy to use CLI for interacting with the model transform. It can be used as an example of how to call into the transform and can also be used for simple debugging.
 
-**amplify-graphql-transformer-e2e-tests**
+**graphql-transformer-e2e-tests**
 
 This pacakge implements end-to-end tests for the transform libraries. It builds an API with the transform, deploys it via CloudFormation, and hits the AppSync data plane to test all generated code paths.
 
-**amplify-graphql-mapping-template**
+**graphql-mapping-template**
 
 This package provides a lightweight wrapper around the AppSync Resolver VTL and is used by transformer libraries as a convenience.
+
+# Getting Started (8/01/2018)
+
+The simplest way to get started is to use the transform cli to compile your schema's into
+a cloudformation doc and then using the AWS console to create a stack from that template.
+Using the console will allow you to see all the parameters the template makes available
+for customization.
+
+First clone this repo and checkout the graphql (or mp-dev if we have yet to merge)
+
+```
+git clone https://github.com/aws/aws-amplify-staging.git
+cd aws-amplify-staging
+git checkout graphql
+```
+
+You will need to have lerna installed to build the project. From the root directory run
+
+```
+lerna bootstrap
+lerna run build
+cd packages/graphql-transform-cli
+```
+
+From this repo you can then compile the schema in `schema.graphql` using this command.
+
+```
+node lib/index.js compile schema.graphql cftemplate.json
+```
+
+You can then take that cloud formation template and upload it to the CloudFormation console.
 
 ### Prerequisites
 
