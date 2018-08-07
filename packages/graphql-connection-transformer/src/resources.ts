@@ -42,7 +42,7 @@ export class ResourceFactory {
                 `Cannot create connection ${connectionName}. Table ${table.Properties.TableName} out of GSI capacity.`
             )
         }
-        const connectionGSIName = Fn.Join('-', [Refs.StackName, 'gsi', connectionName])
+        const connectionGSIName = `gsi-${connectionName}`
 
         // If the GSI does not exist yet then add it.
         const existingGSI = gsis.find(gsi => gsi.IndexName === connectionGSIName)
@@ -109,11 +109,11 @@ export class ResourceFactory {
      * Create a resolver that queries an item in DynamoDB.
      * @param type
      */
-    public makeQueryConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string) {
+    public makeQueryConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string, connectionName: string) {
         const defaultPageLimit = 10
         return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
@@ -127,7 +127,7 @@ export class ResourceFactory {
                             }),
                             'expressionValues': obj({
                                 ':connectionAttribute': obj({
-                                    'S': str('$util.source.id')
+                                    'S': str('$context.source.id')
                                 })
                             })
                         }),
@@ -150,7 +150,8 @@ export class ResourceFactory {
                             ref('context.args.nextToken'),
                             str('$context.args.nextToken'),
                             nul()
-                        )
+                        ),
+                        index: str(`gsi-${connectionName}`)
                     })
                 ])
             ),

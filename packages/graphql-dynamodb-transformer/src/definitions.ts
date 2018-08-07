@@ -15,10 +15,13 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notCont
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
 const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
+export function makeCreateInputObjectName(typeName: string): string {
+    return graphqlName(`Create` + toUpper(typeName) + 'Input')
+}
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Create` + toUpper(obj.name.value) + 'Input')
+    const name = makeCreateInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
-        .filter((field: FieldDefinitionNode) => field.name.value !== 'id')
+        .filter((field: FieldDefinitionNode) => field.name.value !== 'id' && isScalar(field.type))
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
@@ -45,9 +48,13 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
+export function makeUpdateInputObjectName(typeName: string): string {
+    return graphqlName('Update' + toUpper(typeName) + 'Input')
+}
 export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName('Update' + toUpper(obj.name.value) + 'Input')
+    const name = makeUpdateInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
+        .filter(f => isScalar(f.type))
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
@@ -76,8 +83,11 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
+export function makeDeleteInputObjectName(typeName: string): string {
+    return graphqlName('Delete' + toUpper(typeName) + 'Input')
+}
 export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName('Delete' + toUpper(obj.name.value) + 'Input')
+    const name = makeDeleteInputObjectName(obj.name.value)
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
         // TODO: Service does not support new style descriptions so wait.

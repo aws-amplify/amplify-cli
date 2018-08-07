@@ -1,11 +1,11 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode
+    InputValueDefinitionNode, buildASTSchema
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
-import { AppSyncDynamoDBTransformer } from 'graphql-dynamodb-transformer'
+import AppSyncDynamoDBTransformer, { makeCreateInputObjectName, makeUpdateInputObjectName } from 'graphql-dynamodb-transformer'
 import { AppSyncConnectionTransformer } from '../AppSyncConnectionTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
@@ -41,6 +41,107 @@ test('Test AppSyncConnectionTransformer simple one to many happy case', () => {
     expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
     expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
     expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check the Comment.commentPostId
+    // Check the Comment.commentPostId inputs
+    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postCommentsId')
+    expect(connectionId).toBeTruthy()
+
+    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postCommentsId')
+    expect(connectionUpdateId).toBeTruthy()
+});
+
+test('Test AppSyncConnectionTransformer simple one to many happy case with custom keyField', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncConnectionTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+
+    // Post.comments field
+    const postType = getObjectType(schemaDoc, 'Post')
+    expectFields(postType, ['comments'])
+    const commentField = postType.fields.find(f => f.name.value === 'comments')
+    expect(commentField.arguments.length).toEqual(4)
+    expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
+    expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check the Comment.commentPostId
+    // Check the Comment.commentPostId inputs
+    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionId).toBeTruthy()
+
+    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionUpdateId).toBeTruthy()
+});
+
+test('Test AppSyncConnectionTransformer simple one to many happy case with custom keyField', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String!
+        post: Post @connection(name: "PostComments", keyField: "postId")
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new AppSyncDynamoDBTransformer(),
+            new AppSyncConnectionTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+
+    // Post.comments field
+    const postType = getObjectType(schemaDoc, 'Post')
+    expectFields(postType, ['comments'])
+    const commentField = postType.fields.find(f => f.name.value === 'comments')
+    expect(commentField.arguments.length).toEqual(4)
+    expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
+    expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check the Comment.commentPostId
+    // Check the Comment.commentPostId inputs
+    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionId).toBeTruthy()
+
+    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionUpdateId).toBeTruthy()
 });
 
 test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
@@ -78,6 +179,15 @@ test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
     expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
     expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
     expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check the Comment.commentPostId inputs
+    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const connectionId = commentCreateInput.fields.find(f => f.name.value === 'commentPostId')
+    expect(connectionId).toBeTruthy()
+
+    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'commentPostId')
+    expect(connectionUpdateId).toBeTruthy()
 
     // Check Comment.post field
     const postField = commentType.fields.find(f => f.name.value === 'post')

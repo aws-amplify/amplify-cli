@@ -2,7 +2,8 @@ import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-
 import Table from 'cloudform/types/dynamoDb/table'
 import {
     DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode,
-    TypeSystemDefinitionNode, Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode
+    TypeSystemDefinitionNode, Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
+    InputObjectTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
@@ -11,13 +12,16 @@ import {
     makeModelConnectionField,
     makeScalarFilterInputs,
     makeModelXFilterInputObject,
-    makeModelSortDirectionEnumObject
+    makeModelSortDirectionEnumObject,
+    makeUpdateInputObjectName,
+    makeCreateInputObjectName
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
     toCamelCase
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
+import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
 
 interface QueryNameMap {
     get?: string;
@@ -53,7 +57,7 @@ export class AppSyncConnectionTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncConnectionTransformer',
-            `directive @connection(name: String) on FIELD_DEFINITION`
+            `directive @connection(name: String, keyField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -83,7 +87,9 @@ export class AppSyncConnectionTransformer extends Transformer {
         }
 
         const relatedTypeName = getBaseType(field.type)
-        const relatedType = ctx.getObject(relatedTypeName)
+        const relatedType = ctx.inputDocument.definitions.find(
+            d => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === relatedTypeName
+        ) as ObjectTypeDefinitionNode | undefined
         if (!relatedType) {
             throw new InvalidDirectiveError(`Could not find an object type named ${relatedTypeName}.`)
         }
@@ -115,7 +121,8 @@ export class AppSyncConnectionTransformer extends Transformer {
         const leftConnectionIsList = isListType(field.type)
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
 
-        // TODO: Update input objects as necessary.
+        let connectionAttributeName = getDirectiveArgument(directive)("keyField")
+
         // Relationship Cardinalities:
         // 1. [] to []
         // 2. [] to {}
@@ -130,22 +137,27 @@ export class AppSyncConnectionTransformer extends Transformer {
             // 2. [] to {} when the association exists. Note: false and undefined are not equal.
             // Store a foreign key on the related table and wire up a Query resolver.
             // This is the inverse of 3.
-            const connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
+            if (!connectionAttributeName) {
+                connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
+            }
             const queryResolver = this.resources.makeQueryConnectionResolver(
                 parentTypeName,
                 fieldName,
                 relatedTypeName,
-                connectionAttributeName
+                connectionAttributeName,
+                connectionName
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 
             this.extendTypeWithConnection(ctx, parent, field, relatedType)
         } else if (!leftConnectionIsList && rightConnectionIsList) {
             // 3. {} to [] when the association exists.
-            // Store foreign key on this table and write up a GetItem resolver.
+            // Store foreign key on this table and wire up a GetItem resolver.
             // This is the inverse of 2.
 
-            const connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            if (!connectionAttributeName) {
+                connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            }
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(parentTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
             const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName)
@@ -158,11 +170,28 @@ export class AppSyncConnectionTransformer extends Transformer {
                 connectionAttributeName
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
+
+            // Update the create & update input objects for this
+            const createInputName = makeCreateInputObjectName(parentTypeName)
+            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            if (createInput) {
+                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
+                ctx.nodeMap[createInputName] = updated
+            }
+            const updateInputName = makeUpdateInputObjectName(parentTypeName)
+            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            if (updateInput) {
+                const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
+                ctx.nodeMap[updateInputName] = updated
+            }
+
         } else if (leftConnectionIsList) {
             // 4. [] to ?
             // Store foreign key on the related table and wire up a Query resolver.
             // This has no inverse and has limited knowlege of the connection.
-            const connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            if (!connectionAttributeName) {
+                connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            }
 
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(relatedTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
@@ -173,16 +202,33 @@ export class AppSyncConnectionTransformer extends Transformer {
                 parentTypeName,
                 fieldName,
                 relatedTypeName,
-                connectionAttributeName
+                connectionAttributeName,
+                connectionName
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 
             this.extendTypeWithConnection(ctx, parent, field, relatedType)
+
+            // Update the create & update input objects for the related type
+            const createInputName = makeCreateInputObjectName(relatedTypeName)
+            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            if (createInput) {
+                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
+                ctx.nodeMap[createInputName] = updated
+            }
+            const updateInputName = makeUpdateInputObjectName(relatedTypeName)
+            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            if (updateInput) {
+                const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
+                ctx.nodeMap[updateInputName] = updated
+            }
         } else {
             // 5. {} to ?
             // Store foreign key on this table and wire up a GetItem resolver.
             // This has no inverse and has limited knowlege of the connection.
-            const connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            if (!connectionAttributeName) {
+                connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
+            }
             const getResolver = this.resources.makeGetItemConnectionResolver(
                 parentTypeName,
                 fieldName,
@@ -190,6 +236,20 @@ export class AppSyncConnectionTransformer extends Transformer {
                 connectionAttributeName
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
+
+            // Update the create & update input objects for this type
+            const createInputName = makeCreateInputObjectName(parentTypeName)
+            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            if (createInput) {
+                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
+                ctx.nodeMap[createInputName] = updated
+            }
+            const updateInputName = makeUpdateInputObjectName(parentTypeName)
+            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            if (updateInput) {
+                const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
+                ctx.nodeMap[updateInputName] = updated
+            }
         }
     }
 
@@ -227,9 +287,14 @@ export class AppSyncConnectionTransformer extends Transformer {
         ) {
             // Find the field and replace it in place.
             const newFields = type.fields.map(
-                (f: FieldDefinitionNode) =>
-                    f.name.value === field.name.value ?
-                        makeModelConnectionField(field.name.value, returnType.name.value) : field
+                (f: FieldDefinitionNode) => {
+                    if (f.name.value === field.name.value) {
+                        const updated = makeModelConnectionField(field.name.value, returnType.name.value)
+                        updated.directives = f.directives
+                        return updated
+                    }
+                    return f;
+                }
             )
             const updatedType = {
                 ...type,
