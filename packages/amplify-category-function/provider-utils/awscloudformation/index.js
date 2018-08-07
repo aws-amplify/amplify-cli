@@ -102,8 +102,8 @@ async function addResource(context, category, service, options) {
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
-  const result = await serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    
+  const result = await serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename);
+
   if (result.answers) {
     ({ answers } = result);
     options.dependsOn = result.dependsOn;
@@ -119,7 +119,7 @@ async function addResource(context, category, service, options) {
   );
 
   await openEditor(context, category, answers);
-    
+
   return answers.resourceName;
 }
 
