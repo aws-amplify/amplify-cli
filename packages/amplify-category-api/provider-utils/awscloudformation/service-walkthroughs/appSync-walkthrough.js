@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
-const openInEditor = require('open-in-editor');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -133,37 +132,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
   if (editSchemaChoice) {
-    const editorQuestion = {
-      type: inputs[6].type,
-      name: inputs[6].key,
-      message: inputs[6].question,
-      choices: inputs[6].options,
-      validate: amplify.inputValidation(inputs[6]),
-    };
-
-    const { editorSelection } = await inquirer.prompt(editorQuestion);
-    let editorOption = {};
-    if (editorSelection !== 'none') {
-      editorOption = {
-        editor: editorSelection,
-      };
-    }
-    const editor = openInEditor.configure(editorOption, (err) => {
-      console.error(`Editor not found in your machine. Please open your favorite editor and modify the file if needed: ${err}`);
-    });
-
-    return editor.open(targetSchemaFilePath)
-      .then(async () => {
-        const continueQuestion = {
-          type: 'input',
-          name: 'pressKey',
-          message: 'Press any key to continue',
-        };
-
-        await inquirer.prompt(continueQuestion);
-      }, (err) => {
-        context.print.error(`Something went wrong: ${err}. Please manually edit the graphql schema`);
-      })
+    return context.amplify.openEditor(context, targetSchemaFilePath)
       .then(async () => {
         await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
         return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };

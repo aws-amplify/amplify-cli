@@ -35,6 +35,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "optionator": "^0.8.2",
+    "open-in-editor": "^2.2.0",
     "ora": "^2.1.0",
     "promise-sequential": "^1.1.1",
     "util": "^0.11.0"

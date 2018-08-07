@@ -32,12 +32,11 @@ function showGraphQLURL(context, resourcesToBeCreated) {
         amplifyMeta[category][resourceName].output;
 
     context.print.success(`GraphQL endpoint: ${GraphQLAPIEndpointOutput}`);
-    if(securityType === "API_KEY") {
-      context.print.success(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`); 
+    if (securityType === 'API_KEY') {
+      context.print.success(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`);
     }
   }
 }
-
 
 
 module.exports = {

@@ -103,7 +103,7 @@ function addResource(context, category, service, options) {
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
-    .then((result) => {
+    .then(async (result) => {
       if (result.answers) {
         ({ answers } = result);
         options.dependsOn = result.dependsOn;
@@ -117,8 +117,27 @@ function addResource(context, category, service, options) {
         answers.resourceName,
         options,
       );
+
+      await openEditor(context, category, answers);
     })
     .then(() => answers.resourceName);
+}
+
+async function openEditor(context, category, options) {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+  if (await context.prompt.confirm('Do you want to edit the local lambda function now?')) {
+    switch (options.functionTemplate) {
+      case 'helloWorld':
+        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
+        break;
+      case 'serverless':
+        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
+        break;
+      default:
+        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
+        break;
+    }
+  }
 }
 
 async function invoke(context, category, service, resourceName) {
