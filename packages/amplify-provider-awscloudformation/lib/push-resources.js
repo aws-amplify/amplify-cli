@@ -7,6 +7,7 @@ const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
+const { displayHelpfulURLs } = require('./display-helpful-urls');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
@@ -44,7 +45,8 @@ async function run(context, category, resourceName) {
           resourcesToBeDeleted[i].resourceName,
         );
       }
-    });
+    })
+    .then(() => displayHelpfulURLs(context, resourcesToBeCreated));
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {
