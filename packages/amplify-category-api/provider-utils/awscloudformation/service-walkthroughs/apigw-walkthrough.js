@@ -89,27 +89,57 @@ async function askPrivacy(context, answers) {
 
     if (answer.privacy === 'open') { return privacy; }
 
+
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
     context.api = {
       privacy: answer.privacy,
     };
-    const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
-    // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-    // checking to see if any requirements are unsatisfied
-    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-    // if requirements are unsatisfied, trigger auth
-    if (foundUnmetRequirements) {
-      if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
-        try {
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          return privacy;
-        } catch (e) {
-          context.print.error(e);
-        }
-      }
+
+    if(answer.privacy === 'private') {
+
+        const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
+        // getting requirement satisfaction map
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        // checking to see if any requirements are unsatisfied
+        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+        // if requirements are unsatisfied, trigger auth
+
+        if (foundUnmetRequirements) {
+          try {
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+            return privacy;
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+        } 
+
     }
+
+    if(answer.privacy === 'protected') {
+
+      const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
+        // getting requirement satisfaction map
+        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+        // checking to see if any requirements are unsatisfied
+        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+        // if requirements are unsatisfied, trigger auth
+
+        if (foundUnmetRequirements) {
+          try {
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+            return privacy;
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+      } 
+
+    }
+
     return privacy;
   }
 }
