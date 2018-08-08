@@ -128,12 +128,17 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
   // Guided creation of the transform schema
 
+  let templateSchemaChoices = inputs[4].options;
+  if (authType === 'API_KEY') {
+    templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
+  }
+
   const templateQuestions = [
     {
       type: inputs[4].type,
       name: inputs[4].key,
       message: inputs[4].question,
-      choices: inputs[4].options,
+      choices: templateSchemaChoices,
       validate: amplify.inputValidation(inputs[4]),
     },
     {
