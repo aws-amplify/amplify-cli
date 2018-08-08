@@ -42,8 +42,6 @@ async function copyBatch(context, jobs, props, force, writeParams) {
         props,
       });
 
-      console.log('writeParams', job.paramsFile);
-
       if (writeParams && job.paramsFile) {
         const jsonString = JSON.stringify(props, null, 4);
         fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
