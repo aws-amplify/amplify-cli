@@ -101,7 +101,7 @@ export class AppSyncSearchableTransformer extends Transformer {
                             makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
                             makeArg('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
                             makeArg('limit', makeNamedType('Int')),
-                            makeArg('nextToken', makeNamedType('String'))
+                            makeArg('nextToken', makeNamedType('Int'))
                         ],
                         makeNamedType(`Searchable${def.name.value}Connection`)
                     )

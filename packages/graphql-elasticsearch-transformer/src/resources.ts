@@ -390,16 +390,16 @@ export class ResourceFactory {
                         ElasticSearchMappingTemplate.searchItem({
                             path: str('$indexPath.toLowerCase()'),
                             size: ifElse(
-                                ref('context.args.size'),
-                                ref('context.args.size'),
+                                ref('context.args.limit'),
+                                ref('context.args.limit'),
                                 int(10)),
                             from: ifElse(
-                                ref('context.args.from'),
-                                ref('context.args.from'),
+                                ref('context.args.nextToken'),
+                                ref('context.args.nextToken'),
                                 int(0)),
                             query: ifElse(
-                                ref('context.args.query'),
-                                ref('util.transform.toElasticsearchQueryDSL($ctx.args.query)'),
+                                ref('context.args.filter'),
+                                ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
                                 obj({
                                     'match_all': obj({})
                                 })),

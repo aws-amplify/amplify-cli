@@ -7,10 +7,10 @@ import {
     makeListType, getBaseType
 } from 'graphql-transformer-common'
 
-const STRING_CONDITIONS = ['eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
-const ID_CONDITIONS = ['eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
-const INT_CONDITIONS = ['gt', 'lt', 'gte', 'lte', 'eq', 'range']
-const FLOAT_CONDITIONS = ['gt', 'lt', 'gte', 'lte', 'eq', 'range']
+const STRING_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
+const ID_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
+const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range']
+const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range']
 const BOOLEAN_CONDITIONS = ['eq', 'ne']
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
