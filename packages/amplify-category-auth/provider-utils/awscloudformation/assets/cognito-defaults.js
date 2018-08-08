@@ -62,6 +62,7 @@ const identityAndUserPoolDefaults = projectName => ({
 const functionMap = {
   userPoolOnly: userPoolDefaults,
   identityPoolAndUserPool: identityAndUserPoolDefaults,
+  identityPoolOnly: identityPoolDefaults,
 };
 
 const entityKeys = {

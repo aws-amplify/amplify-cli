@@ -21,6 +21,7 @@ Parameters:
   <% } -%>
 
 Resources:
+  <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -337,14 +338,15 @@ Resources:
       smsConfigExternalId: !Ref roleExternalId 
     DependsOn: MFALogPolicy
   <% } %>
-
-  <%if (props.authSelections !== 'userPoolOnly') { %>
+  <% } -%>
+  <%if (['identityPoolAndUserPool', 'identityPoolOnly'].includes(props.authSelections)) { %>
   # BEGIN IDENTITY POOL RESOURCES
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: !Ref identityPoolName
+      <%if (props.authSelections !== 'identityPoolOnly') { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -354,6 +356,7 @@ Resources:
           ProviderName: !Sub
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+      <% } -%>
       <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
       SupportedLoginProviders: 
         <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
@@ -367,7 +370,7 @@ Resources:
   # Depends on Identity Pool for ID ref
     Type: AWS::Cognito::IdentityPoolRoleAttachment
     Properties: 
-      IdentityPoolId: !Ref 'IdentityPool'
+      IdentityPoolId: !Ref IdentityPool
       Roles:
           unauthenticated: !Ref unAuthRoleArn
           authenticated: !Ref authRoleArn
@@ -375,13 +378,14 @@ Resources:
   <% } %>
 
 Outputs :
-  <%if (props.authSelections !== 'userPoolOnly') { %>
+  <%if (['identityPoolAndUserPool', 'identityPoolOnly'].includes(props.authSelections)) { %>
   IdentityPoolId:
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name
   <% } %>
+  <%if (props.authSelections !== 'identityPoolOnly') { %>
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
@@ -399,4 +403,5 @@ Outputs :
   CreatedSNSRole: 
     Value: !GetAtt SNSRole.Arn
     Description: role arn
+  <% } %>
   <% } %>

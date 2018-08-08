@@ -97,10 +97,17 @@ function updateResource(context, category, service) {
       const previousKeys = Object.keys(context.updatingAuth);
 
       /* if the user changes their auth selection during an edit,
-      *  we should remove remove all the identity pool specfic keys from the parameters */
+      *  we should remove remove all the identity pool/user pool
+      * specfic keys from the parameters (depending on what they deselected) */
       if (result.authSelections === 'userPoolOnly') {
         previousKeys.forEach((k) => {
           if (entityKeys.identityPoolKeys.includes(k)) {
+            delete context.updatingAuth[k];
+          }
+        });
+      } else if (result.authSelections === 'identityPoolOnly') {
+        previousKeys.forEach((k) => {
+          if (entityKeys.userPoolKeys.includes(k)) {
             delete context.updatingAuth[k];
           }
         });

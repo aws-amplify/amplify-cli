@@ -23,6 +23,7 @@ function getWhen(input, answers, previousValues) {
 // HELPER FUNCTION TO DETERMINE IF A SINGLE CONDITION IS MET BY ANSWERS
 const findMatch = (cond, answers, previousValues) => {
   let response = true;
+
   /*eslint-disable*/
   if (!cond.preventEdit) {
     if (cond.operator === '=' && (answers[cond.key] != undefined && answers[cond.key] !== cond.value|| !answers[cond.key] )) {
@@ -37,7 +38,11 @@ const findMatch = (cond, answers, previousValues) => {
       response = false;
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
-    } else if (cond.preventEdit === '=' && (previousValues[cond.key] != undefined && previousValues[cond.key] !== cond.value|| !previousValues[cond.key] )) {
+    } else if (cond.preventEdit === '=' && (previousValues[cond.key] != undefined || previousValues[cond.key] === cond.value )) {
+      if (cond.preventEdit === '=') {
+        console.log('previousValues[cond.key]', previousValues[cond.key]);
+        console.log('cond.value', cond.value);
+      }
       response = false;
     }
   }

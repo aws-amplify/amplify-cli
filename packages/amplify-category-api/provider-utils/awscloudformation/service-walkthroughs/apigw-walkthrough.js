@@ -89,22 +89,28 @@ async function askPrivacy(context, answers) {
 
     if (answer.privacy === 'open') { return privacy; }
 
-    if (!checkIfAuthExists(context)) {
+    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+    context.api = {
+      privacy: answer.privacy,
+    };
+    const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
+    // getting requirement satisfaction map
+    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+    // checking to see if any requirements are unsatisfied
+    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+    // if requirements are unsatisfied, trigger auth
+    if (foundUnmetRequirements) {
       if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
         try {
-          const { checkRequirements } = require('amplify-category-auth');
-          context.api = {
-            privacy: answer.privacy,
-          };
-          await checkRequirements({ authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true }, context, 'api', answers.resourceName);
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           return privacy;
         } catch (e) {
           context.print.error(e);
         }
       }
-    } else {
-      return privacy;
     }
+    return privacy;
   }
 }
 
@@ -293,23 +299,23 @@ async function askLambdaArn(context) {
   return { lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, lambdaFunction: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, '') };
 }
 
-function checkIfAuthExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let authExists = false;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
+// function checkIfAuthExists(context) {
+//   const { amplify } = context;
+//   const { amplifyMeta } = amplify.getProjectDetails();
+//   let authExists = false;
+//   const authServiceName = 'Cognito';
+//   const authCategory = 'auth';
 
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === authServiceName) {
-        authExists = true;
-      }
-    });
-  }
-  return authExists;
-}
+//   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+//     const categoryResources = amplifyMeta[authCategory];
+//     Object.keys(categoryResources).forEach((resource) => {
+//       if (categoryResources[resource].service === authServiceName) {
+//         authExists = true;
+//       }
+//     });
+//   }
+//   return authExists;
+// }
 
 
 module.exports = { serviceWalkthrough };

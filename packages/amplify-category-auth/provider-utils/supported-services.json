@@ -46,8 +46,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "userPoolOnly",
+						"operator": "!="
 					},
 					{
 						"preventEdit": "exists",
@@ -65,8 +65,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "userPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -81,8 +81,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "userPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -166,6 +166,11 @@
 				"required": true,
 				"andConditions": [
 					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
 						"preventEdit": "exists",
 						"key": "userPoolName"
 					}
@@ -178,6 +183,11 @@
 				"type": "list",
 				"map": "mfaOptions",
 				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
 					{
 						"key": "mfaConfiguration",
 						"value": "OFF",
@@ -193,6 +203,11 @@
 				"type": "multiselect",
 				"map": "mfaMethods",
 				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
 					{
 						"key": "mfaConfiguration",
 						"value": "OFF",
@@ -213,8 +228,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -236,8 +251,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -250,8 +265,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -263,8 +278,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -286,8 +301,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -305,8 +320,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -347,8 +362,8 @@
 					},
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -361,8 +376,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -370,6 +385,13 @@
 				"key": "userpoolClientRefreshTokenValidity",
 				"question": "Specify the app's refresh token expiration period (in days):",
 				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				],
 				"validation": {
 					"operator": "range",
 					"value": {"min": 1, "max": 365},
@@ -381,6 +403,13 @@
 				"question": "Do you want to specify the user attributes this app can read and write?",
 				"temp": true,
 				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				],
 				"type":"confirm"
 			},
 			{
@@ -390,6 +419,11 @@
 				"type": "multiselect",
 				"map" : "appClientReadAttributes",
 				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
 					{
 						"key": "userpoolClientSetAttributes",
 						"value": true,
@@ -405,6 +439,11 @@
 				"map": "coreAttributes",
 				"requiredOptions": "requiredAttributes",
 				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
 					{
 						"key": "userpoolClientSetAttributes",
 						"value": true,
