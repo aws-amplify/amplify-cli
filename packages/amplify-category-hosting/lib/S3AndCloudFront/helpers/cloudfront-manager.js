@@ -1,9 +1,10 @@
+const chalk = require('chalk'); 
 const constants = require('../../constants'); 
 
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
 
-function checkValidation(context){
+function invalidateCloudFront(context){
     if(context.parameters.options['invalidateCloudFront'] || 
         context.parameters.options['cloudFront'] ||
         context.parameters.options['c'] ){
@@ -17,9 +18,12 @@ async function invalidate(context){
         context.exeInfo.serviceMeta.output && 
         context.exeInfo.serviceMeta.output.CloudFrontDistributionID){
 
+        const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
+        const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
+
         let cloudFront = await getCloudFrontClient(context)
         let invalidateParams = {
-            DistributionId: context.exeInfo.serviceMeta.output.CloudFrontDistributionID,
+            DistributionId: CloudFrontDistributionID,
             InvalidationBatch: {
                 Paths: {
                     Quantity: 1,
@@ -31,8 +35,13 @@ async function invalidate(context){
         result = new Promise((resolve, reject) => {
                 cloudFront.createInvalidation(invalidateParams, function(err, data){
                 if(err){
+                    context.print.error('Error occured invalidating CloudFront distribution'); 
+                    context.print.info(err); 
                     reject(err); 
                 }else{
+                    context.print.info('CloudFront invalidation request sent successfuly.');
+                    context.print.info(chalk.green(CloudFrontSecureURL)); 
+                    context.exeInfo.cftInvalidationData = data; 
                     resolve(context); 
                 }
             })
@@ -49,6 +58,6 @@ async function getCloudFrontClient(context) {
 }
 
 module.exports = {
-    checkValidation
+    invalidateCloudFront
 };
   

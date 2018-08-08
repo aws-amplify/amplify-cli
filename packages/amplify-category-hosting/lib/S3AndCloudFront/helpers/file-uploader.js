@@ -24,19 +24,12 @@ async function run(context, distributionDirPath) {
   const uploadFileTasks = [];
 
   fileList.forEach((filePath) => {
-    uploadFileTasks.push(() =>
-      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
-  });
-
-  spinner.start();
-  return sequential(uploadFileTasks)
-    .then(() => {
-      spinner.succeed('Upload completed successfully.');
-    })
-    .catch((e) => {
-      spinner.fail('Error has occured during uploading to hosting bucket.');
-      throw e;
-    });
+    uploadFileTasks.push(()=>
+      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath)
+    );
+  }); 
+  
+  return sequential(uploadFileTasks);
 }
 
 async function getS3Client(context) {

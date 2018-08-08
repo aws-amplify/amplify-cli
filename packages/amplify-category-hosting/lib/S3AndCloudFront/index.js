@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
 const moment = require('moment');
@@ -71,13 +72,22 @@ async function configure(context){
 }
 
 function publish(context, args) {
-  return fileUPloader.run(context, args.distributionDirPath)
-    .then(cloudFrontManager.checkValidation(context))
+    const spinner = new ora('Uploading files'); 
+    spinner.start(); 
+    return fileUPloader.run(context, args.distributionDirPath)
+    .then(()=>{
+        spinner.succeed('Uploading files successful.');
+        return cloudFrontManager.invalidateCloudFront(context);
+    })
     .then(() => {
       const { WebsiteURL } = context.exeInfo.serviceMeta.output;
-      context.print.info('Your app is published successfully');
+      context.print.info('Your app is published successfully.');
       context.print.info(chalk.green(WebsiteURL));
       opn(WebsiteURL, { wait: false });
+    })
+    .catch((e)=>{
+        spinner.fail('Error has occured during publish.');
+        throw e; 
     });
 }
 
