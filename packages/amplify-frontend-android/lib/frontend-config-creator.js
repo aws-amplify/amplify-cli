@@ -104,12 +104,12 @@ function getPinpointConfig(pinpointResources) {
     PinpointAnalytics: {
       Default: {
         AppId: pinpointResource.output.Id,
-        Region: pinpointResource.output.Region,
+        Region: 'us-east-1',
       },
     },
     PinpointTargeting: {
       Default: {
-        Region: pinpointResource.output.Region,
+        Region: 'us-east-1',
       },
     },
   };
