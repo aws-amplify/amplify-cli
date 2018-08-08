@@ -7,7 +7,7 @@ async function openEditor(context, filePath) {
   const continueQuestion = {
     type: 'input',
     name: 'pressKey',
-    message: 'Press any key to continue',
+    message: 'Press enter to continue',
   };
   let editorSelected;
 

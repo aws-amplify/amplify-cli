@@ -1,0 +1,17 @@
+type Task 
+  @model 
+  @auth(allow: groups, groups: ["Managers"], mutations: [create, update, delete]) 
+  @auth(allow: groups, groups: ["Employees"], queries: [get, list]) 
+{
+  id: ID!
+  title: String!
+  description: String
+  status: String
+}
+type PrivateNote
+  @model
+  @auth(allow: owner)
+{
+  id: ID!
+  content: String!
+}
