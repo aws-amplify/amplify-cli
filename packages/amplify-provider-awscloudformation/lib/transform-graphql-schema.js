@@ -37,6 +37,7 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
+
   const parametersFilePath = path.join(resourceDir, parametersFileName);
 
 
@@ -68,7 +69,16 @@ async function transformGraphQLSchema(context, options) {
     transformers: transformerList,
   });
 
-  const cfdoc = transformer.transform(fs.readFileSync(schemaFilePath, 'utf8'));
+
+  let cfdoc;
+  try {
+    cfdoc = transformer.transform(fs.readFileSync(schemaFilePath, 'utf8'));
+  } catch (e) {
+    throw e;
+  }
+
+  context.print.success('Annotated GraphQL schema compiled successfully.');
+
   fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
 
   // Look for data sources in the cfdoc
