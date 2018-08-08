@@ -147,7 +147,7 @@ async function askDynamoDBQuestions(context) {
       },
     ],
   };
-  while (true) {
+  while (true) { // eslint-disable-line
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer.dynamoDbType) {
       case 'currentProject': {

@@ -169,7 +169,7 @@ async function invoke(context, category, service, resourceName) {
   // Run grunt for invoking lambda function
 
   const grunt = require('grunt');
-  grunt.task.init = function () { };
+  grunt.task.init = function () { }; //eslint-disable-line
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
 
