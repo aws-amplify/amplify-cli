@@ -8,7 +8,7 @@ import {
     ifElse, compoundExpression, bool, equals, iff, raw
 } from 'graphql-mapping-template'
 import { ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
-import { InvalidDirectiveError } from '../node_modules/graphql-transform/lib';
+import { InvalidDirectiveError } from 'graphql-transform';
 
 export class ResourceFactory {
 

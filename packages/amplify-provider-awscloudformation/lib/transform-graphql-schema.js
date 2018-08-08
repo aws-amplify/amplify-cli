@@ -6,6 +6,7 @@ const GraphQLTransform = require('graphql-transform').default;
 const AppSyncDynamoDBTransformer = require('graphql-dynamodb-transformer').default;
 const AppSyncAuthTransformer = require('graphql-auth-transformer').default;
 const AppSyncTransformer = require('graphql-appsync-transformer').default;
+const AppSyncConnectionTransformer = require('graphql-connection-transformer').default;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
@@ -56,6 +57,7 @@ async function transformGraphQLSchema(context, options) {
   const transformerList = [
     new AppSyncTransformer(buildDir),
     new AppSyncDynamoDBTransformer(),
+    new AppSyncConnectionTransformer(),
   ];
 
   if (parameters.AuthCognitoUserPoolId) {

@@ -12,6 +12,7 @@
     "graphql-auth-transformer": "1.0",
     "graphql-transformer-common": "1.0",
     "graphql-appsync-transformer": "1.0",
+    "graphql-connection-transformer": "1.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
     "cfn-lint": "^1.7.2",
