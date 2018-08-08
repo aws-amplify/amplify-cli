@@ -17,10 +17,10 @@ import { ResourceConstants } from 'graphql-transformer-common'
  */
 const ownerCreateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Inject Ownership Information')(
     compoundExpression([
-        iff(raw('$util.isNullOrBlank($ctx.identity.sub)'), raw('$util.unauthorized()')),
+        iff(raw('$util.isNullOrBlank($ctx.identity.username)'), raw('$util.unauthorized()')),
         iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
         comment(`You may change this by changing the "ownerField" passed to the @auth directive.`),
-        qref(`$input.put("${ownerAttribute}", $ctx.identity.sub)`)
+        qref(`$input.put("${ownerAttribute}", $ctx.identity.username)`)
     ])
 )
 const ownerUpdateResolverRequestMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Prepare Ownership Condition')(
@@ -28,13 +28,13 @@ const ownerUpdateResolverRequestMappingTemplateSnippet = (ownerAttribute: string
         set(
             ref(ResourceConstants.SNIPPETS.AuthCondition),
             obj({
-                expression: str("#owner = :sub"),
+                expression: str("#owner = :username"),
                 expressionNames: obj({
                     "#owner": str(`${ownerAttribute}`)
                 }),
                 expressionValues: obj({
-                    ":sub": obj({
-                        "S": str("$ctx.identity.sub")
+                    ":username": obj({
+                        "S": str("$ctx.identity.username")
                     })
                 })
             })
@@ -46,13 +46,13 @@ const ownerDeleteResolverRequestMappingTemplateSnippet = (ownerAttribute: string
         set(
             ref(ResourceConstants.SNIPPETS.AuthCondition),
             obj({
-                expression: str("#owner = :sub"),
+                expression: str("#owner = :username"),
                 expressionNames: obj({
                     "#owner": str(`${ownerAttribute}`)
                 }),
                 expressionValues: obj({
-                    ":sub": obj({
-                        "S": str("$ctx.identity.sub")
+                    ":username": obj({
+                        "S": str("$ctx.identity.username")
                     })
                 })
             })
@@ -61,13 +61,13 @@ const ownerDeleteResolverRequestMappingTemplateSnippet = (ownerAttribute: string
 )
 
 const ownerGetResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Validate Ownership')(
-    iff(notEquals(ref(`ctx.result.${ownerAttribute}`), ref('ctx.identity.sub')), raw('$util.unauthorized()'))
+    iff(notEquals(ref(`ctx.result.${ownerAttribute}`), ref('ctx.identity.username')), raw('$util.unauthorized()'))
 )
 const ownerListResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock("Filter Owned Items")(
     compoundExpression([
         set(ref('items'), list([])),
         forEach(ref('item'), ref('ctx.result.items'), [
-            iff(raw(`$item.${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
+            iff(raw(`$item.${ownerAttribute} == $ctx.identity.username`), qref('$items.add($item)'))
         ]),
         set(ref('ctx.result.items'), ref('items'))
     ])
@@ -76,7 +76,7 @@ const ownerQueryResolverResponseMappingTemplateSnippet = (ownerAttribute: string
     compoundExpression([
         set(ref('items'), list([])),
         forEach(ref('item'), ref('ctx.result.items'), [
-            iff(raw(`$item.${ownerAttribute} == $ctx.identity.sub`), qref('$items.add($item)'))
+            iff(raw(`$item.${ownerAttribute} == $ctx.identity.username`), qref('$items.add($item)'))
         ]),
         set(ref('ctx.result.items'), ref('items'))
     ])
@@ -352,7 +352,7 @@ export class ResourceFactory {
     }
 
     /**
-     * Update a create resolver to inject the $ctx.identity.sub as the "_owner"
+     * Update a create resolver to inject the $ctx.identity.username as the "_owner"
      * in the dynamodb table.
      */
     public ownerProtectCreateResolver(resource: Resolver, ownerAttribute: string): Resolver {

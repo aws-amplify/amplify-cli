@@ -30,11 +30,11 @@ const nManyTruthy = (n: number) => (objs: any[]) => {
  *
  * Impact:
  *
- * getPost - In the response mapping template we check the "owner" field === $ctx.identity.sub.
- * listPost - In the response mapping template we return only items where "owner" === $ctx.identity.sub
- * createPost - We automatically insert a "owner" field to attribute values where "owner" === $ctx.identity.sub.
+ * getPost - In the response mapping template we check the "owner" field === $ctx.identity.username.
+ * listPost - In the response mapping template we return only items where "owner" === $ctx.identity.username
+ * createPost - We automatically insert a "owner" field to attribute values where "owner" === $ctx.identity.username.
  * updatePost - Expose "owner" field in input/output and would set conditional update expression to look for owner.
- * deletePost - Conditional expression checking that the owner === $ctx.identity.sub
+ * deletePost - Conditional expression checking that the owner === $ctx.identity.username
  *
  * Note: The name of the "owner" field may be configured via the CF paramaters.
  *
