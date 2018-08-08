@@ -86,7 +86,7 @@ function updateResource(context, category, service) {
 
     .then((result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, getAllDefaults, entityKeys } = require(defaultValuesSrc);
+      const { functionMap, getAllDefaults } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
