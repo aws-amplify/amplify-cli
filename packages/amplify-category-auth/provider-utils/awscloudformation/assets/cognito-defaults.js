@@ -70,7 +70,7 @@ const entityKeys = {
 };
 
 const getAllDefaults = (name) => {
-  const projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase()}_${sharedId}` : name;
+  const projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase()}${sharedId}` : name;
   const target = generalDefaults(projectName);
   const sources = [
     userPoolDefaults(projectName),
