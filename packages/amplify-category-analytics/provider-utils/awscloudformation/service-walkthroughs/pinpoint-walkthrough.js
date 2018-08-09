@@ -77,7 +77,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       // Check for auth rules/settings
 
       const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-      
+
       const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
       // getting requirement satisfaction map
       const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
@@ -88,14 +88,13 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guest/unauthenticated users to send analytics events (recommended for analytics)?')) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-            
           } catch (e) {
             context.print.error(e);
             throw e;
           }
         } else {
           try {
-            context.print.warning('Providing authorization for only authenticated users to send analytics events. Please use "amplify update auth" to modify this behavior.')
+            context.print.warning('Providing authorization for only authenticated users to send analytics events. Please use "amplify update auth" to modify this behavior.');
             apiRequirements.allowUnauthenticatedIdentities = false;
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           } catch (e) {
@@ -103,7 +102,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             throw e;
           }
         }
-      }      
+      }
 
       const resourceDirPath = path.join(projectBackendDirPath, category, resource);
       delete defaultValues.resourceName;
@@ -135,24 +134,6 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
-
-function checkIfAuthExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let authExists = false;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
-
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === authServiceName) {
-        authExists = true;
-      }
-    });
-  }
-  return authExists;
 }
 
 module.exports = { addWalkthrough };

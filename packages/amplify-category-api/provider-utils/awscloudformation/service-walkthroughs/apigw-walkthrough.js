@@ -96,48 +96,44 @@ async function askPrivacy(context, answers) {
     };
 
 
-    if(answer.privacy === 'private') {
+    if (answer.privacy === 'private') {
+      const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
+      // getting requirement satisfaction map
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      // checking to see if any requirements are unsatisfied
+      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-        const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+      // if requirements are unsatisfied, trigger auth
 
-        // if requirements are unsatisfied, trigger auth
-
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-            return privacy;
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        } 
-
+      if (foundUnmetRequirements) {
+        try {
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          return privacy;
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      }
     }
 
-    if(answer.privacy === 'protected') {
-
+    if (answer.privacy === 'protected') {
       const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+      // getting requirement satisfaction map
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      // checking to see if any requirements are unsatisfied
+      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-        // if requirements are unsatisfied, trigger auth
+      // if requirements are unsatisfied, trigger auth
 
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-            return privacy;
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-      } 
-
+      if (foundUnmetRequirements) {
+        try {
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          return privacy;
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      }
     }
 
     return privacy;
