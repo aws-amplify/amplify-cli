@@ -21,7 +21,7 @@ Parameters:
   <% } -%>
 
 Resources:
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <%if (!props.authSelections.includes('identityPoolOnly')) { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -339,14 +339,14 @@ Resources:
     DependsOn: MFALogPolicy
   <% } %>
   <% } -%>
-  <%if (['identityPoolAndUserPool', 'identityPoolOnly'].includes(props.authSelections)) { %>
+  <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
   # BEGIN IDENTITY POOL RESOURCES
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: !Ref identityPoolName
-      <%if (props.authSelections !== 'identityPoolOnly') { %>
+      IdentityPoolName: <%= props.identityPoolName %>
+      <%if (!props.authSelections.includes('identityPoolOnly')) { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -378,14 +378,14 @@ Resources:
   <% } %>
 
 Outputs :
-  <%if (['identityPoolAndUserPool', 'identityPoolOnly'].includes(props.authSelections)) { %>
+  <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
   IdentityPoolId:
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name
   <% } %>
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <%if (!props.authSelections.includes('identityPoolOnly')) { %>
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
