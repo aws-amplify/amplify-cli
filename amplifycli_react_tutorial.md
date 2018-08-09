@@ -176,7 +176,7 @@ Now inside the `App` component add in the following two methods before the `rend
   todoMutation = async () => {
     const todoDetails = {
       name: 'Party tonight!',
-      description: 'Amplify CLI works!'
+      description: 'Amplify CLI rocks!'
     };
     
     const newEvent = await API.graphql(graphqlOperation(addTodo, todoDetails));
