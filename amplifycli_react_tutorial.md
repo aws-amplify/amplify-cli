@@ -51,7 +51,7 @@ Next, add the Amplify library to your application:
 yarn add aws-amplify aws-amplify-react
 ```
 
-You should see a `/src/aws-exports.js` file created which will have all of the appropriate cloud resources defined for your application. Edit `./src/App.js` to include the Amplify library, configs, and [React HOC](https://reactjs.org/docs/higher-order-components.html). Then initialize the library:
+You should see a `./src/aws-exports.js` file created which will have all of the appropriate cloud resources defined for your application. Edit `./src/App.js` to include the Amplify library, configs, and [React HOC](https://reactjs.org/docs/higher-order-components.html). Then initialize the library:
 
 ```
 import Amplify from 'aws-amplify';
@@ -70,7 +70,9 @@ You can now use `amplify publish` to build and publish your app again. This time
 
 # Add Analytics and Storage
 
-A login screen is nice but now is the time to add some features, like tracking analytics of user behavior and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. Then run `amplify add storage` and select the S3 provider. When complete run `amplify push` and the cloud resources will be created.
+A login screen is nice but now is the time to add some features, like tracking analytics of user behavior and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You will have the option of enabling Analytics for users only when they are authenticated or even if they are not. Since you have already added in Auth to your project go ahead and select `No` and then `Yes` to overwrite when prompted, but you could also try a new project without auth configured to test out this feature.
+
+Next run `amplify add storage` and select the S3 provider. When complete run `amplify push` and the cloud resources will be created.
 
 Edit your `App.js` file in the React project again and modify your imports so that the `Analytics` and `Storage` categories are included as well as the `S3Album` component, which will be used for uploading and downloading photos.
 
@@ -118,7 +120,7 @@ Save your changes and run `amplify publish`. Since you already pushed the change
 
 # Add GraphQL backend
 
-Now that your application is setup, the final piece is to add a backend API with data that can be peristed in a database. The Amplify CLI comes with a **GraphQL Transformer** that converts annotated GraphQL schema files into the appropriate CloudFormation based on your data requirements. This includes options such as:
+Now that your application is setup, it's time to add a backend API with data that can be persisted in a database. The Amplify CLI comes with a **GraphQL Transformer** that converts annotated GraphQL schema files into the appropriate CloudFormation based on your data requirements. This includes options such as:
 - `@model` for storing types in Amazon DynamoDB
 - `@auth` to define different authorization strategies
 - `@connection` for specifying relationships between `@model` object types
