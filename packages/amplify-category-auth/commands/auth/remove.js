@@ -10,7 +10,7 @@ module.exports = {
 
     const existingAuth = Object.keys(amplify.getProjectDetails().amplifyMeta.auth);
 
-    if (existingAuth) {
+    if (existingAuth && existingAuth.length > 0) {
       const currentAuthParams = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${existingAuth[0]}/parameters.json`));
       // const currentConstraints = JSON.parse(currentAuthParams.savedConstraints);
 
