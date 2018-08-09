@@ -98,7 +98,7 @@ function updateResource(context, category, service) {
         /* if the user elects to use defaults during an edit,
          * we simply grab all of the static defaults
          * but make sure to pass existing resource name so we don't create a 2nd auth resource */
-        props = getAllDefaults(context.updatingAuth.resourceName);
+        props = Object.assign(getAllDefaults(context.updatingAuth.resourceName), context.updatingAuth, result);
       } else {
         /* if the user does NOT choose defaults during an edit,
          * we merge actual answers object into props object of previous answers,
