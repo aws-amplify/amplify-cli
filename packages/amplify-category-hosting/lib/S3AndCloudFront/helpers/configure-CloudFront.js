@@ -18,11 +18,11 @@ const originErrorCodes = {
 
 async function configure(context) {
     if(!context.exeInfo.template.Resources.CloudFrontDistribution){
-        context.print.info('CloudFront is NOT in the current hosting feature'); 
+        context.print.info('CloudFront is NOT in the current hosting'); 
         const answer = await inquirer.prompt( {
             name: 'AddCloudFront',
             type: 'confirm',
-            message: 'Add CloudFront to the hosting feature',
+            message: 'Add CloudFront to hosting',
             default: false,
         });
         if(answer.AddCloudFront){
@@ -30,16 +30,6 @@ async function configure(context) {
             const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
             const { CloudFrontDistribution } = originalTemplate.Resources; 
             context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution; 
-        }
-    }else{
-        const answer = await inquirer.prompt( {
-            name: 'RemoveCloudFront',
-            type: 'confirm',
-            message: 'Remove CloudFront from the hosting feature',
-            default: false,
-        });
-        if(answer.RemoveCloudFront){
-            delete context.exeInfo.template.Resources.CloudFrontDistribution;
         }
     }
 
