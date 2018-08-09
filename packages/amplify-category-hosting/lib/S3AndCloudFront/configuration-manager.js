@@ -24,23 +24,37 @@ async function init(context) {
   context.exeInfo.template.Resources.S3Bucket.Properties.BucketName = answers.HostingBucketName;
 }
 
-async function configure(context) {
+async function configure(context, lastConfiguredSection) {
   const options = Object.keys(configurables);
   const done = "I'm done.";
   options.push(done);
+
+  let defaultSection = options[0];
+  if (lastConfiguredSection) {
+    let index = 0;
+    for (let i = 0; i < options.length; i++) {
+      if (options[i] === lastConfiguredSection) {
+        index = i;
+        break;
+      }
+    }
+    if (index < options.length - 1) {
+      defaultSection = options[index + 1];
+    }
+  }
 
   const answer = await inquirer.prompt({
     type: 'list',
     name: 'section',
     message: 'Please select the section to configure',
     choices: options,
-    default: options[0],
+    default: defaultSection,
   });
 
   if (answer.section !== done) {
     const configureModule = require(configurables[answer.section]);
     await configureModule.configure(context);
-    return configure(context);
+    return configure(context, answer.section);
   }
   return context;
 }
