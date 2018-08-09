@@ -219,7 +219,7 @@ Next, you would need to select the security type for the API. Select **Authentic
 Edit your `App.js` file in the React project again and modify your imports so that the `API` category is included as well to make API calls from the app.
 
 ```
-import Amplify, { Analytics, Storage, API } from 'aws-amplify';
+import Amplify, { Analytics, Storage, API, graphqlOperation } from 'aws-amplify';
 ```
 
 
