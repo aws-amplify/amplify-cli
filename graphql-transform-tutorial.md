@@ -159,6 +159,8 @@ query ListBlogs {
 
 ## Project management app with owner based authorization
 
+**Note: To use the @auth directive, the API must be configured to use Amazon Cognito UserPools. Support for more authorization strategies will come in the future.**
+
 **There is currently a bug with the user pool creation so to make this work you need to have your own user pool and then pass the id via a CloudFormation parameter. Ask parismic for help with this. The amplify cli user pool with default setting will not work either and they are fixing this.**
 
 ```graphql
@@ -287,7 +289,8 @@ no mutation fields.
 
 Object types that are annotated with `@auth` are protected by one of the
 supported authorization strategies. Types that are annotated with `@auth`
-must also be annotated with `@model`.
+must also be annotated with `@model`. Currently Amazon Cognito UserPools
+is the only supported authorization mode but more will come in the future.
 
 #### Definition
 
