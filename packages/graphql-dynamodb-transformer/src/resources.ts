@@ -207,15 +207,14 @@ export class ResourceFactory {
             TypeName: 'Mutation',
             RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
                 compoundExpression([
-                    iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
-                    qref('$input.put("createdAt", $util.time.nowISO8601())'),
-                    qref('$input.put("updatedAt", $util.time.nowISO8601())'),
-                    qref(`$input.put("__typename", "${type}")`),
+                    qref('$context.args.input.put("createdAt", $util.time.nowISO8601())'),
+                    qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
                         key: obj({
                             id: obj({ S: str(`$util.autoId()`) })
                         }),
-                        attributeValues: ref('util.dynamodb.toMapValuesJson($input)'),
+                        attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
                         condition: obj({
                             expression: str(`attribute_not_exists(#id)`),
                             expressionNames: obj({
@@ -254,10 +253,9 @@ export class ResourceFactory {
                             })
                         }))
                     ),
-                    iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
                     comment('Automatically set the updatedAt timestamp.'),
-                    qref('$input.put("updatedAt", $util.time.nowISO8601())'),
-                    qref(`$input.put("__typename", "${type}")`),
+                    qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.updateItem({
                         key: obj({
                             id: obj({ S: str('$context.args.input.id') })

@@ -108,7 +108,6 @@ export class DynamoDBMappingTemplate {
         // Auto timestamp
         // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
         return compoundExpression([
-            iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
             set(ref('expNames'), obj({})),
             set(ref('expValues'), obj({})),
             set(ref('expSet'), obj({})),
@@ -116,7 +115,7 @@ export class DynamoDBMappingTemplate {
             set(ref('expRemove'), list([])),
             forEach(
                 ref('entry'),
-                ref(`util.map.copyAndRemoveAllKeys($input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
+                ref(`util.map.copyAndRemoveAllKeys($context.args.input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
                 [
                     ifElse(
                         ref('util.isNull($entry.value)'),

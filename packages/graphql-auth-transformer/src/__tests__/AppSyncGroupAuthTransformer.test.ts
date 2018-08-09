@@ -10,7 +10,7 @@ import AppSyncTransformer from 'graphql-appsync-transformer'
 
 test('Test AppSyncAuthTransformer validation happy case w/ static groups', () => {
     const validSchema = `
-    type Post @model @auth(allow: groups, groups: ["Admin", "Dev"]) {
+    type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
         id: ID!
         title: String!
         createdAt: String
@@ -31,7 +31,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ static groups', () =>
 
 test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () => {
     const validSchema = `
-    type Post @model @auth(allow: groups, groupsField: "groups") {
+    type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
         title: String!
         groups: [String]
@@ -53,7 +53,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () =
 
 test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () => {
     const validSchema = `
-    type Post @model @auth(allow: groups, groupsField: "group") {
+    type Post @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
         id: ID!
         title: String!
         group: String
@@ -76,7 +76,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () =>
 test('Test AppSyncAuthTransformer validation @auth on non @model. Should fail.', () => {
     try {
         const validSchema = `
-            type Post @auth(allow: groups, groupsField: "groups") {
+            type Post @auth(rules: [{allow: groups, groupsField: "groups"}]) {
                 id: ID!
                 title: String!
                 group: String

@@ -16,9 +16,10 @@ import {
     TypeDefinitionNode,
     DefinitionNode,
     ArgumentNode,
-    valueFromASTUntyped
+    valueFromASTUntyped,
+    DocumentNode
 } from 'graphql'
-import { InvalidDirectiveDefinitionError } from './errors'
+import { InvalidTransformerError } from './errors'
 
 function reduceTypeDefinitionNodes(
     acc: { [name: string]: TypeDefinitionNode },
@@ -49,7 +50,7 @@ export default class Transformer {
 
     public directive: DirectiveDefinitionNode
 
-    public extraDefMap: { [name: string]: TypeDefinitionNode }
+    public typeDefinitions: TypeDefinitionNode[]
 
     /**
      * Each transformer has a name.
@@ -58,28 +59,20 @@ export default class Transformer {
      */
     constructor(
         name: string,
-        directiveDef: string,
-        extraDefs?: string
+        docString: string
     ) {
         this.name = name
-
-        const doc = parse(directiveDef);
-        if (doc.definitions.length !== 1) {
-            throw new InvalidDirectiveDefinitionError('Transformers must specify exactly one directive definition.')
+        const doc = parse(docString)
+        const directives = doc.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[]
+        const extraDefs = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[]
+        if (directives.length !== 1) {
+            throw new InvalidTransformerError('Transformers must specify exactly one directive definition.')
         }
-        const def = doc.definitions[0]
-        if (def.kind !== Kind.DIRECTIVE_DEFINITION) {
-            throw new InvalidDirectiveDefinitionError(`Transformers must specify a directive definition not a definition of kind '${def.kind}'.`)
-        }
-        this.directive = def
+        this.directive = directives[0]
 
         // Transformers can define extra shapes that can be used by the directive
         // and validated. TODO: Validation.
-        this.extraDefMap = {}
-        if (extraDefs) {
-            const otherDoc = parse(extraDefs);
-            this.extraDefMap = otherDoc.definitions.reduce(reduceTypeDefinitionNodes, {})
-        }
+        this.typeDefinitions = extraDefs
     }
 
     /**

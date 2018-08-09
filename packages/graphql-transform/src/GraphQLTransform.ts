@@ -4,12 +4,13 @@ import {
     Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode,
     InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode,
     EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
-    InputValueDefinitionNode, EnumValueDefinitionNode
+    InputValueDefinitionNode, EnumValueDefinitionNode, validate
 } from 'graphql'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
-import { InvalidTransformerError, UnknownDirectiveError } from './errors'
+import { InvalidTransformerError, UnknownDirectiveError, TransformSchemaError } from './errors'
+import { validateModelSchema } from './validation'
 
 function isFunction(obj: any) {
     return obj && (typeof obj === 'function')
@@ -165,6 +166,18 @@ export default class GraphQLTransform {
             (acc: any, t: Transformer) => ({ ...acc, [t.directive.name.value]: true }),
             {}
         )
+        let allModelDefinitions = [...context.inputDocument.definitions]
+        for (const transformer of this.transformers) {
+            allModelDefinitions = allModelDefinitions.concat(
+                ...transformer.typeDefinitions,
+                transformer.directive
+            )
+        }
+        const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions })
+        if (errors && errors.length) {
+            throw new TransformSchemaError(errors.slice(0))
+        }
+
         for (const transformer of this.transformers) {
             console.log(`Transforming with ${transformer.name}`)
             if (isFunction(transformer.before)) {
