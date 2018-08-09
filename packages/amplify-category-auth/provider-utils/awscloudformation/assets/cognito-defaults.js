@@ -4,7 +4,7 @@ const { coreAttributes, appClientReadAttributes } = require('./string-maps');
 const [sharedId] = uuid().split('-');
 
 const generalDefaults = projectName => ({
-  resourceName: projectName,
+  resourceName: `cognito${sharedId}`,
   authSelections: ['identityPoolAndUserPool'],
 });
 
