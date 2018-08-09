@@ -2,7 +2,7 @@
 
 # Getting Started
 
-Take the .tgz file that was provided by parismic, upzip it, cd to the root of the new folder and run the following:
+Take the .tgz file that was provided, upzip it, cd to the root of the new folder and run the following:
 
 ```
 npm run setup-dev # this will take a while
@@ -23,9 +23,9 @@ amplify add api
 # When asked if you have a schema just say no.
 # Select one of the default samples. You can change it in a sec.
 # Say you want to edit the schema and it will open the schema.graphql in your editor.
-# Make some changes to the schema. See the reference docs for details.
+# Make some changes to the schema. See the reference docs (at bottom of this page) for details.
 # Save the file and click enter back on the command line.
-# DO NOT CLICK ENTER AGAIN! This is a weird flow i am trying to get them to change.
+# DO NOT CLICK ENTER AGAIN! This is a strange flow and will likely change.
 # When asked if you want to use your own DDB tables say **NO**.
 # Run
 amplify push
@@ -161,7 +161,7 @@ query ListBlogs {
 
 **Note: To use the @auth directive, the API must be configured to use Amazon Cognito UserPools. Support for more authorization strategies will come in the future.**
 
-**There is currently a bug with the user pool creation so to make this work you need to have your own user pool and then pass the id via a CloudFormation parameter. Ask parismic for help with this. The amplify cli user pool with default setting will not work either and they are fixing this.**
+**There is currently a bug with the user pool creation so to make this work you need to have your own user pool and then pass the id via a CloudFormation parameter. The amplify cli user pool with default setting will not work either and they are fixing this.**
 
 ```graphql
 type Task 
