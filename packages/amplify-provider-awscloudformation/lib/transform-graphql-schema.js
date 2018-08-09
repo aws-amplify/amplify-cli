@@ -1,4 +1,4 @@
-const inquirer = require('inquirer');
+// const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
 
@@ -15,7 +15,7 @@ const schemaFileName = 'schema.graphql';
 
 async function transformGraphQLSchema(context, options) {
   let { resourceDir, parameters } = options;
-  const { noConfig } = options;
+  // const { noConfig } = options;
 
   // Compilation during the push step
   if (!resourceDir) {
@@ -81,7 +81,8 @@ async function transformGraphQLSchema(context, options) {
 
   fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
 
-  // Look for data sources in the cfdoc
+  // Comment this piece for now until transformer lib supports custom DDB ARns
+  /* Look for data sources in the cfdoc
 
   const dynamoResources = [];
   const cfResources = cfdoc.Resources;
@@ -92,8 +93,13 @@ async function transformGraphQLSchema(context, options) {
   });
 
   if (dynamoResources.length > 0 && !noConfig) {
-    context.print.info(`We've detected ${dynamoResources.length} DynamoDB resources which would be created for you as a part of the AppSync service.`);
-    if (await context.prompt.confirm('Do you want to use your own tables instead?')) {
+    context.print.info(`We've detected
+    ${dynamoResources.length} DynamoDB
+    resources which would be created for you as a
+     part of the AppSync service.`);
+
+    if (await context.prompt.confirm('Do you want to use your own
+      tables instead?')) {
       let continueConfiguringDyanmoTables = true;
 
       while (continueConfiguringDyanmoTables) {
@@ -120,14 +126,16 @@ async function transformGraphQLSchema(context, options) {
         ({ continueConfiguringDyanmoTables } = await inquirer.prompt(confirmQuestion));
       }
     }
-  }
+  } */
 
   const jsonString = JSON.stringify(parameters, null, 4);
 
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-async function askDynamoDBQuestions(context) {
+// Comment this piece for now until transform lib supports custom DDB ARns
+
+/* async function askDynamoDBQuestions(context) {
   const dynamoDbTypeQuestion = {
     type: 'list',
     name: 'dynamoDbType',
@@ -147,7 +155,7 @@ async function askDynamoDBQuestions(context) {
       },
     ],
   };
-  while (true) {
+  while (true) { // eslint-disable-line
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer.dynamoDbType) {
       case 'currentProject': {
@@ -159,7 +167,8 @@ async function askDynamoDBQuestions(context) {
           }
         });
         if (dynamoDbProjectResources.length === 0) {
-          context.print.error('There are no DynamoDb resources configured in your project currently');
+          context.print.error('There are no DynamoDb
+            resources configured in your project currently');
           break;
         }
         const dynamoResourceQuestion = {
@@ -184,7 +193,8 @@ async function askDynamoDBQuestions(context) {
         try {
           ({ add } = require('amplify-category-storage'));
         } catch (e) {
-          context.print.error('Storage plugin not installed in the CLI. Please install it to use this feature');
+          context.print.error('Storage plugin not installed in the CLI.
+           Please install it to use this feature');
           break;
         }
         return add(context, 'awscloudformation', 'DynamoDB')
@@ -199,7 +209,8 @@ async function askDynamoDBQuestions(context) {
           });
       }
       case 'cloudResource': {
-        const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
+        const regions = await context.amplify.executeProviderUtils(context,
+          'awscloudformation', 'getRegions');
 
         const regionQuestion = {
           type: 'list',
@@ -210,7 +221,8 @@ async function askDynamoDBQuestions(context) {
 
         const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables', { region: regionAnswer.region });
+        const dynamodbTables = await context.amplify.executeProviderUtils(context,
+        'awscloudformation', 'getDynamoDBTables', { region: regionAnswer.region });
 
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
@@ -223,7 +235,8 @@ async function askDynamoDBQuestions(context) {
         }));
 
         if (dynamodbOptions.length === 0) {
-          context.print.error('You do not have any DynamoDB tables configured for the selected region');
+          context.print.error('You do not have any DynamoDB tables
+           configured for the selected region');
           break;
         }
 
@@ -240,7 +253,7 @@ async function askDynamoDBQuestions(context) {
       default: context.print.error('Invalid option selected');
     }
   }
-}
+} */
 
 
 module.exports = {

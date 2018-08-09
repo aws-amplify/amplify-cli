@@ -113,7 +113,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
     aws_appsync_region: projectRegion,
     aws_appsync_authenticationType: appsyncResource.output.securityType,
-    aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput,
+    aws_appsync_apiKey: appsyncResource.output.securityType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
   };
 }
 
@@ -141,7 +141,7 @@ function getPinpointConfig(pinpointResources) {
 
   return {
     aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: pinpointResource.output.Region,
+    aws_mobile_analytics_app_region: 'us-east-1',
   };
 }
 

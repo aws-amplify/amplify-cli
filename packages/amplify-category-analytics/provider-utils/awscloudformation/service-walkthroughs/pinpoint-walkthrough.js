@@ -8,20 +8,6 @@ const serviceName = 'Pinpoint';
 const templateFileName = 'pinpoint-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
-  while (!checkIfAuthExists(context)) {
-    if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding analytics for user files. Do you want to add auth now?')) {
-      try {
-        const { add } = require('amplify-category-auth');
-        await add(context);
-      } catch (e) {
-        context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
-        break;
-      }
-      break;
-    } else {
-      process.exit(0);
-    }
-  }
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
@@ -54,7 +40,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   }
 
   const questions = [];
-  for (let i = 0; i < inputs.length; i += 1) {
+  for (let i = 1; i < inputs.length; i += 1) {
     let question = {
       name: inputs[i].key,
       message: inputs[i].question,
@@ -84,9 +70,41 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   }
 
   return inquirer.prompt(questions)
-    .then((answers) => {
+    .then(async (answers) => {
+      answers[inputs[0].key] = answers[inputs[1].key];
       Object.assign(defaultValues, answers);
       const resource = defaultValues.resourceName;
+
+      // Check for auth rules/settings
+
+      const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+
+      const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
+      // getting requirement satisfaction map
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      // checking to see if any requirements are unsatisfied
+      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+      if (foundUnmetRequirements) {
+        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guest/unauthenticated users to send analytics events (recommended when getting started)?')) {
+          try {
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+        } else {
+          try {
+            context.print.warning('Providing authorization for only authenticated users to send analytics events. Please use "amplify update auth" to modify this behavior.');
+            apiRequirements.allowUnauthenticatedIdentities = false;
+            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          } catch (e) {
+            context.print.error(e);
+            throw e;
+          }
+        }
+      }
+
       const resourceDirPath = path.join(projectBackendDirPath, category, resource);
       delete defaultValues.resourceName;
       fs.ensureDirSync(resourceDirPath);
@@ -117,24 +135,6 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
-
-function checkIfAuthExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let authExists = false;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
-
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === authServiceName) {
-        authExists = true;
-      }
-    });
-  }
-  return authExists;
 }
 
 module.exports = { addWalkthrough };

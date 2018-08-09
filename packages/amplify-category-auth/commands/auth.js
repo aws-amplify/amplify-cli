@@ -26,6 +26,10 @@ module.exports = {
         name: 'remove',
         description: `Removes ${featureName} resource from your local backend which would be removed from the cloud on the next push command`,
       },
+      {
+        name: 'update',
+        description: `Updates the ${featureName} resource from your local backend.`,
+      },
     ];
 
     context.amplify.showHelp(header, commands);

@@ -1,3 +1,8 @@
+const learnMoreOption = [{
+  name: 'I want to learn more.',
+  value: 'learnMore',
+}];
+
 const defaultPrompMap = [
   {
     name: 'Yes, use the default configuration.',
@@ -6,10 +11,20 @@ const defaultPrompMap = [
   {
     name: 'No, I will set up my own configuration.',
     value: 'manual',
-  }, {
-    name: 'I want to learn more about these options.',
-    value: 'learnMore',
   },
+  ...learnMoreOption,
+];
+
+const booleanOptions = [
+  {
+    name: 'Yes',
+    value: true,
+  },
+  {
+    name: 'No',
+    value: false,
+  },
+  ...learnMoreOption,
 ];
 
 const mfaOptions = [
@@ -25,6 +40,7 @@ const mfaOptions = [
     name: 'OPTIONAL (Individual users can use MFA)',
     value: 'OPTIONAL',
   },
+  ...learnMoreOption,
 ];
 
 const mfaMethods = [
@@ -53,10 +69,16 @@ const authSelectionMap = [
   {
     name: 'User Sign-Up, Sign-In, connected with AWS IAM controls (Enables per-user Storage features for images or other content, Analytics, and more)',
     value: 'identityPoolAndUserPool',
-  }, {
+  },
+  {
     name: 'User Sign-Up & Sign-In only (Best used with a cloud API only)',
     value: 'userPoolOnly',
   },
+  // {
+  //   name: 'Identity Pool Only',
+  //   value: 'identityPoolOnly',
+  // },
+  ...learnMoreOption,
 ];
 
 const coreAttributes = [
@@ -147,16 +169,26 @@ const authProviders = [
   },
 ];
 
-const getAllMaps = (() => ({
-  coreAttributes,
-  authSelectionMap,
-  appClientReadAttributes,
-  authProviders,
-  mfaOptions,
-  mfaMethods,
-  emailRegistration,
-  defaultPrompMap,
-}));
+const disableOptionsOnEdit = () => {
+  mfaOptions.find(i => i.value === 'ON').disabled = true;
+};
+
+const getAllMaps = ((edit) => {
+  if (edit) {
+    disableOptionsOnEdit();
+  }
+  return {
+    coreAttributes,
+    authSelectionMap,
+    appClientReadAttributes,
+    authProviders,
+    mfaOptions,
+    mfaMethods,
+    emailRegistration,
+    defaultPrompMap,
+    booleanOptions,
+  };
+});
 
 module.exports = {
   coreAttributes,
@@ -168,4 +200,5 @@ module.exports = {
   mfaMethods,
   emailRegistration,
   defaultPrompMap,
+  booleanOptions,
 };
