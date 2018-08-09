@@ -38,9 +38,9 @@ export class AppSyncSearchableTransformer extends Transformer {
     constructor() {
         super(
             `AppSyncSearchableTransformer`,
-            `directive @searchable(queries: SearchableQueryMap) on OBJECT`,
             `
-                input SearchableQueryMap { search: String }
+            directive @searchable(queries: SearchableQueryMap) on OBJECT
+            input SearchableQueryMap { search: String }
             `
         );
         this.resources = new ResourceFactory();

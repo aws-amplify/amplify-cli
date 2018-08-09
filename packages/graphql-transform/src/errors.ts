@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 export class InvalidTransformerError extends Error {
 
     constructor(message: string) {
@@ -9,12 +11,13 @@ export class InvalidTransformerError extends Error {
     }
 }
 
-export class InvalidDirectiveDefinitionError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "InvalidDirectiveDefinitionError";
+export class TransformSchemaError extends Error {
+
+    constructor(errors: GraphQLError[]) {
+        super(`Schema Errors:\n\n${errors.join('\n')}`);
+        this.name = "TransformSchemaError";
         if ((Error as any).captureStackTrace) {
-            (Error as any).captureStackTrace(this, InvalidDirectiveDefinitionError)
+            (Error as any).captureStackTrace(this, TransformSchemaError)
         }
     }
 }
