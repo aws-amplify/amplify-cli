@@ -70,7 +70,7 @@ You can now use `amplify publish` to build and publish your app again. This time
 
 # Add Analytics and Storage
 
-A login screen is nice but now is the time to add some features, like tracking analytics of user behavior and uploading/downloading images in the cloud. Start by running `amplify add analyitcs` in your project. Then run `amplify add storage` and select the S3 provider. When complete run `amplify push` and the cloud resources will be created.
+A login screen is nice but now is the time to add some features, like tracking analytics of user behavior and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. Then run `amplify add storage` and select the S3 provider. When complete run `amplify push` and the cloud resources will be created.
 
 Edit your `App.js` file in the React project again and modify your imports so that the `Analytics` and `Storage` categories are included as well as the `S3Album` component, which will be used for uploading and downloading photos.
 
@@ -124,7 +124,7 @@ Now that your application is setup, the final piece is to add a backend API with
 - `@connection` for specifying relationships between `@model` object types
 - `@searchable` to stream `@model` types into Amazon Elasticsearch
 
-To get started run `amplify add api` and select `GraphQL`. When prompted choose `Amazon Cognito User Pools` and the project will leverage your existing Auth setup. Select **No** when asked for an `annotated schema` and **Yes** when asked about `guided schema creation`.
+To get started run `amplify add api` and select `GraphQL`. When prompted choose `Amazon Cognito User Pool` and the project will leverage your existing Auth setup. Select **No** when asked for an `annotated schema` and **Yes** when asked about `guided schema creation`.
 
 The guided creation will give some default schemas that are pre-annotated for you for learning purposes. The following steps take you through choosing `Single object with fields` but feel free to revisit these steps later in another project. If you choose this option you'll see the following annotated schema in your text editor:
 
@@ -136,7 +136,7 @@ type Todo @model {
 }
 ```
 
-This is the GraphQL schema that will be deployed to AWS AppSync. If you're familiar with GraphQL you could rename/add fields & types, but note the client code would need to change as well. When you're ready press `enter` in the CLI and then `No` on the next question followed by `amplify push`.
+This is the GraphQL schema that will be deployed to AWS AppSync. If you're familiar with GraphQL you could rename/add fields & types, but note the client code would need to change as well. When you're ready press `enter` in the CLI followed by `amplify push`.
 
 After the deployment is done open your `App.js` again and update the import to include both the `API` category and `graphqlOperation` method:
 
@@ -274,7 +274,7 @@ In your project directory, open `./amplify/backend/function` and you will see th
 
 # Testing your Function
 
-Amplify CLI supports local testing of Lambda functions. Run `amplfiy status` to get the resource name of the Lambda function created earlier, and execute:
+Amplify CLI supports local testing of Lambda functions. Run `amplify status` to get the resource name of the Lambda function created earlier, and execute:
 
 ```
 amplify function invoke <resourcename>
