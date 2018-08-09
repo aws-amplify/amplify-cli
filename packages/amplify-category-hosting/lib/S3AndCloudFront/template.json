@@ -28,8 +28,7 @@
                     "IndexDocument": {"Ref": "IndexDocument"},
                     "ErrorDocument": {"Ref": "ErrorDocument"}
                 }
-            },
-            "DeletionPolicy": "Retain"
+            }
         },
         "BucketPolicy": {
             "Type": "AWS::S3::BucketPolicy",

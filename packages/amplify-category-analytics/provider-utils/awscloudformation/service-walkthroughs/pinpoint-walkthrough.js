@@ -40,7 +40,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   }
 
   const questions = [];
-  for (let i = 0; i < inputs.length; i += 1) {
+  for (let i = 1; i < inputs.length; i += 1) {
     let question = {
       name: inputs[i].key,
       message: inputs[i].question,
@@ -71,6 +71,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 
   return inquirer.prompt(questions)
     .then(async (answers) => {
+      answers[inputs[0].key] = answers[inputs[1].key];
       Object.assign(defaultValues, answers);
       const resource = defaultValues.resourceName;
 
@@ -85,7 +86,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
       if (foundUnmetRequirements) {
-        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guest/unauthenticated users to send analytics events (recommended for analytics)?')) {
+        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guest/unauthenticated users to send analytics events (recommended when getting started)?')) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           } catch (e) {
