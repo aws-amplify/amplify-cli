@@ -34,7 +34,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 }
 
 
-function addResource(context, category, service) {
+async function addResource(context, category, service) {
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const {
@@ -50,7 +50,7 @@ function addResource(context, category, service) {
     serviceWalkthroughFilename,
   )
 
-    .then((result) => {
+    .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, generalDefaults } = require(defaultValuesSrc);
 
@@ -65,7 +65,7 @@ function addResource(context, category, service) {
 
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
 
-      copyCfnTemplate(context, category, props, cfnFilename);
+      await copyCfnTemplate(context, category, props, cfnFilename);
     })
     .then(() => props.resourceName);
 }
@@ -84,7 +84,7 @@ function updateResource(context, category, service) {
     serviceWalkthroughFilename,
   )
 
-    .then((result) => {
+    .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, getAllDefaults } = require(defaultValuesSrc);
 
@@ -110,7 +110,7 @@ function updateResource(context, category, service) {
         props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
       }
 
-      copyCfnTemplate(context, category, props, cfnFilename);
+      await copyCfnTemplate(context, category, props, cfnFilename);
     })
     .then(() => props.resourceName);
 }
