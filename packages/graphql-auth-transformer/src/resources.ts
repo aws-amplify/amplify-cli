@@ -77,7 +77,7 @@ export class ResourceFactory {
             Value: Fn.If(
                 ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
                 Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID),
-                ""
+                Fn.Join(" ", ["See UserPool:", Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)])
             ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoNativeClient"])
@@ -91,7 +91,7 @@ export class ResourceFactory {
             Value: Fn.If(
                 ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
                 Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID),
-                ""
+                Fn.Join(" ", ["See UserPool:", Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)])
             ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoJSClient"])
