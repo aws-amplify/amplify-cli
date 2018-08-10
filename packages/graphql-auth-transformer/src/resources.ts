@@ -157,7 +157,9 @@ export class ResourceFactory {
                 Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)
             ),
             GenerateSecret: true,
-            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
+            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity),
+            ReadAttributes: [],
+            WriteAttributes: []
         }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
@@ -170,7 +172,9 @@ export class ResourceFactory {
                 Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)
             ),
             GenerateSecret: false,
-            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
+            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity),
+            ReadAttributes: [],
+            WriteAttributes: []
         }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 

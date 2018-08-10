@@ -64,6 +64,7 @@ Resources:
         -
           Name: <%= props.requiredAttributes[i] %>
           Required: true
+          Mutable: true
         <% } %>
       <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes

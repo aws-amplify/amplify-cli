@@ -2,7 +2,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-const GraphQLTransform = require('graphql-transform').default;
+const TransformPackage = require('graphql-transform')
+const GraphQLTransform = TransformPackage.default;
+const collectDirectiveNames = TransformPackage.collectDirectiveNames;
 const AppSyncDynamoDBTransformer = require('graphql-dynamodb-transformer').default;
 const AppSyncAuthTransformer = require('graphql-auth-transformer').default;
 const AppSyncTransformer = require('graphql-appsync-transformer').default;
@@ -12,6 +14,14 @@ const category = 'api';
 const parametersFileName = 'parameters.json';
 const templateFileName = 'cloudformation-template.json';
 const schemaFileName = 'schema.graphql';
+
+function checkForCommonIssues(schemaText, opts) {
+  const usedDirectives = collectDirectiveNames(schemaText)
+  if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
+    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito UserPools for your API. 
+Run \`amplify add auth\` and then \`amplify update api\` and select "Amazon Cognito User Pool" when choosing an authorization type for the API.`)
+  }
+}
 
 async function transformGraphQLSchema(context, options) {
   let { resourceDir, parameters } = options;
@@ -54,6 +64,10 @@ async function transformGraphQLSchema(context, options) {
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
+  const schemaText = fs.readFileSync(schemaFilePath, 'utf8')
+
+  // Check for common errors
+  checkForCommonIssues(schemaText, { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) })
 
   const transformerList = [
     new AppSyncTransformer(buildDir),
@@ -66,13 +80,13 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const transformer = new GraphQLTransform({
-    transformers: transformerList,
+    transformers: transformerList
   });
 
 
   let cfdoc;
   try {
-    cfdoc = transformer.transform(fs.readFileSync(schemaFilePath, 'utf8'));
+    cfdoc = transformer.transform(schemaText);
   } catch (e) {
     throw e;
   }
