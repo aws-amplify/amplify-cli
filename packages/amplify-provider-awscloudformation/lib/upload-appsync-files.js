@@ -7,6 +7,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 
 function uploadAppSyncFiles(context, resources) {
   resources = resources.filter(resource => resource.service === 'AppSync');
+  const buildTimeStamp = new Date().getTime().toString()
   // There can only be one appsync resource
   if (resources.length > 0) {
     const resource = resources[0];
@@ -21,7 +22,7 @@ function uploadAppSyncFiles(context, resources) {
     // Upload schema file
     uploadFilePromises.push(uploadAppSyncFile(
       context, schemaFileName,
-      schemaFilePath, s3LocationMap,
+      schemaFilePath, s3LocationMap, buildTimeStamp,
     ));
 
     const resolverFiles = fs.readdirSync(resolverDir);
@@ -29,7 +30,7 @@ function uploadAppSyncFiles(context, resources) {
     resolverFiles.forEach((file) => {
       const resolverFilePath = path.join(resolverDir, file);
 
-      uploadFilePromises.push(uploadAppSyncFile(context, file, resolverFilePath, s3LocationMap));
+      uploadFilePromises.push(uploadAppSyncFile(context, file, resolverFilePath, s3LocationMap, buildTimeStamp));
     });
 
     return Promise.all(uploadFilePromises)
@@ -52,10 +53,11 @@ function uploadAppSyncFiles(context, resources) {
   }
 }
 
-function uploadAppSyncFile(context, fileName, filePath, s3LocationMap) {
+function uploadAppSyncFile(context, fileName, filePath, s3LocationMap, buildTimeStamp) {
   const formattedName = fileName.split('.').map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s)).join('');
 
-  const s3Key = `amplify-appsync-files/${fileName}`;
+  const s3Key = `amplify-appsync-files/${fileName}.${buildTimeStamp}`;
+  console.log(`Attempting to write to s3 key: ${s3Key}`)
 
   return new S3(context)
     .then((s3) => {
