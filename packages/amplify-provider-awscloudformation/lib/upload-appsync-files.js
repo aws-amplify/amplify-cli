@@ -57,7 +57,6 @@ function uploadAppSyncFile(context, fileName, filePath, s3LocationMap, buildTime
   const formattedName = fileName.split('.').map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s)).join('');
 
   const s3Key = `amplify-appsync-files/${fileName}.${buildTimeStamp}`;
-  console.log(`Attempting to write to s3 key: ${s3Key}`)
 
   return new S3(context)
     .then((s3) => {
