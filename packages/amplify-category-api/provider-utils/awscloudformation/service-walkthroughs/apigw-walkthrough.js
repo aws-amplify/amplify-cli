@@ -61,21 +61,29 @@ async function askApiNames(context, defaults) {
 
 async function askPrivacy(context, answers) {
   while (true) {
+    
+    const apiAccess = await inquirer.prompt({
+      name: 'restrict',
+      type: 'confirm',
+      default: true,
+      message: 'Restrict API access'
+    });
+
+    if (!apiAccess.restrict) {
+      return { open: true };
+    }
+    
     const answer = await inquirer.prompt({
       name: 'privacy',
       type: 'list',
-      message: 'Which kind of privacy your API should have?',
+      message: 'Who should have access?',
       choices: [
         {
-          name: 'Open (No security)',
-          value: 'open',
-        },
-        {
-          name: 'Authenticated - AWS IAM (Signature Version 4 signing)',
+          name: 'Authenticated users only',
           value: 'private',
         },
         {
-          name: 'Authenticated and Guest users (AWS_IAM with Cognito Identity)',
+          name: 'Authenticated and Guest users',
           value: 'protected',
         },
       ],
@@ -97,6 +105,9 @@ async function askPrivacy(context, answers) {
 
 
     if (answer.privacy === 'private') {
+
+      privacy.auth = await askReadWrite('Authenticated', context);
+
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
       // getting requirement satisfaction map
       const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
@@ -117,6 +128,9 @@ async function askPrivacy(context, answers) {
     }
 
     if (answer.privacy === 'protected') {
+      privacy.auth = await askReadWrite('Authenticated', context);
+      privacy.unauth = await askReadWrite('Guest', context);
+      
       const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
       // getting requirement satisfaction map
       const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
@@ -137,6 +151,34 @@ async function askPrivacy(context, answers) {
     }
 
     return privacy;
+  }
+}
+
+async function askReadWrite(userType, context) {
+  while (true) {
+    const answer = await inquirer.prompt({
+      name: 'permissions',
+      type: 'list',
+      message: 'What kind of access do you want for ' + userType + ' users',
+      choices: [
+        {
+          name: 'read',
+          value: 'r',
+        },
+        {
+          name: 'write',
+          value: 'w',
+        },
+        {
+          name: 'read/write',
+          value: 'rw',
+        },
+      ],
+    });
+    
+    if (answer.permissions !== 'learn') {
+      return answer.permissions;
+    }
   }
 }
 
