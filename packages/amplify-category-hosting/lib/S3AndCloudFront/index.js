@@ -1,104 +1,91 @@
 const fs = require('fs-extra');
+const Ora = require('ora');
 const path = require('path');
-const inquirer = require('inquirer');
-const moment = require('moment');
 const opn = require('opn');
 const chalk = require('chalk');
+const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
+const cloudFrontManager = require('./helpers/cloudfront-manager');
 const constants = require('../constants');
 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
+const templateFileName = 'template.json';
 
-const templateFileName = 'hosting-s3andcloudfront-template.json';
-const parametersFileName = 'parameters.json';
+async function enable(context) {
+  let templateFilePath = path.join(__dirname, 'template.json');
+  context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
 
-let parameters = {
-  HostingBucketName: 'hosting-bucket',
-  IndexDocument: 'index.html',
-  ErrorDocument: 'error.html',
-};
+  // will take this out once cloudformation invoke and wait are separated;
+  checkCDN(context);
 
-function enable(context) {
-  return configure(context)
-    .then(() => {
-      const metaData = {
-        service: serviceName,
-        providerPlugin,
-      };
-      return context.amplify.updateamplifyMetaAfterResourceAdd(
-        constants.CategoryName,
-        serviceName,
-        metaData,
-      );
-    });
-}
+  await configManager.init(context);
 
-function configure(context) {
+  if (context.parameters.options.p) {
+    await configManager.configure(context);
+  }
+
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
   fs.ensureDirSync(serviceDirPath);
 
+  templateFilePath = path.join(serviceDirPath, templateFileName);
+  const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+  fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+  const metaData = {
+    service: serviceName,
+    providerPlugin,
+  };
+  return context.amplify.updateamplifyMetaAfterResourceAdd(
+    constants.CategoryName,
+    serviceName,
+    metaData,
+  );
+}
+
+
+function checkCDN(context) {
+  if (context.parameters.options.nocdn) {
+    delete context.exeInfo.template.Resources.CloudFrontDistribution;
+    delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
+    delete context.exeInfo.template.Outputs.CloudFrontDomainName;
+    delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+  }
+}
+
+async function configure(context) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
   const templateFilePath = path.join(serviceDirPath, templateFileName);
-  if (!fs.existsSync(templateFilePath)) {
-    fs.copySync(path.join(__dirname, 'template.json'), templateFilePath);
-  }
 
-  let currentParameters;
-  const parametersFilePath = path.join(serviceDirPath, parametersFileName);
-  if (fs.existsSync(parametersFilePath)) {
-    try {
-      currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
-    } catch (e) {
-      currentParameters = undefined;
-    }
+  if (fs.existsSync(templateFilePath)) {
+    context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
+    await configManager.configure(context);
+    const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+    fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+    return context;
   }
-
-  if (currentParameters) {
-    parameters = currentParameters;
-  } else {
-    const { projectConfig } = context.exeInfo;
-    const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}-`;
-    const bucketName = projectConfig.projectName + timeStamp + parameters.HostingBucketName;
-    parameters.HostingBucketName = bucketName.replace(/[^-a-z0-9]/g, '');
-  }
-
-  const parameterQuestions = [
-    {
-      name: 'HostingBucketName',
-      type: 'input',
-      message: 'hosting bucket name',
-      default: parameters.HostingBucketName,
-    },
-    {
-      name: 'IndexDocument',
-      type: 'input',
-      message: 'index doc for the website',
-      default: parameters.IndexDocument,
-    },
-    {
-      name: 'ErrorDocument',
-      type: 'input',
-      message: 'error doc for the website',
-      default: parameters.ErrorDocument,
-    },
-  ];
-  return inquirer.prompt(parameterQuestions)
-    .then((answers) => {
-      const jsonString = JSON.stringify(answers, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-      return answers;
-    });
+  throw new Error('Missing CloudFormation template for hosting.');
 }
 
 function publish(context, args) {
+  const spinner = new Ora('Uploading files');
+  spinner.start();
   return fileUPloader.run(context, args.distributionDirPath)
     .then(() => {
-      const { amplifyMeta } = context.amplify.getProjectDetails();
-      const { WebsiteURL } = amplifyMeta[constants.CategoryName][serviceName].output;
-      context.print.info('Your app is published successfully');
+      spinner.succeed('Uploading files successful.');
+      return cloudFrontManager.invalidateCloudFront(context);
+    })
+    .then(() => {
+      const { WebsiteURL } = context.exeInfo.serviceMeta.output;
+      context.print.info('Your app is published successfully.');
       context.print.info(chalk.green(WebsiteURL));
       opn(WebsiteURL, { wait: false });
+    })
+    .catch((e) => {
+      spinner.fail('Error has occured during publish.');
+      throw e;
     });
 }
 

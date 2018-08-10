@@ -93,13 +93,13 @@ function run(context) {
           answer = await inquirer.prompt([
             {
               type: 'input',
-              name: 'profileName',
+              name: 'pn',
               message: 'Profile Name: ',
               default: 'default',
             },
           ]);
-          if (answer && answer.profileName) {
-            ({ profileName } = answer);
+          if (answer && answer.pn) {
+            profileName = answer.pn;
           }
         }
 

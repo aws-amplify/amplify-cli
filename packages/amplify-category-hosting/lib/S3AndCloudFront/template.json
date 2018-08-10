@@ -1,32 +1,23 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description" : "Stack for static web hosting",
-    "Parameters":{
-        "HostingBucketName":{
-            "Description": "Name of the hosting bucket",
-            "Type": "String",
-            "Default": "HostingBucket"
-        },
-        "IndexDocument":{
-            "Description": "index doc",
-            "Type": "String",
-            "Default": "index.html"
-        },
-        "ErrorDocument":{
-            "Description": "error doc",
-            "Type": "String",
-            "Default": "error.html"
-        }
-    }, 
     "Resources": {
         "S3Bucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": {"Ref": "HostingBucketName"},
+                "BucketName": "HostingBucket",
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
-                    "IndexDocument": {"Ref": "IndexDocument"},
-                    "ErrorDocument": {"Ref": "ErrorDocument"}
+                    "IndexDocument": "index.html",
+                    "ErrorDocument": "error.html"
+                },
+                "CorsConfiguration": {
+                    "CorsRules" : [ {
+                        "AllowedHeaders" : [ "Authorization" ],
+                        "AllowedMethods" : [ "GET"],
+                        "AllowedOrigins" : [ "*" ],
+                        "MaxAge" : 3000
+                    } ]
                 }
             }
         },
@@ -47,9 +38,7 @@
                                     "",
                                     [
                                         "arn:aws:s3:::",
-                                        {
-                                            "Ref": "S3Bucket"
-                                        },
+                                        {"Ref": "S3Bucket"},
                                         "/*"
                                     ]
                                 ]
@@ -61,20 +50,69 @@
                     "Ref": "S3Bucket"
                 }
             }
+        },
+        "CloudFrontDistribution" : {
+            "Type" : "AWS::CloudFront::Distribution",
+            "DependsOn" : "S3Bucket",
+            "Properties" : {
+                "DistributionConfig" : {
+                    "Origins" : [ 
+                        {
+                            "DomainName" :  {"Fn::GetAtt": ["S3Bucket", "DomainName"]},
+                            "Id" : "hostingS3Bucket",
+                            "S3OriginConfig" : {
+                            }
+                        }
+                    ],
+                    "Enabled" : "true",
+                    "DefaultCacheBehavior" : {
+                        "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+                        "TargetOriginId" : "hostingS3Bucket",
+                        "ForwardedValues" : {
+                            "QueryString" : "false"
+                        },
+                        "ViewerProtocolPolicy" : "allow-all", 
+                        "DefaultTTL" : 86400,
+                        "MaxTTL" : 31536000,
+                        "MinTTL" : 60
+                    }, 
+                    "DefaultRootObject" : "index.html",
+                    "CustomErrorResponses" : [
+                        {
+                            "ErrorCachingMinTTL" : 300,
+                            "ErrorCode" : 400,
+                            "ResponseCode" : 200,
+                            "ResponsePagePath" : "/"
+                        }, 
+                        {
+                            "ErrorCachingMinTTL" : 300,
+                            "ErrorCode" : 403,
+                            "ResponseCode" : 200,
+                            "ResponsePagePath" : "/"
+                        }, 
+                        {
+                            "ErrorCachingMinTTL" : 300,
+                            "ErrorCode" : 404,
+                            "ResponseCode" : 200,
+                            "ResponsePagePath" : "/"
+                        }
+                    ]
+                }
+            }
         }
     },
     "Outputs": {
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        },
         "HostingBucketName": {
             "Description": "Hosting bucket name", 
-            "Value": {"Ref": "HostingBucketName"}
+            "Value":  {"Ref": "S3Bucket"}
         },
         "WebsiteURL": {
-            "Value": {
-                "Fn::GetAtt": [
-                    "S3Bucket",
-                    "WebsiteURL"
-                ]
-            },
+            "Value":  {"Fn::GetAtt": ["S3Bucket", "WebsiteURL"]},
             "Description": "URL for website hosted on S3"
         },
         "S3BucketSecureURL": {
@@ -84,19 +122,28 @@
                     [
                         "https://",
                         {
-                            "Fn::GetAtt": [
-                                "S3Bucket",
-                                "DomainName"
-                            ]
+                            "Fn::GetAtt": ["S3Bucket", "DomainName"]
                         }
                     ]
                 ]
             },
             "Description": "Name of S3 bucket to hold website content"
+        }, 
+        "CloudFrontDistributionID": {
+            "Value": { "Ref": "CloudFrontDistribution"}
         },
-        "Region": {
+        "CloudFrontDomainName": {
+            "Value": {"Fn::GetAtt": ["CloudFrontDistribution", "DomainName"]}
+        },
+        "CloudFrontSecureURL": {
             "Value": {
-                "Ref": "AWS::Region"
+                "Fn::Join": [
+                    "",
+                    [
+                        "https://",
+                        {"Fn::GetAtt":  ["CloudFrontDistribution", "DomainName"]}
+                    ]
+                ]
             }
         }
     }

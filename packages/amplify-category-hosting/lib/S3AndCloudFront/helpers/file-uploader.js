@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const ora = require('ora');
 const mime = require('mime-types');
 const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
@@ -13,7 +12,6 @@ const publishIgnore = {
   FileList: [],
 };
 
-const spinner = ora('Uploading to hosting bucket');
 async function run(context, distributionDirPath) {
   const s3Client = await getS3Client(context);
   const hostingBucketName = getHostingBucketName(context);
@@ -28,15 +26,7 @@ async function run(context, distributionDirPath) {
       uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
   });
 
-  spinner.start();
-  return sequential(uploadFileTasks)
-    .then(() => {
-      spinner.succeed('Upload completed successfully.');
-    })
-    .catch((e) => {
-      spinner.fail('Error has occured during uploading to hosting bucket.');
-      throw e;
-    });
+  return sequential(uploadFileTasks);
 }
 
 async function getS3Client(context) {
@@ -47,8 +37,7 @@ async function getS3Client(context) {
 }
 
 function getHostingBucketName(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+  const { amplifyMeta } = context.exeInfo;
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 

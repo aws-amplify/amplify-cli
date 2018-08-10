@@ -1,0 +1,18 @@
+
+    {
+        "BucketName" : "true, but can not change after init", 
+        "AccessControl" : true,
+        "WebsiteConfiguration" : true,
+        "CorsConfiguration" : true,
+        "Tags" : "nice to have",
+        "AccelerateConfiguration" : "nice to have",
+        "AnalyticsConfigurations" : "nice to have",
+        "BucketEncryption" : false,
+        "LoggingConfiguration" : "nice to have",
+        "MetricsConfigurations" : "nice to have",
+        "NotificationConfiguration" : "nice to have",
+        "ReplicationConfiguration" : "nice to have",
+        "VersioningConfiguration" : "nice to have",
+        "InventoryConfigurations" : false,
+        "LifecycleConfiguration" : false
+    }

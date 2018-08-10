@@ -9,6 +9,7 @@
     	"no-console": "off",
     	"global-require": "off",
     	"import/no-dynamic-require": "off",
-    	"consistent-return": "off"
+		"consistent-return": "off",
+		"no-plusplus": "off"
     }
 }
