@@ -74,7 +74,11 @@ export class ResourceFactory {
     public makeNativeClientOutput(): Output {
         return {
             Description: "Amazon Cognito UserPools native client ID",
-            Value: Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID),
+            Value: Fn.If(
+                ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
+                Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID),
+                ""
+            ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoNativeClient"])
             }
@@ -84,7 +88,11 @@ export class ResourceFactory {
     public makeJSClientOutput(): Output {
         return {
             Description: "Amazon Cognito UserPools JS client ID",
-            Value: Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID),
+            Value: Fn.If(
+                ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
+                Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID),
+                ""
+            ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoJSClient"])
             }
@@ -136,7 +144,7 @@ export class ResourceFactory {
                     RequireUppercase: true
                 }
             },
-            AutoVerifiedAttributes: ['email', 'phone_number']
+            AutoVerifiedAttributes: ['email']
         }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
@@ -150,7 +158,7 @@ export class ResourceFactory {
             ),
             GenerateSecret: true,
             RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
-        })
+        }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
     public makeUserPoolJSClient() {
@@ -163,7 +171,7 @@ export class ResourceFactory {
             ),
             GenerateSecret: false,
             RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
-        })
+        }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
     /**
