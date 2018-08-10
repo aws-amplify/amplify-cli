@@ -17,7 +17,7 @@ async function enable(context) {
   context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
 
   // will take this out once cloudformation invoke and wait are separated;
-  tempCloudFrontRemoval(context);
+  checkCDN(context);
 
   await configManager.init(context);
 
@@ -45,8 +45,8 @@ async function enable(context) {
 }
 
 
-function tempCloudFrontRemoval(context) {
-  if (!context.parameters.options.c && !context.parameters.options.cft) {
+function checkCDN(context) {
+  if (context.parameters.options.nocdn) {
     delete context.exeInfo.template.Resources.CloudFrontDistribution;
     delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
     delete context.exeInfo.template.Outputs.CloudFrontDomainName;

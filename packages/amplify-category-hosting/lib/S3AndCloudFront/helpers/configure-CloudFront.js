@@ -31,6 +31,19 @@ async function configure(context) {
             const { CloudFrontDistribution } = originalTemplate.Resources; 
             context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution; 
         }
+    }else{
+        const answer = await inquirer.prompt( {
+            name: 'RemoveCloudFront',
+            type: 'confirm',
+            message: 'Remove CloudFront from hosting',
+            default: false,
+        });
+        if(answer.RemoveCloudFront){
+            delete context.exeInfo.template.Resources.CloudFrontDistribution;
+            delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
+            delete context.exeInfo.template.Outputs.CloudFrontDomainName;
+            delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+        }
     }
 
     if(context.exeInfo.template.Resources.CloudFrontDistribution){
