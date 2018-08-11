@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 
+const pinpointHelper = require('../../lib/pinpoint-helper');
+
 
 const subcommand = 'channel';
 const category = 'analytics';
@@ -19,7 +21,7 @@ module.exports = {
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
 
-    if (checkPinpointEnabled(context)) {
+    if (pinpointHelper.checkPinpointEnabled(context)) {
       context.exeInfo.pinpointClient = await getPinpointClient(context);
 
       const availableChannels = Object.keys(channelWorkers);
@@ -44,23 +46,6 @@ module.exports = {
     context.print.info('Please anable analytics category, and push to the cloud first');
   },
 };
-
-function checkPinpointEnabled(context) {
-  let result = false;
-  const { amplifyMeta } = context.exeInfo;
-  if (amplifyMeta[category]) {
-    const services = Object.keys(amplifyMeta[category]);
-
-    for (let i = 0; i < services.length; i++) {
-      if (amplifyMeta[category][services[i]].service === 'Pinpoint') {
-        result = true;
-        context.exeInfo.serviceMeta = amplifyMeta[category][services[i]];
-        break;
-      }
-    }
-  }
-  return result;
-}
 
 async function getPinpointClient(context) {
   const { projectConfig } = context.exeInfo;
