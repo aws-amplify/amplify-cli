@@ -8,7 +8,8 @@ const category = 'analytics';
 const providerName = 'awscloudformation';
 
 const channelWorkers = {
-  'Mobile Push': '../../lib/channel-mobile-push',
+  APN: '../../lib/channel-APN',
+  GCM: '../../lib/channel-GCM',
   Email: '../../lib/channel-email',
   SMS: '../../lib/channel-sms',
 };

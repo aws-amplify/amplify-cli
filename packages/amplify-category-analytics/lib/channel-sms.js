@@ -5,14 +5,14 @@ const channelName = 'SMS';
 async function run(context) {
   const isChannelEnabled =
     context.exeInfo.serviceMeta.output[channelName] &&
-    context.exeInfo.serviceMeta.output[channelName].enabled;
+    context.exeInfo.serviceMeta.output[channelName].Enabled;
 
   if (isChannelEnabled) {
-    context.print.info('The SMS channel is currently enabled');
+    context.print.info(`The ${channelName} channel is currently enabled`);
     const answer = await inquirer.prompt({
       name: 'disableChannel',
       type: 'confirm',
-      message: 'Do you want to disable the SMS channel',
+      message: `Do you want to disable the ${channelName} channel`,
       default: false,
     });
     if (answer.disableChannel) {
@@ -22,7 +22,7 @@ async function run(context) {
     const answer = await inquirer.prompt({
       name: 'enableChannel',
       type: 'confirm',
-      message: 'Do you want to enable the SMS channel',
+      message: `Do you want to enable the ${channelName} channel`,
       default: true,
     });
     if (answer.enableChannel) {
@@ -30,7 +30,6 @@ async function run(context) {
     }
   }
 }
-
 
 function enableChannel(context) {
   const params = {
@@ -45,10 +44,8 @@ function enableChannel(context) {
         console.log('update channel error');
         reject(err);
       } else {
-        console.log('The SMS channel has been successfully enabled.');
-        context.exeInfo.serviceMeta.output[channelName] = {
-          enabled: true,
-        };
+        console.log(`The ${channelName} channel has been successfully enabled.`);
+        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse; 
         resolve(data);
       }
     });
@@ -68,10 +65,8 @@ function disableChannel(context) {
         console.log('update channel error');
         reject(err);
       } else {
-        console.log('The SMS channel has been disabled.');
-        context.exeInfo.serviceMeta.output[channelName] = {
-          enabled: false,
-        };
+        console.log(`The ${channelName} channel has been disabled.`);
+        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse; 
         resolve(data);
       }
     });

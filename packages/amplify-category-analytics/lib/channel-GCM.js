@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 
-const channelName = 'Email';
+const channelName = 'GCM';
 
 async function run(context) {
   const isChannelEnabled =
@@ -38,64 +38,50 @@ async function enableChannel(context) {
   }
   const questions = [
     {
-        name: 'FromAddress',
+        name: 'ApiKey',
         type: 'input',
-        message: "The 'From' Email address used to send emails",
-        default: channelOutput.FromAddress,
-    },
-    {
-        name: 'Identity',
-        type: 'input',
-        message: 'The ARN of an identity verified with SES',
-        default: channelOutput.Identity,
-    },
-    {
-        name: 'RoleArn',
-        type: 'input',
-        message: "The ARN of an IAM Role used to submit events to Mobile Analytics' event ingestion service",
-        default: channelOutput.RoleArn,
+        message: "ApiKey",
+        default: channelOutput.ApiKey,
     }
   ];
   const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    EmailChannelRequest: {
+    GCMChannelRequest: {
+      ApiKey: answers.ApiKey,
       Enabled: true,
-      FromAddress: answers.FromAddress,
-      Identity: answers.Identity,
-      RoleArn: answers.RoleArn
-    }
+    },
   };
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
       if (err) {
         console.log('update channel error');
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse; 
         resolve(data);
       }
     });
   });
 }
 
-async function disableChannel(context) {
+function disableChannel(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    EmailChannelRequest: {
+    GCMChannelRequest: {
       Enabled: false,
     },
   };
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
       if (err) {
         console.log('update channel error');
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse; 
         resolve(data);
       }
     });
