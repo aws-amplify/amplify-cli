@@ -39,10 +39,6 @@ const findMatch = (cond, answers, previousValues) => {
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
     } else if (cond.preventEdit === '=' && (previousValues[cond.key] != undefined || previousValues[cond.key] === cond.value )) {
-      if (cond.preventEdit === '=') {
-        console.log('previousValues[cond.key]', previousValues[cond.key]);
-        console.log('cond.value', cond.value);
-      }
       response = false;
     }
   }
