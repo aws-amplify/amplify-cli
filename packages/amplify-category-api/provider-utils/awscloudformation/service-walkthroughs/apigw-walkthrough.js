@@ -177,7 +177,7 @@ async function askPrivacy(context, answers, currentPath) {
     const apiAccess = await inquirer.prompt({
       name: 'restrict',
       type: 'confirm',
-      default: !((currentPath && currentPath.open)),
+      default: !((currentPath && currentPath.open))
       message: 'Restrict API access',
     });
 
