@@ -61,18 +61,17 @@ async function askApiNames(context, defaults) {
 
 async function askPrivacy(context, answers) {
   while (true) {
-    
     const apiAccess = await inquirer.prompt({
       name: 'restrict',
       type: 'confirm',
       default: true,
-      message: 'Restrict API access'
+      message: 'Restrict API access',
     });
 
     if (!apiAccess.restrict) {
       return { open: true };
     }
-    
+
     const answer = await inquirer.prompt({
       name: 'privacy',
       type: 'list',
@@ -105,7 +104,6 @@ async function askPrivacy(context, answers) {
 
 
     if (answer.privacy === 'private') {
-
       privacy.auth = await askReadWrite('Authenticated', context);
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
@@ -130,7 +128,7 @@ async function askPrivacy(context, answers) {
     if (answer.privacy === 'protected') {
       privacy.auth = await askReadWrite('Authenticated', context);
       privacy.unauth = await askReadWrite('Guest', context);
-      
+
       const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
       // getting requirement satisfaction map
       const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
@@ -154,12 +152,12 @@ async function askPrivacy(context, answers) {
   }
 }
 
-async function askReadWrite(userType, context) {
+async function askReadWrite(userType) {
   while (true) {
     const answer = await inquirer.prompt({
       name: 'permissions',
       type: 'list',
-      message: 'What kind of access do you want for ' + userType + ' users',
+      message: `What kind of access do you want for ${userType} users`,
       choices: [
         {
           name: 'read',
@@ -175,7 +173,7 @@ async function askReadWrite(userType, context) {
         },
       ],
     });
-    
+
     if (answer.permissions !== 'learn') {
       return answer.permissions;
     }

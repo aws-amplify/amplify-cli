@@ -31,7 +31,7 @@ async function pushResources(context, category, resourceName) {
     .catch((err) => {
       spinner.fail('There was an issue pushing the resources to the cloud');
       // Handle the errors and print them nicely for the user.
-      context.print.error('\n'+err.message);
+      context.print.error(`\n${err.message}`);
     });
 }
 

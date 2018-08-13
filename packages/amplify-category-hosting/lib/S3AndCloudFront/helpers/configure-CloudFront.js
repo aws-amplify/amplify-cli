@@ -1,5 +1,5 @@
-const fs = require('fs-extra'); 
-const path = require('path'); 
+const fs = require('fs-extra');
+const path = require('path');
 const inquirer = require('inquirer');
 
 const originErrorCodes = {
@@ -17,84 +17,84 @@ const originErrorCodes = {
 };
 
 async function configure(context) {
-    if(!context.exeInfo.template.Resources.CloudFrontDistribution){
-        context.print.info('CloudFront is NOT in the current hosting'); 
-        const answer = await inquirer.prompt( {
-            name: 'AddCloudFront',
-            type: 'confirm',
-            message: 'Add CloudFront to hosting',
-            default: false,
-        });
-        if(answer.AddCloudFront){
-            const templateFilePath = path.join(__dirname, '../template.json');
-            const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
-            const { CloudFrontDistribution } = originalTemplate.Resources; 
-            context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution; 
-        }
-    }else{
-        const answer = await inquirer.prompt( {
-            name: 'RemoveCloudFront',
-            type: 'confirm',
-            message: 'Remove CloudFront from hosting',
-            default: false,
-        });
-        if(answer.RemoveCloudFront){
-            delete context.exeInfo.template.Resources.CloudFrontDistribution;
-            delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-            delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-            delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-        }
+  if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
+    context.print.info('CloudFront is NOT in the current hosting');
+    const answer = await inquirer.prompt({
+      name: 'AddCloudFront',
+      type: 'confirm',
+      message: 'Add CloudFront to hosting',
+      default: false,
+    });
+    if (answer.AddCloudFront) {
+      const templateFilePath = path.join(__dirname, '../template.json');
+      const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
+      const { CloudFrontDistribution } = originalTemplate.Resources;
+      context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
     }
+  } else {
+    const answer = await inquirer.prompt({
+      name: 'RemoveCloudFront',
+      type: 'confirm',
+      message: 'Remove CloudFront from hosting',
+      default: false,
+    });
+    if (answer.RemoveCloudFront) {
+      delete context.exeInfo.template.Resources.CloudFrontDistribution;
+      delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
+      delete context.exeInfo.template.Outputs.CloudFrontDomainName;
+      delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+    }
+  }
 
-    if(context.exeInfo.template.Resources.CloudFrontDistribution){
-        const { DistributionConfig } =
+  if (context.exeInfo.template.Resources.CloudFrontDistribution) {
+    const { DistributionConfig } =
                 context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
 
-        const questions = [
-            {
-                name: 'DefaultRootObject',
-                type: 'input',
-                message: 'default object to return from origin',
-                default: DistributionConfig.DefaultRootObject,
-            },
-            {
-                name: 'DefaultCacheDefaultTTL',
-                type: 'input',
-                message: 'Default TTL for the default cache behavior',
-                default: DistributionConfig.DefaultCacheBehavior.DefaultTTL,
-            },
-            {
-                name: 'DefaultCacheMaxTTL',
-                type: 'input',
-                message: 'Max TTL for the default cache behavior',
-                default: DistributionConfig.DefaultCacheBehavior.MaxTTL,
-            },
-            {
-                name: 'DefaultCacheMinTTL',
-                type: 'input',
-                message: 'Min TTL for the default cache behavior',
-                default: DistributionConfig.DefaultCacheBehavior.MinTTL,
-            },
-            {
-                name: 'ConfigCustomError',
-                type: 'confirm',
-                message: 'Configure Custom Error Reponses',
-                default: true,
-            },
-        ];
+    const questions = [
+      {
+        name: 'DefaultRootObject',
+        type: 'input',
+        message: 'default object to return from origin',
+        default: DistributionConfig.DefaultRootObject,
+      },
+      {
+        name: 'DefaultCacheDefaultTTL',
+        type: 'input',
+        message: 'Default TTL for the default cache behavior',
+        default: DistributionConfig.DefaultCacheBehavior.DefaultTTL,
+      },
+      {
+        name: 'DefaultCacheMaxTTL',
+        type: 'input',
+        message: 'Max TTL for the default cache behavior',
+        default: DistributionConfig.DefaultCacheBehavior.MaxTTL,
+      },
+      {
+        name: 'DefaultCacheMinTTL',
+        type: 'input',
+        message: 'Min TTL for the default cache behavior',
+        default: DistributionConfig.DefaultCacheBehavior.MinTTL,
+      },
+      {
+        name: 'ConfigCustomError',
+        type: 'confirm',
+        message: 'Configure Custom Error Reponses',
+        default: true,
+      },
+    ];
 
-        const answers = await inquirer.prompt(questions);
-        DistributionConfig.DefaultRootObject = answers.DefaultRootObject;
-        DistributionConfig.DefaultCacheBehavior.DefaultTTL = answers.DefaultCacheDefaultTTL;
-        DistributionConfig.DefaultCacheBehavior.MaxTTL = answers.DefaultCacheMaxTTL;
-        DistributionConfig.DefaultCacheBehavior.MinTTL = answers.DefaultCacheMinTTL;
+    const answers = await inquirer.prompt(questions);
+    DistributionConfig.DefaultRootObject = answers.DefaultRootObject;
+    DistributionConfig.DefaultCacheBehavior.DefaultTTL = answers.DefaultCacheDefaultTTL;
+    DistributionConfig.DefaultCacheBehavior.MaxTTL = answers.DefaultCacheMaxTTL;
+    DistributionConfig.DefaultCacheBehavior.MinTTL = answers.DefaultCacheMinTTL;
 
-        if (answers.ConfigCustomError) {
-            await configureCustomErrorResponse(DistributionConfig);
-        }
+    if (answers.ConfigCustomError) {
+      await configureCustomErrorResponse(DistributionConfig);
     }
+  }
 
-    return context;
+  return context;
 }
 
 async function configureCustomErrorResponse(DistributionConfig) {
