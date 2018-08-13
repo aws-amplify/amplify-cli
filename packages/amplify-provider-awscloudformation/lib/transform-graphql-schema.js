@@ -19,7 +19,7 @@ function checkForCommonIssues(schemaText, opts) {
   const usedDirectives = collectDirectiveNames(schemaText)
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
     throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito UserPools for your API. 
-Run \`amplify add auth\` and then \`amplify update api\` and select "Amazon Cognito User Pool" when choosing an authorization type for the API.`)
+Run \`amplify update api\` and select "Amazon Cognito User Pool" when choosing an authorization type for the API.`)
   }
 }
 

@@ -173,7 +173,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
             const continueQuestion = {
               type: 'input',
               name: 'pressKey',
-              message: `Please correct the errors in schema.graphql and press enter to re-compile.\nPath to schema.graphql: ${targetSchemaFilePath}`,
+              message: `Please correct the errors in schema.graphql and press enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
             };
             await inquirer.prompt(continueQuestion);
             continue;
