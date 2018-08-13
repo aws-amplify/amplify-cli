@@ -10,10 +10,10 @@ const category = 'analytics';
 const providerName = 'awscloudformation';
 
 const channelWorkers = {
-  APN: '../../lib/channel-APN',
+  APNS: '../../lib/channel-APNS',
   GCM: '../../lib/channel-GCM',
-  Email: '../../lib/channel-email',
-  SMS: '../../lib/channel-sms',
+  Email: '../../lib/channel-Email',
+  SMS: '../../lib/channel-SMS',
 };
 
 module.exports = {

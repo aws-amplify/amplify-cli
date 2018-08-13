@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 
-const channelName = 'GCM';
+const channelName = 'APNS';
 
 async function run(context) {
   const isChannelEnabled =
@@ -38,23 +38,61 @@ async function enableChannel(context) {
   }
   const questions = [
     {
-        name: 'ApiKey',
+        name: 'BundleId',
         type: 'input',
-        message: "ApiKey",
-        default: channelOutput.ApiKey,
+        message: "The bundle id used for APNs Tokens.",
+        default: channelOutput.BundleId,
+    },
+    {
+        name: 'Certificate',
+        type: 'input',
+        message: "The distribution certificate from Apple.",
+        default: channelOutput.Certificate,
+    },
+    {
+        name: 'PrivateKey',
+        type: 'input',
+        message: "The certificate private key.",
+        default: channelOutput.PrivateKey,
+    },
+    {
+        name: 'DefaultAuthenticationMethod',
+        type: 'input',
+        message: "The default authentication method used for APNs.",
+        default: channelOutput.DefaultAuthenticationMethod,
+    },
+    {
+        name: 'TeamId',
+        type: 'input',
+        message: "The team id used for APNs Tokens.",
+        default: channelOutput.TeamId,
+    },
+    {
+        name: 'TokenKey',
+        type: 'input',
+        message: "The token key used for APNs Tokens.",
+        default: channelOutput.TokenKey,
+    },
+    {
+        name: 'TokenKeyId',
+        type: 'input',
+        message: "The token key id used for APNs Tokens.",
+        default: channelOutput.TokenKeyId,
     }
   ];
   const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    GCMChannelRequest: {
+    APNSChannelRequest: {
       Enabled: true,
       ...answers
     },
   };
+  console.log(params); 
+  
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
       if (err) {
         console.log('update channel error');
         reject(err);
@@ -70,12 +108,12 @@ async function enableChannel(context) {
 function disableChannel(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    GCMChannelRequest: {
+    APNSChannelRequest: {
       Enabled: false,
     },
   };
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
       if (err) {
         console.log('update channel error');
         reject(err);

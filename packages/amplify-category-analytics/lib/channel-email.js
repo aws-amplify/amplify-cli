@@ -62,9 +62,7 @@ async function enableChannel(context) {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
       Enabled: true,
-      FromAddress: answers.FromAddress,
-      Identity: answers.Identity,
-      RoleArn: answers.RoleArn
+      ...answers
     }
   };
   return new Promise((resolve, reject) => {
