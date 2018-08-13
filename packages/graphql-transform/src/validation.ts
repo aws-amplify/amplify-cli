@@ -1,6 +1,6 @@
-import { TypeInfo } from 'graphql/utilities'
+import { GraphQLScalarType } from 'graphql'
 import {
-    Kind, DocumentNode, TypeDefinitionNode, DirectiveDefinitionNode
+    Kind, DocumentNode, TypeDefinitionNode, DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse
 } from 'graphql/language'
 import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type'
 import { validate } from 'graphql/validation'
@@ -71,6 +71,20 @@ export const specifiedRules = [
     UniqueInputFieldNames,
 ];
 
+const EXTRA_SCALARS_DOCUMENT = parse(`
+scalar AWSDate
+scalar AWSTime
+scalar AWSDateTime
+scalar AWSTimestamp
+scalar AWSEmail
+scalar AWSJSON
+scalar AWSURL
+scalar AWSPhone
+scalar AWSIPAddress
+scalar BigInt
+scalar Double
+`)
+
 export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
     const nodeMap = doc.definitions.reduce(
         (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
@@ -87,11 +101,18 @@ export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
 }
 
 export function validateModelSchema(doc: DocumentNode) {
-    const builder = astBuilder(doc)
-    const directives = doc.definitions
+    const fullDocument = {
+        kind: Kind.DOCUMENT,
+        definitions: [
+            ...doc.definitions,
+            ...EXTRA_SCALARS_DOCUMENT.definitions
+        ]
+    }
+    const builder = astBuilder(fullDocument)
+    const directives = fullDocument.definitions
         .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
         .map((d: DirectiveDefinitionNode) => builder.buildDirective(d))
-    const types = doc.definitions
+    const types = fullDocument.definitions
         .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION)
         .map((d: TypeDefinitionNode) => builder.buildType(d))
     const outputTypes = types.filter(
