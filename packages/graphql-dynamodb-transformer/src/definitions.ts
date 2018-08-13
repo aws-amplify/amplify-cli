@@ -287,6 +287,18 @@ export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNo
     return connectionTypeExtension
 }
 
+export function makeModelScanField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
+    return makeField(
+        fieldName,
+        [
+            makeArg('filter', makeNamedType(makeModelFilterInputTypeName(returnTypeName))),
+            makeArg('limit', makeNamedType('Int')),
+            makeArg('nextToken', makeNamedType('String'))
+        ],
+        makeNamedType(makeModelConnectionTypeName(returnTypeName))
+    )
+}
+
 export function makeModelFilterInputTypeName(name: string): string {
     return `Model${name}FilterInput`
 }

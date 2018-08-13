@@ -7,7 +7,7 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionTypeName, makeModelConnectionField,
-    makeScalarFilterInputs
+    makeScalarFilterInputs, makeModelScanField
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
@@ -263,7 +263,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             // Extend the query type to include listX
             queryType = extensionWithFields(
                 queryType,
-                [makeModelConnectionField(listResolver.Properties.FieldName, def.name.value)]
+                [makeModelScanField(listResolver.Properties.FieldName, def.name.value)]
             )
         }
 
