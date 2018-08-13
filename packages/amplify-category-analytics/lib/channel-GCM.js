@@ -17,6 +17,8 @@ async function run(context) {
     });
     if (answer.disableChannel) {
       await disableChannel(context);
+    }else{
+      await configure(context);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -26,12 +28,12 @@ async function run(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await enableChannel(context);
+      await configure(context);
     }
   }
 }
 
-async function enableChannel(context) {
+async function configure(context) {
   let channelOutput = {}; 
   if(context.exeInfo.serviceMeta.output[channelName]){
     channelOutput = context.exeInfo.serviceMeta.output[channelName]; 
