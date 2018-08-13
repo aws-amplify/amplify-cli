@@ -41,6 +41,7 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
             },
             Outputs: {
+                [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
             }
@@ -73,6 +74,16 @@ export class ResourceFactory {
     /**
      * Outputs
      */
+    public makeAPIIDOutput(): Output {
+        return {
+            Description: "Your GraphQL API ID.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiId"])
+            }
+        }
+    }
+
     public makeAPIEndpointOutput(): Output {
         return {
             Description: "Your GraphQL API endpoint.",

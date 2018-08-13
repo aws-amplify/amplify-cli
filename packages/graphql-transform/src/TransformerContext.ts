@@ -14,7 +14,8 @@ import {
     DocumentNode,
     Kind,
     parse,
-    EnumTypeDefinitionNode
+    EnumTypeDefinitionNode,
+    TypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 
@@ -127,6 +128,21 @@ export default class TransformerContext {
             throw new Error(`Conflicting schema type found.`)
         }
         this.nodeMap.__schema = obj
+    }
+
+    /**
+     * Add a generic type.
+     * @param obj The type to add
+     */
+    public addType(obj: TypeDefinitionNode) {
+        if (this.nodeMap[obj.name.value]) {
+            throw new Error(`Conflicting type '${obj.name.value}' found.`)
+        }
+        this.nodeMap[obj.name.value] = obj
+    }
+
+    public getType(name: string): TypeSystemDefinitionNode | undefined {
+        return this.nodeMap[name]
     }
 
     /**

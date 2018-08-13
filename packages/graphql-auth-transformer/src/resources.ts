@@ -74,7 +74,11 @@ export class ResourceFactory {
     public makeNativeClientOutput(): Output {
         return {
             Description: "Amazon Cognito UserPools native client ID",
-            Value: Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID),
+            Value: Fn.If(
+                ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
+                Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID),
+                Fn.Join(" ", ["See UserPool:", Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)])
+            ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoNativeClient"])
             }
@@ -84,7 +88,11 @@ export class ResourceFactory {
     public makeJSClientOutput(): Output {
         return {
             Description: "Amazon Cognito UserPools JS client ID",
-            Value: Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID),
+            Value: Fn.If(
+                ResourceConstants.CONDITIONS.AuthShouldCreateUserPool,
+                Fn.Ref(ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID),
+                Fn.Join(" ", ["See UserPool:", Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)])
+            ),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "CognitoJSClient"])
             }
@@ -136,7 +144,7 @@ export class ResourceFactory {
                     RequireUppercase: true
                 }
             },
-            AutoVerifiedAttributes: ['email', 'phone_number']
+            AutoVerifiedAttributes: ['email']
         }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
@@ -149,8 +157,10 @@ export class ResourceFactory {
                 Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)
             ),
             GenerateSecret: true,
-            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
-        })
+            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity),
+            ReadAttributes: [],
+            WriteAttributes: []
+        }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
     public makeUserPoolJSClient() {
@@ -162,8 +172,10 @@ export class ResourceFactory {
                 Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId)
             ),
             GenerateSecret: false,
-            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity)
-        })
+            RefreshTokenValidity: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolRefreshTokenValidity),
+            ReadAttributes: [],
+            WriteAttributes: []
+        }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }
 
     /**

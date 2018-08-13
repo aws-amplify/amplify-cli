@@ -10,7 +10,7 @@ const generalDefaults = () => ({
 
 const userPoolDefaults = projectName => ({
   userPoolName: `${projectName}_userpool_${sharedId}`,
-  autoVerifiedAttributes: ['phone_number'],
+  autoVerifiedAttributes: ['email'],
   mfaConfiguration: 'OFF',
   mfaTypes: ['SMS Text Message'],
   roleName: `${projectName}_sns-role`,
@@ -28,14 +28,13 @@ const userPoolDefaults = projectName => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes.find(b => b.name === 'Phone Number').value,
+    coreAttributes.find(b => b.name === 'Email').value,
   ],
   userpoolClientName: `${projectName}_app_client`,
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [
     appClientReadAttributes.find(d => d.name === 'Email').value,
-    appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
   allowUnauthenticatedIdentities: false,
   mfaLambdaRole: `${projectName}_totp_lambda_role`,

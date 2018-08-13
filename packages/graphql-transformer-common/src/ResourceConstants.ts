@@ -60,6 +60,7 @@ export class ResourceConstants {
         // AppSync
         GraphQLAPIEndpointOutput: 'GraphQLAPIEndpointOutput',
         GraphQLAPIApiKeyOutput: 'GraphQLAPIKeyOutput',
+        GraphQLAPIIdOutput: 'GraphQLAPIIdOutput',
 
         // Elasticsearch
         ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
