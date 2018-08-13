@@ -168,12 +168,12 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
           try {
             await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
           } catch (e) {
-            context.print.error('Failed compiling annotated GraphQL schema.');
-            context.print.info(e.stack);
+            context.print.error('Failed compiling GraphQL schema:');
+            context.print.info(e.message);
             const continueQuestion = {
               type: 'input',
               name: 'pressKey',
-              message: 'Please correct the errors in the GraphQL annotated schema and press enter to re-compile',
+              message: `Please correct the errors in schema.graphql and press enter to re-compile.\nPath to schema.graphql: ${targetSchemaFilePath}`,
             };
             await inquirer.prompt(continueQuestion);
             continue;
