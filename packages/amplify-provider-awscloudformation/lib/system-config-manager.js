@@ -122,7 +122,6 @@ function getFullConfig() {
   return awsConfigs;
 }
 
-
 module.exports = {
   setProfile,
   getProfile,
