@@ -7,7 +7,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 
 function uploadAppSyncFiles(context, resources) {
   resources = resources.filter(resource => resource.service === 'AppSync');
-  const buildTimeStamp = new Date().getTime().toString()
+  const buildTimeStamp = new Date().getTime().toString();
   // There can only be one appsync resource
   if (resources.length > 0) {
     const resource = resources[0];
@@ -30,7 +30,10 @@ function uploadAppSyncFiles(context, resources) {
     resolverFiles.forEach((file) => {
       const resolverFilePath = path.join(resolverDir, file);
 
-      uploadFilePromises.push(uploadAppSyncFile(context, file, resolverFilePath, s3LocationMap, buildTimeStamp));
+      uploadFilePromises.push(uploadAppSyncFile(
+        context, file,
+        resolverFilePath, s3LocationMap, buildTimeStamp,
+      ));
     });
 
     return Promise.all(uploadFilePromises)

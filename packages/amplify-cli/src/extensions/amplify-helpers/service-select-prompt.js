@@ -47,7 +47,7 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 
   const question = [{
     name: 'service',
-    message: 'Please select from one of the above mentioned services',
+    message: 'Please select from one of the below mentioned services',
     type: 'list',
     choices: options,
   }];

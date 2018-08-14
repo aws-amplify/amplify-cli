@@ -29,7 +29,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       name: inputs[1].key,
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
-      default: answers => answers.resourceName,
+      default: () => {
+        const defaultValue = allDefaultValues[inputs[1].key];
+        return defaultValue;
+      },
     },
   ];
 
