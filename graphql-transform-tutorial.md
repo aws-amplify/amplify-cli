@@ -586,7 +586,7 @@ mutation Update($postId: ID!) {
 ```graphql
 mutation Delete($postId: ID!) {
   deletePost(
-    input:{
+    input: {
       id: $postId,
       expectedVersion: 2
     }
@@ -616,7 +616,7 @@ directive @searchable(queries: SearchableQueryMap) on OBJECT
 input SearchableQueryMap { search: String }
 ```
 
-**What is the Amplify GraphQL Transform** 
+**What is the GraphQL Transform** 
 
 The Amplify GraphQL Transform is a set of libraries committed to simplifying the process of developing, deploying, and maintaining APIs on AWS. 
 With it, you define your API using the GraphQL Schema Definition Language (SDL) and then pass it to this library where it is expanded and transformed into a fully descriptive cloudformation template that implements your API's data model.
@@ -624,12 +624,12 @@ With it, you define your API using the GraphQL Schema Definition Language (SDL) 
 For example, you might define the data model for an app like this:
 
 ```graphql
-type Blog @model @searchable {
+type Blog @model {
     id: ID!
     name: String!
     posts: [Post] @connection(name: "BlogPosts")
 }
-type Post @model @searchable {
+type Post @model {
     id: ID!
     title: String!
     tags: [String]
@@ -650,7 +650,6 @@ And then pass the schema to an instance of the `GraphQLTransform` class with the
 // From graphql-transform-cli/src/commands/create.ts
 import GraphQLTransform from 'graphql-transform'
 import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
-import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer'
 import AppSyncConnectionTransformer from 'graphql-connection-transformer'
 import AppSyncAuthTransformer from 'graphql-auth-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
@@ -659,7 +658,6 @@ const transformer = new GraphQLTransform({
     transformers: [
         new AppSyncTransformer(),
         new AppSyncDynamoDBTransformer(),
-        new AppSyncElasticsearchTransformer(),
         new AppSyncAuthTransformer(),
         new AppSyncConnectionTransformer()
     ]
