@@ -462,11 +462,15 @@ Resources:
               - 'iam:CreateOpenIDConnectProvider'
               - 'iam:GetOpenIDConnectProvider'
               - 'iam:AddClientIDToOpenIDConnectProvider'
-            Resource: 'arn:aws:iam::444407295970:oidc-provider/accounts.google.com'
+            Resource: !Sub  
+              - arn:aws:iam::${account}:oidc-provider/accounts.google.com
+              - { account: !Ref "AWS::AccountId"}
           - Effect: Allow
             Action:
               - 'iam:ListOpenIDConnectProviders'
-            Resource: 'arn:aws:iam::444407295970:oidc-provider/*'
+            Resource: !Sub  
+              - arn:aws:iam::${account}:oidc-provider/${selector}
+              - { account: !Ref "AWS::AccountId", selector: '*'}
     DependsOn: OpenIdLambda
 
   OpenIdLogPolicy:
@@ -533,7 +537,7 @@ Resources:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
       <% } %> 
-    <%if ((!props.audiences || props.audiences.length === 1) && props.authSelections !== 'identityPoolOnly') { %>   
+    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>   
     DependsOn: UserPoolClientInputs 
     <% } %>
   
