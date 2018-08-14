@@ -78,6 +78,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     requirements,
     currentAuthParams,
   );
+
   /* eslint-disable */
   const authPropsValues = authExists ?
     Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, requirements) :
