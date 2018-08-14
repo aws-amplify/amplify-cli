@@ -19,7 +19,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     validate: amplify.inputValidation(input),
     default: (answers) => { // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is alwasys the default
-      if (context.updatingAuth && context.updatingAuth[input.key]) {
+      if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
         return context.updatingAuth[input.key];
       }
 

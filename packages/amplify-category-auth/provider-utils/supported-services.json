@@ -40,7 +40,7 @@
 				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nThe name of the identity pool should be between 1 and 128 characters.",
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]){1,128}$",
+					"value": "^([a-zA-Z0-9_]){1,128}$",
 					"onErrorMsg": "The identity pool name must be at least 1 character and no more than 128."
 				},
 				"andConditions": [
