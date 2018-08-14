@@ -261,7 +261,8 @@ export class ResourceFactory {
                             expression: str("attribute_exists(#id)"),
                             expressionNames: obj({
                                 "#id": str("id")
-                            })
+                            }),
+                            expressionValues: obj({}),
                         }))
                     ),
                     comment('Automatically set the updatedAt timestamp.'),
@@ -438,8 +439,18 @@ export class ResourceFactory {
                             expression: str("attribute_exists(#id)"),
                             expressionNames: obj({
                                 "#id": str("id")
-                            })
+                            }),
+                            expressionValues: obj({})
                         }))
+                    ),
+                    iff(
+                        ref(ResourceConstants.SNIPPETS.VersionedCondition),
+                        compoundExpression([
+                            // tslint:disable-next-line
+                            qref(`$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`),
+                            qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
+                            qref(`$condition.expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`)
+                        ])
                     ),
                     DynamoDBMappingTemplate.deleteItem({
                         key: obj({

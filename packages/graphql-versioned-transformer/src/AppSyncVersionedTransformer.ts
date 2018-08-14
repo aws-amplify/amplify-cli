@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformSchemaError } from "graphql-transform";
+import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transform";
 import {
     valueFromASTUntyped,
     ArgumentNode,
@@ -14,7 +14,9 @@ import {
     ResolverResourceIDs,
     makeArg,
     makeNonNullType,
-    makeNamedType
+    makeNamedType,
+    getBaseType,
+    makeField
 } from "graphql-transformer-common";
 
 export class AppSyncVersionedTransformer extends Transformer {
@@ -58,9 +60,7 @@ export class AppSyncVersionedTransformer extends Transformer {
         }
 
         const versionField = getArg('versionField', "version")
-        console.log(`ADDING VERSIONING WITH VERSION FIELD ${versionField}`)
         const versionInput = getArg('versionInput', "expectedVersion")
-        console.log(`ADDING VERSIONING WITH VERSION INPUT ${versionInput}`)
         const typeName = def.name.value
 
         // Make the necessary changes to the context
@@ -70,6 +70,7 @@ export class AppSyncVersionedTransformer extends Transformer {
         this.stripCreateInputVersionedField(ctx, typeName, versionField)
         this.addVersionedInputToDeleteInput(ctx, typeName, versionInput)
         this.addVersionedInputToUpdateInput(ctx, typeName, versionInput)
+        this.enforceVersionedFieldOnType(ctx, typeName, versionField)
     }
 
     /**
@@ -104,10 +105,10 @@ export class AppSyncVersionedTransformer extends Transformer {
                 set(ref(ResourceConstants.SNIPPETS.VersionedCondition), obj({
                     expression: str(`#${versionField} = :${versionInput}`),
                     expressionValues: obj({
-                        [`:${versionInput}`]: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.${versionInput})`)
+                        [`:${versionInput}`]: raw(`$util.dynamodb.toDynamoDB($ctx.args.input.${versionInput})`)
                     }),
                     expressionNames: obj({
-                        [`#${versionInput}`]: str(`${versionField}`)
+                        [`#${versionField}`]: str(`${versionField}`)
                     })
                 })),
                 qref(`$ctx.args.input.remove("${versionInput}")`)
@@ -127,13 +128,14 @@ export class AppSyncVersionedTransformer extends Transformer {
                 set(ref(ResourceConstants.SNIPPETS.VersionedCondition), obj({
                     expression: str(`#${versionField} = :${versionInput}`),
                     expressionValues: obj({
-                        [`:${versionInput}`]: raw(`$util.dynamodb.toDynamoDBJson($ctx.args.input.${versionInput})`)
+                        [`:${versionInput}`]: raw(`$util.dynamodb.toDynamoDB($ctx.args.input.${versionInput})`)
                     }),
                     expressionNames: obj({
-                        [`#${versionInput}`]: str(`${versionField}`)
+                        [`#${versionField}`]: str(`${versionField}`)
                     })
                 })),
-                qref(`$ctx.args.input.put("${versionField}", $ctx.args.input.${versionInput} + 1)`),
+                set(ref('newVersion'), raw(`$ctx.args.input.${versionInput} + 1`)),
+                qref(`$ctx.args.input.put("${versionField}", $newVersion)`),
                 qref(`$ctx.args.input.remove("${versionInput}")`)
             ])
         )
@@ -162,7 +164,7 @@ export class AppSyncVersionedTransformer extends Transformer {
                 ...input,
                 fields: updatedFields
             }
-            ctx.nodeMap[createInputName] = updatedInput
+            ctx.putType(updatedInput)
         }
     }
 
@@ -205,7 +207,44 @@ export class AppSyncVersionedTransformer extends Transformer {
                 ...input,
                 fields: updatedFields
             }
-            ctx.nodeMap[inputName] = updatedInput
+            ctx.putType(updatedInput)
+        }
+    }
+    
+    private enforceVersionedFieldOnType(
+        ctx: TransformerContext,
+        typeName: string,
+        versionField: string,
+    ) {
+        const type = ctx.getType(typeName)
+        if (type && type.kind === Kind.OBJECT_TYPE_DEFINITION) {
+            const versionFieldImpl = type.fields.find(f => f.name.value === versionField)
+            let updatedField = versionFieldImpl
+            if (versionFieldImpl) {
+                const baseType = getBaseType(versionFieldImpl.type)
+                if (baseType === 'Int' || baseType === 'BigInt') {
+                    // ok.
+                    if (versionFieldImpl.type.kind !== Kind.NON_NULL_TYPE) {
+                        updatedField = {
+                            ...updatedField,
+                            type: makeNonNullType(versionFieldImpl.type),
+                        }
+                    }
+                } else {
+                    throw new TransformerContractError(`The versionField "${versionField}" is required to be of type "Int" or "BigInt".`)
+                }
+            } else {
+                updatedField = makeField(versionField, [], makeNonNullType(makeNamedType('Int')))
+            }
+            const updatedFields = [
+                ...type.fields,
+                updatedField
+            ]
+            const updatedType = {
+                ...type,
+                fields: updatedFields
+            }
+            ctx.putType(updatedType)
         }
     }
 }
