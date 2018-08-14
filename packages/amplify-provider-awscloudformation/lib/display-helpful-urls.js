@@ -2,7 +2,8 @@ const chalk = require('chalk');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
-  context.print.info('Helpful URLs:');
+  context.print.info(chalk.red('Helpful URLs:'));
+  context.print.info("======================")
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
@@ -24,7 +25,7 @@ function showPinpointURL(context, resourcesToBeCreated) {
     const consoleUrl =
         `https://console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/events`;
 
-    context.print.info(chalk.blue(`Pinpoint URL to track events: ${consoleUrl}`));
+    context.print.info(chalk`Pinpoint URL to track events {blue.underline ${consoleUrl}}`);
   }
 }
 
@@ -45,9 +46,10 @@ function showGraphQLURL(context, resourcesToBeCreated) {
       return;
     }
 
-    context.print.info(chalk.blue(`GraphQL endpoint: ${GraphQLAPIEndpointOutput}`));
+    context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (securityType === 'API_KEY') {
       context.print.info(chalk.blue(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`));
+      context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
     }
   }
 }
@@ -66,7 +68,8 @@ function showHostingURL(context, resourcesToBeCreated) {
         amplifyMeta[category][resourceName].output;
 
     const hostingEndpoint = CloudFrontSecureURL || WebsiteURL;
-    context.print.info(chalk.blue(`Hosting endpoint: ${hostingEndpoint}`));
+
+    context.print.info(chalk`Hosting endpoint: {blue.underline ${hostingEndpoint}}`);
   }
 }
 
