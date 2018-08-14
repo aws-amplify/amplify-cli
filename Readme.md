@@ -105,6 +105,7 @@ Category specific commands
 
 * Configure the CLI with your AWS credentials
 
+
 ```
 amplify configure
 ```
