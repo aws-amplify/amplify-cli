@@ -17,7 +17,7 @@ async function run(context) {
     });
     if (answer.disableChannel) {
       await disableChannel(context);
-    }else{
+    } else {
       await configure(context);
     }
   } else {
@@ -34,29 +34,29 @@ async function run(context) {
 }
 
 async function configure(context) {
-  let channelOutput = {}; 
-  if(context.exeInfo.serviceMeta.output[channelName]){
-    channelOutput = context.exeInfo.serviceMeta.output[channelName]; 
+  let channelOutput = {};
+  if (context.exeInfo.serviceMeta.output[channelName]) {
+    channelOutput = context.exeInfo.serviceMeta.output[channelName];
   }
   const questions = [
     {
-        name: 'FromAddress',
-        type: 'input',
-        message: "The 'From' Email address used to send emails",
-        default: channelOutput.FromAddress,
+      name: 'FromAddress',
+      type: 'input',
+      message: "The 'From' Email address used to send emails",
+      default: channelOutput.FromAddress,
     },
     {
-        name: 'Identity',
-        type: 'input',
-        message: 'The ARN of an identity verified with SES',
-        default: channelOutput.Identity,
+      name: 'Identity',
+      type: 'input',
+      message: 'The ARN of an identity verified with SES',
+      default: channelOutput.Identity,
     },
     {
-        name: 'RoleArn',
-        type: 'input',
-        message: "The ARN of an IAM Role used to submit events to Mobile Analytics' event ingestion service",
-        default: channelOutput.RoleArn,
-    }
+      name: 'RoleArn',
+      type: 'input',
+      message: "The ARN of an IAM Role used to submit events to Mobile Analytics' event ingestion service",
+      default: channelOutput.RoleArn,
+    },
   ];
   const answers = await inquirer.prompt(questions);
 
@@ -64,8 +64,8 @@ async function configure(context) {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
       Enabled: true,
-      ...answers
-    }
+      ...answers,
+    },
   };
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
@@ -74,7 +74,7 @@ async function configure(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }
     });
@@ -95,7 +95,7 @@ async function disableChannel(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }
     });

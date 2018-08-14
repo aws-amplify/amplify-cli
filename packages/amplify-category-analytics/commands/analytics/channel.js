@@ -4,9 +4,7 @@ const inquirer = require('inquirer');
 
 const pinpointHelper = require('../../lib/pinpoint-helper');
 
-
 const subcommand = 'channel';
-const category = 'analytics';
 const providerName = 'awscloudformation';
 
 const channelWorkers = {

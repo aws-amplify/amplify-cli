@@ -45,7 +45,7 @@ function enableChannel(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }
     });
@@ -66,7 +66,7 @@ function disableChannel(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }
     });

@@ -17,7 +17,7 @@ async function run(context) {
     });
     if (answer.disableChannel) {
       await disableChannel(context);
-    }else{
+    } else {
       await configure(context);
     }
   } else {
@@ -34,17 +34,17 @@ async function run(context) {
 }
 
 async function configure(context) {
-  let channelOutput = {}; 
-  if(context.exeInfo.serviceMeta.output[channelName]){
-    channelOutput = context.exeInfo.serviceMeta.output[channelName]; 
+  let channelOutput = {};
+  if (context.exeInfo.serviceMeta.output[channelName]) {
+    channelOutput = context.exeInfo.serviceMeta.output[channelName];
   }
   const questions = [
     {
-        name: 'ApiKey',
-        type: 'input',
-        message: "ApiKey",
-        default: channelOutput.ApiKey,
-    }
+      name: 'ApiKey',
+      type: 'input',
+      message: 'ApiKey',
+      default: channelOutput.ApiKey,
+    },
   ];
   const answers = await inquirer.prompt(questions);
 
@@ -52,7 +52,7 @@ async function configure(context) {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
       Enabled: true,
-      ...answers
+      ...answers,
     },
   };
   return new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ async function configure(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }
     });
@@ -83,7 +83,7 @@ function disableChannel(context) {
         reject(err);
       } else {
         console.log(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse; 
+        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }
     });
