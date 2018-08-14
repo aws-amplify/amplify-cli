@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
-const openInEditor = require('open-in-editor');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -30,7 +29,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
       name: inputs[1].key,
       message: inputs[1].question,
       validate: amplify.inputValidation(inputs[1]),
-      default: answers => answers.resourceName,
+      default: () => {
+        const defaultValue = allDefaultValues[inputs[1].key];
+        return defaultValue;
+      },
     },
   ];
 
@@ -91,13 +93,37 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   if (!await context.prompt.confirm('Do you want a guided schema creation?')) {
     // Copy the most basic schema onto the users resource dir and transform that
-    const schemaFilePath = `${__dirname}/../appsync-schemas/basic-schema.graphql`;
-    const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
 
-    context.print.info('Creating a base schema for you...');
+    const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
+    const typeNameQuestion = {
+      type: 'input',
+      name: 'typeName',
+      message: 'Provide a custom type name',
+      default: 'MyType',
+      validate: amplify.inputValidation({
+        operator: 'regex',
+        value: '^[a-zA-Z0-9]+$',
+        onErrorMsg: 'Resource name should be alphanumeric',
+      }),
+    };
+    const typeNameAnswer = await inquirer.prompt(typeNameQuestion);
 
     fs.ensureDirSync(resourceDir);
-    fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
+    // fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
+    const schemaDir = `${__dirname}/../appsync-schemas`;
+
+    const copyJobs = [
+      {
+        dir: schemaDir,
+        template: 'basic-schema.graphql.ejs',
+        target: targetSchemaFilePath,
+      },
+    ];
+
+    // copy over the ejs file
+    await context.amplify.copyBatch(context, copyJobs, typeNameAnswer);
+
+    context.print.info('Creating a base schema for you...');
 
     await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, noConfig: true });
 
@@ -105,12 +131,17 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   }
   // Guided creation of the transform schema
 
+  let templateSchemaChoices = inputs[4].options;
+  if (authType === 'API_KEY') {
+    templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
+  }
+
   const templateQuestions = [
     {
       type: inputs[4].type,
       name: inputs[4].key,
       message: inputs[4].question,
-      choices: inputs[4].options,
+      choices: templateSchemaChoices,
       validate: amplify.inputValidation(inputs[4]),
     },
     {
@@ -133,43 +164,33 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
   if (editSchemaChoice) {
-    const editorQuestion = {
-      type: inputs[6].type,
-      name: inputs[6].key,
-      message: inputs[6].question,
-      choices: inputs[6].options,
-      validate: amplify.inputValidation(inputs[6]),
-    };
-
-    const { editorSelection } = await inquirer.prompt(editorQuestion);
-    let editorOption = {};
-    if (editorSelection !== 'none') {
-      editorOption = {
-        editor: editorSelection,
-      };
-    }
-    const editor = openInEditor.configure(editorOption, (err) => {
-      console.error(`Editor not found in your machine. Please open your favorite editor and modify the file if needed: ${err}`);
-    });
-
-    return editor.open(targetSchemaFilePath)
+    return context.amplify.openEditor(context, targetSchemaFilePath)
       .then(async () => {
-        const continueQuestion = {
-          type: 'input',
-          name: 'pressKey',
-          message: 'Press any key to continue',
-        };
-
-        await inquirer.prompt(continueQuestion);
-      }, (err) => {
-        context.print.error(`Something went wrong: ${err}. Please manually edit the graphql schema`);
-      })
-      .then(async () => {
-        await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+        let notCompiled = true;
+        while (notCompiled) {
+          try {
+            await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+          } catch (e) {
+            context.print.error('Failed compiling GraphQL schema:');
+            context.print.info(e.message);
+            const continueQuestion = {
+              type: 'input',
+              name: 'pressKey',
+              message: `Please correct the errors in schema.graphql and press enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
+            };
+            await inquirer.prompt(continueQuestion);
+            continue;
+          }
+          notCompiled = false;
+        }
         return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
       });
   }
+
+
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+
+
   return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
 }
 

@@ -20,7 +20,7 @@ About aws credentials and configurations
 - For project specific configurations, the cli stores the keys in a file (per project) in the ~/.amplify/ folder. Since it's not in the project's codebase, the file won't be accidentally checked into code repos.
 
 Before pushing code or sending PR:
-- run npm run lint at the top level directory. This invokes lerna to check for lint errors in all our packages
+- At the command line, `run npm run lint` at the top level directory. This invokes lerna to check for lint errors in all our packages
 - eslint can fix some of the lint errors, so go into the package which has errors and run 'lint-fx'
 - You might stil have some lint errors which you would have to resolve manually
 - Linting your code would make sure of good code quality and practices. So please make sure to do it :)
@@ -104,6 +104,7 @@ Category specific commands
 * [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
 
 * Configure the CLI with your AWS credentials
+
 
 ```
 amplify configure

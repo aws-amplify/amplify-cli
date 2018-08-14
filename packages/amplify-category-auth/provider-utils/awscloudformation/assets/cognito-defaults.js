@@ -5,17 +5,17 @@ const [sharedId] = uuid().split('-');
 
 const generalDefaults = () => ({
   resourceName: `cognito${sharedId}`,
-  authSelections: ['identityPoolAndUserPool'],
+  authSelections: 'identityPoolAndUserPool',
 });
 
 const userPoolDefaults = projectName => ({
-  userPoolName: `${projectName}-userpool-${sharedId}`,
-  autoVerifiedAttributes: ['phone_number'],
+  userPoolName: `${projectName}_userpool_${sharedId}`,
+  autoVerifiedAttributes: ['email'],
   mfaConfiguration: 'OFF',
   mfaTypes: ['SMS Text Message'],
-  roleName: `${projectName}-sns-role-${sharedId}`,
-  roleExternalId: sharedId,
-  policyName: `${projectName}-sns-policy-${sharedId}`,
+  roleName: `${projectName}_sns-role`,
+  roleExternalId: `${projectName}_role_external_id`,
+  policyName: `${projectName}-sns-policy`,
   smsAuthenticationMessage: 'Your authentication code is {####}',
   smsVerificationMessage: 'Your verification code is {####}',
   emailVerificationSubject: 'Your verification code',
@@ -28,41 +28,55 @@ const userPoolDefaults = projectName => ({
     'Requires Symbols',
   ],
   requiredAttributes: [
-    coreAttributes.find(b => b.name === 'Phone Number').value,
+    coreAttributes.find(b => b.name === 'Email').value,
   ],
-  userpoolClientName: `${projectName}-app-client-${sharedId}`,
+  userpoolClientName: `${projectName}_app_client`,
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
   userpoolClientReadAttributes: [
     appClientReadAttributes.find(d => d.name === 'Email').value,
-    appClientReadAttributes.find(e => e.name === 'Phone Number').value,
   ],
   allowUnauthenticatedIdentities: false,
-  mfaLambdaRole: `${projectName}_totp_lambda_role_${sharedId}`,
-  mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy_${sharedId}`,
-  mfaPassRolePolicy: `${projectName}_totp_pass_role_policy_${sharedId}`,
-  mfaLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy_${sharedId}`,
-  userpoolClientLambdaRole: `${projectName}_userpool_client_lambda_role_${sharedId}`,
-  userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy_${sharedId}`,
-  userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy_${sharedId}`,
+  mfaLambdaRole: `${projectName}_totp_lambda_role`,
+  mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,
+  mfaPassRolePolicy: `${projectName}_totp_pass_role_policy`,
+  mfaLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy`,
+  userpoolClientLambdaRole: `${projectName}_userpoolclient_lambda_role`,
+  userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy`,
+  userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy`,
+});
+
+const identityPoolDefaults = projectName => ({
+  identityPoolName: `${projectName}_identitypool_${sharedId}`,
+  allowUnauthenticatedIdentities: false,
+  lambdaLogPolicy: `${projectName}_lambda_log_policy`,
+  openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
+  openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
+  openIdLambdaIAMPolicy: `${projectName}_openid_lambda_iam_policy`,
+  openIdLogPolicy: `${projectName}_openid_lambda_log_policy`,
+
 });
 
 const identityAndUserPoolDefaults = projectName => ({
   // replace dashes with underscores for id pool regex constraint
-  identityPoolName: `${projectName}_identitypool_${sharedId.replace(/-/g, '_')}`,
-  allowUnauthenticatedIdentities: false,
-  lambdaLogPolicy: `${projectName}_lambda_log_policy_${sharedId}`,
+  ...identityPoolDefaults(projectName),
   ...userPoolDefaults(projectName),
 });
 
 const functionMap = {
   userPoolOnly: userPoolDefaults,
   identityPoolAndUserPool: identityAndUserPoolDefaults,
+  identityPoolOnly: identityPoolDefaults,
 };
 
-const getAllDefaults = (amplify) => {
-  const projectName = amplify.projectConfig.projectName.toLowerCase();
-  const target = generalDefaults();
+const entityKeys = {
+  identityPoolKeys: Object.keys(identityPoolDefaults('')),
+  userPoolKeys: Object.keys(userPoolDefaults('')),
+};
+
+const getAllDefaults = (name) => {
+  const projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase()}${sharedId}` : name;
+  const target = generalDefaults(projectName);
   const sources = [
     userPoolDefaults(projectName),
     identityAndUserPoolDefaults(projectName),
@@ -75,4 +89,5 @@ module.exports = {
   getAllDefaults,
   functionMap,
   generalDefaults,
+  entityKeys,
 };

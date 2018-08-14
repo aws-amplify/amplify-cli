@@ -1,12 +1,14 @@
 import { Transformer, TransformerContext } from "graphql-transform";
 import {
     buildASTSchema,
-    printSchema
+    printSchema,
+    TypeDefinitionNode,
+    Kind
 } from "graphql";
 
 import { ResourceFactory } from "./resources";
 import { ResourceConstants, blankObject, makeSchema, makeOperationType } from "graphql-transformer-common";
-import Resource from "../../graphql-transform/node_modules/cloudform/types/resource";
+import Resource from "cloudform/types/resource";
 
 import fs = require('fs');
 import { normalize } from "path";
@@ -46,10 +48,34 @@ export class AppSyncTransformer extends Transformer {
     }
 
     public after = (ctx: TransformerContext): void => {
+        // The transform allows transformer authors to manager the nodeMap
+        // themselves but if an input definition is not added manually
+        // this fills in the definitions in the map.
+        this.fillMissingNodes(ctx)
         if (!this.outputPath) {
             this.printWithoutFilePath(ctx);
         } else {
             this.printWithFilePath(ctx);
+        }
+    }
+
+    private fillMissingNodes(ctx: TransformerContext): void {
+        for (const inputDef of ctx.inputDocument.definitions) {
+            switch (inputDef.kind) {
+                case Kind.OBJECT_TYPE_DEFINITION:
+                case Kind.SCALAR_TYPE_DEFINITION:
+                case Kind.INTERFACE_TYPE_DEFINITION:
+                case Kind.INPUT_OBJECT_TYPE_DEFINITION:
+                case Kind.ENUM_TYPE_DEFINITION:
+                case Kind.UNION_TYPE_DEFINITION:
+                    const typeDef = inputDef as TypeDefinitionNode
+                    if (!ctx.getType(typeDef.name.value)) {
+                        ctx.addType(typeDef)
+                    }
+                    break;
+                default:
+                    /* pass any others */
+            }
         }
     }
 

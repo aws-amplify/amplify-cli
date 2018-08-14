@@ -1,12 +1,13 @@
 import { Transformer, TransformerContext } from 'graphql-transform'
 import {
-    DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode,
-    TypeSystemDefinitionNode, Kind
+    DirectiveNode, ObjectTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
-    makeTableScalarFilterInputObject, makeTableXFilterInputObject, makeTableSortDirectionEnumObject
+    makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
+    makeModelConnectionType, makeModelConnectionTypeName, makeModelConnectionField,
+    makeScalarFilterInputs
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
@@ -54,13 +55,13 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     constructor() {
         super(
             'AppSyncDynamoDBTransformer',
-            `directive @model(
+            `
+            directive @model(
                 queries: ModelQueryMap,
                 mutations: ModelMutationMap
-            ) on OBJECT`,
-            `
-                input ModelMutationMap { create: String, update: String, delete: String }
-                input ModelQueryMap { get: String, list: String }
+            ) on OBJECT
+            input ModelMutationMap { create: String, update: String, delete: String }
+            input ModelQueryMap { get: String, list: String }
             `
         )
         this.resources = new ResourceFactory();
@@ -212,31 +213,24 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         }
         ctx.addObjectExtension(mutationType)
 
+        if (shouldMakeQuery || shouldMakeList) {
+            if (!this.typeExist('ModelSortDirection', ctx)) {
+                const tableSortDirection = makeModelSortDirectionEnumObject()
+                ctx.addEnum(tableSortDirection)
+            }
+        }
+
         // Create query queries
         if (shouldMakeQuery) {
-            this.generateTableXConnectionType(ctx, def)
+            this.generateModelXConnectionType(ctx, def)
 
             const queryResolver = this.resources.makeQueryResolver(def.name.value, queryFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBQueryResolverResourceID(typeName), queryResolver)
 
             queryType = extensionWithFields(
                 queryType,
-                [makeField(
-                    queryResolver.Properties.FieldName,
-                    [
-                        makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
-                        makeArg('sortDirection', makeNamedType('TableSortDirection')),
-                        makeArg('limit', makeNamedType('Int')),
-                        makeArg('nextToken', makeNamedType('String'))
-                    ],
-                    makeNamedType(`Table${def.name.value}Connection`)
-                )]
+                [makeModelConnectionField(queryResolver.Properties.FieldName, def.name.value)]
             )
-
-            if (!this.typeExist('TableSortDirection', ctx)) {
-                const tableSortDirection = makeTableSortDirectionEnumObject()
-                ctx.addEnum(tableSortDirection)
-            }
 
             this.generateFilterInputs(ctx, def)
         }
@@ -258,7 +252,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
 
         if (shouldMakeList) {
 
-            this.generateTableXConnectionType(ctx, def)
+            this.generateModelXConnectionType(ctx, def)
 
             // Create the list resolver
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride)
@@ -269,15 +263,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             // Extend the query type to include listX
             queryType = extensionWithFields(
                 queryType,
-                [makeField(
-                    listResolver.Properties.FieldName,
-                    [
-                        makeArg('filter', makeNamedType(`Table${def.name.value}FilterInput`)),
-                        makeArg('limit', makeNamedType('Int')),
-                        makeArg('nextToken', makeNamedType('String'))
-                    ],
-                    makeNamedType(`Table${def.name.value}Connection`)
-                )]
+                [makeModelConnectionField(listResolver.Properties.FieldName, def.name.value)]
             )
         }
 
@@ -288,68 +274,30 @@ export class AppSyncDynamoDBTransformer extends Transformer {
         return Boolean(type in ctx.nodeMap);
     }
 
-    private generateTableXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-        const tableXConnectionName = `Table${def.name.value}Connection`
+    private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+        const tableXConnectionName = makeModelConnectionTypeName(def.name.value)
         if (this.typeExist(tableXConnectionName, ctx)) {
             return
         }
 
-        // Create the TableXConnection
+        // Create the ModelXConnection
         const connectionType = blankObject(tableXConnectionName)
         ctx.addObject(connectionType)
 
-        // Create TableXConnection type with items and nextToken
-        let connectionTypeExtension = blankObjectExtension(tableXConnectionName)
-        connectionTypeExtension = extensionWithFields(
-            connectionTypeExtension,
-            [makeField(
-                'items',
-                [],
-                makeListType(makeNamedType(def.name.value))
-            )]
-        )
-        connectionTypeExtension = extensionWithFields(
-            connectionTypeExtension,
-            [makeField(
-                'nextToken',
-                [],
-                makeNamedType('String')
-            )]
-        )
-        ctx.addObjectExtension(connectionTypeExtension)
+        ctx.addObjectExtension(makeModelConnectionType(def.name.value))
     }
 
     private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-
-        // Create the Scalar filter inputs
-        if (!this.typeExist('TableStringFilterInput', ctx)) {
-            const tableStringFilterInput = makeTableScalarFilterInputObject('String')
-            ctx.addInput(tableStringFilterInput)
+        const scalarFilters = makeScalarFilterInputs()
+        for (const filter of scalarFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
         }
 
-        if (!this.typeExist('TableIDFilterInput', ctx)) {
-            const tableIDFilterInput = makeTableScalarFilterInputObject('ID')
-            ctx.addInput(tableIDFilterInput)
-        }
-
-        if (!this.typeExist('TableIntFilterInput', ctx)) {
-            const tableIntFilterInput = makeTableScalarFilterInputObject('Int')
-            ctx.addInput(tableIntFilterInput)
-        }
-
-        if (!this.typeExist('TableFloatFilterInput', ctx)) {
-            const tableFloatFilterInput = makeTableScalarFilterInputObject('Float')
-            ctx.addInput(tableFloatFilterInput)
-        }
-
-        if (!this.typeExist('TableBooleanFilterInput', ctx)) {
-            const tableBooleanFilterInput = makeTableScalarFilterInputObject('Boolean')
-            ctx.addInput(tableBooleanFilterInput)
-        }
-
-        // Create the TableXFilterInput
-        if (!this.typeExist(`Table${def.name.value}FilterInput`, ctx)) {
-            const tableXQueryFilterInput = makeTableXFilterInputObject(def)
+        // Create the ModelXFilterInput
+        const tableXQueryFilterInput = makeModelXFilterInputObject(def)
+        if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }
     }

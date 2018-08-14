@@ -29,9 +29,9 @@ async function pushResources(context, category, resourceName) {
       spinner.succeed('All resources are updated in the cloud');
     })
     .catch((err) => {
-      console.log(err);
       spinner.fail('There was an issue pushing the resources to the cloud');
-      throw err;
+      // Handle the errors and print them nicely for the user.
+      context.print.error(`\n${err.message}`);
     });
 }
 

@@ -7,6 +7,7 @@ const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
+const { displayHelpfulURLs } = require('./display-helpful-urls');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
@@ -44,7 +45,8 @@ async function run(context, category, resourceName) {
           resourcesToBeDeleted[i].resourceName,
         );
       }
-    });
+    })
+    .then(() => displayHelpfulURLs(context, resourcesToBeCreated));
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {
@@ -218,6 +220,14 @@ function formNestedStack(context, projectDetails) {
 
               parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
             }
+          }
+        }
+
+        const values = Object.values(parameters);
+        const keys = Object.keys(parameters);
+        for (let a = 0; a < values.length; a += 1) {
+          if (Array.isArray(values[a])) {
+            parameters[keys[a]] = values[a].join();
           }
         }
 

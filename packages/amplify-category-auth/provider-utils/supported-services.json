@@ -12,20 +12,24 @@
 			},
 			{
 				"key": "authSelections",
-				"set": "core",
 				"question": "Select the authentication/authorization services that you want to use:",
 				"required": true,
 				"type": "list",
-				"map": "authSelectionMap"
+				"map": "authSelectionMap",
+				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool."
 			},
 			{
 				"key": "resourceName",
-				"set": "core",
 				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"andConditions": [
+					{
+						"preventEdit": "always"
+					}
+				],
 				"validation": {
 					"operator": "regex",
-					"value": "^[a-zA-Z0-9]+$",
-					"onErrorMsg": "Resource name should be alphanumeric"
+					"value": "^([a-zA-Z0-9]){1,128}$",
+					"onErrorMsg": "The resource name must be at least 1 character and no more than 128 and only contain alphanumeric characters."
 				},
 				"required": true
 			},
@@ -33,31 +37,54 @@
 				"key": "identityPoolName",
 				"question": "Please enter a name for your identity pool.",
 				"required": true,
-				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.",
+				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nThe name of the identity pool should be between 1 and 128 characters.",
 				"validation": {
 					"operator": "regex",
-					"value": "^.{1,128}$",
+					"value": "^([a-zA-Z0-9_]){1,128}$",
 					"onErrorMsg": "The identity pool name must be at least 1 character and no more than 128."
 				},
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "userPoolOnly",
+						"operator": "!="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "identityPoolName"
 					}
 				]
 			},
 			{
 				"key": "allowUnauthenticatedIdentities",
 				"question": "Allow unauthenticated logins? (Provides scoped down permissions that you can control via AWS IAM)",
-				"type": "confirm",
-				"required": true
+				"type": "list",
+				"map": "booleanOptions",
+				"learnMore": "If you select 'yes', your identity pool will provide temporary AWS credentials for unauthenticated guest users.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "userPoolOnly",
+						"operator": "!="
+					}
+				]
 			},
 			{
 				"key": "thirdPartyAuth",
 				"question": "Do you want to enable 3rd party authentication providers in your identity pool?",
-				"type": "confirm",
-				"required": true
+				"learnMore": "If you select yes, your identity pool will support users who are authenticated via a public login provider such as Facebook, Google, Twitter and Amazon (non-Cognito).  Your identity pool will continue to support users who are authenticated via a user pool.",
+				"temp": true,
+				"type": "list",
+				"map": "booleanOptions",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "userPoolOnly",
+						"operator": "!="
+					}
+				]
 			},
 			{
 				"key": "authProviders",
@@ -77,6 +104,7 @@
 				"key": "facebookAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
 				"question": "Enter your Facebook App ID: ",
+				"required": "true",
 				"andConditions": [
 					{
 						"key": "authProviders",
@@ -94,6 +122,40 @@
 						"key": "authProviders",
 						"value": "accounts.google.com",
 						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleIos",
+				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
+				"question": "Enter your Google Client ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "accounts.google.com",
+						"operator": "includes"
+					},
+					{
+						"key": "frontendHandler",
+						"value": "ios",
+						"operator": "configMatch"
+					}
+				]
+			},
+			{
+				"key": "googleAndroid",
+				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
+				"question": "Enter your Google Client ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "accounts.google.com",
+						"operator": "includes"
+					},
+					{
+						"key": "frontendHandler",
+						"value": "android",
+						"operator": "configMatch"
 					}
 				]
 			},
@@ -136,11 +198,20 @@
 				"key": "userPoolName",
 				"question": "Please provide a name for your user pool:",
 				"required": true,
+				"validation": {
+					"operator": "regex",
+					"value": "^([\\w\\s+=,.@-]){1,128}$",
+					"onErrorMsg": "The user pool name must be at least 1 character and no more than 128 and only contain alphanumeric characters or the characters ',.@-'."
+				},
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "userPoolName"
 					}
 				]
 			},
@@ -153,10 +224,16 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OFF",
+						"preventEdit": "="
 					}
-				]
+				],
+				"learnMore": "Multi-factor authentication (MFA) increases security for your app by adding another authentication method, and not relying solely on user name and password. You can choose to use SMS text messages, or time-based one-time (TOTP) passwords as second factors in signing in your users.\nNote that once your User Pool has been created, You can only select the 'OPTIONAL' configuration for MFA.  Similiarly, once MFA has been enabled for a User pool you cannot disable it."
 			},
 			{
 				"key": "mfaTypes",
@@ -167,8 +244,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -190,8 +267,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -213,8 +290,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -227,8 +304,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -240,18 +317,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
-					},
-					{
-						"key": "mfaConfiguration",
-						"value": "OFF",
+						"value": "identityPoolOnly",
 						"operator": "!="
-					},
-					{
-						"key": "mfaTypes",
-						"value": "SMS Text Message",
-						"operator": "includes"
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -273,18 +340,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
-					},
-					{
-						"key": "mfaConfiguration",
-						"value": "OFF",
+						"value": "identityPoolOnly",
 						"operator": "!="
-					},
-					{
-						"key": "mfaTypes",
-						"value": "SMS Text Message",
-						"operator": "includes"
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -295,14 +352,15 @@
 			},
 			{
 				"key": "defaultPasswordPolicy",
-				"question": "Do you want to use the default password policy for this User Pool?",
+				"question": "Do you want to override the default password policy for this User Pool?",
+				"temp": true,
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -319,12 +377,7 @@
 				"andConditions": [
 					{
 						"key": "defaultPasswordPolicy",
-						"value": false,
-						"operator": "="
-					},
-					{
-						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
+						"value": true,
 						"operator": "="
 					}
 				]
@@ -343,13 +396,13 @@
 				"andConditions": [
 					{
 						"key": "defaultPasswordPolicy",
-						"value": false,
+						"value": true,
 						"operator": "="
 					},
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -362,25 +415,8 @@
 				"andConditions": [
 					{
 						"key": "authSelections",
-						"value": "identityPoolAndUserPool",
-						"operator": "="
-					}
-				]
-			},
-			{
-				"key": "userpoolClientName",
-				"question": "An app client controls access on a per-application basis. Amplify creates separate clients for web or native platforms. Please provide a name for the app client:",
-				"required": true,
-				"validation": {
-					"operator": "regex",
-					"value": "^.{1,128}$",
-					"onErrorMsg": "The user pool name must be at least 1 character and no more than 128."
-				},
-				"andConditions": [
-					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				]
 			},
@@ -390,9 +426,9 @@
 				"required": true,
 				"andConditions": [
 					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
 				],
 				"validation": {
@@ -404,15 +440,16 @@
 			{
 				"key": "userpoolClientSetAttributes",
 				"question": "Do you want to specify the user attributes this app can read and write?",
+				"temp": true,
 				"required": true,
-				"type":"confirm",
 				"andConditions": [
 					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
 					}
-				]
+				],
+				"type":"confirm"
 			},
 			{
 				"key": "userpoolClientReadAttributes",
@@ -422,9 +459,9 @@
 				"map" : "appClientReadAttributes",
 				"andConditions": [
 					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "userpoolClientSetAttributes",
@@ -442,9 +479,9 @@
 				"requiredOptions": "requiredAttributes",
 				"andConditions": [
 					{
-						"key": "createUserpoolClient",
-						"value": true,
-						"operator": "="
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
 					},
 					{
 						"key": "userpoolClientSetAttributes",

@@ -19,7 +19,7 @@ function createAWSConfig(context, amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
     UserAgent: 'aws-amplify/cli',
-    Version: '1.0',
+    Version: '0.1.0',
     IdentityManager: {
       Default: {},
     },
@@ -36,6 +36,8 @@ function createAWSConfig(context, amplifyResources) {
       case 'Pinpoint': Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'DynamoDB': Object.assign(configOutput, getDynamoDBConfig(serviceResourceMapping[service], projectRegion));
+        break;
+      case 'AppSync': Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
       default: break;
     }
@@ -99,12 +101,12 @@ function getPinpointConfig(pinpointResources) {
     PinpointAnalytics: {
       Default: {
         AppId: pinpointResource.output.Id,
-        Region: pinpointResource.output.Region,
+        Region: 'us-east-1',
       },
     },
     PinpointTargeting: {
       Default: {
-        Region: pinpointResource.output.Region,
+        Region: 'us-east-1',
       },
     },
   };
@@ -115,6 +117,21 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
     DynamoDBObjectMapper: {
       Default: {
         Region: projectRegion,
+      },
+    },
+  };
+}
+
+function getAppSyncConfig(appsyncResources, projectRegion) {
+  // There can only be one appsync resource
+  const appsyncResource = appsyncResources[0];
+  return {
+    AppSync: {
+      Default: {
+        ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
+        Region: projectRegion,
+        AuthMode: appsyncResource.output.securityType,
+        ApiKey: appsyncResource.output.securityType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
       },
     },
   };

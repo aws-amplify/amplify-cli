@@ -119,7 +119,7 @@ async function askDynamoDBQuestions(context, inputs) {
     message: inputs[5].question,
     choices: inputs[5].options,
   };
-  while (true) {
+  while (true) { //eslint-disable-line
     const dynamoDbTypeAnswer = await inquirer.prompt([dynamoDbTypeQuestion]);
     switch (dynamoDbTypeAnswer[inputs[5].key]) {
       case 'currentProject': {

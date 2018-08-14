@@ -10,7 +10,7 @@ import AppSyncTransformer from 'graphql-appsync-transformer'
 
 test('Test AppSyncAuthTransformer validation happy case', () => {
     const validSchema = `
-    type Post @model @auth(allow: owner) {
+    type Post @model @auth(rules: [{allow: owner}]) {
         id: ID!
         title: String!
         createdAt: String

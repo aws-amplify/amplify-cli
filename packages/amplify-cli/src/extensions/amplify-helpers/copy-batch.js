@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 /**
  * Runs a series of jobs through the templating system.
  *
@@ -6,7 +8,7 @@
  * @param {any}   props          - The props to use for variable replacement.
  * @param {any}   opts           - Additional options
  */
-async function copyBatch(context, jobs, props, force) {
+async function copyBatch(context, jobs, props, force, writeParams) {
   // grab some features
   const {
     template,
@@ -31,16 +33,23 @@ async function copyBatch(context, jobs, props, force) {
       continue;
     }
     // generate the React component
+    // TODO: Error handling in event of single file write failure
     if (await shouldGenerate(job.target, force)) {
-      await template.generate({
+      template.generate({
         directory: job.dir,
         template: job.template,
         target: job.target,
         props,
       });
+
+      if (writeParams && job.paramsFile) {
+        const jsonString = JSON.stringify(props, null, 4);
+        fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
+      }
     }
   }
 }
+
 
 module.exports = {
   copyBatch,

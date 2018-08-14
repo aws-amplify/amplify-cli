@@ -15,18 +15,15 @@
         },
     <% } %>
     "Resources": {
-        <%if (!props.privacy.open) { %>
-        "PolicyAPIGW<%= props.apiName %>": {
+        <%if (props.privacy.auth) { %>
+        "PolicyAPIGW<%= props.apiName %>auth": {
             "DependsOn": [
               "<%= props.apiName %>"
             ],
             "Type": "AWS::IAM::Policy",
             "Properties": {
-              "PolicyName": "PolicyAPIGW<%= props.apiName %>",
+              "PolicyName": "PolicyAPIGW<%= props.apiName %>auth",
               "Roles": [
-              <%if (props.privacy.protected) { %>
-                 "<%= props.privacy.unAuthRoleName %>",
-                 <% } %>  
                 "<%= props.privacy.authRoleName %>"
               ],
               "PolicyDocument": {
@@ -37,26 +34,327 @@
                     "Action": [
                       "execute-api:Invoke"
                     ],
-                    "Resource": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "arn:aws:execute-api:",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          ":",
-                          {
-                            "Ref": "AWS::AccountId"
-                          },
-                          ":",
-                          {
-                            "Ref": "<%= props.apiName %>"
-                          },
-                          "/Prod/*/*"
+                    "Resource": [
+                    <%if (props.privacy.auth === 'rw') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/*/*"
+                          ]
                         ]
-                      ]
-                    }
+                      }
+                    <% } %>
+                    <%if (props.privacy.auth === 'r') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/GET/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/HEAD/*"
+                          ]
+                        ]
+                      }
+                    <% } %>
+                    <%if (props.privacy.auth === 'w') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/DELETE/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/PATCH/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/POST/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/PUT/*"
+                          ]
+                        ]
+                      }
+                    <% } %>
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+        <% } %>
+        <%if (props.privacy.unauth) { %>
+        "PolicyAPIGW<%= props.apiName %>unauth": {
+            "DependsOn": [
+              "<%= props.apiName %>"
+            ],
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": "PolicyAPIGW<%= props.apiName %>unauth",
+              "Roles": [
+                 "<%= props.privacy.unAuthRoleName %>"
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "execute-api:Invoke"
+                    ],
+                    "Resource": [
+                    <%if (props.privacy.unauth === 'rw') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/*/*"
+                          ]
+                        ]
+                      }
+                    <% } %>
+                    <%if (props.privacy.unauth === 'r') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/GET/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/HEAD/*"
+                          ]
+                        ]
+                      }
+                    <% } %>
+                    <%if (props.privacy.unauth === 'w') { %>
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/DELETE/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/PATCH/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/POST/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "<%= props.apiName %>"
+                            },
+                            "/Prod/PUT/*"
+                          ]
+                        ]
+                      }
+                    <% } %>
+                    ]
                   }
                 ]
               }

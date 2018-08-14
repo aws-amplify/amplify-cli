@@ -3,12 +3,12 @@ const chalk = require('chalk');
 const providerName = 'awscloudformation';
 
 function invalidateCloudFront(context) {
-    console.log(context.parameters.options);
-    if (context.parameters.options.invalidateCache ||
+  console.log(context.parameters.options);
+  if (context.parameters.options.invalidateCache ||
             context.parameters.options.invalidateCloudFront ||
             context.parameters.options.c) {
-        return invalidate(context);
-    }
+    return invalidate(context);
+  }
 }
 
 async function invalidate(context) {
@@ -16,7 +16,6 @@ async function invalidate(context) {
   if (context.exeInfo.serviceMeta &&
     context.exeInfo.serviceMeta.output &&
     context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
-        
     const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
     const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
 

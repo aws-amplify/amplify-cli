@@ -1,10 +1,6 @@
 const inquirer = require('inquirer');
 
-function parseInputs(
-  input, amplify,
-  defaultValuesFilename,
-  stringMapsFilename, currentAnswers, context,
-) {
+function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
@@ -19,22 +15,24 @@ function parseInputs(
     message: input.question,
     prefix: input.prefix,
     suffix: input.suffix,
-    when: amplify.getWhen(input, currentAnswers),
+    when: amplify.getWhen(input, currentAnswers, context.updatingAuth, amplify),
     validate: amplify.inputValidation(input),
     default: (answers) => { // eslint-disable-line no-unused-vars
-      if (currentAnswers) {
-        answers = Object.assign(answers, currentAnswers);
+      // if the user is editing and there is a previous value, this is alwasys the default
+      if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
+        return context.updatingAuth[input.key];
       }
-      const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
 
+      // if not editing or no previous value, get defaults
+      const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
       if (defaultValue) {
         return defaultValue;
       }
 
+      // special case for api
       if (context.api && context.api.privacy === 'protected' && input.key === 'allowUnauthenticatedIdentities') {
         return true;
       }
-
       return undefined;
     },
   };
@@ -42,7 +40,7 @@ function parseInputs(
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
     if (!input.requiredOptions || !currentAnswers[input.requiredOptions]) {
       question = Object.assign({
-        choices: input.map ? getAllMaps()[input.map] : input.options,
+        choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
     } else {
       const requiredOptions = getAllMaps()[input.map]
@@ -54,7 +52,7 @@ function parseInputs(
       /*eslint-disable*/
       question = Object.assign(question, {
         choices: [new inquirer.Separator(`--- You have already selected the following attributes as required for this User Pool.  They are writeable by default: ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
-        filter: ((input) => {
+        filter: ((input) => { // eslint-disable-line no-shadow
           input = input.concat(...requiredOptions.map(z => z.value));
           return input;
         }),
@@ -80,7 +78,6 @@ function parseInputs(
       type: 'input',
     }, question);
   }
-
 
   return question;
 }

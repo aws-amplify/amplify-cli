@@ -18,7 +18,7 @@
 				"question": "Provide API name:",
 				"validation": {
 					"operator": "regex",
-					"value": "^[a-zA-Z0-9._-]+$",
+					"value": "^[a-zA-Z0-9]+$",
 					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
@@ -44,11 +44,15 @@
 				"question": "What best describes your project:",
 				"options": [{
 						"name": "Single object with fields (e.g. “Todo” with ID, name, description)",
-						"value": "single-relationship-schema.graphql"
+						"value": "single-object-schema.graphql"
 					},
 					{
-						"name": "One to many relationship (e.g. “Blogs” with “Comments”)",
+						"name": "One to many relationship (e.g. “Blogs” with “Posts” & “Comments”)",
 						"value": "many-relationship-schema.graphql"
+					},
+					{
+						"name": "Objects with fine-grained security (e.g. Project management app with owner based authorization)",
+						"value": "single-object-auth-schema.graphql"
 					}
 				],
 				"required": true

@@ -38,9 +38,9 @@ export class AppSyncSearchableTransformer extends Transformer {
     constructor() {
         super(
             `AppSyncSearchableTransformer`,
-            `directive @searchable(queries: SearchableQueryMap) on OBJECT`,
             `
-                input SearchableQueryMap { search: String }
+            directive @searchable(queries: SearchableQueryMap) on OBJECT
+            input SearchableQueryMap { search: String }
             `
         );
         this.resources = new ResourceFactory();
@@ -101,7 +101,7 @@ export class AppSyncSearchableTransformer extends Transformer {
                             makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
                             makeArg('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
                             makeArg('limit', makeNamedType('Int')),
-                            makeArg('nextToken', makeNamedType('String'))
+                            makeArg('nextToken', makeNamedType('Int'))
                         ],
                         makeNamedType(`Searchable${def.name.value}Connection`)
                     )

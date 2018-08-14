@@ -6,7 +6,7 @@ const getAllDefaults = (project) => {
   const [shortId] = uuid().split('-');
   const defaults = {
     resourceName: `appsync${shortId}`,
-    apiName: `${name}${shortId}`,
+    apiName: `${name}`,
     serviceRoleName: `serviceRole${shortId}`,
     servicePolicyName: `servicePolicy${shortId}`,
     apiCreationChoice: false,

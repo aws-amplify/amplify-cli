@@ -42,12 +42,13 @@ export class DynamoDBMappingTemplate {
      * Create a query resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
-    public static query({ query, filter, scanIndexForward, limit, nextToken }: {
+    public static query({ query, filter, scanIndexForward, limit, nextToken, index }: {
         query: ObjectNode;
         scanIndexForward: Expression;
         filter: ObjectNode | Expression;
         limit: Expression;
         nextToken?: Expression;
+        index?: StringNode;
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
@@ -56,7 +57,8 @@ export class DynamoDBMappingTemplate {
             scanIndexForward,
             filter,
             limit,
-            nextToken
+            nextToken,
+            index
         })
     }
 
@@ -106,7 +108,6 @@ export class DynamoDBMappingTemplate {
         // Auto timestamp
         // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
         return compoundExpression([
-            iff(raw('!$input'), set(ref('input'), ref('util.map.copyAndRemoveAllKeys($context.args.input, [])'))),
             set(ref('expNames'), obj({})),
             set(ref('expValues'), obj({})),
             set(ref('expSet'), obj({})),
@@ -114,7 +115,7 @@ export class DynamoDBMappingTemplate {
             set(ref('expRemove'), list([])),
             forEach(
                 ref('entry'),
-                ref(`util.map.copyAndRemoveAllKeys($input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
+                ref(`util.map.copyAndRemoveAllKeys($context.args.input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
                 [
                     ifElse(
                         ref('util.isNull($entry.value)'),

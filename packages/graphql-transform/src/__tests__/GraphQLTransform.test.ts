@@ -4,11 +4,11 @@ import {
 import GraphQLTransform from '../GraphQLTransform'
 import TransformerContext from '../TransformerContext'
 import Transformer from '../Transformer'
-import { InvalidTransformerError, UnknownDirectiveError } from '../errors'
 
 class ValidObjectTransformer extends Transformer {
     constructor() {
-        super('ValidObjectTransformer', 'directive @ObjectDirective on OBJECT')
+        super(
+            'ValidObjectTransformer', 'directive @ObjectDirective on OBJECT')
     }
 
     public object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => {
@@ -57,6 +57,40 @@ test('Test graphql transformer validation. Unknown directive.', () => {
     try {
         transformer.transform(invalidSchema);
     } catch (e) {
-        expect(e.name).toEqual('UnknownDirectiveError')
+        expect(e.name).toEqual('TransformSchemaError')
+    }
+});
+
+class PingTransformer extends Transformer {
+    constructor() {
+        super(
+            'ValidObjectTransformer',
+            `
+            directive @ping(config: PingConfig) on OBJECT
+            input PingConfig {
+                url: String!
+            }
+            `)
+    }
+
+    public object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => {
+        return
+    }
+}
+
+test('Test graphql transformer validation on bad shapes. @ping directive.', () => {
+    const invalidSchema = `type Post @ping(config: { bad: "shape" }) { id: ID! }`
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new PingTransformer()
+        ]
+    })
+    try {
+        console.log(`Transforming: \n${invalidSchema}`)
+        const out = transformer.transform(invalidSchema);
+        expect(true).toEqual(false)
+    } catch (e) {
+        console.log(e.message)
+        expect(e.name).toEqual('TransformSchemaError')
     }
 });

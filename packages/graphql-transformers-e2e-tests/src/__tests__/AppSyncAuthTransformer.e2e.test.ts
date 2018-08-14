@@ -13,8 +13,9 @@ import { Output } from 'aws-sdk/clients/cloudformation'
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
 import AppSyncTransformer from 'graphql-appsync-transformer'
-import { S3Client } from '../s3client2';
+import { S3Client } from '../S3Client';
 import * as path from 'path'
+import { deploy } from '../deploy'
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -22,7 +23,7 @@ import * as path from 'path'
 jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'TestAppSyncAuthTransformerTest'
+const STACK_NAME = 'AppSyncAuthTransformerTest'
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -46,37 +47,6 @@ function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
         const output = outputs.find((o: Output) => o.OutputKey === key)
         return output ? output.OutputValue : null
-    }
-}
-
-async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string) {
-    let s3LocationMap = {}
-    const files = fs.readdirSync(directory)
-    for (const file of files) {
-        const contentPath = path.join(directory, file)
-        const s3Location = path.join(key, file)
-        if (fs.lstatSync(contentPath).isDirectory()) {
-            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location)
-            s3LocationMap = { ...recMap, ...s3LocationMap }
-        } else {
-            await client.uploadFile(bucket, contentPath, s3Location)
-            const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
-            s3LocationMap[formattedName] = 's3://' + path.join(bucket, s3Location)
-        }
-    }
-    return s3LocationMap
-}
-
-async function cleanupBucket(client: S3Client, directory: string, bucket: string, key: string) {
-    const files = fs.readdirSync(directory)
-    for (const file of files) {
-        const contentPath = path.join(directory, file)
-        const s3Location = path.join(key, file)
-        if (fs.lstatSync(contentPath).isDirectory()) {
-            await cleanupBucket(client, contentPath, bucket, s3Location)
-        } else {
-            await client.deleteFile(bucket, s3Location)
-        }
     }
 }
 
@@ -105,23 +75,23 @@ beforeAll(async () => {
         fs.mkdirSync(TMP_ROOT);
     }
     const validSchema = `
-    type Post @model @auth(allow: owner) {
+    type Post @model @auth(rules: [{ allow: owner }]) {
         id: ID!
         title: String!
         createdAt: String
         updatedAt: String
         owner: String
     }
-    type Salary @model @auth(allow: groups, groups: ["Admin"]) {
+    type Salary @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
         id: ID!
         wage: Int
     }
-    type ManyGroupProtected @model @auth(allow: groups, groupsField: "groups") {
+    type ManyGroupProtected @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
         value: Int
         groups: [String]
     }
-    type SingleGroupProtected @model @auth(allow: groups, groupsField: "group") {
+    type SingleGroupProtected @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
         id: ID!
         value: Int
         group: String
@@ -137,16 +107,8 @@ beforeAll(async () => {
     const s3Client = new S3Client('us-west-2')
     try {
         // Clean the bucket
-        await cleanupBucket(s3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
         deleteDirectory(TMP_ROOT)
         const out = transformer.transform(validSchema)
-        console.log('GOT TEMPLATE')
-        console.log(JSON.stringify(out, null, 4))
-        console.log('UPLOADING ASSETS')
-        const uploadedKeys = await uploadDirectory(s3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
-        console.log('DONE UPLOADING')
-        console.log(uploadedKeys)
-        console.log('Creating Stack ' + STACK_NAME)
         const userPoolId = 'us-west-2_21A7JBDkX'
         console.log(`USING USER POOL ID: ${userPoolId}`)
         if (!userPoolId) {
@@ -156,21 +118,11 @@ Set it to the id of a valid cognito user pool to continue tests. Also make sure 
 users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w/ ${USERPASSWORD2} in groups [Dev]`
             )
         }
-        const createStackResponse = await cf.createStack(
-            out,
-            STACK_NAME,
-            {
+        const finishedStack = await deploy(
+            s3Client, cf, STACK_NAME, out, {
                 [ResourceConstants.PARAMETERS.AuthCognitoUserPoolId]: userPoolId,
-                ...uploadedKeys
-            }
-        )
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
-        console.log('FINISHED STACK')
-        console.log(JSON.stringify(finishedStack, null, 4))
+            }, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
         // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
-        console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
@@ -465,13 +417,12 @@ test('Test deletePost mutation when not authorized', async () => {
         expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
     } catch (e) {
         console.error(e)
-        console.error(JSON.stringify(e.response.data))
         // fail
         expect(e).toBeUndefined()
     }
 })
 
-test('Test listPost mutation when authorized', async () => {
+test('Test listPost query when authorized', async () => {
     try {
         const firstPost = await GRAPHQL_CLIENT_1.query(`mutation {
             createPost(input: { title: "testing list" }) {
@@ -787,9 +738,7 @@ test(`Test listSalary w/ Admin group protection not authorized`, async () => {
             }
         }
         `)
-        expect(req2.data.listSalary).toEqual(null)
-        expect(req2.errors.length).toEqual(1)
-        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+        expect(req2.data.listSalary.items).toEqual([])
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined()

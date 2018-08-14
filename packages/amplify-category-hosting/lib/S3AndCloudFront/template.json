@@ -19,8 +19,7 @@
                         "MaxAge" : 3000
                     } ]
                 }
-            },
-            "DeletionPolicy": "Retain"
+            }
         },
         "BucketPolicy": {
             "Type": "AWS::S3::BucketPolicy",

@@ -16,7 +16,7 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
   answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
   ({ dependsOn } = pathsAnswer);
 
-  const privacy = await askPrivacy(context);
+  const privacy = await askPrivacy(context, answers);
   answers = { ...answers, privacy, dependsOn };
 
   if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
@@ -59,23 +59,30 @@ async function askApiNames(context, defaults) {
   return answer;
 }
 
-async function askPrivacy(context) {
+async function askPrivacy(context, answers) {
   while (true) {
+    const apiAccess = await inquirer.prompt({
+      name: 'restrict',
+      type: 'confirm',
+      default: true,
+      message: 'Restrict API access',
+    });
+
+    if (!apiAccess.restrict) {
+      return { open: true };
+    }
+
     const answer = await inquirer.prompt({
       name: 'privacy',
       type: 'list',
-      message: 'Which kind of privacy your API should have?',
+      message: 'Who should have access?',
       choices: [
         {
-          name: 'Open (No security)',
-          value: 'open',
-        },
-        {
-          name: 'Authenticated - AWS IAM (Signature Version 4 signing)',
+          name: 'Authenticated users only',
           value: 'private',
         },
         {
-          name: 'Authenticated and Guest users (AWS_IAM with Cognito Identity)',
+          name: 'Authenticated and Guest users',
           value: 'protected',
         },
       ],
@@ -89,21 +96,86 @@ async function askPrivacy(context) {
 
     if (answer.privacy === 'open') { return privacy; }
 
-    if (!checkIfAuthExists(context)) {
-      if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
+
+    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+    context.api = {
+      privacy: answer.privacy,
+    };
+
+
+    if (answer.privacy === 'private') {
+      privacy.auth = await askReadWrite('Authenticated', context);
+
+      const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
+      // getting requirement satisfaction map
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      // checking to see if any requirements are unsatisfied
+      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+      // if requirements are unsatisfied, trigger auth
+
+      if (foundUnmetRequirements) {
         try {
-          const { add } = require('amplify-category-auth');
-          context.api = {
-            privacy: answer.privacy,
-          };
-          await add(context);
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           return privacy;
         } catch (e) {
-          context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+          context.print.error(e);
+          throw e;
         }
       }
-    } else {
-      return privacy;
+    }
+
+    if (answer.privacy === 'protected') {
+      privacy.auth = await askReadWrite('Authenticated', context);
+      privacy.unauth = await askReadWrite('Guest', context);
+
+      const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
+      // getting requirement satisfaction map
+      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
+      // checking to see if any requirements are unsatisfied
+      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+      // if requirements are unsatisfied, trigger auth
+
+      if (foundUnmetRequirements) {
+        try {
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+          return privacy;
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      }
+    }
+
+    return privacy;
+  }
+}
+
+async function askReadWrite(userType) {
+  while (true) {
+    const answer = await inquirer.prompt({
+      name: 'permissions',
+      type: 'list',
+      message: `What kind of access do you want for ${userType} users`,
+      choices: [
+        {
+          name: 'read',
+          value: 'r',
+        },
+        {
+          name: 'write',
+          value: 'w',
+        },
+        {
+          name: 'read/write',
+          value: 'rw',
+        },
+      ],
+    });
+
+    if (answer.permissions !== 'learn') {
+      return answer.permissions;
     }
   }
 }
@@ -293,23 +365,23 @@ async function askLambdaArn(context) {
   return { lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, lambdaFunction: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, '') };
 }
 
-function checkIfAuthExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let authExists = false;
-  const authServiceName = 'Cognito';
-  const authCategory = 'auth';
+// function checkIfAuthExists(context) {
+//   const { amplify } = context;
+//   const { amplifyMeta } = amplify.getProjectDetails();
+//   let authExists = false;
+//   const authServiceName = 'Cognito';
+//   const authCategory = 'auth';
 
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === authServiceName) {
-        authExists = true;
-      }
-    });
-  }
-  return authExists;
-}
+//   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
+//     const categoryResources = amplifyMeta[authCategory];
+//     Object.keys(categoryResources).forEach((resource) => {
+//       if (categoryResources[resource].service === authServiceName) {
+//         authExists = true;
+//       }
+//     });
+//   }
+//   return authExists;
+// }
 
 
 module.exports = { serviceWalkthrough };

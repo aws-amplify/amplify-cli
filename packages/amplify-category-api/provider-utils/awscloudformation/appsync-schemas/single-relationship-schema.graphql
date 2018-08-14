@@ -1,4 +1,0 @@
-type Post @model {
-    id: ID!
-    title: String!
-}
