@@ -119,9 +119,6 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
       }
     }
 
-    console.log('coreAnswers.selectedParties', coreAnswers.selectedParties);
-    console.log('coreAnswers.audiences', coreAnswers.audiences);
-
     coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
   }
 
