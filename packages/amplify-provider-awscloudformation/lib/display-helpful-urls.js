@@ -1,7 +1,11 @@
+const chalk = require('chalk');
+
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
+  context.print.info('Helpful URLs:');
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
+  showHostingURL(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -12,12 +16,15 @@ function showPinpointURL(context, resourcesToBeCreated) {
     const resource = resources[0];
     const { category, resourceName } = resource;
     const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
     const { Id, Region } =
         amplifyMeta[category][resourceName].output;
     const consoleUrl =
         `https://console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/events`;
 
-    context.print.success(`Pinpoint URL to track events: ${consoleUrl}`);
+    context.print.info(chalk.blue(`Pinpoint URL to track events: ${consoleUrl}`));
   }
 }
 
@@ -28,13 +35,38 @@ function showGraphQLURL(context, resourcesToBeCreated) {
     const resource = resources[0];
     const { category, resourceName } = resource;
     const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
     const { GraphQLAPIEndpointOutput, securityType, GraphQLAPIKeyOutput } =
         amplifyMeta[category][resourceName].output;
 
-    context.print.success(`GraphQL endpoint: ${GraphQLAPIEndpointOutput}`);
-    if (securityType === 'API_KEY') {
-      context.print.success(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`);
+    if (!GraphQLAPIEndpointOutput) {
+      return;
     }
+
+    context.print.info(chalk.blue(`GraphQL endpoint: ${GraphQLAPIEndpointOutput}`));
+    if (securityType === 'API_KEY') {
+      context.print.info(chalk.blue(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`));
+    }
+  }
+}
+
+function showHostingURL(context, resourcesToBeCreated) {
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'S3AndCloudFront');
+  // There can only be one appsync resource
+  if (resources.length > 0) {
+    const resource = resources[0];
+    const { category, resourceName } = resource;
+    const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
+    const { CloudFrontSecureURL, WebsiteURL } =
+        amplifyMeta[category][resourceName].output;
+
+    const hostingEndpoint = CloudFrontSecureURL || WebsiteURL;
+    context.print.info(chalk.blue(`Hosting endpoint: ${hostingEndpoint}`));
   }
 }
 

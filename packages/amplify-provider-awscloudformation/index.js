@@ -5,6 +5,7 @@ const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
+const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const consoleCommand = require('./lib/console');
 
@@ -32,6 +33,10 @@ function getConfiguredAWSClient(context) {
   return aws.configureWithCreds(context);
 }
 
+function showHelpfulLinks(context, resources) {
+  return displayHelpfulURLs(context, resources);
+}
+
 function console(context) {
   return consoleCommand.run(context);
 }
@@ -47,4 +52,5 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  showHelpfulLinks,
 };
