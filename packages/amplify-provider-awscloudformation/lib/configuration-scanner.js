@@ -14,7 +14,7 @@ const systemConfigManager = require('./system-config-manager');
 function run(context) {
   let configSource = 'none';
   const systemConfigs = systemConfigManager.getFullConfig();
-  if(Object.keys(systemConfigs).length > 0){
+  if (Object.keys(systemConfigs).length > 0) {
     configSource = 'profile-available';
   }
   if (systemConfigs && systemConfigs.default) {

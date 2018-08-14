@@ -105,8 +105,8 @@ function run(context) {
 
         systemConfigManager.setProfile(awsConfig, profileName);
         context.newUserInfo = {
-          profileName
-        }
+          profileName,
+        };
         context.print.info('');
         context.print.info('Successfully setup the new user.');
         return context;
