@@ -5,7 +5,7 @@ const [sharedId] = uuid().split('-');
 
 const generalDefaults = () => ({
   resourceName: `cognito${sharedId}`,
-  authSelections: ['identityPoolAndUserPool'],
+  authSelections: 'identityPoolAndUserPool',
 });
 
 const userPoolDefaults = projectName => ({

@@ -21,7 +21,7 @@ Parameters:
   <% } -%>
 
 Resources:
-  <%if (!props.authSelections.includes('identityPoolOnly')) { %>
+  <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -340,7 +340,7 @@ Resources:
     DependsOn: MFALogPolicy
   <% } %>
   <% } -%>
-  <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { %>
   # BEGIN IDENTITY POOL RESOURCES
   <%if (props.audiences && props.audiences.length > 0) { %>
   OpenIdLambdaRole:
@@ -508,7 +508,7 @@ Resources:
     Type: AWS::Cognito::IdentityPool
     Properties: 
       IdentityPoolName: <%= props.identityPoolName %>
-      <%if (!props.authSelections.includes('identityPoolOnly')) { %>
+      <%if (props.authSelections !== 'identityPoolOnly') { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -533,9 +533,9 @@ Resources:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
       <% } %> 
-    <%if (!props.audiences || props.audiences.length < 1) { %>   
+    <%if (!props.audiences || props.audiences.length < 1 && props.authSelections !== 'identityPoolOnly') { %>   
     DependsOn: UserPoolClientInputs 
-    <% } %> 
+    <% } %>
   
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
@@ -553,14 +553,14 @@ Resources:
   <% } %>
 
 Outputs :
-  <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') { %>
   IdentityPoolId:
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name 
   <% } %>
-  <%if (!props.authSelections.includes('identityPoolOnly')) { %>
+  <%if (props.authSelections !== 'identityPoolOnly') { %>
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
