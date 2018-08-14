@@ -267,6 +267,16 @@ export class ResourceFactory {
                     comment('Automatically set the updatedAt timestamp.'),
                     qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
                     qref(`$context.args.input.put("__typename", "${type}")`),
+                    comment('Update condition if type is @versioned'),
+                    iff(
+                        ref(ResourceConstants.SNIPPETS.VersionedCondition),
+                        compoundExpression([
+                            // tslint:disable-next-line
+                            qref(`$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`),
+                            qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
+                            qref(`$condition.expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`)
+                        ])
+                    ),
                     DynamoDBMappingTemplate.updateItem({
                         key: obj({
                             id: obj({ S: str('$context.args.input.id') })

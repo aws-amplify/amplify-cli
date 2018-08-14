@@ -6,7 +6,7 @@ import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
-    makeModelConnectionType, makeModelConnectionTypeName, makeModelConnectionField,
+    makeModelConnectionType, makeModelConnectionField,
     makeScalarFilterInputs, makeModelScanField
 } from './definitions'
 import {
@@ -275,7 +275,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     }
 
     private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-        const tableXConnectionName = makeModelConnectionTypeName(def.name.value)
+        const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value)
         if (this.typeExist(tableXConnectionName, ctx)) {
             return
         }
