@@ -93,7 +93,7 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
     coreAnswers.selectedParties = {};
     thirdPartyMap.forEach((e) => {
       // don't send google value in cf if native project, since we need to make an openid provider
-      if (projectType !== 'javascript' && e.answerHashKey !== 'googleClientId') {
+      if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
         if (coreAnswers[e.answerHashKey]) {
           coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
         }
@@ -109,6 +109,19 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
         }
       }
     });
+
+    if (projectType !== 'javascript' && coreAnswers.authProviders.includes('accounts.google.com')) {
+      coreAnswers.audiences = [coreAnswers.googleClientId];
+      if (projectType === 'ios') {
+        coreAnswers.audiences.push(coreAnswers.googleIos);
+      } else if (projectType === 'android') {
+        coreAnswers.audiences.push(coreAnswers.googleAndroid);
+      }
+    }
+
+    console.log('coreAnswers.selectedParties', coreAnswers.selectedParties);
+    console.log('coreAnswers.audiences', coreAnswers.audiences);
+
     coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
   }
 

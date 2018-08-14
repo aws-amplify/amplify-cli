@@ -341,44 +341,9 @@ Resources:
   <% } -%>
   <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
   # BEGIN IDENTITY POOL RESOURCES
-  IdentityPool:
-  # Always created
-    Type: AWS::Cognito::IdentityPool
-    Properties: 
-      IdentityPoolName: <%= props.identityPoolName %>
-      <%if (!props.authSelections.includes('identityPoolOnly')) { %>
-      CognitoIdentityProviders:
-        - ClientId:  !Ref UserPoolClient
-          ProviderName: !Sub
-            - cognito-idp.${region}.amazonaws.com/${client}
-            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
-        - ClientId:  !Ref UserPoolClientWeb
-          ProviderName: !Sub
-            - cognito-idp.${region}.amazonaws.com/${client}
-            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
-      <% } -%>
-      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0) { %>
-      SupportedLoginProviders: 
-        <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
-          <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
-        <% } %> 
-      <% } %>
-      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
-  
-  IdentityPoolRoleMap:
-  # Created to map Auth and Unauth roles to the identity pool
-  # Depends on Identity Pool for ID ref
-    Type: AWS::Cognito::IdentityPoolRoleAttachment
-    Properties: 
-      IdentityPoolId: !Ref IdentityPool
-      Roles:
-          unauthenticated: !Ref unAuthRoleArn
-          authenticated: !Ref authRoleArn
-    DependsOn: IdentityPool
-
-
   OpenIdLambdaRole:
   # Created to execute Lambda which sets MFA config values
+  # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
     Type: 'AWS::IAM::Role'
     Properties:
       RoleName: !Ref openIdLambdaRoleName     
@@ -400,7 +365,7 @@ Resources:
               Action:
                 - 'iam:PassRole'
               Resource: <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>
-    DependsOn: IdentityPoolRoleMap
+    DependsOn: UserPoolClientInputs
 
   OpenIdLambda:
   # Lambda which sets OpenId Values
@@ -409,59 +374,62 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
+
           - - 'const response = require(''cfn-response'');'
-          - - 'const aws = require(''aws-sdk'');'
-          - - 'const iam = new aws.IAM();'
-          - - 'exports.handler = (event, context, callback) => {'
-          - - 'const params = {'
-          - - ' ClientIDList: [...event.ResourceProperties.clientIdList],'
-          - - ' ThumbprintList: ["0000000000000000000000000000000000000000"],'   
-          - - ' Url: event.ResourceProperties.url'
-          - - '};'
-          - - 'let exists = false;'
-          - - 'let existingValue;'
-          - - 'iam.listOpenIDConnectProviders({}).promise().then((data) => {'
-          - - ' if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {'
-          - - '   const vals = data.OpenIDConnectProviderList.map(x => x.Arn);'
-          - - '   existingValue = vals.find(i => i.split(''/'')[1] === ''params.Url'');'
-          - - '   if (!existingValue) {'
-          - - '     exists = true;'
-          - - '   }'
-          - - ' }'
-          - - ' if (!existingValue) {'
-          - - '   iam.createOpenIDConnectProvider(params).promise().then((data) => {'
-          - - '     response.send(event, context, response.SUCCESS, {data});'   
-          - - '   })'
-          - - '   .catch(err => console.log(err))'
-          - - ' } else {'
-          - - '   const findParams = {'
-          - - '     OpenIDConnectProviderArn: existingValue'
-          - - '   }'
-          - - '   iam.getOpenIDConnectProvider(findParams).promise().then((data) => {'
-          - - '     const audiences = data.ClientIDList;'
-          - - '     const updateCalls = [];'
-          - - '     params.ClientIDList.forEach((a) => {'
-          - - '       if (!audiences.includes(a)) {'
-          - - '         const updateParams = {'
-          - - '           ClientID: a,'
-          - - '           OpenIDConnectProviderArn: existingValue'
-          - - '         }'
-          - - '         const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();'
-          - - '         updateCalls.push(prom);'
-          - - '       }'
-          - - '     })'
-          - - '     Promise.all(updateCalls).then(function(values) {'
-          - - '       response.send(event, context, response.SUCCESS, {data});'   
-          - - '     })'
-          - - '     .catch((err3) => {'
-          - - '       response.send(event, context, response.FAILURE, {err3});'
-          - - '     })'
-          - - '   })'
-          - - '   .catch(err2 => console.log(err2))'
-          - - ' }'
-          - - '})'
-          - - '.catch(err1 => console.log(err1))'
-          - - '};'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const iam = new aws.IAM();'
+            - 'exports.handler = (event, context, callback) => {'
+            - 'const params = {'
+            - ' ClientIDList: event.ResourceProperties.clientIdList.split('',''),'
+            - ' ThumbprintList: ["0000000000000000000000000000000000000000"],'   
+            - ' Url: event.ResourceProperties.url'
+            - '};'
+            - 'let exists = false;'
+            - 'let existingValue;'
+            - 'iam.listOpenIDConnectProviders({}).promise().then((data) => {'
+            - ' if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {'
+            - '   const vals = data.OpenIDConnectProviderList.map(x => x.Arn);'
+            - '   existingValue = vals.find(i => i.split(''/'')[1] === params.Url.split(''//'')[1]);'
+            - '   if (!existingValue) {'
+            - '     exists = true;'
+            - '   }'
+            - ' }'
+            - ' if (!existingValue) {'
+            - '   iam.createOpenIDConnectProvider(params).promise().then((data) => {'
+            - '     response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn});'   
+            - '   })'
+            - '   .catch((err) => {'
+            - '     response.send(event, context, response.FAILURE, {err});'
+            - '   })'
+            - ' } else {'
+            - '   const findParams = {'
+            - '     OpenIDConnectProviderArn: existingValue'
+            - '   }'
+            - '   iam.getOpenIDConnectProvider(findParams).promise().then((data) => {'
+            - '     const audiences = data.ClientIDList;'
+            - '     const updateCalls = [];'
+            - '     params.ClientIDList.forEach((a) => {'
+            - '       if (!audiences.includes(a)) {'
+            - '         const updateParams = {'
+            - '           ClientID: a,'
+            - '           OpenIDConnectProviderArn: existingValue'
+            - '         }'
+            - '         const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();'
+            - '         updateCalls.push(prom);'
+            - '       }'
+            - '     })'
+            - '     Promise.all(updateCalls).then(function(values) {'
+            - '       response.send(event, context, response.SUCCESS, {providerArn: existingValue});'   
+            - '     })'
+            - '     .catch((err3) => {'
+            - '       response.send(event, context, response.FAILURE, {err3});'
+            - '     })'
+            - '   })'
+            - '   .catch(err2 => console.log(err2))'
+            - ' }'
+            - '})'
+            - '.catch(err1 => console.log(err1))'
+            - '};'
       Handler: index.handler
       Runtime: nodejs6.10
       Timeout: '300'
@@ -496,7 +464,7 @@ Resources:
 
   OpenIdLogPolicy:
   # Sets log policy for the role that executes the OpenId  Lambda
-  # Depends on UserPool for Arn
+  # Depends on OpenIdLambda for Arn
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
@@ -523,10 +491,54 @@ Resources:
     Type: 'Custom::LambdaCallout'
     Properties:
       ServiceToken: !GetAtt OpenIdLambda.Arn
-      clientIdList: 'testid1, testid2'
-      url: 'accounts.google.com'
+      clientIdList: <%= props.audiences.join() %>
+      url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
   
+  IdentityPool:
+  # Always created
+    Type: AWS::Cognito::IdentityPool
+    Properties: 
+      IdentityPoolName: <%= props.identityPoolName %>
+      <%if (!props.authSelections.includes('identityPoolOnly')) { %>
+      CognitoIdentityProviders:
+        - ClientId:  !Ref UserPoolClient
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+        - ClientId:  !Ref UserPoolClientWeb
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+      <% } -%>
+      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && Object.keys(JSON.parse(props.selectedParties))[0] !== 'accounts.google.com') { %>
+      SupportedLoginProviders: 
+        <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
+          <%if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com')  { %>
+          <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
+          <% } -%>
+        <% } %> 
+      <% } %>
+      <%if (props.audiences && props.audiences.length > 0) { %>
+      OpenIdConnectProviderARNs:
+        - !GetAtt OpenIdLambdaInputs.providerArn
+      <% } %> 
+      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
+    DependsOn: OpenIdLambdaInputs
+  
+  IdentityPoolRoleMap:
+  # Created to map Auth and Unauth roles to the identity pool
+  # Depends on Identity Pool for ID ref
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties: 
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+          unauthenticated: !Ref unAuthRoleArn
+          authenticated: !Ref authRoleArn
+    DependsOn: IdentityPool
+
+
+
   <% } %>
 
 Outputs :
@@ -535,7 +547,7 @@ Outputs :
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
-    Value: !GetAtt IdentityPool.Name
+    Value: !GetAtt IdentityPool.Name 
   <% } %>
   <%if (!props.authSelections.includes('identityPoolOnly')) { %>
   UserPoolId:
