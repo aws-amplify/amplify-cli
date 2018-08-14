@@ -341,6 +341,7 @@ Resources:
   <% } -%>
   <%if (props.authSelections.includes('identityPoolAndUserPool') || props.authSelections.includes('identityPoolOnly')) { %>
   # BEGIN IDENTITY POOL RESOURCES
+  <%if (props.audiences && props.audiences.length > 0) { %>
   OpenIdLambdaRole:
   # Created to execute Lambda which sets MFA config values
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
@@ -494,6 +495,7 @@ Resources:
       clientIdList: <%= props.audiences.join() %>
       url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
+  <% } %>
   
   IdentityPool:
   # Always created
@@ -519,12 +521,15 @@ Resources:
           <% } -%>
         <% } %> 
       <% } %>
+      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
       OpenIdConnectProviderARNs:
         - !GetAtt OpenIdLambdaInputs.providerArn
-      <% } %> 
-      AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
     DependsOn: OpenIdLambdaInputs
+      <% } %> 
+    <%if (!props.audiences || props.audiences.length < 1) { %>   
+    DependsOn: UserPoolClientInputs 
+    <% } %> 
   
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
