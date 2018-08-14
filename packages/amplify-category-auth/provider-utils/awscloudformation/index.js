@@ -87,6 +87,7 @@ function updateResource(context, category, service) {
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, getAllDefaults } = require(defaultValuesSrc);
+      const { authProviders } = require(`${__dirname}/assets/string-maps.js`);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
@@ -108,6 +109,25 @@ function updateResource(context, category, service) {
          * and in turn merge these into the defaults
          * ensuring that manual entries override previous which then override defaults */
         props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
+      }
+
+      if (!result.thirdPartyAuth) {
+        delete props.selectedParties;
+        delete props.authProviders;
+        authProviders.forEach((a) => {
+          if (props[a.answerHashKey]) {
+            delete props[a.answerHashKey];
+          }
+        });
+        if (props.googleIos) {
+          delete props.googleIos;
+        }
+        if (props.googleAndroid) {
+          delete props.googleAndroid;
+        }
+        if (props.audiences) {
+          delete props.audiences;
+        }
       }
 
       await copyCfnTemplate(context, category, props, cfnFilename);

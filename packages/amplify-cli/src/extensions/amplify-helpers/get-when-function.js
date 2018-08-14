@@ -1,5 +1,5 @@
 
-function getWhen(input, answers, previousValues) {
+function getWhen(input, answers, previousValues, amplify) {
   // TODO: Promisify
 
   const conditionParser = () => {
@@ -7,11 +7,11 @@ function getWhen(input, answers, previousValues) {
     let orConditions = true;
 
     if (input.andConditions && input.andConditions.length > 0) {
-      andConditions = input.andConditions.every(condition => findMatch(condition, answers, previousValues)); // eslint-disable-line max-len
+      andConditions = input.andConditions.every(condition => findMatch(condition, answers, previousValues, amplify)); // eslint-disable-line max-len
     }
 
     if (input.orConditions && input.orConditions.length > 0) {
-      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues));// eslint-disable-line max-len
+      orConditions = input.orConditions.some(condition => findMatch(condition, answers, previousValues, amplify));// eslint-disable-line max-len
     }
 
     return andConditions && orConditions;
@@ -21,7 +21,7 @@ function getWhen(input, answers, previousValues) {
 }
 
 // HELPER FUNCTION TO DETERMINE IF A SINGLE CONDITION IS MET BY ANSWERS
-const findMatch = (cond, answers, previousValues) => {
+const findMatch = (cond, answers, previousValues, amplify) => {
   let response = true;
 
   /*eslint-disable*/
@@ -32,17 +32,16 @@ const findMatch = (cond, answers, previousValues) => {
       response = false;
     } else if (cond.operator === 'includes' && (!answers[cond.key] || !answers[cond.key].includes(cond.value))) {
       response = false;
-    } 
+    } else if (cond.operator === 'configMatch' && cond.value && cond.key && amplify) {
+      const configKey = Object.keys(amplify.getProjectConfig()[cond.key])[0];
+      return configKey.toLowerCase() === cond.value.toLowerCase()
+    }
   } else if (previousValues && Object.keys(previousValues).length > 0) {
     if (cond.preventEdit === 'always') {
       response = false;
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
     } else if (cond.preventEdit === '=' && (previousValues[cond.key] != undefined || previousValues[cond.key] === cond.value )) {
-      if (cond.preventEdit === '=') {
-        console.log('previousValues[cond.key]', previousValues[cond.key]);
-        console.log('cond.value', cond.value);
-      }
       response = false;
     }
   }

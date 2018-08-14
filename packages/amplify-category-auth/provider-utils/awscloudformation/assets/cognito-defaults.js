@@ -50,6 +50,11 @@ const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: false,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
+  openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
+  openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
+  openIdLambdaIAMPolicy: `${projectName}_openid_lambda_iam_policy`,
+  openIdLogPolicy: `${projectName}_openid_lambda_log_policy`,
+
 });
 
 const identityAndUserPoolDefaults = projectName => ({
