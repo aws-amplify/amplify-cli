@@ -62,7 +62,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     currentAuthParams = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${currentAuthName}/parameters.json`));
 
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
-      requirements.authSelections = ['identityPoolAndUserPool'];
+      requirements.authSelections = 'identityPoolAndUserPool';
     }
   } else {
     currentAuthName = projectName;
