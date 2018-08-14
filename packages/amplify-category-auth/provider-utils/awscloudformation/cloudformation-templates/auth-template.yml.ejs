@@ -533,7 +533,7 @@ Resources:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
       <% } %> 
-    <%if (!props.audiences || props.audiences.length < 1 && props.authSelections !== 'identityPoolOnly') { %>   
+    <%if ((!props.audiences || props.audiences.length === 1) && props.authSelections !== 'identityPoolOnly') { %>   
     DependsOn: UserPoolClientInputs 
     <% } %>
   
