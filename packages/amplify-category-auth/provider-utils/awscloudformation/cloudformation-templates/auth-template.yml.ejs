@@ -519,7 +519,7 @@ Resources:
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } -%>
-      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && Object.keys(JSON.parse(props.selectedParties))[0] !== 'accounts.google.com') { %>
+      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && props.selectedParties !== '{}') { %>
       SupportedLoginProviders: 
         <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
           <%if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com')  { %>
