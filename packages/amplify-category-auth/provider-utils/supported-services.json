@@ -126,6 +126,40 @@
 				]
 			},
 			{
+				"key": "googleIos",
+				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
+				"question": "Enter your Google Client ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "accounts.google.com",
+						"operator": "includes"
+					},
+					{
+						"key": "frontendHandler",
+						"value": "ios",
+						"operator": "configMatch"
+					}
+				]
+			},
+			{
+				"key": "googleAndroid",
+				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
+				"question": "Enter your Google Client ID: ",
+				"andConditions": [
+					{
+						"key": "authProviders",
+						"value": "accounts.google.com",
+						"operator": "includes"
+					},
+					{
+						"key": "frontendHandler",
+						"value": "android",
+						"operator": "configMatch"
+					}
+				]
+			},
+			{
 				"key": "amazonAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
 				"question": "Enter your Amazon App ID: ",

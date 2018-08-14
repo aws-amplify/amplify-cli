@@ -14,9 +14,13 @@ async function serviceWalkthrough(
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const constraints = context.updatingAuth && context.updatingAuth.savedConstraints ? JSON.parse(context.updatingAuth.savedConstraints) : undefined; // eslint-disable-line
   const allMetadata = amplify.getProjectDetails().amplifyMeta || {};
+  const projectType = Object.keys(amplify.getProjectConfig().frontendHandler)[0];
+
 
   let coreAnswers = {};
   /* eslint-disable */
+
+  // QUESTION LOOP
   for (let i = 0; i < inputs.length; i = i + 1) {
     // If we are on the second or higher question, we first check to see if the user selected 'learn more' and if learn more text is present on the question object.
     if (i > 0 && new RegExp(/learn/i).test(coreAnswers[inputs[i-1].key]) && inputs[i-1].learnMore) {
@@ -78,6 +82,8 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
     coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) };
   }
 
+
+  // POST-QUESTION LOOP PARSING
   /*
     create key/value pairs of third party auth providers,
     where key = name accepted by updateIdentityPool API call and value = id entered by user
@@ -86,18 +92,21 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
   if (coreAnswers.thirdPartyAuth) {
     coreAnswers.selectedParties = {};
     thirdPartyMap.forEach((e) => {
-      if (coreAnswers[e.answerHashKey]) {
-        coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
-      }
-      /*
-        certain third party providers (such as Twitter) require multiple values,
-        which Cognito requires to be a concatenated string -
-        so here we build the string using 'concatKeys' defined in the thirdPartyMap
-      */
-      if (coreAnswers[e.answerHashKey] && e.concatKeys) {
-        e.concatKeys.forEach((i) => {
-          coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
-        });
+      // don't send google value in cf if native project, since we need to make an openid provider
+      if (projectType !== 'javascript' && e.answerHashKey !== 'googleClientId') {
+        if (coreAnswers[e.answerHashKey]) {
+          coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
+        }
+        /*
+          certain third party providers (such as Twitter) require multiple values,
+          which Cognito requires to be a concatenated string -
+          so here we build the string using 'concatKeys' defined in the thirdPartyMap
+        */
+        if (coreAnswers[e.answerHashKey] && e.concatKeys) {
+          e.concatKeys.forEach((i) => {
+            coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
+          });
+        }
       }
     });
     coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
