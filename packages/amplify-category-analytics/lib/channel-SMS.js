@@ -41,10 +41,10 @@ function enableChannel(context) {
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err, data) => {
       if (err) {
-        console.log('update channel error');
+        context.print.error('update channel error');
         reject(err);
       } else {
-        console.log(`The ${channelName} channel has been successfully enabled.`);
+        context.print.info(`The ${channelName} channel has been successfully enabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }
@@ -62,10 +62,10 @@ function disableChannel(context) {
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err, data) => {
       if (err) {
-        console.log('update channel error');
+        context.print.error('update channel error');
         reject(err);
       } else {
-        console.log(`The ${channelName} channel has been disabled.`);
+        context.print.info(`The ${channelName} channel has been disabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }

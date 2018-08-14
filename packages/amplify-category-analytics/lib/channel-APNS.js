@@ -91,15 +91,14 @@ async function configure(context) {
       ...answers,
     },
   };
-  console.log(params);
 
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
       if (err) {
-        console.log('update channel error');
+        context.print.error('update channel error');
         reject(err);
       } else {
-        console.log(`The ${channelName} channel has been successfully enabled.`);
+        context.print.info(`The ${channelName} channel has been successfully enabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }
@@ -117,10 +116,10 @@ function disableChannel(context) {
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
       if (err) {
-        console.log('update channel error');
+        context.print.error('update channel error');
         reject(err);
       } else {
-        console.log(`The ${channelName} channel has been disabled.`);
+        context.print.info(`The ${channelName} channel has been disabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }

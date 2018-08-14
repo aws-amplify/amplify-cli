@@ -101,12 +101,10 @@ function printInfo(context) {
   const url =
   'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html';
   context.print.info('');
-  context.print.info('awscloudformation uses the aws-sdk\'s configuration directly by default.');
-  context.print.info('For details on how to set the configuration, please follow this link.');
+  context.print.info('Amplify uses AWS CloudFormation default configuration.');
+  context.print.info('To change this, see:');
   context.print.info(chalk.green(url));
-  context.print.info('You can also configure the awscloudformation provider on the project level');
-  context.print.info('Project level configuration only applies to this particular project,');
-  context.print.info('and it overrides the default configuration.');
+  context.print.info('You can also configure the awscloudformation provider on the project level and override the default.');
   context.print.info('');
 }
 
