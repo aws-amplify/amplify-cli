@@ -83,7 +83,7 @@ Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
   }
 
 
-  // POST-QUESTION ampliLOOP PARSING
+  // POST-QUESTION LOOP PARSING
   /*
     create key/value pairs of third party auth providers,
     where key = name accepted by updateIdentityPool API call and value = id entered by user
