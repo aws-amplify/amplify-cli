@@ -525,6 +525,83 @@ In order to keep connection queries fast and efficient, the graphql transform ma
 GSIs on the generated tables on your behalf. We bake in best practices to keep
 your queries efficient but this also comes with additional cost.
 
+### @versioned
+
+The `@versioned` directive adds object versioning and conflict resolution to a type.
+
+#### Definition
+
+```graphql
+directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT
+```
+
+#### Usage
+
+Annotate a `@model` type with the `@versioned` directive to add object versioning and conflict detection to a type.
+
+```graphql
+type Post @model @versioned {
+  id: ID!
+  title: String!
+  version: Int!   # <- If not provided, it is added for you.
+}
+```
+
+**Creating a Post automatically sets the version to 1**
+
+```graphql
+mutation Create {
+  createPost(input:{
+    title:"Conflict detection in the cloud!"
+  }) {
+    id
+    title
+    version  # will be 1
+  }
+}
+```
+
+**Updating a Post requires passing the "expectedVersion" which is the object's last saved version**
+
+> Note: When updating an object, the version number will automatically increment.
+
+```graphql
+mutation Update($postId: ID!) {
+  updatePost(
+    input:{
+      id: $postId,
+      title: "Conflict detection in the cloud is great!",
+      expectedVersion: 1
+    }
+  ) {
+    id
+    title
+    version # will be 2
+  }
+}
+```
+
+**Deleting a Post requires passing the "expectedVersion" which is the object's last saved version**
+
+```graphql
+mutation Delete($postId: ID!) {
+  deletePost(
+    input:{
+      id: $postId,
+      expectedVersion: 2
+    }
+  ) {
+    id
+    title
+    version
+  }
+}
+```
+
+Update and delete operations will fail if the **expectedVersion** does not match the version
+stored in DynamoDB. You may change the default name of the version field on the type as well as the name
+of the input field via the **versionField** and **versionInput** arguments on the `@versioned` directive.
+
 
 ### @searchable
 
