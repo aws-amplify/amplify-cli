@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "Root stack for the amplify CloudFormation provider",
+    "Description" : "Root stack for the Amplify AWS CloudFormation provider",
     "Parameters":{
         "DeploymentBucketName":{
             "Description": "Name of the common deployment bucket provided by the parent stack",
@@ -75,14 +75,14 @@
     },
     "Outputs" : {
         "Region": {
-            "Description": "CloudFormation provider root stack region", 
+            "Description": "CloudFormation provider root stack Region", 
             "Value": {"Ref": "AWS::Region"},
             "Export": {
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-Region"}
             }
         }, 
         "StackName": {
-            "Description": "CloudFormation provider root stack id", 
+            "Description": "CloudFormation provider root stack ID", 
             "Value": {"Ref": "AWS::StackName"},
             "Export": {
                 "Name" : { "Fn::Sub" : "${AWS::StackName}-StackName"}
