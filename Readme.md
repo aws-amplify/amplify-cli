@@ -1,29 +1,25 @@
 # AWS Amplify CLI
 
-To setup your local dev environment:
+To set up your local dev environment, go to the `aws-amplify-staging/` directory and then run the following:<br>
+`yarn config set workspaces-experimental true`<br>
+`npm run setup-dev`
 
-- under dir `aws-amplify-staging/`<br />
-  execute `yarn config set workspaces-experimental true` <br />
-  execute `npm run setup-dev`
-<br />
+To test your category, do the following:<br> 
+`cd <your test front-end project>` <br>
+`amplify init` <br>
+`amplify <your category> <subcommand>`<br> 
 
-To test your category: 
-- `cd <your test frontend project>`
-- `amplify init` 
-- `amplify <your category> <subcommand>` 
+About AWS Credentials and Configurations
 
-About aws credentials and configurations
+- For general configurations, the CLI directly uses the configuration provided by the AWS SDK. To get credentials, the AWS SDK uses the EC2 role, environmental variables, and shared config files in the directory ~/.aws/ folder. No additional credentials are stored by the CLI.
+- If you don't provide project-specific configurations, the CLI uses the general configurations for AWS access.
+- If you use project-specific configurations, these configurations override the general configurations when CLI commands are run inside the project.
+- For project-specific configurations, the CLI stores the keys in a file (per project) in the ~/.amplify/ folder. Because the key file isn't in the project's code base, the file won't be accidentally checked in to code repos.
 
-- For general configurations, the cli directly uses what the aws sdk provides. The aws sdk uses EC2 role, environmental variables and the shared config files in the directory ~/.aws/ folder, to get credentials. So no additional secrets are stored by the cli.
-- If the user does not provide project specific configurations, the cli will use the general configurations for aws access.
-- If the user configured project specific configurations, they override the general configurations when cli commands are executed inside the project.
-- For project specific configurations, the cli stores the keys in a file (per project) in the ~/.amplify/ folder. Since it's not in the project's codebase, the file won't be accidentally checked into code repos.
-
-Before pushing code or sending PR:
-- At the command line, `run npm run lint` at the top level directory. This invokes lerna to check for lint errors in all our packages
-- eslint can fix some of the lint errors, so go into the package which has errors and run 'lint-fx'
-- You might stil have some lint errors which you would have to resolve manually
-- Linting your code would make sure of good code quality and practices. So please make sure to do it :)
+Before pushing code or sending a pull request, do the following:
+- At the command line, `run npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
+- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fx`
+- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step. 
 
 # Amplify CLI 
 
@@ -41,7 +37,7 @@ Before pushing code or sending PR:
   </a>
 </p>
 
-The Amplify CLI, provides a command line interface for frontend developers to seamlessly enable and configure AWS services into their apps and manage their backend resources with the help of AWS Cloudformation templates.
+The Amplify CLI, provides a command line interface that front-end developers can use to seamlessly enable and configure AWS services in their apps. It also enables them to manage their backend resources using AWS CloudFormation templates.
 
 * [Installation](#installation)
 * [Getting Started](#getting-started)
@@ -51,46 +47,48 @@ The Amplify CLI, provides a command line interface for frontend developers to se
 
 ## Installation
 
-The easiest way to install is using npm or yarn
+To install the Amplify CLI, use npm or yarn as follows:
 
 ```
 npm install -g amplify-cli
+```
 
-or
+Or
 
+```
 yarn global add amplify-cli
 ```
 
 ## Getting Started
 
-To create a new Amplify project and pull the project configuration into your app, run the following command on your terminal.
+To create a new Amplify project and pull the project configuration into your app, run the following command on your terminal:
 
 ```
 cd <your-app>
 amplify init
 ```
 
-Running this command enables your Amplify project with cloud resuorces required to provision and deploy your project. By default the Amplify CLI uses AWS Cloudformation as the cloud provider. The command also adds the [AWS Amplify](https://github.com/aws/aws-amplify#aws-amplify) JavaScript library to your app so you can easily integrate Analytics, as well as other features provided by AWS. These features can easily be added  using the amplify cli commands below.
+By running this command, you enable your Amplify project with the cloud resources required to provision and deploy your project. By default the Amplify CLI uses AWS CloudFormation as the cloud provider. The command also adds the [AWS Amplify](https://github.com/aws/aws-amplify#aws-amplify) JavaScript library to your app so you can easily integrate analytics and other services provided by AWS. You can add these services using the Amplify CLI commands listed in the following section.
 
 
 
 ## Commands Summary
 
-The current set of commands supported by the amplify CLI are
+The Amplify CLI supports the commands shown in the following table. 
 
 | Command              | Description |
 | --- | --- |
-| amplify init | Initializes a new project, sets up deployment resources in the cloud and makes your project Amplify ready|
-| amplify configure | Configures the aws access credentials, aws region and attributes of your project like switching frontend framework and adding/removing cloud-provider plugins for amplify-cli |
-| amplify push | Provisions cloud resources with the latest local developments |
-| amplify publish | Executes amplify push, then builds and publishes client-side application to S3 and Cloud Front |
-| amplify serve | Executes amplify push, then executes the project's start command to test run the client-side application |
-| amplify status | Shows state of local resources not yet pushed to the cloud (Create/Update/Delete) |
-| amplify delete | Deletes all the resources tied to the project from the cloud |
-| amplify help | Displays help for the core cli |
-| amplify `<category>` help | Displays help for the categories in the cli |
+| amplify init | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.|
+| amplify configure | Configures the AWS access credentials, AWS Region, and attributes of your project like switching the front-end framework, and adding or removing cloud-provider plugins for Amplify CLI. |
+| amplify push | Provisions cloud resources with the latest local developments. |
+| amplify publish | Runs `amplify push`, and then builds and publishes a client-side application to Amazon S3 and Amazon CloudFront. |
+| amplify serve | Runs `amplify push`, and then executes the project's start command to test run the client-side application. |
+| amplify status | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete). |
+| amplify delete | Deletes all of the resources tied to the project from the cloud. |
+| amplify help | Displays help for the core CLI. |
+| amplify `<category>` help | Displays help for the categories in the CLI. |
 
-Category specific commands
+Category specific commands:
 1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
 2. [storage (S3 & DynamoDB)](packages/amplify-category-storage/Readme.md)
 3. [function (Lambda)](packages/amplify-category-function/Readme.md)
@@ -103,7 +101,7 @@ Category specific commands
 
 * [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
 
-* Configure the CLI with your AWS credentials
+* Configure the CLI with your AWS credentials by running:
 
 
 ```
