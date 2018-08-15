@@ -31,7 +31,7 @@ module.exports = {
       })
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('There was an error adding the function resource');
+        context.print.error('An error occurred when adding the function resource');
       });
   },
 };
