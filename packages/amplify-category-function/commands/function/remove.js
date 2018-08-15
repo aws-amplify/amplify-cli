@@ -11,7 +11,7 @@ module.exports = {
       .then(() => context.print.success('Successfully removed resource'))
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('There was an error removing the function resource');
+        context.print.error('An error occurred when removing the function resource');
       });
   },
 };
