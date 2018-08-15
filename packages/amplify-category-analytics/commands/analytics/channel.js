@@ -28,7 +28,7 @@ module.exports = {
         const answer = await inquirer.prompt({
           name: 'selection',
           type: 'list',
-          message: 'Please select the engagement channel to configure.',
+          message: 'Choose the engagement channel to configure.',
           choices: availableChannels,
           default: availableChannels[0],
         });
@@ -41,7 +41,7 @@ module.exports = {
       return context;
     }
     context.print.error('No Pinpoint app is associated with your backend');
-    context.print.info('Please anable analytics category, and push to the cloud first');
+    context.print.info('Enable analytics category and push it to the cloud first');
   },
 };
 
