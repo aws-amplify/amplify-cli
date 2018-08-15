@@ -1,17 +1,17 @@
-# Plugin guide for amplify
+# Plugin Guide for Amplify
 
-Plugins allow you to add features to amplify, such as commands and
+Plugins enable you to add features to Amplify, such as commands and
 extensions to the `context` object that provides the majority of the functionality
-used by amplify.
+used by Amplify.
 
-Creating a amplify plugin is easy. Just create a repo with two folders:
+To create an Amplify plugin, create a repo with the following folders:
 
 ```
 commands/
 extensions/
 ```
 
-A command is a file that looks something like this:
+A command is a file that looks something like the following:
 
 ```js
 // commands/foo.js
@@ -24,7 +24,7 @@ module.exports = (context) => {
 }
 ```
 
-An extension lets you add additional features to `context`.
+You can use extensions to add additional features to `context`, like the following:
 
 ```js
 // extensions/bar-extension.js
@@ -36,10 +36,8 @@ module.exports = (context) => {
 }
 ```
 
-This is then accessible in your plugin's commands as `context.bar`.
+You can access extensions from your plugin's commands as `context.bar`.
 
-# Loading a plugin
+# Loading a Plugin
 
-To load a particular plugin (which has to start with `amplify-*`),
-install it to your project using `npm install --save-dev amplify-PLUGINNAME`,
-and amplify will pick it up automatically.
+All plugin names must start with `amplify-*`. To load a particular plugin, install it to your project using `npm install --save-dev amplify-PLUGINNAME` and then amplify picks it up automatically.
