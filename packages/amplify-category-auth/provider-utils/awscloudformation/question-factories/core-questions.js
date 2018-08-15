@@ -24,16 +24,8 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       }
 
       // if not editing or no previous value, get defaults
-      const defaultValue = getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
-      if (defaultValue) {
-        return defaultValue;
-      }
+      return getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
 
-      // special case for api
-      if (context.api && context.api.privacy === 'protected' && input.key === 'allowUnauthenticatedIdentities') {
-        return true;
-      }
-      return undefined;
     },
   };
 

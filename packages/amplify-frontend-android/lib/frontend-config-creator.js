@@ -66,7 +66,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const cognitoResource = cognitoResources[0];
 
-  return {
+  const resourceValue = {
     CredentialsProvider: {
       CognitoIdentity: {
         Default: {
@@ -84,6 +84,22 @@ function getCognitoConfig(cognitoResources, projectRegion) {
       },
     },
   };
+
+  if (cognitoResource.output.GoogleWebClient) {
+    resourceValue.GoogleSignIn = {
+      Permissions: 'email,profile,openid',
+      'ClientId-WebApp': cognitoResource.output.GoogleWebClient,
+    };
+  }
+  if (cognitoResource.output.FacebookWebClient) {
+    resourceValue.FacebookSignIn = {
+      AppId: cognitoResource.output.FacebookWebClient,
+      Permissions: 'public_profile',
+    };
+  }
+
+
+  return resourceValue;
 }
 
 

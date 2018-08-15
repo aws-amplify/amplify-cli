@@ -402,7 +402,7 @@ Resources:
             - '     }'
             - '     if (!existingValue) {'
             - '       iam.createOpenIDConnectProvider(params).promise().then((data) => {'
-            - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn});'   
+            - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'   
             - '       })'
             - '       .catch((err) => {'
             - '         response.send(event, context, response.FAILURE, {err});'
@@ -425,7 +425,7 @@ Resources:
             - '           }'
             - '         })'
             - '         Promise.all(updateCalls).then(function(values) {'
-            - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue});'   
+            - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});'   
             - '         })'
             - '         .catch((err3) => {'
             - '           response.send(event, context, response.FAILURE, {err3});'
@@ -583,4 +583,20 @@ Outputs :
     Value: !GetAtt SNSRole.Arn
     Description: role arn
   <% } %>
+  <%if (props.googleClientId) { %>
+  GoogleWebClient:
+    Value: <%= props.googleClientId %>
+  <% } %> 
+  <%if (props.googleIos) { %>
+  GoogleIOSClient:
+    Value: <%= props.googleIos %>
+  <% } %> 
+  <%if (props.googleAndroid) { %>
+  GoogleAndroidClient:
+    Value: <%= props.googleAndroid %>
+  <% } %>
+  <%if (props.facebookAppId) { %>
+  FacebookWebClient:
+    Value: <%= props.facebookAppId %>
+  <% } %> 
   <% } %>
