@@ -29,13 +29,13 @@ class S3 {
     return this.ifBucketExists(bucketName)
       .then((result) => {
         if (!result) {
-          this.context.print.warning('S3 Bucket to store cloudformation templates not present. Creating one for you....');
+          this.context.print.warning('The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....');
           this.context.print.warning(`Bucket name: ${bucketName}`);
 
           return this.s3.createBucket(params).promise()
             .then(() => this.s3.waitFor('bucketExists', params).promise())
             .then(() => {
-              this.context.print.success('S3 Bucket sucessfully created');
+              this.context.print.success('S3 bucket sucessfully created');
               return bucketName;
             });
         }
