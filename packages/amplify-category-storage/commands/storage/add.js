@@ -35,7 +35,7 @@ module.exports = {
       })
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('An error ocurred when adding the storage resource');
+        context.print.error('An error occurred when adding the storage resource');
       });
   },
 };
