@@ -27,7 +27,7 @@ function run(context) {
   const selectFrontendHandler = {
     type: 'list',
     name: 'selectedFrontendHandler',
-    message: "Please choose the type of app that you're building",
+    message: "Choose the type of app that you're building",
     choices: frontEndPluginMap,
     default: suitableHandler,
   };
