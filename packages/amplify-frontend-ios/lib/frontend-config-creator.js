@@ -18,7 +18,7 @@ function createAmplifyConfig(context, amplifyResources) {
 function createAWSConfig(context, amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
-    UserAgent: 'aws-amplify-cli',
+    UserAgent: 'aws-amplify-cli/0.1.0',
     Version: '1.0',
     IdentityManager: {
       Default: {},
