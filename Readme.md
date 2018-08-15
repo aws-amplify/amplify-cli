@@ -89,12 +89,12 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify `<category>` help | Displays help for the categories in the CLI. |
 
 Category specific commands:
-1. [auth (Cognito)](packages/amplify-category-auth/Readme.md)
-2. [storage (S3 & DynamoDB)](packages/amplify-category-storage/Readme.md)
-3. [function (Lambda)](packages/amplify-category-function/Readme.md)
-4. [api (AppSync & API Gateway)](packages/amplify-category-api/Readme.md)
-5. [analytics (Pinpoint)](packages/amplify-category-analytics/Readme.md)
-6. [hosting (S3 and CloudFront Distribution)](packages/amplify-category-hosting/Readme.md)
+1. [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
+2. [storage (Amazon S3 & Amazon DynamoDB)](packages/amplify-category-storage/Readme.md)
+3. [function (AWS Lambda)](packages/amplify-category-function/Readme.md)
+4. [api (AWS AppSync & Amazon API Gateway)](packages/amplify-category-api/Readme.md)
+5. [analytics (Amazon Pinpoint)](packages/amplify-category-analytics/Readme.md)
+6. [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
 
 
 ## Configuration
