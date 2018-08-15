@@ -14,15 +14,15 @@ function run(context) {
     region: constants.DefaultAWSRegion,
   };
 
-  context.print.info('Please follow these steps to setup your aws access');
+  context.print.info('Follow these steps to set up access to your AWS account:');
   context.print.info('');
-  context.print.info('Please sign up/in your aws account with Administrator Access:');
+  context.print.info('Sign in to your AWS administrator account:');
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
   opn(constants.AWSAmazonConsoleUrl, { wait: false });
 
   return context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' })
     .then(() => {
-      context.print.info('Please specify the aws region');
+      context.print.info('Specify the AWS Region');
       return inquirer.prompt([
         {
           type: 'list',
@@ -33,7 +33,7 @@ function run(context) {
         }]);
     }).then((answers) => {
       awsConfig.region = answers.region;
-      context.print.info('Please specify the username of the new IAM user');
+      context.print.info('Specify the username of the new IAM user:');
       return inquirer.prompt([
         {
           type: 'input',
@@ -43,13 +43,13 @@ function run(context) {
         }]);
     }).then((answers) => {
       const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', answers.userName).replace('{region}', answers.region);
-      context.print.info('Please complete the user creation on the aws console');
+      context.print.info('Complete the user creation using the AWS console');
       context.print.info(chalk.green(deepLinkURL));
       opn(deepLinkURL, { wait: false });
       return context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
     })
     .then(() => {
-      context.print.info('Please enter the access key of the newly created user:');
+      context.print.info('Enter the access key of the newly created user:');
       return inquirer.prompt([
         {
           type: 'input',
@@ -108,7 +108,7 @@ function run(context) {
           profileName,
         };
         context.print.info('');
-        context.print.info('Successfully setup the new user.');
+        context.print.info('Successfully set up the new user.');
         return context;
       }
       context.print.info('');
