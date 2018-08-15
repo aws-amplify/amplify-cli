@@ -6,8 +6,8 @@ import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
-    makeModelConnectionType, makeModelConnectionTypeName, makeModelConnectionField,
-    makeScalarFilterInputs
+    makeModelConnectionType, makeModelConnectionField,
+    makeScalarFilterInputs, makeModelScanField
 } from './definitions'
 import {
     blankObject, makeField, makeArg, makeNamedType,
@@ -263,7 +263,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
             // Extend the query type to include listX
             queryType = extensionWithFields(
                 queryType,
-                [makeModelConnectionField(listResolver.Properties.FieldName, def.name.value)]
+                [makeModelScanField(listResolver.Properties.FieldName, def.name.value)]
             )
         }
 
@@ -275,7 +275,7 @@ export class AppSyncDynamoDBTransformer extends Transformer {
     }
 
     private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
-        const tableXConnectionName = makeModelConnectionTypeName(def.name.value)
+        const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value)
         if (this.typeExist(tableXConnectionName, ctx)) {
             return
         }

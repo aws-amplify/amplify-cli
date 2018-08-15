@@ -9,7 +9,7 @@ import {
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
-import { InvalidTransformerError, UnknownDirectiveError, TransformSchemaError } from './errors'
+import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors'
 import { validateModelSchema } from './validation'
 
 function isFunction(obj: any) {
@@ -175,7 +175,7 @@ export default class GraphQLTransform {
         }
         const errors = validateModelSchema({ kind: Kind.DOCUMENT, definitions: allModelDefinitions })
         if (errors && errors.length) {
-            throw new TransformSchemaError(errors.slice(0))
+            throw new SchemaValidationError(errors.slice(0))
         }
 
         for (const transformer of this.transformers) {
