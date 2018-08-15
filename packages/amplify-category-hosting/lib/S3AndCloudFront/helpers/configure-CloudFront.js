@@ -17,32 +17,33 @@ const originErrorCodes = {
 };
 
 async function configure(context) {
-  if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
-    context.print.info('CloudFront is NOT in the current hosting');
-    const answer = await inquirer.prompt({
-      name: 'AddCloudFront',
-      type: 'confirm',
-      message: 'Add CloudFront to hosting',
-      default: false,
-    });
-    if (answer.AddCloudFront) {
-      const templateFilePath = path.join(__dirname, '../template.json');
-      const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
-      const { CloudFrontDistribution } = originalTemplate.Resources;
-      context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
-    }
-  } else {
-    const answer = await inquirer.prompt({
-      name: 'RemoveCloudFront',
-      type: 'confirm',
-      message: 'Remove CloudFront from hosting',
-      default: false,
-    });
-    if (answer.RemoveCloudFront) {
-      delete context.exeInfo.template.Resources.CloudFrontDistribution;
-      delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-      delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-      delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+    if(!context.exeInfo.template.Resources.CloudFrontDistribution){
+        context.print.info('Amazon CloudFront is NOT in the current hosting'); 
+        const answer = await inquirer.prompt( {
+            name: 'AddCloudFront',
+            type: 'confirm',
+            message: 'Add CloudFront to hosting',
+            default: false,
+        });
+        if(answer.AddCloudFront){
+            const templateFilePath = path.join(__dirname, '../template.json');
+            const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
+            const { CloudFrontDistribution } = originalTemplate.Resources; 
+            context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution; 
+        }
+    }else{
+        const answer = await inquirer.prompt( {
+            name: 'RemoveCloudFront',
+            type: 'confirm',
+            message: 'Remove CloudFront from hosting',
+            default: false,
+        });
+        if(answer.RemoveCloudFront){
+            delete context.exeInfo.template.Resources.CloudFrontDistribution;
+            delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
+            delete context.exeInfo.template.Outputs.CloudFrontDomainName;
+            delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+        }
     }
   }
 
@@ -106,7 +107,7 @@ async function configureCustomErrorResponse(DistributionConfig) {
   const answer = await inquirer.prompt({
     name: 'action',
     type: 'list',
-    message: 'Please select the action on Custom Error Responses.',
+    message: 'Choose the action on custom error responses.',
     choices: configActions,
     default: configActions[0],
   });
@@ -149,7 +150,7 @@ async function addCER(CustomErrorResponses) {
     const selection = await inquirer.prompt({
       name: 'ErrorCode',
       type: 'list',
-      message: 'Please select the error code to add custom error response.',
+      message: 'Choose the error code to add for the custom error response.',
       choices: unConfiguredCodes,
       default: unConfiguredCodes[0],
     });
@@ -183,7 +184,7 @@ async function addCER(CustomErrorResponses) {
     });
   } else {
     console.log('All configurable error codes from the origin have been mapped.');
-    console.log('You can select to edit those custom error responses.');
+    console.log('You can choose an error code to edit the custom error responses.');
   }
 }
 
@@ -193,7 +194,7 @@ async function editCER(CustomErrorResponses) {
     const selection = await inquirer.prompt({
       name: 'ErrorCode',
       type: 'list',
-      message: 'Please select the error code to edit its custom error response.',
+      message: 'Choose the error code to edit its custom error response.',
       choices: configuredCodes,
       default: configuredCodes[0],
     });
@@ -227,7 +228,7 @@ async function editCER(CustomErrorResponses) {
     CustomErrorResponses[i].ResponsePagePath = answers.ResponsePagePath;
   } else {
     console.log('No configurable error code from the origin has been mapped.');
-    console.log('You can select to add custom error responses.');
+    console.log('You can choose the error code to add a custom error response.');
   }
 }
 
@@ -237,7 +238,7 @@ async function removeCER(CustomErrorResponses) {
     const selection = await inquirer.prompt({
       name: 'ErrorCode',
       type: 'list',
-      message: 'Please select the error code to remove its custom error response.',
+      message: 'Choose the error code to remove its custom error response.',
       choices: configuredCodes,
       default: configuredCodes[0],
     });
