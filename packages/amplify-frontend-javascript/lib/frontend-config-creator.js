@@ -169,7 +169,8 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
   return {
     aws_content_delivery_bucket: s3AndCloudfrontResource.output.HostingBucketName,
     aws_content_delivery_bucket_region: s3AndCloudfrontResource.output.Region,
-    aws_content_delivery_url: s3AndCloudfrontResource.output.S3BucketSecureURL,
+    aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL ||
+      s3AndCloudfrontResource.output.WebsiteURL,
   };
 }
 
