@@ -25,7 +25,6 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 
       // if not editing or no previous value, get defaults
       return getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
-
     },
   };
 

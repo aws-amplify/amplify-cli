@@ -68,17 +68,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     currentAuthName = projectName;
   }
 
-
-  // build the constraints object
-  const constraints = amplify.buildConstraints(
-    authExists,
-    projectName,
-    externalCategory,
-    resourceName,
-    requirements,
-    currentAuthParams,
-  );
-
   /* eslint-disable */
   const authPropsValues = authExists ?
     Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, requirements) :
@@ -86,7 +75,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   /* eslint-enable */
   const roles = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
   const authProps = {
-    savedConstraints: JSON.stringify(constraints),
     ...authPropsValues,
     ...roles,
   };

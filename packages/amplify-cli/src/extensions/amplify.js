@@ -29,7 +29,6 @@ const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers
 const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-prompt');
 const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
 const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2');
-const { buildConstraints } = require('./amplify-helpers/parse-resource-constraints');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -44,7 +43,6 @@ const { executeProviderUtils } = require('./amplify-helpers/execute-provider-uti
 
 module.exports = (context) => {
   const amplify = {
-    buildConstraints,
     buildResources,
     constants,
     copyBatch,

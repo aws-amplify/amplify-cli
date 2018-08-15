@@ -1,6 +1,5 @@
 const subcommand = 'remove';
 const category = 'auth';
-const fs = require('fs');
 
 module.exports = {
   name: subcommand,
@@ -8,30 +7,10 @@ module.exports = {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
-    const existingAuth = Object.keys(amplify.getProjectDetails().amplifyMeta.auth);
+    const dependentResources = Object.keys(amplify.getProjectDetails().amplifyMeta).some(e => ['analytics', 'api', 'storage', 'function'].includes(e));
 
-    if (existingAuth && existingAuth.length > 0) {
-      const currentAuthParams = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${existingAuth[0]}/parameters.json`));
-      // const currentConstraints = JSON.parse(currentAuthParams.savedConstraints);
-
-      if (currentAuthParams.savedConstraints) {
-        context.print.error('\nWarning: The some of your resources depend on this Auth resource.  Delete at your own risk.\n');
-      }
-      // const { table } = context.print;
-      // const tableOptions = [['Category', 'Resource Name']];
-
-      // currentConstraints.forEach((s) => {
-      //   const category = Object.keys(s)[0];
-      //   const row = [
-      //     category,
-      //     Object.keys(s[category])[0]
-      //   ];
-      //   tableOptions.push(row);
-      // });
-      // table(
-      //   tableOptions,
-      //   { format: 'markdown' },
-      // );
+    if (dependentResources) {
+      context.print.info('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
     }
 
     return amplify.removeResource(context, category, resourceName)
