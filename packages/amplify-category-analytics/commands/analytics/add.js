@@ -34,8 +34,8 @@ module.exports = {
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
         print.success('Some next steps:');
-        print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+        print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+        print.info('"amplify publish" builds all your local backend and front-end resources (if you have hosting category added) and provisions them in the cloud');
         print.info('');
       })
       .catch((err) => {
