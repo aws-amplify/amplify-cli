@@ -62,7 +62,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const cognitoResource = cognitoResources[0];
 
-  return {
+  const resourceValue = {
     CredentialsProvider: {
       CognitoIdentity: {
         Default: {
@@ -80,6 +80,27 @@ function getCognitoConfig(cognitoResources, projectRegion) {
       },
     },
   };
+
+  if (cognitoResource.output.GoogleWebClient || cognitoResource.output.GoogleIOSClient) {
+    resourceValue.GoogleSignIn = {
+      Permissions: 'email,profile,openid',
+    };
+    if (cognitoResource.output.GoogleWebClient) {
+      resourceValue.GoogleSignIn['ClientId-WebApp'] = cognitoResource.output.GoogleWebClient;
+    }
+    if (cognitoResource.output.GoogleIOSClient) {
+      resourceValue.GoogleSignIn['ClientId-iOS'] = cognitoResource.output.GoogleIOSClient;
+    }
+  }
+  if (cognitoResource.output.FacebookWebClient) {
+    resourceValue.FacebookSignIn = {
+      AppId: cognitoResource.output.FacebookWebClient,
+      Permissions: 'public_profile',
+    };
+  }
+
+
+  return resourceValue;
 }
 
 function getS3Config(s3Resources) {
