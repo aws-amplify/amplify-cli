@@ -16,6 +16,12 @@ module.exports = {
       return context.print.warning('Auth has not yet been added to this project.');
     }
 
+    const dependentResources = Object.keys(amplify.getProjectDetails().amplifyMeta).some(e => ['analytics', 'api', 'storage', 'function'].includes(e));
+
+    if (dependentResources) {
+      context.print.info('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
+    }
+
     const resourceName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0];
     context.updatingAuth = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`));
 

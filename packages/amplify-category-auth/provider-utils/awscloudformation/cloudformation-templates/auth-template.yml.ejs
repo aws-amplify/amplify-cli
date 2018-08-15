@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
-  <% if (typeof Object.values(props)[i] === 'string') { %>
+  <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>

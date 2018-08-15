@@ -12,8 +12,6 @@ async function serviceWalkthrough(
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
-  const constraints = context.updatingAuth && context.updatingAuth.savedConstraints ? JSON.parse(context.updatingAuth.savedConstraints) : undefined; // eslint-disable-line
-  const allMetadata = amplify.getProjectDetails().amplifyMeta || {};
   const projectType = Object.keys(amplify.getProjectConfig().frontendHandler)[0];
 
 
@@ -52,31 +50,6 @@ ${helpTextArray.join(`
       coreAnswers,
       context,
     );
-    if (q.name === 'useDefault' && context.updatingAuth && context.updatingAuth.savedConstraints) {
-      const editWarning = chalkpipe(null, chalk.red)(`
-You have already saved other AWS resources which have Cognito-related constraints. By selecting the default options, you risk creating an invalid configuration. Select default configuration at your own risk.\n
-      `);
-      q.prefix = q.prefix ? q.prefix.concat(editWarning) : editWarning;
-    }
-
-
-    // TODO: Replace with a function that checks after edit, and offers undo. Remove triple loop.
-    if (constraints && constraints.length > 0) {
-      constraints.forEach((c) => {
-        const plugins = Object.keys(c);
-        plugins.forEach((p) => {
-          const resources = Object.keys(c[p]);
-          resources.forEach((r) => {
-            if (allMetadata[p] && allMetadata[p][r] && Object.keys(c[p][r]).includes(inputs[i].key)) { //eslint-disable-line
-              const overRideWarning = chalkpipe(null, chalk.red)(`
-Your ${p} resource named ${r} relies on this attribute. Edit at your own risk.\n
-`);
-              q.prefix = q.prefix ? q.prefix.concat(overRideWarning) : overRideWarning;
-            }
-          });
-        });
-      });
-    }
 
     // Update answers with spreading of previous values and those returning from question prompt
     coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) };
