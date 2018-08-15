@@ -1,5 +1,5 @@
 const uuid = require('uuid');
-const { coreAttributes, appClientReadAttributes } = require('./string-maps');
+const { coreAttributes, appClientReadAttributes, booleanOptions } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
@@ -20,6 +20,7 @@ const userPoolDefaults = projectName => ({
   smsVerificationMessage: 'Your verification code is {####}',
   emailVerificationSubject: 'Your verification code',
   emailVerificationMessage: 'Your verification code is {####}',
+  defaultPasswordPolicy: booleanOptions.find(b => b.value === false),
   passwordPolicyMinLength: 8,
   passwordPolicyCharacters: [
     'Requires Lowercase',
@@ -36,7 +37,6 @@ const userPoolDefaults = projectName => ({
   userpoolClientReadAttributes: [
     appClientReadAttributes.find(d => d.name === 'Email').value,
   ],
-  allowUnauthenticatedIdentities: false,
   mfaLambdaRole: `${projectName}_totp_lambda_role`,
   mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,
   mfaPassRolePolicy: `${projectName}_totp_pass_role_policy`,
@@ -48,7 +48,8 @@ const userPoolDefaults = projectName => ({
 
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
-  allowUnauthenticatedIdentities: false,
+  allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
+  thirdPartyAuth: booleanOptions.find(b => b.value === false).value,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
   openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
   openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
