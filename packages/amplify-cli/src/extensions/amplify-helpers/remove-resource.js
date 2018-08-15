@@ -17,7 +17,7 @@ function removeResource(context, category) {
 
   const question = [{
     name: 'resource',
-    message: 'Please select the resource you would want to remove',
+    message: 'Choose the resource you would want to remove',
     type: 'list',
     choices: resources,
   }];
@@ -30,7 +30,7 @@ function removeResource(context, category) {
         category,
         resourceName,
       ));
-      return context.prompt.confirm('Are you sure you want to delete the resource? This would delete all corresponding files related to this resource from the backend directory.')
+      return context.prompt.confirm('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
         .then(async (confirm) => {
           if (confirm) {
             const { allResources } = await context.amplify.getResourceStatus();
@@ -39,9 +39,9 @@ function removeResource(context, category) {
                 resourceItem.dependsOn.forEach((dependsOnItem) => {
                   if (dependsOnItem.category === category &&
                       dependsOnItem.resourceName === resourceName) {
-                    context.print.error('Resource cannot be removed since it has a dependency on another resource');
+                    context.print.error('Resource cannot be removed because it has a dependency on another resource');
                     context.print.error(`Dependency: ${resourceItem.service}:${resourceItem.resourceName}`);
-                    throw new Error('Resource cannot be removed since it has a dependency on another resource');
+                    throw new Error('Resource cannot be removed because it has a dependency on another resource');
                   }
                 });
               }
@@ -60,7 +60,7 @@ function removeResource(context, category) {
     })
     .catch((err) => {
       context.print.info(err.stack);
-      context.print.error('There was an issue removing the resources from the local directory');
+      context.print.error('An error occurred when removing the resources from the local directory');
     });
 }
 
