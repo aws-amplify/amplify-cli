@@ -12,7 +12,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('You already have an appsync API in your project. Please use "amplify update api" command to update your existing AppSync API');
+    context.print.warning('You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.');
     process.exit(0);
   }
 
@@ -176,7 +176,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
             const continueQuestion = {
               type: 'input',
               name: 'pressKey',
-              message: `Please correct the errors in schema.graphql and press enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
+              message: `Correct the errors in schema.graphql and press Enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
             };
             await inquirer.prompt(continueQuestion);
             continue;
@@ -206,7 +206,7 @@ async function updateWalkthrough(context) {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   } else {
-    context.print.error('No appsync resource to update. Please use "amplify add api" command to update your existing AppSync API');
+    context.print.error('No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.');
     process.exit(0);
     return;
   }
@@ -261,10 +261,10 @@ async function askSecurityQuestions(context, parameters) {
 
         authResourceName = await add(context);
       } catch (e) {
-        context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+        context.print.error('Auth plugin not installed in the CLI. You need to install it to use this feature.');
       }
     } else {
-      context.print.info('Using cognito user pool configured as a part of this project');
+      context.print.info('Use a Cognito user pool configured as a part of this project');
     }
 
     parameters.AuthCognitoUserPoolId = {
