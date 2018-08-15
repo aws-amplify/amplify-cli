@@ -3,7 +3,7 @@
 		"inputs": [{
 				"key": "resourceName",
 				"type": "input",
-				"question": "Provide a friendly name for your resource that will be used to label this category in the project:",
+				"question": "Provide a friendly name for your resource to be used as label for this category in the project:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9]+$",
@@ -43,15 +43,15 @@
 				"type": "list",
 				"question": "What best describes your project:",
 				"options": [{
-						"name": "Single object with fields (e.g. “Todo” with ID, name, description)",
+						"name": "Single object with fields (e.g., “Todo” with ID, name, description)",
 						"value": "single-object-schema.graphql"
 					},
 					{
-						"name": "One to many relationship (e.g. “Blogs” with “Posts” & “Comments”)",
+						"name": "One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”)",
 						"value": "many-relationship-schema.graphql"
 					},
 					{
-						"name": "Objects with fine-grained security (e.g. Project management app with owner based authorization)",
+						"name": "Objects with fine-grained access control (e.g., a project management app with owner-based authorization)",
 						"value": "single-object-auth-schema.graphql"
 					}
 				],
@@ -68,7 +68,7 @@
 
 				"key": "editorSelection",
 				"type": "list",
-				"question": "Choose the editor you would want to open the schema in:",
+				"question": "Choose the editor you want to open the schema in:",
 				"options": [{
 						"name": "Sublime Text",
 						"value": "sublime"
@@ -107,7 +107,7 @@
 				"type": "list",
 				"question": "Choose a DynamoDB data source option",
 				"options": [{
-						"name": "Use DynamoDB table configured in the current Amplify project",
+						"name": "Use the DynamoDB table configured in the current Amplify project",
 						"value": "currentProject"
 					},
 					{
@@ -131,7 +131,7 @@
 		"inputs": [
 			{
 				"key": "apiName",
-				"question": "Please provide a friendly name for your api?",
+				"question": "Provide a friendly name for your API:",
 				"required": true
 			},
 			{
@@ -143,7 +143,7 @@
 			{
 
 				"key": "lambdaFunction",
-				"question": "Select lambda function",
+				"question": "Select the Lambda function",
 				"required": true,
 				"type": "input"
 			}
