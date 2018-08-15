@@ -23,7 +23,7 @@ module.exports = {
         const resourceName = context.parameters.first;
 
         if (!resourceName) {
-          context.print.error('Please provide a function resource name');
+          context.print.error('Provide a function resource name');
           return;
         }
 
