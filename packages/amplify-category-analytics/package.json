@@ -8,6 +8,7 @@
     "eslint": "^4.19.1",
     "fs-extra": "^7.0.0",
     "inquirer": "^3.2.1",
+    "opn": "^5.3.0",
     "uuid": "^3.3.2"
   },
   "scripts": {

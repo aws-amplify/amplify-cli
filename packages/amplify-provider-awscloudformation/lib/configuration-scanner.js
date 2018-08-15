@@ -5,7 +5,8 @@ const systemConfigManager = require('./system-config-manager');
 /* const configSources = [
   'none',
   'EC2role',
-  'system',
+  'profile-available'
+  'profile-default',
   'envVar',
   'project',
 ]; */
@@ -13,6 +14,9 @@ const systemConfigManager = require('./system-config-manager');
 function run(context) {
   let configSource = 'none';
   const systemConfigs = systemConfigManager.getFullConfig();
+  if (systemConfigs && Object.keys(systemConfigs).length > 0) {
+    configSource = 'profile-available';
+  }
   if (systemConfigs && systemConfigs.default) {
     configSource = 'system';
   }

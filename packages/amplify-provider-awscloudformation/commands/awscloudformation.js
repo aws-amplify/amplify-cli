@@ -10,7 +10,5 @@ module.exports = {
         context.print.error('Command not found');
       }
     }
-    const { print } = context;
-    print.info('awscfn///');
   },
 };

@@ -1,11 +1,13 @@
 const path = require('path');
 const fs = require('fs-extra');
+const chalk = require('chalk');
 const inquirer = require('inquirer');
 const awsRegions = require('./aws-regions');
 const constants = require('./constants');
 const configScanner = require('./configuration-scanner');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
+const systemConfigManager = require('./system-config-manager');
 
 async function init(context) {
   context.projectConfigInfo = {};
@@ -15,11 +17,12 @@ async function init(context) {
   return carryOutConfigAction(context);
 }
 
-function configure(context) {
+async function configure(context) {
   context.projectConfigInfo = {};
+  await newUserCheck(context);
   printInfo(context);
-  return promptForProjectConfigUpdate(context)
-    .then(carryOutConfigAction);
+  await promptForProjectConfigUpdate(context);
+  return carryOutConfigAction(context);
 }
 
 function carryOutConfigAction(context) {
@@ -95,11 +98,13 @@ function remove(context) {
 }
 
 function printInfo(context) {
+  const url =
+  'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html';
   context.print.info('');
-  context.print.info('awscloudformation uses two levels of configurations.');
-  context.print.info('General configuration is used by default for all projects.');
-  context.print.info('You can also configure the provider specifically for this project.');
-  context.print.info('Project specific configuration overrides the general configuration.');
+  context.print.info('Amplify uses AWS CloudFormation default configuration.');
+  context.print.info('To change this, see:');
+  context.print.info(chalk.green(url));
+  context.print.info('You can also configure the awscloudformation provider on the project level and override the default.');
   context.print.info('');
 }
 
@@ -107,7 +112,7 @@ function comfirmProjectConfigSetup(context, isInit) {
   const configProjectComfirmation = {
     type: 'confirm',
     name: 'setProjectConfig',
-    message: 'Do you want to setup project specific configuration',
+    message: 'Do you want to setup project level configuration',
     default: false,
   };
   return inquirer.prompt(configProjectComfirmation)
@@ -124,7 +129,7 @@ function promptForProjectConfigUpdate(context) {
     const updateOrRemove = {
       type: 'list',
       name: 'action',
-      message: 'Do you want to udpate or remove the project specific configuration',
+      message: 'Do you want to udpate or remove the project level configuration',
       choices: ['update', 'remove', 'cancel'],
       default: 'update',
     };
@@ -141,7 +146,7 @@ function confirmProjectConfigRemoval(context) {
   const removeProjectComfirmation = {
     type: 'confirm',
     name: 'removeProjectConfig',
-    message: 'Remove project specific configuration',
+    message: 'Remove project level configuration',
     default: false,
   };
   return inquirer.prompt(removeProjectComfirmation)
@@ -151,22 +156,28 @@ function confirmProjectConfigRemoval(context) {
     });
 }
 
-function configProject(context) {
+async function configProject(context) {
   const {
     projectConfigInfo,
+    newUserInfo,
   } = context;
+
+  const systemConfig = systemConfigManager.getFullConfig();
+  const availableProfiles = Object.keys(systemConfig);
+
   const useProfileConfirmation = {
     type: 'confirm',
     name: 'useProfile',
-    message: 'Do you want to use an existing AWS profile set on your system?',
+    message: 'Do you want to use an AWS profile?',
     default: projectConfigInfo.useProfile,
   };
 
   const profileName = {
-    type: 'input',
+    type: 'list',
     name: 'profileName',
-    message: 'Profile name',
-    default: 'default',
+    message: 'Please choose the profile you want to use',
+    choices: availableProfiles,
+    default: newUserInfo ? newUserInfo.profileName : availableProfiles[0],
   };
 
   const configurationSettings = [
@@ -197,28 +208,27 @@ function configProject(context) {
     },
   ];
 
-  return inquirer.prompt(useProfileConfirmation)
-    .then((answers) => {
-      projectConfigInfo.useProfile = answers.useProfile;
-      if (answers.useProfile) {
-        return inquirer.prompt(profileName)
-          .then((asws) => {
-            projectConfigInfo.profileName = asws.profileName;
-            return context;
-          });
-      }
-      return inquirer.prompt(configurationSettings)
-        .then((asws) => {
-          if (!obfuscateUtil.isObfuscated(asws.accessKeyId)) {
-            projectConfigInfo.accessKeyId = asws.accessKeyId;
-          }
-          if (!obfuscateUtil.isObfuscated(asws.secretAccessKey)) {
-            projectConfigInfo.secretAccessKey = asws.secretAccessKey;
-          }
-          projectConfigInfo.region = asws.region;
-          return context;
-        });
-    });
+  let answers;
+
+  if (availableProfiles.length > 0) {
+    answers = await inquirer.prompt(useProfileConfirmation);
+    projectConfigInfo.useProfile = answers.useProfile;
+    if (answers.useProfile) {
+      answers = await inquirer.prompt(profileName);
+      projectConfigInfo.profileName = answers.profileName;
+      return context;
+    }
+  }
+
+  answers = await inquirer.prompt(configurationSettings);
+  if (!obfuscateUtil.isObfuscated(answers.accessKeyId)) {
+    projectConfigInfo.accessKeyId = answers.accessKeyId;
+  }
+  if (!obfuscateUtil.isObfuscated(answers.secretAccessKey)) {
+    projectConfigInfo.secretAccessKey = answers.secretAccessKey;
+  }
+  projectConfigInfo.region = answers.region;
+  return context;
 }
 
 function validateConfig(context) {
@@ -318,14 +328,19 @@ function removeProjectConfig(context) {
 
 async function loadConfiguration(context, awsClient) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  await newUserCheck(context);
-  return logProjectSpecificConfg(context, awsClient);
+  const configSource = configScanner.run(context);
+  if (configSource === 'none') {
+    context.print.error('Can not resolve aws access settings.');
+    throw new Error('Can not resolve aws access settings.');
+  } else {
+    return logProjectSpecificConfg(context, awsClient);
+  }
 }
 
 async function newUserCheck(context) {
   const configSource = configScanner.run(context);
   if (configSource === 'none') {
-    context.print.info('AWS access credentials can not be resolved.');
+    context.print.info('AWS access credentials can not be detected.');
     const answer = await inquirer.prompt([{
       type: 'confirm',
       name: 'setupNewUser',
