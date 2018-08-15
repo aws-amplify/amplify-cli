@@ -12,7 +12,7 @@ async function run(context) {
       const projectNameQuestion = {
         type: 'input',
         name: 'projectName',
-        message: 'Please enter a name for the project',
+        message: 'Enter a name for the project',
         validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 3) ? reject(new Error('Project name should be between 3 and 10 characters')) : resolvePromise(true))),
       };
 
