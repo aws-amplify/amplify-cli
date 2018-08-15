@@ -86,7 +86,8 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
       if (foundUnmetRequirements) {
-        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events (we recommend you allow this when getting started)?')) {
+        context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)')) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           } catch (e) {
