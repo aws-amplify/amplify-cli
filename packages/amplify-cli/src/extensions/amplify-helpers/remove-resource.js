@@ -55,6 +55,8 @@ function removeResource(context, category) {
 
             // Remove resource directory from backend/
             context.filesystem.remove(resourceDir);
+
+            context.print.success('Successfully removed resource');
           }
         });
     })
