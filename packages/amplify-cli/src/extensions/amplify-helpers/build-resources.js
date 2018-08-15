@@ -22,7 +22,7 @@ function buildResources(context, category, resourceName) {
     .then(() => spinner.succeed('All resources are built.'))
     .catch((err) => {
       console.log(err);
-      spinner.fail('There was an issue building the resources.');
+      spinner.fail('An error occurred when building the resources.');
       throw err;
     });
 }
