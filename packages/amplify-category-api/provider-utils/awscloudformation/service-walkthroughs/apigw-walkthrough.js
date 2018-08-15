@@ -1,4 +1,11 @@
 const inquirer = require('inquirer');
+const pathLib = require('path');
+const fs = require('fs-extra');
+
+const category = 'api';
+const serviceName = 'API Gateway';
+const parametersFileName = 'api-params.json';
+const uuid = require('uuid');
 
 async function serviceWalkthrough(context, defaultValuesFilename) {
   const { amplify } = context;
@@ -6,17 +13,123 @@ async function serviceWalkthrough(context, defaultValuesFilename) {
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  let answers = {};
-  let dependsOn = {};
+  let answers = {
+    paths: [],
+  };
 
   const apiNames = await askApiNames(context, allDefaultValues);
   answers = { ...answers, ...apiNames };
 
-  const pathsAnswer = await askPaths(context);
-  answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
-  ({ dependsOn } = pathsAnswer);
+  return pathFlow(context, answers);
+}
 
-  const privacy = await askPrivacy(context, answers);
+async function updateWalkthrough(context, defaultValuesFilename) {
+  const { amplify } = context;
+  const { allResources } = await context.amplify.getResourceStatus();
+  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+  const resources = allResources
+    .filter(resource => resource.service === serviceName)
+    .map(resource => resource.resourceName);
+
+  // There can only be one appsync resource
+  if (resources.length === 0) {
+    context.print.error('No REST API resource to update. Please use "amplify add api" command to create a new REST API');
+    process.exit(0);
+    return;
+  }
+
+  let answers = {
+    paths: [],
+  };
+
+  const question = [{
+    name: 'resourceName',
+    message: 'Please select the REST API you would want to update',
+    type: 'list',
+    choices: resources,
+  }, {
+    name: 'operation',
+    message: 'What would you like to do',
+    type: 'list',
+    choices: [
+      { name: 'Add another path', value: 'add' },
+      { name: 'Update path', value: 'update' },
+      { name: 'Remove path', value: 'remove' }],
+  }];
+
+  const updateApi = await inquirer.prompt(question);
+
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = pathLib.join(projectBackendDirPath, category, updateApi.resourceName);
+  const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
+  let parameters;
+  try {
+    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+  } catch (e) {
+    parameters = {};
+  }
+  parameters.resourceName = updateApi.resourceName;
+  Object.assign(allDefaultValues, parameters);
+  answers = { ...answers, ...parameters };
+  [answers.uuid] = uuid().split('-');
+  const pathList = answers.paths.map(path => path.name);
+  let updatedResult = {};
+
+  switch (updateApi.operation) {
+    case 'add': {
+      updatedResult = pathFlow(context, answers);
+      break;
+    }
+    case 'remove': {
+      const pathToRemove = await inquirer.prompt({
+        name: 'path',
+        message: 'Please select the path you would want to remove',
+        type: 'list',
+        choices: pathList,
+      });
+
+      answers.paths = answers.paths.filter(path => path.name !== pathToRemove.path);
+
+      const { dependsOn, functionArns } = findDependsOn(answers.paths);
+      answers.dependsOn = dependsOn;
+      answers.functionArns = functionArns;
+
+      updatedResult = { answers, dependsOn };
+      break;
+    }
+    case 'update': {
+      const pathToEdit = await inquirer.prompt({
+        name: 'path',
+        message: 'Please select the path you would want to edit',
+        type: 'list',
+        choices: pathList,
+      });
+
+      const currentPath = answers.paths.find(path => path.name === pathToEdit.path);
+      answers.paths = answers.paths.filter(path => path.name !== pathToEdit.path);
+
+      updatedResult = pathFlow(context, answers, currentPath);
+      break;
+    }
+    default: {
+      updatedResult = {};
+    }
+  }
+
+  return updatedResult;
+}
+
+async function pathFlow(context, answers, currentPath) {
+  const pathsAnswer = await askPaths(context, answers, currentPath);
+  answers = { ...answers, paths: pathsAnswer.paths, functionArns: pathsAnswer.functionArns };
+  const { dependsOn } = pathsAnswer;
+
+  const privacy = {};
+  privacy.auth = pathsAnswer.paths.filter(path => path.privacy.auth).length;
+  privacy.unauth = pathsAnswer.paths.filter(path => path.privacy.unauth).length;
+
   answers = { ...answers, privacy, dependsOn };
 
   if (context.amplify.getProjectDetails() && context.amplify.getProjectDetails().amplifyMeta &&
@@ -59,12 +172,12 @@ async function askApiNames(context, defaults) {
   return answer;
 }
 
-async function askPrivacy(context, answers) {
+async function askPrivacy(context, answers, currentPath) {
   while (true) {
     const apiAccess = await inquirer.prompt({
       name: 'restrict',
       type: 'confirm',
-      default: true,
+      default: !((currentPath && currentPath.open)),
       message: 'Restrict API access',
     });
 
@@ -86,25 +199,24 @@ async function askPrivacy(context, answers) {
           value: 'protected',
         },
       ],
+      default: (currentPath && currentPath.privacy && currentPath.privacy.protected) ? 'protected' : 'private',
     });
 
     const privacy = {};
     privacy[answer.privacy] = true;
-    const roles = { unAuthRoleName: 'unauth-role-name', authRoleName: 'auth-role-name' };// await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
-    privacy.unAuthRoleName = roles.unAuthRoleName;
-    privacy.authRoleName = roles.authRoleName;
 
     if (answer.privacy === 'open') { return privacy; }
-
 
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
     context.api = {
       privacy: answer.privacy,
     };
 
+    const { privacy: { auth: authPrivacy } } = currentPath || { privacy: {} };
+    const { privacy: { unauth: unauthPrivacy } } = currentPath || { privacy: {} };
 
     if (answer.privacy === 'private') {
-      privacy.auth = await askReadWrite('Authenticated', context);
+      privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
       // getting requirement satisfaction map
@@ -126,8 +238,8 @@ async function askPrivacy(context, answers) {
     }
 
     if (answer.privacy === 'protected') {
-      privacy.auth = await askReadWrite('Authenticated', context);
-      privacy.unauth = await askReadWrite('Guest', context);
+      privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
+      privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
       // getting requirement satisfaction map
@@ -152,7 +264,7 @@ async function askPrivacy(context, answers) {
   }
 }
 
-async function askReadWrite(userType) {
+async function askReadWrite(userType, context, privacy = 'r') {
   while (true) {
     const answer = await inquirer.prompt({
       name: 'permissions',
@@ -172,6 +284,7 @@ async function askReadWrite(userType) {
           value: 'rw',
         },
       ],
+      default: privacy,
     });
 
     if (answer.permissions !== 'learn') {
@@ -180,10 +293,7 @@ async function askReadWrite(userType) {
   }
 }
 
-async function askPaths(context) {
-  /* TODO: add spinner when
-  checking if the account had
-  functions deployed and hide the option from the menu */
+async function askPaths(context, answers, currentPath) {
   const existingLambdaArns = true;
   const existingFunctions = functionsExist(context);
 
@@ -207,47 +317,46 @@ async function askPaths(context) {
       value: 'projectFunction',
     });
   }
+
+  let defaultFunctionType = 'newFunction';
+  if (currentPath) {
+    defaultFunctionType = currentPath.lambdaArn ? 'arn' : 'projectFunction';
+  }
+
   const questions = [
     {
       name: 'name',
       type: 'input',
       message: 'Please provide a path, e.g. /items',
-      default: '/items',
+      default: currentPath ? currentPath.name : '/items',
     },
     {
       name: 'functionType',
       type: 'list',
       message: 'Please select lambda source',
       choices,
+      default: defaultFunctionType,
     },
   ];
 
   let addAnotherPath;
-  const paths = [];
-  const dependsOn = [];
-  const functionArns = [];
+  const paths = [...answers.paths];
 
   do {
     const answer = await inquirer.prompt(questions);
+    // TODO: add path validation like awsmobile-cli does
     let path = { name: answer.name };
     let lambda;
     do {
-      lambda = await askLambdaSource(context, answer.functionType, answer.name);
+      lambda = await askLambdaSource(context, answer.functionType, answer.name, currentPath);
     } while (!lambda);
-    path = { ...path, ...lambda };
+    const privacy = await askPrivacy(context, answers, currentPath);
+    path = { ...path, ...lambda, privacy };
     paths.push(path);
 
-    if (lambda.lambdaFunction && !lambda.lambdaArn) {
-      dependsOn.push({
-        category: 'function',
-        resourceName: lambda.lambdaFunction,
-        attributes: ['Name', 'Arn'],
-      });
+    if (currentPath) {
+      break;
     }
-
-    functionArns.push(lambda);
-
-
     addAnotherPath = (await inquirer.prompt({
       name: 'anotherPath',
       type: 'confirm',
@@ -256,7 +365,33 @@ async function askPaths(context) {
     })).anotherPath;
   } while (addAnotherPath);
 
+  const { dependsOn, functionArns } = findDependsOn(paths);
+
   return { paths, dependsOn, functionArns };
+}
+
+function findDependsOn(paths) {
+  // go thru all paths and add lambdaFunctions to dependsOn and functionArns uniquely
+  const dependsOn = [];
+  const functionArns = [];
+  paths.forEach((path) => {
+    if (path.lambdaFunction && !path.lambdaArn) {
+      if (!dependsOn.find(func => func.resourceName === path.lambdaFunction)) {
+        dependsOn.push({
+          category: 'function',
+          resourceName: path.lambdaFunction,
+          attributes: ['Name', 'Arn'],
+        });
+      }
+    }
+    if (!functionArns.find(func => func.lambdaFunction === path.lambdaFunction)) {
+      functionArns.push({
+        lambdaFunction: path.lambdaFunction,
+        lambdaArn: path.lambdaArn,
+      });
+    }
+  });
+  return { dependsOn, functionArns };
 }
 
 function functionsExist(context) {
@@ -279,10 +414,10 @@ function functionsExist(context) {
   return true;
 }
 
-async function askLambdaSource(context, functionType, path) {
+async function askLambdaSource(context, functionType, path, currentPath) {
   switch (functionType) {
-    case 'arn': return askLambdaArn(context);
-    case 'projectFunction': return askLambdaFromProject(context);
+    case 'arn': return askLambdaArn(context, currentPath);
+    case 'projectFunction': return askLambdaFromProject(context, currentPath);
     case 'newFunction': return newLambdaFunction(context, path);
     default: throw new Error('Type not supported');
   }
@@ -306,7 +441,7 @@ function newLambdaFunction(context, path) {
     });
 }
 
-async function askLambdaFromProject(context) {
+async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach((resourceName) => {
@@ -320,12 +455,13 @@ async function askLambdaFromProject(context) {
     type: 'list',
     message: 'Please select lambda function to invoke by this path',
     choices: lambdaFunctions,
+    default: currentPath ? currentPath.lambdaFunction : lambdaFunctions[0],
   });
 
   return { lambdaFunction: answer.lambdaFunction };
 }
 
-async function askLambdaArn(context) {
+async function askLambdaArn(context, currentPath) {
   const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
   const regionQuestion = {
@@ -333,6 +469,7 @@ async function askLambdaArn(context) {
     name: 'region',
     message: 'Select lambda function region',
     choices: regions,
+    default: (currentPath && currentPath.lambdaArn) ? currentPath.lambdaArn.split(':')[3] : 'us-west-1',
   };
 
   const regionAnswer = await inquirer.prompt([regionQuestion]);
@@ -358,6 +495,7 @@ async function askLambdaArn(context) {
     name: 'lambdaChoice',
     message: 'Please select a Lambda function',
     choices: lambdaOptions,
+    default: (currentPath && currentPath.lambdaArn) ? currentPath.lambdaArn : lambdaOptions[0],
   };
 
   const lambdaCloudOptionAnswer = await inquirer.prompt([lambdaCloudOptionQuestion]);
@@ -384,4 +522,4 @@ async function askLambdaArn(context) {
 // }
 
 
-module.exports = { serviceWalkthrough };
+module.exports = { serviceWalkthrough, updateWalkthrough };
