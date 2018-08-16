@@ -145,7 +145,7 @@ Resources:
             - 'exports.handler = (event, context, callback) => {'
             - ' if (event.RequestType == ''Delete'') { '
             - '   response.send(event, context, response.SUCCESS)'
-            - ' };'
+            - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   const params = {'
             - '     ClientId: event.ResourceProperties.clientId,'
@@ -158,7 +158,7 @@ Resources:
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILURE, {err});'
             - '     });'
-            - ' };'
+            - ' }'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
@@ -255,7 +255,7 @@ Resources:
             - 'exports.handler = (event, context, callback) => {'
             - ' if (event.RequestType == ''Delete'') { '
             - '   response.send(event, context, response.SUCCESS)'
-            - ' };'
+            - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   let totpParams = {};'
             - '   try {'
@@ -281,7 +281,7 @@ Resources:
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILURE, {err});'
             - '     });'
-            - ' };'
+            - ' }'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
