@@ -90,6 +90,8 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 
   return inquirer.prompt(questions)
     .then((answers) => {
+      
+
       Object.assign(defaultValues, answers);
       const resource = defaultValues.resourceName;
       const resourceDirPath = path.join(projectBackendDirPath, category, resource);
