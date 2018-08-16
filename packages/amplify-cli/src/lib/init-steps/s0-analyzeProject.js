@@ -8,12 +8,12 @@ async function run(context) {
     let projectName = path.basename(projectPath);
     projectName = projectName.replace(/[^a-zA-Z0-9]/g, '');
 
-    if (projectName.length > 10) {
+    if (projectName.length > 20) {
       const projectNameQuestion = {
         type: 'input',
         name: 'projectName',
         message: 'Enter a name for the project',
-        validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 3) ? reject(new Error('Project name should be between 3 and 10 characters')) : resolvePromise(true))),
+        validate: input => new Promise((resolvePromise, reject) => ((input.length > 20 || input.length < 3) ? reject(new Error('Project name should be between 3 and 20 characters')) : resolvePromise(true))),
       };
 
       ({ projectName } = await inquirer.prompt(projectNameQuestion));
