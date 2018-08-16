@@ -4,9 +4,9 @@ import {
 } from 'graphql'
 import GraphQLTransform, { TransformerContractError } from 'graphql-transform'
 import { ResourceConstants, ModelResourceIDs, ResolverResourceIDs } from 'graphql-transformer-common'
-import { AppSyncVersionedTransformer } from '../AppSyncVersionedTransformer'
+import { VersionedModelTransformer } from '../VersionedModelTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 
 const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode => 
         schemaDoc.definitions.find(d => d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false) as InputObjectTypeDefinitionNode
@@ -15,7 +15,7 @@ const getType = (schemaDoc: DocumentNode) => (name: string): ObjectTypeDefinitio
     schemaDoc.definitions.find(d => d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false) as ObjectTypeDefinitionNode
 const getField = (input: ObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field)
 
-test('Test AppSyncVersionedTransformer validation happy case', () => {
+test('Test VersionedModelTransformer validation happy case', () => {
     const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -27,8 +27,8 @@ test('Test AppSyncVersionedTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncVersionedTransformer()
+            new DynamoDBModelTransformer(),
+            new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -44,7 +44,7 @@ test('Test AppSyncVersionedTransformer validation happy case', () => {
 });
 
 
-test('Test AppSyncVersionedTransformer validation fails when provided version field of wrong type.', () => {
+test('Test VersionedModelTransformer validation fails when provided version field of wrong type.', () => {
     const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -58,8 +58,8 @@ test('Test AppSyncVersionedTransformer validation fails when provided version fi
         const transformer = new GraphQLTransform({
             transformers: [
                 new AppSyncTransformer(),
-                new AppSyncDynamoDBTransformer(),
-                new AppSyncVersionedTransformer()
+                new DynamoDBModelTransformer(),
+                new VersionedModelTransformer()
             ]
         })
         const out = transformer.transform(validSchema);
@@ -68,7 +68,7 @@ test('Test AppSyncVersionedTransformer validation fails when provided version fi
     }
 });
 
-test('Test AppSyncVersionedTransformer version field replaced by non-null if provided as nullable.', () => {
+test('Test VersionedModelTransformer version field replaced by non-null if provided as nullable.', () => {
     const validSchema = `
     type Post @model @versioned {
         id: ID!
@@ -81,8 +81,8 @@ test('Test AppSyncVersionedTransformer version field replaced by non-null if pro
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncVersionedTransformer()
+            new DynamoDBModelTransformer(),
+            new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);

@@ -4,7 +4,7 @@ import {
 } from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transform'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -13,7 +13,7 @@ import { GraphQLClient } from '../GraphQLClient'
 jest.setTimeout(200000);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'AppSyncDynamoDBTransformerTest'
+const STACK_NAME = 'DynamoDBModelTransformerTest'
 
 let GRAPHQL_CLIENT = undefined;
 
@@ -36,7 +36,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);

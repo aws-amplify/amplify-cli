@@ -1,3 +1,3 @@
-import { AppSyncSearchableTransformer } from './AppSyncSearchableTransformer'
-export * from './AppSyncSearchableTransformer'
-export default AppSyncSearchableTransformer
+import { SearchableModelTransformer } from './SearchableModelTransformer'
+export * from './SearchableModelTransformer'
+export default SearchableModelTransformer

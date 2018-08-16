@@ -1,6 +1,6 @@
 import GraphQLTransform from "graphql-transform";
-import { AppSyncSearchableTransformer } from "./";
-import { AppSyncDynamoDBTransformer } from "graphql-dynamodb-transformer";
+import { SearchableModelTransformer } from "./";
+import { DynamoDBModelTransformer } from "graphql-dynamodb-transformer";
 import { AppSyncTransformer } from "graphql-appsync-transformer";
 
 import fs = require('fs');
@@ -19,8 +19,8 @@ type Post @model @searchable {
 const transformer = new GraphQLTransform({
     transformers: [
         new AppSyncTransformer(),
-        new AppSyncDynamoDBTransformer(),
-        new AppSyncSearchableTransformer()]
+        new DynamoDBModelTransformer(),
+        new SearchableModelTransformer()]
 });
 const out = transformer.transform(validSchema);
 fs.writeFile('cf.out.json', JSON.stringify(out, null, 4), (err) => {

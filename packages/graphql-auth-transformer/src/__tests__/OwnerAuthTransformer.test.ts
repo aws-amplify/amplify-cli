@@ -4,11 +4,11 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncDynamoDBTransformer } from 'graphql-dynamodb-transformer'
-import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
+import { ModelAuthTransformer } from '../ModelAuthTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
-test('Test AppSyncAuthTransformer validation happy case', () => {
+test('Test ModelAuthTransformer validation happy case', () => {
     const validSchema = `
     type Post @model @auth(rules: [{allow: owner}]) {
         id: ID!
@@ -20,8 +20,8 @@ test('Test AppSyncAuthTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncAuthTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema)

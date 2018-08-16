@@ -124,25 +124,29 @@ export class AppSyncTransformer extends Transformer {
         const resolverResource = ctx.template.Resources[resourceName]
 
         const requestMappingTemplate = resolverResource.Properties.RequestMappingTemplate
-        const reqType = resolverResource.Properties.TypeName
-        const reqFieldName = resolverResource.Properties.FieldName
-        const reqFileName = `${reqType}.${reqFieldName}.request`
-        fs.writeFileSync(`${resolverFilePath}/${reqFileName}`, requestMappingTemplate)
-
-        const reqParam = this.resources.makeResolverParam(reqFileName);
-        ctx.mergeParameters(reqParam.Parameters);
-
         const responseMappingTemplate = resolverResource.Properties.ResponseMappingTemplate
-        const respType = resolverResource.Properties.TypeName
-        const respFieldName = resolverResource.Properties.FieldName
-        const respFileName = `${respType}.${respFieldName}.response`
-        fs.writeFileSync(`${resolverFilePath}/${respFileName}`, responseMappingTemplate)
+        // If the templates are not strings. aka they use CF intrinsic functions don't rewrite.
+        if (
+            typeof requestMappingTemplate === 'string' &&
+            typeof responseMappingTemplate === 'string'
+        ) {
+            const reqType = resolverResource.Properties.TypeName
+            const reqFieldName = resolverResource.Properties.FieldName
+            const reqFileName = `${reqType}.${reqFieldName}.request`
+            fs.writeFileSync(`${resolverFilePath}/${reqFileName}`, requestMappingTemplate)
+            const reqParam = this.resources.makeResolverParam(reqFileName);
+            ctx.mergeParameters(reqParam.Parameters);
 
-        const respParam = this.resources.makeResolverParam(respFileName);
-        ctx.mergeParameters(respParam.Parameters);
+            const respType = resolverResource.Properties.TypeName
+            const respFieldName = resolverResource.Properties.FieldName
+            const respFileName = `${respType}.${respFieldName}.response`
+            fs.writeFileSync(`${resolverFilePath}/${respFileName}`, responseMappingTemplate)
+            const respParam = this.resources.makeResolverParam(respFileName);
+            ctx.mergeParameters(respParam.Parameters);
 
-        const updatedResolverResource = this.resources.updateResolverResource(resolverResource, reqFileName, respFileName)
-        ctx.setResource(resourceName, updatedResolverResource)
+            const updatedResolverResource = this.resources.updateResolverResource(resolverResource, reqFileName, respFileName)
+            ctx.setResource(resourceName, updatedResolverResource)
+        }
     }
 
     private writeSchemaToFile(resourceName: string, ctx: TransformerContext): void {

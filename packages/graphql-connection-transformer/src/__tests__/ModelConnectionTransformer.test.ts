@@ -5,11 +5,11 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
-import AppSyncDynamoDBTransformer, { makeCreateInputObjectName, makeUpdateInputObjectName } from 'graphql-dynamodb-transformer'
-import { AppSyncConnectionTransformer } from '../AppSyncConnectionTransformer'
+import DynamoDBModelTransformer, { makeCreateInputObjectName, makeUpdateInputObjectName } from 'graphql-dynamodb-transformer'
+import { ModelConnectionTransformer } from '../ModelConnectionTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
-test('Test AppSyncConnectionTransformer simple one to many happy case', () => {
+test('Test ModelConnectionTransformer simple one to many happy case', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -24,8 +24,8 @@ test('Test AppSyncConnectionTransformer simple one to many happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -53,7 +53,7 @@ test('Test AppSyncConnectionTransformer simple one to many happy case', () => {
     expect(connectionUpdateId).toBeTruthy()
 });
 
-test('Test AppSyncConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -68,8 +68,8 @@ test('Test AppSyncConnectionTransformer simple one to many happy case with custo
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -97,7 +97,7 @@ test('Test AppSyncConnectionTransformer simple one to many happy case with custo
     expect(connectionUpdateId).toBeTruthy()
 });
 
-test('Test AppSyncConnectionTransformer simple one to many happy case with custom keyField', () => {
+test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -115,8 +115,8 @@ test('Test AppSyncConnectionTransformer simple one to many happy case with custo
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -144,7 +144,7 @@ test('Test AppSyncConnectionTransformer simple one to many happy case with custo
     expect(connectionUpdateId).toBeTruthy()
 });
 
-test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
+test('Test ModelConnectionTransformer complex one to many happy case', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -160,8 +160,8 @@ test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -196,7 +196,7 @@ test('Test AppSyncConnectionTransformer complex one to many happy case', () => {
     expect((postField.type as any).name.value).toEqual('Post')
 });
 
-test('Test AppSyncConnectionTransformer many to many should fail', () => {
+test('Test ModelConnectionTransformer many to many should fail', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -212,8 +212,8 @@ test('Test AppSyncConnectionTransformer many to many should fail', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     try {
@@ -226,7 +226,7 @@ test('Test AppSyncConnectionTransformer many to many should fail', () => {
     }
 });
 
-test('Test AppSyncConnectionTransformer many to many should fail due to missing other "name"', () => {
+test('Test ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -244,8 +244,8 @@ test('Test AppSyncConnectionTransformer many to many should fail due to missing 
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncConnectionTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
         ]
     })
     try {

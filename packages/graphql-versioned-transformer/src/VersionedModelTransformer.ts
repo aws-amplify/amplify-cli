@@ -19,11 +19,11 @@ import {
     makeField
 } from "graphql-transformer-common";
 
-export class AppSyncVersionedTransformer extends Transformer {
+export class VersionedModelTransformer extends Transformer {
 
     constructor() {
         super(
-            'AppSyncVersionedTransformer',
+            'VersionedModelTransformer',
             // TODO: Allow version attribute selection. Could be `@version on FIELD_DEFINITION`
             'directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT'
         )

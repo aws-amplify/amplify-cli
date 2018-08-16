@@ -6,19 +6,19 @@ const TransformPackage = require('graphql-transform');
 
 const GraphQLTransform = TransformPackage.default;
 const { collectDirectiveNames } = TransformPackage;
-const AppSyncDynamoDBTransformer = require('graphql-dynamodb-transformer').default;
-const AppSyncAuthTransformer = require('graphql-auth-transformer').default;
+const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
+const ModelAuthTransformer = require('graphql-auth-transformer').default;
 const AppSyncTransformer = require('graphql-appsync-transformer').default;
-const AppSyncConnectionTransformer = require('graphql-connection-transformer').default;
-const AppSyncVersionedTransformer = require('graphql-versioned-transformer').default;
+const ModelConnectionTransformer = require('graphql-connection-transformer').default;
+const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
+const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
 const templateFileName = 'cloudformation-template.json';
 const schemaFileName = 'schema.graphql';
 
-function checkForCommonIssues(schemaText, opts) {
-  const usedDirectives = collectDirectiveNames(schemaText);
+function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
     throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API. 
 Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
@@ -69,20 +69,25 @@ async function transformGraphQLSchema(context, options) {
   const schemaText = fs.readFileSync(schemaFilePath, 'utf8');
 
   // Check for common errors
+  const usedDirectives = collectDirectiveNames(schemaText);
   checkForCommonIssues(
-    schemaText,
+    usedDirectives,
     { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
   );
 
   const transformerList = [
     new AppSyncTransformer(buildDir),
-    new AppSyncDynamoDBTransformer(),
-    new AppSyncConnectionTransformer(),
-    new AppSyncVersionedTransformer(),
+    new DynamoDBModelTransformer(),
+    new ModelConnectionTransformer(),
+    new VersionedModelTransformer()
   ];
 
+  if (usedDirectives.includes('searchable')) {
+    transformerList.push(new SearchableModelTransformer())
+  }
+
   if (parameters.AuthCognitoUserPoolId) {
-    transformerList.push(new AppSyncAuthTransformer());
+    transformerList.push(new ModelAuthTransformer());
   }
 
   const transformer = new GraphQLTransform({
@@ -97,7 +102,7 @@ async function transformGraphQLSchema(context, options) {
     throw e;
   }
 
-  context.print.success('Annotated GraphQL schema compiled successfully.');
+  context.print.success('GraphQL schema compiled successfully.');
 
   fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
 

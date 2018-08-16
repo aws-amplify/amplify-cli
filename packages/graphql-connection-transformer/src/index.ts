@@ -1,3 +1,3 @@
-import { AppSyncConnectionTransformer } from './AppSyncConnectionTransformer'
-export * from './AppSyncConnectionTransformer'
-export default AppSyncConnectionTransformer
+import { ModelConnectionTransformer } from './ModelConnectionTransformer'
+export * from './ModelConnectionTransformer'
+export default ModelConnectionTransformer

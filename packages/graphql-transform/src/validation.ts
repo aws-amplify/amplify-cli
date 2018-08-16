@@ -118,7 +118,6 @@ export function validateModelSchema(doc: DocumentNode) {
     const outputTypes = types.filter(
         t => isOutputType(t)
     )
-    console.log(`TYPES: [${types.map(t => t.name).join(', ')}]`)
     const fields = outputTypes.reduce(
         (acc, t) => ({ ...acc, [t.name]: { type: t } }),
         {}

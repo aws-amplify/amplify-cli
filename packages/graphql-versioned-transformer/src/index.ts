@@ -1,3 +1,3 @@
-import { AppSyncVersionedTransformer } from './AppSyncVersionedTransformer'
-export * from './AppSyncVersionedTransformer'
-export default AppSyncVersionedTransformer
+import { VersionedModelTransformer } from './VersionedModelTransformer'
+export * from './VersionedModelTransformer'
+export default VersionedModelTransformer

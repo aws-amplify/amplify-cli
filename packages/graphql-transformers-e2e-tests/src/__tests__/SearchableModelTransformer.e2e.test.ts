@@ -4,8 +4,8 @@ import {
 } from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transform'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
-import AppSyncSearchableTransformer from 'graphql-elasticsearch-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import SearchableModelTransformer from 'graphql-elasticsearch-transformer'
 import AppSyncFileTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { S3Client } from '../S3Client'
@@ -15,8 +15,8 @@ import { GraphQLClient } from '../GraphQLClient'
 jest.setTimeout(60000 * 60);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'TestAppSyncSearchableTransformer'
-const BUCKET_NAME = 'testappsyncsearchabletransformer'
+const STACK_NAME = 'TestSearchableModelTransformer'
+const BUCKET_NAME = 'testSearchableModelTransformer'
 const FUNCTION_NAME = 'python_streaming_function.zip'
 const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/streaming-lambda.zip`
 
@@ -43,17 +43,14 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncFileTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncSearchableTransformer()
+            new DynamoDBModelTransformer(),
+            new SearchableModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     try {
-        // create bucket, upload file and get version
-        const version = (await s3.setUpS3Resources(BUCKET_NAME, FUNCTION_PATH, FUNCTION_NAME, true)).VersionId
-
         // create stack with additional params
-        const additionalParams = generateParams(version)
+        const additionalParams = generateParams()
         console.log('Creating Stack ' + STACK_NAME)
         const createStackResponse = await cf.createStack(out, STACK_NAME, additionalParams)
         expect(createStackResponse).toBeDefined()
@@ -154,11 +151,10 @@ test('Test searchPost query', async () => {
     }
 })
 
-function generateParams(lambdaVersion: string) {
+function generateParams() {
     const params = {
         [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket]: BUCKET_NAME,
         [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key]: FUNCTION_NAME,
-        [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version]: lambdaVersion,
         [ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName]: 'ElasticSearchAccessIAMRoleTest',
         [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: 'ElasticSearchStreamingIAMRoleTest'
     }
