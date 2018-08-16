@@ -3,7 +3,7 @@
 		"inputs": [
 			{
 				"key": "resourceName",
-				"question": "Please provide a friendly name for your resource that will be used to label this category in the project:",
+				"question": "Provide a friendly name for your resource to be used as a label for this category in the project:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9]+$",
@@ -13,7 +13,7 @@
 			},
 			{
 				"key": "functionName",
-				"question": "Please provide the Lambda function name:",
+				"question": "Provide the AWS Lambda function name:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9._-]+$",
@@ -23,7 +23,7 @@
 			},
 			{
 				"key": "handlerFilename",
-				"question": "Please provide the name of your script file which contains your handler function:",
+				"question": "Provide the name of the script file that contains your handler function:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9._-]+$",
@@ -33,7 +33,7 @@
 			},
 			{
 				"key": "handlerName",
-				"question": "Please provide the name of the handler function to invoke:",
+				"question": "Provide the name of the handler function to invoke:",
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-zA-Z0-9._-]+$",
@@ -43,7 +43,7 @@
 			},
 			{
 				"key": "functionTemplate",
-				"question": "Please select the function template you want to use:",
+				"question": "Choose the function template that you want to use:",
 				"type": "list",
 				"options": [
 					{
@@ -91,14 +91,14 @@
 
 				"key": "dynamodbTableChoice",
 				"type": "list",
-				"question": "Please select a DynamoDB table:",
+				"question": "Choose a DynamoDB table:",
 				"required": true
 			},
 			{
 
 				"key": "dynamoRegion",
 				"type": "list",
-				"question": "Please select a region:"
+				"question": "Specify a Region:"
 			}
 		],
 		"defaultValuesFilename": "lambda-defaults.js",

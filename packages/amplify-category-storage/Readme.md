@@ -2,10 +2,10 @@
 
 ## Commands Summary
 
-The current set of commands supported by the Amplify Storage Category Plugin
+The following table lists the current set of commands supported by the Amplify Storage Category Plugin.
 
 | Command              | Description |
 | --- | --- |
-| amplify storage add | Takes you through a CLI flow to add a storage resource to your backend   |
-| amplify storage push | Provisions only storage cloud resources with the latest local developments  |
-| amplify storage remove | Removes storage resource from your local backend which would be removed from the cloud on the next push command |
+| amplify storage add | Takes you through steps in the CLI to add a storage resource to your backend.   |
+| amplify storage push | Provisions only storage cloud resources with the latest local developments.  |
+| amplify storage remove | Removes storage resource from your local backend. The resources are removed from the cloud on the next push command. |

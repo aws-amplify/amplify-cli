@@ -20,8 +20,8 @@ const schemaFileName = 'schema.graphql';
 function checkForCommonIssues(schemaText, opts) {
   const usedDirectives = collectDirectiveNames(schemaText);
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito UserPools for your API. 
-Run \`amplify update api\` and select "Amazon Cognito User Pool" when choosing an authorization type for the API.`);
+    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API. 
+Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
   }
 }
 
@@ -78,7 +78,7 @@ async function transformGraphQLSchema(context, options) {
     new AppSyncTransformer(buildDir),
     new AppSyncDynamoDBTransformer(),
     new AppSyncConnectionTransformer(),
-    new AppSyncVersionedTransformer()
+    new AppSyncVersionedTransformer(),
   ];
 
   if (parameters.AuthCognitoUserPoolId) {
@@ -187,14 +187,14 @@ async function transformGraphQLSchema(context, options) {
           }
         });
         if (dynamoDbProjectResources.length === 0) {
-          context.print.error('There are no DynamoDb
+          context.print.error('There are no DynamoDB
             resources configured in your project currently');
           break;
         }
         const dynamoResourceQuestion = {
           type: 'list',
           name: 'dynamoDbResources',
-          message: 'Choose from one of the already configured DynamoDB tables',
+          message: 'Choose one of the DynamoDB tables that is already configured',
           choices: dynamoDbProjectResources,
         };
 
@@ -214,12 +214,12 @@ async function transformGraphQLSchema(context, options) {
           ({ add } = require('amplify-category-storage'));
         } catch (e) {
           context.print.error('Storage plugin not installed in the CLI.
-           Please install it to use this feature');
+           You need to install it to use this feature.');
           break;
         }
         return add(context, 'awscloudformation', 'DynamoDB')
           .then((resourceName) => {
-            context.print.success('Succesfully added DynamoDb table locally');
+            context.print.success('Succesfully added DynamoDB table locally');
             return {
               'Fn::GetAtt': [
                 `storage${resourceName}`,
@@ -235,7 +235,7 @@ async function transformGraphQLSchema(context, options) {
         const regionQuestion = {
           type: 'list',
           name: 'region',
-          message: 'Please select a region:',
+          message: 'Specify a Region:',
           choices: regions,
         };
 
@@ -256,14 +256,14 @@ async function transformGraphQLSchema(context, options) {
 
         if (dynamodbOptions.length === 0) {
           context.print.error('You do not have any DynamoDB tables
-           configured for the selected region');
+           configured for the selected Region');
           break;
         }
 
         const dynamoCloudOptionQuestion = {
           type: 'list',
           name: 'dynamodbTableChoice',
-          message: 'Please select a DynamoDB table:',
+          message: 'Specify a DynamoDB table:',
           choices: dynamodbOptions,
         };
 

@@ -44,7 +44,7 @@ module.exports = {
         return lambdafunctions;
       }))
     .catch((err) => {
-      context.print.error('Failed to fetch lambda functions');
+      context.print.error('Failed to fetch Lambda functions');
       throw err;
     }),
   getDynamoDBTables: (context, options) => {

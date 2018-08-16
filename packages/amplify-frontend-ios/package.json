@@ -1,7 +1,7 @@
 {
   "name": "amplify-frontend-ios",
   "version": "0.1.0",
-  "description": "amplify-cli frontend plugin for xcode projects",
+  "description": "amplify-cli front-end plugin for xcode projects",
   "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {

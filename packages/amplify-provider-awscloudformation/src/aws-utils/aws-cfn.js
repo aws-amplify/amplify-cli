@@ -32,7 +32,7 @@ class CloudFormation {
       cfnModel.createStack(cfnParentStackParams, (createErr) => {
         this.readStackEvents(cfnParentStackParams.StackName);
         if (createErr) {
-          context.print.error('Error creating cloudformation stack');
+          context.print.error('An error occurred when creating the CloudFormation stack');
           reject(createErr);
         }
         cfnModel.waitFor(
@@ -42,7 +42,7 @@ class CloudFormation {
               clearInterval(self.pollForEvents);
             }
             if (completeErr) {
-              context.print.error('Error creating cloudformation stack');
+              context.print.error('An error occurred when  creating the CloudFormation stack');
               reject(completeErr);
             }
             resolve(waitForStackdata);
@@ -80,7 +80,7 @@ class CloudFormation {
             let newEvents = _.differenceBy(stackEvents, allShownEvents, 'EventId');
 
             if (newEvents.length > 0) {
-              // To store all the uniq nestedStacks which are a part of the new found events
+              // To store all the uniq nestedStacks that are a part of the new found events
               const nestedStacks = [];
               const nestedStackEventPromises = [];
 
@@ -135,10 +135,10 @@ class CloudFormation {
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
     if (!stackName) {
-      throw (new Error('Project Stack is not yet created. Please use amplify init to initialize the project.'));
+      throw (new Error('Project stack has not been created yet. Use amplify init to initialize the project.'));
     }
     if (!deploymentBucketName) {
-      throw (new Error('Project deployment bucket is not yet created. Please use amplify init to initialize the project.'));
+      throw (new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.'));
     }
 
     return new S3(this.context)

@@ -20,8 +20,8 @@ function createAmplifyConfig(context, amplifyResources) {
 function createAWSConfig(context, amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
-    UserAgent: 'aws-amplify/cli',
-    Version: '0.1.0',
+    UserAgent: 'aws-amplify-cli/0.1.0',
+    Version: '1.0',
     IdentityManager: {
       Default: {},
     },
@@ -66,40 +66,48 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const cognitoResource = cognitoResources[0];
 
-  const resourceValue = {
-    CredentialsProvider: {
-      CognitoIdentity: {
+  const cognitoConfig = {};
+
+  if (cognitoResource.output.IdentityPoolId) {
+    Object.assign(cognitoConfig, {
+      CredentialsProvider: {
+        CognitoIdentity: {
+          Default: {
+            PoolId: cognitoResource.output.IdentityPoolId,
+            Region: projectRegion,
+          },
+        },
+      },
+    });
+  }
+
+  if (cognitoResource.output.UserPoolId) {
+    Object.assign(cognitoConfig, {
+      CognitoUserPool: {
         Default: {
-          PoolId: cognitoResource.output.IdentityPoolId,
+          PoolId: cognitoResource.output.UserPoolId,
+          AppClientId: cognitoResource.output.AppClientID,
+          AppClientSecret: cognitoResource.output.AppClientSecret,
           Region: projectRegion,
         },
       },
-    },
-    CognitoUserPool: {
-      Default: {
-        PoolId: cognitoResource.output.UserPoolId,
-        AppClientId: cognitoResource.output.AppClientID,
-        AppClientSecret: cognitoResource.output.AppClientSecret,
-        Region: projectRegion,
-      },
-    },
-  };
+    });
+  }
 
   if (cognitoResource.output.GoogleWebClient) {
-    resourceValue.GoogleSignIn = {
+    cognitoConfig.GoogleSignIn = {
       Permissions: 'email,profile,openid',
       'ClientId-WebApp': cognitoResource.output.GoogleWebClient,
     };
   }
   if (cognitoResource.output.FacebookWebClient) {
-    resourceValue.FacebookSignIn = {
+    cognitoConfig.FacebookSignIn = {
       AppId: cognitoResource.output.FacebookWebClient,
       Permissions: 'public_profile',
     };
   }
 
-
-  return resourceValue;
+  return cognitoConfig;
 }
 
 

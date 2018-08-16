@@ -154,7 +154,7 @@ async function askApiNames(context, defaults) {
     {
       name: 'resourceName',
       type: 'input',
-      message: 'Please provide a friendly name for your resource that will be used to label this category in the project:',
+      message: 'Provide a friendly name for your resource to be used as a label for this category in the project:',
       default: defaults.resourceName,
       validate: amplify.inputValidation({
         validation: {
@@ -327,13 +327,13 @@ async function askPaths(context, answers, currentPath) {
     {
       name: 'name',
       type: 'input',
-      message: 'Please provide a path, e.g. /items',
+      message: 'Provide a path (e.g., /items)',
       default: currentPath ? currentPath.name : '/items',
     },
     {
       name: 'functionType',
       type: 'list',
-      message: 'Please select lambda source',
+      message: 'Choose a Lambda source',
       choices,
       default: defaultFunctionType,
     },
@@ -428,7 +428,7 @@ function newLambdaFunction(context, path) {
   try {
     ({ add } = require('amplify-category-function'));
   } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. Please install it to use this feature');
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
   context.api = {
     path,
@@ -436,7 +436,7 @@ function newLambdaFunction(context, path) {
   };
   return add(context, 'awscloudformation', 'Lambda')
     .then((resourceName) => {
-      context.print.success('Succesfully added Lambda function locally');
+      context.print.success('Succesfully added the Lambda function locally');
       return { lambdaFunction: resourceName };
     });
 }
@@ -453,7 +453,7 @@ async function askLambdaFromProject(context, currentPath) {
   const answer = await inquirer.prompt({
     name: 'lambdaFunction',
     type: 'list',
-    message: 'Please select lambda function to invoke by this path',
+    message: 'Choose the Lambda function to invoke by this path',
     choices: lambdaFunctions,
     default: currentPath ? currentPath.lambdaFunction : lambdaFunctions[0],
   });
@@ -467,7 +467,7 @@ async function askLambdaArn(context, currentPath) {
   const regionQuestion = {
     type: 'list',
     name: 'region',
-    message: 'Select lambda function region',
+    message: 'Specify the Lambda function Region',
     choices: regions,
     default: (currentPath && currentPath.lambdaArn) ? currentPath.lambdaArn.split(':')[3] : 'us-west-1',
   };
@@ -486,7 +486,7 @@ async function askLambdaArn(context, currentPath) {
   }));
 
   if (lambdaOptions.length === 0) {
-    context.print.error('You do not have any lambda functions configured for the selected region');
+    context.print.error('You do not have any Lambda functions configured for the selected Region');
     return null;
   }
 

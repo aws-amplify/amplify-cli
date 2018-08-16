@@ -46,7 +46,7 @@ async function configure(context, lastConfiguredSection) {
   const answer = await inquirer.prompt({
     type: 'list',
     name: 'section',
-    message: 'Please select the section to configure',
+    message: 'Specify the section to configure',
     choices: options,
     default: defaultSection,
   });

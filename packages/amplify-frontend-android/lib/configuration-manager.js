@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const constants = require('./constants');
 
 function init(context) {
-  context.print.info('Please tell us about your project');
+  context.print.info('Describe your project:');
   return promptForConfiguration(context);
 }
 
