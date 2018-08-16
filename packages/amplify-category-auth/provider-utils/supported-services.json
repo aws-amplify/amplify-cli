@@ -292,24 +292,6 @@
 				]
 			},
 			{
-				"key": "smsVerificationMessage",
-				"question": "Please specify an SMS verification message:",
-				"required": true,
-				"type": "input",
-				"validation": {
-					"operator": "includes",
-					"value": "{####}",
-					"onErrorMsg": "Your SMS verification message must include '{####}' representing the verification code that the user will receive."
-				},
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "identityPoolOnly",
-						"operator": "!="
-					}
-				]
-			},
-			{
 				"key": "autoVerifiedAttributes",
 				"question": "Email based user registration/forgot password:",
 				"required": true,
@@ -360,6 +342,29 @@
 					{
 						"key": "autoVerifiedAttributes",
 						"value": "email",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "smsVerificationMessage",
+				"question": "Please specify an SMS verification message:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "includes",
+					"value": "{####}",
+					"onErrorMsg": "Your SMS verification message must include '{####}' representing the verification code that the user will receive."
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "autoVerifiedAttributes",
+						"value": "phone_number",
 						"operator": "includes"
 					}
 				]
@@ -424,6 +429,8 @@
 				"key": "requiredAttributes",
 				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Mark the required attributes below:",
 				"required": true,
+				"requiredOptions": "autoVerifiedAttributes",
+				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
 				"type": "multiselect",
 				"map": "coreAttributes",
 				"andConditions": [
@@ -491,6 +498,7 @@
 				"type": "multiselect",				
 				"map": "coreAttributes",
 				"requiredOptions": "requiredAttributes",
+				"requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
 				"andConditions": [
 					{
 						"key": "authSelections",
