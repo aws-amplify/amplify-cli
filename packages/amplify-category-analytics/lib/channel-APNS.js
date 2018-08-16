@@ -1,4 +1,6 @@
 const inquirer = require('inquirer');
+const p8decoder = require('./p8decoder');
+const p12decoder = require('./p12decoder');
 
 const channelName = 'APNS';
 
@@ -18,7 +20,7 @@ async function run(context) {
     if (answer.disableChannel) {
       await disableChannel(context);
     } else {
-      await configure(context);
+      await configureAndEnable(context);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -28,68 +30,64 @@ async function run(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await configure(context);
+      await configureAndEnable(context);
     }
   }
 }
 
-async function configure(context) {
+async function configureAndEnable(context) {
   let channelOutput = {};
   if (context.exeInfo.serviceMeta.output[channelName]) {
     channelOutput = context.exeInfo.serviceMeta.output[channelName];
   }
-  const questions = [
-    {
-      name: 'BundleId',
-      type: 'input',
-      message: 'The bundle id used for APNs Tokens.',
-      default: channelOutput.BundleId,
-    },
-    {
-      name: 'Certificate',
-      type: 'input',
-      message: 'The distribution certificate from Apple.',
-      default: channelOutput.Certificate,
-    },
-    {
-      name: 'PrivateKey',
-      type: 'input',
-      message: 'The certificate private key.',
-      default: channelOutput.PrivateKey,
-    },
+
+  let APNSChannelRequest = { Enabled: true };
+
+  let { DefaultAuthenticationMethod } = channelOutput; 
+
+  let answer, keyConfig, certificateConfig; 
+
+  answer = await inquirer.prompt(
     {
       name: 'DefaultAuthenticationMethod',
-      type: 'input',
-      message: 'The default authentication method used for APNs.',
-      default: channelOutput.DefaultAuthenticationMethod,
-    },
-    {
-      name: 'TeamId',
-      type: 'input',
-      message: 'The team id used for APNs Tokens.',
-      default: channelOutput.TeamId,
-    },
-    {
-      name: 'TokenKey',
-      type: 'input',
-      message: 'The token key used for APNs Tokens.',
-      default: channelOutput.TokenKey,
-    },
-    {
-      name: 'TokenKeyId',
-      type: 'input',
-      message: 'The token key id used for APNs Tokens.',
-      default: channelOutput.TokenKeyId,
-    },
-  ];
-  const answers = await inquirer.prompt(questions);
+      type: 'list',
+      message: 'The default authentication method used for APNs',
+      choices: ['Key', 'Certificate'],
+      default: DefaultAuthenticationMethod ? DefaultAuthenticationMethod : 'Certificate',
+    }
+  );
 
+  APNSChannelRequest.DefaultAuthenticationMethod = answer.DefaultAuthenticationMethod;
+
+  if(APNSChannelRequest.DefaultAuthenticationMethod == 'Key') {
+    keyConfig = await configureKey(context); 
+    answers = await inquirer.prompt({
+      name: 'configureCertificate',
+      type: 'confirm',
+      message: `Also configure the Certificate authenticate method`,
+      default: false,
+    });
+    if (answer.configureCertificate) {
+      certificateConfig = await configureCertificate(context);
+    }
+  }else{
+    certificateConfig = await configureCertificate(context);
+    answers = await inquirer.prompt({
+      name: 'configureKey',
+      type: 'confirm',
+      message: `Also configure the Key authenticate method`,
+      default: false,
+    });
+    if (answer.configureKey) {
+      keyConfig = await configureKey(context); 
+    }
+  }
+
+  Object.assign(APNSChannelRequest, keyConfig, certificateConfig);
+  
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest: {
-      Enabled: true,
-      ...answers,
-    },
+    APNSChannelRequest
   };
 
   return new Promise((resolve, reject) => {
@@ -99,11 +97,55 @@ async function configure(context) {
         reject(err);
       } else {
         context.print.info(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
+        context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
         resolve(data);
       }
     });
   });
+}
+
+async function configureKey(context){
+  const questions = [
+    {
+      name: 'BundleId',
+      type: 'input',
+      message: 'The bundle id used for APNs Tokens: ',
+    },
+    {
+      name: 'TeamId',
+      type: 'input',
+      message: 'The team id used for APNs Tokens: ',
+    },
+    {
+      name: 'TokenKey',
+      type: 'input',
+      message: 'The token key used for APNs Tokens: ',
+    },
+    {
+      name: 'TokenKeyId',
+      type: 'input',
+      message: 'The token key id used for APNs Tokens: ',
+    },
+  ];
+  answers = await inquirer.prompt(questions);
+  return answers; 
+}
+
+async function configureCertificate(context){
+  const questions = [
+    {
+      name: 'Certificate',
+      type: 'input',
+      message: 'The distribution certificate from Apple.',
+    },
+    {
+      name: 'PrivateKey',
+      type: 'input',
+      message: 'The certificate private key.',
+    }
+  ];
+  answers = await inquirer.prompt(questions);
+  return answers; 
 }
 
 function disableChannel(context) {
