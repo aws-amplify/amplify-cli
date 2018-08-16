@@ -21,6 +21,9 @@ function inputValidation(question) {
                         input <= question.validation.value.max;
       return isGood ? resolve(true) : reject(question.validation.onErrorMsg);
     }
+    if (question.validation.operator === 'noEmptyArray') {
+      return Array.isArray(input) && input.length > 0 ? resolve(true) : reject(question.validation.onErrorMsg); //eslint-disable-line
+    }
     if (question.required) {
       return input ? resolve(true) : reject(new Error('A response is required for this field'));
     }

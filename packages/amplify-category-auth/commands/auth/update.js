@@ -39,7 +39,7 @@ module.exports = {
         return providerController.updateResource(context, category, result.service);
       })
       .then((resourceName) => { // eslint-disable-line no-shadow
-        amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+        amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, options);
         const { print } = context;
         print.success(`Successfully updated resource ${resourceName} locally`);
         print.info('');

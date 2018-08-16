@@ -90,7 +90,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     ];
 
     // copy over the files
-    await context.amplify.copyBatch(context, copyJobs, authProps, null, true);
+    await context.amplify.copyBatch(context, copyJobs, authProps, true, true);
     if (!context.updatingAuth) {
       const options = {
         service: 'Cognito',
