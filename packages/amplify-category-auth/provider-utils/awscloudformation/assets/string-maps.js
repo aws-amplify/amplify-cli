@@ -57,7 +57,7 @@ const mfaMethods = [
 const emailRegistration = [
   {
     name: 'Enabled (Requires per-user email entry at registration)',
-    value: ['email', 'phone_number'],
+    value: ['email'],
   },
   {
     name: 'Disabled (Uses SMS/TOTP as an alternative)',
