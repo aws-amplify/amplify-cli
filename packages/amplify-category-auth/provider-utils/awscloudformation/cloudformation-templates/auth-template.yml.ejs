@@ -401,7 +401,7 @@ Resources:
             - '       if (!existingValue) {'
             - '         exists = true;'
             - '       }'
-            - '     };'
+            - '     }'
             - '     if (!existingValue) {'
             - '       iam.createOpenIDConnectProvider(params).promise().then((data) => {'
             - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'   
@@ -436,12 +436,12 @@ Resources:
             - '       .catch((err2) => {'
             - '           response.send(event, context, response.FAILURE, {err2});'
             - '       });'
-            - '     };'
+            - '     }'
             - '   })'
             - '   .catch((err1) => {'
             - '           response.send(event, context, response.FAILURE, {err1});'
             - '   });'
-            - ' };'
+            - ' }'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
