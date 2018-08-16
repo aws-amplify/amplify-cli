@@ -44,6 +44,7 @@ const userPoolDefaults = projectName => ({
   userpoolClientLambdaRole: `${projectName}_userpoolclient_lambda_role`,
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy`,
   userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy`,
+  userpoolClientSetAttributes: false,
 });
 
 const identityPoolDefaults = projectName => ({
