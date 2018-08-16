@@ -51,7 +51,6 @@ Resources:
                 Action: 
                   - "sns:Publish"
                 Resource: "*"
-
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -88,7 +87,6 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -102,7 +100,6 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
-
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -117,7 +114,6 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
-
   # BEGIN USER POOL LAMBDA RESOURCES
   UserPoolClientRole:
   # Created to execute Lambda which gets userpool app client config values
@@ -134,7 +130,6 @@ Resources:
             Action:
               - 'sts:AssumeRole'
     DependsOn: UserPoolClient
-
   UserPoolClientLambda:
   # Lambda which gets userpool app client config values
   # Depends on UserPool for id
@@ -144,7 +139,6 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
-
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const identity = new aws.CognitoIdentityServiceProvider();'
@@ -168,7 +162,6 @@ Resources:
         - UserPoolClientRole
         - Arn
     DependsOn: UserPoolClientRole
-
   UserPoolClientLambdaPolicy:
   # Sets userpool policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
@@ -186,7 +179,6 @@ Resources:
               - 'cognito-idp:DescribeUserPoolClient'
             Resource: !GetAtt UserPool.Arn
     DependsOn: UserPoolClientLambda
-
   UserPoolClientLogPolicy:
   # Sets log policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
@@ -208,7 +200,6 @@ Resources:
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref UserPoolClientLambda}
     DependsOn: UserPoolClientLambdaPolicy  
-
   UserPoolClientInputs:
   # Values passed to Userpool client Lambda
   # Depends on UserPool for Id
@@ -220,7 +211,6 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
-
   <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
@@ -367,7 +357,6 @@ Resources:
                 - 'iam:PassRole'
               Resource: <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>
     DependsOn: UserPoolClientInputs
-
   OpenIdLambda:
   # Lambda which sets OpenId Values
     Type: 'AWS::Lambda::Function'
@@ -375,7 +364,6 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
-
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const iam = new aws.IAM();'
@@ -443,7 +431,6 @@ Resources:
         - OpenIdLambdaRole
         - Arn
     DependsOn: OpenIdLambdaRole
-
   OpenIdLambdaIAMPolicy:
   # Sets policy for the role that executes the OpenId Lambda
   # Depends on OpenIdLambda for Arn
@@ -471,7 +458,6 @@ Resources:
               - arn:aws:iam::${account}:oidc-provider/${selector}
               - { account: !Ref "AWS::AccountId", selector: '*'}
     DependsOn: OpenIdLambda
-
   OpenIdLogPolicy:
   # Sets log policy for the role that executes the OpenId  Lambda
   # Depends on OpenIdLambda for Arn
@@ -493,7 +479,6 @@ Resources:
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OpenIdLambda}
     DependsOn: OpenIdLambdaIAMPolicy  
-
   OpenIdLambdaInputs:
   # Values passed to OpenId Lambda
   # Depends on OpenId for Arn
@@ -550,158 +535,6 @@ Resources:
           unauthenticated: !Ref unAuthRoleArn
           authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
-
-  OpenIdLambdaRole:
-  # Created to execute Lambda which sets MFA config values
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: !Ref openIdLambdaRoleName     
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
-      Policies:
-      - PolicyName: !Ref openIdRolePolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'iam:PassRole'
-              Resource: <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>
-    DependsOn: IdentityPoolRoleMap
-
-  OpenIdLambda:
-  # Lambda which sets OpenId Values
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Code:
-        ZipFile: !Join 
-          - |+
-          - - 'const response = require(''cfn-response'');'
-          - - 'const aws = require(''aws-sdk'');'
-          - - 'const iam = new aws.IAM();'
-          - - 'exports.handler = (event, context, callback) => {'
-          - - 'const params = {'
-          - - ' ClientIDList: [...event.ResourceProperties.clientIdList],'
-          - - ' ThumbprintList: ["0000000000000000000000000000000000000000"],'   
-          - - ' Url: event.ResourceProperties.url'
-          - - '};'
-          - - 'let exists = false;'
-          - - 'let existingValue;'
-          - - 'iam.listOpenIDConnectProviders({}).promise().then((data) => {'
-          - - ' if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {'
-          - - '   const vals = data.OpenIDConnectProviderList.map(x => x.Arn);'
-          - - '   existingValue = vals.find(i => i.split(''/'')[1] === ''params.Url'');'
-          - - '   if (!existingValue) {'
-          - - '     exists = true;'
-          - - '   }'
-          - - ' }'
-          - - ' if (!existingValue) {'
-          - - '   iam.createOpenIDConnectProvider(params).promise().then((data) => {'
-          - - '     response.send(event, context, response.SUCCESS, {data});'   
-          - - '   })'
-          - - '   .catch(err => console.log(err))'
-          - - ' } else {'
-          - - '   const findParams = {'
-          - - '     OpenIDConnectProviderArn: existingValue'
-          - - '   }'
-          - - '   iam.getOpenIDConnectProvider(findParams).promise().then((data) => {'
-          - - '     const audiences = data.ClientIDList;'
-          - - '     const updateCalls = [];'
-          - - '     params.ClientIDList.forEach((a) => {'
-          - - '       if (!audiences.includes(a)) {'
-          - - '         const updateParams = {'
-          - - '           ClientID: a,'
-          - - '           OpenIDConnectProviderArn: existingValue'
-          - - '         }'
-          - - '         const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();'
-          - - '         updateCalls.push(prom);'
-          - - '       }'
-          - - '     })'
-          - - '     Promise.all(updateCalls).then(function(values) {'
-          - - '       response.send(event, context, response.SUCCESS, {data});'   
-          - - '     })'
-          - - '     .catch((err3) => {'
-          - - '       response.send(event, context, response.FAILURE, {err3});'
-          - - '     })'
-          - - '   })'
-          - - '   .catch(err2 => console.log(err2))'
-          - - ' }'
-          - - '})'
-          - - '.catch(err1 => console.log(err1))'
-          - - '};'
-      Handler: index.handler
-      Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - OpenIdLambdaRole
-        - Arn
-    DependsOn: OpenIdLambdaRole
-
-  OpenIdLambdaIAMPolicy:
-  # Sets policy for the role that executes the OpenId Lambda
-  # Depends on OpenIdLambda for Arn
-  # Marked as depending on MFALambda for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: !Ref openIdLambdaIAMPolicy
-      Roles: 
-        - !Ref openIdLambdaRoleName
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'iam:CreateOpenIDConnectProvider'
-              - 'iam:GetOpenIDConnectProvider'
-              - 'iam:AddClientIDToOpenIDConnectProvider'
-            Resource: 'arn:aws:iam::444407295970:oidc-provider/accounts.google.com'
-          - Effect: Allow
-            Action:
-              - 'iam:ListOpenIDConnectProviders'
-            Resource: 'arn:aws:iam::444407295970:oidc-provider/*'
-    DependsOn: OpenIdLambda
-
-  OpenIdLogPolicy:
-  # Sets log policy for the role that executes the OpenId  Lambda
-  # Depends on UserPool for Arn
-  # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: !Ref openIdLogPolicy
-      Roles: 
-        - !Ref openIdLambdaRoleName
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'logs:CreateLogGroup'
-              - 'logs:CreateLogStream'
-              - 'logs:PutLogEvents'
-            Resource: !Sub  
-              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OpenIdLambda}
-    DependsOn: OpenIdLambdaIAMPolicy  
-
-  OpenIdLambdaInputs:
-  # Values passed to OpenId Lambda
-  # Depends on OpenId for Arn
-  # Marked as depending on OpenIdLogPolicy for easier to understand CFN sequencing
-    Type: 'Custom::LambdaCallout'
-    Properties:
-      ServiceToken: !GetAtt OpenIdLambda.Arn
-      clientIdList: 'testid1, testid2'
-      url: 'accounts.google.com'
-    DependsOn: OpenIdLogPolicy
-  
->>>>>>> initial commit for openid lambda
   <% } %>
 
 Outputs :
