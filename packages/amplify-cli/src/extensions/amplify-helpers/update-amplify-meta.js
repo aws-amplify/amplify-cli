@@ -18,8 +18,8 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   }
   amplifyMeta[category][resourceName][attribute] =
     Object.assign(amplifyMeta[category][resourceName][attribute], value);
-  if (timeStamp) { 
-    amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp; 
+  if (timeStamp) {
+    amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp;
   }
 
   const jsonString = JSON.stringify(amplifyMeta, null, 4);

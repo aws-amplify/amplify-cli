@@ -21,7 +21,7 @@ function checkForCommonIssues(schemaText, opts) {
   const usedDirectives = collectDirectiveNames(schemaText);
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
     throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API. 
-Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`)
+Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
   }
 }
 
@@ -78,7 +78,7 @@ async function transformGraphQLSchema(context, options) {
     new AppSyncTransformer(buildDir),
     new AppSyncDynamoDBTransformer(),
     new AppSyncConnectionTransformer(),
-    new AppSyncVersionedTransformer()
+    new AppSyncVersionedTransformer(),
   ];
 
   if (parameters.AuthCognitoUserPoolId) {

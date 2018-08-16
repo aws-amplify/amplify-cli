@@ -3,7 +3,7 @@ const chalk = require('chalk');
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
   context.print.info(chalk.red('Helpful URLs:'));
-  context.print.info("======================")
+  context.print.info('======================');
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
