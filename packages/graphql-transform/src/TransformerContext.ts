@@ -141,6 +141,10 @@ export default class TransformerContext {
         this.nodeMap[obj.name.value] = obj
     }
 
+    public putType(obj: TypeDefinitionNode) {
+        this.nodeMap[obj.name.value] = obj
+    }
+
     public getType(name: string): TypeSystemDefinitionNode | undefined {
         return this.nodeMap[name]
     }

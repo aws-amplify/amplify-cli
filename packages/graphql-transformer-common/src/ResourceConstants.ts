@@ -74,6 +74,7 @@ export class ResourceConstants {
     public static METADATA = {}
 
     public static readonly SNIPPETS = {
-        AuthCondition: "authCondition"
+        AuthCondition: "authCondition",
+        VersionedCondition: "versionedCondition"
     }
 }

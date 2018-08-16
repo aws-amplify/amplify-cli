@@ -25,14 +25,14 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   });
 
   if (!amplifyMeta[category] || Object.keys(dynamoDbResources).length === 0) {
-    context.print.error('No resources to update. Please add a resource first');
+    context.print.error('No resources to update. You need to add a resource.');
     process.exit(0);
     return;
   }
   const resources = Object.keys(dynamoDbResources);
   const question = [{
     name: 'resourceName',
-    message: 'Please select the resource you would want to update',
+    message: 'Specify the resource that you would want to update',
     type: 'list',
     choices: resources,
   }];
@@ -108,8 +108,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   ];
 
   print.info('');
-  print.info('Welcome to NoSQL DynamoDB database wizard');
-  print.info('You will be asked a series of questions to help determine how to best construct your NoSQL database table.');
+  print.info('Welcome to the NoSQL DynamoDB database wizard');
+  print.info('This wizard asks you a series of questions to help determine how to set up your NoSQL database table.');
   print.info('');
 
   // Ask resource and table name question
@@ -161,7 +161,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     if (attributeAnswers.findIndex(attribute => attribute.AttributeName
       === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await context.prompt.confirm('Attribute already added before. Do you want to add another attribute?');
+      continueAttributeQuestion = await context.prompt.confirm('This attribute was already added. Do you want to add another attribute?');
       continue;
     }
 
@@ -179,9 +179,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
 
   print.info('');
-  print.info("Before you create the database, you must specify how items in your table are uniquely organized. This is done by specifying a Primary key. The primary key uniquely identifies each item in the table, so that no two items can have the same key.This could be and individual column or a combination that has 'primary key' and a 'sort key'.");
+  print.info('Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.');
   print.info('');
-  print.info('To learn more about primary key:');
+  print.info('To learn more about primary keys, see:');
   print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey');
   print.info('');
   // Ask for primary key
@@ -266,14 +266,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers.KeySchema = answers.KeySchema;
 
   print.info('');
-  print.info('You can optionally add global secondary indexes for this table. These are useful when running queries defined by a different column than the primary key.');
-  print.info('To learn more about indexes:');
+  print.info('You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.');
+  print.info('To learn more about indexes, see:');
   print.info('http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes');
   print.info('');
 
   // Ask for GSI's
 
-  if (await context.prompt.confirm('Do you want to add GSIs to your table?')) {
+  if (await context.prompt.confirm('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
     const gsiList = [];
     // Generates a clone of the attribute list
@@ -320,7 +320,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
         if (availableAttributes.length > 0) {
-          if (await context.prompt.confirm('Do you want to add a sort key to your GSI?')) {
+          if (await context.prompt.confirm('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
               type: inputs[8].type,
               name: inputs[8].key,
@@ -336,7 +336,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           }
         }
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await context.prompt.confirm('Do you want to add more GSIs to your table?');
+        continuewithGSIQuestions = await context.prompt.confirm('Do you want to add more global secondary indexes to your table?');
       } else {
         context.print.error('You do not have any other attributes remaining to configure');
         break;

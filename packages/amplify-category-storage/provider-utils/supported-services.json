@@ -23,6 +23,7 @@
 				"required": true
 			}
 		],
+		"alias": "Object Storage",
 		"defaultValuesFilename": "s3-defaults.js",
 		"serviceWalkthroughFilename": "s3-walkthrough.js",
 		"cfnFilename": "s3-cloudformation-template.yml.ejs",
@@ -111,6 +112,7 @@
 				"question": "Please choose sort key for the GSI:"
 			}
 		],
+		"alias": "NoSQL Database",
 		"defaultValuesFilename": "dynamoDb-defaults.js",
 		"serviceWalkthroughFilename": "dynamoDb-walkthrough.js",
 		"cfnFilename": "dynamoDb-cloudformation-template.yml.ejs",

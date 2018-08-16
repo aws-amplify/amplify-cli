@@ -40,6 +40,7 @@ const {
 } = require('./amplify-helpers/update-amplify-meta');
 const { showHelp } = require('./amplify-helpers/show-help');
 const { executeProviderUtils } = require('./amplify-helpers/execute-provider-utils');
+const { showHelpfulProviderLinks } = require('./amplify-helpers/show-helpful-provider-links');
 
 module.exports = (context) => {
   const amplify = {
@@ -68,6 +69,7 @@ module.exports = (context) => {
     removeResource,
     sharedQuestions,
     showHelp,
+    showHelpfulProviderLinks,
     showResourceTable,
     serviceSelectionPrompt,
     updateProjectConfig,

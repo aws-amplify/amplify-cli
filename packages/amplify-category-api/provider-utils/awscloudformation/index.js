@@ -1,4 +1,7 @@
-const fs = require('fs');
+const path = require('path');
+const fs = require('fs-extra');
+
+const parametersFileName = 'api-params.json';
 
 let serviceMetadata;
 
@@ -24,7 +27,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options);
+  return context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
 
 function addResource(context, category, service, options) {
@@ -32,6 +35,7 @@ function addResource(context, category, service, options) {
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
     .then((result) => {
@@ -49,6 +53,13 @@ function addResource(context, category, service, options) {
           cfnFilename = answers.customCfnFile;
         }
         copyCfnTemplate(context, category, answers, cfnFilename);
+
+        const parameters = { ...answers };
+        const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+        fs.ensureDirSync(resourceDirPath);
+        const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+        const jsonString = JSON.stringify(parameters, null, 4);
+        fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
       }
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
@@ -61,17 +72,54 @@ function addResource(context, category, service, options) {
 
 
 async function updateResource(context, category, service) {
+  let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   if (!updateWalkthrough) {
     context.print.error('Update functionality not available for this option');
     process.exit(0);
   }
 
-  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
+  return updateWalkthrough(context, defaultValuesFilename, serviceMetadata)
+    .then((result) => {
+      const options = {};
+      if (result) {
+        if (result.answers) {
+          ({ answers } = result);
+          options.dependsOn = result.dependsOn;
+        } else {
+          answers = result;
+        }
+
+        if (!result.noCfnFile) {
+          if (answers.customCfnFile) {
+            cfnFilename = answers.customCfnFile;
+          }
+          copyCfnTemplate(context, category, answers, cfnFilename);
+          const parameters = { ...answers };
+          const resourceDirPath = path.join(
+            projectBackendDirPath,
+            category,
+            parameters.resourceName,
+          );
+          fs.ensureDirSync(resourceDirPath);
+          const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+          const jsonString = JSON.stringify(parameters, null, 4);
+          fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+          context.amplify.updateamplifyMetaAfterResourceUpdate(
+            category,
+            answers.resourceName,
+            'dependsOn',
+            answers.dependsOn,
+          );
+        }
+      }
+    });
 }
 
 module.exports = { addResource, updateResource };

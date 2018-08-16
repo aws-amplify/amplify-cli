@@ -30,7 +30,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, null, true);
+  return context.amplify.copyBatch(context, copyJobs, options, true, true);
 }
 
 

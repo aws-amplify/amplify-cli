@@ -2,6 +2,7 @@ const awsRegions = require('./aws-regions');
 const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
+const AppSync = require('../src/aws-utils/aws-appsync');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 
 
@@ -36,16 +37,14 @@ module.exports = {
     }).promise()
       .then((result) => {
         let lambdafunctions = result.Functions;
-
         if (options && options.region) {
           lambdafunctions = lambdafunctions.filter(lambdafunction =>
             lambdafunction.FunctionArn.includes(options.region));
         }
-
         return lambdafunctions;
       }))
     .catch((err) => {
-      context.print.error('Failed to fetch lambda functions');
+      context.print.error('Failed to fetch Lambda functions');
       throw err;
     }),
   getDynamoDBTables: (context, options) => {
@@ -62,9 +61,11 @@ module.exports = {
         const describeTablePromises = [];
 
         for (let i = 0; i < dynamodbTables.length; i += 1) {
-          describeTablePromises.push(dynamodbModel.dynamodb.describeTable({
-            TableName: dynamodbTables[i],
-          }).promise());
+          describeTablePromises.push(dynamodbModel.dynamodb
+            .describeTable({
+              TableName: dynamodbTables[i],
+            })
+            .promise());
         }
 
         return Promise.all(describeTablePromises);
@@ -92,4 +93,24 @@ module.exports = {
         throw err;
       });
   },
+  getAppSyncAPIs: context =>
+    new AppSync(context)
+      .then((result) => {
+        const appSyncModel = result;
+        context.print.debug(result);
+        return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
+      })
+      .then(result => result.graphqlApis),
+  getIntrospectionSchema: (context, options) =>
+    new AppSync(context)
+      .then((result) => {
+        const appSyncModel = result;
+        return appSyncModel.appSync
+          .getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' })
+          .promise();
+      })
+      .then(result => result.schema.toString() || null)
+      .catch((e) => {
+        context.print.debug(e);
+      }),
 };

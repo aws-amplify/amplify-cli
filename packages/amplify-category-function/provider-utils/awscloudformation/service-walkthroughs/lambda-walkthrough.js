@@ -126,7 +126,7 @@ async function askDynamoDBQuestions(context, inputs) {
         const storageResources = context.amplify.getProjectDetails().amplifyMeta.storage;
         const dynamoDbProjectResources = [];
         if (!storageResources) {
-          context.print.error('There are no DynamoDb resources configured in your project currently');
+          context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
         Object.keys(storageResources).forEach((resourceName) => {
@@ -135,7 +135,7 @@ async function askDynamoDBQuestions(context, inputs) {
           }
         });
         if (dynamoDbProjectResources.length === 0) {
-          context.print.error('There are no DynamoDb resources configured in your project currently');
+          context.print.error('There are no DynamoDB resources configured in your project currently');
           break;
         }
         const dynamoResourceQuestion = {
@@ -154,7 +154,7 @@ async function askDynamoDBQuestions(context, inputs) {
         try {
           ({ add } = require('amplify-category-storage'));
         } catch (e) {
-          context.print.error('Storage plugin not installed in the CLI. Please install it to use this feature');
+          context.print.error('Storage plugin is not installed in the CLI. You must install it to use this feature.');
           break;
         }
         return add(context, 'awscloudformation', 'DynamoDB')
@@ -190,7 +190,7 @@ async function askDynamoDBQuestions(context, inputs) {
         }));
 
         if (dynamodbOptions.length === 0) {
-          context.print.error('You do not have any DynamoDB tables configured for the selected region');
+          context.print.error('You do not have any DynamoDB tables configured for the selected Region');
           break;
         }
 

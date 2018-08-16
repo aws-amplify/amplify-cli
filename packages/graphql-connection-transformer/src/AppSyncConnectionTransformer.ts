@@ -173,16 +173,16 @@ export class AppSyncConnectionTransformer extends Transformer {
 
             // Update the create & update input objects for this
             const createInputName = makeCreateInputObjectName(parentTypeName)
-            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
-                ctx.nodeMap[createInputName] = updated
+                ctx.putType(updated)
             }
             const updateInputName = makeUpdateInputObjectName(parentTypeName)
-            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
-                ctx.nodeMap[updateInputName] = updated
+                ctx.putType(updated)
             }
 
         } else if (leftConnectionIsList) {
@@ -211,16 +211,16 @@ export class AppSyncConnectionTransformer extends Transformer {
 
             // Update the create & update input objects for the related type
             const createInputName = makeCreateInputObjectName(relatedTypeName)
-            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
-                ctx.nodeMap[createInputName] = updated
+                ctx.putType(updated)
             }
             const updateInputName = makeUpdateInputObjectName(relatedTypeName)
-            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
-                ctx.nodeMap[updateInputName] = updated
+                ctx.putType(updated)
             }
         } else {
             // 5. {} to ?
@@ -239,16 +239,16 @@ export class AppSyncConnectionTransformer extends Transformer {
 
             // Update the create & update input objects for this type
             const createInputName = makeCreateInputObjectName(parentTypeName)
-            const createInput = ctx.nodeMap[createInputName] as InputObjectTypeDefinitionNode
+            const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
-                ctx.nodeMap[createInputName] = updated
+                ctx.putType(updated)
             }
             const updateInputName = makeUpdateInputObjectName(parentTypeName)
-            const updateInput = ctx.nodeMap[updateInputName] as InputObjectTypeDefinitionNode
+            const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
-                ctx.nodeMap[updateInputName] = updated
+                ctx.putType(updated)
             }
         }
     }
@@ -280,7 +280,7 @@ export class AppSyncConnectionTransformer extends Transformer {
 
         // Extensions are not allowed to redeclare fields so we must replace
         // it in place.
-        const type = ctx.nodeMap[parent.name.value] as ObjectTypeDefinitionNode
+        const type = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode
         if (
             type &&
             (type.kind === Kind.OBJECT_TYPE_DEFINITION || type.kind === Kind.INTERFACE_TYPE_DEFINITION)
@@ -300,7 +300,7 @@ export class AppSyncConnectionTransformer extends Transformer {
                 ...type,
                 fields: newFields
             }
-            ctx.nodeMap[parent.name.value] = updatedType
+            ctx.putType(updatedType)
 
             if (!this.typeExist('ModelSortDirection', ctx)) {
                 const modelSortDirection = makeModelSortDirectionEnumObject()

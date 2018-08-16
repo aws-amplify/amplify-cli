@@ -33,7 +33,7 @@ async function invalidate(context) {
     result = new Promise((resolve, reject) => {
       cloudFront.createInvalidation(invalidateParams, (err, data) => {
         if (err) {
-          context.print.error('Error occured invalidating CloudFront distribution');
+          context.print.error('Error occured when invalidating the Amazon CloudFront distribution');
           context.print.info(err);
           reject(err);
         } else {

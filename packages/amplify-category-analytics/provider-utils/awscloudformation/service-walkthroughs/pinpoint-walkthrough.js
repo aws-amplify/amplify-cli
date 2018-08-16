@@ -11,7 +11,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('You have Pinpoint analytics already added to your project.');
+    context.print.warning('Pinpoint analytics have already been added to your project.');
     process.exit(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);
@@ -75,7 +75,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       Object.assign(defaultValues, answers);
       const resource = defaultValues.resourceName;
 
-      // Check for auth rules/settings
+      // Check for authorization rules and settings
 
       const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
@@ -86,7 +86,8 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
       if (foundUnmetRequirements) {
-        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guest/unauthenticated users to send analytics events (recommended when getting started)?')) {
+        context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)')) {
           try {
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           } catch (e) {
@@ -95,7 +96,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           }
         } else {
           try {
-            context.print.warning('Providing authorization for only authenticated users to send analytics events. Please use "amplify update auth" to modify this behavior.');
+            context.print.warning('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
             apiRequirements.allowUnauthenticatedIdentities = false;
             await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
           } catch (e) {

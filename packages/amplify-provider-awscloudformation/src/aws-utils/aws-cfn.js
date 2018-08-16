@@ -32,7 +32,7 @@ class CloudFormation {
       cfnModel.createStack(cfnParentStackParams, (createErr) => {
         this.readStackEvents(cfnParentStackParams.StackName);
         if (createErr) {
-          context.print.error('Error creating cloudformation stack');
+          context.print.error('An error occurred when creating the CloudFormation stack');
           reject(createErr);
         }
         cfnModel.waitFor(
@@ -42,7 +42,7 @@ class CloudFormation {
               clearInterval(self.pollForEvents);
             }
             if (completeErr) {
-              context.print.error('Error creating cloudformation stack');
+              context.print.error('An error occurred when  creating the CloudFormation stack');
               reject(completeErr);
             }
             resolve(waitForStackdata);
@@ -76,38 +76,67 @@ class CloudFormation {
               showEvents(stackEvents);
               allShownEvents = stackEvents;
             }
-          } else {
-            let newEvents = _.differenceBy(stackEvents, allShownEvents, 'EventId');
 
-            if (newEvents.length > 0) {
-              // To store all the uniq nestedStacks which are a part of the new found events
-              const nestedStacks = [];
-              const nestedStackEventPromises = [];
+            // To store all the uniq nestedStacks that are a part of the new found events
+            const nestedStacks = [];
+            const nestedStackEventPromises = [];
+            let newEvents = stackEvents;
 
-              for (let i = 0; i < newEvents.length; i += 1) {
-                if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
-                  // Logic to fetch events from nested stack within the parent stacks
-                  if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
-                    /*eslint-disable*/
-                    nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
-                    /* eslint-enable */
-                    nestedStacks.push(newEvents[i].PhysicalResourceId);
-                  }
+            for (let i = 0; i < newEvents.length; i += 1) {
+              if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
+                // Logic to fetch events from nested stack within the parent stacks
+                if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
+                  /*eslint-disable*/
+                  nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
+                  /* eslint-enable */
+                  nestedStacks.push(newEvents[i].PhysicalResourceId);
                 }
               }
-
-              return Promise.all(nestedStackEventPromises)
-                .then((nestedstackEvents) => {
-                  newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
-                    combinedEventList.concat(nestedstackEventList), newEvents);
-                  // Just get the new events to display to the user
-
-                  newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
-                  newEvents = _.uniqBy(newEvents, 'EventId');
-                  showEvents(newEvents);
-                  allShownEvents = allShownEvents.concat(newEvents);
-                });
             }
+
+            return Promise.all(nestedStackEventPromises)
+              .then((nestedstackEvents) => {
+                newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
+                  combinedEventList.concat(nestedstackEventList), newEvents);
+                // Just get the new events to display to the user
+
+                newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
+                newEvents = _.uniqBy(newEvents, 'EventId');
+                showEvents(newEvents);
+                allShownEvents = allShownEvents.concat(newEvents);
+              });
+          }
+
+          let newEvents = stackEvents;
+
+          if (newEvents.length > 0) {
+            // To store all the uniq nestedStacks that are a part of the new found events
+            const nestedStacks = [];
+            const nestedStackEventPromises = [];
+
+            for (let i = 0; i < newEvents.length; i += 1) {
+              if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
+                // Logic to fetch events from nested stack within the parent stacks
+                if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
+                  /*eslint-disable*/
+                    nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
+                    /* eslint-enable */
+                  nestedStacks.push(newEvents[i].PhysicalResourceId);
+                }
+              }
+            }
+
+            return Promise.all(nestedStackEventPromises)
+              .then((nestedstackEvents) => {
+                newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
+                  combinedEventList.concat(nestedstackEventList), newEvents);
+                // Just get the new events to display to the user
+
+                newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
+                newEvents = _.uniqBy(newEvents, 'EventId');
+                showEvents(newEvents);
+                allShownEvents = allShownEvents.concat(newEvents);
+              });
           }
         }
       });
@@ -135,10 +164,10 @@ class CloudFormation {
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
     if (!stackName) {
-      throw (new Error('Project Stack is not yet created. Please use amplify init to initialize the project.'));
+      throw (new Error('Project stack has not been created yet. Use amplify init to initialize the project.'));
     }
     if (!deploymentBucketName) {
-      throw (new Error('Project deployment bucket is not yet created. Please use amplify init to initialize the project.'));
+      throw (new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.'));
     }
 
     return new S3(this.context)
@@ -312,6 +341,8 @@ function showEvents(events) {
   console.log('\n');
   events = events.sort((a, b) => new Date(a.Timestamp) > new Date(b.Timestamp));
 
-  console.log(columnify(events, { columns: ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'], showHeaders: false }));
+  if (events.length > 0) {
+    console.log(columnify(events, { columns: ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'], showHeaders: false }));
+  }
 }
 module.exports = CloudFormation;

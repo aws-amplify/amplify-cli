@@ -24,6 +24,7 @@
     "amplify-frontend-ios": "^0.1.0",
     "amplify-frontend-javascript": "^0.1.0",
     "amplify-provider-awscloudformation": "^0.1.0",
+    "amplify-codegen": "^0.1.0",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",
     "eslint": "^4.19.1",

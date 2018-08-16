@@ -9,7 +9,7 @@ function run(context) {
   const selectProviders = {
     type: 'checkbox',
     name: 'selectedProviders',
-    message: 'Please select the backend providers.',
+    message: 'Select the backend providers.',
     choices: providerPluginList,
     default: ['awscloudformation'],
   };

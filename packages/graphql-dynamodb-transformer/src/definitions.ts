@@ -6,7 +6,8 @@ import {
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
     isScalar, getBaseType, blankObjectExtension, extensionWithFields, makeField,
-    makeArg
+    makeArg,
+    ModelResourceIDs
 } from 'graphql-transformer-common'
 
 const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
@@ -15,11 +16,8 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notCont
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
 const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
-export function makeCreateInputObjectName(typeName: string): string {
-    return graphqlName(`Create` + toUpper(typeName) + 'Input')
-}
 export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = makeCreateInputObjectName(obj.name.value)
+    const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => field.name.value !== 'id' && isScalar(field.type))
         .map(
@@ -48,11 +46,8 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeUpdateInputObjectName(typeName: string): string {
-    return graphqlName('Update' + toUpper(typeName) + 'Input')
-}
 export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = makeUpdateInputObjectName(obj.name.value)
+    const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter(f => isScalar(f.type))
         .map(
@@ -83,11 +78,8 @@ export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeDeleteInputObjectName(typeName: string): string {
-    return graphqlName('Delete' + toUpper(typeName) + 'Input')
-}
 export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = makeDeleteInputObjectName(obj.name.value)
+    const name = ModelResourceIDs.ModelDeleteInputObjectName(obj.name.value)
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
         // TODO: Service does not support new style descriptions so wait.
@@ -115,7 +107,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
 }
 
 export function makeModelXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Model${obj.name.value}FilterInput`)
+    const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
         .map(
@@ -206,7 +198,7 @@ export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
 }
 
 export function makeModelScalarFilterInputObject(type: string): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Model${type}FilterInput`)
+    const name = ModelResourceIDs.ModelFilterInputTypeName(type)
     let conditions = getScalarConditions(type)
     const fields: InputValueDefinitionNode[] = conditions
         .map((condition: string) => ({
@@ -262,11 +254,8 @@ function getScalarConditions(type: string): string[] {
     }
 }
 
-export function makeModelConnectionTypeName(typeName: string): string {
-    return `Model${typeName}Connection`
-}
 export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNode {
-    const connectionName = makeModelConnectionTypeName(typeName)
+    const connectionName = ModelResourceIDs.ModelConnectionTypeName(typeName)
     let connectionTypeExtension = blankObjectExtension(connectionName)
     connectionTypeExtension = extensionWithFields(
         connectionTypeExtension,
@@ -287,19 +276,28 @@ export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNo
     return connectionTypeExtension
 }
 
-export function makeModelFilterInputTypeName(name: string): string {
-    return `Model${name}FilterInput`
+export function makeModelScanField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
+    return makeField(
+        fieldName,
+        [
+            makeArg('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
+            makeArg('limit', makeNamedType('Int')),
+            makeArg('nextToken', makeNamedType('String'))
+        ],
+        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
+    )
 }
+
 export function makeModelConnectionField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
     return makeField(
         fieldName,
         [
-            makeArg('filter', makeNamedType(makeModelFilterInputTypeName(returnTypeName))),
+            makeArg('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
             makeArg('sortDirection', makeNamedType('ModelSortDirection')),
             makeArg('limit', makeNamedType('Int')),
             makeArg('nextToken', makeNamedType('String'))
         ],
-        makeNamedType(makeModelConnectionTypeName(returnTypeName))
+        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
     )
 }
 

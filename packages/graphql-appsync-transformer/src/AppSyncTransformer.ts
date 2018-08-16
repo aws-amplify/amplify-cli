@@ -82,7 +82,7 @@ export class AppSyncTransformer extends Transformer {
     private buildSchema(ctx: TransformerContext): string {
         const built = buildASTSchema({
             kind: 'Document',
-            definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.nodeMap[k])
+            definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
         })
         const SDL = printSchema(built)
         return SDL;

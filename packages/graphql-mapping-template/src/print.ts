@@ -12,7 +12,7 @@ function printIf(node: IfNode, indent: string = '') {
     if (node.inline) {
         return `#if( ${printExpr(node.predicate)} ) ${printExpr(node.expr)} #end`;
     }
-    return `${indent}#if( ${printExpr(node.predicate)} )\n${indent}${TAB}${printExpr(node.expr)}\n${indent}#end`;
+    return `${indent}#if( ${printExpr(node.predicate)} )\n${printExpr(node.expr, indent + TAB)}\n${indent}#end`;
 }
 
 function printIfElse(node: IfElseNode, indent: string = '') {
@@ -114,7 +114,7 @@ function printComment(node: CommentNode, indent: string = ''): string {
 }
 
 function printCompoundExpression(node: CompoundExpressionNode, indent: string = ''): string {
-    return node.expressions.map((node: Expression) => printExpr(node, indent)).join(`\n${indent}`)
+    return node.expressions.map((node: Expression) => indent + printExpr(node, indent)).join(`\n${indent}`)
 }
 
 function printToJson(node: ToJsonNode, indent: string = ''): string {

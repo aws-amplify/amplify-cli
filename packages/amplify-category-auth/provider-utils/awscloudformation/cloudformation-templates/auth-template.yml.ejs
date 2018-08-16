@@ -51,7 +51,6 @@ Resources:
                 Action: 
                   - "sns:Publish"
                 Resource: "*"
-
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -88,7 +87,6 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -102,7 +100,6 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
-
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
@@ -117,7 +114,6 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
-
   # BEGIN USER POOL LAMBDA RESOURCES
   UserPoolClientRole:
   # Created to execute Lambda which gets userpool app client config values
@@ -134,7 +130,6 @@ Resources:
             Action:
               - 'sts:AssumeRole'
     DependsOn: UserPoolClient
-
   UserPoolClientLambda:
   # Lambda which gets userpool app client config values
   # Depends on UserPool for id
@@ -144,22 +139,26 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
-
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const identity = new aws.CognitoIdentityServiceProvider();'
             - 'exports.handler = (event, context, callback) => {'
+            - ' if (event.RequestType == ''Delete'') { '
+            - '   response.send(event, context, response.SUCCESS)'
+            - ' };'
+            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   const params = {'
             - '     ClientId: event.ResourceProperties.clientId,'
             - '     UserPoolId: event.ResourceProperties.userpoolId'
-            - '   }'
+            - '   };'
             - '   identity.describeUserPoolClient(params).promise()'
             - '     .then((res) => {'
             - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
             - '     })'
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILURE, {err});'
-            - '     })'
+            - '     });'
+            - ' };'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
@@ -168,7 +167,6 @@ Resources:
         - UserPoolClientRole
         - Arn
     DependsOn: UserPoolClientRole
-
   UserPoolClientLambdaPolicy:
   # Sets userpool policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
@@ -186,7 +184,6 @@ Resources:
               - 'cognito-idp:DescribeUserPoolClient'
             Resource: !GetAtt UserPool.Arn
     DependsOn: UserPoolClientLambda
-
   UserPoolClientLogPolicy:
   # Sets log policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
@@ -208,7 +205,6 @@ Resources:
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref UserPoolClientLambda}
     DependsOn: UserPoolClientLambdaPolicy  
-
   UserPoolClientInputs:
   # Values passed to Userpool client Lambda
   # Depends on UserPool for Id
@@ -220,8 +216,6 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
-
-
   <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
@@ -261,7 +255,7 @@ Resources:
             - 'exports.handler = (event, context, callback) => {'
             - ' if (event.RequestType == ''Delete'') { '
             - '   response.send(event, context, response.SUCCESS)'
-            - ' }'
+            - ' };'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   let totpParams = {};'
             - '   try {'
@@ -276,18 +270,18 @@ Resources:
             - '         }'
             - '       },'
             - '       SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === ''true'' ? true : false}'
-            - '     }'
+            - '     };'
             - '   } catch(e) {'
             - '     response.send(event, context, response.FAILURE, {e});'
-            - '   }'
+            - '   };'
             - '   identity.setUserPoolMfaConfig(totpParams).promise()'
             - '     .then((res) => {'
             - '       response.send(event, context, response.SUCCESS, {res});'   
             - '     })'
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILURE, {err});'
-            - '     })'
-            - ' }'
+            - '     });'
+            - ' };'
             - '};'
       Handler: index.handler
       Runtime: nodejs6.10
@@ -378,7 +372,6 @@ Resources:
                 - 'iam:PassRole'
               Resource: <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>
     DependsOn: UserPoolClientInputs
-
   OpenIdLambda:
   # Lambda which sets OpenId Values
     Type: 'AWS::Lambda::Function'
@@ -386,13 +379,12 @@ Resources:
       Code:
         ZipFile: !Join 
           - |+
-
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
             - 'const iam = new aws.IAM();'
             - 'exports.handler = (event, context) => {'
             - ' if (event.RequestType == ''Delete'') { '
-            - '   response.send(event, context, response.SUCCESS)'
+            - '   response.send(event, context, response.SUCCESS);'
             - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   const params = {'
@@ -409,18 +401,18 @@ Resources:
             - '       if (!existingValue) {'
             - '         exists = true;'
             - '       }'
-            - '     }'
+            - '     };'
             - '     if (!existingValue) {'
             - '       iam.createOpenIDConnectProvider(params).promise().then((data) => {'
             - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'   
             - '       })'
             - '       .catch((err) => {'
             - '         response.send(event, context, response.FAILURE, {err});'
-            - '       })'
+            - '       });'
             - '     } else {'
             - '       const findParams = {'
             - '         OpenIDConnectProviderArn: existingValue'
-            - '       }'
+            - '       };'
             - '       iam.getOpenIDConnectProvider(findParams).promise().then((data) => {'
             - '         const audiences = data.ClientIDList;'
             - '         const updateCalls = [];'
@@ -433,20 +425,24 @@ Resources:
             - '             const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();'
             - '             updateCalls.push(prom);'
             - '           }'
-            - '         })'
+            - '         });'
             - '         Promise.all(updateCalls).then(function(values) {'
             - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});'   
             - '         })'
             - '         .catch((err3) => {'
             - '           response.send(event, context, response.FAILURE, {err3});'
-            - '         })'
+            - '         });'
             - '       })'
-            - '       .catch(err2 => console.log(err2))'
-            - '     }'
+            - '       .catch((err2) => {'
+            - '           response.send(event, context, response.FAILURE, {err2});'
+            - '       });'
+            - '     };'
             - '   })'
-            - '   .catch(err1 => console.log(err1))'
-            - '   };'
-            - '}'
+            - '   .catch((err1) => {'
+            - '           response.send(event, context, response.FAILURE, {err1});'
+            - '   });'
+            - ' };'
+            - '};'
       Handler: index.handler
       Runtime: nodejs6.10
       Timeout: '300'
@@ -454,7 +450,6 @@ Resources:
         - OpenIdLambdaRole
         - Arn
     DependsOn: OpenIdLambdaRole
-
   OpenIdLambdaIAMPolicy:
   # Sets policy for the role that executes the OpenId Lambda
   # Depends on OpenIdLambda for Arn
@@ -482,7 +477,6 @@ Resources:
               - arn:aws:iam::${account}:oidc-provider/${selector}
               - { account: !Ref "AWS::AccountId", selector: '*'}
     DependsOn: OpenIdLambda
-
   OpenIdLogPolicy:
   # Sets log policy for the role that executes the OpenId  Lambda
   # Depends on OpenIdLambda for Arn
@@ -504,7 +498,6 @@ Resources:
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OpenIdLambda}
     DependsOn: OpenIdLambdaIAMPolicy  
-
   OpenIdLambdaInputs:
   # Values passed to OpenId Lambda
   # Depends on OpenId for Arn
@@ -561,9 +554,6 @@ Resources:
           unauthenticated: !Ref unAuthRoleArn
           authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
-
-
-
   <% } %>
 
 Outputs :

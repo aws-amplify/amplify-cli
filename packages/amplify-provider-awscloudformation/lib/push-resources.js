@@ -62,7 +62,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
       try {
         cfnLint.validateFile(filePath);
       } catch (err) {
-        context.print.error(`Invalid Cloudformation tempalte: ${filePath}`);
+        context.print.error(`Invalid CloudFormation template: ${filePath}`);
         throw err;
       }
     }
@@ -99,9 +99,9 @@ function packageResources(context, resources) {
         const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
 
         if (cfnFiles.length !== 1) {
-          context.print.error('There should be just one cloudformation template in the resource directory');
+          context.print.error('Only one CloudFormation template is allowed in the resource directory');
           context.print.error(resourceDir);
-          throw new Error('There should be just one cloudformation template in the resource directory');
+          throw new Error('Only one CloudFormation template is allowed in the resource directory');
         }
 
         const cfnFile = cfnFiles[0];
@@ -154,7 +154,7 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const files = fs.readdirSync(resourceDir);
-    // Fetch all the Cloudformation templates for the resource (can be json or yml)
+    // Fetch all the CloudFormation templates for the resource (can be json or yml)
     const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
 
     for (let j = 0; j < cfnFiles.length; j += 1) {

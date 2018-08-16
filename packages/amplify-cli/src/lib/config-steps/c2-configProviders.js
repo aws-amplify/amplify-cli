@@ -10,7 +10,7 @@ function run(context) {
   const providerSelection = {
     type: 'checkbox',
     name: 'selectedProviders',
-    message: 'Please select the backend providers.',
+    message: 'Select the backend providers.',
     choices: providerPluginNames,
     default: currentSelectedProviders,
   };

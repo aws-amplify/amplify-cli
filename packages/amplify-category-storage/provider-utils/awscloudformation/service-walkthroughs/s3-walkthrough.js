@@ -9,12 +9,12 @@ const templateFileName = 's3-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   while (!checkIfAuthExists(context)) {
-    if (await context.prompt.confirm('You need auth (Cognito) added to your project for adding storage for user files. Do you want to add auth now?')) {
+    if (await context.prompt.confirm('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
       } catch (e) {
-        context.print.error('Auth plugin not installed in the CLI. Please install it to use this feature');
+        context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
         break;
       }
       break;
@@ -25,7 +25,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('You have S3 storage already added to your project.');
+    context.print.warning('Amazon S3 storage was already added to your project.');
     process.exit(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);

@@ -20,7 +20,7 @@ module.exports = {
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not confgiured for this category');
+          context.print.error('Provider not configured for this category');
           return;
         }
         return providerController.addResource(context, category, result.service, options);
@@ -29,12 +29,12 @@ module.exports = {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally.`);
         print.info('');
-        print.success('Some next steps:');
-        print.info(`Checkout sample function code generated in <project-dir>/amplify/backend/${resourceName}/src`);
-        print.info('"amplify function build" will build all your functions currently in the project');
-        print.info(`"amplify function invoke ${resourceName}" will allow you to test a function locally`);
-        print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
-        print.info('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud');
+        print.success('Next steps:');
+        print.info(`Check out sample function code generated in <project-dir>/amplify/backend/${resourceName}/src`);
+        print.info('"amplify function build" builds all of your functions currently in the project');
+        print.info(`"amplify function invoke ${resourceName}" enables you to test a function locally`);
+        print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+        print.info('"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud');
         print.info('');
       })
       .catch((err) => {

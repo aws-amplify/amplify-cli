@@ -16,11 +16,11 @@ module.exports = {
     const commands = [
       {
         name: 'add',
-        description: `Takes you through a CLI flow to add a ${featureName} resource to your local backend`,
+        description: `Takes you through steps in the CLI to add a ${featureName} resource to your local backend`,
       },
       {
         name: 'update',
-        description: `Takes you through a CLI flow to update an ${featureName} resource`,
+        description: `Takes you through steps in the CLI to update an ${featureName} resource`,
       },
       {
         name: 'push',
@@ -28,7 +28,7 @@ module.exports = {
       },
       {
         name: 'remove',
-        description: `Removes ${featureName} resource from your local backend which would be removed from the cloud on the next push command`,
+        description: `Removes ${featureName} resource from your local backend. The resource is removed from the cloud on the next push command.`,
       },
     ];
 
