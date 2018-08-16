@@ -107,6 +107,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
         choices: pathList,
       });
 
+      // removing path from paths list
       const currentPath = answers.paths.find(path => path.name === pathToEdit.path);
       answers.paths = answers.paths.filter(path => path.name !== pathToEdit.path);
 
@@ -329,6 +330,13 @@ async function askPaths(context, answers, currentPath) {
       type: 'input',
       message: 'Provide a path (e.g., /items)',
       default: currentPath ? currentPath.name : '/items',
+      validate(value) {
+        const err = validatePathName(value, answers.paths);
+        if (err) {
+          return err;
+        }
+        return true;
+      },
     },
     {
       name: 'functionType',
@@ -368,6 +376,56 @@ async function askPaths(context, answers, currentPath) {
   const { dependsOn, functionArns } = findDependsOn(paths);
 
   return { paths, dependsOn, functionArns };
+}
+
+function validatePathName(name, paths) {
+  const err = null;
+
+  if (name.length === 0 || name.substring(name.length - 1) === '/') {
+    return 'Each sub-path must begin with a letter or number.';
+  }
+
+  // Set / as a first character of path name
+  if (name.substring(0, 1) !== '/') {
+    return 'Path must begin with / e.g. /items';
+  }
+  if (/[^a-zA-Z0-9\-/]/.test(name)) {
+    return 'You can use the following characters: a-z A-Z 0-9 - /';
+  }
+
+  // If the are is something like /asasd//asa must be detected
+  // Splitting the string with / to find empty sub-path
+  const split = name.split('/');
+  for (let i = 1; i < split.length; i += 1) {
+    const val = split[i];
+    if (val.length === 0) {
+      return 'Each sub-path must begin with a letter or number';
+    }
+  }
+
+  // Checking if there is already that path created on the API
+  if (paths.find(path => path.name === name)) {
+    return 'Path name already exists';
+  }
+
+  // Create subpath from the beginning to find a match on existing paths
+  const findSubPath = (path, subpath) => path.name === subpath;
+  let subpath = '';
+  split.forEach((sub) => {
+    subpath = `${subpath}/${sub}`;
+    const subpathFind = paths.find(path => findSubPath(path, subpath));
+    if (subpathFind) {
+      return `A different path already matches this sub-path: ${subpath}`;
+    }
+  });
+
+  // Check if other paths are a subpath of the new path
+  subpath = paths.find(path => path.name.indexOf(name) === 0);
+  if (subpath) {
+    return `An existing path already match with the one provided: ${subpath.name}`;
+  }
+
+  return err;
 }
 
 function findDependsOn(paths) {
