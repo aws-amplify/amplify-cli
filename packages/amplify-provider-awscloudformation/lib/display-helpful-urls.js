@@ -2,8 +2,6 @@ const chalk = require('chalk');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
-  context.print.info(chalk.red('Helpful URLs:'));
-  context.print.info('======================');
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
@@ -48,7 +46,6 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (securityType === 'API_KEY') {
-      context.print.info(chalk.blue(`GraphQL API KEY: ${GraphQLAPIKeyOutput}`));
       context.print.info(chalk`GraphQL API KEY: {blue.underline ${GraphQLAPIKeyOutput}}`);
     }
   }
