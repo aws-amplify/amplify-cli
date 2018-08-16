@@ -95,13 +95,13 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   }
 
   if (cognitoResource.output.GoogleWebClient) {
-    cognitoResource.GoogleSignIn = {
+    cognitoConfig.GoogleSignIn = {
       Permissions: 'email,profile,openid',
       'ClientId-WebApp': cognitoResource.output.GoogleWebClient,
     };
   }
   if (cognitoResource.output.FacebookWebClient) {
-    cognitoResource.FacebookSignIn = {
+    cognitoConfig.FacebookSignIn = {
       AppId: cognitoResource.output.FacebookWebClient,
       Permissions: 'public_profile',
     };
