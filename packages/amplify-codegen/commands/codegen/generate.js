@@ -10,6 +10,7 @@ module.exports = {
       await codeGen.generate(context, forceDownloadSchema)
     } catch (ex) {
       context.print.error(ex.message)
+      process.exit(1)
     }
   },
 }
