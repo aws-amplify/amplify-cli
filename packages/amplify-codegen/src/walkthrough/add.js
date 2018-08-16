@@ -1,4 +1,4 @@
-const path = require('path')
+const {dirname, join } = require('path')
 const askAppSyncAPITarget = require('./questions/apiTarget')
 const askCodeGenTargetLanguage = require('./questions/languageTarget')
 const askCodeGenQueryFilePattern = require('./questions/queryFilePattern')
@@ -48,8 +48,8 @@ async function addWalkThrough(context, configs) {
   const api = newAPIs.find(a => a.id === apiId)
   const frontendHandler = getFrontEndHandler(context)
   const includePatternDefault =
-    frontendHandler === 'android' ? path.dirname(getSchemaDownloadLocation(context)) : ''
-  includePattern = await askCodeGenQueryFilePattern([path.join(includePatternDefault, 'graphql', '**', '*.graphql')])
+    frontendHandler === 'android' ? dirname(getSchemaDownloadLocation(context)) : 'graphql/'
+  includePattern = await askCodeGenQueryFilePattern([join(includePatternDefault, '**', '*.graphql')])
 
   if (frontendHandler !== 'android') {
     targetLanguage = await askCodeGenTargetLanguage(context)
