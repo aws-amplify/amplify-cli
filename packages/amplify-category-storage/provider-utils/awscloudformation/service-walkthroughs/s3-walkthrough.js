@@ -65,7 +65,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
-  let parameters;
+  let parameters = {};
   if (resourceName) {
     inputs = inputs.filter(input => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
