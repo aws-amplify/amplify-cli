@@ -529,144 +529,144 @@
 					}
 				]
 			}
-		}
-	},
-	"S3AuthPolicyW": {
-		"Condition": "EnableAuthWrite",
-		"DependsOn": [
-			"S3Bucket"
-		],
-		"Type": "AWS::IAM::Policy",
-		"Properties": {
-			"PolicyName": {
-				"Ref": "authPolicyName"
-			},
-			"Roles": [
-				{
-					"Ref": "authRoleName"
-				}
+		},
+		"S3AuthPolicyW": {
+			"Condition": "EnableAuthWrite",
+			"DependsOn": [
+				"S3Bucket"
 			],
-			"PolicyDocument": {
-				"Version": "2012-10-17",
-				"Statement": [
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "authPolicyName"
+				},
+				"Roles": [
 					{
-						"Effect": "Allow",
-						"Action": [
-							"s3:GetObject",
-							"s3:PutObject",
-							"s3:DeleteObject"
-						],
-						"Resource": [
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										},
-										"/public/*"
+						"Ref": "authRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:GetObject",
+								"s3:PutObject",
+								"s3:DeleteObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/public/*"
+										]
 									]
-								]
-							},
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										},
-										"/protected/${cognito-identity.amazonaws.com:sub}/*"
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/protected/${cognito-identity.amazonaws.com:sub}/*"
+										]
 									]
-								]
-							},
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										},
-										"/private/${cognito-identity.amazonaws.com:sub}/*"
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/private/${cognito-identity.amazonaws.com:sub}/*"
+										]
 									]
-								]
-							}
-						]
-					},
-					{
-						"Effect": "Allow",
-						"Action": [
-							"s3:PutObject"
-						],
-						"Resource": [
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										},
-										"/uploads/*"
+								}
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:PutObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/uploads/*"
+										]
 									]
-								]
-							}
-						]
-					},
-					{
-						"Effect": "Allow",
-						"Action": [
-							"s3:GetObject"
-						],
-						"Resource": [
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										},
-										"/protected/*"
+								}
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:GetObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/protected/*"
+										]
 									]
-								]
-							}
-						]
-					},
-					{
-						"Effect": "Allow",
-						"Action": [
-							"s3:ListBucket"
-						],
-						"Resource": [
-							{
-								"Fn::Join": [
-									"",
-									[
-										"arn:aws:s3:::",
-										{
-											"Ref": "S3Bucket"
-										}
+								}
+							]
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:ListBucket"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											}
+										]
 									]
-								]
-							}
-						],
-						"Condition": {
-							"StringLike": {
-								"s3:prefix": [
-									"public/",
-									"public/*",
-									"protected/",
-									"protected/*",
-									"private/${cognito-identity.amazonaws.com:sub}/",
-									"private/${cognito-identity.amazonaws.com:sub}/*"
-								]
+								}
+							],
+							"Condition": {
+								"StringLike": {
+									"s3:prefix": [
+										"public/",
+										"public/*",
+										"protected/",
+										"protected/*",
+										"private/${cognito-identity.amazonaws.com:sub}/",
+										"private/${cognito-identity.amazonaws.com:sub}/*"
+									]
+								}
 							}
 						}
-					}
-				]
+					]
+				}
 			}
 		}
 	},

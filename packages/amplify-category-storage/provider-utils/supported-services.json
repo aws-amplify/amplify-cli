@@ -37,7 +37,7 @@
 				]
 			}
 		],
-		"alias": "Object Storage",
+		"alias": "Content (Images, audio, video, etc.)",
 		"defaultValuesFilename": "s3-defaults.js",
 		"serviceWalkthroughFilename": "s3-walkthrough.js",
 		"cfnFilename": "s3-cloudformation-template.yml.ejs",
