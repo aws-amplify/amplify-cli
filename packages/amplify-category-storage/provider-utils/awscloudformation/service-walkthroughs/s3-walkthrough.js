@@ -95,14 +95,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // auth permissions
   const authPermissions = await askReadWrite('Authenticated', context, 'rw');
   answers = { ...answers, authPermissions };
+  let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
     const unauthPermissions = await askReadWrite('Guest', context, 'r');
     answers = { ...answers, unauthPermissions };
+    allowUnauthenticatedIdentities = true;
   }
 
-  console.log(answers);
-
-  const storageRequirements = { authSelections: 'identityPoolAndUserPool' };
+  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
   // getting requirement satisfaction map
   const satisfiedRequirements = await checkRequirements(storageRequirements, context, 'storage', answers.resourceName);
   // checking to see if any requirements are unsatisfied
