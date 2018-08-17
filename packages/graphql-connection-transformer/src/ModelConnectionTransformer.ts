@@ -50,13 +50,13 @@ function makeConnectionAttributeName(type: string, field?: string) {
  * This transform configures the GSIs and resolvers needed to implement
  * relationships at the GraphQL level.
  */
-export class AppSyncConnectionTransformer extends Transformer {
+export class ModelConnectionTransformer extends Transformer {
 
     resources: ResourceFactory
 
     constructor() {
         super(
-            'AppSyncConnectionTransformer',
+            'ModelConnectionTransformer',
             `directive @connection(name: String, keyField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();

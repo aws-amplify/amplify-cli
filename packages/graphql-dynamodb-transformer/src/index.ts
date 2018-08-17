@@ -1,4 +1,4 @@
-import { AppSyncDynamoDBTransformer } from './AppSyncDynamoDBTransformer'
-export * from './AppSyncDynamoDBTransformer'
-export default AppSyncDynamoDBTransformer
+import { DynamoDBModelTransformer } from './DynamoDBModelTransformer'
+export * from './DynamoDBModelTransformer'
+export default DynamoDBModelTransformer
 export * from './definitions'

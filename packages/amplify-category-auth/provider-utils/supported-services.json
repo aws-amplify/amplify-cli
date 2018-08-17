@@ -120,8 +120,8 @@
 			{
 				"key": "googleClientId",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-				"question": "Enter your Google Client ID: ",
-				"require": true,
+				"question": "Enter your Google Web Client ID: ",
+				"required": true,
 				"andConditions": [
 					{
 						"key": "authProviders",
@@ -133,7 +133,7 @@
 			{
 				"key": "googleIos",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
-				"question": "Enter your Google Client ID: ",
+				"question": "Enter your Google iOS Client ID: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -151,7 +151,7 @@
 			{
 				"key": "googleAndroid",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
-				"question": "Enter your Google Client ID: ",
+				"question": "Enter your Google Android Client ID: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -292,24 +292,6 @@
 				]
 			},
 			{
-				"key": "smsVerificationMessage",
-				"question": "Please specify an SMS verification message:",
-				"required": true,
-				"type": "input",
-				"validation": {
-					"operator": "includes",
-					"value": "{####}",
-					"onErrorMsg": "Your SMS verification message must include '{####}' representing the verification code that the user will receive."
-				},
-				"andConditions": [
-					{
-						"key": "authSelections",
-						"value": "identityPoolOnly",
-						"operator": "!="
-					}
-				]
-			},
-			{
 				"key": "autoVerifiedAttributes",
 				"question": "Email based user registration/forgot password:",
 				"required": true,
@@ -360,6 +342,29 @@
 					{
 						"key": "autoVerifiedAttributes",
 						"value": "email",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "smsVerificationMessage",
+				"question": "Please specify an SMS verification message:",
+				"required": true,
+				"type": "input",
+				"validation": {
+					"operator": "includes",
+					"value": "{####}",
+					"onErrorMsg": "Your SMS verification message must include '{####}' representing the verification code that the user will receive."
+				},
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "autoVerifiedAttributes",
+						"value": "phone_number",
 						"operator": "includes"
 					}
 				]
@@ -424,6 +429,8 @@
 				"key": "requiredAttributes",
 				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Mark the required attributes below:",
 				"required": true,
+				"requiredOptions": "autoVerifiedAttributes",
+				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
 				"type": "multiselect",
 				"map": "coreAttributes",
 				"andConditions": [
@@ -491,6 +498,7 @@
 				"type": "multiselect",				
 				"map": "coreAttributes",
 				"requiredOptions": "requiredAttributes",
+				"requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
 				"andConditions": [
 					{
 						"key": "authSelections",

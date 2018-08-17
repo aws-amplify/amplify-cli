@@ -4,11 +4,11 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncDynamoDBTransformer } from 'graphql-dynamodb-transformer'
-import { AppSyncAuthTransformer } from '../AppSyncAuthTransformer'
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
+import { ModelAuthTransformer } from '../ModelAuthTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
-test('Test AppSyncAuthTransformer validation happy case w/ static groups', () => {
+test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
     const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
         id: ID!
@@ -20,8 +20,8 @@ test('Test AppSyncAuthTransformer validation happy case w/ static groups', () =>
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncAuthTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema)
@@ -29,7 +29,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ static groups', () =>
     expect(out.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS')
 });
 
-test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () => {
+test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => {
     const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
@@ -42,8 +42,8 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () =
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncAuthTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema)
@@ -51,7 +51,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic groups', () =
     expect(out.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS')
 });
 
-test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () => {
+test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
     const validSchema = `
     type Post @model @auth(rules: [{allow: groups, groupsField: "group"}]) {
         id: ID!
@@ -64,8 +64,8 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () =>
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncAuthTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema)
@@ -73,7 +73,7 @@ test('Test AppSyncAuthTransformer validation happy case w/ dynamic group', () =>
     expect(out.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual('AMAZON_COGNITO_USER_POOLS')
 });
 
-test('Test AppSyncAuthTransformer validation @auth on non @model. Should fail.', () => {
+test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', () => {
     try {
         const validSchema = `
             type Post @auth(rules: [{allow: groups, groupsField: "groups"}]) {
@@ -87,8 +87,8 @@ test('Test AppSyncAuthTransformer validation @auth on non @model. Should fail.',
         const transformer = new GraphQLTransform({
             transformers: [
                 new AppSyncTransformer(),
-                new AppSyncDynamoDBTransformer(),
-                new AppSyncAuthTransformer()
+                new DynamoDBModelTransformer(),
+                new ModelAuthTransformer()
             ]
         })
         const out = transformer.transform(validSchema)

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const pythonStreamingFunctionFileName = 'python_streaming_function.zip';
 const schemaFileName = 'schema.graphql';
 const S3 = require('../src/aws-utils/aws-s3');
 
@@ -15,7 +16,9 @@ function uploadAppSyncFiles(context, resources) {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceBuildDir = path.normalize(path.join(backEndDir, category, resourceName, 'build'));
     const resolverDir = path.normalize(path.join(resourceBuildDir, 'resolvers'));
+    const functionsDir = path.normalize(path.join(resourceBuildDir, 'functions'));
     const schemaFilePath = path.normalize(path.join(resourceBuildDir, schemaFileName));
+    const pythonStreamingFunctionFilePath = path.normalize(path.join(functionsDir, pythonStreamingFunctionFileName));
     const uploadFilePromises = [];
     const s3LocationMap = {};
 
@@ -23,6 +26,12 @@ function uploadAppSyncFiles(context, resources) {
     uploadFilePromises.push(uploadAppSyncFile(
       context, schemaFileName,
       schemaFilePath, s3LocationMap, buildTimeStamp,
+    ));
+
+    // Upload streaming lambda function
+    uploadFilePromises.push(uploadLambdaStreamingFunction(
+      context, pythonStreamingFunctionFileName,
+      pythonStreamingFunctionFilePath, s3LocationMap,
     ));
 
     const resolverFiles = fs.readdirSync(resolverDir);
@@ -74,6 +83,24 @@ function uploadAppSyncFile(context, fileName, filePath, s3LocationMap, buildTime
     });
 }
 
+function uploadLambdaStreamingFunction(context, fileName, filePath, s3LocationMap) {
+  const bucketKeyParameterName = 'ElasticSearchStreamingLambdaCodeS3Bucket';
+  const bucketKeyParameterKey = 'ElasticSearchStreamingLambdaCodeS3Key';
+  const s3Key = `amplify-appsync-files/${fileName}`;
+
+  return new S3(context)
+    .then((s3) => {
+      const s3Params = {
+        Body: fs.createReadStream(filePath),
+        Key: s3Key,
+      };
+      return s3.uploadFile(s3Params);
+    })
+    .then((bucket) => {
+      s3LocationMap[bucketKeyParameterKey] = s3Key;
+      s3LocationMap[bucketKeyParameterName] = bucket;
+    });
+}
 
 module.exports = {
   uploadAppSyncFiles,

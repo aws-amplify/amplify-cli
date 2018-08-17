@@ -4,10 +4,10 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncDynamoDBTransformer } from '../AppSyncDynamoDBTransformer'
+import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
-test('Test AppSyncDynamoDBTransformer validation happy case', () => {
+test('Test DynamoDBModelTransformer validation happy case', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -19,14 +19,14 @@ test('Test AppSyncDynamoDBTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 });
 
-test('Test AppSyncDynamoDBTransformer with query overrides', () => {
+test('Test DynamoDBModelTransformer with query overrides', () => {
     const validSchema = `type Post @model(queries: { get: "customGetPost", list: "customListPost" }) {
         id: ID!
         title: String!
@@ -37,7 +37,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema)
@@ -53,7 +53,7 @@ test('Test AppSyncDynamoDBTransformer with query overrides', () => {
     expectFields(queryType, ['customListPost'])
 });
 
-test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
+test('Test DynamoDBModelTransformer with mutation overrides', () => {
     const validSchema = `type Post @model(mutations: { create: "customCreatePost", update: "customUpdatePost", delete: "customDeletePost" }) { 
         id: ID!
         title: String!
@@ -64,7 +64,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -79,7 +79,7 @@ test('Test AppSyncDynamoDBTransformer with mutation overrides', () => {
     expectFields(mutationType, ['customCreatePost', 'customUpdatePost', 'customDeletePost'])
 });
 
-test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
+test('Test DynamoDBModelTransformer with only create mutations', () => {
     const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) { 
         id: ID!
         title: String!
@@ -90,7 +90,7 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -106,7 +106,7 @@ test('Test AppSyncDynamoDBTransformer with only create mutations', () => {
     doNotExpectFields(mutationType, ['updatePost'])
 });
 
-test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
+test('Test DynamoDBModelTransformer with multiple model directives', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -123,7 +123,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -163,7 +163,7 @@ test('Test AppSyncDynamoDBTransformer with multiple model directives', () => {
     expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy();
 });
 
-test('Test AppSyncDynamoDBTransformer with filter', () => {
+test('Test DynamoDBModelTransformer with filter', () => {
     const validSchema = `
     type Post @model {
         id: ID!
@@ -174,7 +174,7 @@ test('Test AppSyncDynamoDBTransformer with filter', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer()
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);

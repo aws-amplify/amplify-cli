@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && cp streaming-lambda.zip lib/streaming-lambda.zip",
     "clean": "rm -rf ./lib",
     "lint": "tslint -p ./tslint.json"
   },
@@ -30,7 +30,6 @@
     "@types/jest": "^23.1.1",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "graphql-dynamodb-transformer": "1.0",
-    "graphql-appsync-transformer": "1.0"
+    "graphql-dynamodb-transformer": "1.0"
   }
 }

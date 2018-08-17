@@ -2,7 +2,7 @@ import { Command, command, param } from 'clime';
 import File from '../types/File';
 import GraphQLTransform from 'graphql-transform';
 import DynamoDBTransformer from 'graphql-dynamodb-transformer'
-import { AppSyncSearchableTransformer } from 'graphql-elasticsearch-transformer'
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer'
 import AuthTransformer from 'graphql-auth-transformer'
 import log from '../log'
 import { CloudFormation } from 'aws-sdk'

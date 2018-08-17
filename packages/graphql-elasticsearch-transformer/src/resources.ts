@@ -25,9 +25,6 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key]: new StringParameter({
                 Description: 'S3 key containing the DynamoDB streaming lambda code.'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version]: new StringParameter({
-                Description: 'S3 version of the DynamoDB streaming lambda code version.'
-            }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
                 Default: 'python_streaming_function.lambda_handler'
@@ -133,8 +130,7 @@ export class ResourceFactory {
         return new Lambda.Function({
             Code: {
                 S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket),
-                S3Key: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key),
-                S3ObjectVersion: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Version)
+                S3Key: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key)
             },
             FunctionName: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
             Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName),
@@ -174,7 +170,13 @@ export class ResourceFactory {
      */
     public makeElasticsearchAccessIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
+            RoleName: Fn.Join(
+                "-",
+                [
+                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            ),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -211,7 +213,13 @@ export class ResourceFactory {
                                         ":",
                                         Refs.AccountId,
                                         ":domain/",
-                                        Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                                        Fn.Join(
+                                            "-",
+                                            [
+                                                "d",
+                                                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                                            ]
+                                        ),
                                         "/*"
                                     ]
                                 )
@@ -267,7 +275,13 @@ export class ResourceFactory {
                                         ":",
                                         Refs.AccountId,
                                         ":domain/",
-                                        Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                                        Fn.Join(
+                                            "-",
+                                            [
+                                                "d",
+                                                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                                            ]
+                                        ),
                                         "/*"
                                     ]
                                 )
@@ -327,7 +341,13 @@ export class ResourceFactory {
      */
     public makeElasticSearchDomain() {
         return new Elasticsearch.Domain({
-            DomainName: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+            DomainName: Fn.Join(
+                "-",
+                [
+                    "d",
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            ),
             ElasticsearchVersion: '6.2',
             AccessPolicies: {
                 Version: "2012-10-17",
@@ -352,7 +372,13 @@ export class ResourceFactory {
                                 ":",
                                 Refs.AccountId,
                                 ":domain/",
-                                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchDomainName),
+                                Fn.Join(
+                                    "-",
+                                    [
+                                        "d",
+                                        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                                    ]
+                                ),
                                 "/*"
                             ]
                         )
@@ -386,7 +412,7 @@ export class ResourceFactory {
             RequestMappingTemplate: Fn.Sub(
                 print(
                     compoundExpression([
-                        set(ref('indexPath'), str('/${ddbTableName}/doc/_search')),
+                        set(ref('indexPath'), str('/${DDBTableName}/doc/_search')),
                         ElasticSearchMappingTemplate.searchItem({
                             path: str('$indexPath.toLowerCase()'),
                             size: ifElse(
@@ -418,7 +444,9 @@ export class ResourceFactory {
                                 list([]))
                         })
                     ])
-                ), { 'ddbTableName': Fn.Ref(ModelResourceIDs.ModelTableResourceID(type)) }
+                ), {
+                    'DDBTableName': Fn.Join('-', [type, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                }
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([

@@ -1,3 +1,3 @@
-import { AppSyncAuthTransformer } from './AppSyncAuthTransformer'
-export * from './AppSyncAuthTransformer'
-export default AppSyncAuthTransformer
+import { ModelAuthTransformer } from './ModelAuthTransformer'
+export * from './ModelAuthTransformer'
+export default ModelAuthTransformer

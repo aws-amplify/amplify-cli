@@ -235,6 +235,53 @@ query ListPrivateNote {
 }
 ```
 
+## A note taking app with versioned notes and conflict detection
+
+```graphql
+type Note @model @versioned {
+  id: ID!
+  content: String!
+  version: Int! # You can leave this out. Validation fails if this is not a int like type (Int/BigInt) and is always coerced to non-null.
+}
+```
+
+### Queries for the versioned notes example
+
+```graphql
+mutation Create {
+  createNote(input:{
+    content:"A note"
+  }) {
+    id
+    content
+    version
+  }
+}
+
+mutation Update($noteId: ID!) {
+  updateNote(input:{
+    id: $noteId,
+    content:"A second version",
+    expectedVersion: 1
+  }) {
+    id
+    content
+    version
+  }
+}
+
+mutation Delete($noteId: ID!) {
+  deleteNote(input:{
+    id: $noteId,
+    expectedVersion: 2
+  }) {
+    id
+    content
+    version
+  }
+}
+```
+
 # Reference Documentation
 
 ### @model
@@ -613,7 +660,48 @@ directive @searchable(queries: SearchableQueryMap) on OBJECT
 input SearchableQueryMap { search: String }
 ```
 
-**What is the Amplify GraphQL Transform?** 
+#### Usage
+
+Store posts in DynamoDB and automatically stream them to ElasticSearch
+via lambda and connect a searchQueryField resolver.
+
+```graphql
+type Post @model @searchable {
+  id: ID!
+  title: String!
+  createdAt: String!
+  updatedAt: String!
+}
+```
+
+You may then create objects in DynamoDB that will automatically streamed to lambda
+using the normal `createPost` mutation.
+
+```graphql
+mutation CreatePost {
+  createPost(input: { title: "Stream me to Elasticsearch!" }) {
+    id
+    title
+    createdAt
+    updatedAt
+  }
+}
+```
+
+And then search for posts
+
+```graphql
+query SearchPosts {
+  searchPost(filter: { title: { term: "Stream" }}) {
+    items {
+      id
+      title
+    }
+  }
+}
+```
+
+**What is the GraphQL Transform** 
 
 The Amplify GraphQL Transform is a set of libraries designed to simplify the process of developing, deploying, and maintaining APIs on AWS. 
 With it, you define your API using the GraphQL Schema Definition Language (SDL) and then pass it to this library where it is expanded and transformed into a fully descriptive CloudFormation template that implements your API's data model.
@@ -646,17 +734,17 @@ And then you pass the schema to an instance of the `GraphQLTransform` class with
 ```javascript
 // From graphql-transform-cli/src/commands/create.ts
 import GraphQLTransform from 'graphql-transform'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
-import AppSyncConnectionTransformer from 'graphql-connection-transformer'
-import AppSyncAuthTransformer from 'graphql-auth-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import ModelConnectionTransformer from 'graphql-connection-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
 const transformer = new GraphQLTransform({
     transformers: [
         new AppSyncTransformer(),
-        new AppSyncDynamoDBTransformer(),
-        new AppSyncAuthTransformer(),
-        new AppSyncConnectionTransformer()
+        new DynamoDBModelTransformer(),
+        new ModelAuthTransformer(),
+        new ModelConnectionTransformer()
     ]
 })
 const cfdoc = transformer.transform(schema.readSync());

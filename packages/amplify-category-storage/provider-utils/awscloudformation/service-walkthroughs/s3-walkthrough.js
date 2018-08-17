@@ -28,12 +28,12 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     context.print.warning('Amazon S3 storage was already added to your project.');
     process.exit(0);
   } else {
-    return configure(context, defaultValuesFilename, serviceMetadata);
+    return await configure(context, defaultValuesFilename, serviceMetadata);
   }
 }
 
 
-function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
+async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify } = context;
   let { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -88,25 +88,82 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     questions.push(question);
   }
 
-  return inquirer.prompt(questions)
-    .then((answers) => {
-      Object.assign(defaultValues, answers);
-      const resource = defaultValues.resourceName;
-      const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-      delete defaultValues.resourceName;
-      fs.ensureDirSync(resourceDirPath);
-      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      const jsonString = JSON.stringify(defaultValues, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
-      const templateFilePath = path.join(resourceDirPath, templateFileName);
-      if (!fs.existsSync(templateFilePath)) {
-        fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
-      }
-      return resource;
-    });
+  let answers = await inquirer.prompt(questions);
+
+  // auth permissions
+  const authPermissions = await askReadWrite('Authenticated', context, 'rw');
+  answers = { ...answers, authPermissions, unauthPermissions: '' };
+  let allowUnauthenticatedIdentities = false;
+  if (answers.storageAccess === 'authAndGuest') {
+    const unauthPermissions = await askReadWrite('Guest', context, 'r');
+    answers = { ...answers, unauthPermissions };
+    allowUnauthenticatedIdentities = true;
+  } 
+
+  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
+  // getting requirement satisfaction map
+  const satisfiedRequirements = await checkRequirements(storageRequirements, context, 'storage', answers.resourceName);
+  // checking to see if any requirements are unsatisfied
+  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+  // if requirements are unsatisfied, trigger auth
+
+  if (foundUnmetRequirements) {
+    try {
+      await externalAuthEnable(context, 'storage', answers.resourceName, storageRequirements);
+    } catch (e) {
+      context.print.error(e);
+      throw e;
+    }
+  }
+
+  Object.assign(defaultValues, answers);
+  const resource = defaultValues.resourceName;
+  const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+  delete defaultValues.resourceName;
+  delete defaultValues.storageAccess;
+  fs.ensureDirSync(resourceDirPath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const jsonString = JSON.stringify(defaultValues, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+  const templateFilePath = path.join(resourceDirPath, templateFileName);
+  if (!fs.existsSync(templateFilePath)) {
+    fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
+  }
+  return resource;
 }
 
+async function askReadWrite(userType, context, privacy = 'r') {
+  while (true) {
+    const answer = await inquirer.prompt({
+      name: 'permissions',
+      type: 'list',
+      message: `What kind of access do you want for ${userType} users`,
+      choices: [
+        {
+          name: 'read',
+          value: 'r',
+        },
+        {
+          name: 'write',
+          value: 'w',
+        },
+        {
+          name: 'read/write',
+          value: 'rw',
+        },
+      ],
+      default: privacy,
+    });
+
+    if (answer.permissions !== 'learn') {
+      return answer.permissions;
+    }
+  }
+}
 
 function resourceAlreadyExists(context) {
   const { amplify } = context;

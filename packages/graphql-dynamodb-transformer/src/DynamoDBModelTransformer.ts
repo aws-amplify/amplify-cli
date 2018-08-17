@@ -48,13 +48,13 @@ interface ModelDirectiveArgs {
  *  updatedAt (LSI w/ type)
  * }
  */
-export class AppSyncDynamoDBTransformer extends Transformer {
+export class DynamoDBModelTransformer extends Transformer {
 
     resources: ResourceFactory
 
     constructor() {
         super(
-            'AppSyncDynamoDBTransformer',
+            'DynamoDBModelTransformer',
             `
             directive @model(
                 queries: ModelQueryMap,

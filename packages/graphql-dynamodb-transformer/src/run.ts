@@ -1,5 +1,5 @@
 import GraphQLTransform from "graphql-transform";
-import { AppSyncDynamoDBTransformer } from "./AppSyncDynamoDBTransformer";
+import { DynamoDBModelTransformer } from "./DynamoDBModelTransformer";
 import AppSyncTransformer from 'graphql-appsync-transformer';
 
 import fs = require('fs');
@@ -23,7 +23,7 @@ type User @model {
 const transformer = new GraphQLTransform({
     transformers: [
         new AppSyncTransformer(),
-        new AppSyncDynamoDBTransformer()
+        new DynamoDBModelTransformer()
     ]
 });
 const out = transformer.transform(validSchema);

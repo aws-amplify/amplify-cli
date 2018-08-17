@@ -4,9 +4,9 @@ import {
 } from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transform'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
-import AppSyncVersionedTransformer from 'graphql-versioned-transformer'
+import VersionedModelTransformer from 'graphql-versioned-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -38,8 +38,8 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncVersionedTransformer()
+            new DynamoDBModelTransformer(),
+            new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);

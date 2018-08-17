@@ -23,7 +23,7 @@ export interface AuthRule {
 }
 
 /**
- * Implements the AppSyncAuthTransformer.
+ * Implements the ModelAuthTransformer.
  *
  * Owner Auth Usage:
  *
@@ -63,13 +63,13 @@ export interface AuthRule {
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
-export class AppSyncAuthTransformer extends Transformer {
+export class ModelAuthTransformer extends Transformer {
 
     resources: ResourceFactory
 
     constructor() {
         super(
-            'AppSyncAuthTransformer',
+            'ModelAuthTransformer',
             `
             directive @auth(rules: [AuthRule!]!) on OBJECT
             input AuthRule {

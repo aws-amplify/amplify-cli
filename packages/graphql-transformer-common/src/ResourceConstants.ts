@@ -39,7 +39,6 @@ export class ResourceConstants {
         ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
         ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
         ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
-        ElasticSearchStreamingLambdaCodeS3Version: 'ElasticSearchStreamingLambdaCodeS3Version',
         ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
         ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
 

@@ -32,12 +32,12 @@ interface ModelDirectiveArgs {
 /**
  * Handles the @searchable directive on OBJECT types.
  */
-export class AppSyncSearchableTransformer extends Transformer {
+export class SearchableModelTransformer extends Transformer {
     resources: ResourceFactory;
 
     constructor() {
         super(
-            `AppSyncSearchableTransformer`,
+            `SearchableModelTransformer`,
             `
             directive @searchable(queries: SearchableQueryMap) on OBJECT
             input SearchableQueryMap { search: String }

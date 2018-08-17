@@ -5,8 +5,8 @@ import {
 import Amplify, { Auth } from 'aws-amplify';
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transform'
-import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
-import AppSyncAuthTransformer from 'graphql-auth-transformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -23,7 +23,7 @@ import { deploy } from '../deploy'
 jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'AppSyncAuthTransformerTest'
+const STACK_NAME = 'ModelAuthTransformerTest'
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -100,8 +100,8 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new AppSyncTransformer(TMP_ROOT),
-            new AppSyncDynamoDBTransformer(),
-            new AppSyncAuthTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const s3Client = new S3Client('us-west-2')
