@@ -5,7 +5,6 @@ const pythonStreamingFunctionFileName = 'python_streaming_function.zip';
 const schemaFileName = 'schema.graphql';
 const S3 = require('../src/aws-utils/aws-s3');
 
-
 function uploadAppSyncFiles(context, resources) {
   resources = resources.filter(resource => resource.service === 'AppSync');
   const buildTimeStamp = new Date().getTime().toString();
@@ -29,10 +28,12 @@ function uploadAppSyncFiles(context, resources) {
     ));
 
     // Upload streaming lambda function
-    uploadFilePromises.push(uploadLambdaStreamingFunction(
-      context, pythonStreamingFunctionFileName,
-      pythonStreamingFunctionFilePath, s3LocationMap,
-    ));
+    if (fs.existsSync(pythonStreamingFunctionFilePath)) {
+      uploadFilePromises.push(uploadLambdaStreamingFunction(
+        context, pythonStreamingFunctionFileName,
+        pythonStreamingFunctionFilePath, s3LocationMap,
+      ));
+    }
 
     const resolverFiles = fs.readdirSync(resolverDir);
 
