@@ -8,6 +8,7 @@ const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
+const { downloadAPIModels } = require('./download-api-models');
 
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
@@ -46,7 +47,27 @@ async function run(context, category, resourceName) {
         );
       }
     })
-    .then(() => displayHelpfulURLs(context, resourcesToBeCreated));
+    .then(async () => {
+      let {
+        allResources,
+      } = await context.amplify.getResourceStatus(category, resourceName);
+
+
+      const newAPIresources = [];
+
+      allResources = allResources.filter(resource => resource.service === 'API Gateway');
+
+      for (let i = 0; i < allResources.length; i += 1) {
+        if (resources.findIndex(resource => resource.resourceName
+          === allResources[i].resourceName) > -1) {
+          newAPIresources.push(allResources[i]);
+        }
+      }
+
+
+      return downloadAPIModels(context, newAPIresources);
+    })
+    .then(() => displayHelpfulURLs(context, resources));
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {

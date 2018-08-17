@@ -1,6 +1,6 @@
 const constants = require('./constants');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify, filesystem } = context;
@@ -53,9 +53,8 @@ function generateAWSConfigFile(context, configOutput) {
   const frontendConfig = projectConfig[constants.Label].config;
   const srcDirPath = path.join(projectConfig.projectPath, frontendConfig.ResDir, 'raw');
 
-  if (!fs.existsSync(srcDirPath)) {
-    fs.mkdirSync(srcDirPath);
-  }
+  fs.ensureDirSync(srcDirPath);
+
   const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
   const jsonString = JSON.stringify(configOutput, null, 4);
   fs.writeFileSync(targetFilePath, jsonString, 'utf8');
