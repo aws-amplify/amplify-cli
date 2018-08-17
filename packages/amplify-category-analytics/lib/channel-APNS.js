@@ -41,53 +41,53 @@ async function configureAndEnable(context) {
     channelOutput = context.exeInfo.serviceMeta.output[channelName];
   }
 
-  let APNSChannelRequest = { Enabled: true };
+  const APNSChannelRequest = { Enabled: true };
 
-  let { DefaultAuthenticationMethod } = channelOutput; 
+  const { DefaultAuthenticationMethod } = channelOutput;
 
-  let answer, keyConfig, certificateConfig; 
+  let answers;
+  let keyConfig;
+  let certificateConfig;
 
-  answer = await inquirer.prompt(
-    {
-      name: 'DefaultAuthenticationMethod',
-      type: 'list',
-      message: 'The default authentication method used for APNs',
-      choices: ['Key', 'Certificate'],
-      default: DefaultAuthenticationMethod ? DefaultAuthenticationMethod : 'Certificate',
-    }
-  );
+  answers = await inquirer.prompt({
+    name: 'DefaultAuthenticationMethod',
+    type: 'list',
+    message: 'The default authentication method used for APNs',
+    choices: ['Key', 'Certificate'],
+    default: DefaultAuthenticationMethod || 'Certificate',
+  });
 
-  APNSChannelRequest.DefaultAuthenticationMethod = answer.DefaultAuthenticationMethod;
+  APNSChannelRequest.DefaultAuthenticationMethod = answers.DefaultAuthenticationMethod;
 
-  if(APNSChannelRequest.DefaultAuthenticationMethod == 'Key') {
-    keyConfig = await configureKey.run(context); 
+  if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
+    keyConfig = await configureKey.run();
     answers = await inquirer.prompt({
       name: 'configureCertificate',
       type: 'confirm',
-      message: `Also configure the Certificate authenticate method`,
+      message: 'Also configure the Certificate authenticate method',
       default: false,
     });
-    if (answer.configureCertificate) {
-      certificateConfig = await configureCertificate.run(context);
+    if (answers.configureCertificate) {
+      certificateConfig = await configureCertificate.run();
     }
-  }else{
-    certificateConfig = await configureCertificate.run(context);
+  } else {
+    certificateConfig = await configureCertificate.run();
     answers = await inquirer.prompt({
       name: 'configureKey',
       type: 'confirm',
-      message: `Also configure the Key authenticate method`,
+      message: 'Also configure the Key authenticate method',
       default: false,
     });
-    if (answer.configureKey) {
-      keyConfig = await configureKey.run(context); 
+    if (answers.configureKey) {
+      keyConfig = await configureKey.run();
     }
   }
 
   Object.assign(APNSChannelRequest, keyConfig, certificateConfig);
-  
+
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest
+    APNSChannelRequest,
   };
 
   return new Promise((resolve, reject) => {
