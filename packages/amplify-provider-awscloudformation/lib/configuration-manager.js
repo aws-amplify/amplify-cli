@@ -162,8 +162,11 @@ async function configProject(context) {
     newUserInfo,
   } = context;
 
+  let availableProfiles = []; 
   const systemConfig = systemConfigManager.getFullConfig();
-  const availableProfiles = Object.keys(systemConfig);
+  if(systemConfig){
+    availableProfiles = Object.keys(systemConfig);
+  }
 
   const useProfileConfirmation = {
     type: 'confirm',
@@ -210,7 +213,7 @@ async function configProject(context) {
 
   let answers;
 
-  if (availableProfiles.length > 0) {
+  if (availableProfiles && availableProfiles.length > 0) {
     answers = await inquirer.prompt(useProfileConfirmation);
     projectConfigInfo.useProfile = answers.useProfile;
     if (answers.useProfile) {
