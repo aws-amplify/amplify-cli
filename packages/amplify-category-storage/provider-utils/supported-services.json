@@ -20,21 +20,6 @@
 					"onErrorMsg": "Bucket name can only use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
-			},
-			{
-				"type": "list",
-				"key": "storageAccess",
-				"question": "Who should have access:",
-				"options": [
-					{
-						"name": "Auth users only",
-						"value": "auth"
-					},
-					{
-						"name": "Auth and guest users",
-						"value": "authAndGuest"
-					}
-				]
 			}
 		],
 		"alias": "Content (Images, audio, video, etc.)",
