@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
-const p8decoder = require('./p8decoder');
-const p12decoder = require('./p12decoder');
+const configureKey = require('./apns-key-config');
+const configureCertificate = require('./apns-cert-config');
 
 const channelName = 'APNS';
 
@@ -60,7 +60,7 @@ async function configureAndEnable(context) {
   APNSChannelRequest.DefaultAuthenticationMethod = answer.DefaultAuthenticationMethod;
 
   if(APNSChannelRequest.DefaultAuthenticationMethod == 'Key') {
-    keyConfig = await configureKey(context); 
+    keyConfig = await configureKey.run(context); 
     answers = await inquirer.prompt({
       name: 'configureCertificate',
       type: 'confirm',
@@ -68,10 +68,10 @@ async function configureAndEnable(context) {
       default: false,
     });
     if (answer.configureCertificate) {
-      certificateConfig = await configureCertificate(context);
+      certificateConfig = await configureCertificate.run(context);
     }
   }else{
-    certificateConfig = await configureCertificate(context);
+    certificateConfig = await configureCertificate.run(context);
     answers = await inquirer.prompt({
       name: 'configureKey',
       type: 'confirm',
@@ -79,7 +79,7 @@ async function configureAndEnable(context) {
       default: false,
     });
     if (answer.configureKey) {
-      keyConfig = await configureKey(context); 
+      keyConfig = await configureKey.run(context); 
     }
   }
 
@@ -104,50 +104,6 @@ async function configureAndEnable(context) {
   });
 }
 
-async function configureKey(context){
-  const questions = [
-    {
-      name: 'BundleId',
-      type: 'input',
-      message: 'The bundle id used for APNs Tokens: ',
-    },
-    {
-      name: 'TeamId',
-      type: 'input',
-      message: 'The team id used for APNs Tokens: ',
-    },
-    {
-      name: 'TokenKey',
-      type: 'input',
-      message: 'The token key used for APNs Tokens: ',
-    },
-    {
-      name: 'TokenKeyId',
-      type: 'input',
-      message: 'The token key id used for APNs Tokens: ',
-    },
-  ];
-  answers = await inquirer.prompt(questions);
-  return answers; 
-}
-
-async function configureCertificate(context){
-  const questions = [
-    {
-      name: 'Certificate',
-      type: 'input',
-      message: 'The distribution certificate from Apple.',
-    },
-    {
-      name: 'PrivateKey',
-      type: 'input',
-      message: 'The certificate private key.',
-    }
-  ];
-  answers = await inquirer.prompt(questions);
-  return answers; 
-}
-
 function disableChannel(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
@@ -168,7 +124,6 @@ function disableChannel(context) {
     });
   });
 }
-
 
 module.exports = {
   run,
