@@ -35,7 +35,10 @@ Without making any changes to your React application, add web hosting as follows
 amplify add hosting
 ```
 
-You would be prompted next to select the environment setup. Select **DEV (S3 only with HTTP)** for quick prototyping and testing, and once production ready you could run the `amplify update hosting` command to publish your app to Amazon Cloudfront (a CDN service).  
+You would be prompted next to select the environment setup. Select **DEV (S3 only with HTTP)** for quick prototyping and testing, and once production ready you could run the `amplify update hosting` command to publish your app to Amazon Cloudfront (a CDN service).
+
+**Note:** when using the **PROD** option there could be a 15-20 minute delay for the CDN setup and content replication.
+
 When you're prompted for information, such as the bucket name or application files, you can use the default values by pressing **Enter**.
 
 **Note** You can use an order alias to add or remove category features. You can also run `amplify hosting add`.
