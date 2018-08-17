@@ -70,9 +70,9 @@ You can now use `amplify publish` to build and publish your app again. This time
 
 # Add Analytics and Storage
 
-Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You've already added authentication to your project so you can choose `No`. Or, you an also try a new project without authentication configured to test this feature.
+Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You would be pormpted to ask whether you want to allow guests and unauthenticated users to send analytics events, so you can choose `Yes`. You you an also try a new project without authentication configured to test this feature.
 
-Run `amplify add storage` and then select the Amazon S3 provider. When complete, run `amplify push` to create the cloud resources.
+Run `amplify add storage` and then select **Content (Images, audio, video, etc.)**. You'll then be prompted for autorization related questions. Choose **Auth and guest users** to give both authorized and guest users access. In the next prompts, based on your previous selection you would be asked to configure read/write permissions for the authorized and guest users. When complete, run `amplify push` to create the cloud resources.
 
 Edit your `App.js` file in the React project again and modify your imports so that the `Analytics` and `Storage` categories are included in addition to the `S3Album` component, which we'll use to upload and download photos.
 
@@ -215,7 +215,8 @@ For this example, we use a REST backend with a NoSQL database. Run `amplify add 
 
 Since you do not have a database provisioned yet, the CLI workflow prompts you for this information. Alternatively, you can run `amplify add storage` beforehand to create a DynamoDB table and use it in this setup. When the CLI prompts you for the primary key structure, use an attribute named `id` of type `String`. Don't select any other options like sort keys or global secondary indexes (GSIs).
 
-Next, for the API security type, choose **Authenticated - AWS IAM (Signature Version 4 signing)**.
+Next, for the API security type questions, choose **Yes** when prompted for Restriction of API access. Similar to the storage category, when prompted for **Who should have access?**, choose **Auth and guest users** to give both authorized and guest users access. In the next prompts, based on your previous selection you would be asked to configure read/write permissions for authorized and guest user.
+
 
 
 In the React project, edit your `App.js` file again and modify your imports so that the `API` category is included so that you can make API calls from the app.
