@@ -11,6 +11,7 @@ If you're using Windows, we recommend the [Windows Subsystem for Linux](https://
 
 - An AWS Account and credentials are required. For more information about how to find your credentials, see [AWS Mobile CLI User Credentials](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html) in the *AWS Mobile User Guide*.
 - Ensure that you have Node.js installed.
+- Ensure that you have [lerna](https://github.com/lerna/lerna) installed globally.
 - Download the Amplify CLI from [HERE](https://s3.amazonaws.com/amplify-cli-beta-3dd89264-8c7c-11e8-9eb6-529269fb1459/amplify-cli-0.1.0-8-8-18.tgz).
 - Go to the unpacked directory (usually called `package`) and run `npm run setup-dev`
 - Ensure you have [Create React App](https://github.com/facebook/create-react-app) installed. 
@@ -127,6 +128,7 @@ Now that your application is set up, it's time to add a backend API with data th
 - `@model` for storing types in Amazon DynamoDB.
 - `@auth` to define different authorization strategies.
 - `@connection` for specifying relationships between `@model` object types.
+- `@searchable` for streaming the data of an `@model` object type to Amazon Elasticsearch Service.
 
 To get started run `amplify add api` and select `GraphQL`. When prompted, choose `Amazon Cognito User Pool` and the project will leverage your existing authentication setup. For `annotated schema`, choose **No**. For `guided schema creation`, choose **Yes**.
 

@@ -692,7 +692,7 @@ And then search for posts
 
 ```graphql
 query SearchPosts {
-  searchPost(filter: { title: { term: "Stream" }}) {
+  searchPost(filter: { title: { match: "Stream" }}) {
     items {
       id
       title

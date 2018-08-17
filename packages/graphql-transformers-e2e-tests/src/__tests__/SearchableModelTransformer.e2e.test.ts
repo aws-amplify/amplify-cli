@@ -14,24 +14,44 @@ import { GraphQLClient } from '../GraphQLClient'
 
 jest.setTimeout(60000 * 60);
 
+const s3 = new S3Client('us-west-2')
 const cf = new CloudFormationClient('us-west-2')
 const STACK_NAME = 'TestSearchableModelTransformer'
 const BUCKET_NAME = 'testSearchableModelTransformer'
 const FUNCTION_NAME = 'python_streaming_function.zip'
 const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/streaming-lambda.zip`
 
-const s3 = new S3Client('us-west-2')
+const createPosts = async () => {
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test", 157, 10, 97.4, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 60, 30, 21.0, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test TITLE", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 200, 50, 11.9, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 77.7, true
+    ), {})
 
-let GRAPHQL_CLIENT = undefined;
-
-function outputValueSelector(key: string) {
-    return (outputs: Output[]) => {
-        const output = outputs.find((o: Output) => o.OutputKey === key)
-        return output ? output.OutputValue : null
-    }
+    // Waiting for the ES Cluster + Streaming Lambda infra to be setup
+    await cf.wait(120, () => Promise.resolve())
 }
 
-beforeAll(async () => {
+const setup = async () => {
     const validSchema = `
     type Post @model @searchable {
         id: ID!
@@ -66,13 +86,22 @@ beforeAll(async () => {
         expect(apiKey).toBeDefined()
         expect(endpoint).toBeDefined()
         GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
-    } catch (e) {
+
+        // Create sample mutations to test search queries
+        createPosts();
+    } catch (e: AlreadyExistsException) {
+        console.log('Setup failed with AlreadyExistsException, cleaning up resources. ' + e)
+        await cleanup()
+
+        console.log('Calling Setup again')
+        await setup()
+    } catch (e: Exception) {
         console.error(e)
         expect(true).toEqual(false)
     }
-});
+}
 
-afterAll(async () => {
+const cleanup = async () => {
     try {
         console.log('Deleting S3 resources')
         await s3.cleanUpS3Resources(BUCKET_NAME, FUNCTION_NAME)
@@ -92,33 +121,14 @@ afterAll(async () => {
             expect(true).toEqual(false)
         }
     }
-})
+}
 
-test('Test createPost mutation', async () => {
-    try {
-        await cf.wait(120, () => Promise.resolve())
-        
-        const response = await GRAPHQL_CLIENT.query(`mutation {
-            createPost(input: { title: "Hello, World!" }) {
-                id
-                title
-                createdAt
-                updatedAt
-            }
-        }`, {})
-        console.log('createPost: ' + JSON.stringify(response, null, 4))
-        expect(response.data.createPost.id).toBeDefined()
-        expect(response.data.createPost.title).toEqual('Hello, World!')
-        expect(response.data.createPost.createdAt).toBeDefined()
-        expect(response.data.createPost.updatedAt).toBeDefined()
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
+let GRAPHQL_CLIENT = undefined;
 
-test('Test searchPost query', async () => {
+beforeAll(setup);
+afterAll(cleanup);
+
+test('Test searchPost query without filter', async () => {
     try {
         await GRAPHQL_CLIENT.query(`mutation {
             createPost(input: { title: "Hello, World 2!" }) {
@@ -139,11 +149,35 @@ test('Test searchPost query', async () => {
                 }
             }
         }`, {})
-        console.log('searchPost: ' + JSON.stringify(response, null, 4))
+        console.log('Test searchPost query without filter: ' + JSON.stringify(response, null, 4))
         expect(response).toBeDefined
         expect(response.data.searchPost.items).toBeDefined
         const items = response.data.searchPost.items
         expect(items.length).toBeGreaterThan(0)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test searchPost query with basic filter', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`query {
+            searchPost(filter: {
+                author: { eq: "snvishna" }
+            }) {
+                items {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        console.log('Test searchPost query with basic filter: ' + JSON.stringify(response, null, 4))
+        expect(response).toBeDefined
+        expect(response.data.searchPost.items).toBeDefined
+        const items = response.data.searchPost.items
+        expect(items.length).toEqual(8)
     } catch (e) {
         console.error(e)
         // fail
@@ -160,4 +194,39 @@ function generateParams() {
     }
 
     return params
+}
+
+function getCreatePostsQuery(
+    author: string,
+    title: string,
+    ups: number,
+    downs: number,
+    percantageUp: number,
+    isPublished: boolean
+): string {
+    return `mutation {
+        createPost(input: {
+            author: ${author}
+            title: ${title}
+            ups: ${ups}
+            downs: ${downs}
+            percentageUp: ${percantageUp}
+            isPublished: ${isPublished}
+        }) {
+            id
+            author
+            title
+            ups
+            downs
+            percentageUp
+            isPublished
+        }
+    }`
+}
+
+function outputValueSelector(key: string) {
+    return (outputs: Output[]) => {
+        const output = outputs.find((o: Output) => o.OutputKey === key)
+        return output ? output.OutputValue : null
+    }
 }
