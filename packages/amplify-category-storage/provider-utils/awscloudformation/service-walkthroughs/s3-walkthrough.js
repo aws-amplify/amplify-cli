@@ -32,6 +32,26 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   }
 }
 
+function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+
+  const storageResources = {};
+
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+    if (amplifyMeta[category][resourceName].service === serviceName) {
+      storageResources[resourceName] = amplifyMeta[category][resourceName];
+    }
+  });
+
+  if (Object.keys(storageResources).length === 0) {
+    context.print.error('No resources to update. You need to add a resource.');
+    process.exit(0);
+    return;
+  }
+  const [resourceName] = Object.keys(storageResources);
+  return configure(context, defaultValuesFilename, serviceMetada, resourceName);
+}
 
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify } = context;
@@ -43,12 +63,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
+  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
+  let parameters;
   if (resourceName) {
     inputs = inputs.filter(input => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    let parameters;
     try {
       parameters = JSON.parse(fs.readFileSync(parametersFilePath));
     } catch (e) {
@@ -57,50 +78,78 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
   }
+  let answers = {};
 
-  const questions = [];
-  for (let i = 0; i < inputs.length; i += 1) {
-    let question = {
-      name: inputs[i].key,
-      message: inputs[i].question,
-      validate: amplify.inputValidation(inputs[i]),
-      default: () => {
-        const defaultValue = defaultValues[inputs[i].key];
-        return defaultValue;
-      },
-    };
+  // only ask this for add
+  if (!parameters.resourceName) {
+    const questions = [];
+    for (let i = 0; i < inputs.length; i += 1) {
+      let question = {
+        name: inputs[i].key,
+        message: inputs[i].question,
+        validate: amplify.inputValidation(inputs[i]),
+        default: () => {
+          const defaultValue = defaultValues[inputs[i].key];
+          return defaultValue;
+        },
+      };
 
-    if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign({
-        type: 'list',
-        choices: inputs[i].options,
-      }, question);
-    } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign({
-        type: 'checkbox',
-        choices: inputs[i].options,
-      }, question);
-    } else {
-      question = Object.assign({
-        type: 'input',
-      }, question);
+      if (inputs[i].type && inputs[i].type === 'list') {
+        question = Object.assign({
+          type: 'list',
+          choices: inputs[i].options,
+        }, question);
+      } else if (inputs[i].type && inputs[i].type === 'multiselect') {
+        question = Object.assign({
+          type: 'checkbox',
+          choices: inputs[i].options,
+        }, question);
+      } else {
+        question = Object.assign({
+          type: 'input',
+        }, question);
+      }
+      questions.push(question);
     }
-    questions.push(question);
+
+    answers = await inquirer.prompt(questions);
   }
 
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+  if (parameters.resourceName) {
+    if (parameters.unauthPermissions
+      && parameters.unauthPermissions !== '') {
+      Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
+    }
+  }
 
-  let answers = await inquirer.prompt(questions);
+  const accessQuestion = await inquirer.prompt({
+    type: 'list',
+    name: 'storageAccess',
+    message: 'Who should have access:',
+    choices: [
+      {
+        name: 'Auth users only',
+        value: 'auth',
+      },
+      {
+        name: 'Auth and guest users',
+        value: 'authAndGuest',
+      },
+    ],
+    default: defaultValues.storageAccess,
+  });
+
+  answers = { ...answers, storageAccess: accessQuestion.storageAccess };
 
   // auth permissions
-  const authPermissions = await askReadWrite('Authenticated', context, 'rw');
+  const authPermissions = await askReadWrite('Authenticated', context, defaultValues.authPermissions);
   answers = { ...answers, authPermissions, unauthPermissions: '' };
   let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
-    const unauthPermissions = await askReadWrite('Guest', context, 'r');
+    const unauthPermissions = await askReadWrite('Guest', context, defaultValues.unauthPermissions);
     answers = { ...answers, unauthPermissions };
     allowUnauthenticatedIdentities = true;
-  } 
+  }
 
   const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
   // getting requirement satisfaction map
@@ -136,7 +185,16 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-async function askReadWrite(userType, context, privacy = 'r') {
+async function askReadWrite(userType, context, privacy) {
+  switch (privacy) {
+    case 'r':
+    case 'w':
+    case 'rw':
+      break;
+    default:
+      privacy = 'r';
+  }
+
   while (true) {
     const answer = await inquirer.prompt({
       name: 'permissions',
@@ -200,4 +258,4 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-module.exports = { addWalkthrough };
+module.exports = { addWalkthrough, updateWalkthrough };

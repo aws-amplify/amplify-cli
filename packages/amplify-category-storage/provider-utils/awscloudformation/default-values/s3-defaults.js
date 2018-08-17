@@ -17,6 +17,9 @@ const getAllDefaults = (project) => {
     unauthPolicyName: `s3_amplify_${shortId}`,
     authRoleName,
     unauthRoleName,
+    storageAccess: 'auth',
+    authPermissions: 'rw',
+    unauthPermissions: 'r',
   };
 
   return defaults;
