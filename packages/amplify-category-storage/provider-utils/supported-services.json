@@ -12,7 +12,6 @@
 				"required": true
 			},
 			{
-
 				"key": "bucketName",
 				"question": "Please provide bucket name:",
 				"validation": {
@@ -21,9 +20,24 @@
 					"onErrorMsg": "Bucket name can only use the following characters: a-z A-Z 0-9 . - _"
 				},
 				"required": true
+			},
+			{
+				"type": "list",
+				"key": "storageAccess",
+				"question": "Who should have access:",
+				"options": [
+					{
+						"name": "Auth users only",
+						"value": "auth"
+					},
+					{
+						"name": "Auth and guest users",
+						"value": "authAndGuest"
+					}
+				]
 			}
 		],
-		"alias": "Object Storage",
+		"alias": "Content (Images, audio, video, etc.)",
 		"defaultValuesFilename": "s3-defaults.js",
 		"serviceWalkthroughFilename": "s3-walkthrough.js",
 		"cfnFilename": "s3-cloudformation-template.yml.ejs",
@@ -43,7 +57,6 @@
 				"required": true
 			},
 			{
-
 				"key": "tableName",
 				"type": "input",
 				"question": "Please provide table name:",
@@ -55,7 +68,6 @@
 				"required": true
 			},
 			{
-
 				"key": "attribute",
 				"type": "input",
 				"question": "What would you like to name this column:",
@@ -67,27 +79,23 @@
 				"required": true
 			},
 			{
-
 				"key": "attributeType",
 				"type": "list",
 				"question": "Please choose the data type:",
 				"required": true
 			},
 			{
-
 				"key": "partitionKey",
 				"type": "list",
 				"question": "Please choose partition key for the table:",
 				"required": true
 			},
 			{
-
 				"key": "sortKey",
 				"type": "list",
 				"question": "Please choose sort key for the table:"
 			},
 			{
-
 				"key": "gsiName",
 				"type": "input",
 				"question": "Please provide the GSI name:",
@@ -99,14 +107,12 @@
 				"required": true
 			},
 			{
-
 				"key": "gsiPartitionKey",
 				"type": "list",
 				"question": "Please choose partition key for the GSI:",
 				"required": true
 			},
 			{
-
 				"key": "gsiSortKey",
 				"type": "list",
 				"question": "Please choose sort key for the GSI:"
