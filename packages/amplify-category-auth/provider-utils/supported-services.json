@@ -120,8 +120,8 @@
 			{
 				"key": "googleClientId",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-				"question": "Enter your Google Client ID: ",
-				"require": true,
+				"question": "Enter your Google Web Client ID: ",
+				"required": true,
 				"andConditions": [
 					{
 						"key": "authProviders",
@@ -133,7 +133,7 @@
 			{
 				"key": "googleIos",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
-				"question": "Enter your Google Client ID: ",
+				"question": "Enter your Google iOS Client ID: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -151,7 +151,7 @@
 			{
 				"key": "googleAndroid",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
-				"question": "Enter your Google Client ID: ",
+				"question": "Enter your Google Android Client ID: ",
 				"required": true,
 				"andConditions": [
 					{
