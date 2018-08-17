@@ -36,11 +36,12 @@ Without making any changes to your React application, add web hosting as follows
 amplify add hosting
 ```
 
+You would be prompted next to select the environment setup. Select **DEV (S3 only with HTTP)** for quick prototyping and testing, and once production ready you could run the `amplify update hosting` command to publish your app to Amazon Cloudfront (a CDN service).  
 When you're prompted for information, such as the bucket name or application files, you can use the default values by pressing **Enter**.
 
 **Note** You can use an order alias to add or remove category features. You can also run `amplify hosting add`.
 
-Run `amplify status` to see that status (not deployed). Next, build and deploy your site by running `amplify publish`. After it's complete, your application is available in an S3 hosting bucket for testing. It's also fronted with an Amazon CloudFront distribution.
+Run `amplify status` to see that status (not deployed). Next, build and deploy your site by running `amplify publish` or `amplify publish -invalidate-cache` - for cache invalidation in the distribution network (if Cloudfront is added via the hosting category). After it's complete, your application is available in an S3 hosting bucket for testing. It's also fronted with an Amazon CloudFront distribution. (if it is added via the hosting category in the prior bucket)
 
 # Add User Registration and Sign In
 
@@ -70,7 +71,7 @@ You can now use `amplify publish` to build and publish your app again. This time
 
 # Add Analytics and Storage
 
-Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You've already added authentication to your project so you can choose `No` and then `Yes` to overwrite when you're prompted. Or, you an also try a new project without authentication configured to test this feature.
+Next, we'll add some features, like tracking user behavior analytics and uploading/downloading images in the cloud. Start by running `amplify add analytics` in your project. You can enable analytics for authenticated users only, or for users that aren't authenticated. You've already added authentication to your project so you can choose `No`. Or, you an also try a new project without authentication configured to test this feature.
 
 Run `amplify add storage` and then select the Amazon S3 provider. When complete, run `amplify push` to create the cloud resources.
 

@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const inquirer = require('inquirer');
 const Ora = require('ora');
 const path = require('path');
 const opn = require('opn');
@@ -12,12 +13,20 @@ const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 
+
+const DEV = 'DEV (S3 only with HTTP)';
+const PROD = 'PROD (S3 with CloudFront using HTTPS)';
+const Environments = [
+  DEV,
+  PROD,
+];
+
 async function enable(context) {
   let templateFilePath = path.join(__dirname, 'template.json');
   context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
 
   // will take this out once cloudformation invoke and wait are separated;
-  checkCDN(context);
+  await checkCDN(context);
 
   await configManager.init(context);
 
@@ -44,14 +53,25 @@ async function enable(context) {
   );
 }
 
-
-function checkCDN(context) {
-  if (context.parameters.options.nocdn) {
-    delete context.exeInfo.template.Resources.CloudFrontDistribution;
-    delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-    delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-    delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+async function checkCDN(context) {
+  const selectEnvironment = {
+    type: 'list',
+    name: 'environment',
+    message: 'Select the environment setup:',
+    choices: Environments,
+    default: DEV,
+  };
+  const answer = await inquirer.prompt(selectEnvironment);
+  if (answer.environment === DEV) {
+    removeCDN(context);
   }
+}
+
+function removeCDN(context) {
+  delete context.exeInfo.template.Resources.CloudFrontDistribution;
+  delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
+  delete context.exeInfo.template.Outputs.CloudFrontDomainName;
+  delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
 }
 
 async function configure(context) {
@@ -95,6 +115,7 @@ function console(context) {
         amplifyMeta[constants.CategoryName][serviceName].output;
   const consoleUrl =
         `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
+  context.print.info(chalk.green(consoleUrl));
   opn(consoleUrl, { wait: false });
 }
 

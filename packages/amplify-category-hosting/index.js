@@ -25,9 +25,13 @@ async function add(context) {
     } else if (disabledServices.length === 1) {
       return categoryManager.runServiceAction(context, disabledServices[0], 'enable');
     }
-    throw new Error('Hosting is already fully enabled.');
+    const errorMessage = 'Hosting is already fully enabled.';
+    context.print.error(errorMessage);
+    throw new Error(errorMessage);
   } else {
-    throw new Error('Hosting is not available from enabled providers.');
+    const errorMessage = 'Hosting is not available from enabled providers.';
+    context.print.error(errorMessage);
+    throw new Error(errorMessage);
   }
 }
 
