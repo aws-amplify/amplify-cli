@@ -9,7 +9,7 @@ const providerName = 'awscloudformation';
 
 const channelWorkers = {
   APNS: '../../lib/channel-APNS',
-  GCM: '../../lib/channel-GCM',
+  FCM: '../../lib/channel-FCM',
   Email: '../../lib/channel-Email',
   SMS: '../../lib/channel-SMS',
 };
@@ -19,7 +19,7 @@ module.exports = {
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
 
-    if (pinpointHelper.checkPinpointEnabled(context)) {
+    if (pinpointHelper.checkPinpointEnabledAndPushed(context)) {
       context.exeInfo.pinpointClient = await getPinpointClient(context);
 
       const availableChannels = Object.keys(channelWorkers);
@@ -40,7 +40,7 @@ module.exports = {
       updateaServiceMeta(context);
       return context;
     }
-    context.print.error('No Pinpoint app is associated with your backend');
+    context.print.error('No Pinpoint app is associated with your backend in the cloud');
     context.print.info('Enable analytics category and push it to the cloud first');
   },
 };
