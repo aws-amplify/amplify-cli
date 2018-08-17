@@ -243,7 +243,6 @@
 						{
 							"Effect": "Allow",
 							"Action": [
-								"s3:GetObject",
 								"s3:ListBucket"
 							],
 							"Resource": [
@@ -269,6 +268,38 @@
 									]
 								}
 							}
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:GetObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/protected/*"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/public/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}
@@ -497,7 +528,6 @@
 						{
 							"Effect": "Allow",
 							"Action": [
-								"s3:GetObject",
 								"s3:ListBucket"
 							],
 							"Resource": [
@@ -519,12 +549,42 @@
 										"public/",
 										"public/*",
 										"protected/",
-										"protected/*",
-										"private/${cognito-identity.amazonaws.com:sub}/",
-										"private/${cognito-identity.amazonaws.com:sub}/*"
+										"protected/*"
 									]
 								}
 							}
+						},
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:GetObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/protected/*"
+										]
+									]
+								},
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/public/*"
+										]
+									]
+								}
+							]
 						}
 					]
 				}
