@@ -1,16 +1,14 @@
 # GraphQL Transformer Tutorial
 
-# Getting Started
+The Amplify GraphQL Transform is a library for simplifying the process of developing, deploying, and maintaining GraphQL APIs. With it, you define your API using the GraphQL Schema Definition Language (SDL) and then pass it to this library where it is expanded and transformed into a fully descriptive cloudformation template that implements your API's data model.
 
-Take the .tgz file that was provided, upzip it, cd to the root of the new folder, and then run the following:
+The Transform can be run as an independent library, however it is integrated into the Amplify CLI via the `API` category for you to use immediately. Additionally, the Amplify CLI has a `codegen` utility that will automatically download GraphQL introspection schemas from an endpoint and generate Swift and TypeScript classes automatically for mobile and web development.
 
+Example usage:
+
+## Project initialization and Transformer usage
 ```
-npm run setup-dev # this will take a while
-```
-
-Now, the `amplify` command is available on the command line. Run the following:
-
-```
+#Navigate into the root of a JavaScript, iOS, or Android project
 amplify init
 # Follow the wizard and create a new app.
 
@@ -31,6 +29,32 @@ amplify push
 # This deploys your API after it has been transformed. Go to AWS CloudFormation to view it.
 # You can find your project assets in the amplify/backend folder under your API.
 ```
+
+## Code Generation
+```
+#Navigate into the root of a JavaScript, iOS, or Android project and run "amplify <subcommand> codegen". For example:
+amplify add
+amplify generate
+
+## Available subcommands:
+* add - Downloads GraphQL introspection schema, and prepares *.graphql files with queries/mutations/subscriptions (you must create these files) for code generation
+
+* generate - Generates Swift API code or TypeScript annotations based on a GraphQL schema and query documents. If you want to download schema each time before generating code pass --download flag           
+## Note - Android codegen is done through Gradle, however this utility will still download the introspection schema.
+
+* configure - Change/Update codegen configuration 
+
+Steps:
+1)First run the amplify add codegen command 
+
+2)add query/mutation/subscription documents in your directory specified in the above setup (if you go with defaults, create query in <app>/graphql for ios)
+
+3) amplify codegen generate
+
+For Android & iOS ->  adds schema.json in amplify/backend/introspections/
+For iOS -> creates code API.swift at root level
+```
+
 
 # Examples to Get Started
 
