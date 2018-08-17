@@ -1,74 +1,56 @@
-const Certificate = `\r\n-----BEGIN CERTIFICATE-----\r\n
-MIIGMzCCBRugAwIBAgIIIT/ZFFYk1BswDQYJKoZIhvcNAQELBQAwgZYxCzAJBgNV
-BAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBsZSBXb3Js
-ZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBwbGUgV29ybGR3
-aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkw
-HhcNMTgwODE0MDYyMTIzWhcNMTkwOTEzMDYyMTIzWjCBnjEmMCQGCgmSJomT8ixk
-AQEMFmNvbS5hbWF6b25hd3MuZWxvcnphZmUxNDAyBgNVBAMMK0FwcGxlIFB1c2gg
-U2VydmljZXM6IGNvbS5hbWF6b25hd3MuZWxvcnphZmUxEzARBgNVBAsMCjZDSDJS
-UVQ2NlYxHDAaBgNVBAoME0ZyYW5jaXNjbyBSb2RyaWd1ZXoxCzAJBgNVBAYTAlVT
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy0bRoX7fscMgESlTBBhZ
-LROYmfr05lpczMutlyLakbNIDAUovT1dZxb/BN6Jy7aYY4WH2l2dJSnVzBXz8Y1C
-6Tofv6W7MSmDoB14kKrROU4gcYzBZcrBsy58BGZaVMlgQouc/Te/AQufia0AOwUy
-9nLfDouSGFLDwMuL0R5kjGTyZxJHq4pgxmXPGntfFzyadOW6TDnTDc9JG8E9oORw
-x0nv3AoLKiREA3Ae5JXh9v43SDC5ciLnUECFCj/Oovcgc+caGYYp8pFPCsjBIBpH
-tYPFOVh4U5vok3WMjaFjhLui2cMchYTaY5Od6DQmoZb5gyrUy/WfhUjNLumc8iFn
-uQIDAQABo4ICeTCCAnUwDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBSIJxcJqbYY
-YIvs67r2R1nFUlSjtzCCARwGA1UdIASCARMwggEPMIIBCwYJKoZIhvdjZAUBMIH9
-MIHDBggrBgEFBQcCAjCBtgyBs1JlbGlhbmNlIG9uIHRoaXMgY2VydGlmaWNhdGUg
-YnkgYW55IHBhcnR5IGFzc3VtZXMgYWNjZXB0YW5jZSBvZiB0aGUgdGhlbiBhcHBs
-aWNhYmxlIHN0YW5kYXJkIHRlcm1zIGFuZCBjb25kaXRpb25zIG9mIHVzZSwgY2Vy
-dGlmaWNhdGUgcG9saWN5IGFuZCBjZXJ0aWZpY2F0aW9uIHByYWN0aWNlIHN0YXRl
-bWVudHMuMDUGCCsGAQUFBwIBFilodHRwOi8vd3d3LmFwcGxlLmNvbS9jZXJ0aWZp
-Y2F0ZWF1dGhvcml0eTATBgNVHSUEDDAKBggrBgEFBQcDAjAwBgNVHR8EKTAnMCWg
-I6Ahhh9odHRwOi8vY3JsLmFwcGxlLmNvbS93d2RyY2EuY3JsMB0GA1UdDgQWBBSk
-T8LVSoh4eJQI1wYb+d0HAPlmYDAOBgNVHQ8BAf8EBAMCB4AwEAYKKoZIhvdjZAYD
-AQQCBQAwEAYKKoZIhvdjZAYDAgQCBQAwgYkGCiqGSIb3Y2QGAwYEezB5DBZjb20u
-YW1hem9uYXdzLmVsb3J6YWZlMAUMA2FwcAwbY29tLmFtYXpvbmF3cy5lbG9yemFm
-ZS52b2lwMAYMBHZvaXAMI2NvbS5hbWF6b25hd3MuZWxvcnphZmUuY29tcGxpY2F0
-aW9uMA4MDGNvbXBsaWNhdGlvbjANBgkqhkiG9w0BAQsFAAOCAQEAUN9QKXCMm8A9
-PqY0Abp8zOTuyawpfl6tLUx+YGabT9Qqn7NFoE89EIZWPO8Zlzg+hX3bRln8JRGw
-0QjOmVXepXSWIvINnFBg/onahelhDrrEDOVCY0uCjWdNsyHbuHjKXno9dwoI4BX/
-WWvF+Do+pSwvkkWTFQ07Taany0/qDZ4PlyzsD/YDiF/eO9punWvJqyr0Ahck5R8j
-3KQ7jk3RFBaa+pl1GWt6NwFo+vgI/XWiqyBMO/NWWFKh2mtFDIfX/NP4BVbypshL
-R3a5kDDOM2a1UNSWu6Qnis5W0yP1h1iZ8yxzkUTkGFmp2QbcOutfn7L9Z1ifbqsO
-XhMoNpWgZQ==
-\r\n-----END CERTIFICATE-----\r\n`;
-
-const PrivateKey = `\r\n-----BEGIN RSA PRIVATE KEY-----\r\n
-MIIEogIBAAKCAQEAy0bRoX7fscMgESlTBBhZLROYmfr05lpczMutlyLakbNIDAUo
-vT1dZxb/BN6Jy7aYY4WH2l2dJSnVzBXz8Y1C6Tofv6W7MSmDoB14kKrROU4gcYzB
-ZcrBsy58BGZaVMlgQouc/Te/AQufia0AOwUy9nLfDouSGFLDwMuL0R5kjGTyZxJH
-q4pgxmXPGntfFzyadOW6TDnTDc9JG8E9oORwx0nv3AoLKiREA3Ae5JXh9v43SDC5
-ciLnUECFCj/Oovcgc+caGYYp8pFPCsjBIBpHtYPFOVh4U5vok3WMjaFjhLui2cMc
-hYTaY5Od6DQmoZb5gyrUy/WfhUjNLumc8iFnuQIDAQABAoIBAC32Czv6ldV5iuyW
-bWDFqJQalCxso6bZ05Wyj8NWbBj5clbVa8qt70p51pthPcLDvFz0Oi1TcU6P0Ple
-FVQOXoyhScBpVpPdERfI0hPTq47LbWZ/LtM3Lui2n+/WvKHjDlK9gnd2fUddO2tD
-pIOzvzwd6PU+9X9uZzhWTXyw5IchfFDMQpALTJcnQmJqq+vr4NQOsvEzfJJCYndJ
-rLKdLXOLV/cm7o3mu/EOhodVVDSU5n6mdk2t4ZgnIKwdOmyHixVkrnbwkpLLgXuz
-2dAVxbM4bviDlt2kF9HLMOg4HiUuTQRyjVIcHHn0jszEzOIjWK9V3OJlHWj9Temk
-SJFAcqECgYEA+1eHJNV6p3bikd6SqsHDj9Z9qWtFhH7fi+RPGOw/xidorLkwsMyr
-3wfQdDijXpxQ/BYgLe/YQZumucUK8EKHUR/sY2YAU7W/GPGakva1HIokkxQKOtzj
-/bseN9ZaiDEj772P5+5CKE4xIDgLUZ3SWIob2JfuYkrd0uFJKRnnOb0CgYEAzws/
-wN/XmXrYG7k/Wz9CTBjVnWff7L6RZehr9W7Hs6FaGd8t+jDgDg1gKo2c1Khvd5np
-wq/c/W8Rifqkz0gLD67s/67ORHihWWPlAZ/iFHOD7AWuKzLgCs7kDSrw6w9gyszf
-8A/KKohbmhoaxnOuDT+1hlcHsRTHHSaChsC/n60CgYBeQmsacz02hK1fyzrx8wzm
-aqhh2ysND4/CpPLNA/y+0ZS+Ag2yoG9siz+v9nW+S51LjPiwgZx2rmsOjEkX5btd
-vz0l4eEJg8WREzrHFuLBO0WQKxnTDXgrdftVMXxuSw+RH2RStNX2y6w8ywfjqe5y
-6gibaA8sqasbJQYM9fvzeQKBgHKHuXubF2uqXbNwVRDHvIfV0QzisicG/+1MlbPN
-1SCT6ACZyZg1wyti0MiZT6D/j7GsbXgpymhTMXOPN+4F30CMtkN10lpkFHUbYkn0
-xJ4ljFtahQ8WdILmEZcLIvwUpKlqjZIBWgcPKQTk3dzbjvN7Q5INwI5/fOmuLNQX
-+ah9AoGAPSzcySzgzBqhZahjVnSAApC9zxw2TUx4bePzwDnJ65PkQrjEsQKUcvlU
-OZfUKHOLbf0oqtT2xQrTLRbhtS3EkRLYjBhetNHrA3JfWP1/fmyKIA4jtW8E+e3I
-+EF/JdcxOV9TMjM5plrk1Ti+ZSYYBcE8nml733/MQ+y2DMB/wfc=
-\r\n-----END RSA PRIVATE KEY-----\r\n`;
+const fs = require('fs-extra'); 
+const os = require('os');
+const path = require('path');
+const {execSync} = require('child_process'); 
 
 function run(info){
     const {filePath, password} = info; 
+    const pemFileContent = getPemFileContent(filePath, password)
+    const Certificate = getCertificate(pemFileContent);
+    const PrivateKey = getPrivateKey(pemFileContent);
     return {
         Certificate,
         PrivateKey
     }; 
+}
+
+function getPemFileContent(infp, pswd){
+    const outfp = path.join(os.tmpdir(), 'temp.pem');
+    const cmd = `openssl pkcs12 -in ${infp} -out ${outfp} -nodes -passin pass:${pswd}`;
+    execSync(cmd); 
+    const content = fs.readFileSync(outfp, "utf8"); 
+    fs.removeSync(outfp); 
+    return content;
+}
+
+function getCertificate(pemFileContent){
+    let certificate;
+    const beginMark = '-----BEGIN CERTIFICATE-----'; 
+    const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
+    if(beginIndex>-1){
+        const endMark = '-----END CERTIFICATE-----'; 
+        const endIndex = pemFileContent.indexOf(endMark, beginIndex);
+        if(endIndex>-1){
+            certificate = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
+            certificate = beginMark + os.EOL + certificate + os.EOL + endMark;
+        }
+    }
+    return certificate; 
+}
+
+function getPrivateKey(pemFileContent){
+    let privateKey;
+    const beginMark = '-----BEGIN PRIVATE KEY-----';
+    const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
+    if(beginIndex>-1){
+        const endMark = '-----END PRIVATE KEY-----';
+        const endIndex = pemFileContent.indexOf(endMark, beginIndex);
+        if(endIndex>-1){
+            privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
+            privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+        }
+    }
+    return privateKey; 
 }
 
 module.exports = {
