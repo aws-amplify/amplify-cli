@@ -52,7 +52,7 @@ async function configureAndEnable(context) {
   answers = await inquirer.prompt({
     name: 'DefaultAuthenticationMethod',
     type: 'list',
-    message: 'The default authentication method used for APNs',
+    message: 'Choose authentication method used for APNs',
     choices: ['Key', 'Certificate'],
     default: DefaultAuthenticationMethod || 'Certificate',
   });
@@ -61,26 +61,8 @@ async function configureAndEnable(context) {
 
   if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
     keyConfig = await configureKey.run();
-    answers = await inquirer.prompt({
-      name: 'configureCertificate',
-      type: 'confirm',
-      message: 'Also configure the Certificate authenticate method',
-      default: false,
-    });
-    if (answers.configureCertificate) {
-      certificateConfig = await configureCertificate.run();
-    }
   } else {
     certificateConfig = await configureCertificate.run();
-    answers = await inquirer.prompt({
-      name: 'configureKey',
-      type: 'confirm',
-      message: 'Also configure the Key authenticate method',
-      default: false,
-    });
-    if (answers.configureKey) {
-      keyConfig = await configureKey.run();
-    }
   }
 
   Object.assign(APNSChannelRequest, keyConfig, certificateConfig);

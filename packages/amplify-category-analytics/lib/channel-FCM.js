@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 
-const channelName = 'GCM';
+const channelName = 'FCM';
 
 async function run(context) {
   const isChannelEnabled =
