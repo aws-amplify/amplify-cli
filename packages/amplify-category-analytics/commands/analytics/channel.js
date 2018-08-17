@@ -28,7 +28,7 @@ module.exports = {
         const answer = await inquirer.prompt({
           name: 'selection',
           type: 'list',
-          message: 'Choose the engagement channel to configure.',
+          message: 'Choose the push notification channel to configure.',
           choices: availableChannels,
           default: availableChannels[0],
         });

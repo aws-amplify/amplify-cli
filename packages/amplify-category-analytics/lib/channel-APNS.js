@@ -52,7 +52,7 @@ async function configureAndEnable(context) {
   answers = await inquirer.prompt({
     name: 'DefaultAuthenticationMethod',
     type: 'list',
-    message: 'The default authentication method used for APNs',
+    message: 'Choose authentication method used for APNs',
     choices: ['Key', 'Certificate'],
     default: DefaultAuthenticationMethod || 'Certificate',
   });
