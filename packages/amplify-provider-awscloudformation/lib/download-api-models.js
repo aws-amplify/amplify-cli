@@ -40,7 +40,7 @@ function extractAPIModel(context, resource, framework) {
         .then((data) => {
           const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-          const tempDir = `${backendDir}/temp`;
+          const tempDir = `${backendDir}/.temp`;
 
           fs.ensureDirSync(tempDir);
 
@@ -67,7 +67,7 @@ function extractAPIModel(context, resource, framework) {
 
 function copyFilesToSrc(context, apiName, framework) {
   const backendDir = context.amplify.pathManager.getBackendDirPath();
-  const tempDir = `${backendDir}/temp`;
+  const tempDir = `${backendDir}/.temp`;
 
   switch (framework) {
     case 'android': {
@@ -90,7 +90,7 @@ function copyFilesToSrc(context, apiName, framework) {
       fs.copySync(generatedSrc, target);
     }
       break;
-    default: context.print.warning('Unsupported framework.');
+    default: throw new Error(`Unsupported framework. ${framework}`);
   }
 }
 
@@ -128,7 +128,7 @@ function getAPIGWRequestParams(context, resource, framework) {
         },
       };
 
-    default: context.print.warning('Unsupported framework.');
+    default: throw new Error(`Unsupported framework. ${framework}`);
   }
 }
 
