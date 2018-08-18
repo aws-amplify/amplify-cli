@@ -31,5 +31,20 @@
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "graphql-dynamodb-transformer": "1.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
