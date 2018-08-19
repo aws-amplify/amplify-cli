@@ -1,10 +1,11 @@
 const inquirer = require('inquirer');
 
-async function editorSelection() {
+async function editorSelection(defaultEditor) {
   const editorQuestion = {
     type: 'list',
     name: 'editorSelected',
     message: 'Choose your default editor:',
+    default: defaultEditor,
     choices: [
       {
         name: 'Sublime Text',

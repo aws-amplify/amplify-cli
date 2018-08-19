@@ -79,11 +79,11 @@ async function transformGraphQLSchema(context, options) {
     new AppSyncTransformer(buildDir),
     new DynamoDBModelTransformer(),
     new ModelConnectionTransformer(),
-    new VersionedModelTransformer()
+    new VersionedModelTransformer(),
   ];
 
   if (usedDirectives.includes('searchable')) {
-    transformerList.push(new SearchableModelTransformer())
+    transformerList.push(new SearchableModelTransformer());
   }
 
   if (parameters.AuthCognitoUserPoolId) {

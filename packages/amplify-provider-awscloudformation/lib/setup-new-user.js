@@ -79,36 +79,24 @@ function run(context) {
     .then(async (awsConfig) => {
       if (validateAWSConfig(awsConfig)) {
         let profileName = 'default';
-
-        let answer = await inquirer.prompt([
+        context.print.warn(('This would update/create the AWS Profile in your local machine'));
+        const answer = await inquirer.prompt([
           {
-            type: 'confirm',
-            name: 'assignProfileName',
-            message: 'Assign a profile name for this user: ',
-            default: false,
+            type: 'input',
+            name: 'pn',
+            message: 'Profile Name: ',
+            default: 'default',
           },
         ]);
 
-        if (answer.assignProfileName) {
-          answer = await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'pn',
-              message: 'Profile Name: ',
-              default: 'default',
-            },
-          ]);
-          if (answer && answer.pn) {
-            profileName = answer.pn;
-          }
-        }
+        profileName = answer.pn;
 
         systemConfigManager.setProfile(awsConfig, profileName);
         context.newUserInfo = {
           profileName,
         };
         context.print.info('');
-        context.print.info('Successfully set up the new user.');
+        context.print.success('Successfully set up the new user.');
         return context;
       }
       context.print.info('');

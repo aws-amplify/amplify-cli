@@ -45,11 +45,10 @@ async function configureAndEnable(context) {
 
   const { DefaultAuthenticationMethod } = channelOutput;
 
-  let answers;
   let keyConfig;
   let certificateConfig;
 
-  answers = await inquirer.prompt({
+  const answers = await inquirer.prompt({
     name: 'DefaultAuthenticationMethod',
     type: 'list',
     message: 'Choose authentication method used for APNs',
