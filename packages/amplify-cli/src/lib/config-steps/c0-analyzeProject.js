@@ -4,7 +4,6 @@ const inquirer = require('inquirer');
 const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
 
 function run(context) {
-  
   return new Promise(async (resolve) => {
     context.exeInfo = {};
     const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
@@ -34,8 +33,8 @@ async function initializeConfig(context) {
   }
 
   const projectPath = process.cwd();
-  if(!fs.existsSync(path.join(projectPath, 'amplify'))) {
-    context.print.error("Please execute this command from the root of your app");
+  if (!fs.existsSync(path.join(projectPath, 'amplify'))) {
+    context.print.error('Please execute this command from the root of your app');
     process.exit(0);
   }
   let projectName = context.exeInfo.projectConfig.projectName || path.basename(projectPath);
