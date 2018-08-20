@@ -70,7 +70,7 @@ describe('Add walk-through', () => {
     const results = await add(mockContext, mockConfigs)
     expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
     expect(askCodegenTargetLanguage).not.toHaveBeenCalled()
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/graphql/**/*.graphql'])
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/**/*.graphql'])
     expect(askGeneratedFileName).not.toHaveBeenCalled()
     expect(results).toEqual({
       api: mockAvailableApis[1],

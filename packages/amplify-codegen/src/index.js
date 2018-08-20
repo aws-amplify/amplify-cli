@@ -62,10 +62,10 @@ async function add(context) {
     endPoint: answer.api.endPoint,
   }
   config.addProject(newProject)
-  config.save()
   if (answer.shouldGenerateCode) {
     generate(context)
   }
+  config.save()
 }
 
 async function configure(context) {
