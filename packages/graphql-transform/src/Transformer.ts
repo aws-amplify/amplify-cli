@@ -164,7 +164,7 @@ export default class Transformer {
     public getDirectiveArgumentMap(directive: DirectiveNode) {
         return directive.arguments ? directive.arguments.reduce(
             (acc: {}, arg: ArgumentNode) => ({
-                ...arg,
+                ...acc,
                 [arg.name.value]: valueFromASTUntyped(arg.value)
             }),
             {}

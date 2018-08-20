@@ -1,5 +1,5 @@
 import {
-    ObjectTypeDefinitionNode, DirectiveNode
+    ObjectTypeDefinitionNode, DirectiveNode, parse
 } from 'graphql'
 import GraphQLTransform from '../GraphQLTransform'
 import TransformerContext from '../TransformerContext'
@@ -94,3 +94,13 @@ test('Test graphql transformer validation on bad shapes. @ping directive.', () =
         expect(e.name).toEqual('TransformSchemaError')
     }
 });
+
+test('Test graphql transformer returns correct number of arguments from directive', () => {
+    const validSchema = `type Post @model(queries: { list: "listPost" }, mutations: {create: "createCustom"}) { name: String! }`
+    const transformer = new ValidObjectTransformer()
+    const doc = parse(validSchema)
+    const def = doc.definitions[0] as ObjectTypeDefinitionNode
+    const map: any = transformer.getDirectiveArgumentMap(def.directives[0])
+    expect(map).not.toBeNull()
+    expect(Object.keys(map)).toEqual(expect.arrayContaining(['mutations', 'queries']))
+})
