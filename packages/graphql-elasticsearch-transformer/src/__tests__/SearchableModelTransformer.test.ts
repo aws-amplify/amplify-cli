@@ -114,8 +114,8 @@
 //     const parsed = parse(definition);
 //     const queryType = getObjectType(parsed, 'Query')
 //     expect(queryType).toBeDefined()
-//     expectFields(queryType, ['searchPost'])
-//     expectFields(queryType, ['searchUser'])
+//     expectFields(queryType, ['searchPosts'])
+//     expectFields(queryType, ['searchUsers'])
 
 //     const stringInputType = getInputType(parsed, 'SearchableStringFilterInput')
 //     expect(stringInputType).toBeDefined()
@@ -132,19 +132,19 @@
 //     const userInputType = getInputType(parsed, 'SearchableUserFilterInput')
 //     expect(userInputType).toBeDefined()
 
-//     expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy;
 
 //     expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableIntFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableFloatFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchablePostFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableUserFilterInput', 1)).toBeTruthy;
 // });
@@ -175,7 +175,7 @@
 //     const parsed = parse(definition);
 //     const queryType = getObjectType(parsed, 'Query')
 //     expect(queryType).toBeDefined()
-//     expectFields(queryType, ['searchPost'])
+//     expectFields(queryType, ['searchPosts'])
 
 //     const stringInputType = getInputType(parsed, 'SearchableStringFilterInput')
 //     expect(stringInputType).toBeDefined()
@@ -193,18 +193,17 @@
 //     expect(sortInputType).toBeDefined()
 
 
-//     expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy;
+//     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy;
 
 //     expect(verifyInputCount(parsed, 'SearchableStringFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableBooleanFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableIntFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchableFloatFilterInput', 1)).toBeTruthy;
-//     expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchablePostFilterInput', 1)).toBeTruthy;
 //     expect(verifyInputCount(parsed, 'SearchablePostSortInput', 1)).toBeTruthy;
 // });

@@ -9,7 +9,7 @@ import {
     nul,
     int
 } from 'graphql-mapping-template'
-import { toUpper, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
+import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
 
 export class ResourceFactory {
 
@@ -403,7 +403,7 @@ export class ResourceFactory {
      * Create the ElasticSearch search resolver.
      */
     public makeSearchResolver(type: string, nameOverride?: string) {
-        const fieldName = nameOverride ? nameOverride : graphqlName('search' + toUpper(type))
+        const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),

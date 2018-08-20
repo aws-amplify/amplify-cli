@@ -9,7 +9,7 @@ import {
     ref, obj, set, nul,
     ifElse, compoundExpression, qref, bool, equals, iff, raw, comment
 } from 'graphql-mapping-template'
-import { ResourceConstants, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common'
+import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common'
 
 export class ResourceFactory {
 
@@ -382,7 +382,7 @@ export class ResourceFactory {
      * @param type
      */
     public makeListResolver(type: string, nameOverride?: string) {
-        const fieldName = nameOverride ? nameOverride : graphqlName('list' + toUpper(type))
+        const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type)))
         const defaultPageLimit = 10
 
         return new AppSync.Resolver({

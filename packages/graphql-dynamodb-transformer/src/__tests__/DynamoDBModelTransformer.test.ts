@@ -136,31 +136,31 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
-    expectFields(queryType, ['listPost'])
-    expectFields(queryType, ['listUser'])
+    expectFields(queryType, ['listPosts'])
+    expectFields(queryType, ['listUsers'])
 
-    const stringInputType = getInputType(parsed, 'TableStringFilterInput')
+    const stringInputType = getInputType(parsed, 'ModelStringFilterInput')
     expect(stringInputType).toBeDefined()
-    const booleanInputType = getInputType(parsed, 'TableBooleanFilterInput')
+    const booleanInputType = getInputType(parsed, 'ModelBooleanFilterInput')
     expect(booleanInputType).toBeDefined()
-    const intInputType = getInputType(parsed, 'TableIntFilterInput')
+    const intInputType = getInputType(parsed, 'ModelIntFilterInput')
     expect(intInputType).toBeDefined()
-    const floatInputType = getInputType(parsed, 'TableFloatFilterInput')
+    const floatInputType = getInputType(parsed, 'ModelFloatFilterInput')
     expect(floatInputType).toBeDefined()
-    const idInputType = getInputType(parsed, 'TableIDFilterInput')
+    const idInputType = getInputType(parsed, 'ModelIDFilterInput')
     expect(idInputType).toBeDefined()
-    const postInputType = getInputType(parsed, 'TablePostFilterInput')
+    const postInputType = getInputType(parsed, 'ModelPostFilterInput')
     expect(postInputType).toBeDefined()
-    const userInputType = getInputType(parsed, 'TableUserFilterInput')
+    const userInputType = getInputType(parsed, 'ModelUserFilterInput')
     expect(userInputType).toBeDefined()
 
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableUserFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
 });
 
 test('Test DynamoDBModelTransformer with filter', () => {
@@ -187,17 +187,17 @@ test('Test DynamoDBModelTransformer with filter', () => {
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
-    expectFields(queryType, ['listPost'])
+    expectFields(queryType, ['listPosts'])
 
-    const connectionType = getObjectType(parsed, 'TablePostConnection')
+    const connectionType = getObjectType(parsed, 'ModelPostConnection')
     expect(connectionType).toBeDefined()
 
-    expect(verifyInputCount(parsed, 'TableStringFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableBooleanFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableIntFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableFloatFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TableIDFilterInput', 1)).toBeTruthy();
-    expect(verifyInputCount(parsed, 'TablePostFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelStringFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelBooleanFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
