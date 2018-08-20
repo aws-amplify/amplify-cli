@@ -30,36 +30,39 @@ module.exports = {
       context.print.error('Failed to fetch user pools');
       throw err;
     }),
-  getLambdaFunctions: (context, options) => new Lambda(context)
-    .then(lambdaModel => lambdaModel.lambda.listFunctions({
-      MaxItems: 10000,
-      Marker: null,
-    }).promise()
-      .then((result) => {
-        let lambdafunctions = result.Functions;
-        if (options && options.region) {
-          lambdafunctions = lambdafunctions.filter(lambdafunction =>
-            lambdafunction.FunctionArn.includes(options.region));
+  getLambdaFunctions: async (context) => {
+    const lambdaModel = await new Lambda(context);
+    let nextMarker;
+    const lambdafunctions = [];
+    try {
+      do {
+        const paginatedFunctions = await lambdaModel.lambda.listFunctions({
+          MaxItems: 10000,
+          Marker: nextMarker,
+        }).promise();
+        if (paginatedFunctions && paginatedFunctions.Functions) {
+          lambdafunctions.push(...paginatedFunctions.Functions);
         }
-        return lambdafunctions;
-      }))
-    .catch((err) => {
+        nextMarker = paginatedFunctions.NextMarker;
+      } while (nextMarker);
+    } catch (err) {
       context.print.error('Failed to fetch Lambda functions');
       throw err;
-    }),
-  getDynamoDBTables: (context, options) => {
-    let dynamodbModel;
+    }
+    return lambdafunctions;
+  },
+  getDynamoDBTables: async (context) => {
+    const dynamodbModel = await new DynamoDB(context);
 
-    return new DynamoDB(context)
-      .then((result) => {
-        dynamodbModel = result;
+    let nextToken;
+    const describeTablePromises = [];
 
-        return dynamodbModel.dynamodb.listTables({ Limit: 100 }).promise();
-      })
-      .then((result) => {
-        const dynamodbTables = result.TableNames;
-        const describeTablePromises = [];
-
+    try {
+      do {
+        const paginatedTables = await dynamodbModel.dynamodb
+          .listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
+        const dynamodbTables = paginatedTables.TableNames;
+        nextToken = paginatedTables.LastEvaluatedTableName;
         for (let i = 0; i < dynamodbTables.length; i += 1) {
           describeTablePromises.push(dynamodbModel.dynamodb
             .describeTable({
@@ -67,31 +70,29 @@ module.exports = {
             })
             .promise());
         }
+      } while (nextToken);
 
-        return Promise.all(describeTablePromises);
-      })
-      .then((allTables) => {
-        const tablesToReturn = [];
-        for (let i = 0; i < allTables.length; i += 1) {
-          const arn = allTables[i].Table.TableArn;
-          const arnSplit = arn.split(':');
-          const region = arnSplit[3];
-          if (region === options.region) {
-            tablesToReturn.push({
-              Name: allTables[i].Table.TableName,
-              Arn: allTables[i].Table.TableArn,
-              Region: region,
-              KeySchema: allTables[i].Table.KeySchema,
-              AttributeDefinitions: allTables[i].Table.AttributeDefinitions,
-            });
-          }
-        }
-        return tablesToReturn;
-      })
-      .catch((err) => {
-        context.print.error('Failed to fetch DynamoDB tables');
-        throw err;
-      });
+      const allTables = await Promise.all(describeTablePromises);
+
+      const tablesToReturn = [];
+      for (let i = 0; i < allTables.length; i += 1) {
+        const arn = allTables[i].Table.TableArn;
+        const arnSplit = arn.split(':');
+        const region = arnSplit[3];
+
+        tablesToReturn.push({
+          Name: allTables[i].Table.TableName,
+          Arn: allTables[i].Table.TableArn,
+          Region: region,
+          KeySchema: allTables[i].Table.KeySchema,
+          AttributeDefinitions: allTables[i].Table.AttributeDefinitions,
+        });
+      }
+      return tablesToReturn;
+    } catch (err) {
+      context.print.error('Failed to fetch DynamoDB tables');
+      throw err;
+    }
   },
   getAppSyncAPIs: context =>
     new AppSync(context)

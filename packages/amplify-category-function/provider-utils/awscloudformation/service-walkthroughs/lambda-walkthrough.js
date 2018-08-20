@@ -164,19 +164,7 @@ async function askDynamoDBQuestions(context, inputs) {
           });
       }
       case 'cloudResource': {
-        const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
-
-        const regionQuestion = {
-          type: inputs[8].type,
-          name: inputs[8].key,
-          message: inputs[8].question,
-          choices: regions,
-        };
-
-        const regionAnswer = await inquirer.prompt([regionQuestion]);
-
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables', { region: regionAnswer[inputs[8].key] });
-
+        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
             resourceName: dynamodbTable.Name,
