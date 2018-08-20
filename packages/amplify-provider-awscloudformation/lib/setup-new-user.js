@@ -79,7 +79,7 @@ function run(context) {
     .then(async (awsConfig) => {
       if (validateAWSConfig(awsConfig)) {
         let profileName = 'default';
-        context.print.warn(('This would update/create the AWS Profile in your local machine'));
+        context.print.warning(('This would update/create the AWS Profile in your local machine'));
         const answer = await inquirer.prompt([
           {
             type: 'input',

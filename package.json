@@ -6,7 +6,7 @@
     "lint": "lerna run -- lint",
     "lint-fix": "lerna run -- lint-fix",
     "clean": "rm -rf node_modules && npx lerna@2.11 clean --yes",
-    "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
+    "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap --hoist && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
     "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
   },
   "main": "index.js",

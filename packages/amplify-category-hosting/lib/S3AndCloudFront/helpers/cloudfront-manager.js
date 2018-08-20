@@ -3,7 +3,6 @@ const chalk = require('chalk');
 const providerName = 'awscloudformation';
 
 function invalidateCloudFront(context) {
-  
   if (context.parameters.options.invalidateCache ||
             context.parameters.options.invalidateCloudFront ||
             context.parameters.options.c) {
