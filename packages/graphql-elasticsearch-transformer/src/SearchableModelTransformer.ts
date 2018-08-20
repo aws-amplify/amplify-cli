@@ -20,6 +20,7 @@ import {
     makeNonNullType
 } from "graphql-transformer-common";
 import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
+import path = require('path');
 
 interface QueryNameMap {
     search?: string;
@@ -50,6 +51,7 @@ export class SearchableModelTransformer extends Transformer {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources);
         ctx.mergeParameters(template.Parameters);
+        ctx.metadata.set('ElasticSearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
     };
 
     /**

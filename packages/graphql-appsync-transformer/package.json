@@ -21,8 +21,7 @@
     "graphql-mapping-template": "1.0",
     "cloudform": "^2.2.1",
     "graphql-transform": "1.0",
-    "graphql-transformer-common": "1.0",
-    "graphql-elasticsearch-transformer": "1.0"
+    "graphql-transformer-common": "1.0"
   },
   "devDependencies": {
     "@types/node": "^10.3.4",
