@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
 
 async function run(context) {
+  context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   return new Promise(async (resolve) => {
     const projectPath = process.cwd();
     let projectName = path.basename(projectPath);

@@ -21,6 +21,7 @@ function pushResources(context, category, resourceName) {
   return resourcePusher.run(context, category, resourceName);
 }
 
+
 function configure(context) {
   return configManager.configure(context);
 }
@@ -37,6 +38,10 @@ function showHelpfulLinks(context, resources) {
   return displayHelpfulURLs(context, resources);
 }
 
+function configureNewUser(context) {
+  return setupNewUser.run(context);
+}
+
 function console(context) {
   return consoleCommand.run(context);
 }
@@ -46,6 +51,7 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  configureNewUser,
   constants,
   pushResources,
   buildResources,

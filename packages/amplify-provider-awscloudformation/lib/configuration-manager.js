@@ -13,7 +13,8 @@ async function init(context) {
   context.projectConfigInfo = {};
   await newUserCheck(context);
   printInfo(context);
-  await comfirmProjectConfigSetup(context, true);
+  context.projectConfigInfo.action = 'init';
+
   return carryOutConfigAction(context);
 }
 
@@ -108,28 +109,13 @@ function printInfo(context) {
   context.print.info('');
 }
 
-function comfirmProjectConfigSetup(context, isInit) {
-  const configProjectComfirmation = {
-    type: 'confirm',
-    name: 'setProjectConfig',
-    message: 'Do you want to setup project level configuration',
-    default: false,
-  };
-  return inquirer.prompt(configProjectComfirmation)
-    .then((answers) => {
-      const initOrCreate = isInit ? 'init' : 'create';
-      context.projectConfigInfo.action = answers.setProjectConfig ? initOrCreate : 'cancel';
-      return context;
-    });
-}
-
 function promptForProjectConfigUpdate(context) {
   getProjectConfig(context);
   if (context.projectConfigInfo.projectConfigExists) {
     const updateOrRemove = {
       type: 'list',
       name: 'action',
-      message: 'Do you want to udpate or remove the project level configuration',
+      message: 'Do you want to update or remove the project level configuration',
       choices: ['update', 'remove', 'cancel'],
       default: 'update',
     };
@@ -139,7 +125,7 @@ function promptForProjectConfigUpdate(context) {
         return context;
       });
   }
-  return comfirmProjectConfigSetup(context);
+  context.projectConfigInfo.action = 'create';
 }
 
 function confirmProjectConfigRemoval(context) {
@@ -162,9 +148,9 @@ async function configProject(context) {
     newUserInfo,
   } = context;
 
-  let availableProfiles = []; 
+  let availableProfiles = [];
   const systemConfig = systemConfigManager.getFullConfig();
-  if(systemConfig){
+  if (systemConfig) {
     availableProfiles = Object.keys(systemConfig);
   }
 
