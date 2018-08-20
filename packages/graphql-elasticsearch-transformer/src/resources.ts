@@ -98,7 +98,7 @@ export class ResourceFactory {
         }
     }
 
-    /**
+/**
      * Given the name of a data source and optional logical id return a CF
      * spec for a data source pointing to the elasticsearch domain.
      * @param name The name for the data source. If a logicalId is not provided the name is used.
