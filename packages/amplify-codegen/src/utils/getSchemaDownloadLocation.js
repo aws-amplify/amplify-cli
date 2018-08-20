@@ -2,7 +2,7 @@ const { join, dirname } = require('path')
 
 const getAndroidResDir = require('./getAndroidResDir')
 
-function getSchemaDownloadLocation(context) {
+function getSchemaDownloadLocation(context, name) {
   const { amplify } = context
   let downloadDir
   try {
@@ -10,7 +10,7 @@ function getSchemaDownloadLocation(context) {
     downloadDir = join(dirname(androidResDir), 'graphql')
   } catch (e) {
     const outputPath = amplify.pathManager.getBackendDirPath()
-    downloadDir = join(outputPath, 'introspection')
+    downloadDir = join(outputPath, 'api', name)
   }
   return join(downloadDir, 'schema.json')
 }

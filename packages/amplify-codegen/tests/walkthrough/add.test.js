@@ -20,8 +20,7 @@ describe('Add walk-through', () => {
   const mockIncludePattern = 'MOCK_INCLUDE_PATTERN'
   const mockContext = 'MOCK_CONTEXT'
   const mockGeneratedFileName = 'MOCK_FILE_NAME.ts'
-  const mockDownloadLocation = 'MOCK_DOWNLOAD_LOCATION'
-  const mockSchemaLocation = 'MOCK_SCHEMA_DIR/schema.json'
+  const mockDownloadLocation = 'MOCK_SCHEMA_DIR/graphql/schema.json'
 
   const mockAvailableApis = [
     {
@@ -44,7 +43,6 @@ describe('Add walk-through', () => {
     askGenerateCode.mockReturnValue(true);
     getSchemaDownloadLocation.mockReturnValue(mockDownloadLocation)
     askCodegneQueryFilePattern.mockReturnValue(mockIncludePattern)
-    getSchemaDownloadLocation.mockReturnValue(mockSchemaLocation)
     getFrontEndHandler.mockReturnValue('ios')
   })
 
@@ -61,7 +59,7 @@ describe('Add walk-through', () => {
       excludePattern: ['amplify/**'],
       generatedFileName: mockGeneratedFileName,
       shouldGenerateCode: true,
-      schemaLocation: mockSchemaLocation,
+      schemaLocation: mockDownloadLocation,
     })
   })
 
@@ -79,7 +77,7 @@ describe('Add walk-through', () => {
       excludePattern: ['amplify/**'],
       generatedFileName: '',
       shouldGenerateCode: false,
-      schemaLocation: mockSchemaLocation,
+      schemaLocation: mockDownloadLocation,
     })
   })
 
