@@ -1,17 +1,44 @@
-const category = 'analytics';
+const opn = require('opn');
+const constants = require('./constants');
 
-function checkPinpointEnabledAndPushed(context) {
-  let result = false;
-  const { amplifyMeta } = context.exeInfo;
-  if (amplifyMeta[category]) {
-    const services = Object.keys(amplifyMeta[category]);
+function console(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.NotificationsCategoryName]);
+  }
+  if (pinpointApp) {
+    const { Id } = pinpointApp;
+    const consoleUrl =
+          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/analytics/overview`;
+    opn(consoleUrl, { wait: false });
+  } else {
+    context.print.error('Neither analytics nor notifications is anabled in the cloud.');
+  }
+}
 
+function scanCategoryMetaForPinpoint(categoryMeta) {
+  let result;
+  if (categoryMeta) {
+    const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
-      if (amplifyMeta[category][services[i]].service === 'Pinpoint' && 
-        amplifyMeta[category][services[i]].output && 
-        amplifyMeta[category][services[i]].output.Id){
-        result = true;
-        context.exeInfo.serviceMeta = amplifyMeta[category][services[i]];
+      const serviceMeta = categoryMeta[services[i]];
+      if (serviceMeta.service === 'Pinpoint' &&
+        serviceMeta.output &&
+        serviceMeta.output.Id) {
+        result = {
+          Id: serviceMeta.output.Id,
+        };
+        if (serviceMeta.output.Name) {
+          result.Name = serviceMeta.output.Name;
+        } else if (serviceMeta.output.appName) {
+          result.Name = serviceMeta.output.appName;
+        }
+
+        if (serviceMeta.output.Region) {
+          result.Region = serviceMeta.output.Region;
+        }
+
         break;
       }
     }
@@ -20,5 +47,5 @@ function checkPinpointEnabledAndPushed(context) {
 }
 
 module.exports = {
-  checkPinpointEnabledAndPushed,
+  console,
 };

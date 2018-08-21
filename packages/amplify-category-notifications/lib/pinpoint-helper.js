@@ -148,7 +148,7 @@ function console(context) {
           `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/notifications/`;
     opn(consoleUrl, { wait: false });
   } else {
-    context.print.error('Neither notifications nor analytics are anabled in the cloud.');
+    context.print.error('Neither notifications nor analytics is anabled in the cloud.');
   }
 }
 
