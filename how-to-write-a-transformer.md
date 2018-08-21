@@ -11,6 +11,7 @@ import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import ModelAuthTransformer from 'graphql-auth-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
+import VersionedModelTransformer from 'graphql-versioned-transformer'
 
 // Note: This is not exact as we are omitting the @searchable transformer.
 const transformer = new GraphQLTransform({
@@ -18,7 +19,8 @@ const transformer = new GraphQLTransform({
         new AppSyncTransformer(),
         new DynamoDBModelTransformer(),
         new ModelAuthTransformer(),
-        new ModelConnectionTransformer()
+        new ModelConnectionTransformer(),
+        new VersionedModelTransformer()
     ]
 })
 const schema = `
@@ -129,7 +131,7 @@ type Post @model @versioned {
 }
 ```
 
-> Note: @versioned depends on @model but there is no way to explicitly state this yet..
+> Note: @versioned depends on @model so we must pass `new new DynamoDBModelTransformer()` before `new new VersionedModelTransformer()`. Also note that `new AppSyncTransformer()` must go first for now. In the future we can add a dependency mechanism and topologically sort it outselves.
 
 The next step after defining the directive is to implement the transformer's business logic. The `graphql-transform` package makes this a little easier
 by exporting a common class through which we may define transformers. User's extend the `Transformer` class and implement the required functions.
