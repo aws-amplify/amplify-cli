@@ -1,4 +1,5 @@
 const constants = require('./constants'); 
+const providerName = 'awscloudformation';
 
 await function ensurePinpointApp(context){
   const { amplifyMeta, projectConfig } = context.exeInfo;
@@ -7,10 +8,10 @@ await function ensurePinpointApp(context){
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
     if(pinpointApp){
       if(!pinpointApp.Name){
-        pinpointApp = await getPinpointApp(context, pinpointApp.Id);
+        pinpointApp = await getApp(context, pinpointApp.Id);
       }
     }else{
-      pinpointApp = await createPinpointApp(context, projectConfig.projectName); 
+      pinpointApp = await createApp(context, projectConfig.projectName); 
     }
     amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
       "service": constants.PinpointName,
@@ -19,6 +20,19 @@ await function ensurePinpointApp(context){
         "Id": pinpointApp.Id
       }
     }
+  }
+}
+
+await function deletePinpointApp(context){
+  const { amplifyMeta, projectConfig } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if(!pinpointApp){
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  if(pinpointApp){
+    pinpointApp = await deleteApp(context, pinpointApp.Id);
+    removeCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], pinpointApp.Id);
+    removeCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName], pinpointApp.Id);
   }
 }
 
@@ -39,21 +53,43 @@ function scanCategoryMetaForPinpoint(categoryMeta){
         }else if(serviceMeta.output.appName){
           result.Name = serviceMeta.output.appName;
         }
+
+        if(serviceMeta.output.Region){
+          result.Region = serviceMeta.output.Region;
+        }
+
         break;
       }
     }
   }
   return result; 
 }
+
+function removeCategoryMetaForPinpoint(categoryMeta, pinpointAppId){
+  let result; 
+  if (categoryMeta) {
+    const services = Object.keys(categoryMeta);
+    for (let i = 0; i < services.length; i++) {
+      const serviceMeta = analyticsMeta[services[i]]; 
+      if (serviceMeta.service === 'Pinpoint' && 
+        serviceMeta.output && 
+        serviceMeta.output.Id === pinpointAppId){
+        delete analyticsMeta[services[i]]; 
+      }
+    }
+  }
+  return result; 
+}
  
-function createPinpointApp(context, pinpointAppName){
+function createApp(context, pinpointAppName){
   const params = {
     CreateApplicationRequest: {
       Name: pinpointAppName
     }
   };
+  const pinpointClient = await getPinpointClient(context); 
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.createApp(params, (err, data) => {
+    pinpointClient.createApp(params, (err, data) => {
       if (err) {
         context.print.error('Pinpoint app creation error');
         reject(err);
@@ -65,12 +101,13 @@ function createPinpointApp(context, pinpointAppName){
   });
 } 
 
-function getPinpointApp(context, pinpointAppId){
+function getApp(context, pinpointAppId){
   const params = {
       ApplicationId: pinpointAppId
   };
+  const pinpointClient = await getPinpointClient(context); 
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.getApp(params, (err, data) => {
+    pinpointClient.getApp(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -80,6 +117,48 @@ function getPinpointApp(context, pinpointAppId){
   });
 }
 
+async function deleteApp(context, pinpointAppId){
+  const params = {
+      ApplicationId: pinpointAppId
+  };
+  const pinpointClient = await getPinpointClient(context); 
+  return new Promise((resolve, reject) => {
+    pinpointClient.deleteApp(params, (err, data) => {
+      if (err) {
+        context.print.error('Pinpoint app deletion error');
+        reject(err);
+      } else {
+        resolve(data.ApplicationResponse);
+      }
+    });
+  });
+}
+
+function console(context){
+  const { amplifyMeta, projectConfig } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if(!pinpointApp){
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  if (pinpointApp) {
+    const { Id } = pinpointApp;
+    const consoleUrl =
+          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/notifications/`;
+    opn(consoleUrl, { wait: false });
+  } else {
+    context.print.error('Neither notifications nor analytics are anabled in the cloud.');
+  }
+}
+
+async function getPinpointClient(context) {
+  const { projectConfig } = context.exeInfo;
+  const provider = require(projectConfig.providers[providerName]);
+  const aws = await provider.getConfiguredAWSClient(context);
+  return new aws.Pinpoint();
+}
+
 module.exports = {
-  ensurePinpointApp
+  ensurePinpointApp,
+  deletePinpointApp, 
+  console
 };
