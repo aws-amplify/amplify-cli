@@ -5,8 +5,9 @@ const fs = require('fs');
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
-  const projectConfig = amplify.getProjectConfig();
-  const srcDirPath = path.join(projectConfig.projectPath);
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const srcDirPath = path.join(projectPath);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
@@ -43,12 +44,14 @@ function createAWSConfig(context, amplifyResources) {
     }
   });
   generateAWSConfigFile(context, configOutput);
+  return context;
 }
 
 function generateAWSConfigFile(context, configOutput) {
   const { amplify } = context;
-  const projectConfig = amplify.getProjectConfig();
-  const srcDirPath = path.join(projectConfig.projectPath);
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const srcDirPath = path.join(projectPath);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);

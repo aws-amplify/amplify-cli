@@ -4,9 +4,12 @@ const fs = require('fs-extra');
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify, filesystem } = context;
-  const projectConfig = amplify.getProjectConfig();
-  const frontendConfig = projectConfig[constants.Label].config;
-  const srcDirPath = path.join(projectConfig.projectPath, frontendConfig.ResDir, 'raw');
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
   if (!fs.existsSync(srcDirPath)) {
     filesystem.dir(srcDirPath);
@@ -45,13 +48,17 @@ function createAWSConfig(context, amplifyResources) {
     }
   });
   generateAWSConfigFile(context, configOutput);
+  return context;
 }
 
 function generateAWSConfigFile(context, configOutput) {
   const { amplify } = context;
-  const projectConfig = amplify.getProjectConfig();
-  const frontendConfig = projectConfig[constants.Label].config;
-  const srcDirPath = path.join(projectConfig.projectPath, frontendConfig.ResDir, 'raw');
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.ResDir, 'raw');
 
   fs.ensureDirSync(srcDirPath);
 
