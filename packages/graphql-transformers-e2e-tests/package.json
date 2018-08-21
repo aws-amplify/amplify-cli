@@ -22,7 +22,8 @@
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
     "graphql-transform": "1.0",
-    "graphql-transformer-common": "1.0"
+    "graphql-transformer-common": "1.0",
+    "moment": "^2.22.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

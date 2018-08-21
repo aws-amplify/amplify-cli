@@ -11,24 +11,60 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { S3Client } from '../S3Client'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import * as moment from 'moment';
 
 jest.setTimeout(60000 * 60);
 
-const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'TestSearchableModelTransformer'
-const BUCKET_NAME = 'testSearchableModelTransformer'
-const FUNCTION_NAME = 'python_streaming_function.zip'
-
 const s3 = new S3Client('us-west-2')
+const cf = new CloudFormationClient('us-west-2')
+const STACK_NAME = `TestSearchableModelTransformer-${moment().format('YYYYMMDDHHmmss')}`
+const BUCKET_NAME = 'testsearchablemodeltransformer'
+const FUNCTION_NAME = 'python_streaming_function.zip'
+const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/lib/streaming-lambda.zip`
+
+const selectionSet = `
+    id
+    author
+    title
+    ups
+    downs
+    percentageUp
+    isPublished
+`;
+
+const createPosts = async () => {
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test", 157, 10, 97.4, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 60, 30, 21.0, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test TITLE", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 200, 50, 11.9, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 77.7, true
+    ), {})
+
+    console.log('Created 8 Posts')
+
+    // Waiting for the ES Cluster + Streaming Lambda infra to be setup
+    await cf.wait(120, () => Promise.resolve())
+}
 
 let GRAPHQL_CLIENT = undefined;
-
-function outputValueSelector(key: string) {
-    return (outputs: Output[]) => {
-        const output = outputs.find((o: Output) => o.OutputKey === key)
-        return output ? output.OutputValue : null
-    }
-}
 
 beforeAll(async () => {
     const validSchema = `
@@ -45,7 +81,7 @@ beforeAll(async () => {
         postedAt: String
         comments: [String!]
         ratings: [Int!]
-        percantageUp: Float
+        percentageUp: Float
         isPublished: Boolean
     }
     `
@@ -58,6 +94,11 @@ beforeAll(async () => {
     })
     const out = transformer.transform(validSchema);
     try {
+        // create bucket, upload file and get version
+        console.log('Uploading Streaming Lambda Function from: '.concat(FUNCTION_PATH))
+        const s3Response = await s3.setUpS3Resources(BUCKET_NAME, FUNCTION_PATH, FUNCTION_NAME, true)
+        expect(s3Response).toBeDefined()
+
         // create stack with additional params
         const additionalParams = generateParams()
         console.log('Creating Stack ' + STACK_NAME)
@@ -104,23 +145,139 @@ afterAll(async () => {
             expect(true).toEqual(false)
         }
     }
-})
+});
 
-test('Test searchPost query', async () => {
+test('Test searchPosts query without filter', async () => {
     try {
         const response = await GRAPHQL_CLIENT.query(`query {
-            searchPost {
-                items {
-                    id
-                    title
-                }
+            searchPosts {
+                items { ${selectionSet} }
             }
         }`, {})
-        console.log('searchPost: ' + JSON.stringify(response, null, 4))
+        console.log('Test searchPosts query without filter: ' + JSON.stringify(response, null, 4))
         expect(response).toBeDefined
-        expect(response.data.searchPost.items).toBeDefined
-        const items = response.data.searchPost.items
+        expect(response.data.searchPosts.items).toBeDefined
+        const items = response.data.searchPosts.items
         expect(items.length).toBeGreaterThan(0)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test searchPosts query with basic filter', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`query {
+            searchPosts(filter: {
+                author: { eq: "snvishna" }
+            }) {
+                items { ${selectionSet} }
+            }
+        }`, {})
+        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        expect(response).toBeDefined
+        expect(response.data.searchPosts.items).toBeDefined
+        const items = response.data.searchPosts.items
+        expect(items.length).toEqual(8)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test searchPosts query with non-recursive filter', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`query {
+            searchPosts(filter: {
+                title: { eq: "test title" }
+                ups: { gte: 100 }
+                percentageUp: { ne: 77.7 }
+                downs: { range: [29, 31] }
+                author: { wildcard: "s*a" }
+                isPublished: { eq: true }
+            }) {
+                items { ${selectionSet} }
+            }
+        }`, {})
+        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        expect(response).toBeDefined
+        expect(response.data.searchPosts.items).toBeDefined
+        const items = response.data.searchPosts.items
+        expect(items.length).toEqual(1)
+        expect(items[0].author).toEqual("shanraju")
+        expect(items[0].title).toEqual("test title")
+        expect(items[0].ups).toEqual(170)
+        expect(items[0].downs).toEqual(30)
+        expect(items[0].percentageUp).toEqual(88.8)
+        expect(items[0].isPublished).toEqual(true)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test searchPosts query with recursive filter 1', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`query {
+            searchPosts(filter: {
+                downs: { eq: 10 }
+                or: [
+                    {
+                        author: { wildcard: "s*a" },
+                        downs: { eq: 30 }
+                    },
+                    {
+                        isPublished: { eq: true }
+                    }
+                ]
+            }) {
+                items { ${selectionSet} }
+            }
+        }`, {})
+        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        expect(response).toBeDefined
+        expect(response.data.searchPosts.items).toBeDefined
+        const items = response.data.searchPosts.items
+        expect(items.length).toEqual(1)
+        expect(items[0].author).toEqual("shanraju")
+        expect(items[0].title).toEqual("test")
+        expect(items[0].ups).toEqual(157)
+        expect(items[0].downs).toEqual(10)
+        expect(items[0].percentageUp).toEqual(97.4)
+        expect(items[0].isPublished).toEqual(true)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test searchPosts query with recursive filter 2', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`query {
+            searchPosts(filter: {
+                downs: { eq: 30 }
+                or: [
+                    {
+                        author: { wildcard: "s*a" },
+                        downs: { eq: 30 }
+                    },
+                    {
+                        isPublished: { eq: true }
+                    }
+                ]
+            }) {
+                items { ${selectionSet} }
+            }
+        }`, {})
+        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        expect(response).toBeDefined
+        expect(response.data.searchPosts.items).toBeDefined
+        const items = response.data.searchPosts.items
+        expect(items.length).toEqual(4)
     } catch (e) {
         console.error(e)
         // fail
@@ -144,7 +301,7 @@ function getCreatePostsQuery(
     title: string,
     ups: number,
     downs: number,
-    percantageUp: number,
+    percentageUp: number,
     isPublished: boolean
 ): string {
     return `mutation {
@@ -153,46 +310,15 @@ function getCreatePostsQuery(
             title: ${title}
             ups: ${ups}
             downs: ${downs}
-            percentageUp: ${percantageUp}
+            percentageUp: ${percentageUp}
             isPublished: ${isPublished}
-        }) {
-            id
-            author
-            title
-            ups
-            downs
-            percentageUp
-            isPublished
-        }
+        }) { ${selectionSet} }
     }`
 }
 
-const createPosts = async () => {
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test", 157, 10, 97.4, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 60, 30, 21.0, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 160, 30, 97.6, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test TITLE", 170, 30, 88.8, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 200, 50, 11.9, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 170, 30, 88.8, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 160, 30, 97.6, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 170, 30, 77.7, true
-    ), {})
-
-    // Waiting for the ES Cluster + Streaming Lambda infra to be setup
-    await cf.wait(120, () => Promise.resolve())
+function outputValueSelector(key: string) {
+    return (outputs: Output[]) => {
+        const output = outputs.find((o: Output) => o.OutputKey === key)
+        return output ? output.OutputValue : null
+    }
 }
