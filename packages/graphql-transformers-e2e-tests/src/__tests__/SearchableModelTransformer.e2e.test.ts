@@ -34,9 +34,19 @@ beforeAll(async () => {
     const validSchema = `
     type Post @model @searchable {
         id: ID!
-        title: String!
-        createdAt: String
-        updatedAt: String
+        author: String!
+        title: String
+        content: String
+        url: String
+        ups: Int
+        downs: Int
+        version: Int
+        relatedPosts: [Post]
+        postedAt: String
+        comments: [String!]
+        ratings: [Int!]
+        percantageUp: Float
+        isPublished: Boolean
     }
     `
     const transformer = new GraphQLTransform({
@@ -65,6 +75,9 @@ beforeAll(async () => {
         expect(apiKey).toBeDefined()
         expect(endpoint).toBeDefined()
         GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
+
+        // Create sample mutations to test search queries
+        createPosts();
     } catch (e) {
         console.error(e)
         expect(true).toEqual(false)
@@ -93,43 +106,8 @@ afterAll(async () => {
     }
 })
 
-test('Test createPost mutation', async () => {
-    try {
-        await cf.wait(120, () => Promise.resolve())
-        
-        const response = await GRAPHQL_CLIENT.query(`mutation {
-            createPost(input: { title: "Hello, World!" }) {
-                id
-                title
-                createdAt
-                updatedAt
-            }
-        }`, {})
-        console.log('createPost: ' + JSON.stringify(response, null, 4))
-        expect(response.data.createPost.id).toBeDefined()
-        expect(response.data.createPost.title).toEqual('Hello, World!')
-        expect(response.data.createPost.createdAt).toBeDefined()
-        expect(response.data.createPost.updatedAt).toBeDefined()
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
-})
-
 test('Test searchPost query', async () => {
     try {
-        await GRAPHQL_CLIENT.query(`mutation {
-            createPost(input: { title: "Hello, World 2!" }) {
-                id
-                title
-                createdAt
-                updatedAt
-            }
-        }`, {})
-
-        await cf.wait(120, () => Promise.resolve())
-
         const response = await GRAPHQL_CLIENT.query(`query {
             searchPost {
                 items {
@@ -159,4 +137,62 @@ function generateParams() {
     }
 
     return params
+}
+
+function getCreatePostsQuery(
+    author: string,
+    title: string,
+    ups: number,
+    downs: number,
+    percantageUp: number,
+    isPublished: boolean
+): string {
+    return `mutation {
+        createPost(input: {
+            author: ${author}
+            title: ${title}
+            ups: ${ups}
+            downs: ${downs}
+            percentageUp: ${percantageUp}
+            isPublished: ${isPublished}
+        }) {
+            id
+            author
+            title
+            ups
+            downs
+            percentageUp
+            isPublished
+        }
+    }`
+}
+
+const createPosts = async () => {
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test", 157, 10, 97.4, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 60, 30, 21.0, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test TITLE", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 200, 50, 11.9, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 88.8, true
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), {})
+    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 77.7, true
+    ), {})
+
+    // Waiting for the ES Cluster + Streaming Lambda infra to be setup
+    await cf.wait(120, () => Promise.resolve())
 }

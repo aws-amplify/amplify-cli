@@ -49,9 +49,7 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
-
   const parametersFilePath = path.join(resourceDir, parametersFileName);
-
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
@@ -93,7 +91,6 @@ async function transformGraphQLSchema(context, options) {
   const transformer = new GraphQLTransform({
     transformers: transformerList,
   });
-
 
   let cfdoc;
   try {
@@ -279,7 +276,6 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 } */
-
 
 module.exports = {
   transformGraphQLSchema,
