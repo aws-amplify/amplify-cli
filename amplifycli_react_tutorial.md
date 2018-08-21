@@ -154,7 +154,7 @@ Add the following query and mutations in your code, *before* the `class App exte
 
 ```
 const listTodos = `query listTodos {
-  listTodo{
+  listTodos{
     items{
       id
       name
