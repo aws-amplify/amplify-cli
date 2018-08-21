@@ -18,6 +18,7 @@
     "amplify-category-auth": "^0.1.0",
     "amplify-category-function": "^0.1.0",
     "amplify-category-hosting": "^0.1.0",
+    "amplify-category-notifications": "^0.1.0",
     "amplify-category-storage": "^0.1.0",
     "amplify-category-api": "^0.1.0",
     "amplify-frontend-android": "^0.1.0",
