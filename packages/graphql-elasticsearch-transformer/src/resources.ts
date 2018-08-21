@@ -6,7 +6,6 @@ import {
     ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, toJson, ifElse,
-    nul,
     int
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
