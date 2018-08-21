@@ -1,5 +1,6 @@
 const initializer = require('./lib/initializer');
 const resourcePusher = require('./lib/push-resources');
+const projectRemover = require('./lib/delete-project');
 const resourceBuilder = require('./lib/build-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
@@ -21,6 +22,9 @@ function pushResources(context, category, resourceName) {
   return resourcePusher.run(context, category, resourceName);
 }
 
+function deleteProject(context) {
+  return projectRemover.run(context);
+}
 
 function configure(context) {
   return configManager.configure(context);
@@ -59,4 +63,5 @@ module.exports = {
   setupNewUser,
   getConfiguredAWSClient,
   showHelpfulLinks,
+  deleteProject,
 };

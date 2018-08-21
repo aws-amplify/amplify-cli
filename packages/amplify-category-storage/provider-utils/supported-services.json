@@ -17,7 +17,7 @@
 				"validation": {
 					"operator": "regex",
 					"value": "^[a-z0-9-]+$",
-					"onErrorMsg": "Bucket name can only use the following characters: a-z A-Z 0-9 . - _"
+					"onErrorMsg": "Bucket name can only use the following characters: a-z 0-9 -"
 				},
 				"required": true
 			}
