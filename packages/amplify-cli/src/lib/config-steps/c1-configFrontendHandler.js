@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
+const { getResourceOutputs } = require('../../extensions/amplify-helpers/get-resource-outputs');
 
 function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -31,7 +32,8 @@ function run(context) {
         delete context.exeInfo.projectConfig.frontendHandler[currentHandlerName];
         delete context.exeInfo.projectConfig[currentHandlerName];
         const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
-        return handlerModule.init(context);
+        return handlerModule.init(context)
+          .then(() => handlerModule.createFrontendConfigs(context, getResourceOutputs()));
       }
       const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
       return handlerModule.configure(context);

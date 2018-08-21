@@ -19,7 +19,7 @@ function onInitSuccessful(context) {
 function createFrontendConfigs(context, amplifyResources) {
   const { outputsByProvider } = amplifyResources;
   // createAmplifyConfig(context, outputsByCategory);
-  createAWSConfig(context, outputsByProvider.awscloudformation);
+  return createAWSConfig(context, outputsByProvider.awscloudformation);
 }
 
 function configure(context) {
