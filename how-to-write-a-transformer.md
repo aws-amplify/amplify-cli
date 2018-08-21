@@ -131,7 +131,7 @@ type Post @model @versioned {
 
 > Note: @versioned depends on @model but there is no way to explicitly state this yet..
 
-The next step after defining the directive to implement the business logic that implements your transformer. The `graphql-transform` package makes this a little easier
+The next step after defining the directive is to implement the transformer's business logic. The `graphql-transform` package makes this a little easier
 by exporting a common class through which we may define transformers. User's extend the `Transformer` class and implement the required functions.
 
 ```javascript
