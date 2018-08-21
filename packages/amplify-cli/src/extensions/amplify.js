@@ -7,6 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
+const { deleteProject } = require('./amplify-helpers/delete-project');
 const { buildResources } = require('./amplify-helpers/build-resources');
 const { getPlugin } = require('./amplify-helpers/get-plugin');
 const { getCategoryPlugins } = require('./amplify-helpers/get-category-plugins');
@@ -47,6 +48,7 @@ module.exports = (context) => {
     buildResources,
     constants,
     copyBatch,
+    deleteProject,
     executeProviderUtils,
     getPlugin,
     getCategoryPlugins,

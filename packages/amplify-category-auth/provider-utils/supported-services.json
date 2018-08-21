@@ -4,7 +4,7 @@
 			{
 				"key": "useDefault",
 				"prefix": "\n The current configured provider is Amazon Cognito. \n",
-				"question": "Do you want to use default authentication and security configuration?",
+				"question": "Do you want to use the default authentication and security configuration?",
 				"type": "list",
 				"default": true,
 				"learnMore": "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",

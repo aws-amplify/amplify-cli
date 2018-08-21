@@ -100,12 +100,10 @@ function remove(context) {
 
 function printInfo(context) {
   const url =
-  'https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html';
+  'https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html';
   context.print.info('');
-  context.print.info('Amplify uses AWS CloudFormation default configuration.');
-  context.print.info('To change this, see:');
+  context.print.info('For more information on AWS Profiles, see:');
   context.print.info(chalk.green(url));
-  context.print.info('You can also configure the AWS CloudFormation provider on the project level and override the default.');
   context.print.info('');
 }
 
