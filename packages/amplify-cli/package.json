@@ -1,6 +1,6 @@
 {
   "name": "amplify-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -25,7 +25,7 @@
     "amplify-frontend-android": "^0.1.1",
     "amplify-frontend-ios": "^0.1.1",
     "amplify-frontend-javascript": "^0.1.1",
-    "amplify-provider-awscloudformation": "^0.1.1",
+    "amplify-provider-awscloudformation": "^0.1.2",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",
     "eslint": "^4.19.1",
