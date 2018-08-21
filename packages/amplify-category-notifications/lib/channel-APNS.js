@@ -45,11 +45,10 @@ async function enable(context) {
 
   const { DefaultAuthenticationMethod } = channelOutput;
 
-  let answers;
   let keyConfig;
   let certificateConfig;
 
-  answers = await inquirer.prompt({
+  const answers = await inquirer.prompt({
     name: 'DefaultAuthenticationMethod',
     type: 'list',
     message: 'Choose authentication method used for APNs',
@@ -110,5 +109,5 @@ function disable(context) {
 module.exports = {
   configure,
   enable,
-  disable
+  disable,
 };

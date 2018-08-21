@@ -93,5 +93,5 @@ function disable(context) {
 module.exports = {
   configure,
   enable,
-  disable
+  disable,
 };

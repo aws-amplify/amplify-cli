@@ -1,28 +1,28 @@
-const inquirer = require('inquirer'); 
+const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
-const notificationManager = require('../../lib/notifications-manager'); 
+const notificationManager = require('../../lib/notifications-manager');
 
 module.exports = {
-  name: "configure",
+  name: 'configure',
   run: async (context) => {
-    const availableChannels = notificationManager.getAvailableChannels(context); 
+    const availableChannels = notificationManager.getAvailableChannels(context);
     let channelName = context.parameters.first;
 
-    if(!channelName || !availableChannels.includes(channelName)){
-        const answer = await inquirer.prompt({
-            name: 'selection',
-            type: 'list',
-            message: 'Choose the push notification channel to configure.',
-            choices: availableChannels,
-            default: availableChannels[0],
-        });
-        channelName = answer.selection;
+    if (!channelName || !availableChannels.includes(channelName)) {
+      const answer = await inquirer.prompt({
+        name: 'selection',
+        type: 'list',
+        message: 'Choose the push notification channel to configure.',
+        choices: availableChannels,
+        default: availableChannels[0],
+      });
+      channelName = answer.selection;
     }
 
-    await pinpointHelper.ensurePinpointApp(context); 
-    await notificationManager.configureChannel(context, channelName); 
+    await pinpointHelper.ensurePinpointApp(context);
+    await notificationManager.configureChannel(context, channelName);
     notificationManager.updateaServiceMeta(context);
-   
+
     return context;
   },
 };

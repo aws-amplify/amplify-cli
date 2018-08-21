@@ -16,12 +16,12 @@ module.exports = {
     const commands = [
       {
         name: 'channel',
-        description: `Allows you to configure notification channels`,
+        description: 'Allows you to configure notification channels',
       },
       {
         name: 'console',
-        description: `Opens the Pinpoint web console displaying the current channel settings`,
-      }
+        description: 'Opens the Pinpoint web console displaying the current channel settings',
+      },
     ];
 
     context.amplify.showHelp(header, commands);
