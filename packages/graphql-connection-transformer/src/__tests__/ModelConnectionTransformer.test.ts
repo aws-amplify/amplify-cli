@@ -4,8 +4,8 @@ import {
     InputValueDefinitionNode, buildASTSchema
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
-import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
-import DynamoDBModelTransformer, { makeCreateInputObjectName, makeUpdateInputObjectName } from 'graphql-dynamodb-transformer'
+import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
@@ -44,11 +44,11 @@ test('Test ModelConnectionTransformer simple one to many happy case', () => {
 
     // Check the Comment.commentPostId
     // Check the Comment.commentPostId inputs
-    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
     const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postCommentsId')
     expect(connectionId).toBeTruthy()
 
-    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
     const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postCommentsId')
     expect(connectionUpdateId).toBeTruthy()
 });
@@ -88,11 +88,11 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
 
     // Check the Comment.commentPostId
     // Check the Comment.commentPostId inputs
-    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
     const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionId).toBeTruthy()
 
-    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
     const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionUpdateId).toBeTruthy()
 });
@@ -135,11 +135,11 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
 
     // Check the Comment.commentPostId
     // Check the Comment.commentPostId inputs
-    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
     const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionId).toBeTruthy()
 
-    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
     const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionUpdateId).toBeTruthy()
 });
@@ -181,11 +181,11 @@ test('Test ModelConnectionTransformer complex one to many happy case', () => {
     expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
 
     // Check the Comment.commentPostId inputs
-    const commentCreateInput = getInputType(schemaDoc, makeCreateInputObjectName('Comment'))
+    const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
     const connectionId = commentCreateInput.fields.find(f => f.name.value === 'commentPostId')
     expect(connectionId).toBeTruthy()
 
-    const commentUpdateInput = getInputType(schemaDoc, makeUpdateInputObjectName('Comment'))
+    const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
     const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'commentPostId')
     expect(connectionUpdateId).toBeTruthy()
 
