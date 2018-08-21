@@ -695,6 +695,7 @@ type Post @model @searchable {
   title: String!
   createdAt: String!
   updatedAt: String!
+  upvotes: Int
 }
 ```
 
@@ -708,11 +709,12 @@ mutation CreatePost {
     title
     createdAt
     updatedAt
+    upvotes
   }
 }
 ```
 
-And then search for posts
+And then search for posts using a `match` query:
 
 ```graphql
 query SearchPosts {
@@ -724,6 +726,65 @@ query SearchPosts {
   }
 }
 ```
+
+There are multiple `SearchableTypes` generated in the schema, based on the datatype of the fields you specify in the Post type.
+
+The `filter` parameter in the search queery has a searchable type field that corresponds to the field listed in the Post type. For example, the `title` field of the `filter` object, has the following properties (containing the operators that are applicable to the `string` type):
+
+* `eq` - which uses the Elasticsearch keyword type to match for the exact term.
+* `ne` - this is an iverse operation of `eq`.
+* `matchPhrase` - searches using the Elasticsearch's [Match Phrase Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-match-query-phrase.html) to filter the documents in the search query.
+* `matchPhrasePrefix` - This uses the Elasticsearch's [Match Phrase Prefix Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-match-query-phrase-prefix.html) to filter the documents in the search query.
+* `multiMatch` - Corresponds to the Elasticsearch [Multi Match Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-multi-match-query.html).
+* `exists` - Corresponds to the Elasticsearch [Exists Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-exists-query.html).
+* `wildcard` - Corresponds to the Elasticsearch [Wildcard Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-wildcard-query.html).
+* `regexp` - Corresponds to the Elasticsearch [Regexp Query](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-regexp-query.html).
+
+
+For example, you can filter using the wildcard expression to search for posts using the following `wildcard` query:
+
+```graphql
+query SearchPosts {
+  searchPost(filter: { title: { wildcard: "S*Elasticsearch!" }}) {
+    items {
+      id
+      title
+    }
+  }
+}
+```
+
+The above query returns all documents whose `title` begins with `S` and ends with `Elasticsearch!`.
+
+Moreover you can use the `filter` parameter to pass a nested `and`/`or`/`not` conditions. By default, every operation in the filter properties is *AND* ed. You can use the `or` or `not` properties in the `filter` parameter of the search query to override this behavior. Each of these operators (`and`, `or`, `not` properties in the filter object) accepts an array of SearchableTypes which are in turn joined by the corresponding operator. For example, consider the following search query:
+
+```graphql
+query SearchPosts {
+  searchPost(filter: {
+    title: { wildcard: "S*" }
+    or: [
+      { createdAt: { eq: "08/20/2018" } },
+      { updatedAt: { eq: "08/20/2018" } }
+    ]
+  }) {
+    items {
+      id
+      title
+    }
+  }
+}
+```
+
+Assuming, you used the `createPost` mutation to create new posts with `title`, `createdAt` and `updatedAt` values, the above search query will return you a list of all `Posts`, whose `title` starts with `S` _and_ have `createdAt` _or_ `updatedAt` value as `08/20/2018`.
+
+Here is a complete list of searchable operations per GraphQL type supported as of today:
+
+| GraphQL Type        | Searchable Operation           |
+|-------------:|:-------------|
+| String      | `ne`, `eq`, `match`, `matchPhrase`, `matchPhrasePrefix`, `multiMatch`, `exists`, `wildcard`, `regexp` |
+| Int     | `ne`, `gt`, `lt`, `gte`, `lte`, `eq`, `range`      |
+| Float | `ne`, `gt`, `lt`, `gte`, `lte`, `eq`, `range`      |
+| Boolean | `eq`, `ne`      |
 
 **What is the GraphQL Transform** 
 
