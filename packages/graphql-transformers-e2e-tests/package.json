@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "scripts": {
@@ -17,12 +17,12 @@
   "author": "Michael Paris",
   "license": "MIT",
   "dependencies": {
-    "graphql-mapping-template": "1.0",
     "axios": "^0.18.0",
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-transform": "1.0",
-    "graphql-transformer-common": "1.0"
+    "graphql-mapping-template": "^0.1.1",
+    "graphql-transform": "^0.1.1",
+    "graphql-transformer-common": "^0.1.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -31,12 +31,12 @@
     "@types/node": "^10.3.4",
     "aws-amplify": "^1.0.4",
     "aws-sdk": "^2.259.1",
-    "graphql-appsync-transformer": "1.0",
-    "graphql-auth-transformer": "1.0.0",
-    "graphql-connection-transformer": "1.0.0",
-    "graphql-dynamodb-transformer": "1.0.0",
-    "graphql-elasticsearch-transformer": "1.0.0",
-    "graphql-versioned-transformer": "1.0.0",
+    "graphql-appsync-transformer": "^0.1.1",
+    "graphql-auth-transformer": "^0.1.1",
+    "graphql-connection-transformer": "^0.1.1",
+    "graphql-dynamodb-transformer": "^0.1.1",
+    "graphql-elasticsearch-transformer": "^0.1.1",
+    "graphql-versioned-transformer": "^0.1.1",
     "jest": "^23.1.0",
     "node-fetch": "^2.2.0",
     "ts-jest": "^22.4.6",

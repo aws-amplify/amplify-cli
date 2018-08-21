@@ -1,6 +1,6 @@
 {
   "name": "graphql-transform",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "main": "lib/index.js",
   "scripts": {
