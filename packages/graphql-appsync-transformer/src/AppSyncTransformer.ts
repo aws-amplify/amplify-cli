@@ -1,7 +1,6 @@
-import { Transformer, TransformerContext } from "graphql-transform";
+import { Transformer, TransformerContext, stripDirectives } from "graphql-transform";
 import {
-    buildASTSchema,
-    printSchema,
+    print,
     TypeDefinitionNode,
     Kind
 } from "graphql";
@@ -80,11 +79,11 @@ export class AppSyncTransformer extends Transformer {
     }
 
     private buildSchema(ctx: TransformerContext): string {
-        const built = buildASTSchema({
+        const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
         })
-        const SDL = printSchema(built)
+        const SDL = print(astSansDirectives)
         return SDL;
     }
 

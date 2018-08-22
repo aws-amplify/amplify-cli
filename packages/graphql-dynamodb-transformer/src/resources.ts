@@ -439,8 +439,7 @@ export class ResourceFactory {
                             expression: str("attribute_exists(#id)"),
                             expressionNames: obj({
                                 "#id": str("id")
-                            }),
-                            expressionValues: obj({})
+                            })
                         }))
                     ),
                     iff(
@@ -449,7 +448,9 @@ export class ResourceFactory {
                             // tslint:disable-next-line
                             qref(`$condition.put("expression", "($condition.expression) AND $${ResourceConstants.SNIPPETS.VersionedCondition}.expression")`),
                             qref(`$condition.expressionNames.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionNames)`),
-                            qref(`$condition.expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`)
+                            set(ref('expressionValues'), raw('$util.defaultIfNull($condition.expressionValues, {})')),
+                            qref(`$expressionValues.putAll($${ResourceConstants.SNIPPETS.VersionedCondition}.expressionValues)`),
+                            set(ref('condition.expressionValues'), ref('expressionValues'))
                         ])
                     ),
                     DynamoDBMappingTemplate.deleteItem({

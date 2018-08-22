@@ -1,4 +1,5 @@
 import { graphqlName, toUpper } from './util'
+import { DEFAULT_SCALARS } from './definition'
 
 export class ModelResourceIDs {
     static ModelTableResourceID(typeName: string): string {
@@ -11,6 +12,13 @@ export class ModelResourceIDs {
         return `${typeName}IAMRole`
     }
     static ModelFilterInputTypeName(name: string): string {
+        const nameOverride = DEFAULT_SCALARS[name]
+        if (nameOverride) {
+            return `Model${nameOverride}FilterInput`
+        }
+        return `Model${name}FilterInput`
+    }
+    static ModelScalarFilterInputTypeName(name: string): string {
         return `Model${name}FilterInput`
     }
     static ModelConnectionTypeName(typeName: string): string {

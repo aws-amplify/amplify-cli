@@ -1,7 +1,7 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode, buildASTSchema
+    InputValueDefinitionNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transform'
 import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
