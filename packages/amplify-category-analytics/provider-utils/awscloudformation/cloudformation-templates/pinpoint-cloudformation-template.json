@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Pinpoint app creation from Amplify CLI",
+    "Description": "Pinpoint resource stack creation using Amplify CLI",
     "Parameters": {
         "appName": {
             "Type": "String"

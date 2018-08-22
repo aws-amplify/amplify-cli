@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description" : "Stack for static web hosting",
+    "Description": "Hosting resource stack creation using Amplify CLI",
     "Resources": {
         "S3Bucket": {
             "Type": "AWS::S3::Bucket",
