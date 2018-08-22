@@ -184,7 +184,7 @@ test('Test searchPosts query with basic filter', async () => {
     expect(response).toBeDefined
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
-    expect(items.length).toEqual(8)
+    expect(items.length).toEqual(7)
 })
 
 test('Test searchPosts query with non-recursive filter', async () => {
