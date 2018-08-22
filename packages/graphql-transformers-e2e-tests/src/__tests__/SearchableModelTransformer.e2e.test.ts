@@ -64,7 +64,18 @@ const createPosts = async () => {
 
     // Waiting for the ES Cluster + Streaming Lambda infra to be setup
     console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup')
-    await cf.wait(300, () => Promise.resolve())
+    await cf.wait(120, () => Promise.resolve())
+}
+
+const runQuery = async (query: string, logContent: string) => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(query,  {});
+        console.log(logContent + JSON.stringify(response, null, 4));
+        return response;
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
 }
 
 let GRAPHQL_CLIENT = undefined;
@@ -121,7 +132,7 @@ beforeAll(async () => {
         GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
 
         // Create sample mutations to test search queries
-        createPosts();
+        await createPosts();
     } catch (e) {
         console.error(e)
         expect(true).toEqual(false)
@@ -151,136 +162,106 @@ afterAll(async () => {
 });
 
 test('Test searchPosts query without filter', async () => {
-    try {
-        const response = await runQuery(`query {
-            searchPosts {
-                items { ${selectionSet} }
-            }
-        }`, 'Test searchPosts response without filter: ')
-        expect(response).toBeDefined
-        expect(response.data.searchPosts.items).toBeDefined
-        const items = response.data.searchPosts.items
-        expect(items.length).toBeGreaterThan(0)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
+    const response = await runQuery(`query {
+        searchPosts {
+            items { ${selectionSet} }
+        }
+    }`, 'Test searchPosts response without filter: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toBeGreaterThan(0)
 })
 
 test('Test searchPosts query with basic filter', async () => {
-    try {
-        const response = await runQuery(`query {
-            searchPosts(filter: {
-                author: { eq: "snvishna" }
-            }) {
-                items { ${selectionSet} }
-            }
-        }`, 'Test searchPosts response with basic filter: ')
-        expect(response).toBeDefined
-        expect(response.data.searchPosts.items).toBeDefined
-        const items = response.data.searchPosts.items
-        expect(items.length).toEqual(8)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            author: { eq: "snvishna" }
+        }) {
+            items { ${selectionSet} }
+        }
+    }`, 'Test searchPosts response with basic filter: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(8)
 })
 
 test('Test searchPosts query with non-recursive filter', async () => {
-    try {
-        const response = await runQuery(`query {
-            searchPosts(filter: {
-                title: { eq: "test title" }
-                ups: { gte: 100 }
-                percentageUp: { ne: 77.7 }
-                downs: { range: [29, 31] }
-                author: { wildcard: "s*a" }
-                isPublished: { eq: true }
-            }) {
-                items { ${selectionSet} }
-            }
-        }`, 'Test searchPosts response with non-recursive filter: ')
-        expect(response).toBeDefined
-        expect(response.data.searchPosts.items).toBeDefined
-        const items = response.data.searchPosts.items
-        expect(items.length).toEqual(1)
-        expect(items[0].author).toEqual("shanraju")
-        expect(items[0].title).toEqual("test title")
-        expect(items[0].ups).toEqual(170)
-        expect(items[0].downs).toEqual(30)
-        expect(items[0].percentageUp).toEqual(88.8)
-        expect(items[0].isPublished).toEqual(true)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            title: { eq: "test title" }
+            ups: { gte: 100 }
+            percentageUp: { ne: 77.7 }
+            downs: { range: [29, 31] }
+            author: { wildcard: "s*a" }
+            isPublished: { eq: true }
+        }) {
+            items { ${selectionSet} }
+        }
+    }`, 'Test searchPosts response with non-recursive filter: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].author).toEqual("shanraju")
+    expect(items[0].title).toEqual("test title")
+    expect(items[0].ups).toEqual(170)
+    expect(items[0].downs).toEqual(30)
+    expect(items[0].percentageUp).toEqual(88.8)
+    expect(items[0].isPublished).toEqual(true)
 })
 
 test('Test searchPosts query with recursive filter 1', async () => {
-    try {
-        const response = await runQuery(`query {
-            searchPosts(filter: {
-                downs: { eq: 10 }
-                or: [
-                    {
-                        author: { wildcard: "s*a" },
-                        downs: { eq: 30 }
-                    },
-                    {
-                        isPublished: { eq: true }
-                    }
-                ]
-            }) {
-                items { ${selectionSet} }
-            }
-        }`, 'Test searchPosts response with recursive filter 1: ')
-        expect(response).toBeDefined
-        expect(response.data.searchPosts.items).toBeDefined
-        const items = response.data.searchPosts.items
-        expect(items.length).toEqual(1)
-        expect(items[0].author).toEqual("shanraju")
-        expect(items[0].title).toEqual("test")
-        expect(items[0].ups).toEqual(157)
-        expect(items[0].downs).toEqual(10)
-        expect(items[0].percentageUp).toEqual(97.4)
-        expect(items[0].isPublished).toEqual(true)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            downs: { eq: 10 }
+            or: [
+                {
+                    author: { wildcard: "s*a" },
+                    downs: { eq: 30 }
+                },
+                {
+                    isPublished: { eq: true }
+                }
+            ]
+        }) {
+            items { ${selectionSet} }
+        }
+    }`, 'Test searchPosts response with recursive filter 1: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].author).toEqual("shanraju")
+    expect(items[0].title).toEqual("test")
+    expect(items[0].ups).toEqual(157)
+    expect(items[0].downs).toEqual(10)
+    expect(items[0].percentageUp).toEqual(97.4)
+    expect(items[0].isPublished).toEqual(true)
 })
 
 test('Test searchPosts query with recursive filter 2', async () => {
-    try {
-        const response = await runQuery(`query {
-            searchPosts(filter: {
-                downs: { eq: 30 }
-                or: [
-                    {
-                        author: { wildcard: "s*a" },
-                        downs: { eq: 30 }
-                    },
-                    {
-                        isPublished: { eq: true }
-                    }
-                ]
-            }) {
-                items { ${selectionSet} }
-            }
-        }`, 'Test searchPosts response with recursive filter 2: ')
-        expect(response).toBeDefined
-        expect(response.data.searchPosts.items).toBeDefined
-        const items = response.data.searchPosts.items
-        expect(items.length).toEqual(4)
-    } catch (e) {
-        console.error(e)
-        // fail
-        expect(e).toBeUndefined()
-    }
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            downs: { eq: 30 }
+            or: [
+                {
+                    author: { wildcard: "s*a" },
+                    downs: { eq: 30 }
+                },
+                {
+                    isPublished: { eq: true }
+                }
+            ]
+        }) {
+            items { ${selectionSet} }
+        }
+    }`, 'Test searchPosts response with recursive filter 2: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(4)
 })
 
 function generateParams() {
@@ -292,12 +273,6 @@ function generateParams() {
     }
 
     return params
-}
-
-async function runQuery(query: string, logContent: string) {
-    const response = await GRAPHQL_CLIENT.query(query,  {});
-    console.log(logContent + JSON.stringify(response, null, 4));
-    return response;
 }
 
 function getCreatePostsQuery(
