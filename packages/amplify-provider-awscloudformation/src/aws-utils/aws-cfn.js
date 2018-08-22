@@ -337,10 +337,10 @@ function formatOutputs(outputs) {
 }
 
 function showEvents(events) {
-  console.log('\n');
   events = events.sort((a, b) => new Date(a.Timestamp) > new Date(b.Timestamp));
 
   if (events.length > 0) {
+    console.log('\n');
     console.log(columnify(events, { columns: ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'], showHeaders: false }));
   }
 }
