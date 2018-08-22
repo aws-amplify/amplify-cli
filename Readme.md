@@ -1,27 +1,4 @@
-# AWS Amplify CLI
-
-To set up your local dev environment, go to the `aws-amplify-staging/` directory and then run the following:<br>
-`yarn config set workspaces-experimental true`<br>
-`npm run setup-dev`
-
-To test your category, do the following:<br> 
-`cd <your test front-end project>` <br>
-`amplify init` <br>
-`amplify <your category> <subcommand>`<br> 
-
-About AWS Credentials and Configurations
-
-- For general configurations, the CLI directly uses the configuration provided by the AWS SDK. To get credentials, the AWS SDK uses the EC2 role, environmental variables, and shared config files in the directory ~/.aws/ folder. No additional credentials are stored by the CLI.
-- If you don't provide project-specific configurations, the CLI uses the general configurations for AWS access.
-- If you use project-specific configurations, these configurations override the general configurations when CLI commands are run inside the project.
-- For project-specific configurations, the CLI stores the keys in a file (per project) in the ~/.amplify/ folder. Because the key file isn't in the project's code base, the file won't be accidentally checked in to code repos.
-
-Before pushing code or sending a pull request, do the following:
-- At the command line, `run npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
-- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fx`
-- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step. 
-
-# Amplify CLI 
+# AWS Amplify CLI 
 
 <a href="https://nodei.co/npm/awsmobile-cli/">
   <img src="https://nodei.co/npm/awsmobile-cli.svg?downloads=true&downloadRank=true&stars=true">
@@ -79,14 +56,15 @@ The Amplify CLI supports the commands shown in the following table.
 | Command              | Description |
 | --- | --- |
 | amplify init | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.|
-| amplify configure | Configures the AWS access credentials, AWS Region, and attributes of your project like switching the front-end framework, and adding or removing cloud-provider plugins for Amplify CLI. |
+| amplify configure project | Configures the AWS user profile tied to the project and allows to update configurations set during the amplify init step. |
 | amplify push | Provisions cloud resources with the latest local developments. |
-| amplify publish | Runs `amplify push`, and then builds and publishes a client-side application to Amazon S3 and Amazon CloudFront. |
+| amplify publish | Runs `amplify push`, and then builds and publishes a client-side application to Amazon S3 and Amazon CloudFront (if hosting is enabled). |
 | amplify serve | Runs `amplify push`, and then executes the project's start command to test run the client-side application. |
 | amplify status | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete). |
 | amplify delete | Deletes all of the resources tied to the project from the cloud. |
 | amplify help | Displays help for the core CLI. |
 | amplify `<category>` help | Displays help for the categories in the CLI. |
+| amplify configure | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile |
 
 Category specific commands:
 1. [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
@@ -97,7 +75,7 @@ Category specific commands:
 6. [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
 
 
-## Configuration
+## New user setup
 
 * [Sign up for the AWS Free Tier](https://aws.amazon.com/free/) to learn and prototype at little or no cost.
 
@@ -108,3 +86,26 @@ Category specific commands:
 amplify configure
 ```
 
+
+# Development setup
+
+To set up your local dev environment, go to the `aws-amplify-staging/` directory and then run the following:<br>
+`yarn config set workspaces-experimental true`<br>
+`npm run setup-dev`
+
+To test your category, do the following:<br> 
+`cd <your test front-end project>` <br>
+`amplify init` <br>
+`amplify <your category> <subcommand>`<br> 
+
+About AWS Credentials and Configurations
+
+- For general configurations, the CLI directly uses the configuration provided by the AWS SDK. To get credentials, the AWS SDK uses the EC2 role, environmental variables, and shared config files in the directory ~/.aws/ folder. No additional credentials are stored by the CLI.
+- If you don't provide project-specific configurations, the CLI uses the general configurations for AWS access.
+- If you use project-specific configurations, these configurations override the general configurations when CLI commands are run inside the project.
+- For project-specific configurations, the CLI stores the keys in a file (per project) in the ~/.amplify/ folder. Because the key file isn't in the project's code base, the file won't be accidentally checked in to code repos.
+
+Before pushing code or sending a pull request, do the following:
+- At the command line, `run npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
+- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fx`
+- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step. 
