@@ -196,7 +196,7 @@ async function asyncForEach(array, callback) {
 }
 
 
-async function getResourceStatus(category, resourceName) {
+async function getResourceStatus(category, resourceName, providerName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -209,26 +209,38 @@ async function getResourceStatus(category, resourceName) {
     category,
     resourceName,
   );
-  const resourcesToBeUpdated = await getResourcesToBeUpdated(
+  let resourcesToBeUpdated = await getResourcesToBeUpdated(
     amplifyMeta,
     currentamplifyMeta,
     category,
     resourceName,
   );
-  const resourcesToBeDeleted = getResourcesToBeDeleted(
+  let resourcesToBeDeleted = getResourcesToBeDeleted(
     amplifyMeta,
     currentamplifyMeta,
     category,
     resourceName,
   );
 
-  const allResources = getAllResources(
+  let allResources = getAllResources(
     amplifyMeta,
     category,
     resourceName,
   );
 
   resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.category !== 'provider');
+
+  if (providerName) {
+    resourcesToBeCreated = resourcesToBeCreated.filter(resource =>
+      resource.providerPlugin === providerName);
+    resourcesToBeUpdated = resourcesToBeUpdated.filter(resource =>
+      resource.providerPlugin === providerName);
+    resourcesToBeDeleted = resourcesToBeCreated.filter(resource =>
+      resource.providerPlugin === providerName);
+    allResources = allResources.filter(resource =>
+      resource.providerPlugin === providerName);
+  }
+
 
   return {
     resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
