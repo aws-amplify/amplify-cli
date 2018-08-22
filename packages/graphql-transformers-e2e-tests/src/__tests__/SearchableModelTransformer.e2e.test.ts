@@ -24,15 +24,9 @@ const BUCKET_NAME = `testsearchablemodeltransformer-${dateAppender}`
 const FUNCTION_NAME = 'python_streaming_function.zip'
 const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/lib/streaming-lambda.zip`
 
-const selectionSet = `
-    id
-    author
-    title
-    ups
-    downs
-    percentageUp
-    isPublished
-`;
+const fragments = [
+    `fragment FullPost on Post { id author title ups downs percentageUp isPublished }`
+]
 
 const createPosts = async () => {
     const logContent = 'createPost response: '
@@ -69,7 +63,8 @@ const createPosts = async () => {
 
 const runQuery = async (query: string, logContent: string) => {
     try {
-        const response = await GRAPHQL_CLIENT.query(query,  {});
+        const q = [query, ...fragments].join('\n');
+        const response = await GRAPHQL_CLIENT.query(q,  {});
         console.log(logContent + JSON.stringify(response, null, 4));
         return response;
     } catch (e) {
@@ -164,7 +159,7 @@ afterAll(async () => {
 test('Test searchPosts query without filter', async () => {
     const response = await runQuery(`query {
         searchPosts {
-            items { ${selectionSet} }
+            items { ...FullPost }
         }
     }`, 'Test searchPosts response without filter: ')
     expect(response).toBeDefined
@@ -178,7 +173,7 @@ test('Test searchPosts query with basic filter', async () => {
         searchPosts(filter: {
             author: { eq: "snvishna" }
         }) {
-            items { ${selectionSet} }
+            items { ...FullPost }
         }
     }`, 'Test searchPosts response with basic filter: ')
     expect(response).toBeDefined
@@ -197,7 +192,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
             author: { wildcard: "s*a" }
             isPublished: { eq: true }
         }) {
-            items { ${selectionSet} }
+            items { ...FullPost }
         }
     }`, 'Test searchPosts response with non-recursive filter: ')
     expect(response).toBeDefined
@@ -226,7 +221,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
                 }
             ]
         }) {
-            items { ${selectionSet} }
+            items { ...FullPost }
         }
     }`, 'Test searchPosts response with recursive filter 1: ')
     expect(response).toBeDefined
@@ -255,7 +250,7 @@ test('Test searchPosts query with recursive filter 2', async () => {
                 }
             ]
         }) {
-            items { ${selectionSet} }
+            items { ...FullPost }
         }
     }`, 'Test searchPosts response with recursive filter 2: ')
     expect(response).toBeDefined
@@ -291,7 +286,7 @@ function getCreatePostsQuery(
             downs: ${downs}
             percentageUp: ${percentageUp}
             isPublished: ${isPublished}
-        }) { ${selectionSet} }
+        }) { ...FullPost }
     }`
 }
 
