@@ -11,7 +11,7 @@ function run(context) {
 
   jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
   const currentBackendMetaFilePath =
-            amplify.pathManager.getCurentBackendCloudAmplifyMetaFilePath(projectPath);
+            amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
   fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
   const backendMetaFilePath = amplify.pathManager.getAmplifyMetaFilePath(projectPath);
   fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');

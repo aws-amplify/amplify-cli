@@ -22,8 +22,8 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     category,
     resourceName,
   ));
-  
-  if(!fs.existsSync(localBackendDir)) {
+
+  if (!fs.existsSync(localBackendDir)) {
     return false;
   }
 
@@ -204,7 +204,7 @@ async function getResourceStatus(category, resourceName, providerName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
-  const currentamplifyMetaFilePath = pathManager.getCurentBackendCloudAmplifyMetaFilePath();
+  const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
   const currentamplifyMeta = JSON.parse(fs.readFileSync(currentamplifyMetaFilePath));
 
   let resourcesToBeCreated = getResourcesToBeCreated(
