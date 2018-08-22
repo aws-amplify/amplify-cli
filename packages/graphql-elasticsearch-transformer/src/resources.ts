@@ -6,7 +6,6 @@ import {
     ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, toJson, ifElse,
-    nul,
     int
 } from 'graphql-mapping-template'
 import { toUpper, plurality, graphqlName, ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
@@ -132,7 +131,13 @@ export class ResourceFactory {
                 S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket),
                 S3Key: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key)
             },
-            FunctionName: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
+            FunctionName: Fn.Join(
+                "-",
+                [
+                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            ),
             Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName),
             Role: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
             Runtime: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime),
@@ -238,7 +243,13 @@ export class ResourceFactory {
      */
     public makeStreamingLambdaIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName),
+            RoleName: Fn.Join(
+                "-",
+                [
+                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName),
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            ),
             AssumeRolePolicyDocument: {
                 Version: "2012-10-17",
                 Statement: [
