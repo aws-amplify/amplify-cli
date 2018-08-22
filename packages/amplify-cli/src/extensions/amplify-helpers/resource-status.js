@@ -200,7 +200,7 @@ async function getResourceStatus(category, resourceName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
-  const currentamplifyMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
+  const currentamplifyMetaFilePath = pathManager.getCurentBackendCloudAmplifyMetaFilePath();
   const currentamplifyMeta = JSON.parse(fs.readFileSync(currentamplifyMetaFilePath));
 
   let resourcesToBeCreated = getResourcesToBeCreated(

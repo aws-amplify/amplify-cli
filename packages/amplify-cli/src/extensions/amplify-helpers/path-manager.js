@@ -116,7 +116,7 @@ function getAmplifyMetaFilePath(projectPath) {
   ));
 }
 
-function getCurentBackendCloudamplifyMetaFilePath(projectPath) {
+function getCurentBackendCloudAmplifyMetaFilePath(projectPath) {
   return path.normalize(path.join(
     getCurrentCloudBackendDirPath(projectPath),
     amplifyCLIConstants.amplifyMetaFileName,
@@ -135,5 +135,5 @@ module.exports = {
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
   getAmplifyMetaFilePath,
-  getCurentBackendCloudamplifyMetaFilePath,
+  getCurentBackendCloudAmplifyMetaFilePath,
 };

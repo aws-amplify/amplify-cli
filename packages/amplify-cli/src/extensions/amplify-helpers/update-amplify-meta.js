@@ -32,7 +32,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
+  const amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudAmplifyMetaFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
     const sourceDir = path.normalize(path.join(
@@ -92,7 +92,7 @@ function updateProvideramplifyMeta(providerName, options) {
 
 function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute, value) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  // let amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
+  // let amplifyCloudMetaFilePath = pathManager.getCurentBackendCloudAmplifyMetaFilePath();
   const currentTimestamp = new Date();
 
   updateAwsMetaFile(
@@ -169,7 +169,7 @@ function updateAmplifyMetaAfterPackage(resource, zipFilename) {
 
 
 function updateamplifyMetaAfterResourceDelete(category, resourceName) {
-  const amplifyMetaFilePath = pathManager.getCurentBackendCloudamplifyMetaFilePath();
+  const amplifyMetaFilePath = pathManager.getCurentBackendCloudAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   const resourceDir = path.normalize(path.join(

@@ -6,7 +6,11 @@ const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 
 async function pushResources(context, category, resourceName) {
-  await showResourceTable(category, resourceName);
+  try{
+    await showResourceTable(category, resourceName);
+  }catch(e){
+    console.log(e.stack);
+  }
 
   return context.prompt.confirm('Are you sure you want to continue?')
     .then((answer) => {
