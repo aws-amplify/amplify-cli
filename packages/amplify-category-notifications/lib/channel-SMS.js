@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 
 const channelName = 'SMS';
 
-async function run(context) {
+async function configure(context) {
   const isChannelEnabled =
     context.exeInfo.serviceMeta.output[channelName] &&
     context.exeInfo.serviceMeta.output[channelName].Enabled;
@@ -16,7 +16,7 @@ async function run(context) {
       default: false,
     });
     if (answer.disableChannel) {
-      await disableChannel(context);
+      await disable(context);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -26,12 +26,12 @@ async function run(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await enableChannel(context);
+      await enable(context);
     }
   }
 }
 
-function enableChannel(context) {
+function enable(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     SMSChannelRequest: {
@@ -52,7 +52,7 @@ function enableChannel(context) {
   });
 }
 
-function disableChannel(context) {
+function disable(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     SMSChannelRequest: {
@@ -73,7 +73,8 @@ function disableChannel(context) {
   });
 }
 
-
 module.exports = {
-  run,
+  configure,
+  enable,
+  disable,
 };

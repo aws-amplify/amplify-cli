@@ -1,10 +1,8 @@
 const inquirer = require('inquirer');
-const configureKey = require('./apns-key-config');
-const configureCertificate = require('./apns-cert-config');
 
-const channelName = 'APNS';
+const channelName = 'Email';
 
-async function run(context) {
+async function configure(context) {
   const isChannelEnabled =
     context.exeInfo.serviceMeta.output[channelName] &&
     context.exeInfo.serviceMeta.output[channelName].Enabled;
@@ -18,9 +16,10 @@ async function run(context) {
       default: false,
     });
     if (answer.disableChannel) {
-      await disableChannel(context);
+      await disable(context);
     } else {
-      await configureAndEnable(context);
+      const successMessage = `The ${channelName} channel has been successfully updated.`;
+      await enable(context, successMessage);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -30,76 +29,77 @@ async function run(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await configureAndEnable(context);
+      await enable(context);
     }
   }
 }
 
-async function configureAndEnable(context) {
+async function enable(context, successMessage) {
   let channelOutput = {};
   if (context.exeInfo.serviceMeta.output[channelName]) {
     channelOutput = context.exeInfo.serviceMeta.output[channelName];
   }
-
-  const APNSChannelRequest = { Enabled: true };
-
-  const { DefaultAuthenticationMethod } = channelOutput;
-
-  let keyConfig;
-  let certificateConfig;
-
-  const answers = await inquirer.prompt({
-    name: 'DefaultAuthenticationMethod',
-    type: 'list',
-    message: 'Choose authentication method used for APNs',
-    choices: ['Key', 'Certificate'],
-    default: DefaultAuthenticationMethod || 'Certificate',
-  });
-
-  APNSChannelRequest.DefaultAuthenticationMethod = answers.DefaultAuthenticationMethod;
-
-  if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
-    keyConfig = await configureKey.run();
-  } else {
-    certificateConfig = await configureCertificate.run();
-  }
-
-  Object.assign(APNSChannelRequest, keyConfig, certificateConfig);
+  const questions = [
+    {
+      name: 'FromAddress',
+      type: 'input',
+      message: "The 'From' Email address used to send emails",
+      default: channelOutput.FromAddress,
+    },
+    {
+      name: 'Identity',
+      type: 'input',
+      message: 'The ARN of an identity verified with SES',
+      default: channelOutput.Identity,
+    },
+    {
+      name: 'RoleArn',
+      type: 'input',
+      message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
+      default: channelOutput.RoleArn,
+    },
+  ];
+  const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest,
+    EmailChannelRequest: {
+      Enabled: true,
+      ...answers,
+    },
   };
-
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
       if (err) {
         context.print.error('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been successfully enabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
+        if (!successMessage) {
+          successMessage = `The ${channelName} channel has been successfully enabled.`;
+        }
+        context.print.info(successMessage);
+        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }
     });
   });
 }
 
-function disableChannel(context) {
+async function disable(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest: {
+    EmailChannelRequest: {
       Enabled: false,
     },
   };
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
       if (err) {
         context.print.error('update channel error');
         reject(err);
       } else {
         context.print.info(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
+        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }
     });
@@ -107,5 +107,7 @@ function disableChannel(context) {
 }
 
 module.exports = {
-  run,
+  configure,
+  enable,
+  disable,
 };

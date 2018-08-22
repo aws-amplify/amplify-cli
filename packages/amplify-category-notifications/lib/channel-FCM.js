@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 
 const channelName = 'FCM';
 
-async function run(context) {
+async function configure(context) {
   const isChannelEnabled =
     context.exeInfo.serviceMeta.output[channelName] &&
     context.exeInfo.serviceMeta.output[channelName].Enabled;
@@ -16,9 +16,10 @@ async function run(context) {
       default: false,
     });
     if (answer.disableChannel) {
-      await disableChannel(context);
+      await disable(context);
     } else {
-      await configure(context);
+      const successMessage = `The ${channelName} channel has been successfully updated.`;
+      await enable(context, successMessage);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -28,12 +29,12 @@ async function run(context) {
       default: true,
     });
     if (answer.enableChannel) {
-      await configure(context);
+      await enable(context);
     }
   }
 }
 
-async function configure(context) {
+async function enable(context, successMessage) {
   let channelOutput = {};
   if (context.exeInfo.serviceMeta.output[channelName]) {
     channelOutput = context.exeInfo.serviceMeta.output[channelName];
@@ -61,7 +62,10 @@ async function configure(context) {
         context.print.error('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been successfully enabled.`);
+        if (!successMessage) {
+          successMessage = `The ${channelName} channel has been successfully enabled.`;
+        }
+        context.print.info(successMessage);
         context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }
@@ -69,7 +73,7 @@ async function configure(context) {
   });
 }
 
-function disableChannel(context) {
+function disable(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
@@ -90,7 +94,8 @@ function disableChannel(context) {
   });
 }
 
-
 module.exports = {
-  run,
+  configure,
+  enable,
+  disable,
 };
