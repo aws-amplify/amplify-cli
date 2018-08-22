@@ -7,14 +7,11 @@ import {
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    makeModelConnectionTypeName,
     makeModelConnectionType,
     makeModelConnectionField,
     makeScalarFilterInputs,
     makeModelXFilterInputObject,
     makeModelSortDirectionEnumObject,
-    makeUpdateInputObjectName,
-    makeCreateInputObjectName
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
@@ -172,13 +169,13 @@ export class ModelConnectionTransformer extends Transformer {
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
 
             // Update the create & update input objects for this
-            const createInputName = makeCreateInputObjectName(parentTypeName)
+            const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName)
             const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
                 ctx.putType(updated)
             }
-            const updateInputName = makeUpdateInputObjectName(parentTypeName)
+            const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName)
             const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
@@ -210,13 +207,13 @@ export class ModelConnectionTransformer extends Transformer {
             this.extendTypeWithConnection(ctx, parent, field, relatedType)
 
             // Update the create & update input objects for the related type
-            const createInputName = makeCreateInputObjectName(relatedTypeName)
+            const createInputName = ModelResourceIDs.ModelCreateInputObjectName(relatedTypeName)
             const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
                 ctx.putType(updated)
             }
-            const updateInputName = makeUpdateInputObjectName(relatedTypeName)
+            const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(relatedTypeName)
             const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
@@ -238,13 +235,13 @@ export class ModelConnectionTransformer extends Transformer {
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver)
 
             // Update the create & update input objects for this type
-            const createInputName = makeCreateInputObjectName(parentTypeName)
+            const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName)
             const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
                 const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
                 ctx.putType(updated)
             }
-            const updateInputName = makeUpdateInputObjectName(parentTypeName)
+            const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName)
             const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
@@ -258,7 +255,7 @@ export class ModelConnectionTransformer extends Transformer {
     }
 
     private generateModelXConnectionType(ctx: TransformerContext, typeDef: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): void {
-        const tableXConnectionName = makeModelConnectionTypeName(typeDef.name.value)
+        const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(typeDef.name.value)
         if (this.typeExist(tableXConnectionName, ctx)) {
             return
         }
