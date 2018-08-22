@@ -1,6 +1,6 @@
 # AWS Amplify CLI 
 
-The Amplify CLI is a command line interface to seamlessly enable and configure cloud services for your apps. It enables and manages your backend resources, by default using AWS CloudFormation templates.
+The Amplify CLI is a command line interface to seamlessly enable and configure cloud services for your apps using AWS CloudFormation templates.
 
 * [Installation](#installation)
 * [Getting Started](#getting-started)
