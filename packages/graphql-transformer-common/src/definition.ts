@@ -6,16 +6,16 @@ import {
 } from 'graphql'
 
 export const STANDARD_SCALARS = {
-    String: true,
-    Int: true,
-    Float: true,
-    Boolean: true,
-    ID: true
+    String: 'String',
+    Int: 'Int',
+    Float: 'Int',
+    Boolean: 'Boolean',
+    ID: 'ID'
 };
 
 const OTHER_SCALARS = {
-    BigInt: true,
-    Double: true
+    BigInt: 'Int',
+    Double: 'Float'
 };
 
 export const APPSYNC_DEFINED_SCALARS: { [k: string]: string } = {
@@ -30,7 +30,7 @@ export const APPSYNC_DEFINED_SCALARS: { [k: string]: string } = {
     AWSIPAddress: 'String'
 };
 
-export const DEFAULT_SCALARS: { [k: string]: boolean } = {
+export const DEFAULT_SCALARS: { [k: string]: string } = {
     ...STANDARD_SCALARS,
     ...OTHER_SCALARS,
     ...APPSYNC_DEFINED_SCALARS

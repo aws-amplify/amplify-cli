@@ -179,7 +179,6 @@ export default class GraphQLTransform {
         }
 
         for (const transformer of this.transformers) {
-            // console.log(`Transforming with ${transformer.name}`)
             if (isFunction(transformer.before)) {
                 transformer.before(context)
             }

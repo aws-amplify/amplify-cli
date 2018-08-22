@@ -95,7 +95,7 @@ export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
         nodeMap,
         {},
         typeRef => {
-            throw new Error(`Type "${typeRef.name.value}" not found in document.`);
+            throw new Error(`Type!! "${typeRef.name.value}" not found in document.`);
         },
     )
 }
@@ -127,5 +127,5 @@ export function validateModelSchema(doc: DocumentNode) {
         fields
     })
     const schema = new GraphQLSchema({ query: queryType, types, directives });
-    return validate(schema, doc, specifiedRules)
+    return validate(schema, fullDocument, specifiedRules)
 }

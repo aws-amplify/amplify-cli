@@ -114,7 +114,7 @@ export function makeModelXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: makeNamedType('Model' + getBaseType(field.type) + 'FilterInput'),
+                type: makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(getBaseType(field.type))),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []

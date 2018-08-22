@@ -17,7 +17,8 @@ async function run(context, category, resourceName) {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
-  } = await context.amplify.getResourceStatus(category, resourceName);
+  } = await context.amplify.getResourceStatus(category, resourceName, providerName);
+
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 

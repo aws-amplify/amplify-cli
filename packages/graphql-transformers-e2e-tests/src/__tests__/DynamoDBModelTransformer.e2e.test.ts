@@ -29,8 +29,8 @@ beforeAll(async () => {
     type Post @model {
         id: ID!
         title: String!
-        createdAt: String
-        updatedAt: String
+        createdAt: AWSDateTime
+        updatedAt: AWSDateTime
     }
     `
     const transformer = new GraphQLTransform({
@@ -194,7 +194,7 @@ test('Test getPost query', async () => {
     }
 })
 
-test('Test listPost query', async () => {
+test('Test listPosts query', async () => {
     try {
         const createResponse = await GRAPHQL_CLIENT.query(`mutation {
             createPost(input: { title: "Test List" }) {
@@ -207,15 +207,15 @@ test('Test listPost query', async () => {
         expect(createResponse.data.createPost.id).toBeDefined()
         expect(createResponse.data.createPost.title).toEqual('Test List')
         const listResponse = await GRAPHQL_CLIENT.query(`query {
-            listPost {
+            listPosts {
                 items {
                     id
                     title
                 }
             }
         }`, {})
-        expect(listResponse.data.listPost.items).toBeDefined
-        const items = listResponse.data.listPost.items
+        expect(listResponse.data.listPosts.items).toBeDefined()
+        const items = listResponse.data.listPosts.items
         expect(items.length).toBeGreaterThan(0)
     } catch (e) {
         console.error(e)
@@ -224,7 +224,7 @@ test('Test listPost query', async () => {
     }
 })
 
-test('Test listPost query with filter', async () => {
+test('Test listPosts query with filter', async () => {
     try {
         const createResponse = await GRAPHQL_CLIENT.query(`mutation {
             createPost(input: { title: "Test List with filter" }) {
@@ -237,7 +237,7 @@ test('Test listPost query with filter', async () => {
         expect(createResponse.data.createPost.id).toBeDefined()
         expect(createResponse.data.createPost.title).toEqual('Test List with filter')
         const listWithFilterResponse = await GRAPHQL_CLIENT.query(`query {
-            listPost(filter: {
+            listPosts(filter: {
                 title: {
                     contains: "List with filter"
                 }
@@ -248,8 +248,9 @@ test('Test listPost query with filter', async () => {
                 }
             }
         }`, {})
-        expect(listWithFilterResponse.data.listPost.items).toBeDefined
-        const items = listWithFilterResponse.data.listPost.items
+        console.log(JSON.stringify(listWithFilterResponse, null, 4))
+        expect(listWithFilterResponse.data.listPosts.items).toBeDefined()
+        const items = listWithFilterResponse.data.listPosts.items
         expect(items.length).toEqual(1)
         expect(items[0].title).toEqual('Test List with filter')
     } catch (e) {
