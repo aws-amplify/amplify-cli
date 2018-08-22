@@ -44,7 +44,7 @@ const createPosts = async () => {
         "snvishna", "test title", 60, 30, 21.0, false
     ), logContent)
     await runQuery(getCreatePostsQuery(
-        "snvishna", "test title", 160, 30, 97.6, false
+        "shankar", "test title", 160, 30, 97.6, false
     ), logContent)
     await runQuery(getCreatePostsQuery(
         "snvishna", "test TITLE", 170, 30, 88.8, true
@@ -204,7 +204,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
-    expect(items[0].author).toEqual("shanraju")
+    expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test title")
     expect(items[0].ups).toEqual(170)
     expect(items[0].downs).toEqual(30)
@@ -233,7 +233,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
-    expect(items[0].author).toEqual("shanraju")
+    expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test")
     expect(items[0].ups).toEqual(157)
     expect(items[0].downs).toEqual(10)
@@ -261,7 +261,7 @@ test('Test searchPosts query with recursive filter 2', async () => {
     expect(response).toBeDefined
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
-    expect(items.length).toEqual(4)
+    expect(items.length).toEqual(5)
 })
 
 function generateParams() {
