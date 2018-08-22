@@ -22,6 +22,10 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     category,
     resourceName,
   ));
+  
+  if(!fs.existsSync(localBackendDir)) {
+    return false;
+  }
 
   const localDirHash = await getHashForResourceDir(localBackendDir);
   const cloudDirHash = await getHashForResourceDir(cloudBackendDir);
