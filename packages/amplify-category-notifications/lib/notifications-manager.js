@@ -24,8 +24,8 @@ function getEnabledChannels(context) {
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
       if (serviceMeta.service === 'Pinpoint' &&
-                            serviceMeta.output &&
-                            serviceMeta.output.Id) {
+                                serviceMeta.output &&
+                                serviceMeta.output.Id) {
         availableChannels.forEach((channel) => {
           if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
             result.push(channel);
@@ -77,8 +77,15 @@ async function configureChannel(context, channelName) {
 
 function updateaServiceMeta(context) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
+  context.exeInfo.serviceMeta.lastPushTimeStamp = new Date();
+  let jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+  const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetaFilePath));
+  currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
+  jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
+  fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
 }
 
 module.exports = {
