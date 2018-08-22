@@ -4,7 +4,7 @@ import {
 } from 'graphql'
 import {
     graphqlName, makeNamedType, isScalar,
-    makeListType, getBaseType
+    makeListType, getBaseType, SearchableResourceIDs
 } from 'graphql-transformer-common'
 
 const STRING_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
@@ -14,7 +14,7 @@ const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range']
 const BOOLEAN_CONDITIONS = ['eq', 'ne']
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Searchable${type}FilterInput`)
+    const name = SearchableResourceIDs.SearchableFilterInputTypeName(type)
     let conditions = getScalarConditions(type)
     const fields: InputValueDefinitionNode[] = conditions
         .map((condition: string) => ({
@@ -42,14 +42,14 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
 }
 
 export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = graphqlName(`Searchable${obj.name.value}FilterInput`)
+    const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: makeNamedType('Searchable' + getBaseType(field.type) + 'FilterInput'),
+                type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(field.type)),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []

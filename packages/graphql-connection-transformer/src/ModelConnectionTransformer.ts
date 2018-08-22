@@ -1,8 +1,8 @@
 import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transform'
 import Table from 'cloudform/types/dynamoDb/table'
 import {
-    DirectiveNode, buildASTSchema, printSchema, ObjectTypeDefinitionNode,
-    TypeSystemDefinitionNode, Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
+    DirectiveNode, ObjectTypeDefinitionNode,
+    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
     InputObjectTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
