@@ -18,7 +18,7 @@ To install the Amplify CLI, use npm or yarn as follows:
 $ npm install -g @aws-amplify/cli
 ```
 
-Or
+or
 
 ```bash
 $ yarn global add @aws-amplify/cli
