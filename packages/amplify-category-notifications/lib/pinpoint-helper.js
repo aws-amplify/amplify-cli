@@ -28,7 +28,7 @@ async function checkPinpointApp(context) {
 }
 
 async function deletePinpointApp(context) {
-  const { amplifyMeta } = context.exeInfo;
+  const amplifyMeta = context.amplify.getProjectMeta();
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);

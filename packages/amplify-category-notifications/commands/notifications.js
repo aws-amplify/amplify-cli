@@ -16,12 +16,24 @@ module.exports = {
 
     const commands = [
       {
-        name: 'channel',
-        description: 'Allows you to configure notification channels',
+        name: 'add | enable',
+        description: 'Add a notification channel',
+      },
+      {
+        name: 'remove | disable',
+        description: 'Remove a notification channel',
+      },
+      {
+        name: 'configure',
+        description: 'Configure a notification channel',
+      },
+      {
+        name: 'status | list',
+        description: 'List the enabled/disabled status of the available notification channels',
       },
       {
         name: 'console',
-        description: 'Opens the Pinpoint web console displaying the current channel settings',
+        description: 'Open the Pinpoint web console displaying the current channel settings',
       },
     ];
 
