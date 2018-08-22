@@ -79,11 +79,11 @@ async function transformGraphQLSchema(context, options) {
     new AppSyncTransformer(buildDir),
     new DynamoDBModelTransformer(),
     new ModelConnectionTransformer(),
-    new VersionedModelTransformer()
+    new VersionedModelTransformer(),
   ];
 
   if (usedDirectives.includes('searchable')) {
-    transformerList.push(new SearchableModelTransformer())
+    transformerList.push(new SearchableModelTransformer());
   }
 
   if (parameters.AuthCognitoUserPoolId) {
@@ -102,7 +102,7 @@ async function transformGraphQLSchema(context, options) {
     throw e;
   }
 
-  context.print.success('GraphQL schema compiled successfully.');
+  context.print.success('\nGraphQL schema compiled successfully.');
 
   fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
 

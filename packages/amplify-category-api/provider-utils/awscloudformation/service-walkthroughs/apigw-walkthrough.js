@@ -520,26 +520,10 @@ async function askLambdaFromProject(context, currentPath) {
 }
 
 async function askLambdaArn(context, currentPath) {
-  const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
-
-  const regionQuestion = {
-    type: 'list',
-    name: 'region',
-    message: 'Specify the Lambda function Region',
-    choices: regions,
-    default: (currentPath && currentPath.lambdaArn) ? currentPath.lambdaArn.split(':')[3] : 'us-west-1',
-  };
-
-  const regionAnswer = await inquirer.prompt([regionQuestion]);
-
-  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', { region: regionAnswer.region });
+  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions');
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
-    value: {
-      resourceName: lambdaFunction.FunctionName.replace(/[^0-9a-zA-Z]/gi, ''),
-      Arn: lambdaFunction.FunctionArn,
-      FunctionName: lambdaFunction.FunctionName,
-    },
+    value: lambdaFunction.FunctionArn,
     name: `${lambdaFunction.FunctionName} (${lambdaFunction.FunctionArn})`,
   }));
 
@@ -553,12 +537,26 @@ async function askLambdaArn(context, currentPath) {
     name: 'lambdaChoice',
     message: 'Please select a Lambda function',
     choices: lambdaOptions,
-    default: (currentPath && currentPath.lambdaArn) ? currentPath.lambdaArn : lambdaOptions[0],
+    default: (currentPath && currentPath.lambdaArn) ?
+      `${currentPath.lambdaArn}` : `${lambdaOptions[0].value}`,
   };
 
-  const lambdaCloudOptionAnswer = await inquirer.prompt([lambdaCloudOptionQuestion]);
+  let lambdaOption;
+  while (!lambdaOption) {
+    try {
+      lambdaOption = await inquirer.prompt([lambdaCloudOptionQuestion]);
+    } catch (err) {
+      context.print.error('Select a Lambda Function');
+    }
+  }
 
-  return { lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, lambdaFunction: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, '') };
+  const lambdaCloudOptionAnswer =
+    lambdaFunctions.find(lambda => lambda.FunctionArn === lambdaOption.lambdaChoice);
+
+  return {
+    lambdaArn: lambdaCloudOptionAnswer.FunctionArn,
+    lambdaFunction: lambdaCloudOptionAnswer.FunctionName,
+  };
 }
 
 // function checkIfAuthExists(context) {

@@ -168,8 +168,8 @@ export class AppSyncTransformer extends Transformer {
         if (!fs.existsSync(functionPath)) {
             fs.mkdirSync(functionPath);
         }
-        const sourcePath = normalize(
-            `${__dirname}/../node_modules/graphql-elasticsearch-transformer/streaming-lambda.zip`)
+        const sourcePath = normalize(ctx.metadata.get('ElasticSearchPathToStreamingLambda'))
+        // console.log('ElasticSearchPathToStreamingLambda Source Path: ' + sourcePath)
         const destPath = normalize(`${this.outputPath}/functions/python_streaming_function.zip`)
 
         const lambdaCode = fs.readFileSync(sourcePath)

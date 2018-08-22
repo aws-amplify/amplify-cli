@@ -18,11 +18,8 @@
   "license": "MIT",
   "dependencies": {
     "cloudform": "^2.2.1",
-    "graphql": "^0.13.2",
-    "graphql-elasticsearch-transformer": "^0.1.1",
-    "graphql-mapping-template": "^0.1.1",
-    "graphql-transform": "^0.1.1",
-    "graphql-transformer-common": "^0.1.1"
+    "graphql-transform": "1.0",
+    "graphql-transformer-common": "1.0"
   },
   "devDependencies": {
     "@types/jest": "^23.1.1",

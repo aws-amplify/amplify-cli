@@ -2,7 +2,7 @@ const getFrontEndHandler = require('./getFrontEndHandler')
 const getAppSyncAPIDetails = require('./getAppSyncAPIDetails')
 const getOutputFileName = require('./getOutputFileName')
 const downloadIntrospectionSchema = require('./downloadIntrospectionSchema')
-const getSchemaDownloadLocation = require('./getSchemaDownloadLoation')
+const getSchemaDownloadLocation = require('./getSchemaDownloadLocation')
 
 module.exports = {
   getAppSyncAPIDetails,

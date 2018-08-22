@@ -17,7 +17,12 @@ function uploadAppSyncFiles(context, resources) {
     const resolverDir = path.normalize(path.join(resourceBuildDir, 'resolvers'));
     const functionsDir = path.normalize(path.join(resourceBuildDir, 'functions'));
     const schemaFilePath = path.normalize(path.join(resourceBuildDir, schemaFileName));
-    const pythonStreamingFunctionFilePath = path.normalize(path.join(functionsDir, pythonStreamingFunctionFileName));
+
+    const pythonStreamingFunctionFilePath = path.normalize(path.join(
+      functionsDir,
+      pythonStreamingFunctionFileName,
+    ));
+
     const uploadFilePromises = [];
     const s3LocationMap = {};
 

@@ -38,7 +38,6 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
         if (serviceMeta.output.Region) {
           result.Region = serviceMeta.output.Region;
         }
-
         break;
       }
     }

@@ -988,7 +988,7 @@
       <%if (props.functionArns) { %>            
         <% for (var i=0; i < props.functionArns.length; i++) { %>
         
-        "function<%= props.functionArns[i].lambdaFunction %>Permission<%= props.apiName %>": {
+        "function<%= props.functionArns[i].lambdaFunction.replace(/[^0-9a-zA-Z]/gi, '') %>Permission<%= props.apiName %>": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
                 "FunctionName": <% if (props.functionArns[i].lambdaArn) {%> "<%= props.functionArns[i].lambdaArn %>", <% } else { %>

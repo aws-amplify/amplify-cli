@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc && cp streaming-lambda.zip lib/streaming-lambda.zip",
+    "build": "tsc && zip -j lib/streaming-lambda.zip ./streaming-lambda/python_streaming_function.py",
     "clean": "rm -rf ./lib",
     "lint": "tslint -p ./tslint.json"
   },
@@ -18,10 +18,9 @@
   "license": "MIT",
   "dependencies": {
     "cloudform": "^2.2.1",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "^0.1.1",
-    "graphql-transform": "^0.1.1",
-    "graphql-transformer-common": "^0.1.1"
+    "graphql-transform": "1.0",
+    "graphql-transformer-common": "1.0",
+    "graphql-appsync-transformer": "1.0"
   },
   "devDependencies": {
     "@types/jest": "^23.1.1",

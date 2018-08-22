@@ -18,7 +18,6 @@ const cf = new CloudFormationClient('us-west-2')
 const STACK_NAME = 'TestSearchableModelTransformer'
 const BUCKET_NAME = 'testSearchableModelTransformer'
 const FUNCTION_NAME = 'python_streaming_function.zip'
-const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/streaming-lambda.zip`
 
 const s3 = new S3Client('us-west-2')
 

@@ -290,7 +290,7 @@ class CloudFormation {
 
   deleteResourceStack() {
     const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].parentStackName : '';
+    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
     if (!stackName) {
       throw new Error('Project stack does not exist');
     }
@@ -303,10 +303,9 @@ class CloudFormation {
 
     return new Promise((resolve, reject) => {
       cfnModel.describeStacks(cfnStackParams, (err) => {
-        let cfnDeleteStatus = 'stackCreateComplete';
+        const cfnDeleteStatus = 'stackDeleteComplete';
         if (err === null) {
           cfnModel.deleteStack(cfnStackParams, (deleteErr) => {
-            cfnDeleteStatus = 'stackDeleteComplete';
             if (deleteErr) {
               console.log(`Error deleting stack ${stackName}`);
               reject(deleteErr);

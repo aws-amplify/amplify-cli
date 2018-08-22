@@ -1,14 +1,17 @@
 const constants = require('./constants');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
   const pluginDir = __dirname;
-  const projectConfig = amplify.getProjectConfig();
-  const frontendConfig = projectConfig[constants.Label].config;
-  const srcDirPath = path.join(projectConfig.projectPath, frontendConfig.SourceDir);
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.configFilename);
@@ -56,32 +59,36 @@ function createAWSExports(context, amplifyResources) {
     }
   });
   generateAWSExportsFile(context, configOutput);
+  return context;
 }
 
 function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
   const pluginDir = __dirname;
-  const projectConfig = amplify.getProjectConfig();
-  const frontendConfig = projectConfig[constants.Label].config;
-  const srcDirPath = path.join(projectConfig.projectPath, frontendConfig.SourceDir);
+  const projectPath = context.exeInfo ?
+    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
 
-  if (fs.existsSync(srcDirPath)) {
-    const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
-    const options = {
-      configOutput,
-    };
-    const copyJobs = [
-      {
-        dir: pluginDir,
-        template: './aws_exports.js.ejs',
-        target: targetFilePath,
-      },
-    ];
+  fs.ensureDirSync(srcDirPath);
 
-    // copy over the files
-    const forceOverwrite = true;
-    return amplify.copyBatch(context, copyJobs, options, forceOverwrite);
-  }
+  const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
+  const options = {
+    configOutput,
+  };
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: './aws_exports.js.ejs',
+      target: targetFilePath,
+    },
+  ];
+
+  // copy over the files
+  const forceOverwrite = true;
+  return amplify.copyBatch(context, copyJobs, options, forceOverwrite);
 }
 
 function getCognitoConfig(cognitoResources, projectRegion) {

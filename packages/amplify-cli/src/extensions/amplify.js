@@ -7,6 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
+const { deleteProject } = require('./amplify-helpers/delete-project');
 const { buildResources } = require('./amplify-helpers/build-resources');
 const { getPlugin } = require('./amplify-helpers/get-plugin');
 const { getCategoryPlugins } = require('./amplify-helpers/get-category-plugins');
@@ -19,13 +20,13 @@ const { getResourceStatus } = require('./amplify-helpers/resource-status');
 const { getResourceOutputs } = require('./amplify-helpers/get-resource-outputs');
 const { showResourceTable } = require('./amplify-helpers/resource-status');
 const { sharedQuestions } = require('./amplify-helpers/shared-questions.js');
-const { inputValidation } = require('../../../amplify-cli/src/extensions/amplify-helpers/input-validation');
+const { inputValidation } = require('./amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
 const { listCategories } = require('./amplify-helpers/list-categories');
 const pathManager = require('./amplify-helpers/path-manager');
 const { makeId } = require('./amplify-helpers/make-id');
 const { openEditor } = require('./amplify-helpers/open-editor');
-const { getWhen } = require('../../../amplify-cli/src/extensions/amplify-helpers/get-when-function');
+const { getWhen } = require('./amplify-helpers/get-when-function');
 const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-prompt');
 const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
 const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2');
@@ -47,6 +48,7 @@ module.exports = (context) => {
     buildResources,
     constants,
     copyBatch,
+    deleteProject,
     executeProviderUtils,
     getPlugin,
     getCategoryPlugins,
