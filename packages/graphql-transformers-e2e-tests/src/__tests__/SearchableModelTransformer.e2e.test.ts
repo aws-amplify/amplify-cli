@@ -17,8 +17,10 @@ jest.setTimeout(60000 * 60);
 
 const s3 = new S3Client('us-west-2')
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = `TestSearchableModelTransformer-${moment().format('YYYYMMDDHHmmss')}`
-const BUCKET_NAME = 'testsearchablemodeltransformer'
+
+const dateAppender = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `TestSearchableModelTransformer-${dateAppender}`
+const BUCKET_NAME = `testsearchablemodeltransformer-${dateAppender}`
 const FUNCTION_NAME = 'python_streaming_function.zip'
 const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/lib/streaming-lambda.zip`
 
