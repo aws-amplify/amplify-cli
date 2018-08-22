@@ -1,10 +1,12 @@
 const inquirer = require('inquirer');
+const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
 
 module.exports = {
   name: 'remove',
   alias: 'disable',
   run: async (context) => {
+    context.exeInfo = context.amplify.getProjectDetails();
     const availableChannels = notificationManager.getAvailableChannels(context);
     const enabledChannels = notificationManager.getEnabledChannels(context);
 
@@ -26,6 +28,7 @@ module.exports = {
       }
 
       if (channelName) {
+        await pinpointHelper.checkPinpointApp(context);
         await notificationManager.disableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);
       }

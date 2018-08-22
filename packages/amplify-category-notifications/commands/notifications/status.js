@@ -4,6 +4,7 @@ module.exports = {
   name: 'status',
   alias: ['list', 'ls'],
   run: async (context) => {
+    context.exeInfo = context.amplify.getProjectDetails();
     const enabledChannels = notificationManager.getEnabledChannels(context);
     const disableChannels = notificationManager.getDisabledChannels(context);
 

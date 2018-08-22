@@ -6,6 +6,7 @@ module.exports = {
   name: 'add',
   alias: 'enable',
   run: async (context) => {
+    context.exeInfo = context.amplify.getProjectDetails();
     const availableChannels = notificationManager.getAvailableChannels(context);
     const disabledChannels = notificationManager.getDisabledChannels(context);
 
@@ -26,7 +27,7 @@ module.exports = {
       }
 
       if (channelName) {
-        await pinpointHelper.ensurePinpointApp(context);
+        await pinpointHelper.checkPinpointApp(context);
         await notificationManager.enableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);
       }

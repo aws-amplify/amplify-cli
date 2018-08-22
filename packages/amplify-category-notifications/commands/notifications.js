@@ -2,6 +2,7 @@ const featureName = 'notifications';
 
 module.exports = {
   name: featureName,
+  alias: ['notification'],
   run: async (context) => {
     if (/^win/.test(process.platform)) {
       try {

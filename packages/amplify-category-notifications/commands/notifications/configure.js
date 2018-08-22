@@ -5,6 +5,7 @@ const notificationManager = require('../../lib/notifications-manager');
 module.exports = {
   name: 'configure',
   run: async (context) => {
+    context.exeInfo = context.amplify.getProjectDetails();
     const availableChannels = notificationManager.getAvailableChannels(context);
     let channelName = context.parameters.first;
 
@@ -19,7 +20,7 @@ module.exports = {
       channelName = answer.selection;
     }
 
-    await pinpointHelper.ensurePinpointApp(context);
+    await pinpointHelper.checkPinpointApp(context);
     await notificationManager.configureChannel(context, channelName);
     notificationManager.updateaServiceMeta(context);
 

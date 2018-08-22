@@ -3,7 +3,7 @@ const constants = require('./constants');
 
 const providerName = 'awscloudformation';
 
-async function ensurePinpointApp(context) {
+async function checkPinpointApp(context) {
   const { amplifyMeta, projectConfig } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
@@ -15,6 +15,7 @@ async function ensurePinpointApp(context) {
     } else {
       pinpointApp = await createApp(context, projectConfig.projectName);
     }
+    amplifyMeta[constants.CategoryName] = {};
     amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
       service: constants.PinpointName,
       output: {
@@ -23,6 +24,7 @@ async function ensurePinpointApp(context) {
       },
     };
   }
+  context.exeInfo.serviceMeta = amplifyMeta[constants.CategoryName][pinpointApp.Name];
 }
 
 async function deletePinpointApp(context) {
@@ -145,7 +147,7 @@ function console(context) {
   if (pinpointApp) {
     const { Id } = pinpointApp;
     const consoleUrl =
-          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/notifications/`;
+          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/manage/channels`;
     opn(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is anabled in the cloud.');
@@ -160,7 +162,8 @@ async function getPinpointClient(context) {
 }
 
 module.exports = {
-  ensurePinpointApp,
+  checkPinpointApp,
   deletePinpointApp,
+  getPinpointClient,
   console,
 };

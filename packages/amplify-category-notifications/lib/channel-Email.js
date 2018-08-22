@@ -18,7 +18,8 @@ async function configure(context) {
     if (answer.disableChannel) {
       await disable(context);
     } else {
-      await enable(context);
+      const successMessage = `The ${channelName} channel has been successfully updated.`;
+      await enable(context, successMessage);
     }
   } else {
     const answer = await inquirer.prompt({
@@ -33,7 +34,7 @@ async function configure(context) {
   }
 }
 
-async function enable(context) {
+async function enable(context, successMessage) {
   let channelOutput = {};
   if (context.exeInfo.serviceMeta.output[channelName]) {
     channelOutput = context.exeInfo.serviceMeta.output[channelName];
@@ -73,7 +74,10 @@ async function enable(context) {
         context.print.error('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been successfully enabled.`);
+        if (!successMessage) {
+          successMessage = `The ${channelName} channel has been successfully enabled.`;
+        }
+        context.print.info(successMessage);
         context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
         resolve(data);
       }

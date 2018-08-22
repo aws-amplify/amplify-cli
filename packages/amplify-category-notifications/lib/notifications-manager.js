@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
+const path = require('path');
 const constants = require('./constants');
+const pintpointHelper = require('./pinpoint-helper');
 
 const channelWorkers = {
   APNS: './channel-APNS',
@@ -8,11 +10,11 @@ const channelWorkers = {
   SMS: './channel-SMS',
 };
 
-async function getAvailableChannels() {
+function getAvailableChannels() {
   return Object.keys(channelWorkers);
 }
 
-async function getEnabledChannels(context) {
+function getEnabledChannels(context) {
   const result = [];
   const { amplifyMeta } = context.exeInfo;
   const availableChannels = getAvailableChannels(context);
@@ -22,8 +24,8 @@ async function getEnabledChannels(context) {
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
       if (serviceMeta.service === 'Pinpoint' &&
-                        serviceMeta.output &&
-                        serviceMeta.output.Id) {
+                            serviceMeta.output &&
+                            serviceMeta.output.Id) {
         availableChannels.forEach((channel) => {
           if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
             result.push(channel);
@@ -36,52 +38,44 @@ async function getEnabledChannels(context) {
   return result;
 }
 
-async function getDisabledChannels(context) {
+function getDisabledChannels(context) {
   const result = [];
-  const { amplifyMeta } = context.exeInfo;
   const availableChannels = getAvailableChannels(context);
-  const categoryMeta = amplifyMeta[constants.CategoryName];
-  if (categoryMeta) {
-    const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
-                        serviceMeta.output &&
-                        serviceMeta.output.Id) {
-        availableChannels.forEach((channel) => {
-          if (!serviceMeta.output[channel] || !serviceMeta.output[channel].Enabled) {
-            result.push(channel);
-          }
-        });
-        break;
-      }
+  const enabledChannels = getEnabledChannels(context);
+  availableChannels.forEach((channel) => {
+    if (!enabledChannels.includes(channel)) {
+      result.push(channel);
     }
-  }
+  });
+
   return result;
 }
 
 async function enableChannel(context, channelName) {
-  if (Object.keys(channelWorkers).includes[channelName]) {
-    const channelWorker = require(channelWorkers[channelName]);
+  if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.enable(context);
   }
 }
 
 async function disableChannel(context, channelName) {
-  if (Object.keys(channelWorkers).includes[channelName]) {
-    const channelWorker = require(channelWorkers[channelName]);
+  if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.disable(context);
   }
 }
 
 async function configureChannel(context, channelName) {
-  if (Object.keys(channelWorkers).includes[channelName]) {
-    const channelWorker = require(channelWorkers[channelName]);
+  if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.configure(context);
   }
 }
 
-async function updateaServiceMeta(context) {
+function updateaServiceMeta(context) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
