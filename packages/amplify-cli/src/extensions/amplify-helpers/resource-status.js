@@ -239,12 +239,11 @@ async function getResourceStatus(category, resourceName, providerName) {
       resource.providerPlugin === providerName);
     resourcesToBeUpdated = resourcesToBeUpdated.filter(resource =>
       resource.providerPlugin === providerName);
-    resourcesToBeDeleted = resourcesToBeCreated.filter(resource =>
+    resourcesToBeDeleted = resourcesToBeDeleted.filter(resource =>
       resource.providerPlugin === providerName);
     allResources = allResources.filter(resource =>
       resource.providerPlugin === providerName);
   }
-
 
   return {
     resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources,
