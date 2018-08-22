@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -11,14 +11,14 @@
   "author": "Yathi <yathiraj@amazon.com>",
   "license": "MIT",
   "dependencies": {
-    "aws-appsync-codegen": "^0.17.4",
     "eslint": "^4.9.0",
+    "aws-appsync-codegen": "^0.17.4",
+    "inquirer": "^3.2.1",
+    "graphql-config": "^2.1.0",
+    "underscore": "^1.9.1",
     "fs-jetpack": "^2.1.0",
     "glob-all": "^3.1.0",
-    "graphql-config": "^2.1.0",
-    "inquirer": "^3.2.1",
-    "ora": "^3.0.0",
-    "underscore": "^1.9.1"
+    "ora": "^3.0.0"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",

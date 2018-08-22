@@ -1,6 +1,6 @@
 {
   "name": "graphql-transform-cli",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "CLI for AWS AppSync",
   "main": "lib/index.js",
   "scripts": {
@@ -21,12 +21,12 @@
     "babel-polyfill": "^6.26.0",
     "chalk": "^2.4.1",
     "clime": "^0.5.9",
-    "graphql-appsync-transformer": "^0.1.1",
-    "graphql-auth-transformer": "^0.1.1",
-    "graphql-dynamodb-transformer": "^0.1.1",
-    "graphql-elasticsearch-transformer": "^0.1.1",
-    "graphql-transform": "^0.1.1",
-    "graphql-transformer-common": "^0.1.1"
+    "graphql-transform": "1.0",
+    "graphql-dynamodb-transformer": "1.0",
+    "graphql-elasticsearch-transformer": "1.0",
+    "graphql-auth-transformer": "1.0",
+    "graphql-transformer-common": "1.0",
+    "graphql-appsync-transformer": "1.0"
   },
   "devDependencies": {
     "@types/node": "^10.1.2",
