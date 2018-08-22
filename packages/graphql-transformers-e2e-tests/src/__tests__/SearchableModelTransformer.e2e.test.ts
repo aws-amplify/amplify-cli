@@ -35,35 +35,36 @@ const selectionSet = `
 `;
 
 const createPosts = async () => {
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test", 157, 10, 97.4, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 60, 30, 21.0, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 160, 30, 97.6, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test TITLE", 170, 30, 88.8, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 200, 50, 11.9, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 170, 30, 88.8, true
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 160, 30, 97.6, false
-    ), {})
-    await GRAPHQL_CLIENT.query(getCreatePostsQuery(
-        "snvishna", "test title", 170, 30, 77.7, true
-    ), {})
+    const logContent = 'createPost response: '
 
-    console.log('Created 8 Posts')
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test", 157, 10, 97.4, true
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 60, 30, 21.0, false
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test TITLE", 170, 30, 88.8, true
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 200, 50, 11.9, false
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 88.8, true
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 160, 30, 97.6, false
+    ), logContent)
+    await runQuery(getCreatePostsQuery(
+        "snvishna", "test title", 170, 30, 77.7, true
+    ), logContent)
 
     // Waiting for the ES Cluster + Streaming Lambda infra to be setup
-    await cf.wait(120, () => Promise.resolve())
+    console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup')
+    await cf.wait(300, () => Promise.resolve())
 }
 
 let GRAPHQL_CLIENT = undefined;
@@ -151,12 +152,11 @@ afterAll(async () => {
 
 test('Test searchPosts query without filter', async () => {
     try {
-        const response = await GRAPHQL_CLIENT.query(`query {
+        const response = await runQuery(`query {
             searchPosts {
                 items { ${selectionSet} }
             }
-        }`, {})
-        console.log('Test searchPosts query without filter: ' + JSON.stringify(response, null, 4))
+        }`, 'Test searchPosts response without filter: ')
         expect(response).toBeDefined
         expect(response.data.searchPosts.items).toBeDefined
         const items = response.data.searchPosts.items
@@ -170,14 +170,13 @@ test('Test searchPosts query without filter', async () => {
 
 test('Test searchPosts query with basic filter', async () => {
     try {
-        const response = await GRAPHQL_CLIENT.query(`query {
+        const response = await runQuery(`query {
             searchPosts(filter: {
                 author: { eq: "snvishna" }
             }) {
                 items { ${selectionSet} }
             }
-        }`, {})
-        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        }`, 'Test searchPosts response with basic filter: ')
         expect(response).toBeDefined
         expect(response.data.searchPosts.items).toBeDefined
         const items = response.data.searchPosts.items
@@ -191,7 +190,7 @@ test('Test searchPosts query with basic filter', async () => {
 
 test('Test searchPosts query with non-recursive filter', async () => {
     try {
-        const response = await GRAPHQL_CLIENT.query(`query {
+        const response = await runQuery(`query {
             searchPosts(filter: {
                 title: { eq: "test title" }
                 ups: { gte: 100 }
@@ -202,8 +201,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
             }) {
                 items { ${selectionSet} }
             }
-        }`, {})
-        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        }`, 'Test searchPosts response with non-recursive filter: ')
         expect(response).toBeDefined
         expect(response.data.searchPosts.items).toBeDefined
         const items = response.data.searchPosts.items
@@ -223,7 +221,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
 
 test('Test searchPosts query with recursive filter 1', async () => {
     try {
-        const response = await GRAPHQL_CLIENT.query(`query {
+        const response = await runQuery(`query {
             searchPosts(filter: {
                 downs: { eq: 10 }
                 or: [
@@ -238,8 +236,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
             }) {
                 items { ${selectionSet} }
             }
-        }`, {})
-        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        }`, 'Test searchPosts response with recursive filter 1: ')
         expect(response).toBeDefined
         expect(response.data.searchPosts.items).toBeDefined
         const items = response.data.searchPosts.items
@@ -259,7 +256,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
 
 test('Test searchPosts query with recursive filter 2', async () => {
     try {
-        const response = await GRAPHQL_CLIENT.query(`query {
+        const response = await runQuery(`query {
             searchPosts(filter: {
                 downs: { eq: 30 }
                 or: [
@@ -274,8 +271,7 @@ test('Test searchPosts query with recursive filter 2', async () => {
             }) {
                 items { ${selectionSet} }
             }
-        }`, {})
-        console.log('Test searchPosts query with basic filter: ' + JSON.stringify(response, null, 4))
+        }`, 'Test searchPosts response with recursive filter 2: ')
         expect(response).toBeDefined
         expect(response.data.searchPosts.items).toBeDefined
         const items = response.data.searchPosts.items
@@ -298,6 +294,12 @@ function generateParams() {
     return params
 }
 
+async function runQuery(query: string, logContent: string) {
+    const response = await GRAPHQL_CLIENT.query(query,  {});
+    console.log(logContent + JSON.stringify(response, null, 4));
+    return response;
+}
+
 function getCreatePostsQuery(
     author: string,
     title: string,
@@ -308,8 +310,8 @@ function getCreatePostsQuery(
 ): string {
     return `mutation {
         createPost(input: {
-            author: ${author}
-            title: ${title}
+            author: "${author}"
+            title: "${title}"
             ups: ${ups}
             downs: ${downs}
             percentageUp: ${percentageUp}
