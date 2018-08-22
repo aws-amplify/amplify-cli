@@ -5,6 +5,10 @@
         "appName": {
             "Type": "String"
         },
+        "appId": {
+            "Type": "String",
+            "Default": "NONE"
+        },
         "roleName": {
             "Type": "String"
         },
@@ -44,8 +48,19 @@
             ]
         }
     },
+    "Conditions": {
+        "ShouldCreatePinpointApp": {
+            "Fn::Equals": [
+                {
+                    "Ref": "appId"
+                },
+                "NONE"
+            ]
+        }
+    },
     "Resources": {
         "LambdaExecutionRole": {
+            "Condition": "ShouldCreatePinpointApp",
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
@@ -110,6 +125,7 @@
         },
         "PinpointFunction": {
             "Type": "AWS::Lambda::Function",
+            "Condition": "ShouldCreatePinpointApp",
             "Properties": {
                 "Code": {
                     "ZipFile": {
@@ -165,6 +181,7 @@
         },
         "PinpointFunctionOutputs": {
             "Type": "Custom::LambdaCallout",
+            "Condition": "ShouldCreatePinpointApp",
             "Properties": {
                 "ServiceToken": {
                     "Fn::GetAtt": [
@@ -204,22 +221,45 @@
                     "Resource": [
                         {
 
-                            "Fn::Join": [
-                                "",
-                                [
-                                  "arn:aws:mobiletargeting:*:",
-                                  {
-                                    "Ref": "IAMPrefix"
-                                  },
-                                  ":apps/",
-                                  {
-                                    "Fn::GetAtt": [
-                                        "PinpointFunctionOutputs",
-                                        "Id"
+                            "Fn::If": [
+                                "ShouldCreatePinpointApp",
+                                {
+
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:aws:mobiletargeting:*:",
+                                          {
+                                            "Ref": "IAMPrefix"
+                                          },
+                                          ":apps/",
+                                          {
+                                            "Fn::GetAtt": [
+                                                "PinpointFunctionOutputs",
+                                                "Id"
+                                            ]
+                                          },
+                                          "*"
+                                        ]
                                     ]
-                                  },
-                                  "*"
-                                ]
+                                },
+                                {
+
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:aws:mobiletargeting:*:",
+                                          {
+                                            "Ref": "IAMPrefix"
+                                          },
+                                          ":apps/",
+                                          {
+                                            "Ref": "appId"
+                                          },
+                                          "*"
+                                        ]
+                                    ]
+                                },
                             ]
                         }
                 
@@ -256,22 +296,45 @@
                     "Resource": [
                         {
 
-                            "Fn::Join": [
-                                "",
-                                [
-                                  "arn:aws:mobiletargeting:*:",
-                                  {
-                                    "Ref": "IAMPrefix"
-                                  },
-                                  ":apps/",
-                                  {
-                                    "Fn::GetAtt": [
-                                        "PinpointFunctionOutputs",
-                                        "Id"
+                            "Fn::If": [
+                                "ShouldCreatePinpointApp",
+                                {
+
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:aws:mobiletargeting:*:",
+                                          {
+                                            "Ref": "IAMPrefix"
+                                          },
+                                          ":apps/",
+                                          {
+                                            "Fn::GetAtt": [
+                                                "PinpointFunctionOutputs",
+                                                "Id"
+                                            ]
+                                          },
+                                          "*"
+                                        ]
                                     ]
-                                  },
-                                  "*"
-                                ]
+                                },
+                                {
+
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:aws:mobiletargeting:*:",
+                                          {
+                                            "Ref": "IAMPrefix"
+                                          },
+                                          ":apps/",
+                                          {
+                                            "Ref": "appId"
+                                          },
+                                          "*"
+                                        ]
+                                    ]
+                                },
                             ]
                         }
                 
@@ -284,23 +347,37 @@
     },
     "Outputs": {
         "Region": {
-            "Value": {
-                "Ref": "AWS::Region"
-            }
+            "Value": "us-east-1"
         },
         "Id": {
             "Value": {
-                "Fn::GetAtt": [
-                    "PinpointFunctionOutputs",
-                    "Id"
+                "Fn::If": [
+                    "ShouldCreatePinpointApp",
+                    {
+                        "Fn::GetAtt": [
+                            "PinpointFunctionOutputs",
+                            "Id"
+                        ]
+                    }, 
+                    {
+                        "Ref": "appId"
+                    }       
                 ]
             }
         },
         "appName": {
             "Value": {
-                "Fn::GetAtt": [
-                    "PinpointFunctionOutputs",
-                    "Name"
+                "Fn::If": [
+                    "ShouldCreatePinpointApp",
+                    {
+                        "Fn::GetAtt": [
+                            "PinpointFunctionOutputs",
+                            "Name"
+                        ]
+                    }, 
+                    {
+                        "Ref": "appName"
+                    }       
                 ]
             }
         }

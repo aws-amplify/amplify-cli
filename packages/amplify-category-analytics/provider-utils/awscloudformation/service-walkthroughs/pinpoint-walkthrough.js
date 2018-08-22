@@ -39,6 +39,13 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     Object.assign(defaultValues, parameters);
   }
 
+
+  const appId = checkIfNotificationsCategoryExists(context);
+
+  if (appId) {
+    Object.assign(defaultValues, { appId });
+  }
+
   const questions = [];
   for (let i = 1; i < inputs.length; i += 1) {
     let question = {
@@ -119,6 +126,23 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       }
       return resource;
     });
+}
+
+function checkIfNotificationsCategoryExists(context) {
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+  let appId;
+
+  if (amplifyMeta.notifications) {
+    const categoryResources = amplifyMeta.notifications;
+    Object.keys(categoryResources).forEach((resource) => {
+      if (categoryResources[resource].service === serviceName) {
+        appId = categoryResources[resource].output.Id;
+      }
+    });
+  }
+
+  return appId;
 }
 
 function resourceAlreadyExists(context) {
