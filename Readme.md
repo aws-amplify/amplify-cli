@@ -47,7 +47,7 @@ $ amplify configure
 
 By running this command you enable your project with cloud resources required to provision and deploy your project. By default the Amplify CLI uses AWS CloudFormation.
 
-[Get started](https://aws-amplify.github.io)
+[Get started](https://aws-amplify.github.io/media/toolchain)
 
 ## Commands Summary
 
