@@ -1,11 +1,13 @@
-# Amplify CLI notifications Plugin
+# Amplify CLI Notifications Plugin
 
 ## Commands Summary
 
-The Amplify notifications Category Plugin supports the commands listed in the following table. 
+The Amplify Notifications Category Plugin supports the commands listed in the following table. 
 
 | Command              | Description |
 | --- | --- |
-| amplify notifications add | Takes you through steps in the CLI to add an notifications resource to your backend.   |
-| amplify notifications push | Provisions only notifications cloud resources with the latest local developments.  |
-| amplify notifications remove | Removes an notifications resource from your local backend. The notifications resource is removed from the cloud on the next push command. |
+| amplify notifications add | Adds a notification channel .   |
+| amplify notifications configure | Remove a notification channel .  |
+| amplify notifications remove | List the enabled/disabled status of the available notification channels . |
+| amplify notifications console   | Opens the Amazon Pinpoint console displaying the current channel settings. |
+
