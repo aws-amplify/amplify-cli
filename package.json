@@ -10,7 +10,15 @@
     "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
     "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
   },
+  "bugs": {
+    "url": "https://github.com/aws-amplify/amplify-cli/issues"
+  },
+  "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
