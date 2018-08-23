@@ -438,7 +438,7 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
     expect(items1[0].percentageUp).toEqual(22.2)
     expect(items1[0].isPublished).toEqual(true)
 
-    const deleteResponse = await runQuery(`query {
+    const deleteResponse = await runQuery(`mutation {
         deletePost(id: "${postToBeDeletedResponse.data.createPost.id}") {
             ...FullPost
         }
