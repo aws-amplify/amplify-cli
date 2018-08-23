@@ -125,14 +125,9 @@ users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w
         // Arbitrary wait to make sure everything is ready.
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-        // const getUserPoolId = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput)
-        const getUserPoolClientID = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolJSClientOutput)
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
-        const apiKey = getApiKey(finishedStack.Outputs)
-        const userPoolClientId = getUserPoolClientID(finishedStack.Outputs)
+        const userPoolClientId = '7ikhu5mvro27dh4b0b0rap266c'
         console.log(`UserPoolId: ${userPoolId}. UserPoolClientId: ${userPoolClientId}`)
-        expect(apiKey).toBeDefined()
         expect(GRAPHQL_ENDPOINT).toBeDefined()
         expect(userPoolId).toBeDefined()
         expect(userPoolClientId).toBeDefined()
@@ -422,7 +417,7 @@ test('Test deletePost mutation when not authorized', async () => {
     }
 })
 
-test('Test listPost query when authorized', async () => {
+test('Test listPosts query when authorized', async () => {
     try {
         const firstPost = await GRAPHQL_CLIENT_1.query(`mutation {
             createPost(input: { title: "testing list" }) {
@@ -449,14 +444,14 @@ test('Test listPost query when authorized', async () => {
         }`, {})
         // There are two posts but only 1 created by me.
         const listResponse = await GRAPHQL_CLIENT_1.query(`query {
-            listPost(filter: { title: { eq: "testing list" } }, limit: 25) {
+            listPosts(filter: { title: { eq: "testing list" } }, limit: 25) {
                 items {
                     id
                 }
             }
         }`, {})
         console.log(JSON.stringify(listResponse, null, 4))
-        expect(listResponse.data.listPost.items.length).toEqual(1)
+        expect(listResponse.data.listPosts.items.length).toEqual(1)
     } catch (e) {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
@@ -478,7 +473,6 @@ test(`Test createSalary w/ Admin group protection authorized`, async () => {
             }
         }
         `)
-        console.log(JSON.stringify(req, null, 4))
         expect(req.data.createSalary.id).toBeDefined()
         expect(req.data.createSalary.wage).toEqual(10)
     } catch (e) {
@@ -683,7 +677,7 @@ test(`Test getSalary w/ Admin group protection not authorized`, async () => {
     }
 })
 
-test(`Test listSalary w/ Admin group protection authorized`, async () => {
+test(`Test listSalarys w/ Admin group protection authorized`, async () => {
     try {
         const req = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -698,7 +692,7 @@ test(`Test listSalary w/ Admin group protection authorized`, async () => {
         expect(req.data.createSalary.wage).toEqual(101)
         const req2 = await GRAPHQL_CLIENT_1.query(`
         query {
-            listSalary(filter: { wage: { eq: 101 }}) {
+            listSalarys(filter: { wage: { eq: 101 }}) {
                 items {
                     id
                     wage
@@ -706,16 +700,16 @@ test(`Test listSalary w/ Admin group protection authorized`, async () => {
             }
         }
         `)
-        expect(req2.data.listSalary.items.length).toEqual(1)
-        expect(req2.data.listSalary.items[0].id).toEqual(req.data.createSalary.id)
-        expect(req2.data.listSalary.items[0].wage).toEqual(101)
+        expect(req2.data.listSalarys.items.length).toEqual(1)
+        expect(req2.data.listSalarys.items[0].id).toEqual(req.data.createSalary.id)
+        expect(req2.data.listSalarys.items[0].wage).toEqual(101)
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined()
     }
 })
 
-test(`Test listSalary w/ Admin group protection not authorized`, async () => {
+test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
     try {
         const req = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -730,7 +724,7 @@ test(`Test listSalary w/ Admin group protection not authorized`, async () => {
         expect(req.data.createSalary.wage).toEqual(102)
         const req2 = await GRAPHQL_CLIENT_2.query(`
         query {
-            listSalary(filter: { wage: { eq: 102 }}) {
+            listSalarys(filter: { wage: { eq: 102 }}) {
                 items {
                     id
                     wage
@@ -738,7 +732,7 @@ test(`Test listSalary w/ Admin group protection not authorized`, async () => {
             }
         }
         `)
-        expect(req2.data.listSalary.items).toEqual([])
+        expect(req2.data.listSalarys.items).toEqual([])
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined()
