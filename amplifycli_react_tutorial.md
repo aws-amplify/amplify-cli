@@ -5,15 +5,14 @@ This tutorial walks you through how to use the AWS Amplify CLI with a React appl
 
 # Installation
 
-**Note** The following steps will change slightly after the Amplify CLI is released publicly.
+```
+$ npm install -g @aws-amplify/cli
+$ amplify configure
+```
 
 If you're using Windows, we recommend the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 - An AWS Account and credentials are required. For more information about how to find your credentials, see [AWS Mobile CLI User Credentials](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html) in the *AWS Mobile User Guide*.
-- Ensure that you have Node.js installed.
-- Ensure that you have [lerna](https://github.com/lerna/lerna) installed globally.
-- Download the Amplify CLI from [HERE](https://s3.amazonaws.com/amplify-cli-beta-3dd89264-8c7c-11e8-9eb6-529269fb1459/amplify-cli-0.1.0-8-8-18.tgz).
-- Go to the unpacked directory (usually called `package`) and run `npm run setup-dev`
 - Ensure you have [Create React App](https://github.com/facebook/create-react-app) installed. 
 - Create a new project as follows:<br>
   `yarn create-react-app -g`<br>
