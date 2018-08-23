@@ -77,7 +77,9 @@ async function configureChannel(context, channelName) {
 
 function updateaServiceMeta(context) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  context.exeInfo.serviceMeta.lastPushTimeStamp = new Date();
+  if (context.exeInfo && context.exeInfo.serviceMeta) {
+    context.exeInfo.serviceMeta.lastPushTimeStamp = new Date();
+  }
   let jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
