@@ -2,7 +2,8 @@ const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
 
-const pinpointApp = 'The Pinpoint application';
+const PinpointApp = 'The Pinpoint application';
+const Cancel = 'Cancel'; 
 
 module.exports = {
   name: 'remove',
@@ -12,7 +13,8 @@ module.exports = {
     const availableChannels = notificationManager.getAvailableChannels(context);
     const enabledChannels = notificationManager.getEnabledChannels(context);
 
-    enabledChannels.push(pinpointApp);
+    enabledChannels.push(PinpointApp);
+    enabledChannels.push(Cancel);
 
     let channelName = context.parameters.first;
 
@@ -30,8 +32,8 @@ module.exports = {
       channelName = undefined;
     }
 
-    if (channelName) {
-      if (channelName !== pinpointApp) {
+    if (channelName && channelName !== Cancel) {
+      if (channelName !== PinpointApp) {
         await pinpointHelper.checkPinpointApp(context);
         await notificationManager.disableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);

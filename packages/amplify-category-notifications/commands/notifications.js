@@ -24,12 +24,12 @@ module.exports = {
         description: 'Removes a notification channel',
       },
       {
-        name: 'configure',
-        description: 'Configures a notification channel',
+        name: 'update',
+        description: 'Updates the configuration of a notification channel',
       },
       {
         name: 'status',
-        description: 'Lists the enabled/disabled status of the available notification channels',
+        description: 'Lists the enabled/disabled statuses of the available notification channels',
       },
       {
         name: 'console',

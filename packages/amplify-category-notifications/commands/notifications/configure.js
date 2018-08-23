@@ -4,6 +4,7 @@ const notificationManager = require('../../lib/notifications-manager');
 
 module.exports = {
   name: 'configure',
+  alias: 'update',
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
     const availableChannels = notificationManager.getAvailableChannels(context);
