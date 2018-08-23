@@ -36,10 +36,11 @@ module.exports = {
         await notificationManager.disableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);
       } else {
-        if (pinpointHelper.isAnalyticsAdded(context)) {
+        if(pinpointHelper.isAnalyticsAdded(context)) {
             context.print.error('You have added the analytics to your backend');
-            context.print.error('Analytics is also managed by the AWS Pinpoint application');
-            context.print.info('Execution aborted.')
+            context.print.error('Analytics is also managed by the Amazon Pinpoint application');
+            context.print.info('Analytics must be removed before Amazon Pinpoint can be deleted'); 
+            context.print.info('Execution aborted.');
         }else{
             const answer = await inquirer.prompt({
                 name: 'deletePinpointApp',
