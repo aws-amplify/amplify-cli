@@ -18,6 +18,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 
 * [Install the CLI](#install-the-cli)
 * [Commands Summary](#commands-summary)
+* [Tutorials](#tutorials)
 * [Contributing](#contributing)
 * [Start building your app](https://aws-amplify.github.io/media/get_started)
 
@@ -60,6 +61,13 @@ The Amplify CLI supports the commands shown in the following table.
 - [analytics (Amazon Pinpoint)](packages/amplify-category-analytics/Readme.md)
 - [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
 - [notifications (Amazon Pinpoint)](packages/amplify-category-notifications/Readme.md)
+
+## Tutorials
+
+- [React tutorial](amplifycli_react_tutorial.md)
+- [GraphQL transform tutorial](graphql-transform-tutorial.md)
+- [How to write your own GraphQL transformer](how-to-write-a-transformer.md)
+
 
 ## Contributing
 
