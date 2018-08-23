@@ -37,23 +37,24 @@ module.exports = {
         notificationManager.updateaServiceMeta(context);
       } else {
         if (pinpointHelper.isAnalyticsAdded(context)) {
-          context.print.warning('Your have added the analytics to your backend');
-          context.print.warning('Analytics is also managed by the Pinpoint application');
-        }
-        const answer = await inquirer.prompt({
-          name: 'deletePinpointApp',
-          type: 'confirm',
-          message: 'Confirm that you want to delete the associated Pinpoint application',
-          default: false,
-        });
-        if (answer.deletePinpointApp) {
-          await pinpointHelper.deletePinpointApp(context);
-          context.print.info('The Pinpoint application has been successfully deleted.');
-          notificationManager.updateaServiceMeta(context);
+            context.print.error('You have added the analytics to your backend');
+            context.print.error('Analytics is also managed by the AWS Pinpoint application');
+            context.print.info('Execution aborted.')
+        }else{
+            const answer = await inquirer.prompt({
+                name: 'deletePinpointApp',
+                type: 'confirm',
+                message: 'Confirm that you want to delete the associated AWS Pinpoint application',
+                default: false,
+            });
+            if (answer.deletePinpointApp) {
+                await pinpointHelper.deletePinpointApp(context);
+                context.print.info('The Pinpoint application has been successfully deleted.');
+                notificationManager.updateaServiceMeta(context);
+            }
         }
       }
     }
-
     return context;
   },
 };
