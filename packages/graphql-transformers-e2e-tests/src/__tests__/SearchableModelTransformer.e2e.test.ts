@@ -259,6 +259,148 @@ test('Test searchPosts query with recursive filter 2', async () => {
     expect(items.length).toEqual(5)
 })
 
+test('Test searchPosts query with recursive filter 3', async () => {
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            ups:{  gt:199  }
+            and:[
+              {
+                or:[
+                  {
+                    author:{  wildcard:"s*a"  }
+                  },
+                  {
+                    downs:{  ne:30  }
+                  }
+                ]
+              },
+              {
+                isPublished:{  eq:false  }
+              }
+            ]
+          }) {
+            items { ...FullPost }
+        }
+    }`, 'Test searchPosts query with recursive filter 3: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].author).toEqual("snvishna")
+    expect(items[0].title).toEqual("test title")
+    expect(items[0].ups).toEqual(200)
+    expect(items[0].downs).toEqual(50)
+    expect(items[0].percentageUp).toEqual(11.9)
+    expect(items[0].isPublished).toEqual(false)
+})
+
+test('Test searchPosts query with recursive filter 4', async () => {
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            ups:{  gt:100  }
+            and:[
+              {
+                or:[
+                  {
+                    author:{  wildcard:"s*a"  }
+                  },
+                  {
+                    downs:{  ne:30  }
+                  }
+                ]
+              },
+              {
+                isPublished:{  eq:false  }
+              }
+            ],
+            not: {
+              percentageUp: { lt: 20 }
+            }
+          }) {
+            items { ...FullPost }
+        }
+    }`, 'Test searchPosts query with recursive filter 4: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].author).toEqual("snvishna")
+    expect(items[0].title).toEqual("test title")
+    expect(items[0].ups).toEqual(160)
+    expect(items[0].downs).toEqual(30)
+    expect(items[0].percentageUp).toEqual(97.6)
+    expect(items[0].isPublished).toEqual(false)
+})
+
+test('Test searchPosts query with recursive filter 5', async () => {
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            downs:{  ne:30  }
+            or:[
+              {
+                and:[
+                  {
+                    author:{  wildcard:"s*a"  },
+                    not: {
+                      isPublished: { eq: true }
+                    }
+                  }
+                ]
+              },
+              {
+                percentageUp:{  range: [90.0, 100.0]  }
+              }
+            ]
+            and: {
+              title:{ matchPhrasePrefix: "test t" }
+            }
+          }) {
+            items { ...FullPost }
+        }
+    }`, 'Test searchPosts query with recursive filter 5: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].author).toEqual("snvishna")
+    expect(items[0].title).toEqual("test title")
+    expect(items[0].ups).toEqual(200)
+    expect(items[0].downs).toEqual(50)
+    expect(items[0].percentageUp).toEqual(11.9)
+    expect(items[0].isPublished).toEqual(false)
+})
+
+test('Test searchPosts query with recursive filter 6', async () => {
+    const response = await runQuery(`query {
+        searchPosts(filter: {
+            not: {
+              title:{ wildcard: "*test*" }
+            }
+            or:[
+              {
+                and:[
+                  {
+                    author:{  wildcard:"s*a"  },
+                    not: {
+                      isPublished: { eq: true }
+                    }
+                  }
+                ]
+              },
+              {
+                percentageUp:{  range: [90.0, 100.0]  }
+              }
+            ]
+          }) {
+            items { ...FullPost }
+        }
+    }`, 'Test searchPosts query with recursive filter 6: ')
+    expect(response).toBeDefined
+    expect(response.data.searchPosts.items).toBeDefined
+    const items = response.data.searchPosts.items
+    expect(items.length).toEqual(0)
+})
+
 function generateParams() {
     const params = {
         [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket]: BUCKET_NAME,
