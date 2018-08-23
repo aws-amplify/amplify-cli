@@ -10,6 +10,7 @@
     "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
   },
   "main": "index.js",
+  "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^2.11.0"

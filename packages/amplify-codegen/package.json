@@ -8,8 +8,8 @@
     "test": "jest",
     "test-watch": "jest --watch"
   },
-  "author": "Yathi <yathiraj@amazon.com>",
-  "license": "MIT",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "dependencies": {
     "eslint": "^4.9.0",
     "aws-appsync-codegen": "^0.17.4",

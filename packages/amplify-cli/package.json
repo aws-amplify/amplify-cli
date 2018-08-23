@@ -12,6 +12,7 @@
     "watch": "ava --watch",
     "coverage": "nyc ava"
   },
+  "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "^0.1.0",
