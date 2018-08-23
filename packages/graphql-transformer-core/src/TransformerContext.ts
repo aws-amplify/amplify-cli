@@ -123,10 +123,7 @@ export default class TransformerContext {
      * exists an error will be thrown.
      * @param obj The object type definition node to add.
      */
-    public addSchema(obj: SchemaDefinitionNode) {
-        if (this.nodeMap.__schema) {
-            throw new Error(`Conflicting schema type found.`)
-        }
+    public putSchema(obj: SchemaDefinitionNode) {
         this.nodeMap.__schema = obj
     }
 

@@ -132,7 +132,13 @@ export class DynamoDBModelTransformer extends Transformer {
         let queryFieldNameOverride = undefined;
 
         // Figure out which queries to make and if they have name overrides.
-        if (directiveArguments.queries) {
+        // If queries is undefined (default), create all queries
+        // If queries is explicetly set to null, do not create any
+        // else if queries is defined, check overrides
+        if (directiveArguments.queries === null) {
+            shouldMakeGet = false;
+            shouldMakeList = false;
+        } else if (directiveArguments.queries) {
             if (!directiveArguments.queries.get) {
                 shouldMakeGet = false;
             } else {
@@ -151,7 +157,11 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         // Figure out which mutations to make and if they have name overrides
-        if (directiveArguments.mutations) {
+        if (directiveArguments.mutations === null) {
+            shouldMakeCreate = false
+            shouldMakeUpdate = false
+            shouldMakeDelete = false
+        } else if (directiveArguments.mutations) {
             if (!directiveArguments.mutations.create) {
                 shouldMakeCreate = false;
             } else {
