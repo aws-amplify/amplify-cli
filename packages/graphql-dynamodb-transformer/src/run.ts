@@ -1,4 +1,4 @@
-import GraphQLTransform from "graphql-transform";
+import GraphQLTransform from "graphql-transformer-core";
 import { DynamoDBModelTransformer } from "./DynamoDBModelTransformer";
 import AppSyncTransformer from 'graphql-appsync-transformer';
 

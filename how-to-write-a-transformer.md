@@ -6,7 +6,7 @@ and a list of **GraphQL Transformers** and returns a cloudformation document tha
 For example, the AWS Amplify CLI calls the GraphQL Transform like this:
 
 ```javascript
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import ModelAuthTransformer from 'graphql-auth-transformer'
@@ -133,7 +133,7 @@ type Post @model @versioned {
 
 > Note: @versioned depends on @model so we must pass `new new DynamoDBModelTransformer()` before `new new VersionedModelTransformer()`. Also note that `new AppSyncTransformer()` must go first for now. In the future we can add a dependency mechanism and topologically sort it outselves.
 
-The next step after defining the directive is to implement the transformer's business logic. The `graphql-transform` package makes this a little easier
+The next step after defining the directive is to implement the transformer's business logic. The `graphql-transformer-core` package makes this a little easier
 by exporting a common class through which we may define transformers. User's extend the `Transformer` class and implement the required functions.
 
 ```javascript
@@ -263,7 +263,7 @@ export default class TransformerContext {
 > Note: The @model directive runs first and handles setting up the original mutations. This code prepends the existing template with a "$VersionedCondition" variable which the original template knows to look for and if it exists handles merges the conditions.
 
 ```javascript
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transform";
+import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transformer-core";
 import {
     valueFromASTUntyped,
     ArgumentNode,

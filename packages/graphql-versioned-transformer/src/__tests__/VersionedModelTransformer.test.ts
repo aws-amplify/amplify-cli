@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, TypeDefinitionNode, InputObjectTypeDefinitionNode
 } from 'graphql'
-import GraphQLTransform, { TransformerContractError } from 'graphql-transform'
+import GraphQLTransform, { TransformerContractError } from 'graphql-transformer-core'
 import { ResourceConstants, ModelResourceIDs, ResolverResourceIDs } from 'graphql-transformer-common'
 import { VersionedModelTransformer } from '../VersionedModelTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'

@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext } from 'graphql-transform'
+import { Transformer, TransformerContext } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode
 } from 'graphql'

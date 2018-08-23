@@ -325,7 +325,7 @@ type Comment @model {
 And then pass the schema to an instance of the `GraphQLTransform` class with the DynamoDB, Elasticsearch, and Connection transformers enabled:
 
 ```javascript
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
 import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer'
 import AppSyncConnectionTransformer from 'graphql-connection-transformer'

@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transform";
+import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transformer-core";
 import {
     valueFromASTUntyped,
     ArgumentNode,

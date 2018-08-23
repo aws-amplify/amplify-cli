@@ -2,7 +2,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-const TransformPackage = require('graphql-transform');
+const TransformPackage = require('graphql-transformer-core');
 
 const GraphQLTransform = TransformPackage.default;
 const { collectDirectiveNames } = TransformPackage;

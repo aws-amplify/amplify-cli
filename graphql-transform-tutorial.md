@@ -817,7 +817,7 @@ type Comment @model {
 And then you pass the schema to an instance of the `GraphQLTransform` class with the Amazon DynamoDB, Amazon Elasticsearch Service, and AWS AppSync connection transformers enabled as follows:
 
 ```javascript
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import ModelAuthTransformer from 'graphql-auth-transformer'
