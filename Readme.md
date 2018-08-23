@@ -17,7 +17,6 @@
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks, which allows you to add or modify configurations locally before you push them for execution in your account.
 
 * [Install the CLI](#install-the-cli)
-* [Getting Started](https://aws-amplify.github.io/media/get_started)
 * [Commands Summary](#commands-summary)
 * [Contributing](#contributing)
 * [Start building your app](https://aws-amplify.github.io/media/get_started)
@@ -32,7 +31,7 @@ Install and configure the Amplify CLI as follows:
 
 ```bash
 $ npm install -g @aws-amplify/cli
-amplify configure
+$ amplify configure
 ```
 
 ## Commands Summary
