@@ -33,7 +33,7 @@ async function run(context, category, resourceName) {
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
           context,
-          formNestedStack(context, projectDetails), resourcesToBeDeleted,
+          formNestedStack(context, projectDetails), resourcesToBeCreated,
         );
       }
     })
@@ -150,7 +150,7 @@ function packageResources(context, resources) {
 }
 
 
-function updateCloudFormationNestedStack(context, nestedStack) {
+function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const nestedStackFilepath = path.normalize(path.join(
     backEndDir,
@@ -158,14 +158,31 @@ function updateCloudFormationNestedStack(context, nestedStack) {
     nestedStackFileName,
   ));
 
+  const uniqueCategoriesAdded = getAllUniqueCategories(resourcesToBeCreated);
+
+  let userAgentAction = '';
+
+  if (uniqueCategoriesAdded.size > 0) {
+    userAgentAction = `create ${Array.from(uniqueCategoriesAdded).join(' ')}`;
+  }
+
   const jsonString = JSON.stringify(nestedStack, null, '\t');
   context.filesystem.write(nestedStackFilepath, jsonString);
 
-  return new Cloudformation(context)
+
+  return new Cloudformation(context, undefined, userAgentAction)
     .then(cfnItem => cfnItem.updateResourceStack(
       path.normalize(path.join(backEndDir, providerName)),
       nestedStackFileName,
     ));
+}
+
+function getAllUniqueCategories(resources) {
+  const categories = new Set();
+
+  resources.forEach(resource => categories.add(resource.category));
+
+  return categories;
 }
 
 function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {

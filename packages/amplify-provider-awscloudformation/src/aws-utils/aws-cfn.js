@@ -6,12 +6,36 @@ const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 
+const userAgent = 'aws-amplify-cli/0.1.0';
+
+function formUserAgentParam(context, userAgentAction) {
+  const { amplify } = context;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig : amplify.getProjectConfig();
+
+  let framework = Object.keys(projectConfig.frontendHandler)[0];
+
+  if (framework === 'javascript') {
+    ({ framework } = projectConfig.javascript);
+  }
+
+  const userAgentParam = `${userAgent} ${framework} ${userAgentAction}`;
+
+  return userAgentParam;
+}
+
 class CloudFormation {
-  constructor(context, awsClientWithCreds) {
+  constructor(context, awsClientWithCreds, userAgentAction) {
     const initializeAwsClient = awsClientWithCreds ?
       Promise.resolve(awsClientWithCreds) : aws.configureWithCreds(context);
+
+    const userAgentParam = formUserAgentParam(context, userAgentAction);
+
     return initializeAwsClient
       .then((awsItem) => {
+        if (userAgentAction) {
+          awsItem.config.update({ customUserAgent: userAgentParam });
+        }
         this.cfn = new awsItem.CloudFormation();
         this.context = context;
         return this;
