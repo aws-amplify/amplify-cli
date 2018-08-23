@@ -3,7 +3,7 @@ import Template from 'cloudform/types/template'
 
 import { Fn, StringParameter } from 'cloudform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import Resource from "../../graphql-transform/node_modules/cloudform/types/resource";
+import Resource from "cloudform/types/resource";
 
 
 export class ResourceFactory {
