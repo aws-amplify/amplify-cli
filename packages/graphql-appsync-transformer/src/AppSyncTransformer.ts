@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, stripDirectives } from "graphql-transform";
+import { Transformer, TransformerContext, stripDirectives } from "graphql-transformer-core";
 import {
     print,
     TypeDefinitionNode,

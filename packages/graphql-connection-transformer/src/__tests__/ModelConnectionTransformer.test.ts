@@ -3,7 +3,7 @@ import {
     DefinitionNode, Kind, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode
 } from 'graphql'
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer'

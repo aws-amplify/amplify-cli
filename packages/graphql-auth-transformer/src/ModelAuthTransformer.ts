@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transform'
+import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'

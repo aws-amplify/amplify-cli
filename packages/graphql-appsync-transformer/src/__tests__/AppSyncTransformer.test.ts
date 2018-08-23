@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, InputObjectTypeDefinitionNode
 } from 'graphql'
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
 import { AppSyncTransformer } from '../AppSyncTransformer'
 

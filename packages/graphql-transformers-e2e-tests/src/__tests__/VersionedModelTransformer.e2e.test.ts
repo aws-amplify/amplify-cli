@@ -3,7 +3,7 @@ import {
     Kind
 } from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
-import GraphQLTransform from 'graphql-transform'
+import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 import VersionedModelTransformer from 'graphql-versioned-transformer'

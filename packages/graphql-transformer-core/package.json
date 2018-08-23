@@ -1,5 +1,5 @@
 {
-  "name": "graphql-transform",
+  "name": "graphql-transformer-core",
   "version": "1.0.0",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "main": "lib/index.js",

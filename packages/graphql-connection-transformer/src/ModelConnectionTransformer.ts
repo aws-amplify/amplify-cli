@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transform'
+import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
 import Table from 'cloudform/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,

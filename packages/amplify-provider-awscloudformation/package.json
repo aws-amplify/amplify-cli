@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-storage": "0.1.0",
-    "graphql-transform": "1.0",
+    "graphql-transformer-core": "1.0",
     "graphql-dynamodb-transformer": "1.0",
     "graphql-elasticsearch-transformer": "1.0",
     "graphql-auth-transformer": "1.0",
