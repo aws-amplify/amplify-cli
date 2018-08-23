@@ -5,6 +5,7 @@ async function console(context) {
 }
 
 async function deletePinpointApp(context) {
+  context.exeInfo = context.amplify.getProjectDetails();
   await pinpointHelper.deletePinpointApp(context);
 }
 

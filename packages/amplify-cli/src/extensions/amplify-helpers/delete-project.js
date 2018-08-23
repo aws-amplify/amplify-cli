@@ -1,5 +1,6 @@
 const ora = require('ora');
 const { getProjectConfig } = require('./get-project-config');
+const { getCategoryPlugins } = require('./get-category-plugins');
 const pathManager = require('./path-manager');
 
 const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
@@ -20,6 +21,13 @@ async function deleteProject(context) {
         return Promise.all(providerPromises);
       }
       process.exit(0);
+    })
+    .then(() => {
+      const categoryPlugins = getCategoryPlugins(context);
+      if (categoryPlugins.notifications) {
+        const notificationsModule = require(categoryPlugins.notifications);
+        return notificationsModule.deletePinpointApp(context);
+      }
     })
     .then(() => {
       // Remove resource directory from backend/

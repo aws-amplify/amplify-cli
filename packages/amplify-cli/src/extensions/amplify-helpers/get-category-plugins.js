@@ -1,13 +1,13 @@
 function getCategoryPlugins(context) {
-  const frontendPlugins = {};
+  const categoryPlugins = {};
   context.runtime.plugins.forEach((plugin) => {
     if (plugin.name.includes('category')) {
       const strs = plugin.name.split('-');
       const categoryName = strs[strs.length - 1];
-      frontendPlugins[categoryName] = plugin.directory;
+      categoryPlugins[categoryName] = plugin.directory;
     }
   });
-  return frontendPlugins;
+  return categoryPlugins;
 }
 
 module.exports = {

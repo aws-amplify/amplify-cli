@@ -28,7 +28,7 @@ async function checkPinpointApp(context) {
 }
 
 async function deletePinpointApp(context) {
-  const amplifyMeta = context.amplify.getProjectMeta();
+  const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
@@ -161,9 +161,20 @@ async function getPinpointClient(context) {
   return new aws.Pinpoint();
 }
 
+function isAnalyticsAdded(context) {
+  const { amplifyMeta } = context.exeInfo;
+  let result = false;
+  const pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  if (pinpointApp) {
+    result = true;
+  }
+  return result;
+}
+
 module.exports = {
   checkPinpointApp,
   deletePinpointApp,
   getPinpointClient,
+  isAnalyticsAdded,
   console,
 };
