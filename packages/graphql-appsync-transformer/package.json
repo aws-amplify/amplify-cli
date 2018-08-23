@@ -1,6 +1,6 @@
 {
   "name": "graphql-appsync-transformer",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "An AppSync model transform that takes a cloudformation document and writes mapping templates,lambda function, and schema if a path is specified.",
   "main": "lib/index.js",
   "scripts": {
@@ -17,19 +17,19 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "1.0",
     "cloudform": "^2.2.1",
-    "graphql-transformer-core": "1.0",
-    "graphql-transformer-common": "1.0"
+    "graphql": "^0.13.2",
+    "graphql-mapping-template": "^1.0.4",
+    "graphql-transformer-common": "^1.0.4",
+    "graphql-transformer-core": "^1.0.4"
   },
   "devDependencies": {
-    "@types/node": "^10.3.4",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3",
     "@types/jest": "^23.1.1",
+    "@types/node": "^10.3.4",
     "jest": "^23.1.0",
-    "ts-jest": "^22.4.6"
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
   },
   "jest": {
     "transform": {
