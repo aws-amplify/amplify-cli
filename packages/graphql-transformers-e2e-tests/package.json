@@ -14,8 +14,8 @@
     "appsync",
     "aws"
   ],
-  "author": "Michael Paris",
-  "license": "MIT",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "dependencies": {
     "graphql-mapping-template": "1.0",
     "axios": "^0.18.0",
