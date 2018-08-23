@@ -12,7 +12,6 @@ $ amplify configure
 
 If you're using Windows, we recommend the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
-- An AWS Account and credentials are required. For more information about how to find your credentials, see [AWS Mobile CLI User Credentials](https://docs.aws.amazon.com/aws-mobile/latest/developerguide/aws-mobile-cli-credentials.html) in the *AWS Mobile User Guide*.
 - Ensure you have [Create React App](https://github.com/facebook/create-react-app) installed. 
 - Create a new project as follows:<br>
   `yarn create-react-app -g`<br>
