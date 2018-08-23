@@ -17,7 +17,7 @@
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks, which allows you to add or modify configurations locally before you push them for execution in your account.
 
 * [Installation](#installation)
-* [Getting Started](#getting-started)
+* [Getting Started](https://aws-amplify.github.io/media/get_started)
 * [Commands Summary](#commands-summary)
 
 ## Requirements
@@ -48,7 +48,7 @@ $ amplify configure
 
 By running this command you enable your project with cloud resources required to provision and deploy your project. By default the Amplify CLI uses AWS CloudFormation.
 
-[Get started](https://aws-amplify.github.io/media/toolchain)
+[More info](https://aws-amplify.github.io/media/get_started)
 
 ## Commands Summary
 
