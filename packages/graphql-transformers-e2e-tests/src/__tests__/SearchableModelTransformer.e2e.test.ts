@@ -199,6 +199,7 @@ test('Test searchPosts query with non-recursive filter', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
+    expect(items[0].id).toBeDefined()
     expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test title")
     expect(items[0].ups).toEqual(170)
@@ -228,6 +229,7 @@ test('Test searchPosts query with recursive filter 1', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
+    expect(items[0].id).toBeDefined()
     expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test")
     expect(items[0].ups).toEqual(157)
@@ -286,6 +288,7 @@ test('Test searchPosts query with recursive filter 3', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
+    expect(items[0].id).toBeDefined()
     expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test title")
     expect(items[0].ups).toEqual(200)
@@ -324,6 +327,7 @@ test('Test searchPosts query with recursive filter 4', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
+    expect(items[0].id).toBeDefined()
     expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test title")
     expect(items[0].ups).toEqual(160)
@@ -362,6 +366,7 @@ test('Test searchPosts query with recursive filter 5', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
+    expect(items[0].id).toBeDefined()
     expect(items[0].author).toEqual("snvishna")
     expect(items[0].title).toEqual("test title")
     expect(items[0].ups).toEqual(200)
@@ -399,6 +404,63 @@ test('Test searchPosts query with recursive filter 6', async () => {
     expect(response.data.searchPosts.items).toBeDefined
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(0)
+})
+
+test('Test deletePosts syncing with Elasticsearch', async () => {
+    // Create Post
+    const title = 'to be deleted';
+    const postToBeDeletedResponse = await runQuery(getCreatePostsQuery(
+        "test author new", title, 1157, 1000, 22.2, true
+    ), 'createPost (to be deleted) response: ');
+    expect(postToBeDeletedResponse).toBeDefined
+    expect(postToBeDeletedResponse.data.createPost).toBeDefined
+    expect(postToBeDeletedResponse.data.createPost.id).toBeDefined()
+
+    // Wait for the Post to sync to Elasticsearch
+    await cf.wait(10, () => Promise.resolve())
+
+    const searchResponse1 = await runQuery(`query {
+        searchPosts(filter: {
+            title: { eq: "${title}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`, 'Test deletePosts syncing with Elasticsearch: ')
+    expect(searchResponse1).toBeDefined
+    expect(searchResponse1.data.searchPosts.items).toBeDefined
+    const items1 = searchResponse1.data.searchPosts.items
+    expect(items1.length).toEqual(1)
+    expect(items1[0].id).toEqual(postToBeDeletedResponse.data.createPost.id)
+    expect(items1[0].author).toEqual("test author new")
+    expect(items1[0].title).toEqual(title)
+    expect(items1[0].ups).toEqual(1157)
+    expect(items1[0].downs).toEqual(1000)
+    expect(items1[0].percentageUp).toEqual(22.2)
+    expect(items1[0].isPublished).toEqual(true)
+
+    const deleteResponse = await runQuery(`query {
+        deletePost(id: "${postToBeDeletedResponse.data.createPost.id}") {
+            ...FullPost
+        }
+    }`, 'Test deletePosts syncing with Elasticsearch: ')
+    expect(deleteResponse).toBeDefined
+    expect(deleteResponse.data.deletePost).toBeDefined
+    expect(deleteResponse.data.deletePost.id).toEqual(postToBeDeletedResponse.data.createPost.id)
+
+    // Wait for the Deleted Post to sync to Elasticsearch
+    await cf.wait(10, () => Promise.resolve())
+
+    const searchResponse2 = await runQuery(`query {
+        searchPosts(filter: {
+            title: { eq: "${title}" }
+        }) {
+            items { ...FullPost }
+        }
+    }`, 'Test deletePosts syncing with Elasticsearch: ')
+    expect(searchResponse2).toBeDefined
+    expect(searchResponse2.data.searchPosts.items).toBeDefined
+    const items2 = searchResponse2.data.searchPosts.items
+    expect(items2.length).toEqual(0)
 })
 
 function generateParams() {
