@@ -99,7 +99,7 @@ async function transformGraphQLSchema(context, options) {
     throw e;
   }
 
-  context.print.success('\nGraphQL schema compiled successfully.');
+  context.print.success(`\nGraphQL schema compiled successfully. Edit your schema at ${schemaFilePath}`);
 
   fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
 

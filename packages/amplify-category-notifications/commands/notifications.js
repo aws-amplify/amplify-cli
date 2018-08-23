@@ -16,24 +16,24 @@ module.exports = {
 
     const commands = [
       {
-        name: 'add | enable',
-        description: 'Add a notification channel',
+        name: 'add',
+        description: 'Adds a notification channel',
       },
       {
-        name: 'remove | disable',
-        description: 'Remove a notification channel',
+        name: 'remove',
+        description: 'Removes a notification channel',
       },
       {
         name: 'configure',
-        description: 'Configure a notification channel',
+        description: 'Configures a notification channel',
       },
       {
-        name: 'status | list',
-        description: 'List the enabled/disabled status of the available notification channels',
+        name: 'status',
+        description: 'Lists the enabled/disabled status of the available notification channels',
       },
       {
         name: 'console',
-        description: 'Open the Pinpoint web console displaying the current channel settings',
+        description: 'Opens the Amazon Pinpoint console displaying the current channel settings',
       },
     ];
 

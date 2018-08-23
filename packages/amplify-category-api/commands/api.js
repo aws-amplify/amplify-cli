@@ -29,6 +29,10 @@ module.exports = {
         name: 'update',
         description: `Takes you through steps in the CLI to update an ${featureName} resource`,
       },
+      {
+        name: 'gql-compile',
+        description: `Compiles your GraphQL schema and generates a corresponding cloudformation template`,
+      },
     ];
 
     context.amplify.showHelp(header, commands);
