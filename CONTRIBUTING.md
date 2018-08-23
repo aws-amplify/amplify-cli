@@ -33,6 +33,6 @@ Generally, match the style of the surrounding code. Please ensure your changes d
 
 ## Licensing
 
-AWS Amplify is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
+AWS Amplify CLI is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
