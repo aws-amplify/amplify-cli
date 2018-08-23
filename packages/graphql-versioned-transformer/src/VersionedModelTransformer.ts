@@ -52,7 +52,6 @@ export class VersionedModelTransformer extends Transformer {
         if (!modelDirective) {
             throw new InvalidDirectiveError('Types annotated with @versioned must also be annotated with @model.')
         }
-        console.log(`Calling @versioned on ${def.name.value}`)
 
         const isArg = (s: string) => (arg: ArgumentNode) => arg.name.value === s
         const getArg = (arg: string, dflt?: any) => {
