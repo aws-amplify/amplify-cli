@@ -40,9 +40,11 @@ The Amplify CLI supports the commands shown in the following table.
 
 | Command              | Description |
 | --- | --- |
-| amplify configure [project] | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile |
+| amplify configure | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile |
 | amplify init | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.|
+| amplify configure project | Updates configuration settings used to setup the project during the init step |
 | amplify add `<category>` | Adds cloud features to your app. |
+| amplify update `<category>` | Updates existing cloud features in your app. |
 | amplify push \| amplify `<category>` push | Provisions cloud resources with the latest local developments. |
 | amplify publish | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (*hosting category is required). |
 | amplify status | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete). |
