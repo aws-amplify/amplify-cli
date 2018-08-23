@@ -8,7 +8,7 @@ import {
 export const STANDARD_SCALARS = {
     String: 'String',
     Int: 'Int',
-    Float: 'Int',
+    Float: 'Float',
     Boolean: 'Boolean',
     ID: 'ID'
 };

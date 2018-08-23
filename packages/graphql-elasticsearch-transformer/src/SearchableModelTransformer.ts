@@ -177,8 +177,8 @@ export class SearchableModelTransformer extends Transformer {
             ctx.addInput(searchableBooleanFilterInput)
         }
 
-        if (!this.typeExist(`Searchable${def.name.value}FilterInput`, ctx)) {
-            const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def)
+        const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def)
+        if (!this.typeExist(searchableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(searchableXQueryFilterInput)
         }
 

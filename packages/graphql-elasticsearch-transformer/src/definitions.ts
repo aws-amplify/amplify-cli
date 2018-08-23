@@ -49,7 +49,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
                 name: field.name,
-                type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(field.type)),
+                type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName(getBaseType(field.type))),
                 // TODO: Service does not support new style descriptions so wait.
                 // description: field.description,
                 directives: []

@@ -325,7 +325,6 @@ type Comment @model {
 And then pass the schema to an instance of the `GraphQLTransform` class with the DynamoDB, Elasticsearch, and Connection transformers enabled:
 
 ```javascript
-// From graphql-transform-cli/src/commands/create.ts
 import GraphQLTransform from 'graphql-transform'
 import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
 import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer'
@@ -373,10 +372,6 @@ This package implements any directives that deal with Elasticsearch. Out of the 
 
 This package implements any directives related to authN or authZ workflows. Out of the box, it configures an *Amazon Cognito UserPool* and implements the **@auth** directive.
 
-**graphql-transform-cli**
-
-This package implements a bare bones and easy to use CLI for interacting with the model transform. It can be used as an example of how to call into the transform and can also be used for simple debugging.
-
 **graphql-transformer-e2e-tests**
 
 This pacakge implements end-to-end tests for the transform libraries. It builds an API with the transform, deploys it via CloudFormation, and hits the AppSync data plane to test all generated code paths.
@@ -384,37 +379,6 @@ This pacakge implements end-to-end tests for the transform libraries. It builds 
 **graphql-mapping-template**
 
 This package provides a lightweight wrapper around the AppSync Resolver VTL and is used by transformer libraries as a convenience.
-
-# Getting Started (8/01/2018)
-
-The simplest way to get started is to use the transform cli to compile your schema's into
-a cloudformation doc and then using the AWS console to create a stack from that template.
-Using the console will allow you to see all the parameters the template makes available
-for customization.
-
-First clone this repo and checkout the graphql (or mp-dev if we have yet to merge)
-
-```
-git clone https://github.com/aws/aws-amplify-staging.git
-cd aws-amplify-staging
-git checkout graphql
-```
-
-You will need to have lerna installed to build the project. From the root directory run
-
-```
-lerna bootstrap
-lerna run build
-cd packages/graphql-transform-cli
-```
-
-From this repo you can then compile the schema in `schema.graphql` using this command.
-
-```
-node lib/index.js compile schema.graphql cftemplate.json
-```
-
-You can then take that cloud formation template and upload it to the CloudFormation console.
 
 ### Prerequisites
 
