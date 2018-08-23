@@ -39,7 +39,7 @@ function run(context) {
 
       const spinner = ora();
       spinner.start('Initializing project in the cloud...');
-      return new Cloudformation(ctxt, awscfn)
+      return new Cloudformation(ctxt, awscfn, 'init')
         .then(cfnItem => cfnItem.createResourceStack(params))
         .then((waitData) => {
           processStackCreationData(ctxt, waitData);
