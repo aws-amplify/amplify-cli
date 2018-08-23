@@ -172,35 +172,41 @@ def _lambda_handler(event, context):
         else:
             logger.warning('Unsupported event_name: %s', event_name)
 
+        is_ddb_insert_or_update = (event_name == 'INSERT') or (event_name == 'MODIFY')
+        is_ddb_delete = event_name == 'REMOVE'
+        image_name = 'NewImage' if is_ddb_insert_or_update else 'OldImage'
+
+        if image_name not in ddb:
+            logger.warning(
+                'Cannot process stream if it does not contain ' + image_name)
+            continue
+        logger.debug(image_name + ': %s', ddb[image_name])
+        # Deserialize DynamoDB type to Python types
+        doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
+
+        print(doc_fields)
+
+        doc_index = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
+            ddb['Keys'], ddb_deserializer)
+
+        # Generate JSON payload
+        doc_json = json.dumps(doc_fields)
+
         # If DynamoDB INSERT or MODIFY, send 'index' to ES
-        if (event_name == 'INSERT') or (event_name == 'MODIFY'):
-            if 'NewImage' not in ddb:
-                logger.warning(
-                    'Cannot process stream if it does not contain NewImage')
-                continue
-            logger.debug('NewImage: %s', ddb['NewImage'])
-            # Deserialize DynamoDB type to Python types
-            doc_fields = ddb_deserializer.deserialize({'M': ddb['NewImage']})
-
-            print(doc_fields)
-
-            doc_index = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
-                ddb['Keys'], ddb_deserializer)
-
-            # Generate JSON payload
-            doc_json = json.dumps(doc_fields)
-
+        if is_ddb_insert_or_update:
             # Generate ES payload for item
             action = {'index': {'_index': doc_table,
                                 '_type': doc_type, '_id': doc_index}}
             # Action line with 'index' directive
             es_actions.append(json.dumps(action))
-            es_actions.append(doc_json)            # Payload line
+            # Payload line
+            es_actions.append(doc_json)
 
         # If DynamoDB REMOVE, send 'delete' to ES
-        elif event_name == 'REMOVE':
+        elif is_ddb_delete:
             action = {'delete': {'_index': doc_table,
                                  '_type': doc_type, '_id': doc_index}}
+            # Action line with 'index' directive
             es_actions.append(json.dumps(action))
 
     # Prepare bulk payload
