@@ -1,3 +1,16 @@
+<img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
+
+<p>
+  <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
+    <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
+  </a>
+  <a href="#">
+    <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
+  </a>
+</p>
+
+
+
 # AWS Amplify CLI 
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks, which allows you to add or modify configurations locally before you push them for execution in your account.
@@ -33,6 +46,8 @@ $ amplify configure
 ```
 
 By running this command you enable your project with cloud resources required to provision and deploy your project. By default the Amplify CLI uses AWS CloudFormation.
+
+[Get started](https://aws-amplify.github.io)
 
 ## Commands Summary
 
