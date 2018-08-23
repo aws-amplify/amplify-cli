@@ -10,11 +10,14 @@ import VersionedModelTransformer from 'graphql-versioned-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import * as moment from 'moment';
 
 jest.setTimeout(200000);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'GraphQLVersionedTest'
+
+const dateAppender = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `GraphQLVersionedTest-${dateAppender}`
 
 let GRAPHQL_CLIENT = undefined;
 
