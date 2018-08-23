@@ -6,6 +6,8 @@ const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 
+// TODO: Put this in package.json and integrate with lerna to bump up version
+
 const userAgent = 'aws-amplify-cli/0.1.0';
 
 function formUserAgentParam(context, userAgentAction) {
