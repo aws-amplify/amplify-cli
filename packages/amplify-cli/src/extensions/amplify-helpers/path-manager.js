@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const homedir = require('os').homedir();
 const amplifyCLIConstants = require('./constants.js');
+const { print } = require('gluegun/print');
 
 /* Helpers */
 
@@ -54,7 +55,9 @@ function getAmplifyDirPath(projectPath) {
       amplifyCLIConstants.AmplifyCLIDirName,
     ));
   }
-  throw new Error('you are not working inside a valid amplify project');
+  print.error('You are not working inside a valid amplify project.');
+  print.info('Use \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  process.exit(0);
 }
 
 // ///////////////////level 1
@@ -89,7 +92,9 @@ function getAmplifyRcFilePath(projectPath) {
       '.amplifyrc',
     ));
   }
-  throw new Error('you are not working inside a valid amplify project');
+  print.error('You are not working inside a valid Amplify project.');
+  print.info('Run \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+  process.exit(0);
 }
 
 

@@ -3,7 +3,7 @@ const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
 
 const PinpointApp = 'The Pinpoint application';
-const Cancel = 'Cancel'; 
+const Cancel = 'Cancel';
 
 module.exports = {
   name: 'remove',
@@ -37,24 +37,22 @@ module.exports = {
         await pinpointHelper.checkPinpointApp(context);
         await notificationManager.disableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);
+      } else if (pinpointHelper.isAnalyticsAdded(context)) {
+        context.print.error('You have added the analytics to your backend');
+        context.print.error('Analytics is also managed by the Amazon Pinpoint application');
+        context.print.info('Analytics must be removed before Amazon Pinpoint can be deleted');
+        context.print.info('Execution aborted.');
       } else {
-        if(pinpointHelper.isAnalyticsAdded(context)) {
-            context.print.error('You have added the analytics to your backend');
-            context.print.error('Analytics is also managed by the Amazon Pinpoint application');
-            context.print.info('Analytics must be removed before Amazon Pinpoint can be deleted'); 
-            context.print.info('Execution aborted.');
-        }else{
-            const answer = await inquirer.prompt({
-                name: 'deletePinpointApp',
-                type: 'confirm',
-                message: 'Confirm that you want to delete the associated AWS Pinpoint application',
-                default: false,
-            });
-            if (answer.deletePinpointApp) {
-                await pinpointHelper.deletePinpointApp(context);
-                context.print.info('The Pinpoint application has been successfully deleted.');
-                notificationManager.updateaServiceMeta(context);
-            }
+        const answer = await inquirer.prompt({
+          name: 'deletePinpointApp',
+          type: 'confirm',
+          message: 'Confirm that you want to delete the associated AWS Pinpoint application',
+          default: false,
+        });
+        if (answer.deletePinpointApp) {
+          await pinpointHelper.deletePinpointApp(context);
+          context.print.info('The Pinpoint application has been successfully deleted.');
+          notificationManager.updateaServiceMeta(context);
         }
       }
     }

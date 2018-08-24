@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         name: 'gql-compile',
-        description: `Compiles your GraphQL schema and generates a corresponding cloudformation template`,
+        description: 'Compiles your GraphQL schema and generates a corresponding cloudformation template',
       },
     ];
 
