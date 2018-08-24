@@ -112,8 +112,6 @@ export class AppSyncTransformer extends Transformer {
         }
         const schema = makeSchema(ops)
         ctx.putSchema(schema)
-
-
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))

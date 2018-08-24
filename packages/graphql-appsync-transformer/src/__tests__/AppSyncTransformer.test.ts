@@ -11,7 +11,7 @@ import path = require('path');
 
 test('Test AppSyncTransformer validation happy case', () => {
     const validSchema = `
-    type Post @model @searchable {
+    type Post {
         id: ID!
         title: String!
         createdAt: String
