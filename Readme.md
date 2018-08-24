@@ -35,7 +35,7 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
- - Warning: Please don't use `yarn` for installing the CLI. It has known issues when installing the Amplify CLI. Use `npm` instead as advised above.
+ - Warning: Please don't use `yarn` for installing the CLI. It has known issues. Use `npm` instead as advised above.
 
 ## Commands Summary
 
