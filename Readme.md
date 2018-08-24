@@ -27,12 +27,15 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 
  - Requires Node.js® version 8.x or later
 
+
 Install and configure the Amplify CLI as follows:
 
 ```bash
 $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
+
+ - Warning: Please don't use `yarn` for installing the CLI. It has known issues when installing the Amplify CLI. Use `npm` instead as advised above.
 
 ## Commands Summary
 
