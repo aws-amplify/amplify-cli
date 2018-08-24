@@ -16,6 +16,7 @@ import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
 import { deploy } from '../deploy'
+import * as moment from 'moment';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -23,7 +24,9 @@ import { deploy } from '../deploy'
 jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
-const STACK_NAME = 'ModelAuthTransformerTest'
+
+const dateAppender = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `ModelAuthTransformerTest-${dateAppender}`
 
 let GRAPHQL_ENDPOINT = undefined;
 
