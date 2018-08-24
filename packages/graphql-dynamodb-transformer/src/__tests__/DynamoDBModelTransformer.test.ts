@@ -200,6 +200,74 @@ test('Test DynamoDBModelTransformer with filter', () => {
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
 });
 
+test('Test DynamoDBModelTransformer with mutations set to null', () => {
+    const validSchema = `type Post @model(mutations: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with queries set to null', () => {
+    const validSchema = `type Post @model(queries: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).toBeDefined()
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with queries and mutations set to null', () => {
+    const validSchema = `type Post @model(queries: null, mutations: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).not.toBeDefined()
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).not.toBeDefined()
+})
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)

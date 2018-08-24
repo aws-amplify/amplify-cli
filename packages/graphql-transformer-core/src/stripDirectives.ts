@@ -38,22 +38,28 @@ export function stripDirectives(doc: DocumentNode): DocumentNode {
 }
 
 export function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {
+    const fields = node.fields ? node.fields.map(stripFieldDirectives) : node.fields
     return {
         ...node,
+        fields,
         directives: []
     }
 }
 
 export function stripInterfaceDirectives(node: InterfaceTypeDefinitionNode): InterfaceTypeDefinitionNode {
+    const fields = node.fields ? node.fields.map(stripFieldDirectives) : node.fields
     return {
         ...node,
+        fields,
         directives: []
     }
 }
 
 export function stripFieldDirectives(node: FieldDefinitionNode): FieldDefinitionNode {
+    const args = node.arguments ? node.arguments.map(stripArgumentDirectives) : node.arguments
     return {
         ...node,
+        arguments: args,
         directives: []
     }
 }
@@ -80,15 +86,19 @@ export function stripScalarDirectives(node: ScalarTypeDefinitionNode): ScalarTyp
 }
 
 export function stripInputObjectDirectives(node: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+    const fields = node.fields ? node.fields.map(stripArgumentDirectives) : node.fields
     return {
         ...node,
+        fields,
         directives: []
     }
 }
 
 export function stripEnumDirectives(node: EnumTypeDefinitionNode): EnumTypeDefinitionNode {
+    const values = node.values ? node.values.map(stripEnumValueDirectives) : node.values
     return {
         ...node,
+        values,
         directives: []
     }
 }

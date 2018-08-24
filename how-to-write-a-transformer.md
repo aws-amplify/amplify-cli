@@ -244,7 +244,7 @@ export default class TransformerContext {
     mergeOutputs(outputs: {
         [key: string]: Output;
     }): void;
-    addSchema(obj: SchemaDefinitionNode): void;
+    putSchema(obj: SchemaDefinitionNode): void;
     addType(obj: TypeDefinitionNode): void;
     putType(obj: TypeDefinitionNode): void;
     getType(name: string): TypeSystemDefinitionNode | undefined;

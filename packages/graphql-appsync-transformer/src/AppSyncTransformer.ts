@@ -38,7 +38,7 @@ export class AppSyncTransformer extends Transformer {
             makeOperationType('query', 'Query'),
             makeOperationType('mutation', 'Mutation')
         ])
-        ctx.addSchema(schema)
+        ctx.putSchema(schema)
 
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
@@ -73,12 +73,35 @@ export class AppSyncTransformer extends Transformer {
                     }
                     break;
                 default:
-                    /* pass any others */
+                /* pass any others */
             }
         }
     }
 
     private buildSchema(ctx: TransformerContext): string {
+        const mutationNode: any = ctx.nodeMap.Mutation
+        const queryNode: any = ctx.nodeMap.Query
+        let includeMutation = true
+        let includeQuery = true
+        if (!mutationNode || mutationNode.fields.length === 0) {
+            delete ctx.nodeMap.Mutation
+            includeMutation = false
+        }
+        if (!queryNode || queryNode.fields.length === 0) {
+            delete ctx.nodeMap.Query
+            includeQuery = false
+        }
+        const ops = []
+        if (includeQuery) {
+            ops.push(makeOperationType('query', 'Query'))
+        }
+        if (includeMutation) {
+            ops.push(makeOperationType('mutation', 'Mutation'))
+        }
+        const schema = makeSchema(ops)
+        ctx.putSchema(schema)
+
+
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
@@ -86,7 +109,6 @@ export class AppSyncTransformer extends Transformer {
         const SDL = print(astSansDirectives)
         return SDL;
     }
-
 
     private printWithoutFilePath(ctx: TransformerContext): void {
         const SDL = this.buildSchema(ctx)
@@ -98,6 +120,15 @@ export class AppSyncTransformer extends Transformer {
 
         if (!fs.existsSync(this.outputPath)) {
             fs.mkdirSync(this.outputPath);
+        }
+
+        const resolverFilePath = normalize(this.outputPath + '/resolvers')
+        if (fs.existsSync(resolverFilePath)) {
+            try {
+                const files = fs.readdirSync(resolverFilePath)
+                files.forEach(file => fs.unlinkSync(resolverFilePath + '/' + files))
+                fs.rmdirSync(resolverFilePath)
+            } catch (e) { return }
         }
 
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
