@@ -6,8 +6,11 @@ import {
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
     isScalar, getBaseType, blankObjectExtension, extensionWithFields, makeField,
-    makeArg,
-    ModelResourceIDs
+    makeInputValueDefinition,
+    ModelResourceIDs,
+    makeDirective,
+    makeArgument,
+    makeValueNode
 } from 'graphql-transformer-common'
 
 const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
@@ -276,13 +279,27 @@ export function makeModelConnectionType(typeName: string): ObjectTypeExtensionNo
     return connectionTypeExtension
 }
 
+export function makeSubscriptionField(fieldName: string, returnTypeName: string, mutations: string[]): FieldDefinitionNode {
+    return makeField(
+        fieldName,
+        [],
+        makeNamedType(returnTypeName),
+        [
+            makeDirective(
+                'aws_subscribe',
+                [makeArgument('mutations', makeValueNode(mutations))]
+            )
+        ]
+    )
+}
+
 export function makeModelScanField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
     return makeField(
         fieldName,
         [
-            makeArg('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
-            makeArg('limit', makeNamedType('Int')),
-            makeArg('nextToken', makeNamedType('String'))
+            makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
+            makeInputValueDefinition('limit', makeNamedType('Int')),
+            makeInputValueDefinition('nextToken', makeNamedType('String'))
         ],
         makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
     )
@@ -292,10 +309,10 @@ export function makeModelConnectionField(fieldName: string, returnTypeName: stri
     return makeField(
         fieldName,
         [
-            makeArg('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
-            makeArg('sortDirection', makeNamedType('ModelSortDirection')),
-            makeArg('limit', makeNamedType('Int')),
-            makeArg('nextToken', makeNamedType('String'))
+            makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
+            makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
+            makeInputValueDefinition('limit', makeNamedType('Int')),
+            makeInputValueDefinition('nextToken', makeNamedType('String'))
         ],
         makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
     )

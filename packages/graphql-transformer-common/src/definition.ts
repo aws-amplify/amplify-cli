@@ -2,8 +2,12 @@ import {
     ObjectTypeDefinitionNode, InputValueDefinitionNode, FieldDefinitionNode,
     TypeNode, SchemaDefinitionNode, OperationTypeNode, OperationTypeDefinitionNode,
     ObjectTypeExtensionNode, NamedTypeNode, Kind, NonNullTypeNode, ListTypeNode,
-    valueFromASTUntyped, ArgumentNode, DirectiveNode, EnumTypeDefinitionNode
+    valueFromASTUntyped, ArgumentNode, DirectiveNode, EnumTypeDefinitionNode,
+    ValueNode,
+    ListValueNode,
+    ObjectValueNode
 } from 'graphql'
+import { access } from 'fs';
 
 export const STANDARD_SCALARS = {
     String: 'String',
@@ -173,7 +177,7 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
     }
 }
 
-export function makeField(name: string, args: InputValueDefinitionNode[], type: TypeNode): FieldDefinitionNode {
+export function makeField(name: string, args: InputValueDefinitionNode[], type: TypeNode, directives: DirectiveNode[] = []): FieldDefinitionNode {
     return {
         kind: Kind.FIELD_DEFINITION,
         name: {
@@ -182,13 +186,66 @@ export function makeField(name: string, args: InputValueDefinitionNode[], type: 
         },
         arguments: args,
         type,
-        directives: []
+        directives
     }
 }
 
-export function makeArg(name: string, type: TypeNode): InputValueDefinitionNode {
+export function makeDirective(name: string, args: ArgumentNode[]): DirectiveNode {
     return {
-        kind: 'InputValueDefinition',
+        kind: Kind.DIRECTIVE,
+        name: {
+            kind: Kind.NAME,
+            value: name
+        },
+        arguments: args
+    }
+}
+
+export function makeArgument(name: string, value: ValueNode): ArgumentNode {
+    return {
+        kind: Kind.ARGUMENT,
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        value
+    }
+}
+
+export function makeValueNode(value: any): ValueNode {
+    if (typeof value === 'string') {
+        return { kind: Kind.STRING, value: value }
+    } else if (Number.isInteger(value)) {
+        return { kind: Kind.INT, value: value }
+    } else if (typeof value === 'number') {
+        return { kind: Kind.FLOAT, value: String(value) }
+    } else if (typeof value === 'boolean') {
+        return { kind: Kind.BOOLEAN, value: value }
+    } else if (value === null) {
+        return { kind: Kind.NULL }
+    } else if (Array.isArray(value)) {
+        return {
+            kind: Kind.LIST,
+            values: value.map(v => makeValueNode(v))
+        }
+    } else if (typeof value === 'object') {
+        return {
+            kind: Kind.OBJECT,
+            fields: Object.keys(value).map((key: string) => {
+                const keyValNode = makeValueNode(value[key])
+                return {
+                    kind: Kind.OBJECT_FIELD,
+                    name: { kind: Kind.NAME, value: key },
+                    value: keyValNode
+                }
+            })
+        }
+    }
+}
+
+export function makeInputValueDefinition(name: string, type: TypeNode): InputValueDefinitionNode {
+    return {
+        kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
             kind: 'Name',
             value: name
