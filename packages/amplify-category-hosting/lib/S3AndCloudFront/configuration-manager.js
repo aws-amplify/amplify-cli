@@ -22,6 +22,9 @@ async function init(context) {
   const answers = await inquirer.prompt(questions);
 
   context.exeInfo.template.Resources.S3Bucket.Properties.BucketName = answers.HostingBucketName;
+
+  const configureModule = require(configurables['Website']);
+  await configureModule.configure(context);
 }
 
 async function configure(context, lastConfiguredSection) {
