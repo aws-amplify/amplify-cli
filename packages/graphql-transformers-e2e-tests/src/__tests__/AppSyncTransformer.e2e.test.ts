@@ -3,15 +3,15 @@ import {
     DefinitionNode, Kind, InputObjectTypeDefinitionNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
-import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncTransformer } from '../AppSyncTransformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import { AppSyncTransformer } from 'graphql-appsync-transformer'
 
 import fs = require('fs');
 import path = require('path');
 
 test('Test AppSyncTransformer validation happy case', () => {
     const validSchema = `
-    type Post {
+    type Post @model {
         id: ID!
         title: String!
         createdAt: String
@@ -21,14 +21,16 @@ test('Test AppSyncTransformer validation happy case', () => {
     const directory = './fileTest';
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(directory + '//')
-
+            new AppSyncTransformer(directory + '//'),
+            new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 
     expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
+    expect(out.Parameters.QueryGetPostRequest).toBeTruthy()
+    expect(out.Parameters.MutationCreatePostRequest).toBeTruthy()
 
     cleanUpFiles(directory)
 });

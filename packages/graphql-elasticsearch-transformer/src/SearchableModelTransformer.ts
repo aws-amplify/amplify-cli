@@ -16,7 +16,7 @@ import {
     extensionWithFields,
     blankObject,
     makeListType,
-    makeArg,
+    makeInputValueDefinition,
     makeNonNullType
 } from "graphql-transformer-common";
 import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
@@ -100,10 +100,10 @@ export class SearchableModelTransformer extends Transformer {
                     makeField(
                         searchResolver.Properties.FieldName,
                         [
-                            makeArg('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
-                            makeArg('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
-                            makeArg('limit', makeNamedType('Int')),
-                            makeArg('nextToken', makeNamedType('Int'))
+                            makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
+                            makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
+                            makeInputValueDefinition('limit', makeNamedType('Int')),
+                            makeInputValueDefinition('nextToken', makeNamedType('Int'))
                         ],
                         makeNamedType(`Searchable${def.name.value}Connection`)
                     )

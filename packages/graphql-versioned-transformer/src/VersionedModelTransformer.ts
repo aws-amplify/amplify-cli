@@ -12,7 +12,7 @@ import {
     makeOperationType,
     ModelResourceIDs,
     ResolverResourceIDs,
-    makeArg,
+    makeInputValueDefinition,
     makeNonNullType,
     makeNamedType,
     getBaseType,
@@ -31,7 +31,7 @@ export class VersionedModelTransformer extends Transformer {
 
     /**
      * When a type is annotated with @versioned enable conflict resolution for the type.
-     * 
+     *
      * Usage:
      *
      * type Post @model @versioned(versionField: "version", versionInput: "expectedVersion") {
@@ -40,9 +40,9 @@ export class VersionedModelTransformer extends Transformer {
      *   version: Int!
      * }
      *
-     * Enabling conflict resolution automatically manages a "version" attribute in 
+     * Enabling conflict resolution automatically manages a "version" attribute in
      * the @model type's DynamoDB table and injects a conditional expression into
-     * the types mutations that actually perform the conflict resolutions by 
+     * the types mutations that actually perform the conflict resolutions by
      * checking the "version" attribute in the table with the "expectedVersion" passed
      * by the user.
      */
@@ -75,9 +75,9 @@ export class VersionedModelTransformer extends Transformer {
 
     /**
      * Set the "version"  to 1.
-     * @param ctx 
-     * @param versionField 
-     * @param versionInput 
+     * @param ctx
+     * @param versionField
+     * @param versionInput
      */
     private augmentCreateMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
         const snippet = printBlock(`Setting "${versionField}" to 1`)(
@@ -94,9 +94,9 @@ export class VersionedModelTransformer extends Transformer {
     /**
      * Prefix the update operation with a conditional expression that checks
      * the object versions.
-     * @param ctx 
-     * @param versionField 
-     * @param versionInput 
+     * @param ctx
+     * @param versionField
+     * @param versionInput
      */
     private augmentDeleteMutation(ctx: TransformerContext, typeName: string, versionField: string, versionInput: string) {
         const mutationResolverLogicalId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName)
@@ -201,7 +201,7 @@ export class VersionedModelTransformer extends Transformer {
         if (input && input.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION) {
             const updatedFields = [
                 ...input.fields,
-                makeArg(versionInput, makeNonNullType(makeNamedType("Int")))
+                makeInputValueDefinition(versionInput, makeNonNullType(makeNamedType("Int")))
             ]
             const updatedInput = {
                 ...input,

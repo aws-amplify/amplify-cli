@@ -32,11 +32,14 @@ export class AppSyncTransformer extends Transformer {
     public before = (ctx: TransformerContext): void => {
         const queryType = blankObject('Query')
         const mutationType = blankObject('Mutation')
+        const subscriptionType = blankObject('Subscription')
         ctx.addObject(mutationType)
         ctx.addObject(queryType)
+        ctx.addObject(subscriptionType)
         const schema = makeSchema([
             makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation')
+            makeOperationType('mutation', 'Mutation'),
+            makeOperationType('subscription', 'Subscription')
         ])
         ctx.putSchema(schema)
 
@@ -81,8 +84,10 @@ export class AppSyncTransformer extends Transformer {
     private buildSchema(ctx: TransformerContext): string {
         const mutationNode: any = ctx.nodeMap.Mutation
         const queryNode: any = ctx.nodeMap.Query
+        const subscriptionNode: any = ctx.nodeMap.Subscription
         let includeMutation = true
         let includeQuery = true
+        let includeSubscription = true
         if (!mutationNode || mutationNode.fields.length === 0) {
             delete ctx.nodeMap.Mutation
             includeMutation = false
@@ -91,6 +96,10 @@ export class AppSyncTransformer extends Transformer {
             delete ctx.nodeMap.Query
             includeQuery = false
         }
+        if (!subscriptionNode || subscriptionNode.fields.length === 0) {
+            delete ctx.nodeMap.Subscription
+            includeSubscription = false
+        }
         const ops = []
         if (includeQuery) {
             ops.push(makeOperationType('query', 'Query'))
@@ -98,14 +107,15 @@ export class AppSyncTransformer extends Transformer {
         if (includeMutation) {
             ops.push(makeOperationType('mutation', 'Mutation'))
         }
+        if (includeSubscription) {
+            ops.push(makeOperationType('subscription', 'Subscription'))
+        }
         const schema = makeSchema(ops)
         ctx.putSchema(schema)
-
-
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
-        })
+        }, ['aws_subscribe'])
         const SDL = print(astSansDirectives)
         return SDL;
     }
