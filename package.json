@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
-    "test": "npx lerna@2.11 run lint",
+    "test": "npx lerna@2.11 bootstrap && npx lerna@2.11 run lint",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && npx lerna@2.11 clean --yes",
