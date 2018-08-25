@@ -9,5 +9,3 @@ jobs:
     steps:
       - checkout
       - run: npm run production-build
-      - run: sudo npm run setup-link
-      - run: amplify
