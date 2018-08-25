@@ -9,7 +9,10 @@
     "clean": "rm -rf node_modules && npx lerna@2.11 clean --yes",
     "production-build": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap --hoist && npx lerna@2.11 run build",
     "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
-    "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
+    "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link",
+    "publish:master": "npx lerna@2.11 publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
+    "publish:beta": "npx lerna@2.11 publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
+    "publish:release": "npx lerna@2.11 publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
