@@ -17,7 +17,7 @@ jobs:
       - checkout
       - run: npm run production-build
       - save_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.lock" }}
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -30,10 +30,18 @@ jobs:
   test:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm run test
   deploy:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
