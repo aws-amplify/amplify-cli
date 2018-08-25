@@ -9,3 +9,5 @@ jobs:
     steps:
       - checkout
       - run: npm run production-build
+      - run: npm run setup-dev
+      - run: amplify
