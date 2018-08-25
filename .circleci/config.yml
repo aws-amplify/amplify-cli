@@ -16,6 +16,17 @@ jobs:
     steps:
       - checkout
       - run: npm run production-build
+      - save_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.lock" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
   test:
     <<: *defaults
     steps:
