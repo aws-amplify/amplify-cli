@@ -8,7 +8,6 @@
     "clean": "rm -rf node_modules && npx lerna@2.11 clean --yes",
     "production-build": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap --hoist && npx lerna@2.11 run build",
     "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
-    "setup-link": "npx lerna@2.11 exec npm link",
     "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link"
   },
   "bugs": {

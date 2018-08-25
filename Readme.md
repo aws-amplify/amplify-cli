@@ -8,6 +8,9 @@
   <a href="https://www.npmjs.com/package/@aws-amplify/cli">
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
   </a>
+  <a href="https://circleci.com/gh/aws-amplify/amplify-cli">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-cli/master.svg" alt="build:started">
+  </a>
 </p>
 
 
