@@ -1,24 +1,72 @@
 version: 2
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+      - image: circleci/node:10.8
+        environment:
+          TERM: xterm
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:10.8
-
-    working_directory: ~/repo
-    
+    <<: *defaults
     steps:
       - checkout
       - run: npm run production-build
+      - save_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum: "package-lock.json" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          path:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
   
   test:
-    docker:
-      - image: circleci/node:10.8
+    <<: *defaults
     steps:
-      - checkout
+      - attach_workspace:
+          at: ./
       - run: npm run test
+
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
+      - run:
+          name: "Publish Amplify CLI"
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              yarn run publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
+    
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - test
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only:
+                - release
+                - master
