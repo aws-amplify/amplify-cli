@@ -19,9 +19,9 @@ jobs:
       - run:
           name: "Update SSH configs"
           command: |
-          mkdir ~/.ssh
-          echo $SSH_HOST_PUBLIC_KEY
-          echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            mkdir ~/.ssh
+            echo $SSH_HOST_PUBLIC_KEY
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
       - save_cache:
           key: amplify-npm-deps-{{ .Branch }}-{{ checksum: "package-lock.json" }}
           paths:
