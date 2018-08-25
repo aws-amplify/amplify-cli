@@ -15,41 +15,20 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: npm run production-build
+  test:
+    <<: *defaults
+    steps:
+      - run: npm run test
+  deploy:
+    <<: *defaults
+    steps:
       - run:
           name: "Update SSH configs"
           command: |
             mkdir ~/.ssh
             echo $SSH_HOST_PUBLIC_KEY
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-      - run: npm run production-build
-      - save_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum: "package-lock.json" }}
-          paths:
-            - ~/.cache
-      - save_cache:
-          key: amplify-ssh-deps-{{ .Branch }}
-          path:
-            - ~/.ssh
-      - persist_to_workspace:
-          root: .
-          paths: .
-
-  test:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - run: npm run test
-
-  deploy:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
       - run:
           name: "Publish Amplify CLI"
           command: |
