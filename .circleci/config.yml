@@ -1,4 +1,7 @@
 version: 2
+machine:
+    environment:
+      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 defaults: &defaults
   working_directory: ~/repo
@@ -13,6 +16,12 @@ jobs:
     steps:
       - checkout
       - run: npm run production-build
+      - run:
+          name: "Update SSH configs"
+          command: |
+          mkdir ~/.ssh
+          echo $SSH_HOST_PUBLIC_KEY
+          echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
       - save_cache:
           key: amplify-npm-deps-{{ .Branch }}-{{ checksum: "package-lock.json" }}
           paths:
@@ -24,7 +33,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths: .
-  
+
   test:
     <<: *defaults
     steps:
@@ -69,4 +78,3 @@ workflows:
             branches:
               only:
                 - release
-                - master
