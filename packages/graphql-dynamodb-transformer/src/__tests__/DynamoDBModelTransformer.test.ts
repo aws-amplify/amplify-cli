@@ -53,8 +53,8 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     expectFields(queryType, ['customListPost'])
     const subscriptionType = getObjectType(parsed, 'Subscription')
     expect(subscriptionType).toBeDefined()
-    expectFields(subscriptionType, ['onPostCreated', 'onPostUpdated', 'onPostDeleted'])
-    const subField = subscriptionType.fields.find(f => f.name.value === 'onPostCreated')
+    expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost'])
+    const subField = subscriptionType.fields.find(f => f.name.value === 'onCreatePost')
     expect(subField.directives.length).toEqual(1)
     expect(subField.directives[0].name.value).toEqual('aws_subscribe')
 });
