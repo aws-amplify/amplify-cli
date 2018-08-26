@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "amplify-cli function plugin",
   "dependencies": {
     "amplify-category-storage": "^0.1.13",
