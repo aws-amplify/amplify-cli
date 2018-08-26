@@ -29,8 +29,7 @@ app.use(function(req, res, next) {
 
 app.get('<%= props.path %>', function(req, res) {
   // Add your code here
-  // Return the API Gateway event and query string parameters for example
-  res.json(req.apiGateway.event);
+  res.json({success: 'get call succeed!', url: req.url});
 });
 
 app.get('<%= props.path %>/*', function(req, res) {
