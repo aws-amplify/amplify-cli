@@ -14,6 +14,10 @@ function run(info) {
   if(!privateKey){
     PrivateKey = getEncryptedPrivateKey(pemFileContent);
   }
+  if(!privateKey){
+    const errorMessage = 'Openssl can not extract the private key from the p12 file'; 
+    throw new Error(errorMessage); 
+  }
 
   return {
     Certificate,
