@@ -7,7 +7,14 @@ function run(info) {
   const { filePath, password } = info;
   const pemFileContent = getPemFileContent(filePath, password);
   const Certificate = getCertificate(pemFileContent);
-  const PrivateKey = getPrivateKey(pemFileContent);
+  let PrivateKey = getPrivateKey(pemFileContent);
+  if(!privateKey){
+    PrivateKey = getRSAPrivateKey(pemFileContent);
+  }
+  if(!privateKey){
+    PrivateKey = getEncryptedPrivateKey(pemFileContent);
+  }
+
   return {
     Certificate,
     PrivateKey,
@@ -44,6 +51,36 @@ function getPrivateKey(pemFileContent) {
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
   if (beginIndex > -1) {
     const endMark = '-----END PRIVATE KEY-----';
+    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
+    if (endIndex > -1) {
+      privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
+      privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+    }
+  }
+  return privateKey;
+}
+
+function getRSAPrivateKey(pemFileContent) {
+  let privateKey;
+  const beginMark = '-----BEGIN RSA PRIVATE KEY-----';
+  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
+  if (beginIndex > -1) {
+    const endMark = '-----END RSA PRIVATE KEY-----';
+    const endIndex = pemFileContent.indexOf(endMark, beginIndex);
+    if (endIndex > -1) {
+      privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
+      privateKey = beginMark + os.EOL + privateKey + os.EOL + endMark;
+    }
+  }
+  return privateKey;
+}
+
+function getEncryptedPrivateKey(pemFileContent) {
+  let privateKey;
+  const beginMark = '-----BEGIN ENCRYPTED PRIVATE KEY-----';
+  const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
+  if (beginIndex > -1) {
+    const endMark = 'END ENCRYPTED PRIVATE KEY';
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
