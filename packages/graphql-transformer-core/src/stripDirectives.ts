@@ -7,7 +7,7 @@ import {
     DocumentNode
 } from "graphql";
 
-export function stripDirectives(doc: DocumentNode): DocumentNode {
+export function stripDirectives(doc: DocumentNode, except: string[] = []): DocumentNode {
     const definitions = []
     for (const def of doc.definitions) {
         switch (def.kind) {
@@ -31,71 +31,84 @@ export function stripDirectives(doc: DocumentNode): DocumentNode {
                 break;
         }
     }
+
+    function excepted(dir: DirectiveNode) { return Boolean(except.find(f => dir.name.value === f))}
+
+    function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {
+        const fields = node.fields ? node.fields.map(stripFieldDirectives) : node.fields
+        return {
+            ...node,
+            fields,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripInterfaceDirectives(node: InterfaceTypeDefinitionNode): InterfaceTypeDefinitionNode {
+        const fields = node.fields ? node.fields.map(stripFieldDirectives) : node.fields
+        return {
+            ...node,
+            fields,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripFieldDirectives(node: FieldDefinitionNode): FieldDefinitionNode {
+        const args = node.arguments ? node.arguments.map(stripArgumentDirectives) : node.arguments
+        return {
+            ...node,
+            arguments: args,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripArgumentDirectives(node: InputValueDefinitionNode): InputValueDefinitionNode {
+        return {
+            ...node,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripUnionDirectives(node: UnionTypeDefinitionNode): UnionTypeDefinitionNode {
+        return {
+            ...node,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripScalarDirectives(node: ScalarTypeDefinitionNode): ScalarTypeDefinitionNode {
+        return {
+            ...node,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripInputObjectDirectives(node: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+        const fields = node.fields ? node.fields.map(stripArgumentDirectives) : node.fields
+        return {
+            ...node,
+            fields,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripEnumDirectives(node: EnumTypeDefinitionNode): EnumTypeDefinitionNode {
+        const values = node.values ? node.values.map(stripEnumValueDirectives) : node.values
+        return {
+            ...node,
+            values,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
+    function stripEnumValueDirectives(node: EnumValueDefinitionNode): EnumValueDefinitionNode {
+        return {
+            ...node,
+            directives: node.directives.filter(excepted)
+        }
+    }
+
     return {
         kind: Kind.DOCUMENT,
         definitions
-    }
-}
-
-export function stripObjectDirectives(node: ObjectTypeDefinitionNode): ObjectTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripInterfaceDirectives(node: InterfaceTypeDefinitionNode): InterfaceTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripFieldDirectives(node: FieldDefinitionNode): FieldDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripArgumentDirectives(node: InputValueDefinitionNode): InputValueDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripUnionDirectives(node: UnionTypeDefinitionNode): UnionTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripScalarDirectives(node: ScalarTypeDefinitionNode): ScalarTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripInputObjectDirectives(node: InputObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripEnumDirectives(node: EnumTypeDefinitionNode): EnumTypeDefinitionNode {
-    return {
-        ...node,
-        directives: []
-    }
-}
-
-export function stripEnumValueDirectives(node: EnumValueDefinitionNode): EnumValueDefinitionNode {
-    return {
-        ...node,
-        directives: []
     }
 }

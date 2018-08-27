@@ -1,5 +1,5 @@
 import { InputObjectTypeDefinitionNode } from 'graphql'
-import { makeArg, makeNonNullType, makeNamedType } from 'graphql-transformer-common';
+import { makeInputValueDefinition, makeNonNullType, makeNamedType } from 'graphql-transformer-common';
 
 export function updateCreateInputWithConnectionField(
     input: InputObjectTypeDefinitionNode,
@@ -8,7 +8,7 @@ export function updateCreateInputWithConnectionField(
 ): InputObjectTypeDefinitionNode {
     const updatedFields = [
         ...input.fields,
-        makeArg(connectionFieldName, nonNull ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'))
+        makeInputValueDefinition(connectionFieldName, nonNull ? makeNonNullType(makeNamedType('ID')) : makeNamedType('ID'))
     ]
     return {
         ...input,
@@ -22,7 +22,7 @@ export function updateUpdateInputWithConnectionField(
 ): InputObjectTypeDefinitionNode {
     const updatedFields = [
         ...input.fields,
-        makeArg(connectionFieldName, makeNamedType('ID'))
+        makeInputValueDefinition(connectionFieldName, makeNamedType('ID'))
     ]
     return {
         ...input,

@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 
@@ -184,7 +184,13 @@ async function invoke(context, category, service, resourceName) {
       },
     },
   });
-  process.chdir(`${__dirname}/../../`); // grunt checks for node_mnodules in this dir
+  // For prod builds since dependencies are hoisted
+  if (!fs.existsSync(`${__dirname}/../../node_modules/grunt-aws-lambda`)) {
+    process.chdir(`${__dirname}/../../../../`); // grunt checks for node_mnodules in this dir
+  } else {
+    // For dev builds
+    process.chdir(`${__dirname}/../../`); // grunt checks for node_mnodules in this dir
+  }
 
   grunt.loadNpmTasks('grunt-aws-lambda');
 

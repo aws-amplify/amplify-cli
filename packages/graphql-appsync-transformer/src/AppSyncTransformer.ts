@@ -32,13 +32,16 @@ export class AppSyncTransformer extends Transformer {
     public before = (ctx: TransformerContext): void => {
         const queryType = blankObject('Query')
         const mutationType = blankObject('Mutation')
+        const subscriptionType = blankObject('Subscription')
         ctx.addObject(mutationType)
         ctx.addObject(queryType)
+        ctx.addObject(subscriptionType)
         const schema = makeSchema([
             makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation')
+            makeOperationType('mutation', 'Mutation'),
+            makeOperationType('subscription', 'Subscription')
         ])
-        ctx.addSchema(schema)
+        ctx.putSchema(schema)
 
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
@@ -73,20 +76,49 @@ export class AppSyncTransformer extends Transformer {
                     }
                     break;
                 default:
-                    /* pass any others */
+                /* pass any others */
             }
         }
     }
 
     private buildSchema(ctx: TransformerContext): string {
+        const mutationNode: any = ctx.nodeMap.Mutation
+        const queryNode: any = ctx.nodeMap.Query
+        const subscriptionNode: any = ctx.nodeMap.Subscription
+        let includeMutation = true
+        let includeQuery = true
+        let includeSubscription = true
+        if (!mutationNode || mutationNode.fields.length === 0) {
+            delete ctx.nodeMap.Mutation
+            includeMutation = false
+        }
+        if (!queryNode || queryNode.fields.length === 0) {
+            delete ctx.nodeMap.Query
+            includeQuery = false
+        }
+        if (!subscriptionNode || subscriptionNode.fields.length === 0) {
+            delete ctx.nodeMap.Subscription
+            includeSubscription = false
+        }
+        const ops = []
+        if (includeQuery) {
+            ops.push(makeOperationType('query', 'Query'))
+        }
+        if (includeMutation) {
+            ops.push(makeOperationType('mutation', 'Mutation'))
+        }
+        if (includeSubscription) {
+            ops.push(makeOperationType('subscription', 'Subscription'))
+        }
+        const schema = makeSchema(ops)
+        ctx.putSchema(schema)
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
-        })
+        }, ['aws_subscribe'])
         const SDL = print(astSansDirectives)
         return SDL;
     }
-
 
     private printWithoutFilePath(ctx: TransformerContext): void {
         const SDL = this.buildSchema(ctx)
@@ -98,6 +130,13 @@ export class AppSyncTransformer extends Transformer {
 
         if (!fs.existsSync(this.outputPath)) {
             fs.mkdirSync(this.outputPath);
+        }
+
+        const resolverFilePath = normalize(this.outputPath + '/resolvers')
+        if (fs.existsSync(resolverFilePath)) {
+            const files = fs.readdirSync(resolverFilePath)
+            files.forEach(file => fs.unlinkSync(resolverFilePath + '/' + file))
+            fs.rmdirSync(resolverFilePath)
         }
 
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
@@ -168,7 +207,6 @@ export class AppSyncTransformer extends Transformer {
             fs.mkdirSync(functionPath);
         }
         const sourcePath = normalize(ctx.metadata.get('ElasticSearchPathToStreamingLambda'))
-        // console.log('ElasticSearchPathToStreamingLambda Source Path: ' + sourcePath)
         const destPath = normalize(`${this.outputPath}/functions/python_streaming_function.zip`)
 
         const lambdaCode = fs.readFileSync(sourcePath)

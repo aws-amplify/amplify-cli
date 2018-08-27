@@ -4,10 +4,9 @@
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest",
+    "e2e": "jest",
     "build": "tsc",
-    "clean": "rm -rf ./lib",
-    "lint": "tslint -p ./tslint.json"
+    "clean": "rm -rf ./lib"
   },
   "keywords": [
     "graphql",

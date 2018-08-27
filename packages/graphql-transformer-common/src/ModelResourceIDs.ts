@@ -33,4 +33,13 @@ export class ModelResourceIDs {
     static ModelCreateInputObjectName(typeName: string): string {
         return graphqlName(`Create` + toUpper(typeName) + 'Input')
     }
+    static ModelOnCreateSubscriptionName(typeName: string): string {
+        return graphqlName(`onCreate` + toUpper(typeName))
+    }
+    static ModelOnUpdateSubscriptionName(typeName: string): string {
+        return graphqlName(`onUpdate` + toUpper(typeName))
+    }
+    static ModelOnDeleteSubscriptionName(typeName: string): string {
+        return graphqlName(`onDelete` + toUpper(typeName))
+    }
 }

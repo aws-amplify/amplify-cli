@@ -158,7 +158,7 @@ query GetBlog($blogId:ID!) {
 
 # List all blogs, their posts, and their posts comments.
 query ListBlogs {
-  listBlog { # Try adding: listBlog(filter: { name: { eq: "My New Blog!" } })
+  listBlogs { # Try adding: listBlog(filter: { name: { eq: "My New Blog!" } })
     items {
       id
       name

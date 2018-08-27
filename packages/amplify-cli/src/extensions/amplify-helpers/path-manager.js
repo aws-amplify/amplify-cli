@@ -54,7 +54,7 @@ function getAmplifyDirPath(projectPath) {
       amplifyCLIConstants.AmplifyCLIDirName,
     ));
   }
-  throw new Error('you are not working inside a valid amplify project');
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
 }
 
 // ///////////////////level 1
@@ -89,7 +89,7 @@ function getAmplifyRcFilePath(projectPath) {
       '.amplifyrc',
     ));
   }
-  throw new Error('you are not working inside a valid amplify project');
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
 }
 
 

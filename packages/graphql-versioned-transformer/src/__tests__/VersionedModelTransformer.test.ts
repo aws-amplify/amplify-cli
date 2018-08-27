@@ -1,17 +1,17 @@
 import {
-    ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, TypeDefinitionNode, InputObjectTypeDefinitionNode
+    ObjectTypeDefinitionNode, parse, DocumentNode,
+    Kind, InputObjectTypeDefinitionNode
 } from 'graphql'
-import GraphQLTransform, { TransformerContractError } from 'graphql-transformer-core'
-import { ResourceConstants, ModelResourceIDs, ResolverResourceIDs } from 'graphql-transformer-common'
+import GraphQLTransform from 'graphql-transformer-core'
+import { ResourceConstants } from 'graphql-transformer-common'
 import { VersionedModelTransformer } from '../VersionedModelTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 
-const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode => 
-        schemaDoc.definitions.find(d => d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false) as InputObjectTypeDefinitionNode
+const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode =>
+    schemaDoc.definitions.find(d => d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false) as InputObjectTypeDefinitionNode
 const getInputField = (input: InputObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field)
-const getType = (schemaDoc: DocumentNode) => (name: string): ObjectTypeDefinitionNode => 
+const getType = (schemaDoc: DocumentNode) => (name: string): ObjectTypeDefinitionNode =>
     schemaDoc.definitions.find(d => d.kind !== Kind.SCHEMA_DEFINITION ? d.name.value === name : false) as ObjectTypeDefinitionNode
 const getField = (input: ObjectTypeDefinitionNode, field: string) => input.fields.find(f => f.name.value === field)
 
@@ -86,7 +86,8 @@ test('Test VersionedModelTransformer version field replaced by non-null if provi
         ]
     })
     const out = transformer.transform(validSchema);
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    const sdl = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition
+    const schemaDoc = parse(sdl)
     const versionField = getField(getType(schemaDoc)('Post'), 'version')
     expect(versionField).toBeDefined()
     expect(versionField.type.kind).toEqual(Kind.NON_NULL_TYPE)
