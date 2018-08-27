@@ -304,7 +304,7 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.addEnum(modelSortDirection)
             }
 
-            this.generateFilterInputs(ctx, parent)
+            this.generateFilterInputs(ctx, returnType)
         } else {
             throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`)
         }
