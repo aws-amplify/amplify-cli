@@ -80,7 +80,7 @@ function getEncryptedPrivateKey(pemFileContent) {
   const beginMark = '-----BEGIN ENCRYPTED PRIVATE KEY-----';
   const beginIndex = pemFileContent.indexOf(beginMark) + beginMark.length;
   if (beginIndex > -1) {
-    const endMark = 'END ENCRYPTED PRIVATE KEY';
+    const endMark = '-----END ENCRYPTED PRIVATE KEY-----';
     const endIndex = pemFileContent.indexOf(endMark, beginIndex);
     if (endIndex > -1) {
       privateKey = pemFileContent.slice(beginIndex, endIndex).replace(/\s/g, '');
