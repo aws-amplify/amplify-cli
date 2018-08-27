@@ -258,6 +258,38 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     }
 });
 
+test('Test ModelConnectionTransformer many to many should fail due to missing other "name"', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        things: [Thing!] @connection
+    }
+
+    type Thing @model(queries: null, mutations: null) {
+        id: ID!
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'things')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    const postType = getObjectType(schemaDoc, 'Post')
+    const postConnection = getObjectType(schemaDoc, 'ModelPostConnection')
+    const thingConnection = getObjectType(schemaDoc, 'ModelThingConnection')
+    const thingFilterInput = getInputType(schemaDoc, 'ModelThingFilterInput')
+    expect(thingFilterInput).toBeDefined()
+    expect(postType).toBeDefined()
+    expect(thingConnection).toBeDefined()
+    expect(postConnection).toBeDefined()
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
