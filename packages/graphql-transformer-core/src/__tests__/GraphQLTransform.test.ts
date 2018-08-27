@@ -57,7 +57,7 @@ test('Test graphql transformer validation. Unknown directive.', () => {
     try {
         transformer.transform(invalidSchema);
     } catch (e) {
-        expect(e.name).toEqual('TransformSchemaError')
+        expect(e.name).toEqual('SchemaValidationError')
     }
 });
 
@@ -91,7 +91,7 @@ test('Test graphql transformer validation on bad shapes. @ping directive.', () =
         expect(true).toEqual(false)
     } catch (e) {
         console.log(e.message)
-        expect(e.name).toEqual('TransformSchemaError')
+        expect(e.name).toEqual('SchemaValidationError')
     }
 });
 
