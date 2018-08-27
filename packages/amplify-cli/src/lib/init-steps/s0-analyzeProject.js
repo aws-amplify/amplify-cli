@@ -14,7 +14,7 @@ async function run(context) {
         type: 'input',
         name: 'projectName',
         message: 'Enter a name for the project',
-        validate: input => new Promise((resolvePromise, reject) => ((input.length > 20 || input.length < 3) ? reject(new Error('Project name should be between 3 and 20 characters')) : resolvePromise(true))),
+        validate: input => new Promise((resolvePromise, reject) => ((input.length > 20 || input.length < 3 || /[^a-zA-Z0-9]/g.test(input)) ? reject(new Error('Project name should be between 3 and 20 characters and alphanumeric')) : resolvePromise(true))),
       };
 
       ({ projectName } = await inquirer.prompt(projectNameQuestion));

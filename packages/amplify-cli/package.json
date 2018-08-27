@@ -10,10 +10,7 @@
   },
   "scripts": {
     "lint": "eslint src",
-    "lint-fix": "eslint . --fix",
-    "test": "ava",
-    "watch": "ava --watch",
-    "coverage": "nyc ava"
+    "lint-fix": "eslint . --fix"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

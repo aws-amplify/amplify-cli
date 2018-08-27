@@ -38,7 +38,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
-                Default: 'DynamoDBToElasticSearchFunctionIAMRole'
+                Default: 'SearchableLambdaIAMRole'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchDebugStreamingLambda]: new NumberParameter({
                 Description: 'Enable debug logs for the Dynamo -> ES streaming lambda.',
@@ -97,12 +97,12 @@ export class ResourceFactory {
         }
     }
 
-/**
-     * Given the name of a data source and optional logical id return a CF
-     * spec for a data source pointing to the elasticsearch domain.
-     * @param name The name for the data source. If a logicalId is not provided the name is used.
-     * @param logicalId The logicalId of the domain if it is different than the name of the data source.
-     */
+    /**
+         * Given the name of a data source and optional logical id return a CF
+         * spec for a data source pointing to the elasticsearch domain.
+         * @param name The name for the data source. If a logicalId is not provided the name is used.
+         * @param logicalId The logicalId of the domain if it is different than the name of the data source.
+         */
     public makeElasticSearchDataSource() {
         const logicalName = ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
         return new AppSync.DataSource({

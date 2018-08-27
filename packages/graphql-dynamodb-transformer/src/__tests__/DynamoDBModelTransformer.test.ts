@@ -1,6 +1,6 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, InputObjectTypeDefinitionNode
+    DefinitionNode, Kind, InputObjectTypeDefinitionNode, ListValueNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
@@ -51,10 +51,16 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     expect(queryType).toBeDefined()
     expectFields(queryType, ['customGetPost'])
     expectFields(queryType, ['customListPost'])
+    const subscriptionType = getObjectType(parsed, 'Subscription')
+    expect(subscriptionType).toBeDefined()
+    expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost'])
+    const subField = subscriptionType.fields.find(f => f.name.value === 'onCreatePost')
+    expect(subField.directives.length).toEqual(1)
+    expect(subField.directives[0].name.value).toEqual('aws_subscribe')
 });
 
 test('Test DynamoDBModelTransformer with mutation overrides', () => {
-    const validSchema = `type Post @model(mutations: { create: "customCreatePost", update: "customUpdatePost", delete: "customDeletePost" }) { 
+    const validSchema = `type Post @model(mutations: { create: "customCreatePost", update: "customUpdatePost", delete: "customDeletePost" }) {
         id: ID!
         title: String!
         createdAt: String
@@ -80,7 +86,7 @@ test('Test DynamoDBModelTransformer with mutation overrides', () => {
 });
 
 test('Test DynamoDBModelTransformer with only create mutations', () => {
-    const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) { 
+    const validSchema = `type Post @model(mutations: { create: "customCreatePost" }) {
         id: ID!
         title: String!
         createdAt: String
@@ -199,6 +205,137 @@ test('Test DynamoDBModelTransformer with filter', () => {
     expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
 });
+
+test('Test DynamoDBModelTransformer with mutations set to null', () => {
+    const validSchema = `type Post @model(mutations: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with queries set to null', () => {
+    const validSchema = `type Post @model(queries: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).toBeDefined()
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with subscriptions set to null', () => {
+    const validSchema = `type Post @model(subscriptions: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).toBeDefined()
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).toBeDefined()
+    const subscriptionType = getObjectType(parsed, 'Subscription')
+    expect(subscriptionType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with queries and mutations set to null', () => {
+    const validSchema = `type Post @model(queries: null, mutations: null, subscriptions: null) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const mutationType = getObjectType(parsed, 'Mutation')
+    expect(mutationType).not.toBeDefined()
+    const queryType = getObjectType(parsed, 'Query')
+    expect(queryType).not.toBeDefined()
+    const subscriptionType = getObjectType(parsed, 'Subscription')
+    expect(subscriptionType).not.toBeDefined()
+})
+test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
+    const validSchema = `type Post @model(subscriptions: {
+            onCreate: ["onFeedUpdated", "onCreatePost"],
+            onUpdate: ["onFeedUpdated"],
+            onDelete: ["onFeedUpdated"]
+        }) {
+          id: ID!
+          title: String!
+          createdAt: String
+          updatedAt: String
+      }
+      `
+    const transformer = new GraphQLTransform({
+        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const subscriptionType = getObjectType(parsed, 'Subscription')
+    expect(subscriptionType).toBeDefined()
+    expectFields(subscriptionType, ['onFeedUpdated', 'onCreatePost'])
+    const subField = subscriptionType.fields.find(f => f.name.value === 'onFeedUpdated')
+    expect(subField.directives.length).toEqual(1)
+    expect(subField.directives[0].name.value).toEqual('aws_subscribe')
+    const mutationsList = subField.directives[0].arguments.find(a => a.name.value === 'mutations').value as ListValueNode
+    console.log(mutationsList.values)
+    const mutList = mutationsList.values.map((v: any) => v.value)
+    expect(mutList.length).toEqual(3)
+    expect(mutList).toContain('createPost')
+    expect(mutList).toContain('updatePost')
+    expect(mutList).toContain('deletePost')
+})
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {

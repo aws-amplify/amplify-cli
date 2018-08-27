@@ -63,12 +63,12 @@ describe('Add walk-through', () => {
     })
   })
 
-  it('should show only ask schema include location for android projects', async () => {
+  it('should ask schema include location only for android projects', async () => {
     getFrontEndHandler.mockReturnValue('android')
     const results = await add(mockContext, mockConfigs)
     expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
     expect(askCodegenTargetLanguage).not.toHaveBeenCalled()
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/**/*.graphql'])
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/graphql/**/*.graphql'])
     expect(askGeneratedFileName).not.toHaveBeenCalled()
     expect(results).toEqual({
       api: mockAvailableApis[1],
