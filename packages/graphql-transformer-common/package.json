@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "clean": "rm -rf ./lib",
-    "lint": "tslint -p ./tslint.json"
+    "clean": "rm -rf ./lib"
   },
   "keywords": [
     "graphql",
