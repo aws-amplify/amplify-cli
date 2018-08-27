@@ -134,11 +134,9 @@ export class AppSyncTransformer extends Transformer {
 
         const resolverFilePath = normalize(this.outputPath + '/resolvers')
         if (fs.existsSync(resolverFilePath)) {
-            try {
-                const files = fs.readdirSync(resolverFilePath)
-                files.forEach(file => fs.unlinkSync(resolverFilePath + '/' + files))
-                fs.rmdirSync(resolverFilePath)
-            } catch (e) { return }
+            const files = fs.readdirSync(resolverFilePath)
+            files.forEach(file => fs.unlinkSync(resolverFilePath + '/' + file))
+            fs.rmdirSync(resolverFilePath)
         }
 
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
@@ -209,7 +207,6 @@ export class AppSyncTransformer extends Transformer {
             fs.mkdirSync(functionPath);
         }
         const sourcePath = normalize(ctx.metadata.get('ElasticSearchPathToStreamingLambda'))
-        // console.log('ElasticSearchPathToStreamingLambda Source Path: ' + sourcePath)
         const destPath = normalize(`${this.outputPath}/functions/python_streaming_function.zip`)
 
         const lambdaCode = fs.readFileSync(sourcePath)
