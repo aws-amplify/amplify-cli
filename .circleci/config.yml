@@ -11,18 +11,14 @@
             TERM: xterm
   jobs:
     build:
-      <<: *defaults
+      working_directory: ~/app
+      docker:
+        - image: circleci/node:10-jessie-browsers
+        - image: cypress/base:10
+          environment:
+              TERM: xterm
       steps:
         - checkout
-        - run: npm run production-build
-        - save_cache:
-            key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            paths:
-              - ~/.cache
-        - save_cache:
-            key: amplify-ssh-deps-{{ .Branch }}
-            paths:
-              - ~/.ssh
         - persist_to_workspace:
             root: .
             paths: .
@@ -31,7 +27,7 @@
       docker:
         - image: cypress/base:10
           environment:
-              TERM: dumb
+            TERM: dumb
         steps:
           - attach_workspace:
               at: ./ 
