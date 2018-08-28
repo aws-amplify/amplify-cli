@@ -54,7 +54,9 @@ function getResourceOutputs() {
     });
   });
 
-  outputsForFrontend.metadata = outputsByProvider.awscloudformation.metadata;
+  if(outputsByProvider.awscloudformation){
+    outputsForFrontend.metadata = outputsByProvider.awscloudformation.metadata;
+  }
 
   return { outputsByProvider, outputsByCategory, outputsForFrontend };
 }
