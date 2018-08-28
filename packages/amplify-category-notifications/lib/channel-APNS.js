@@ -59,14 +59,14 @@ async function enable(context, successMessage) {
 
   APNSChannelRequest.DefaultAuthenticationMethod = answers.DefaultAuthenticationMethod;
 
-  try{
+  try {
     if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
       keyConfig = await configureKey.run();
     } else {
       certificateConfig = await configureCertificate.run();
     }
-  }catch(err){
-    context.print.error(err.message); 
+  } catch (err) {
+    context.print.error(err.message);
     process.exit(1);
   }
 

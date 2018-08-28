@@ -8,20 +8,20 @@ function run(info) {
   const pemFileContent = getPemFileContent(filePath, password);
   const Certificate = getCertificate(pemFileContent);
   let PrivateKey = getPrivateKey(pemFileContent);
-  if(!PrivateKey){
+  if (!PrivateKey) {
     PrivateKey = getRSAPrivateKey(pemFileContent);
   }
-  if(!PrivateKey){
+  if (!PrivateKey) {
     PrivateKey = getEncryptedPrivateKey(pemFileContent);
   }
 
-  if(!Certificate){
-    const errorMessage = 'Openssl can not extract the Certificate from the p12 file'; 
-    throw new Error(errorMessage); 
+  if (!Certificate) {
+    const errorMessage = 'Openssl can not extract the Certificate from the p12 file';
+    throw new Error(errorMessage);
   }
-  if(!PrivateKey){
-    const errorMessage = 'Openssl can not extract the Private Key from the p12 file'; 
-    throw new Error(errorMessage); 
+  if (!PrivateKey) {
+    const errorMessage = 'Openssl can not extract the Private Key from the p12 file';
+    throw new Error(errorMessage);
   }
 
   return {
