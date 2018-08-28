@@ -73,7 +73,7 @@ function copyFilesToSrc(context, apiName, framework) {
     case 'android': {
       const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
 
-      const target = `${context.amplify.getProjectConfig().projectPath}/src/main/java`;
+      const target = `${context.amplify.getProjectConfig().projectPath}/app/src/main/java`;
 
       fs.ensureDirSync(target);
 

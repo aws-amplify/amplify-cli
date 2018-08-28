@@ -8,6 +8,10 @@ function getResourceOutputs() {
   // Build the provider object
   const outputsByProvider = {};
   const outputsByCategory = {};
+  const outputsForFrontend = {
+    metadata: {},
+    serviceResourceMapping: {},
+  };
 
   Object.keys(amplifyMeta.providers).forEach((provider) => {
     outputsByProvider[provider] = {};
@@ -40,12 +44,21 @@ function getResourceOutputs() {
           resourceMeta.output.service = resourceMeta.service;
         }
         outputsByCategory[category][resourceName] = resourceMeta.output;
+
+        // for frontend configuration file generation
+        if (!outputsForFrontend.serviceResourceMapping[resourceMeta.service]) {
+          outputsForFrontend.serviceResourceMapping[resourceMeta.service] = [];
+        }
+        outputsForFrontend.serviceResourceMapping[resourceMeta.service].push(resourceMeta);
       }
     });
   });
 
+  if (outputsByProvider.awscloudformation) {
+    outputsForFrontend.metadata = outputsByProvider.awscloudformation.metadata;
+  }
 
-  return { outputsByProvider, outputsByCategory };
+  return { outputsByProvider, outputsByCategory, outputsForFrontend };
 }
 
 module.exports = {

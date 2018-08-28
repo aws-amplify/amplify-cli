@@ -8,6 +8,9 @@
   <a href="https://www.npmjs.com/package/@aws-amplify/cli">
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
   </a>
+  <a href="https://circleci.com/gh/aws-amplify/amplify-cli">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-cli/master.svg" alt="build:started">
+  </a>
 </p>
 
 
@@ -22,6 +25,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 * [Contributing](#contributing)
 * [Start building your app](https://aws-amplify.github.io/media/get_started)
 
+> If you're using Windows, the CLI currently supports [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ## Install the CLI
 

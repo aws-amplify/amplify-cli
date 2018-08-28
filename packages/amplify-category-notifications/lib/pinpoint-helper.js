@@ -21,6 +21,7 @@ async function checkPinpointApp(context) {
       output: {
         Name: pinpointApp.Name,
         Id: pinpointApp.Id,
+        Region: 'us-east-1',
       },
     };
   }
