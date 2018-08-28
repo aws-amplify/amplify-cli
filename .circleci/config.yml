@@ -31,7 +31,7 @@
       docker:
         - image: cypress/base:10
           environment:
-            TERM: dumb
+              TERM: dumb
         steps:
           - attach_workspace:
               at: ./ 
