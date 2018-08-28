@@ -5,9 +5,10 @@
   defaults: &defaults
     working_directory: ~/app
     docker:
-        - image: circleci/node:10.8
-          environment:
-              TERM: xterm
+      - image: circleci/node:10.8
+        environment:
+            ## this enables colors in the output
+            TERM: xterm
   jobs:
     build:
       <<: *defaults
