@@ -8,15 +8,21 @@ const loadConfig = require('./codegen-config')
 const addWalkThrough = require('./walkthrough/add')
 const configureProjectWalkThrough = require('./walkthrough/configure')
 const constants = require('./constants')
-const { downloadIntrospectionSchema, getFrontEndHandler } = require('./utils')
+const { downloadIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('./utils')
 
 async function generate(context, forceDownloadSchema) {
   const config = loadConfig(context)
-  if (!config.getProjects().length) {
+  const availableAppSyncApis = getAppSyncAPIDetails(context)
+  const availableApiIds = availableAppSyncApis.map(api => api.id)
+  const configuredProjects = config.getProjects()
+  const projects = configuredProjects
+    .filter(proj => availableApiIds.includes(proj.amplifyExtension.graphQLApiId))
+
+  if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED)
   }
   const frontend = getFrontEndHandler(context)
-  config.getProjects().forEach(async (cfg) => {
+  projects.forEach(async (cfg) => {
     const excludes = cfg.excludes.map(pattern => `!${pattern}`)
     const includeFiles = cfg.includes
     const queries = glob.sync([...includeFiles, ...excludes])

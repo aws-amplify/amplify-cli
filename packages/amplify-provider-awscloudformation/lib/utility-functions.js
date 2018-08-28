@@ -111,7 +111,7 @@ module.exports = {
           .promise();
       })
       .then(result => result.schema.toString() || null)
-      .catch((e) => {
-        context.print.debug(e);
+      .catch(() => {
+        throw new Error('Failed to download introspection schema');
       }),
 };
