@@ -15,13 +15,13 @@
     "chalk-pipe": "^1.2.0",
     "eslint": "^4.19.1",
     "inquirer": "^6.0.0",
-    "jest": "^23.5.0",
     "lodash": "^4.17.10",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+    "eslint-plugin-import": "^2.12.0",
+    "jest": "^23.5.0"
   },
   "jest": {
     "collectCoverage": true,
