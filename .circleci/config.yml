@@ -66,17 +66,9 @@
               yarn start
             background: true
         - run:
-            name: "Run cypress tests for aws-amplify-react"
+            name: "Run cypress tests from cli package"
             command: |
-              git clone https://github.com/aws-amplify/amplify-js.git
-              cd amplify-js
-              pwd
-              ls -la
-              yarn config set workspaces-experimental true
-              yarn
-              yarn run bootstrap
-              yarn run build
-              yarn cypress --scope aws-amplify-react
+              yarn cypress run 
         - store_artifacts:
             path: cypress/videos
         - store_artifacts:
