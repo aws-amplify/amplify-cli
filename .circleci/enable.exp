@@ -1,5 +1,5 @@
 #!/usr/bin/expect
-spawn sh /Users/nidsharm/Amplify/cli/aws-amplify-staging/.circleci/com1.sh
+spawn ./.circleci/com1.sh
 expect "Choose your default editor:"
 send -- "\r"
 expect "Choose the type of app that you're building"
