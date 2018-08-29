@@ -15,7 +15,8 @@ jobs:
     steps:
       - checkout
       - run: yarn
-      - run: npm run production-build
+      - run: yarn config set workspaces-experimental true
+      - run: yarn run production-build
       - save_cache:
           key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
