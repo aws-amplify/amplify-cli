@@ -12,12 +12,22 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+    "test": "jest --coverage"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+    "eslint-plugin-import": "^2.12.0",
+    "codecov": "^3.0.0",
+    "jest": "^22.4.3",
+    "mockirer": "^2.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
