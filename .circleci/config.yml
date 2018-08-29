@@ -51,7 +51,7 @@ jobs:
         - run: sudo apt-get install -y zip
         - checkout
         - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-        - run: sudo npm run setup-dev
+        - run: yarn run production-build
         - run: amplify
         - run: echo "hello"
         - run: 
