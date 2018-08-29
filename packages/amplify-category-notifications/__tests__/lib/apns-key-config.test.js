@@ -4,7 +4,7 @@ const p8decoder = require('../../lib/p8decoder');
 
 const apnsKeyConfig = require('../../lib/apns-key-config'); 
 
-describe('apns-cert-config', () => {
+describe('apns-key-config', () => {
     const mockBundleId = 'mockBundleId';
     const mockTeamId = 'mockTeamId';
     const mockTokenKeyId = 'mockTokenKeyId';

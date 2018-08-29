@@ -10,14 +10,20 @@ const channelAPNS = require('../../lib/channel-APNS');
 describe('channel-APNS', () => {
     const mockServiceOutput = {}; 
     const mockChannelOutput = { Enabled: true};
+    const mockPinpointResponseErr = {}; 
+    const mockPinpointResponseData = {
+        APNSChannelResponse: {}
+    }; 
+    const mockKeyConfig = {}; 
+    const mockCertificateConfig = {}; 
     const mockPinpointClient = {
-        updateApnsChannel: jest.fn((params, callback)=>{
-            callback(null, {}); 
+        updateApnsChannel: jest.fn((_, callback)=>{
+            callback(null, mockPinpointResponseData); 
         })
     }
     mockServiceOutput[channelName] = mockChannelOutput;
     
-    const mockContext = {
+    let mockContext = {
         exeInfo: {
             serviceMeta: {
                 output: mockServiceOutput
@@ -31,35 +37,87 @@ describe('channel-APNS', () => {
     }; 
 
     beforeAll(() => {
-        configureKey.run = jest.fn();
-        configureCertificate.run = jest.fn(); 
+        configureKey.run = jest.fn(()=>{
+            return mockKeyConfig; 
+        });
+        configureCertificate.run = jest.fn(()=>{
+            return mockCertificateConfig; 
+        }); 
     }); 
 
-    beforeEach(() => {
+    beforeEach(() => { 
     });
 
-    test('configure enabled to disable', async () => {
+    test('configure', () => {
+        mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
+            callback(null, mockPinpointResponseData); 
+        });
+
         mockChannelOutput.Enabled = true; 
         mockirer(inquirer, {disableChannel: true}); 
+        channelAPNS.configure(mockContext).then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
 
-        await channelAPNS.configure(mockContext); 
-
-        expect(mockPinpointClient.updateApnsChannel).toBeCalled();
-    });
-    test('configure enabled to configure', async () => {
         mockChannelOutput.Enabled = true; 
         mockirer(inquirer, {disableChannel: false}); 
+        channelAPNS.configure(mockContext).then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
 
-        await channelAPNS.configure(mockContext); 
-
-        expect(mockPinpointClient.updateApnsChannel).toBeCalled();
-    });
-    test('configure disabled to enable', async () => {
         mockChannelOutput.Enabled = false; 
         mockirer(inquirer, {enableChannel: true}); 
+        channelAPNS.configure(mockContext).then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
+    });
 
-        await channelAPNS.configure(mockContext); 
+    test('enable', async () => {
+        mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
+            callback(null, mockPinpointResponseData); 
+        });
 
-        expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        mockirer(inquirer, {DefaultAuthenticationMethod: 'Certificate'}); 
+        channelAPNS.enable(mockContext, 'successMessage').then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
+
+        mockirer(inquirer, {DefaultAuthenticationMethod: 'Key'}); 
+        channelAPNS.enable(mockContext, 'successMessage').then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
+    });
+
+    test('enable unsccessful', async () => {
+        mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
+            callback(mockPinpointResponseErr, mockPinpointResponseData); 
+        });
+
+        mockirer(inquirer, {DefaultAuthenticationMethod: 'Certificate'}); 
+        channelAPNS.enable(mockContext, 'successMessage').catch((err)=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        })
+
+        mockirer(inquirer, {DefaultAuthenticationMethod: 'Key'}); 
+        channelAPNS.enable(mockContext, 'successMessage').catch((err)=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        })
+    });
+
+
+    test('disable', () => {
+        mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
+            callback(null, mockPinpointResponseData); 
+        });
+        channelAPNS.disable(mockContext).then(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        });
+
+        mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
+            callback(mockPinpointResponseErr, mockPinpointResponseData); 
+        });
+        channelAPNS.disable(mockContext).catch(()=>{
+            expect(mockPinpointClient.updateApnsChannel).toBeCalled();
+        })
     });
 });
