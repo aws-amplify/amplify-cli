@@ -21,7 +21,7 @@ send -- "n\r"
 expect "accessKeyId:"
 send -- "$env(ACCESS_KEY_ID)\r"
 expect "secretAccessKey:"
-send -- "$env(SECRET_ACCES_KEY)\r"
+send -- "$env(SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
 send -- "\r"
 set timeout 70
