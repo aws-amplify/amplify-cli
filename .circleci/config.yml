@@ -7,9 +7,8 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
-        environment:
-          TERM: xterm
-
+  parallelism: 8
+  
 jobs:
   build:
     <<: *defaults
@@ -41,6 +40,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
+      - restore_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
@@ -51,7 +52,7 @@ jobs:
           name: "Publish Amplify CLI"
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               yarn run publish:$CIRCLE_BRANCH
