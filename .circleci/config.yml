@@ -1,98 +1,82 @@
+version: 2
+machine:
+    environment:
+      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+      - image: circleci/node:8.9.1
+  parallelism: 8
+  
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: yarn
+      - run: yarn config set workspaces-experimental true
+      - run: yarn run production-build
+      - save_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.cache
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: .
+          paths: .
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm run test
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: "Update SSH configs"
+          command: |
+            mkdir ~/.ssh
+            echo $SSH_HOST_PUBLIC_KEY
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: "Publish Amplify CLI"
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              yarn run publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
+    
+workflows:
   version: 2
-  machine:
-      environment:
-        PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
-  defaults: &defaults
-    working_directory: ~/repo
-    docker:
-      - image: circleci/node:10-jessie-browsers 
-        environment:
-            ## this enables colors in the output
-            TERM: xterm
-    parallelism: 8
-  jobs:
-    build:
-      <<: *defaults
-      steps:
-        - checkout
-        - run: yarn
-        - run: yarn config set workspaces-experimental true
-        - run: yarn run production-build
-        - save_cache:
-            key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            paths:
-              - ~/.cache
-        -save_cache:
-            key: amplify-ssh-deps-{{ .Branch }}
-            paths: 
-              - ~/.ssh
-        - persist_to_workspace:
-            root: .
-            paths: .
-    test:
-      <<: *defaults
-      steps:
-        - attach_workspace:
-            at: ./
-        - restore_cache:
-            key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-        - run: npm run test
-    integration_test_auth:
-      working_directory: ~/repo
-      docker:
-        - image: cypress/base:10
-          environment:
-            TERM: dumb
-      steps:
-        - attach_workspace:
-            at: ./ 
-        - run: apt-get install -y sudo
-        - run: sudo apt-get install -y tcl
-        - run: sudo apt-get install -y expect
-        - run: sudo apt-get install -y zip
-        - checkout
-        - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-        - run: sudo npm run setup-dev
-        - run: amplify
-        - run: echo "hello"
-        - run: 
-            name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
-            command: |
-              echo $SSH_HOST_PUBLIC_KEY
-              echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-              cat ~/.ssh/known_hosts
-              git clone $AUTH_CLONE_URL
-              cd aws-amplify-cypress-auth
-              yarn
-        - run: cd .circleci/ && chmod +x com1.sh
-        - run: echo $TERM
-        - run: bash --version
-        - run: expect .circleci/enable.exp 
-        - run: cd aws-amplify-cypress-auth 
-        - run: yarn
-        - run: cd aws-amplify-cypress-auth/src && ls -la
-        - run: cat $(find . -type f -name 'aws-exports*')
-        - run:
-            name: "Start Auth test server in background"
-            command: |
-              cd aws-amplify-cypress-auth
-              pwd
-              yarn start
-            background: true
-        - run:
-            name: "Run cypress tests from cli package"
-            command: |
-              yarn cypress run 
-        - store_artifacts:
-            path: cypress/videos
-        - store_artifacts:
-            path: cypress/screenshots
-  workflows:
-    version: 2
-    build_test_deploy:
-      jobs:
-        - build
-        - test:
-            requires:
-              - build
-        - integration_test_auth
+  build_test_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only:
+                - release
+                - master
