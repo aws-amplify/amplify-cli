@@ -3,6 +3,7 @@ const { getWhen } = require('../../src/extensions/amplify-helpers/get-when-funct
 describe('get-when helper: ', () => {
   let input = {};
   let answers = {};
+  let previousValues = {};
   const mockProjectConfig = jest.fn();
   const amplify = {
     getProjectConfig: mockProjectConfig,
@@ -406,9 +407,14 @@ describe('get-when helper: ', () => {
         answer2: 'iamvalue2',
         answer3: ['index1', 'index2'],
       };
+      previousValues = {
+        answer1: 'iamvalue1',
+        answer2: 'iamoldervalue2',
+        answer3: ['index1', 'index2'],
+      };
     });
 
-    it('...should return true when a single preventEdit condition is "always")', () => {
+    it('...should return true when a single preventEdit condition is "always" and previous values are not present', () => {
       input.andConditions = [
         {
           preventEdit: 'always',
@@ -417,5 +423,97 @@ describe('get-when helper: ', () => {
       const asking = getWhen(input, answers, null, null)();
       expect(asking).toEqual(true);
     });
+
+    it('...should return true when a single preventEdit condition is "exists" and previous values are not present', () => {
+      input.andConditions = [
+        {
+          preventEdit: 'exists',
+          key: 'answer1',
+        },
+      ];
+      const asking = getWhen(input, answers, null, null)();
+      expect(asking).toEqual(true);
+    });
+
+    it('...should return true when a single preventEdit condition is "=" and previous values are not present', () => {
+      input.andConditions = [
+        {
+          preventEdit: '=',
+          key: 'answer1',
+          value: 'iamvalue1',
+        },
+      ];
+      const asking = getWhen(input, answers, null, null)();
+      expect(asking).toEqual(true);
+    });
+
+    it('...should return true when a single preventEdit condition is "exists", previous values are present, and previous values do not contain the specified attribute', () => {
+      input.andConditions = [
+        {
+          preventEdit: 'exists',
+          key: 'answer4',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(true);
+    });
+
+    it('...should return true when a single preventEdit condition is "=", previous values are present, and previous values do not contain the specified attribute', () => {
+      input.andConditions = [
+        {
+          preventEdit: '=',
+          key: 'answer4',
+          value: 'iamvalue4',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(true);
+    });
+
+    it('...should return true when a single preventEdit condition is "=", previous values are present, previous values contain the specified attribute, but the attribute\'s value does not match', () => {
+      input.andConditions = [
+        {
+          preventEdit: '=',
+          key: 'answer2',
+          value: 'iamnotoldervalue4',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(true);
+    });
+
+    it('...should return false when a single preventEdit condition is "always" and previous values are present', () => {
+      input.andConditions = [
+        {
+          preventEdit: 'always',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(false);
+    });
+
+    it('...should return false when a single preventEdit condition is "exists", previous values are present, and previous values contain the specified key', () => {
+      input.andConditions = [
+        {
+          preventEdit: 'exists',
+          key: 'answer1',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(false);
+    });
+
+    it('...should return true when a single preventEdit condition is "=", previous values are present, previous values contain the specified attribute, and the attribute\'s value matches', () => {
+      input.andConditions = [
+        {
+          preventEdit: '=',
+          key: 'answer2',
+          value: 'iamoldervalue2',
+        },
+      ];
+      const asking = getWhen(input, answers, previousValues, null)();
+      expect(asking).toEqual(false);
+    });
+
   });
 });
