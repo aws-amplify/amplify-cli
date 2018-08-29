@@ -41,8 +41,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - restore_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
