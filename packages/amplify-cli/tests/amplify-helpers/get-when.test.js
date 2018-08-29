@@ -514,6 +514,5 @@ describe('get-when helper: ', () => {
       const asking = getWhen(input, answers, previousValues, null)();
       expect(asking).toEqual(false);
     });
-
   });
 });
