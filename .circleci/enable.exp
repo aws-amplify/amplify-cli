@@ -1,5 +1,7 @@
 #!/usr/bin/expect
 spawn ./.circleci/com1.sh
+expect "Enter a name for the project"
+send -- "testauth\r"
 expect "Choose your default editor:"
 send -- "\r"
 expect "Choose the type of app that you're building"
