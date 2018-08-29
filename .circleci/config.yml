@@ -51,6 +51,8 @@ jobs:
         - run: sudo apt-get install -y zip
         - checkout
         - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
+        - run: yarn
+        - run: yarn config set workspaces-experimental true
         - run: yarn run production-build
         - run: amplify
         - run: echo "hello"
