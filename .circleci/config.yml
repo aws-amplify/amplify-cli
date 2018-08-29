@@ -16,6 +16,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: yarn
       - run: npm run production-build
       - save_cache:
           key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
