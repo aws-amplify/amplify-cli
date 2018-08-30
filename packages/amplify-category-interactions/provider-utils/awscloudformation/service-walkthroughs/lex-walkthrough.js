@@ -12,38 +12,49 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 }
 
 function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
-  const resourceName = resourceAlreadyExists(context);
-  if (!resourceName) {
-    context.print.error('No resources to update. Add a resource first');
+  // const resourceName = resourceAlreadyExists(context);
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
+
+  const lexResources = {};
+
+  Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+    if (amplifyMeta[category][resourceName].service === serviceName) {
+      lexResources[resourceName] = amplifyMeta[category][resourceName];
+    }
+  });
+
+  if (!amplifyMeta[category] || Object.keys(lexResources).length === 0) {
+    context.print.error('No resources to update. You need to add a resource.');
     process.exit(0);
-  } else {
-    return configure(context, defaultValuesFilename, serviceMetadata, resourceName);
+    return;
   }
+  const resources = Object.keys(lexResources);
+  const question = [{
+    name: 'resourceName',
+    message: 'Specify the resource that you would want to update',
+    type: 'list',
+    choices: resources,
+  }];
+
+  return inquirer.prompt(question)
+    .then(answer => configure(
+      context, defaultValuesFilename,
+      serviceMetadata, answer.resourceName,
+    ));
 }
 
 // Goes through Lex walkthrough
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify, print } = context;
-  let { inputs } = serviceMetadata;
+  let { inputs, samples } = serviceMetadata;
+
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  if (resourceName) {
-    const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    let parameters;
-    try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
-    } catch (e) {
-      parameters = {};
-    }
-    parameters.resourceName = resourceName;
-    Object.assign(defaultValues, parameters);
-  }
 
   print.info('');
   print.info('Welcome to the Amazon Lex chatbot wizard');
@@ -111,6 +122,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   let botName;
   let intentName;
   let answers;
+  let parameters;
 
   // Follows path based on start choice
 
@@ -138,9 +150,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       print.info('');
     }
 
+    let intents = samples[sampleName];
+
     answers = {
       "resourceName": resourceName,
-      "sampleName": sampleName,
+      "intents": intents,
+      "outputVoice": false,
       "botName": botName,
       "coppa": coppa
     }
@@ -149,22 +164,21 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Chooses to start with an existing chatbot
   else if (startChoice[inputs[1].key] === "Update an existing chatbot") {
     //console.log('update');
-
     // TODO: get list of chatbots from cloud/backend
-    const chatbotList = ['bot1','bot2','bot3'];
-    if (chatbotList) {
-      const botToUpdateQuestion = {
-        type: inputs[5].type,
-        name: inputs[5].key,
-        message: inputs[5].question,
-        choices: chatbotList
+    if (resourceName) {
+      //console.log(resourceName);
+      const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+      try {
+        parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      } catch (e) {
+        parameters = {};
       }
-      botName = await inquirer.prompt(botToUpdateQuestion);
-      botName = botName[inputs[3].key];
     }
     else {
       context.print.error("No chatbots to update");
     }
+    console.log(parameters);
 
     const addUpdateIntentQuestion = {
       type: inputs[6].type,
@@ -175,11 +189,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     let utterances = [];
     let intents = [];
     let slots;
-    let newSlotType = [];
+    let newSlotTypes = [];
     const intentChoice = await inquirer.prompt(addUpdateIntentQuestion);
     if (intentChoice[inputs[6].key] === "Choose an existing intent") {
       // TODO: get intents from cloud/backend
-      const intentList = ['intent1','intent2','intent3'];
+      const intentList = parameters.intents.map(x => x.intentName);
       const chooseIntent = {
         type: inputs[7].type,
         name: inputs[7].key,
@@ -197,7 +211,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       }
       let addUtteranceAnswer = await inquirer.prompt(addUtteranceQuestion);
       if (addUtteranceAnswer[inputs[8].key]) {
-        utterances.push(await addUtterance(context, intentName, botName, resourceName, serviceMetadata));
+        utterances = (await addUtterance(context, intentName, botName, resourceName, serviceMetadata));
       }
 
       const addSlotQuestion = {
@@ -208,15 +222,16 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       }
       let addSlotAnswer = await inquirer.prompt(addSlotQuestion);
 
-      let slotReturn;
+      let slotReturn = [];
       if (addSlotAnswer[inputs[9].key]) {
         slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata);
       }
+      //console.log(slotReturn);
       if (slotReturn.length > 1) {
         slots = slotReturn[0];
-        newSlotType.push(slotReturn[1]);
+        newSlotTypes = slotReturn[1];
         console.log(slots);
-        console.log(newSlotType);
+        console.log(newSlotTypes);
       }
       else { slots = slotReturn }
     }
@@ -241,12 +256,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     answers = {
       "resourceName": resourceName,
-      "botName": botName,
+      "botName": parameters.botName,
       "intentName": intentName,
       "utterances": utterances,
       "intents": intents,
       "slots": slots,
-      "newSlotType": newSlotType
+      "newSlotTypes": newSlotTypes
     }
   }
 
@@ -303,9 +318,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
 
     answers = {
-      "intents": intents,
       "resourceName": resourceName,
       "botName": botName,
+      "intents": intents,
       "outputVoice": outputVoice,
       "sessionTimeout": sessionTimeout,
       "coppa": coppa,
@@ -314,34 +329,65 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   else {
     context.print.error("Valid option not chosen");
   }
-  /*
-  const resource = defaultValues.resourceName;
-  const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-  delete defaultValues.resourceName;
-  fs.ensureDirSync(resourceDirPath);
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const jsonString = JSON.stringify(defaultValues, null, 4);
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-  const templateFilePath = path.join(resourceDirPath, templateFileName);
-  if (!fs.existsSync(templateFilePath)) {
-    fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
-  }
-  return resource;
-  */
   console.log(answers);
 
+  let resource;
   // Write answers to parameters.json file
-  Object.assign(defaultValues, answers);
-  const resource = defaultValues.resourceName;
-  const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-  delete defaultValues.resourceName;
-  fs.ensureDirSync(resourceDirPath);
+  if (parameters) {
+    if (answers.intentName) {
+      parameters.intents.forEach(function(intent) {
+        if (intent.intentName == answers.intentName) {
+          if (answers.utterances) {
+            intent.utterances = intent.utterances.concat(answers.utterances);
+          }
+          if (answers.slots) {
+            intent.slots = intent.slots.concat(answers.slots);
+          }
+          if (answers.newSlotTypes) {
+            if (intent.newSlotTypes) {
+              intent.newSlotTypes = intent.newSlotTypes.concat(answers.newSlotTypes);
+            }
+            else {
+              intent.newSlotTypes = answers.newSlotTypes;
+            }
+          }
+        }
+      })
+    }
+    else {
+      if (!answers.intents) {
+        context.print.error("Valid option not chosen");
+      }
+      else {
+        parameters.intents = parameters.intents.concat(answers.intents);
+      }
+    }
+    resource = parameters.resourceName;
+    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+    delete defaultValues.resourceName;
+    fs.ensureDirSync(resourceDirPath);
 
-  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const jsonString = JSON.stringify(answers, null, 4);
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-  return resourceName;
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    const jsonString = JSON.stringify(parameters, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  }
+  else {
+    Object.assign(defaultValues, answers);
+    resource = defaultValues.resourceName;
+    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+    delete defaultValues.resourceName;
+    fs.ensureDirSync(resourceDirPath);
+
+    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+    const jsonString = JSON.stringify(answers, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+    const templateFilePath = path.join(resourceDirPath, templateFileName);
+    if (!fs.existsSync(templateFilePath)) {
+      fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
+    }
+  }
+  return resource;
 }
 
 async function addIntent(context, botName, resourceName, serviceMetadata) {
@@ -367,13 +413,13 @@ async function addIntent(context, botName, resourceName, serviceMetadata) {
   print.info('');
 
   let slots;
-  let newSlotType = [];
+  let newSlotTypes = [];
   let slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata);
   if (slotReturn.length > 1) {
     slots = slotReturn[0];
-    newSlotType.push(slotReturn[1]);
+    newSlotTypes.push(slotReturn[1]);
     console.log(slots);
-    console.log(newSlotType);
+    console.log(newSlotTypes);
   }
   else { slots = slotReturn }
 
@@ -438,7 +484,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata) {
     "utterances": utterances,
     "intentName": intentName,
     "slots": slots,
-    "newSlotType": newSlotType,
+    "newSlotTypes": newSlotTypes
   }
 }
 
@@ -503,7 +549,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
   let addAnotherSlot = true;
   let slots = [];
   let newSlotTypeAdded = false;
-  let newSlotType = {}
+  let newSlotTypes = [];
   while (addAnotherSlot) {
     console.log("Adding slot...");
     console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
@@ -515,13 +561,13 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     slot.type = await getSlotType(context, serviceMetadata);
     //console.log(slot.type.slotTypeDescription);
     if (slot.type.slotTypeDescription) {
-      newSlotType = {
+      newSlotTypes.push({
         slotType: slot.type.slotType,
         slotTypeDescription: slot.type.slotTypeDescription,
         slotValues: slot.type.slotValues
-      }
+      });
       newSlotTypeAdded = true;
-      slot.type = newSlotType.slotType;
+      slot.type = newSlotTypes[newSlotTypes.length-1].slotType;
     }
 
     slot.prompt = await inquirer.prompt(slotPromptQuestion);
@@ -535,7 +581,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     addAnotherSlot = await inquirer.prompt(addAnotherSlotQuestion);
     addAnotherSlot = addAnotherSlot[inputs[25].key];
   }
-  if (newSlotTypeAdded) { return [slots, newSlotType]; }
+  if (newSlotTypeAdded) { return [slots, newSlotTypes]; }
   return slots;
 }
 
@@ -609,8 +655,6 @@ async function getSlotType(context, serviceMetadata) {
       "slotTypeDescription": slotTypeDescription,
       "slotValues": slotValues
     }
-
-    return slotType[inputs[27].key];
   }
   else {
     context.print.error("Valid option not chosen");
@@ -618,23 +662,7 @@ async function getSlotType(context, serviceMetadata) {
   }
 }
 
-function resourceAlreadyExists(context) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-  let resourceName;
-
-  if (amplifyMeta[category]) {
-    const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === serviceName) {
-        resourceName = resource;
-      }
-    });
-  }
-
-  return resourceName;
-}
-
+/* Code from function category to get lambda functions */
 async function askPaths(context) {
   /* TODO: add spinner when
   checking if the account had
@@ -754,7 +782,7 @@ function newLambdaFunction(context, path) {
     path,
     functionTemplate: 'serverless',
   };
-  return add(context, 'amplify-provider-awscloudformation', 'Lambda')
+  return add(context, 'awscloudformation', 'Lambda')
     .then((resourceName) => {
       context.print.success('Succesfully added Lambda function locally');
       return { lambdaFunction: resourceName };
@@ -762,7 +790,7 @@ function newLambdaFunction(context, path) {
 }
 
 async function askLambdaArn(context) {
-  const regions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getRegions');
+  const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
 
   const regionQuestion = {
     type: 'list',
@@ -773,7 +801,7 @@ async function askLambdaArn(context) {
 
   const regionAnswer = await inquirer.prompt([regionQuestion]);
 
-  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'amplify-provider-awscloudformation', 'getLambdaFunctions', { region: regionAnswer.region });
+  const lambdaFunctions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getLambdaFunctions', { region: regionAnswer.region });
 
   const lambdaOptions = lambdaFunctions.map(lambdaFunction => ({
     value: {

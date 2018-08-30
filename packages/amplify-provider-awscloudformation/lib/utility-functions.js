@@ -3,6 +3,7 @@ const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
+const Lex = require('../src/aws-utils/aws-lex');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 
 

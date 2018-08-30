@@ -93,7 +93,7 @@
                 ]
             }
         },
-        "PinpointFunction": {
+        "LexFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Code": {
@@ -110,7 +110,6 @@
                                 "        return;",
                                 "    }",
                                 "    const inputs = JSON.parse(event.ResourceProperties.inputs);",
-                                // create e.g. intent json objects from inputs using lex api
                                 "    let responseData = {};",
                                 "    const params = {",
                                 "        CreateApplicationRequest: {",
