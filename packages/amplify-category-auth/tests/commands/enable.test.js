@@ -1,4 +1,6 @@
 const add = require('../../commands/auth/enable');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+
 
 describe('auth enable: ', () => {
   const mockExecuteProviderUtils = jest.fn();
@@ -15,11 +17,6 @@ describe('auth enable: ', () => {
       warning: jest.fn(),
     },
   };
-
-
-  afterEach(() => {
-    mockGetProjectDetails.mockReturnValue({});
-  });
 
   it('enable run method should exist', () => {
     expect(add.run).toBeDefined();
@@ -38,9 +35,10 @@ describe('auth enable: ', () => {
         },
       });
     });
-    it('enable method should detect existing auth metadata', () => {
+    it('enable method should detect existing auth metadata and return after printing warning text', () => {
       add.run(mockContext);
-      expect(mockContext.print.warning).toBeCalledWith('Auth has already been added to this project. To update run amplify update auth');
+      expect(mockContext.print.warning).toBeCalledWith(messages.authExists);
+      expect(mockContext.amplify.serviceSelectionPrompt).not.toBeCalled();
     });
   });
 

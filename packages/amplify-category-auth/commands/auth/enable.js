@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 const subcommand = 'enable';
 const category = 'auth';
@@ -14,7 +15,7 @@ module.exports = {
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (Object.keys(existingAuth).length > 0) {
-      return context.print.warning('Auth has already been added to this project. To update run amplify update auth');
+      return context.print.warning(messages.authExists);
     }
 
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)

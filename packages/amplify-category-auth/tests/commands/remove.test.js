@@ -1,9 +1,10 @@
 const remove = require('../../commands/auth/remove');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 describe('auth remove: ', () => {
   const mockExecuteProviderUtils = jest.fn();
   const mockGetProjectDetails = jest.fn();
-  const warningString = '\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n';
+  const warningString = messages.dependenciesExists;
   const mockRemoveResource = jest.fn(() => Promise.resolve({}));
   const mockProjectPath = '/User/someone/Documents/Project/amplify-test';
   const mockContext = {
@@ -19,94 +20,39 @@ describe('auth remove: ', () => {
       first: 'mockFirst',
     },
   };
-
-
-  afterEach(() => {
-    mockGetProjectDetails.mockReturnValue({});
-  });
+  const dependencies = ['analytics', 'api', 'function', 'storage'];
 
   it('remove run method should exist', () => {
     expect(remove.run).toBeDefined();
   });
 
-  describe('case: analytics already enabled', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          analytics: {
-            foo: 'bar',
+  describe('case: resources may rely on auth', () => {
+    dependencies.forEach((d) => {
+      beforeEach(() => {
+        const amplifyMeta = {};
+        amplifyMeta[d] = {};
+        amplifyMeta[d].foo = 'bar';
+        mockGetProjectDetails.mockReturnValue({
+          projectConfig: {
+            projectPath: mockProjectPath,
           },
-        },
+          amplifyMeta,
+        });
       });
-    });
-    it('remove method should detect existing analytics metadata and display warning', () => {
-      remove.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith(warningString);
-    });
-  });
-
-  describe('case: api already enabled', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          api: {
-            foo: 'bar',
-          },
-        },
+      it(`remove method should detect existing ${d} metadata and display warning`, () => {
+        remove.run(mockContext);
+        expect(mockContext.print.info).toBeCalledWith(warningString);
       });
-    });
-    it('remove method should detect existing api metadata and display warning', () => {
-      remove.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith(warningString);
-    });
-  });
-
-  describe('case: function already enabled', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          function: {
-            foo: 'bar',
-          },
-        },
+      it(`remove method should still be called even when warning displayed for existing ${d} resource`, () => {
+        remove.run(mockContext);
+        expect(mockContext.amplify.removeResource).toBeCalled();
       });
-    });
-    it('remove method should detect existing function metadata and display warning', () => {
-      remove.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith(warningString);
-    });
-  });
-
-  describe('case: storage already enabled', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          storage: {
-            foo: 'bar',
-          },
-        },
-      });
-    });
-    it('remove method should detect existing storage metadata and display warning', () => {
-      remove.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith(warningString);
     });
   });
 
   describe('case: auth and other resources not yet enabled', () => {
     beforeEach(() => {
+      jest.resetAllMocks();
       mockGetProjectDetails.mockReturnValue({
         projectConfig: {
           projectPath: mockProjectPath,
@@ -117,6 +63,10 @@ describe('auth remove: ', () => {
     it('service selection prompt should be called', () => {
       remove.run(mockContext);
       expect(mockContext.amplify.removeResource).toBeCalled();
+    });
+    it('should not display a warning for existing resources', () => {
+      remove.run(mockContext);
+      expect(mockContext.print.info).not.toBeCalledWith(warningString);
     });
   });
 });

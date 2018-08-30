@@ -1,8 +1,9 @@
+const update = require('../../commands/auth/update');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 jest.mock('fs', () => ({
   readFileSync: () => '{}',
 }));
-const update = require('../../commands/auth/update');
 
 describe('auth update: ', () => {
   const mockExecuteProviderUtils = jest.fn();
@@ -24,6 +25,7 @@ describe('auth update: ', () => {
       error: jest.fn(),
     },
   };
+  const dependencies = ['analytics', 'api', 'function', 'storage'];
 
   it('update run method should exist', () => {
     expect(update.run).toBeDefined();
@@ -46,108 +48,27 @@ describe('auth update: ', () => {
     });
   });
 
-  describe('case: auth resource does not exist', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          auth: {},
-        },
+  describe('case: resources may rely on auth', () => {
+    dependencies.forEach((d) => {
+      beforeEach(() => {
+        const amplifyMeta = { auth: { foo: 'bar' } };
+        amplifyMeta[d] = {};
+        amplifyMeta[d].foo = 'bar';
+        mockGetProjectDetails.mockReturnValue({
+          projectConfig: {
+            projectPath: mockProjectPath,
+          },
+          amplifyMeta,
+        });
       });
-    });
-    it('update run method should detect absence of auth resource and print a message', () => {
-      update.run(mockContext);
-      expect(mockContext.print.warning).toBeCalledWith('Auth has not yet been added to this project.');
-    });
-  });
-
-  describe('case: api resource exists', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
-          api: {
-            foo: 'bar',
-          },
-        },
+      it(`update run method should detect presence of ${d} resource and print a message`, () => {
+        update.run(mockContext);
+        expect(mockContext.print.info).toBeCalledWith(messages.dependenciesExists);
       });
-    });
-    it('update run method should detect presence of api resource and print a message', () => {
-      update.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
-    });
-  });
-
-  describe('case: analytics resource exists', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
-          analytics: {
-            foo: 'bar',
-          },
-        },
+      it(`serviceSelectionPrompt should still be called even when warning displayed for existing ${d} resource`, () => {
+        update.run(mockContext);
+        expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();
       });
-    });
-    it('update run method should detect presence of analytics resource and print a message', () => {
-      update.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
-    });
-  });
-
-  describe('case: function resource exists', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
-          function: {
-            foo: 'bar',
-          },
-        },
-      });
-    });
-    it('update run method should detect presence of function resource and print a message', () => {
-      update.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
-    });
-  });
-
-  describe('case: storage resource exists', () => {
-    beforeEach(() => {
-      mockGetProjectDetails.mockReturnValue({
-        projectConfig: {
-          projectPath: mockProjectPath,
-        },
-        amplifyMeta: {
-          auth: {
-            foo: 'bar',
-          },
-          storage: {
-            foo: 'bar',
-          },
-        },
-      });
-    });
-    it('update run method should detect presence of storage resource and print a message', () => {
-      update.run(mockContext);
-      expect(mockContext.print.info).toBeCalledWith('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
     });
   });
 
