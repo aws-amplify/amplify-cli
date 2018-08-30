@@ -28,6 +28,7 @@ module.exports = {
 
       if (channelName) {
         await pinpointHelper.checkPinpointApp(context);
+        notificationManager.updateaServiceMeta(context);
         await notificationManager.enableChannel(context, channelName);
         notificationManager.updateaServiceMeta(context);
       }

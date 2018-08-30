@@ -104,7 +104,6 @@ describe('channel-APNS', () => {
         })
     });
 
-
     test('disable', () => {
         mockPinpointClient.updateApnsChannel = jest.fn((_, callback)=>{
             callback(null, mockPinpointResponseData); 
