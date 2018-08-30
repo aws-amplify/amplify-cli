@@ -88,6 +88,8 @@ function updateaServiceMeta(context) {
   currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
   jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
   fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+
+  context.amplify.onCategoryOutputsChange(context);
 }
 
 module.exports = {
