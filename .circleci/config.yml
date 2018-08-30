@@ -19,11 +19,11 @@ jobs:
       - run: yarn config set workspaces-experimental true
       - run: yarn run production-build
       - save_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.cache
       - save_cache:
-          key: amplify-ssh-deps-{{ .Branch }}
+          key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - persist_to_workspace:
@@ -35,7 +35,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm run test
   integration_test_auth:
       working_directory: ~/repo
@@ -47,7 +47,7 @@ jobs:
         - attach_workspace:
             at: ./
         - restore_cache:
-            key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }} 
+            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }} 
         - run: apt-get install -y sudo
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
@@ -65,7 +65,7 @@ jobs:
         - run: echo $TERM
         - run: echo "hello"
         - run: bash --version
-        - run: expect .circleci/enable.exp 
+        - run: expect .circleci/enable_api.exp 
         - run: cd aws-amplify-cypress-auth 
         - run: yarn
         - run: cd aws-amplify-cypress-auth/src && ls -la
@@ -92,7 +92,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
