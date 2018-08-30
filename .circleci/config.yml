@@ -44,16 +44,13 @@ jobs:
             TERM: dumb
       steps:
         - attach_workspace:
-            at: ./ 
+            at: ./
+        - restore_cache:
+            key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }} 
         - run: apt-get install -y sudo
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
         - run: sudo apt-get install -y zip
-        - checkout
-        - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-        - run: yarn
-        - run: yarn config set workspaces-experimental true
-        - run: yarn run production-build
         - run: sudo npm run setup-dev
         - run: amplify
         - run: echo "hello"
@@ -125,7 +122,9 @@ workflows:
       - test:
           requires:
             - build
-      - integration_test_auth
+      - integration_test_auth:
+          requires:
+            - build
       - deploy:
           requires:
             - build
