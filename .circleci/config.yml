@@ -66,10 +66,10 @@ jobs:
         - run: echo $TERM
         - run: echo "hello"
         - run: bash --version
-        - run: expect .circleci/enable_api.exp 
+        - run: expect .circleci/enable.exp 
         - run: cd aws-amplify-cypress-auth 
         - run: yarn
-        - run: cd aws-amplify-cypress-auth/src && ls -la
+        - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*') 
         - run: cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start Auth test server in background"
