@@ -17,6 +17,10 @@ describe('get-when helper: ', () => {
     expect(getWhen).toBeDefined();
   });
 
+  it('...should return a function', () => {
+    expect(typeof getWhen()).toEqual('function');
+  });
+
   describe('case: question without conditions', () => {
     beforeEach(() => {
       input = {
