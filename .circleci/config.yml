@@ -62,6 +62,7 @@ jobs:
               yarn
         - run: cd .circleci/ && chmod +x com1.sh
         - run: echo $TERM
+        - run: echo "hello"
         - run: bash --version
         - run: expect .circleci/enable.exp 
         - run: cd aws-amplify-cypress-auth 
