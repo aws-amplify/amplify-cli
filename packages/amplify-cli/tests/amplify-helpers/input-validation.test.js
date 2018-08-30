@@ -1,9 +1,8 @@
 const { inputValidation } = require('../../src/extensions/amplify-helpers/input-validation');
 
 describe('input-validation helper: ', () => {
-
   let question = {};
-  const rejectionString = 'A response is required for this field'; 
+  const rejectionString = 'A response is required for this field';
 
   it('...should be exported', () => {
     expect(inputValidation).toBeDefined();
@@ -14,7 +13,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: question does not have validation', () => {
-
     it('...promise should resolve(true) if input is not present and question is not required', async () => {
       await expect(inputValidation(question)(null)).resolves.toEqual(true);
     });
@@ -31,7 +29,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: validation operator "includes" and input is string', () => {
-
     beforeEach(() => {
       question.validation = {
         operator: 'includes',
@@ -54,7 +51,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: validation operator "includes" and input is string', () => {
-
     beforeEach(() => {
       question.validation = {
         operator: 'includes',
@@ -77,7 +73,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: validation operator "regex"', () => {
-
     beforeEach(() => {
       question.validation = {
         operator: 'regex',
@@ -100,7 +95,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: validation operator "range"', () => {
-
     beforeEach(() => {
       question.validation = {
         operator: 'range',
@@ -124,7 +118,6 @@ describe('input-validation helper: ', () => {
 
 
   describe('case: validation operator "noEmptyArray"', () => {
-
     beforeEach(() => {
       question.validation = {
         operator: 'noEmptyArray',
@@ -146,7 +139,6 @@ describe('input-validation helper: ', () => {
   });
 
   describe('case: questions is required but gets to end of function without hitting test', () => {
-
     beforeEach(() => {
       question = {
         validation: {},
@@ -164,5 +156,4 @@ describe('input-validation helper: ', () => {
       await expect(inputValidation(question)(['index'])).resolves.toEqual(true);
     });
   });
-
 });
