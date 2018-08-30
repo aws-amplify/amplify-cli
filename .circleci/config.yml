@@ -57,9 +57,6 @@ jobs:
         - run: 
             name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
             command: |
-              echo $SSH_HOST_PUBLIC_KEY
-              echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-              cat ~/.ssh/known_hosts
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
               yarn
