@@ -3,6 +3,7 @@ const glob = require('glob-all')
 const appSyncCodeGen = require('aws-appsync-codegen')
 const jetpack = require('fs-jetpack')
 const Ora = require('ora')
+const generateOps = require('amplify-graphql-ops-generator').default
 
 const loadConfig = require('./codegen-config')
 const addWalkThrough = require('./walkthrough/add')
@@ -15,8 +16,8 @@ async function generate(context, forceDownloadSchema) {
   const availableAppSyncApis = getAppSyncAPIDetails(context)
   const availableApiIds = availableAppSyncApis.map(api => api.id)
   const configuredProjects = config.getProjects()
-  const projects = configuredProjects
-    .filter(proj => availableApiIds.includes(proj.amplifyExtension.graphQLApiId))
+  const projects = configuredProjects.filter(proj =>
+    availableApiIds.includes(proj.amplifyExtension.graphQLApiId))
 
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED)
@@ -68,6 +69,14 @@ async function add(context) {
     endPoint: answer.api.endPoint,
   }
   config.addProject(newProject)
+  if (answer.shouldGenerateOps) {
+    const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
+    opsGenSpinner.start()
+    const opsGenDirectory = path.resolve(answer.opsFilePath)
+    jetpack.dir(opsGenDirectory);
+    generateOps(schema, opsGenDirectory, { separateFiles: true })
+    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory))
+  }
   if (answer.shouldGenerateCode) {
     generate(context)
   }

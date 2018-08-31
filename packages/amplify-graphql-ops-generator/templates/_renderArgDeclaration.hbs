@@ -1,0 +1,7 @@
+{{#if args.length}}
+  (
+    {{#each args as |arg index|}}
+      ${{ arg.name }}:{{arg.type}}{{#if arg.isRequired}}!{{/if}}{{#if arg.defaultValue}}={{arg.defaultValue}}{{/if}}{{#unless @last}},{{/unless}}
+    {{/each}}
+  )
+{{/if}}

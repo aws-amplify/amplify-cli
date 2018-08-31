@@ -1,0 +1,7 @@
+{{#each fragments }}
+  {{#if this.fields.length}}
+    ...on {{this.on}} {
+      {{> renderFields fields=this.fields }}
+    }
+  {{/if}}
+{{/each}}

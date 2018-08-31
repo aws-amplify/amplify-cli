@@ -6,6 +6,7 @@ module.exports = {
     'Enter the file name pattern of graphql queries, mutation and subscriptions',
   PROMPT_MSG_GENERATE_CODE:
     'Do you want to generate code',
+  PROMPT_MSG_GENERATE_OPS: 'Do you want to generate all possible GraphQL operations',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
   ERROR_CODEGEN_TARGET_NOT_SUPPORTED: 'is not supported by codegen plugin',
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
@@ -30,4 +31,6 @@ module.exports = {
   INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS: 'code generated successfully and saved in file',
   INFO_MESSAGE_DOWNLOADING_SCHEMA: 'Downloading the introspection schema',
   INFO_MESSAGE_DOWNLOAD_SUCCESS: 'Downloaded the schema',
+  INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
+  INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
 }

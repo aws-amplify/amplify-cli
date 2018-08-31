@@ -18,7 +18,8 @@
     "graphql-config": "^2.1.0",
     "inquirer": "^3.2.1",
     "ora": "^3.0.0",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "amplify-graphql-ops-generator": "^0.0.1"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",

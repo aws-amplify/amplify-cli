@@ -1,0 +1,49 @@
+# This is an auto generated file. This will be overwritten automatically
+query GetTodo($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+  }
+}
+query ListTodo(
+  $filter: ModelTodoFilterInput
+  $sortDirection: ModelSortDirection
+  $limit: Int
+  $nextToken: String
+) {
+  listTodo(
+    filter: $filter
+    sortDirection: $sortDirection
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      name
+      description
+    }
+    nextToken
+  }
+}
+mutation CreateTodo($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    name
+    description
+  }
+}
+mutation UpdateTodo($input: UpdateTodoInput!) {
+  updateTodo(input: $input) {
+    id
+    name
+    description
+  }
+}
+mutation DeleteTodo($input: DeleteTodoInput!) {
+  deleteTodo(input: $input) {
+    id
+    name
+    description
+  }
+}

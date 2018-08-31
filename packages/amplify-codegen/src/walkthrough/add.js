@@ -4,6 +4,7 @@ const askCodeGenTargetLanguage = require('./questions/languageTarget')
 const askCodeGenQueryFilePattern = require('./questions/queryFilePattern')
 const askTargetFileName = require('./questions/generatedFileName')
 const askShouldGenerateCode = require('./questions/generateCode')
+const askShouldGenerateOps = require('./questions/generateOps')
 
 const { getAppSyncAPIDetails, getFrontEndHandler, getSchemaDownloadLocation } = require('../utils/')
 const {
@@ -58,6 +59,7 @@ async function addWalkThrough(context, configs) {
     generatedFileName = await askTargetFileName('API', targetLanguage)
     shouldGenerateCode = await askShouldGenerateCode()
   }
+  const shouldGenerateOps = await askShouldGenerateOps()
 
   return {
     api,
@@ -67,6 +69,8 @@ async function addWalkThrough(context, configs) {
     generatedFileName,
     shouldGenerateCode,
     schemaLocation,
+    shouldGenerateOps,
+    opsFilePath: includePatternDefault,
   }
 }
 module.exports = addWalkThrough
