@@ -73,7 +73,6 @@ jobs:
               pwd
               yarn start
             background: true
-        - run: cat /root/repo/amplify-cli/cypress/integration/auth_spec.js
         - run: cat $(find . -type f -name 'auth_spec*')
         - run:
             name: "Run cypress tests for aws-amplify-react"
