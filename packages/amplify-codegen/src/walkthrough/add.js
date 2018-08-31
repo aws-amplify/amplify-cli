@@ -50,8 +50,9 @@ async function addWalkThrough(context, configs) {
   const frontendHandler = getFrontEndHandler(context)
   const schemaLocation = getSchemaDownloadLocation(context, api.name)
   const includePatternDefault = frontendHandler === 'android' ? dirname(schemaLocation) : 'graphql/'
+  const includePatternExtension = frontendHandler === 'javascript' ? '*.js' : '*.graphql'
   includePattern = await askCodeGenQueryFilePattern([
-    join(includePatternDefault, '**', '*.graphql'),
+    join(includePatternDefault, '**', includePatternExtension),
   ])
 
   if (frontendHandler !== 'android') {

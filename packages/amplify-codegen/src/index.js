@@ -66,15 +66,17 @@ async function add(context) {
       codeGenTarget: answer.target,
       generatedFileName: answer.generatedFileName,
     },
-    endPoint: answer.api.endPoint,
+    endpoint: answer.api.endpoint,
   }
   config.addProject(newProject)
   if (answer.shouldGenerateOps) {
+    const frontend = getFrontEndHandler(context)
+    const language = frontend === 'javascript' ? 'javascript' : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
     opsGenSpinner.start()
     const opsGenDirectory = path.resolve(answer.opsFilePath)
     jetpack.dir(opsGenDirectory);
-    generateOps(schema, opsGenDirectory, { separateFiles: true })
+    generateOps(schema, opsGenDirectory, { separateFiles: true, language })
     opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory))
   }
   if (answer.shouldGenerateCode) {

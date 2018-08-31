@@ -51,8 +51,8 @@ class AmplifyCodeGenConfig {
     if (project.amplifyExtension && Object.keys(project.amplifyExtension).length) {
       extensions.amplify = project.amplifyExtension
     }
-    if (project.endPoint) {
-      extensions.endPoints = project.endPoint
+    if (project.endpoint) {
+      extensions.endpoints = project.endpoint
     }
 
     if (Object.keys(extensions).length) {

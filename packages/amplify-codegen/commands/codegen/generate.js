@@ -9,7 +9,7 @@ module.exports = {
       const forceDownloadSchema = context.parameters.options.download || false
       await codeGen.generate(context, forceDownloadSchema)
     } catch (ex) {
-      context.print.error(ex.message)
+      context.print.info(ex.message)
       process.exit(1)
     }
   },

@@ -13,12 +13,17 @@ import {
 } from "graphql";
 
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, "../templates"));
+const FILE_EXTENSION_MAP = {
+  javascript: 'js',
+  graphql: 'graphql'
+}
 
 function generate(
   schemaPath: string,
   outputPath: string,
-  options: { separateFiles: boolean }
+  options: { separateFiles: boolean, language: string }
 ): void {
+  const language = options.language || 'graphql';
   const schemaContent = fs.readFileSync(schemaPath, "utf8").trim();
   const schemaData = JSON.parse(schemaContent);
   if (!schemaData.data && !schemaData.__schema) {
@@ -31,23 +36,32 @@ function generate(
   const schema: IntrospectionQuery = schemaData.data || schemaData;
   const gqlOperations = generateAllOps(schema);
   registerPartials();
+  const fileExtension = FILE_EXTENSION_MAP[language];
   if (options.separateFiles) {
     ["queries", "mutations", "subscriptions"].forEach(op => {
-      const gql = renderOps(gqlOperations[op]);
-      fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.graphql`)), gql);
+      const gql = renderOps(gqlOperations[op], language);
+      fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql);
     });
   } else {
     const gql = renderOps([
       ...gqlOperations.queries,
       ...gqlOperations.mutations,
       ...gqlOperations.subscriptions
-    ]);
+    ], language);
     fs.writeFileSync(path.resolve(outputPath), gql);
   }
 }
 
-function renderOps(operations: Array<GQLTemplateOp>) {
-  const templatePath = path.join(TEMPLATE_DIR, "index.hbs");
+function renderOps(operations: Array<GQLTemplateOp>, language: string='graphql') {
+  const templateFiles = {
+    javascript: 'javascript.hbs',
+    graphql: 'graphql.hbs'
+  };
+  const parserMap = {
+    javascript: 'babylon',
+    graphql: 'graphql'
+  }
+  const templatePath = path.join(TEMPLATE_DIR, templateFiles[language]);
   const templateStr = fs.readFileSync(templatePath, "utf8");
 
   const template = handlebars.compile(templateStr, {
@@ -55,7 +69,8 @@ function renderOps(operations: Array<GQLTemplateOp>) {
     preventIndent: true
   });
   const gql = template({ operations: operations });
-  const formattedQuery = prettier.format(gql, { parser: "graphql" });
+
+  const formattedQuery = prettier.format(gql, { parser: parserMap[language] });
   return formattedQuery;
 }
 

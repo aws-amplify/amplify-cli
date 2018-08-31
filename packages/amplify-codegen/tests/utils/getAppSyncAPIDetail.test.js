@@ -30,7 +30,7 @@ describe('getAppSyncDetail', () => {
     const expectedResult = [
       {
         name: mockAppSyncAPIs[0].name,
-        endPoint: mockAppSyncAPIs[0].output.GraphQLAPIEndpointOutput,
+        endpoint: mockAppSyncAPIs[0].output.GraphQLAPIEndpointOutput,
         id: mockAppSyncAPIs[0].output.GraphQLAPIIdOutput,
         securityType: mockAppSyncAPIs[0].output.securityType,
       },

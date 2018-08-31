@@ -36,9 +36,14 @@ export function run(argv: Array<String>): void {
           normalize: true,
           coerce: path.resolve,
         },
+        language: {
+          demand: true,
+          default: 'graphql',
+          normalize: true,
+        }
       },
       async argv => {
-          generateAllOps(argv.schema, argv.output, { separateFiles: false })
+          generateAllOps(argv.schema, argv.output, { separateFiles: false, language: argv.language })
       }
     )
     .help()

@@ -8,7 +8,7 @@ function getAppSyncAPIDetails(context) {
   }
   return appSyncAPIs.map(api => ({
     name: api.name,
-    endPoint: api.output.GraphQLAPIEndpointOutput,
+    endpoint: api.output.GraphQLAPIEndpointOutput,
     id: api.output.GraphQLAPIIdOutput,
     securityType: api.output.securityType,
   }))
