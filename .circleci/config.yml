@@ -79,7 +79,7 @@ jobs:
               yarn add cypress
               pwd
               ls -la
-              yarn cypress run --spec auth_spec.js
+              yarn cypress run --spec /root/repo/amplify-cli/cypress/integration/auth_spec.js
         - run: 
             name: "Clone API test package"
             command: |
