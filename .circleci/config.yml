@@ -77,8 +77,7 @@ jobs:
             name: "Run cypress tests for aws-amplify-react"
             command: |
               yarn add cypress
-              yarn cypress run
-          ------------------------------- 
+              yarn cypress run --spec auth_spec.js
         - run: 
             name: "Clone API test package"
             command: |
@@ -95,13 +94,13 @@ jobs:
             command: |
               cd aws-amplify-cypress-api
               pwd
-              yarn start
+              yarn start 
             background: true
         - run:
             name: "Run cypress tests for aws-amplify-react"
             command: |
               yarn add cypress
-              yarn cypress run
+              yarn cypress run --spec auth_spec.js
         - store_artifacts:
             path: cypress/videos
         - store_artifacts:
