@@ -56,25 +56,44 @@ jobs:
         - run: amplify
         - run: echo "hello"
         - run: 
-            name: "Clone auth test package, initialize mobilehub via cli, and link amplify packages"
+            name: "Clone auth test package"
             command: |
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
               yarn
         - run: cd .circleci/ && chmod +x com1.sh
-        - run: cd .circleci/ && chmod +x com2.sh
-        - run: echo $TERM
-        - run: echo "hello"
-        - run: bash --version
-        - run: expect .circleci/enable.exp 
+        - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth 
         - run: yarn
         - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*') 
-        - run: cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start Auth test server in background"
             command: |
               cd aws-amplify-cypress-auth
+              pwd
+              yarn start
+            background: true
+        - run:
+            name: "Run cypress tests for aws-amplify-react"
+            command: |
+              yarn add cypress
+              yarn cypress run
+          ------------------------------- 
+        - run: 
+            name: "Clone API test package"
+            command: |
+              git clone $API_CLONE_URL
+              cd aws-amplify-cypress-api
+              yarn
+        - run: cd .circleci/ && chmod +x com2.sh
+        - run: expect .circleci/enable_api.exp
+        - run: cd aws-amplify-cypress-api 
+        - run: yarn
+        - run: cd aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')  
+        - run:
+            name: "Start API test server in background"
+            command: |
+              cd aws-amplify-cypress-api
               pwd
               yarn start
             background: true
