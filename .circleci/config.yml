@@ -74,13 +74,14 @@ jobs:
               yarn start
             background: true
         - run: cat /root/repo/amplify-cli/cypress/integration/auth_spec.js
+        - run: cat $(find . -type f -name 'auth_spec*')
         - run:
             name: "Run cypress tests for aws-amplify-react"
             command: |
               yarn add cypress
               pwd
               ls -la
-              .\node_modules\.bin\yarn cypress run --spec /root/repo/amplify-cli/cypress/integration/auth_spec.js
+              cypress run --spec /root/repo/amplify-cli/cypress/integration/auth_spec.js
         - run: 
             name: "Clone API test package"
             command: |
