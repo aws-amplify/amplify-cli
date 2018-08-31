@@ -100,6 +100,8 @@ jobs:
             name: "Run cypress tests for aws-amplify-react"
             command: |
               yarn add cypress
+              pwd
+              ls -la
               yarn cypress run --spec auth_spec.js
         - store_artifacts:
             path: cypress/videos
