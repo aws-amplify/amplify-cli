@@ -77,7 +77,7 @@ jobs:
         - run:
             name: "Run cypress tests for aws-amplify-react"
             command: |
-              npm install cypress
+              npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
         - run: 
             name: "Clone API test package"
