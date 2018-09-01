@@ -2,18 +2,121 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lex chatbot creation from Amplify CLI",
     "Parameters": {
-        "inputs": {
-            "Type": "String"
+        "Bot": {
+            "name": "<%= props.botName %>",
+            "childDirected": "<%= props.coppa %>",
+            "locale": "en-US",
+            "abortStatement": {
+                "messages": [
+                    {
+                        "content": "I don't understand. Can you try again?", 
+                        "contentType": "PlainText"
+                    }, 
+                    {
+                        "content": "I'm sorry, I don't understand.", 
+                        "contentType": "PlainText"
+                    }
+                ]
+            }, 
+            "clarificationPrompt": {
+                "maxAttempts": 3, 
+                "messages": [
+                    {
+                        "content": "I'm sorry, I didn't hear that. Can you repeate what you just said?", 
+                        "contentType": "PlainText"
+                    }, 
+                    {
+                        "content": "Can you say that again?", 
+                        "contentType": "PlainText"
+                    }
+                ]
+            }, 
+            <% if(props.outputVoice) { %>
+            "voiceId": "<%= props.outputVoice %>",
+            <% } %>
+            <% if(props.sessionTimeout) { %>
+            "idleSessionTTLInSeconds": "<%= props.sessionTimeout*60 %>"
+            <% } %>
         },
-        "roleName": {
-            "Type": "String"
+        "Intents": {
+            <% for(var i = 0; i < props.intents.length; i++) { %>
+            "<%= props.intents[i].intentName %>": {
+                <% if(props.intents[i].confirmationQuestion) { %>
+                "confirmationPrompt": {
+                    "maxAttempts": 2, 
+                    "messages": [
+                        {
+                            "content": "<%= props.intents[i].confirmationQuestion %>", 
+                            "contentType": "PlainText"
+                        }
+                    ]
+                }, 
+                <% } %>
+                <% if(props.intents[i].cancelMessage) { %>
+                "rejectionStatement": {
+                    "messages": [
+                        {
+                        "content": "<%= props.intents[i].cancelMessage %>", 
+                        "contentType": "PlainText"
+                        }
+                    ]
+                }, 
+                <% } %>
+                "sampleUtterances": [
+                    <% for(var j = 0; j < props.intents[i].utterances.length; j++) { %>
+                    "<%= props.intents[i].utterances[j] %>",
+                    <% } %>
+                ],
+                <% if(props.intents[i].pathsAnswers) { %>
+                "fulfillmentActivity": {
+                    "type": "CodeHook",
+                    "codeHook": {
+                        "messageVersion": "$LATEST",
+                        "uri": "<%= props.intents[i].pathsAnswers.paths[0].lambdaArn %>"
+                    }
+                }, 
+                <% } else { %>
+                "fulfillmentActivity": {
+                    "type": "ReturnIntent"
+                },
+                <% } %>
+                "slots": [
+                    <% for(var j = 0; j < props.intents[i].slots.length; j++) { %>
+                    {
+                        "name": "<%= props.intents[i].slots[j].name %>",
+                        "slotConstraint": <% if(props.intents[i].slots[j].required) { %>"Required"<% } else { %>"Optional"<% } %>,
+                        "priority": <%= j %>,
+                        "slotType": "<%= props.intents[i].slots[j].type %>",
+                        "valueElicitationPrompt": {
+                            "maxAttempts": 3,
+                            "messages": [
+                                {
+                                    "content": "<%= props.intents[i].slots[j].prompt %>",
+                                    "contentType": "PlainText"
+                                }
+                            ]
+                        }
+                    },
+                    <% } %>
+                ]
+            },
+            <% } %>
         },
-        "cloudWatchPolicyName": {
-            "Type": "String"
-        },
-        "lexPolicyName": {
-            "Type": "String"
-        }
+        "NewSlotTypes": {
+            <% for(var i = 0; i < props.intents.length; i++) { %>
+            <% for(var j = 0; j < props.intents[i].newSlotTypes.length; j++) { %>
+            "<%= props.intents[i].newSlotTypes[j].slotType %>": {
+                "description": "<%= props.intents[i].newSlotTypes[j].slotTypeDescription %>",
+                "enumerationValues": [
+                    <% for(var k = 0; k < props.intents[i].newSlotTypes[j].slotValues.length; k++) { %>
+                    {
+                        "value": "<%= props.intents[i].newSlotTypes[j].slotValues[k] %>"
+                    },
+                    <% } %>
+                ]
+            },
+            <% } %> 
+            <% } %> 
     },
     "Metadata": {
         "AWS::CloudFormation::Interface": {
@@ -103,7 +206,7 @@
                             [
                                 "const response = require('cfn-response');",
                                 "const aws = require('aws-sdk');",
-                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01' });",
+                                "const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });",
                                 "exports.handler = function(event, context) {",
                                 "    if (event.RequestType == 'Delete') {",
                                 "        response.send(event, context, response.SUCCESS);",
@@ -116,7 +219,7 @@
                                 "            Name: appName",
                                 "        }",
                                 "    };",
-                                "    return pinpoint.createApp(params).promise()",
+                                "    return lex.putBot(params).promise()",
                                 "        .then((res) => {",
                                 "            responseData = res.ApplicationResponse;",
                                 "            response.send(event, context, response.SUCCESS, responseData);",
@@ -142,12 +245,12 @@
                 }
             }
         },
-        "PinpointFunctionOutputs": {
+        "LexFunctionOutputs": {
             "Type": "Custom::LambdaCallout",
             "Properties": {
                 "ServiceToken": {
                     "Fn::GetAtt": [
-                        "PinpointFunction",
+                        "LexFunction",
                         "Arn"
                     ]
                 },
@@ -166,7 +269,7 @@
         "Id": {
             "Value": {
                 "Fn::GetAtt": [
-                    "PinpointFunctionOutputs",
+                    "LexFunctionOutputs",
                     "Id"
                 ]
             }
@@ -174,7 +277,7 @@
         "appName": {
             "Value": {
                 "Fn::GetAtt": [
-                    "PinpointFunctionOutputs",
+                    "LexFunctionOutputs",
                     "Name"
                 ]
             }

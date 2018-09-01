@@ -3,9 +3,9 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const category = 'interactions';
-const parametersFileName = 'parameters.json';
+const parametersFileName = 'lex-params.json';
 const serviceName = 'Lex';
-const templateFileName = 'lex-cloudformation-template.json';
+const templateFileName = 'lex-cloudformation-template.json.ejs';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -323,7 +323,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       "intents": intents,
       "outputVoice": outputVoice,
       "sessionTimeout": sessionTimeout,
-      "coppa": coppa,
+      "coppa": coppa
     }
   } 
   else {
@@ -362,32 +362,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         parameters.intents = parameters.intents.concat(answers.intents);
       }
     }
-    resource = parameters.resourceName;
-    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-    delete defaultValues.resourceName;
-    fs.ensureDirSync(resourceDirPath);
-
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    const jsonString = JSON.stringify(parameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    answers = parameters;
   }
-  else {
-    Object.assign(defaultValues, answers);
-    resource = defaultValues.resourceName;
-    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-    delete defaultValues.resourceName;
-    fs.ensureDirSync(resourceDirPath);
-
-    const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    const jsonString = JSON.stringify(answers, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-    const templateFilePath = path.join(resourceDirPath, templateFileName);
-    if (!fs.existsSync(templateFilePath)) {
-      fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
-    }
-  }
-  return resource;
+  return answers;
 }
 
 async function addIntent(context, botName, resourceName, serviceMetadata) {

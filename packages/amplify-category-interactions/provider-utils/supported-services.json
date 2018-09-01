@@ -341,7 +341,7 @@
 						"Book a car"
 					],
 					"intentName": "BookCar",
-					"newSlotType": [
+					"newSlotTypes": [
 						{
 							"slotType": "CarTypeValues",
 							"slotTypeDescription": "Enumeration representing possible types of cars available for rental",
@@ -391,7 +391,7 @@
 						"Book a hotel"
 					],
 					"intentName": "BookHotel",
-					"newSlotType": [
+					"newSlotTypes": [
 						{
 							"slotType": "RoomTypeValues",
 							"slotTypeDescription": "Enumeration representing possible types of a hotel room",
@@ -433,7 +433,7 @@
 						"I would like to pick up flowers"
 					],
 					"intentName": "OrderFlowers",
-					"newSlotType": [
+					"newSlotTypes": [
 						{
 							"slotType": "FlowerTypes",
 							"slotTypeDescription": "Types of flowers to pick up",
@@ -476,7 +476,7 @@
 						"I would like to book an appointment"
 					],
 					"intentName": "MakeAppointment",
-					"newSlotType": [
+					"newSlotTypes": [
 						{
 							"slotType": "AppointmentTypeValue",
 							"slotTypeDescription": "Type of dentist appointment to schedule",
@@ -492,7 +492,7 @@
 		},
 		"defaultValuesFilename": "lex-defaults.js",
 		"serviceWalkthroughFilename": "lex-walkthrough.js",
-		"cfnFilename": "lex-cloudformation-template.yml.ejs",
+		"cfnFilename": "lex-cloudformation-template.json.ejs",
 		"provider": "awscloudformation"
 	}
 }
