@@ -19,6 +19,7 @@
     "graphql-auth-transformer": "^1.0.12",
     "graphql-connection-transformer": "^1.0.12",
     "graphql-dynamodb-transformer": "^1.0.12",
+    "graphql-custom-transformer": "^1.0.12",
     "graphql-elasticsearch-transformer": "^1.0.12",
     "graphql-transformer-common": "^1.0.12",
     "graphql-transformer-core": "^1.0.12",
