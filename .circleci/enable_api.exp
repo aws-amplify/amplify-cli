@@ -28,7 +28,7 @@ set timeout 70
 expect "Please select from one of the below mentioned services\r"
 send -- "\033\[B\r"
 expect "Provide a friendly name for your resource to be used as a label for this category in the project:"
-send -- "\r"
+send -- "myAPI\r"
 expect "Provide a path (e.g., /items)"
 send -- "\r"
 expect "Choose a Lambda source"
