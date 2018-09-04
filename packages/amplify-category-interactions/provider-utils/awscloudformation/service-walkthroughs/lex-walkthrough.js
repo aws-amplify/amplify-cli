@@ -246,7 +246,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         default: inputs[23].default
       }
       while (continueAddingIntents) {
-        intents.push(await addIntent(context, botName, resourceName, serviceMetadata));
+        intents.push(await addIntent(context, botName, resourceName, serviceMetadata, intents, parameters));
         continueAddingIntents = await inquirer.prompt(addAnotherIntentQuestion);
         continueAddingIntents = continueAddingIntents[inputs[23].key];
         //console.log(continueAddingIntents);
@@ -331,7 +331,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     let intents = [];
     while (continueAddingIntents) {
-      intents.push(await addIntent(context, botName, resourceName, serviceMetadata));
+      intents.push(await addIntent(context, botName, resourceName, serviceMetadata, intents, parameters));
       continueAddingIntents = await inquirer.prompt(addAnotherIntentQuestion);
       continueAddingIntents = continueAddingIntents[inputs[23].key];
       //console.log(continueAddingIntents);
@@ -355,13 +355,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   if (parameters) {
     if (answers.intentName) {
       if (deleteIntentConfirmed) {
-        for (let i = 0; i < parameters.intents.length; i++) {
-          console.log(i, parameters.intents[i].intentName, answers.intentName)
-          if (parameters.intents[i].intentName == answers.intentName) {
-            parameters.intents.splice(i, 1);
-            break;
-          }
-        }
+        parameters.intents = parameters.intents.filter( intent => intent.intentName !== answers.intentName );
       }
       else {
         parameters.intents.forEach(function(intent) {
@@ -397,7 +391,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return answers;
 }
 
-async function addIntent(context, botName, resourceName, serviceMetadata) {
+async function addIntent(context, botName, resourceName, serviceMetadata, intents, parameters) {
   let { inputs } = serviceMetadata;
   const { amplify, print } = context;
   console.log("Adding intent...");
@@ -409,8 +403,19 @@ async function addIntent(context, botName, resourceName, serviceMetadata) {
     message: inputs[12].question,
     validate: amplify.inputValidation(inputs[12])
   }
-  let intentName = await inquirer.prompt(intentNameQuestion);
+
+  let intentName;
+  intentName = await inquirer.prompt(intentNameQuestion);
   intentName = intentName[inputs[12].key];
+
+  // Checks to see if intent name is unique
+  while ((intents.filter( intent => intent.intentName === intentName ).length > 0) || (parameters && parameters.intents.filter( intent => intent.intentName === intentName ).length > 0)) {
+    print.info('');
+    print.info('Intent names must be unique');
+    print.info('');
+    intentName = await inquirer.prompt(intentNameQuestion);
+    intentName = intentName[inputs[12].key];
+  }
 
   let utterances = await addUtterance(context, intentName, botName, resourceName, serviceMetadata);
   console.log(utterances);
