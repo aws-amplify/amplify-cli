@@ -79,6 +79,7 @@ jobs:
             command: |
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
+        - run: sudo kill -9 $(lsof -t -i:3000)
         - run: 
             name: "Clone API test package"
             command: |
@@ -93,7 +94,6 @@ jobs:
         - run:
             name: "Start API test server in background"
             command: |
-              sudo kill `lsof -t -i:3000`
               cd aws-amplify-cypress-api
               pwd
               yarn start 
