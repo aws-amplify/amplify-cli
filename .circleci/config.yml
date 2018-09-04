@@ -93,6 +93,7 @@ jobs:
         - run:
             name: "Start API test server in background"
             command: |
+              sudo fuser -k 3000/tcp
               cd aws-amplify-cypress-api
               pwd
               yarn start 
