@@ -35,6 +35,7 @@ export class ResourceFactory {
         table: Table,
         connectionName: string,
         connectionAttributeName: string,
+        sortAttributeName?: string
     ): Table {
         const gsis = table.Properties.GlobalSecondaryIndexes || [] as GlobalSecondaryIndex[]
         if (gsis.length >= 5) {
@@ -54,6 +55,7 @@ export class ResourceFactory {
                         AttributeName: connectionAttributeName,
                         KeyType: 'HASH'
                     })
+                    , ...(sortAttributeName ? [new KeySchema({ AttributeName: sortAttributeName, KeyType: 'RANGE' })] : [])
                 ],
                 Projection: new Projection({
                     ProjectionType: 'ALL'
@@ -73,6 +75,13 @@ export class ResourceFactory {
                 AttributeName: connectionAttributeName,
                 AttributeType: 'S'
             }))
+        }
+
+        if (sortAttributeName) {
+            const existingSortAttribute = attributeDefinitions.find(attr => attr.AttributeName === sortAttributeName)
+            if (!existingSortAttribute) {
+                attributeDefinitions.push(new AttributeDefinition({ AttributeName: sortAttributeName, AttributeType: 'S' }))
+            }
         }
         table.Properties.GlobalSecondaryIndexes = gsis
         table.Properties.AttributeDefinitions = attributeDefinitions

@@ -54,7 +54,7 @@ export class ModelConnectionTransformer extends Transformer {
     constructor() {
         super(
             'ModelConnectionTransformer',
-            `directive @connection(name: String, keyField: String) on FIELD_DEFINITION`
+            `directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -119,6 +119,7 @@ export class ModelConnectionTransformer extends Transformer {
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
 
         let connectionAttributeName = getDirectiveArgument(directive)("keyField")
+        let sortAttributeName = getDirectiveArgument(directive)("sortField")
 
         // Relationship Cardinalities:
         // 1. [] to []
@@ -157,7 +158,7 @@ export class ModelConnectionTransformer extends Transformer {
             }
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(parentTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
-            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName)
+            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName, sortAttributeName)
             ctx.setResource(tableLogicalId, updated)
 
             const getResolver = this.resources.makeGetItemConnectionResolver(
@@ -192,7 +193,7 @@ export class ModelConnectionTransformer extends Transformer {
 
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(relatedTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
-            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName)
+            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName, sortAttributeName)
             ctx.setResource(tableLogicalId, updated)
 
             const queryResolver = this.resources.makeQueryConnectionResolver(

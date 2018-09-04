@@ -7,6 +7,7 @@ const TransformPackage = require('graphql-transformer-core');
 const GraphQLTransform = TransformPackage.default;
 const { collectDirectiveNames } = TransformPackage;
 const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
+const CustomTransformer = require('graphql-custom-transformer').default;
 const ModelAuthTransformer = require('graphql-auth-transformer').default;
 const AppSyncTransformer = require('graphql-appsync-transformer').default;
 const ModelConnectionTransformer = require('graphql-connection-transformer').default;
@@ -76,6 +77,7 @@ async function transformGraphQLSchema(context, options) {
   const transformerList = [
     new AppSyncTransformer(buildDir),
     new DynamoDBModelTransformer(),
+    new CustomTransformer(),
     new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
   ];
