@@ -67,10 +67,9 @@ function updateResource(context, category, service) {
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
       const jsonString = JSON.stringify(parameters, null, 4);
       fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-      context.amplify.updateamplifyMetaAfterResourceAdd(
+      context.amplify.updateamplifyMetaAfterResourceUpdate(
         category,
         answers.resourceName,
-        options,
       );
       return answers.resourceName;
     });

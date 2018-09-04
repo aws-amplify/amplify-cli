@@ -123,6 +123,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   let intentName;
   let answers;
   let parameters;
+  let deleteIntentConfirmed = false;
 
   // Follows path based on start choice
 
@@ -191,7 +192,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     let slots;
     let newSlotTypes = [];
     const intentChoice = await inquirer.prompt(addUpdateIntentQuestion);
-    if (intentChoice[inputs[6].key] === "Choose an existing intent") {
+    if (intentChoice[inputs[6].key] === "Update an existing intent") {
       // TODO: get intents from cloud/backend
       const intentList = parameters.intents.map(x => x.intentName);
       const chooseIntent = {
@@ -201,7 +202,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         choices: intentList
       }
       intentName = await inquirer.prompt(chooseIntent);
-      intentName = intentName[inputs[7].key]
+      intentName = intentName[inputs[7].key];
 
       const addUtteranceQuestion = {
         type: inputs[8].type,
@@ -250,6 +251,25 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         continueAddingIntents = continueAddingIntents[inputs[23].key];
         //console.log(continueAddingIntents);
       }
+    }
+    else if (intentChoice[inputs[6].key] === "Delete an intent"){
+      const intentList = parameters.intents.map(x => x.intentName);
+      const chooseIntent = {
+        type: inputs[7].type,
+        name: inputs[7].key,
+        message: inputs[7].question,
+        choices: intentList
+      }
+      intentName = await inquirer.prompt(chooseIntent);
+      intentName = intentName[inputs[7].key];
+
+      const deleteIntentConfirmation = {
+        type: inputs[31].type,
+        name: inputs[31].key,
+        message: inputs[31].question
+      }
+      deleteIntentConfirmed = await inquirer.prompt(deleteIntentConfirmation);
+      deleteIntentConfirmed = deleteIntentConfirmed[inputs[31].key];
     }
     else {
       context.print.error("No existing intents");
@@ -323,7 +343,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       "intents": intents,
       "outputVoice": outputVoice,
       "sessionTimeout": sessionTimeout,
-      "coppa": coppa
+      "coppa": coppa,
     }
   } 
   else {
@@ -331,28 +351,38 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   }
   console.log(answers);
 
-  let resource;
   // Write answers to parameters.json file
   if (parameters) {
     if (answers.intentName) {
-      parameters.intents.forEach(function(intent) {
-        if (intent.intentName == answers.intentName) {
-          if (answers.utterances) {
-            intent.utterances = intent.utterances.concat(answers.utterances);
-          }
-          if (answers.slots) {
-            intent.slots = intent.slots.concat(answers.slots);
-          }
-          if (answers.newSlotTypes) {
-            if (intent.newSlotTypes) {
-              intent.newSlotTypes = intent.newSlotTypes.concat(answers.newSlotTypes);
-            }
-            else {
-              intent.newSlotTypes = answers.newSlotTypes;
-            }
+      if (deleteIntentConfirmed) {
+        for (let i = 0; i < parameters.intents.length; i++) {
+          console.log(i, parameters.intents[i].intentName, answers.intentName)
+          if (parameters.intents[i].intentName == answers.intentName) {
+            parameters.intents.splice(i, 1);
+            break;
           }
         }
-      })
+      }
+      else {
+        parameters.intents.forEach(function(intent) {
+          if (intent.intentName == answers.intentName) {
+            if (answers.utterances) {
+              intent.utterances = intent.utterances.concat(answers.utterances);
+            }
+            if (answers.slots) {
+              intent.slots = intent.slots.concat(answers.slots);
+            }
+            if (answers.newSlotTypes) {
+              if (intent.newSlotTypes) {
+                intent.newSlotTypes = intent.newSlotTypes.concat(answers.newSlotTypes);
+              }
+              else {
+                intent.newSlotTypes = answers.newSlotTypes;
+              }
+            }
+          }
+        })
+      }
     }
     else {
       if (!answers.intents) {

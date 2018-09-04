@@ -62,8 +62,9 @@
 				"question": "Would you like to add an intent or choose and existing intent?",
 				"type": "list",
 				"options": [
-					"Choose an existing intent",
-					"Add an intent"
+					"Update an existing intent",
+					"Add an intent",
+					"Delete an intent"
 				],
 				"required": true
 			},
@@ -296,13 +297,19 @@
 				"type": "confirm",
 				"default": true,
 				"required": true
+			},
+			{
+				"key": "deleteIntentConfirmation",
+				"question": "Are you sure you want to delete this intent?",
+				"type": "confirm",
+				"required": true
 			}
 		],
 		"samples": {
 			"BookTrip": [
 				{
 					"cancelMessage": "Okay, I have cancelled your reservation in progress.",
-					"confirmationQuestion": "Okay, I have you down for a {CarType} rental in {PickUpCity} from {PickUpDate} to {ReturnDate}.  Should I book the reservation?",
+					"confirmationQuestion": "Okay, I have you down for a {CarType} rental in {PickUpCity} from {PickUpDate} to {ReturnDate}. Should I book the reservation?",
 					"slots": [
 						{
 							"name": "PickUpCity",
@@ -331,7 +338,7 @@
 						{
 							"name": "CarType",
 							"type": "CarTypeValues",
-							"prompt": "What type of car would you like to rent?  Our most popular options are economy, midsize, and luxury",
+							"prompt": "What type of car would you like to rent? Our most popular options are economy, midsize, and luxury",
 							"required": true
 						}
 					],
@@ -358,7 +365,7 @@
 				},
 				{
 					"cancelMessage": "Okay, I have cancelled your reservation in progress.",
-					"confirmationQuestion": "Okay, I have you down for a {Nights} night stay in {Location} starting {CheckInDate}.  Shall I book the reservation?",
+					"confirmationQuestion": "Okay, I have you down for a {Nights} night stay in {Location} starting {CheckInDate}. Shall I book the reservation?",
 					"slots": [
 						{
 							"name": "Location",
@@ -381,7 +388,7 @@
 						{
 							"name": "RoomType",
 							"type": "RoomTypeValues",
-							"prompt": "What type of car would you like to rent?  Our most popular options are economy, midsize, and luxury",
+							"prompt": "What type of car would you like to rent? Our most popular options are economy, midsize, and luxury",
 							"required": true
 						}
 					],
@@ -407,7 +414,7 @@
 			"OrderFlowers": [
 				{
 					"cancelMessage": "Okay, I will not place your order.",
-					"confirmationQuestion": "Okay, your {FlowerType} will be ready for pickup by {PickupTime} on {PickupDate}.  Does this sound okay?",
+					"confirmationQuestion": "Okay, your {FlowerType} will be ready for pickup by {PickupTime} on {PickupDate}. Does this sound okay?",
 					"slots": [
 						{
 							"name": "FlowerType",
