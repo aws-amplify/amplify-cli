@@ -41,7 +41,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
       response = false;
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
-    } else if (cond.preventEdit === '=' && (previousValues[cond.key] == undefined || previousValues[cond.key] !== cond.value )) {
+    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value ) {
       response = false;
     }
   }

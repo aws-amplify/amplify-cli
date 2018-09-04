@@ -239,7 +239,12 @@
 					},
 					{
 						"key": "mfaConfiguration",
-						"value": "OFF",
+						"value": "ON",
+						"preventEdit": "="
+					},
+					{
+						"key": "mfaConfiguration",
+						"value": "OPTIONAL",
 						"preventEdit": "="
 					}
 				],

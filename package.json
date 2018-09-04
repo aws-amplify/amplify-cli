@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
-    "test": "npx lerna@2.11 run lint && npx lerna@2.11 run test",
+    "test": "lerna run lint && lerna run test",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
-    "clean": "rm -rf node_modules && npx lerna@2.11 clean --yes",
-    "production-build": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap --hoist && npx lerna@2.11 run build",
-    "setup-dev": "npx lerna@2.11 exec -- rm -f package-lock.json && npx lerna@2.11 bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && npx lerna@2.11 run build",
-    "setup-dev-win": "npx lerna@2.11 bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link",
-    "publish:master": "npx lerna@2.11 publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
-    "publish:beta": "npx lerna@2.11 publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
-    "publish:release": "npx lerna@2.11 publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
+    "clean": "rm -rf node_modules && lerna clean --yes",
+    "production-build": "lerna exec -- rm -f package-lock.json && lerna bootstrap --hoist && lerna run build",
+    "setup-dev": "lerna exec -- rm -f package-lock.json && lerna bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && lerna run build",
+    "setup-dev-win": "lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link",
+    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
+    "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
+    "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
@@ -26,6 +26,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^2.11.0"
+    "lerna": "2.11.0"
   }
 }

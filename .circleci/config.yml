@@ -6,16 +6,17 @@ machine:
 defaults: &defaults
   working_directory: ~/repo
   docker:
-      - image: circleci/node:10.8
-        environment:
-          TERM: xterm
-
+      - image: circleci/node:8.9.1
+  parallelism: 8
+  
 jobs:
   build:
     <<: *defaults
     steps:
       - checkout
-      - run: npm run production-build
+      - run: yarn
+      - run: yarn config set workspaces-experimental true
+      - run: yarn run production-build
       - save_cache:
           key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
@@ -49,10 +50,12 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
       - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
           name: "Publish Amplify CLI"
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               yarn run publish:$CIRCLE_BRANCH
@@ -76,3 +79,4 @@ workflows:
             branches:
               only:
                 - release
+                - master

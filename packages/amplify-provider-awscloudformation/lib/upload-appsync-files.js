@@ -59,6 +59,8 @@ function uploadAppSyncFiles(context, resources) {
         if (fs.existsSync(parametersFilePath)) {
           try {
             currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
+            // Clear the parameters cache
+            currentParameters = { AppSyncApiName: currentParameters.AppSyncApiName };
           } catch (e) {
             currentParameters = {};
           }
