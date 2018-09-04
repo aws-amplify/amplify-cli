@@ -1,7 +1,7 @@
 import { Transformer, TransformerContext } from 'graphql-transformer-core'
 import { DirectiveNode, ObjectTypeDefinitionNode, NamedTypeNode, InterfaceTypeDefinitionNode, FieldDefinitionNode } from 'graphql'
 import { ResourceFactory } from './resources'
-import { blankObjectExtension, extensionWithFields, ResolverResourceIDs, toUpper, getDirectiveArgument  } from 'graphql-transformer-common'
+import { blankObjectExtension, extensionWithFields, ResolverResourceIDs, toUpper, getDirectiveArgument } from 'graphql-transformer-common'
 import Resource from "cloudform/types/resource";
 
 /**
@@ -10,9 +10,10 @@ import Resource from "cloudform/types/resource";
 export class CustomTransformer extends Transformer {
 
     resources: ResourceFactory
-    blanks: {[key: string]: any} = {
+    blanks: { [key: string]: any } = {
         Mutation: blankObjectExtension('Mutation'),
-        Query: blankObjectExtension('Query')
+        Query: blankObjectExtension('Query'),
+        Subscription: blankObjectExtension('Subscription')
     }
 
     constructor() {
