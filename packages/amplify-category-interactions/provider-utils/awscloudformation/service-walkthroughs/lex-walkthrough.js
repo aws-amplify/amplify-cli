@@ -225,7 +225,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
       let slotReturn = [];
       if (addSlotAnswer[inputs[9].key]) {
-        slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata);
+        slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
       }
       //console.log(slotReturn);
       if (slotReturn.length > 1) {
@@ -408,8 +408,9 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   intentName = await inquirer.prompt(intentNameQuestion);
   intentName = intentName[inputs[12].key];
 
-  // Checks to see if intent name is unique
-  while ((intents.filter( intent => intent.intentName === intentName ).length > 0) || (parameters && parameters.intents.filter( intent => intent.intentName === intentName ).length > 0)) {
+  // Checks for duplicate intent names
+  while ((intents.filter( intent => intent.intentName === intentName ).length > 0)
+          || (parameters && parameters.intents.filter( intent => intent.intentName === intentName ).length > 0)) {
     print.info('');
     print.info('Intent names must be unique');
     print.info('');
@@ -426,7 +427,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
 
   let slots;
   let newSlotTypes = [];
-  let slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata);
+  let slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
   if (slotReturn.length > 1) {
     slots = slotReturn[0];
     newSlotTypes.push(slotReturn[1]);
@@ -531,9 +532,9 @@ async function addUtterance(context, intentName, botName, resourceName, serviceM
   return utterances;
 }
 
-async function addSlot(context, intentName, botName, resourceName, serviceMetadata) {
+async function addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters) {
   let { inputs } = serviceMetadata;
-  const { amplify } = context;
+  const { amplify, print } = context;
   const addAnotherSlotQuestion = {
     type: inputs[25].type,
     name: inputs[25].key,
@@ -569,6 +570,16 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     let slot = {name:"", type:"", prompt:"", required: true};
     slot.name = await inquirer.prompt(slotNameQuestion);
     slot.name = slot.name[inputs[14].key];
+    
+    // Checks for duplicate slot names
+    while ((slots.filter( existingSlot => existingSlot.name === slot.name ).length > 0)
+            || (parameters && parameters.intents.filter( intent => intent.intentName === intentName )[0] && parameters.intents.filter( intent => intent.intentName === intentName )[0].slots.filter( existingSlot => existingSlot.name === slot.name ).length > 0)) {
+      print.info('');
+      print.info('Slot names must be unique');
+      print.info('');
+      slot.name = await inquirer.prompt(slotNameQuestion);
+      slot.name = slot.name[inputs[14].key];
+    }
 
     slot.type = await getSlotType(context, serviceMetadata);
     //console.log(slot.type.slotTypeDescription);
