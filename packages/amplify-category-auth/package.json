@@ -7,18 +7,32 @@
   "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+    "test": "jest"
   },
   "dependencies": {
     "chalk": "^2.4.1",
     "chalk-pipe": "^1.2.0",
     "eslint": "^4.19.1",
     "inquirer": "^6.0.0",
+    "jest": "^23.5.0",
     "lodash": "^4.17.10",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+    "eslint-plugin-import": "^2.12.0",
+    "jest": "^23.5.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

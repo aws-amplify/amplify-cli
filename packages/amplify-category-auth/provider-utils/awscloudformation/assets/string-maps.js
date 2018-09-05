@@ -1,3 +1,8 @@
+const messages = {
+  authExists: 'Auth has already been added to this project. To update run amplify update auth.',
+  dependenciesExists: '\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n',
+};
+
 const learnMoreOption = [{
   name: 'I want to learn more.',
   value: 'learnMore',
@@ -201,4 +206,5 @@ module.exports = {
   emailRegistration,
   defaultPrompMap,
   booleanOptions,
+  messages,
 };

@@ -9,6 +9,7 @@
     "access": "public"
   },
   "scripts": {
+    "test": "jest",
     "lint": "eslint src",
     "lint-fix": "eslint . --fix"
   },
@@ -48,7 +49,19 @@
     "babel-eslint": "^8.0.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
+    "jest": "^23.5.0",
     "nyc": "^11.2.1",
     "prettier": "^1.7.4"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
