@@ -59,6 +59,10 @@ function getConfiguredAwsCfnClient(context) {
   if (projectConfigInfo.action === 'init') {
     if (projectConfigInfo.useProfile && projectConfigInfo.profileName) {
       process.env.AWS_PROFILE = projectConfigInfo.profileName;
+      const credentials = new aws.SharedIniFileCredentials({
+        profile: projectConfigInfo.profileName,
+      });
+      aws.config.credentials = credentials;
     } else {
       aws.config.update({
         accessKeyId: projectConfigInfo.accessKeyId,
