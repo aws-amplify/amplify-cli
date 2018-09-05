@@ -1,5 +1,3 @@
-import generateAllOps, { GQLTemplateOp } from "./generateOperations";
-
 import * as fs from "fs";
 import * as path from "path";
 import * as handlebars from "handlebars";
@@ -11,6 +9,8 @@ import {
   IntrospectionSchema,
   IntrospectionQuery
 } from "graphql";
+
+import generateAllOps, { GQLTemplateOp, GQLAllOperations } from "./generator";
 
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, "../templates"));
 const FILE_EXTENSION_MAP = {
@@ -34,7 +34,7 @@ function generate(
   }
 
   const schema: IntrospectionQuery = schemaData.data || schemaData;
-  const gqlOperations = generateAllOps(schema);
+  const gqlOperations : GQLAllOperations = generateAllOps(schema);
   registerPartials();
   const fileExtension = FILE_EXTENSION_MAP[language];
   if (options.separateFiles) {
@@ -75,7 +75,6 @@ function renderOps(operations: Array<GQLTemplateOp>, language: string='graphql')
 }
 
 function registerPartials() {
-  // const templateDir = path.resolve(path.join(__dirname, "../templates"));
   const partials = fs.readdirSync(TEMPLATE_DIR);
   partials.forEach(partial => {
     if (!partial.startsWith("_") || !partial.endsWith(".hbs")) {
