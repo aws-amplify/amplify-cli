@@ -1,4 +1,6 @@
 const fs = require('fs');
+const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+
 
 const subcommand = 'update';
 const category = 'auth';
@@ -16,10 +18,14 @@ module.exports = {
       return context.print.warning('Auth has not yet been added to this project.');
     }
 
-    const dependentResources = Object.keys(amplify.getProjectDetails().amplifyMeta).some(e => ['analytics', 'api', 'storage', 'function'].includes(e));
+    const meta = amplify.getProjectDetails().amplifyMeta;
+    const dependentResources = Object.keys(meta)
+      .some((e) => { //eslint-disable-line
+        return ['analytics', 'api', 'storage', 'function'].includes(e) && Object.keys(meta[e]).length > 0;
+      });
 
     if (dependentResources) {
-      context.print.info('\nYou have configured resources that might depend on this Cognito resource.  Updating this Cognito resource could have unintended side effects.\n');
+      context.print.info(messages.dependenciesExists);
     }
 
     const resourceName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0];
