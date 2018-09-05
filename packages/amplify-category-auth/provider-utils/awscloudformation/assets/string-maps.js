@@ -166,12 +166,6 @@ const authProviders = [
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
   },
-  {
-    name: 'Twitter',
-    value: 'api.twitter.com',
-    answerHashKey: 'twitterConsumerKey',
-    concatKeys: ['twitterConsumerSecret'],
-  },
 ];
 
 const disableOptionsOnEdit = () => {
