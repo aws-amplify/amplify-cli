@@ -9,6 +9,10 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
+  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+
+  const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
   const copyJobs = [
     {
@@ -19,7 +23,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, true, false);
+  return context.amplify.copyBatch(context, copyJobs, Object.assign(defaultValues, options), true, false);
 }
 
 function addResource(context, category, service, options) {

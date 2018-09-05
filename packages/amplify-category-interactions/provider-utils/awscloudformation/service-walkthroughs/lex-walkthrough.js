@@ -6,6 +6,8 @@ const category = 'interactions';
 const parametersFileName = 'lex-params.json';
 const serviceName = 'Lex';
 const templateFileName = 'lex-cloudformation-template.json.ejs';
+const aws = require('aws-sdk');
+const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -179,7 +181,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     else {
       context.print.error("No chatbots to update");
     }
-    console.log(parameters);
+    // console.log(parameters);
 
     const addUpdateIntentQuestion = {
       type: inputs[6].type,
@@ -227,12 +229,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       if (addSlotAnswer[inputs[9].key]) {
         slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
       }
-      //console.log(slotReturn);
       if (slotReturn.length > 1) {
         slots = slotReturn[0];
         newSlotTypes = slotReturn[1];
-        console.log(slots);
-        console.log(newSlotTypes);
+        // console.log(slots);
+        // console.log(newSlotTypes);
       }
       else { slots = slotReturn }
     }
@@ -349,7 +350,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   else {
     context.print.error("Valid option not chosen");
   }
-  console.log(answers);
+  // console.log(answers);
 
   // Write answers to parameters.json file
   if (parameters) {
@@ -394,8 +395,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 async function addIntent(context, botName, resourceName, serviceMetadata, intents, parameters) {
   let { inputs } = serviceMetadata;
   const { amplify, print } = context;
-  console.log("Adding intent...");
-  console.log("botName:",botName,"resourceName:",resourceName);
+  // console.log("Adding intent...");
+  // console.log("botName:",botName,"resourceName:",resourceName);
 
   const intentNameQuestion = {
     type: inputs[12].type,
@@ -419,7 +420,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   }
 
   let utterances = await addUtterance(context, intentName, botName, resourceName, serviceMetadata);
-  console.log(utterances);
+  // console.log(utterances);
 
   print.info('');
   print.info('Now, add a slot to your intent. A slot is data the user must provide to fulfill the intent.');
@@ -430,9 +431,9 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   let slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
   if (slotReturn.length > 1) {
     slots = slotReturn[0];
-    newSlotTypes.push(slotReturn[1]);
-    console.log(slots);
-    console.log(newSlotTypes);
+    newSlotTypes = slotReturn[1];
+    // console.log(slots);
+    // console.log(newSlotTypes);
   }
   else { slots = slotReturn }
 
@@ -453,7 +454,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
       validate: amplify.inputValidation(inputs[19])
     }
     confirmationQuestion = await inquirer.prompt(confirmationQuestionQuestion);
-    confirmationQuestion = confirmationQuestion[inputs[19].key];
+    confirmationQuestion = confirmationQuestion[inputs[19].key] 
 
     const cancelMessageQuestion = {
       type: inputs[20].type,
@@ -462,7 +463,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
       validate: amplify.inputValidation(inputs[20])
     }
     cancelMessage = await inquirer.prompt(cancelMessageQuestion);
-    cancelMessage = cancelMessage[inputs[20].key];
+    cancelMessage = cancelMessage[inputs[20].key] ;
   }
 
   const intentFulfillmentQuestion = {
@@ -476,7 +477,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   let pathsAnswer;
   if (intentFulfillment === "lambdaFunction") {
     pathsAnswer = await askPaths(context);
-    console.log(pathsAnswer);
+    // console.log(pathsAnswer);
     // TODO: get lambda functions from backend/cloud
     /*lambdaFunctions = ["lambda1","lambda2","lambda3"];
     const lambdaFunctionQuestion = {
@@ -519,8 +520,8 @@ async function addUtterance(context, intentName, botName, resourceName, serviceM
   let addAnotherUtterance = true;
   let utterances = [];
   while (addAnotherUtterance) {
-    console.log("Adding utterance...");
-    console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
+    // console.log("Adding utterance...");
+    // console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
 
     let utterance = await inquirer.prompt(utteranceQuestion);
     utterance = utterance[inputs[13].key];
@@ -564,8 +565,8 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
   let newSlotTypeAdded = false;
   let newSlotTypes = [];
   while (addAnotherSlot) {
-    console.log("Adding slot...");
-    console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
+    // console.log("Adding slot...");
+    // console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
 
     let slot = {name:"", type:"", prompt:"", required: true};
     slot.name = await inquirer.prompt(slotNameQuestion);
@@ -592,6 +593,8 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
       newSlotTypeAdded = true;
       slot.type = newSlotTypes[newSlotTypes.length-1].slotType;
     }
+
+    // console.log("newSlotTypes======", newSlotTypes);
 
     slot.prompt = await inquirer.prompt(slotPromptQuestion);
     slot.prompt = slot.prompt[inputs[16].key];
@@ -622,6 +625,19 @@ async function getSlotType(context, serviceMetadata) {
   if (slotTypeChoice[inputs[26].key] == "Amazon built-in slot type") {
     // TODO: get slot names from lex/cloud
     const slotTypes = ['AMAZON.cities', 'AMAZON.actors', 'AMAZON.dates','AMAZON.months','AMAZON.food','AMAZON.games','AMAZON.EmailAddresses','AMAZON.countries'];
+    /*let slotTypeParams = {
+      locale: "en-US",
+      maxResults: 50
+    };
+    // missing region in config
+    lex.getBuiltinSlotTypes(slotTypeParams, function(err, data) {
+      if (err) console.log("err", err, err.stack); // an error occurred
+      else     console.log("data", data);           // successful response
+    });
+    lexmodelbuildingservice.getBuiltinSlotTypes(params, function(err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else     console.log(data);           // successful response
+    });*/
     const slotTypeQuestion = {
       type: inputs[15].type,
       name: inputs[15].key,
@@ -671,7 +687,7 @@ async function getSlotType(context, serviceMetadata) {
       continueAddingSlotValues = await inquirer.prompt(continueAddingSlotValuesQuestion);
       continueAddingSlotValues = continueAddingSlotValues[inputs[30].key];
     }
-    console.log(slotValues);
+    // console.log(slotValues);
 
     return {
       "slotType": slotType,
