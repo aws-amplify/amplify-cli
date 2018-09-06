@@ -60,7 +60,10 @@ function uploadAppSyncFiles(context, resources) {
           try {
             currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
             // Clear the parameters cache
-            currentParameters = { AppSyncApiName: currentParameters.AppSyncApiName };
+            currentParameters = {
+              AppSyncApiName: currentParameters.AppSyncApiName,
+              AuthCognitoUserPoolId: currentParameters.AuthCognitoUserPoolId,
+            };
           } catch (e) {
             currentParameters = {};
           }
