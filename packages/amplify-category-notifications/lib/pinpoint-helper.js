@@ -1,6 +1,6 @@
 const opn = require('opn');
 const constants = require('./constants');
-
+const authHelper = require('./auth-helper'); 
 const providerName = 'awscloudformation';
 
 async function checkPinpointApp(context) {
@@ -14,6 +14,8 @@ async function checkPinpointApp(context) {
       }
     } else {
       pinpointApp = await createApp(context, projectConfig.projectName);
+      context.exeInfo.pinpointApp = pinpointApp; 
+      await authHelper.ensureAuth(context); 
     }
     amplifyMeta[constants.CategoryName] = {};
     amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
