@@ -135,8 +135,20 @@ export class ModelAuthTransformer extends Transformer {
             update: [],
             delete: []
         }
-        const matchQuery = (op: ModelQuery) => (rule: AuthRule) => rule && (!rule.queries || rule.queries.includes(op))
-        const matchMutation = (op: ModelMutation) => (rule: AuthRule) => rule && (!rule.mutations || rule.mutations.includes(op))
+        const matchQuery = (op: ModelQuery) => (rule: AuthRule) => {
+            if (rule.queries) {
+                const matchesOp = rule.queries.find(o => o === op)
+                return Boolean(matchesOp)
+            }
+            return false
+        }
+        const matchMutation = (op: ModelMutation) => (rule: AuthRule) => {
+            if (rule.mutations) {
+                const matchesOp = rule.mutations.find(o => o === op)
+                return Boolean(matchesOp)
+            }
+            return false
+        }
         for (const rule of rules) {
             if (matchQuery('get')(rule)) {
                 queryRules.get.push(rule)
