@@ -173,12 +173,17 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
   // There can only be one hosting resource fpr S3AndCloudFront service
   const s3AndCloudfrontResource = s3AndCloudfrontResources[0];
 
-  return {
+  const result = {
     aws_content_delivery_bucket: s3AndCloudfrontResource.output.HostingBucketName,
     aws_content_delivery_bucket_region: s3AndCloudfrontResource.output.Region,
-    aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL ||
-      s3AndCloudfrontResource.output.WebsiteURL,
+    aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL,
   };
+
+  if(s3AndCloudfrontResource.output.CloudFrontSecureURL){
+    result.aws_content_delivery_url = s3AndCloudfrontResource.output.CloudFrontSecureURL; 
+  }
+
+  return result; 
 }
 
 
