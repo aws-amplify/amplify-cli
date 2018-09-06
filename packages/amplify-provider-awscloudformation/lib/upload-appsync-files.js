@@ -5,13 +5,13 @@ const pythonStreamingFunctionFileName = 'python_streaming_function.zip';
 const schemaFileName = 'schema.graphql';
 const S3 = require('../src/aws-utils/aws-s3');
 
-const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files'
+const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
-  return projectBucket
+  return projectBucket;
 }
 
 function uploadAppSyncFiles(context, resources) {
@@ -50,7 +50,7 @@ function uploadAppSyncFiles(context, resources) {
     }
 
     const resolverFiles = fs.readdirSync(resolverDir);
-    const resolverBucket = getProjectBucket(context)
+    const resolverBucket = getProjectBucket(context);
 
     resolverFiles.forEach((file) => {
       const resolverFilePath = path.join(resolverDir, file);
@@ -83,8 +83,8 @@ function uploadAppSyncFiles(context, resources) {
         Object.assign(currentParameters, {
           ResolverBucket: resolverBucket,
           ResolverRootKey: ROOT_APPSYNC_S3_KEY,
-          DeploymentTimestamp: buildTimeStamp
-        })
+          DeploymentTimestamp: buildTimeStamp,
+        });
         const jsonString = JSON.stringify(currentParameters, null, 4);
         fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
       });
@@ -110,8 +110,6 @@ function uploadAppSyncFile(context, fileName, filePath, s3LocationMap, buildTime
 }
 
 function uploadAppSyncResolver(context, fileName, filePath, buildTimeStamp) {
-  const formattedName = fileName.split('.').map((s, i) => (i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s)).join('');
-
   const s3Key = `${ROOT_APPSYNC_S3_KEY}/${fileName}.${buildTimeStamp}`;
 
   return new S3(context)
@@ -121,7 +119,7 @@ function uploadAppSyncResolver(context, fileName, filePath, buildTimeStamp) {
         Key: s3Key,
       };
       return s3.uploadFile(s3Params);
-    })
+    });
 }
 
 function uploadLambdaStreamingFunction(context, fileName, filePath, s3LocationMap) {
