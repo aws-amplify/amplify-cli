@@ -1,10 +1,19 @@
+const ora = require('ora');
 const constants = require('./constants');
 
 const providerName = 'awscloudformation';
+const spinner = ora('');
 
 async function ensureAuth(context) {
-  const policy = await createPolicy(context);
-  await attachPolicy(context, policy);
+  try {
+    spinner.start('Creating and attaching IAM policy.');
+    const policy = await createPolicy(context);
+    await attachPolicy(context, policy);
+    spinner.succeed('Successfully set the IAM policy');
+  } catch (e) {
+    spinner.fail('Error occured during IAM policy setup.');
+    throw e;
+  }
   await checkAuth(context);
 }
 
@@ -61,6 +70,7 @@ async function checkAuth(context) {
     context.print.warning(`Adding ${constants.CategoryName} would also add the Auth category to the project if not already added.`);
     try {
       await externalAuthEnable(context, constants.CategoryName, '', apiRequirements);
+      context.print.warning('Execute "amplify push" to update the Auth resources in the cloud.');
     } catch (e) {
       context.print.error(e);
       throw e;
