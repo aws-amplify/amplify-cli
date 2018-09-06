@@ -6,7 +6,7 @@ machine:
 defaults: &defaults
   working_directory: ~/repo
   docker:
-      - image: circleci/node:8.9.1
+      - image: circleci/node:10.8
   parallelism: 8
   
 jobs:
@@ -14,15 +14,16 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
       - run: yarn
       - run: yarn config set workspaces-experimental true
       - run: yarn run production-build
       - save_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.cache
       - save_cache:
-          key: amplify-ssh-deps-{{ .Branch }}
+          key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - persist_to_workspace:
@@ -34,15 +35,85 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm run test
+  integration_test:
+      working_directory: ~/repo
+      docker:
+        - image: cypress/base:10
+          environment:
+            TERM: dumb
+      steps:
+        - attach_workspace:
+            at: ./
+        - restore_cache:
+            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }} 
+        - run: apt-get install -y sudo
+        - run: sudo apt-get install -y tcl
+        - run: sudo apt-get install -y expect
+        - run: sudo apt-get install -y zip
+        - run: sudo apt-get install -y lsof
+        - run: sudo npm run setup-dev
+        - run: amplify
+        - run: 
+            name: "Clone auth test package"
+            command: |
+              git clone $AUTH_CLONE_URL
+              cd aws-amplify-cypress-auth
+              yarn
+        - run: cd .circleci/ && chmod +x com1.sh
+        - run: expect .circleci/enable_auth.exp
+        - run: cd aws-amplify-cypress-auth 
+        - run: yarn
+        - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*') 
+        - run:
+            name: "Start Auth test server in background"
+            command: |
+              cd aws-amplify-cypress-auth
+              pwd
+              yarn start
+            background: true
+        - run: cat $(find . -type f -name 'auth_spec*')
+        - run:
+            name: "Run cypress tests for auth"
+            command: |
+              npm install --save cypress
+              node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
+        - run: sudo kill -9 $(lsof -t -i:3000)
+        - run: 
+            name: "Clone API test package"
+            command: |
+              git clone $API_CLONE_URL
+              cd aws-amplify-cypress-api
+              yarn
+        - run: cd .circleci/ && chmod +x com2.sh
+        - run: expect .circleci/enable_api.exp
+        - run: cd aws-amplify-cypress-api 
+        - run: yarn
+        - run: cd aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')  
+        - run:
+            name: "Start API test server in background"
+            command: |
+              cd aws-amplify-cypress-api
+              pwd
+              yarn start 
+            background: true
+        - run:
+            name: "Run cypress tests for api"
+            command: |
+              npm install --save cypress
+              node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
+        - store_artifacts:
+            path: cypress/videos
+        - store_artifacts:
+            path: cypress/screenshots
   deploy:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
@@ -69,6 +140,9 @@ workflows:
     jobs:
       - build
       - test:
+          requires:
+            - build
+      - integration_test:
           requires:
             - build
       - deploy:
