@@ -6,8 +6,7 @@ const category = 'interactions';
 const parametersFileName = 'lex-params.json';
 const serviceName = 'Lex';
 const templateFileName = 'lex-cloudformation-template.json.ejs';
-const aws = require('aws-sdk');
-const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
+var fuzzy = require('fuzzy');
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -615,6 +614,8 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
   let { inputs } = serviceMetadata;
   const { amplify } = context;
   let slotType;
+  inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+  
   const slotTypeChoiceQuestion = {
     type: inputs[26].type,
     name: inputs[26].key,
@@ -635,11 +636,23 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
     } while (slotTypeOptions);
 
+    function searchSlotTypes(answers, input) {
+      input = input || '';
+      return new Promise(function(resolve) {
+        var fuzzyResult = fuzzy.filter(input, builtInSlotTypes);
+        resolve(
+          fuzzyResult.map(function(el) {
+            return el.original;
+          })
+        );
+      });
+    }
+
     const slotTypeQuestion = {
       type: inputs[15].type,
       name: inputs[15].key,
       message: inputs[15].question,
-      choices: builtInSlotTypes
+      source: searchSlotTypes
     }
     slotType = await inquirer.prompt(slotTypeQuestion);
     return slotType[inputs[15].key];

@@ -155,7 +155,7 @@
 			{
 				"key": "slotType",
 				"question": "Choose a slot type:",
-				"type": "list",
+				"type": "autocomplete",
 				"required": true
 			},
 			{
