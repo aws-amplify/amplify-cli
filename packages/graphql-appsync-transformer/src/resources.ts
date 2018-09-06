@@ -8,6 +8,22 @@ import Resource from "cloudform/types/resource";
 
 export class ResourceFactory {
 
+    public makeResolverS3RootParams(): Template {
+        return {
+            Parameters: {
+                ResolverBucket: new StringParameter({
+                    Description: `The name of the bucket containing the resolver templates`,
+                }),
+                ResolverRootKey: new StringParameter({
+                    Description: `The s3 key of the folder containing the resolver templates in format {Type}.{Field}.[response|request].{Timestamp}`,
+                }),
+                DeploymentTimestamp: new StringParameter({
+                    Description: `The timestamp used to identify thie most recent version of the resolver templates in s3.`,
+                })
+            }
+        }
+    }
+
     public makeResolverParam(name: string): Template {
         return {
             Parameters: {
@@ -18,14 +34,38 @@ export class ResourceFactory {
         }
     }
 
-    public updateResolverResource(resource: Resource, requestParamName: string, responseParamName: string) {
+    public updateResolverResource(resource: Resource) {
         return new AppSync.Resolver({
             ApiId: resource.Properties.ApiId,
             DataSourceName: resource.Properties.DataSourceName,
             FieldName: resource.Properties.FieldName,
             TypeName: resource.Properties.TypeName,
-            RequestMappingTemplateS3Location: Fn.Ref(this.removeDotsAndCamelcase(requestParamName)),
-            ResponseMappingTemplateS3Location: Fn.Ref(this.removeDotsAndCamelcase(responseParamName))
+            RequestMappingTemplateS3Location: Fn.Join('', [
+                's3://',
+                Fn.Join('/', [
+                    Fn.Ref('ResolverBucket'),
+                    Fn.Ref('ResolverRootKey'),
+                    Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'request',
+                        Fn.Ref('DeploymentTimestamp')
+                    ])
+                ]),
+            ]),
+            ResponseMappingTemplateS3Location: Fn.Join('', [
+                's3://',
+                Fn.Join('/', [
+                    Fn.Ref('ResolverBucket'),
+                    Fn.Ref('ResolverRootKey'),
+                    Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'response',
+                        Fn.Ref('DeploymentTimestamp')
+                    ])
+                ]),
+            ])
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
