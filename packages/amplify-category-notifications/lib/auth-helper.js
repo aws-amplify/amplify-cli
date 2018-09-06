@@ -27,6 +27,7 @@ async function createPolicy(context){
 }
 
 async function attachPolicy(context, policy){
+    const { amplifyMeta } = context.exeInfo; 
     const authRoleName = amplifyMeta.providers[providerName].AuthRoleName; 
     const unAuthRoleName = amplifyMeta.providers[providerName].UnauthRoleName; 
     await attachPolicyToRole(context, policy, authRoleName); 

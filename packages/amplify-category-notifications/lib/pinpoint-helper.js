@@ -4,7 +4,7 @@ const authHelper = require('./auth-helper');
 const providerName = 'awscloudformation';
 
 async function checkPinpointApp(context) {
-  const { amplifyMeta, projectConfig } = context.exeInfo;
+  const { projectConfig } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
@@ -16,7 +16,11 @@ async function checkPinpointApp(context) {
       pinpointApp = await createApp(context, projectConfig.projectName);
       context.exeInfo.pinpointApp = pinpointApp; 
       await authHelper.ensureAuth(context); 
+      //refresh the metadata becuse the auth might have changed it
+      context.exeInfo.amplifyMeta = context.amplify.getProjectMeta(); 
     }
+    
+    const { amplifyMeta } = context.exeInfo;
     amplifyMeta[constants.CategoryName] = {};
     amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
       service: constants.PinpointName,
