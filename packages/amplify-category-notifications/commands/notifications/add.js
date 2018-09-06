@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
+const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
 
 module.exports = {
   name: 'add',
@@ -27,10 +28,10 @@ module.exports = {
       }
 
       if (channelName) {
-        await pinpointHelper.checkPinpointApp(context);
-        notificationManager.updateaServiceMeta(context);
+        await pinpointHelper.ensurePinpointApp(context);
+        writeAmplifyMeta(context);
         await notificationManager.enableChannel(context, channelName);
-        notificationManager.updateaServiceMeta(context);
+        writeAmplifyMeta(context);
       }
     } else {
       context.print.info('All the available notification channels have already been enabled.');

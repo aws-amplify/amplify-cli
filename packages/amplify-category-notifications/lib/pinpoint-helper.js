@@ -2,9 +2,10 @@ const opn = require('opn');
 const constants = require('./constants');
 const authHelper = require('./auth-helper'); 
 const providerName = 'awscloudformation';
+const writeAmplifyMeta = require('./writeAmplifyMeta');
 
-async function checkPinpointApp(context) {
-  const { projectConfig } = context.exeInfo;
+async function ensurePinpointApp(context) {
+  const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
   if (!pinpointApp) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
@@ -12,26 +13,42 @@ async function checkPinpointApp(context) {
       if (!pinpointApp.Name) {
         pinpointApp = await getApp(context, pinpointApp.Id);
       }
+      amplifyMeta[constants.CategoryName] = {};
+      amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
+        service: constants.PinpointName,
+        output: {
+          Name: pinpointApp.Name,
+          Id: pinpointApp.Id,
+          Region: 'us-east-1',
+        },
+      };
     } else {
-      pinpointApp = await createApp(context, projectConfig.projectName);
-      context.exeInfo.pinpointApp = pinpointApp; 
-      await authHelper.ensureAuth(context); 
-      //refresh the metadata becuse the auth might have changed it
-      context.exeInfo.amplifyMeta = context.amplify.getProjectMeta(); 
+      pinpointApp = await createPinpointApp(context);
     }
-    
-    const { amplifyMeta } = context.exeInfo;
-    amplifyMeta[constants.CategoryName] = {};
-    amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
-      service: constants.PinpointName,
-      output: {
-        Name: pinpointApp.Name,
-        Id: pinpointApp.Id,
-        Region: 'us-east-1',
-      },
-    };
   }
   context.exeInfo.serviceMeta = amplifyMeta[constants.CategoryName][pinpointApp.Name];
+}
+
+async function createPinpointApp(context) {
+  const { projectConfig, amplifyMeta } = context.exeInfo;
+  let pinpointApp = await createApp(context, projectConfig.projectName);
+  amplifyMeta[constants.CategoryName] = {};
+  amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
+    service: constants.PinpointName,
+    output: {
+      Name: pinpointApp.Name,
+      Id: pinpointApp.Id,
+      Region: 'us-east-1',
+    },
+    lastPushTimeStamp: new Date()
+  };
+  writeAmplifyMeta(context); 
+
+  await authHelper.ensureAuth(context); 
+  //refresh the metadata becuse the auth might have changed it
+  context.exeInfo.amplifyMeta = context.amplify.getProjectMeta(); 
+  
+  return pinpointApp; 
 }
 
 async function deletePinpointApp(context) {
@@ -180,7 +197,7 @@ function isAnalyticsAdded(context) {
 }
 
 module.exports = {
-  checkPinpointApp,
+  ensurePinpointApp,
   deletePinpointApp,
   getPinpointClient,
   isAnalyticsAdded,
