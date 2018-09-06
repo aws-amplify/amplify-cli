@@ -125,20 +125,16 @@ module.exports = {
     }
     return new Lex(context)
       .then((result) => {
-        return result.lex.getBuiltinSlotTypes(params).promise()
-          .then((data) => console.log("data:", data));
+        return result.lex.getBuiltinSlotTypes(params).promise();
       });
   },
   getSlotTypes: context => {
     let params = {
       maxResults: 50
     };
-    new Lex(context)
+    return new Lex(context)
       .then((result) => {
-        result.lex.getSlotTypes(params, function(err, data) {
-          if (err) console.log(err, err.stack); // an error occurred
-          else     return data;           // successful response
-        });
+        return result.lex.getSlotTypes(params).promise();
       });
   }
 };

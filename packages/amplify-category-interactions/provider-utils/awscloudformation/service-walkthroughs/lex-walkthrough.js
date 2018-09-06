@@ -581,13 +581,8 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
       slot.name = await inquirer.prompt(slotNameQuestion);
       slot.name = slot.name[inputs[14].key];
     }
-
-    if (newSlotTypes) {
-      slot.type = await getSlotType(context, serviceMetadata, newSlotTypes);
-    }
-    else {
-      slot.type = await getSlotType(context, serviceMetadata);
-    }
+      
+    slot.type = await getSlotType(context, serviceMetadata, newSlotTypes, parameters);
     //console.log(slot.type.slotTypeDescription);
     if (slot.type.slotTypeDescription) {
       newSlotTypes.push({
@@ -616,7 +611,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
   return slots;
 }
 
-async function getSlotType(context, serviceMetadata, newSlotTypes) {
+async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
   let { inputs } = serviceMetadata;
   const { amplify } = context;
   let slotType;
@@ -635,7 +630,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes) {
     let builtInSlotTypesReturn;
     do {
       builtInSlotTypesReturn = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getBuiltInSlotTypes', slotTypeOptions);
-      console.log("return:",builtInSlotTypesReturn);
+      //console.log("return:",builtInSlotTypesReturn);
       builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn.slotTypes.map( slotType => slotType.signature ));
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
     } while (slotTypeOptions);
@@ -650,10 +645,17 @@ async function getSlotType(context, serviceMetadata, newSlotTypes) {
     return slotType[inputs[15].key];
   }
   else if (slotTypeChoice[inputs[26].key] == "Slot type I've already made") {
-    let slotTypes = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getSlotTypes').slotTypes.map( slotType => slotType.name );
+    let slotTypes = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getSlotTypes');
+    slotTypes = slotTypes.slotTypes.map( slotType => slotType.name );
     if (newSlotTypes) {
       slotTypes = slotTypes.concat(newSlotTypes.map( slotType => slotType.slotType ));
     }
+    for (let i = 0; i < parameters.intents.length; i++) {
+      if (parameters.intents[i].newSlotTypes) {
+        slotTypes = slotTypes.concat(parameters.intents[i].newSlotTypes.map( slotType => slotType.slotType ));
+      }
+    }
+    slotTypes = slotTypes.filter( (value, index, self) => self.indexOf(value) === index );
 
     const slotTypeQuestion = {
       type: inputs[15].type,
