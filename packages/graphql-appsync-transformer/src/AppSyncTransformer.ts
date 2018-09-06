@@ -141,6 +141,9 @@ export class AppSyncTransformer extends Transformer {
 
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
 
+        const resolverParams = this.resources.makeResolverS3RootParams()
+        ctx.mergeParameters(resolverParams.Parameters);
+
         for (const resourceName of Object.keys(templateResources)) {
             const resource: Resource = templateResources[resourceName]
             if (resource.Type === 'AWS::AppSync::Resolver') {
@@ -172,17 +175,13 @@ export class AppSyncTransformer extends Transformer {
             const reqFieldName = resolverResource.Properties.FieldName
             const reqFileName = `${reqType}.${reqFieldName}.request`
             fs.writeFileSync(`${resolverFilePath}/${reqFileName}`, requestMappingTemplate)
-            const reqParam = this.resources.makeResolverParam(reqFileName);
-            ctx.mergeParameters(reqParam.Parameters);
 
             const respType = resolverResource.Properties.TypeName
             const respFieldName = resolverResource.Properties.FieldName
             const respFileName = `${respType}.${respFieldName}.response`
             fs.writeFileSync(`${resolverFilePath}/${respFileName}`, responseMappingTemplate)
-            const respParam = this.resources.makeResolverParam(respFileName);
-            ctx.mergeParameters(respParam.Parameters);
 
-            const updatedResolverResource = this.resources.updateResolverResource(resolverResource, reqFileName, respFileName)
+            const updatedResolverResource = this.resources.updateResolverResource(resolverResource)
             ctx.setResource(resourceName, updatedResolverResource)
         }
     }
