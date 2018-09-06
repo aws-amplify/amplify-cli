@@ -123,12 +123,10 @@ module.exports = {
     if (options) {
       params.nextToken = options;
     }
-    new Lex(context)
+    return new Lex(context)
       .then((result) => {
-        result.lex.getBuiltinSlotTypes(params, function(err, data) {
-          if (err) console.log(err, err.stack); // an error occurred
-          else     return data;           // successful response
-        });
+        return result.lex.getBuiltinSlotTypes(params).promise()
+          .then((data) => console.log("data:", data));
       });
   },
   getSlotTypes: context => {

@@ -635,8 +635,8 @@ async function getSlotType(context, serviceMetadata, newSlotTypes) {
     let builtInSlotTypesReturn;
     do {
       builtInSlotTypesReturn = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getBuiltInSlotTypes', slotTypeOptions);
-      console.log("return: ",builtInSlotTypesReturn);
-      builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn).slotTypes.map( slotType => slotType.signature );
+      console.log("return:",builtInSlotTypesReturn);
+      builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn.slotTypes.map( slotType => slotType.signature ));
       slotTypeOptions = builtInSlotTypesReturn.nextToken;
     } while (slotTypeOptions);
 
