@@ -254,15 +254,15 @@ export class ResourceFactory {
      * @param ownerAttribute The name of the owner attribute.
      */
     public ownerCreateResolverRequestMappingTemplateSnippet = (
-        ownerAttribute: string, idenityField: string) => printBlock('Inject Ownership Information')(
+        ownerAttribute: string, identityField: string) => printBlock('Inject Ownership Information')(
             compoundExpression([
-                iff(raw(`$util.isNullOrBlank($ctx.identity.${idenityField})`), raw('$util.unauthorized()')),
-                qref(`$ctx.args.input.put("${ownerAttribute}", $ctx.identity.${idenityField})`)
+                iff(raw(`$util.isNullOrBlank($ctx.identity.${identityField})`), raw('$util.unauthorized()')),
+                qref(`$ctx.args.input.put("${ownerAttribute}", $ctx.identity.${identityField})`)
             ])
         )
 
     public ownerUpdateAndDeleteResolverRequestMappingTemplateSnippet =
-        (ownerAttribute: string, idenityField: string) => printBlock('Prepare Ownership Condition')(
+        (ownerAttribute: string, identityField: string) => printBlock('Prepare Ownership Condition')(
             compoundExpression([
                 ifElse(
                     raw(`!$${ResourceConstants.SNIPPETS.AuthCondition}`),
@@ -275,7 +275,7 @@ export class ResourceFactory {
                             }),
                             expressionValues: obj({
                                 ":username": obj({
-                                    "S": str(`$ctx.identity.${idenityField}`)
+                                    "S": str(`$ctx.identity.${identityField}`)
                                 })
                             })
                         })
@@ -287,29 +287,30 @@ export class ResourceFactory {
                         ),
                         raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("#owner", "${ownerAttribute}"))`),
                         // tslint:disable-next-line
-                        raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.put(":username", { "S": "$ctx.identity.${idenityField}"}))`),
+                        raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.put(":username", { "S": "$ctx.identity.${identityField}"}))`),
                     ])
                 )
             ])
         )
 
-    public ownerGetResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Validate Ownership')(
+    public ownerGetResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock('Validate Ownership')(
         iff(
-            equals(ref(`ctx.result.${ownerAttribute}`), ref('ctx.identity.username')),
+            equals(ref(`ctx.result.${ownerAttribute}`), ref(`ctx.identity.${identityField}`)),
             raw('#set($isAuthorized = true)'))
     )
 
-    public ownerListResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock("Filter Owned Items")(
+    public ownerListResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock("Filter Owned Items")(
         compoundExpression([
             set(ref('items'), list([])),
             forEach(ref('item'), ref('ctx.result.items'), [
-                iff(raw(`$item.${ownerAttribute} == $ctx.identity.username`), qref('$items.add($item)'))
+                iff(raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`), qref('$items.add($item)'))
             ]),
             set(ref('ctx.result.items'), ref('items'))
         ])
     )
 
-    public ownerListResolverItemCheck = (ownerAttribute: string) => raw(`$item.${ownerAttribute} == $ctx.identity.username`)
+    public ownerListResolverItemCheck = (ownerAttribute: string, identityField: string) =>
+        raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`)
 
     public loopThroughResultItemsAppendingAuthorized(
         ifExprs: Expression[],
@@ -330,11 +331,11 @@ export class ResourceFactory {
     }
 
 
-    public ownerQueryResolverResponseMappingTemplateSnippet = (ownerAttribute: string) => printBlock('Filter Owned Items')(
+    public ownerQueryResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock('Filter Owned Items')(
         compoundExpression([
             set(ref('items'), list([])),
             forEach(ref('item'), ref('ctx.result.items'), [
-                iff(raw(`$item.${ownerAttribute} == $ctx.identity.username`), qref('$items.add($item)'))
+                iff(raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`), qref('$items.add($item)'))
             ]),
             set(ref('ctx.result.items'), ref('items'))
         ])

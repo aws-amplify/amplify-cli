@@ -71,7 +71,7 @@ ${helpTextArray.join(`
           coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
         }
         /*
-          certain third party providers (such as Twitter) require multiple values,
+          certain third party providers require multiple values,
           which Cognito requires to be a concatenated string -
           so here we build the string using 'concatKeys' defined in the thirdPartyMap
         */
