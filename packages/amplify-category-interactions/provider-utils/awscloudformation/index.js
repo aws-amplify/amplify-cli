@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const parametersFileName = 'lex-params.json';
+const defaultValuesFilename = "lex-defaults.js";
 
 let serviceMetadata;
 
@@ -9,7 +10,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());

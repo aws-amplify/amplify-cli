@@ -115,4 +115,32 @@ module.exports = {
       .catch(() => {
         throw new Error('Failed to download introspection schema');
       }),
+  getBuiltInSlotTypes: (context, options) => {
+    let params = {
+      locale: "en-US",
+      maxResults: 50
+    };
+    if (options) {
+      params.nextToken = options;
+    }
+    new Lex(context)
+      .then((result) => {
+        result.lex.getBuiltinSlotTypes(params, function(err, data) {
+          if (err) console.log(err, err.stack); // an error occurred
+          else     return data;           // successful response
+        });
+      });
+  },
+  getSlotTypes: context => {
+    let params = {
+      maxResults: 50
+    };
+    new Lex(context)
+      .then((result) => {
+        result.lex.getSlotTypes(params, function(err, data) {
+          if (err) console.log(err, err.stack); // an error occurred
+          else     return data;           // successful response
+        });
+      });
+  }
 };

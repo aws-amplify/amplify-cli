@@ -2,9 +2,6 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lex chatbot creation from Amplify CLI",
     "Parameters": {
-        "lexPolicyName": {
-            "Type": "String"
-        }
     },
     "Metadata": {
         "AWS::CloudFormation::Interface": {
@@ -24,9 +21,7 @@
         "LambdaExecutionRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "RoleName": {
-                    "Ref": "roleName"
-                },
+                "RoleName": "<%= props.roleName %>",
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -45,9 +40,7 @@
                 },
                 "Policies": [
                     {
-                        "PolicyName": {
-                            "Ref": "<%= props.lexPolicyName %>"
-                        },
+                        "PolicyName": "<%= props.lexPolicyName %>",
                         "PolicyDocument": {
                             "Version": "2012-10-17",
                             "Statement": [
@@ -152,7 +145,7 @@
                                 "                    'slotConstraint': <% if(props.intents[i].slots[j].required) { %>'Required'<% } else { %>'Optional'<% } %>,",
                                 "                    'priority': <%= j %>,",
                                 "                    'slotType': '<%= props.intents[i].slots[j].type %>',",
-                                "                    'slotTypeVersion': '$LATEST',"
+                                "                    'slotTypeVersion': '$LATEST',",
                                 "                    'valueElicitationPrompt': {",
                                 "                        'maxAttempts': 3,",
                                 "                        'messages': [",
@@ -171,7 +164,7 @@
                                 "    let botParams = {",
                                 "        'name': '<%= props.botName %>',",
                                 "        'intents': [",
-                                        <% for(var i = 0; i < props.intents.length; i++) { %>,
+                                        <% for(var i = 0; i < props.intents.length; i++) { %>
                                 "            {",
                                 "                'intentName': '<%= props.intents[i].intentName %>',",
                                 "                'intentVersion': '$LATEST'",
@@ -183,11 +176,11 @@
                                 "        'abortStatement': {",
                                 "            'messages': [",
                                 "                {",
-                                "                    'content': 'I don\'t understand. Can you try again?', ",
+                                "                    'content': 'I don\\'t understand. Can you try again?', ",
                                 "                    'contentType': 'PlainText'",
                                 "                }, ",
                                 "                {",
-                                "                    'content': 'I\'m sorry, I don\'t understand.', ",
+                                "                    'content': 'I\\'m sorry, I don\\'t understand.', ",
                                 "                    'contentType': 'PlainText'",
                                 "                }",
                                 "            ]",
@@ -196,7 +189,7 @@
                                 "            'maxAttempts': 3, ",
                                 "            'messages': [",
                                 "                {",
-                                "                    'content': 'I\'m sorry, I didn\'t hear that. Can you repeat what you just said?', ",
+                                "                    'content': 'I\\'m sorry, I didn\\'t hear that. Can you repeat what you just said?', ",
                                 "                    'contentType': 'PlainText'",
                                 "                }, ",
                                 "                {",
@@ -223,23 +216,37 @@
                                 "            if (err) console.log(err, err.stack); // an error occurred",
                                 "            else     console.log(data);           // successful response",
                                 "        })",
-                                "    );",
-                                "    intentParams.forEach( intent => lex.putIntent(intent,",
-                                "        function(err, data) {",
-                                "            if (err) console.log(err, err.stack); // an error occurred",
-                                "            else     console.log(data);           // successful response",
-                                "        })",
-                                "    );",
-                                "    return lex.putBot(botParams).promise()",
-                                "        .then((res) => {",
-                                "            responseData = res.ApplicationResponse;",
-                                "            response.send(event, context, response.SUCCESS, responseData);",
-                                "        }).catch((err) => {",
-                                "            console.log(err.stack);",
-                                "            responseData = {Error: err};",
-                                "            response.send(event, context, response.FAILED, responseData);",
-                                "            throw err;",
-                                "        });",
+                                "    ).promise()",
+                                "       .then(() => {",
+                                "           intentParams.forEach( intent => lex.putIntent(intent,",
+                                "               function(err, data) {",
+                                "                   if (err) console.log(err, err.stack); // an error occurred",
+                                "                   else     console.log(data);           // successful response",
+                                "               })",
+                                "           }).promise()",
+                                "               .then(() => {",
+                                "                   return lex.putBot(botParams).promise()",
+                                "                       .then((res) => {",
+                                "                           responseData = res.ApplicationResponse;",
+                                "                           response.send(event, context, response.SUCCESS, responseData);",
+                                "                       }).catch((err) => {",
+                                "                           console.log(err.stack);",
+                                "                           responseData = {Error: err};",
+                                "                           response.send(event, context, response.FAILED, responseData);",
+                                "                           throw err;",
+                                "                       })",
+                                "               }).catch((err) => {",
+                                "                       console.log(err.stack);",
+                                "                       responseData = {Error: err};",
+                                "                       response.send(event, context, response.FAILED, responseData);",
+                                "                       throw err;",
+                                "               })",
+                                "       ).catch((err) => {",
+                                "           console.log(err.stack);",
+                                "           responseData = {Error: err};",
+                                "           response.send(event, context, response.FAILED, responseData);",
+                                "           throw err;",
+                                "       });",
                                 "}"
                             ]
                         ]

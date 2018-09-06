@@ -582,7 +582,12 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
       slot.name = slot.name[inputs[14].key];
     }
 
-    slot.type = await getSlotType(context, serviceMetadata);
+    if (newSlotTypes) {
+      slot.type = await getSlotType(context, serviceMetadata, newSlotTypes);
+    }
+    else {
+      slot.type = await getSlotType(context, serviceMetadata);
+    }
     //console.log(slot.type.slotTypeDescription);
     if (slot.type.slotTypeDescription) {
       newSlotTypes.push({
@@ -611,7 +616,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
   return slots;
 }
 
-async function getSlotType(context, serviceMetadata) {
+async function getSlotType(context, serviceMetadata, newSlotTypes) {
   let { inputs } = serviceMetadata;
   const { amplify } = context;
   let slotType;
@@ -624,20 +629,32 @@ async function getSlotType(context, serviceMetadata) {
   slotTypeChoice = await inquirer.prompt(slotTypeChoiceQuestion);
   if (slotTypeChoice[inputs[26].key] == "Amazon built-in slot type") {
     // TODO: get slot names from lex/cloud
-    const slotTypes = ['AMAZON.cities', 'AMAZON.actors', 'AMAZON.dates','AMAZON.months','AMAZON.food','AMAZON.games','AMAZON.EmailAddresses','AMAZON.countries'];
-    /*let slotTypeParams = {
-      locale: "en-US",
-      maxResults: 50
-    };
-    // missing region in config
-    lex.getBuiltinSlotTypes(slotTypeParams, function(err, data) {
-      if (err) console.log("err", err, err.stack); // an error occurred
-      else     console.log("data", data);           // successful response
-    });
-    lexmodelbuildingservice.getBuiltinSlotTypes(params, function(err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else     console.log(data);           // successful response
-    });*/
+    //const slotTypes = ['AMAZON.cities', 'AMAZON.actors', 'AMAZON.dates','AMAZON.months','AMAZON.food','AMAZON.games','AMAZON.EmailAddresses','AMAZON.countries'];
+    let slotTypeOptions = '';
+    let builtInSlotTypes = [];
+    let builtInSlotTypesReturn;
+    do {
+      builtInSlotTypesReturn = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getBuiltInSlotTypes', slotTypeOptions);
+      console.log("return: ",builtInSlotTypesReturn);
+      builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn).slotTypes.map( slotType => slotType.signature );
+      slotTypeOptions = builtInSlotTypesReturn.nextToken;
+    } while (slotTypeOptions);
+
+    const slotTypeQuestion = {
+      type: inputs[15].type,
+      name: inputs[15].key,
+      message: inputs[15].question,
+      choices: builtInSlotTypes
+    }
+    slotType = await inquirer.prompt(slotTypeQuestion);
+    return slotType[inputs[15].key];
+  }
+  else if (slotTypeChoice[inputs[26].key] == "Slot type I've already made") {
+    let slotTypes = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getSlotTypes').slotTypes.map( slotType => slotType.name );
+    if (newSlotTypes) {
+      slotTypes = slotTypes.concat(newSlotTypes.map( slotType => slotType.slotType ));
+    }
+
     const slotTypeQuestion = {
       type: inputs[15].type,
       name: inputs[15].key,

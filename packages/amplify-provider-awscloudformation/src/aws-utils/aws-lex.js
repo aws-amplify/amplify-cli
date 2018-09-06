@@ -5,7 +5,7 @@ class Lex {
     return aws.configureWithCreds(context)
       .then((awsItem) => {
         this.context = context;
-        this.lex = new awsItem.Lex();
+        this.lex = new awsItem.LexModelBuildingService({ apiVersion: '2017-04-19' });
         return this;
       });
   }

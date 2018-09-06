@@ -250,10 +250,11 @@
 			},
 			{
 				"key": "slotTypeChoice",
-				"question": "Would you like to choose an Amazon built-in slot type or create a new slot type?",
+				"question": "Would you like to choose an Amazon built-in slot type, a slot type you've already made, or create a new slot type?",
 				"type": "list",
 				"options": [
 					"Amazon built-in slot type",
+					"Slot type I've already made",
 					"Create a new slot type"
 				],
 				"required": true
