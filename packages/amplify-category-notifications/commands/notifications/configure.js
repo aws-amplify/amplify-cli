@@ -23,7 +23,6 @@ module.exports = {
     }
 
     await pinpointHelper.ensurePinpointApp(context);
-    writeAmplifyMeta(context);
     await notificationManager.configureChannel(context, channelName);
     writeAmplifyMeta(context);
 

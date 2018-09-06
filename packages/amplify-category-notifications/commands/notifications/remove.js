@@ -36,7 +36,6 @@ module.exports = {
     if (channelName && channelName !== Cancel) {
       if (channelName !== PinpointApp) {
         await pinpointHelper.ensurePinpointApp(context);
-        writeAmplifyMeta(context);
         await notificationManager.disableChannel(context, channelName);
         writeAmplifyMeta(context);
       } else if (pinpointHelper.isAnalyticsAdded(context)) {
