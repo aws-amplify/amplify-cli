@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const path = require('path');
 const constants = require('./constants');
 const pintpointHelper = require('./pinpoint-helper');
@@ -81,5 +80,5 @@ module.exports = {
   getDisabledChannels,
   enableChannel,
   disableChannel,
-  configureChannel
+  configureChannel,
 };
