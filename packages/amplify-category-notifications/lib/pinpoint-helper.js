@@ -44,7 +44,17 @@ async function createPinpointApp(context) {
     name: 'pinpointProjectName',
     type: 'input',
     message: 'Pinpoint project name',
-    default: `${projectConfig.projectName}-${context.amplify.makeId(5)}`,
+    default: `${projectConfig.projectName}${context.amplify.makeId(5)}`,
+    validate: (name) => {
+      let result = false;
+      let message = ''; 
+      if (name && name.length > 0) {
+        result = true; 
+      }else{
+        message = 'Project name can not be empty.'
+      }
+      return result || message;
+    }
   });
 
   const pinpointApp = await createApp(context, answer.pinpointProjectName);
