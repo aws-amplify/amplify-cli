@@ -47,7 +47,6 @@
                 }
             }
         }
-        <% if (props.database && props.database.resourceName) { %>
         ,"lambdaexecutionpolicy": {
             "DependsOn": ["LambdaExecutionRole"],
             "Type": "AWS::IAM::Policy",
@@ -58,10 +57,15 @@
                     "Version": "2012-10-17",
                     "Statement": [
                         {
-                            "Effect": "Allow","Action":["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],"Resource": "arn:aws:logs:*:*:*"
-                        },
+                            "Effect": "Allow",
+                            "Action":["logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"],
+                            "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
+                        }<% if (props.database && props.database.resourceName) { %>,
                         {
-                            "Effect": "Allow", "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
+                            "Effect": "Allow", 
+                            "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
                             <% if (props.database && props.database.Arn) { %>
                                 "<%= props.database.Arn %>"
@@ -70,11 +74,11 @@
                             <% } %>
                             ]
                         }
+                        <% } %>
                     ]
                 }
             }
         }
-        <% } %>
     },
     "Outputs": {
         "Name": {

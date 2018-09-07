@@ -12,7 +12,7 @@ const {
 } = require('../errors')
 const constants = require('../constants')
 
-const DEFAULT_EXCLUDE_PATTERNS = ['amplify/**']
+const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**']
 
 async function addWalkThrough(context, configs) {
   const availableAppSyncApis = getAppSyncAPIDetails(context) // published and up published
