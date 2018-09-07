@@ -19,7 +19,6 @@ function buildResource(context, resource) {
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
   const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, 'src', 'package.json'));
   const packageJsonMeta = fs.statSync(packageJsonPath);
-  const resourceDirMeta = fs.statSync(resourceDir);
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
   let zipFilename = resource.distZipFilename;
@@ -34,7 +33,7 @@ function buildResource(context, resource) {
   }
 
   if (!resource.lastPackageTimeStamp || !resource.distZipFilename ||
-    new Date(resourceDirMeta.atime) > new Date(resource.lastPackageTimeStamp)) {
+    isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)) {
     zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
 
     if (!fs.existsSync(distDir)) {
@@ -60,6 +59,25 @@ function buildResource(context, resource) {
   }
 
   return new Promise(resolve => resolve({ zipFilename, zipFilePath }));
+}
+function isPackageOutdated(resourceDir, lastPackageTimeStamp) {
+  const lastPackageDate = new Date(lastPackageTimeStamp);
+  const sourceFiles = getSourceFiles(resourceDir, 'node_modules');
+
+  for (let i = 0; i < sourceFiles.length; i += 1) {
+    const file = sourceFiles[i];
+    const { mtime } = fs.statSync(file);
+    if (new Date(mtime) > lastPackageDate) {
+      return true;
+    }
+  }
+  return false;
+}
+function getSourceFiles(dir, ignoredDir) {
+  if (!fs.statSync(dir).isDirectory()) return dir;
+  return fs.readdirSync(dir)
+    .map(f => (f === ignoredDir ? null : getSourceFiles(path.join(dir, f))))
+    .filter(f => f != null);
 }
 
 module.exports = {

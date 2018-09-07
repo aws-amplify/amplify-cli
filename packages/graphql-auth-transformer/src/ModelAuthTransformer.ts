@@ -135,8 +135,20 @@ export class ModelAuthTransformer extends Transformer {
             update: [],
             delete: []
         }
-        const matchQuery = (op: ModelQuery) => (rule: AuthRule) => rule && (!rule.queries || rule.queries.includes(op))
-        const matchMutation = (op: ModelMutation) => (rule: AuthRule) => rule && (!rule.mutations || rule.mutations.includes(op))
+        const matchQuery = (op: ModelQuery) => (rule: AuthRule) => {
+            if (rule.queries) {
+                const matchesOp = rule.queries.find(o => o === op)
+                return Boolean(matchesOp)
+            }
+            return false
+        }
+        const matchMutation = (op: ModelMutation) => (rule: AuthRule) => {
+            if (rule.mutations) {
+                const matchesOp = rule.mutations.find(o => o === op)
+                return Boolean(matchesOp)
+            }
+            return false
+        }
         for (const rule of rules) {
             if (matchQuery('get')(rule)) {
                 queryRules.get.push(rule)
@@ -171,14 +183,16 @@ export class ModelAuthTransformer extends Transformer {
      * @param rules The auth rules to apply.
      */
     private protectGetQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
-        if (!rules || rules.length === 0) {
+        const resolver = ctx.getResource(resolverResourceId)
+        if (!rules || rules.length === 0 || !resolver) {
             return
         }
         const beforeResponse = []
         for (const rule of rules) {
             if (rule.allow === OWNER_AUTH_STRATEGY) {
                 const ownerField = rule.ownerField || OWNER_AUTH_STRATEGY
-                const authSnippet = this.resources.ownerGetResolverResponseMappingTemplateSnippet(ownerField)
+                const identityField = rule.identityField || DEFAULT_IDENTITY_FIELD
+                const authSnippet = this.resources.ownerGetResolverResponseMappingTemplateSnippet(ownerField, identityField)
                 beforeResponse.push(authSnippet)
             } else if (rule.allow === GROUPS_AUTH_STRATEGY) {
                 if (rule.groups) {
@@ -193,7 +207,6 @@ export class ModelAuthTransformer extends Transformer {
             }
         }
         // Join together the authorization expressions and update the resolver.
-        const resolver = ctx.getResource(resolverResourceId)
         const templateParts = [...beforeResponse, this.resources.throwWhenUnauthorized(), resolver.Properties.ResponseMappingTemplate]
         resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
         ctx.setResource(resolverResourceId, resolver)
@@ -208,7 +221,8 @@ export class ModelAuthTransformer extends Transformer {
      * @param rules The set of rules that apply to the operation.
      */
     private protectListQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
-        if (!rules || rules.length === 0) {
+        const resolver = ctx.getResource(resolverResourceId)
+        if (!rules || rules.length === 0 || !resolver) {
             return
         }
         const beforeExpressions = []
@@ -217,7 +231,8 @@ export class ModelAuthTransformer extends Transformer {
         for (const rule of rules) {
             if (rule.allow === OWNER_AUTH_STRATEGY) {
                 const ownerField = rule.ownerField || OWNER_AUTH_STRATEGY
-                const authSnippet = this.resources.ownerListResolverItemCheck(ownerField)
+                const identityField = rule.identityField || DEFAULT_IDENTITY_FIELD
+                const authSnippet = this.resources.ownerListResolverItemCheck(ownerField, identityField)
                 itemEquivalenceExpressions.push(authSnippet)
             } else if (rule.allow === GROUPS_AUTH_STRATEGY) {
                 if (rule.groups) {
@@ -240,7 +255,6 @@ export class ModelAuthTransformer extends Transformer {
             }
         }
         // Join together the authorization expressions and update the resolver.
-        const resolver = ctx.getResource(resolverResourceId)
         const templateParts = [
             this.resources.loopThroughResultItemsAppendingAuthorized(itemEquivalenceExpressions, beforeExpressions, beforeItemEquivalenceExpression),
             resolver.Properties.ResponseMappingTemplate
@@ -257,15 +271,16 @@ export class ModelAuthTransformer extends Transformer {
      * @param rules
      */
     private protectCreateMutation(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
-        if (!rules || rules.length === 0) {
+        const resolver = ctx.getResource(resolverResourceId)
+        if (!rules || rules.length === 0 || !resolver) {
             return
         }
         const beforeRequest = []
         for (const rule of rules) {
             if (rule.allow === OWNER_AUTH_STRATEGY) {
                 const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD
-                const idenityField = rule.ownerField || DEFAULT_IDENTITY_FIELD
-                const authSnippet = this.resources.ownerCreateResolverRequestMappingTemplateSnippet(ownerField, idenityField)
+                const identityField = rule.identityField || DEFAULT_IDENTITY_FIELD
+                const authSnippet = this.resources.ownerCreateResolverRequestMappingTemplateSnippet(ownerField, identityField)
                 beforeRequest.push(authSnippet)
             } else if (rule.allow === GROUPS_AUTH_STRATEGY) {
                 if (rule.groups) {
@@ -282,7 +297,6 @@ export class ModelAuthTransformer extends Transformer {
             }
         }
         // Join together the authorization expressions and update the resolver.
-        const resolver = ctx.getResource(resolverResourceId)
         const templateParts = [...beforeRequest, resolver.Properties.RequestMappingTemplate]
         resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
         ctx.setResource(resolverResourceId, resolver)
@@ -298,15 +312,16 @@ export class ModelAuthTransformer extends Transformer {
      * @param rules The list of rules to apply.
      */
     private protectUpdateOrDeleteMutation(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
-        if (!rules || rules.length === 0) {
+        const resolver = ctx.getResource(resolverResourceId)
+        if (!rules || rules.length === 0 || !resolver) {
             return
         }
         const beforeRequest = []
         for (const rule of rules) {
             if (rule.allow === OWNER_AUTH_STRATEGY) {
                 const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD
-                const idenityField = rule.ownerField || DEFAULT_IDENTITY_FIELD
-                const authSnippet = this.resources.ownerUpdateAndDeleteResolverRequestMappingTemplateSnippet(ownerField, idenityField)
+                const identityField = rule.identityField || DEFAULT_IDENTITY_FIELD
+                const authSnippet = this.resources.ownerUpdateAndDeleteResolverRequestMappingTemplateSnippet(ownerField, identityField)
                 beforeRequest.push(authSnippet)
             } else if (rule.allow === GROUPS_AUTH_STRATEGY) {
                 if (rule.groups) {
@@ -322,7 +337,6 @@ export class ModelAuthTransformer extends Transformer {
             }
         }
         // Join together the authorization expressions and update the resolver.
-        const resolver = ctx.getResource(resolverResourceId)
         const templateParts = [...beforeRequest, resolver.Properties.RequestMappingTemplate]
         resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
         ctx.setResource(resolverResourceId, resolver)
