@@ -6,10 +6,11 @@ const ora = require('ora');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
+const { emitMetric } = require('./amplify-metric-emitter');
 
 function run(context) {
   return configurationManager.init(context)
-    .then((ctxt) => {
+    .then(async (ctxt) => {
       const awscfn = getConfiguredAwsCfnClient(ctxt);
       const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
       const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
@@ -39,10 +40,12 @@ function run(context) {
 
       const spinner = ora();
       spinner.start('Initializing project in the cloud...');
+
       return new Cloudformation(ctxt, awscfn, 'init')
         .then(cfnItem => cfnItem.createResourceStack(params))
         .then((waitData) => {
           processStackCreationData(ctxt, waitData);
+          emitMetric(context, { action: 'init' });
           spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
           return ctxt;
         })

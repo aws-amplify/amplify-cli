@@ -11,6 +11,7 @@ const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-cod
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
+const { emitMetric } = require('./amplify-metric-emitter');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -33,6 +34,7 @@ async function run(context, category, resourceName) {
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
+      emitAmplifyMetrics(context, resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted);
       spinner.start();
       projectDetails = context.amplify.getProjectDetails();
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
@@ -81,6 +83,19 @@ async function run(context, category, resourceName) {
       spinner.fail('An error occurred when pushing the resources to the cloud');
       throw err;
     });
+}
+
+function emitAmplifyMetrics(
+  context, resourcesToBeCreated,
+  resourcesToBeUpdated, resourcesToBeDeleted,
+) {
+  const metricPromises = [];
+
+  resourcesToBeCreated.forEach(resource => metricPromises.push(emitMetric(context, { action: 'create', service: resource.service })));
+  resourcesToBeUpdated.forEach(resource => metricPromises.push(emitMetric(context, { action: 'update', service: resource.service })));
+  resourcesToBeDeleted.forEach(resource => metricPromises.push(emitMetric(context, { action: 'delete', service: resource.service })));
+
+  Promise.all(metricPromises);
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {

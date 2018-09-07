@@ -1,6 +1,7 @@
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
+const fs = require('fs');
 
 async function run(argv) {
   const localNodeModulesDirPath = path.join(__dirname, '../node_modules');
@@ -19,8 +20,27 @@ async function run(argv) {
   // and run it
   const context = await cli.run(argv);
 
+  await askAmplifyMetricsQuestion(context);
+
   // send it back (for testing, mostly)
   return context;
+}
+
+async function askAmplifyMetricsQuestion(context) {
+  const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
+  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+
+  if (projectConfig.sendAmplifyMetrics === undefined) {
+    if (await context.prompt.confirm('We will occasionally send anonymous usage statistics and CLI crash logs to the AWS Amplify team to make the tool better. Do you want to send metrics and crash logs to the AWS Amplify team?')) {
+      projectConfig.sendAmplifyMetrics = true;
+    } else {
+      projectConfig.sendAmplifyMetrics = false;
+    }
+  }
+
+  const jsonString = JSON.stringify(projectConfig, null, 4);
+
+  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 }
 
 function normalizeArgv(cli, argv) {
