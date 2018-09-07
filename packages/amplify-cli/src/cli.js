@@ -1,10 +1,12 @@
 const { build } = require('gluegun');
 const path = require('path');
-const globalPrefix = require('global-prefix');
+const globalPrefix = require('./lib/get-global-prefix');
 
 async function run(argv) {
   const nodeModulesDirPath = path.join(__dirname, '../node_modules');
   const globalNodeModulesDirPath = path.join(globalPrefix, 'lib/node_modules');
+  console.log(nodeModulesDirPath);
+  console.log(globalNodeModulesDirPath);
 
   const cli = build()
     .brand('amplify')
