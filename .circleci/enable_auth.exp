@@ -1,5 +1,5 @@
 #!/usr/bin/expect
-spawn ./.circleci/com1.sh
+spawn ./.circleci/auth.sh
 expect "Enter a name for the project"
 send -- "unauth\r"
 expect -exact "Choose your default editor:"
