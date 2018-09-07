@@ -61,7 +61,7 @@ jobs:
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
               yarn
-        - run: cd .circleci/ && chmod +x com1.sh
+        - run: cd .circleci/ && chmod +x auth.sh
         - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth 
         - run: yarn
@@ -80,6 +80,9 @@ jobs:
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
         - run: sudo kill -9 $(lsof -t -i:3000)
+        - run: cd aws-amplify-cypress-auth/src && aws s3 rb --force s3://"$(grep -n "bucket " aws-exports.js | cut -d':' -f 3 | tr -d \' | tr -d ,)"
+        - run: cd .circleci/ && chmod +x delete_auth.sh
+        - run: expect .circleci/delete_auth.exp
         - run: 
             name: "Clone API test package"
             command: |
@@ -103,6 +106,9 @@ jobs:
             command: |
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
+        - run: cd aws-amplify-cypress-api/src && aws s3 rb --force s3://"$(grep -n "bucket " aws-exports.js | cut -d':' -f 3 | tr -d \' | tr -d ,)"
+        - run: cd .circleci/ && chmod +x delete_api.sh
+        - run: expect .circleci/delete_api.exp
         - store_artifacts:
             path: cypress/videos
         - store_artifacts:
