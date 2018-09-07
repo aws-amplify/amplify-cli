@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "0.1.13",
+  "version": "0.1.18",
   "description": "amplify-cli notifications plugin",
   "main": "index.js",
   "dependencies": {
