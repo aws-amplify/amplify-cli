@@ -14,16 +14,16 @@ import generateAllOps, { GQLTemplateOp, GQLAllOperations } from "./generator";
 
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, "../templates"));
 const FILE_EXTENSION_MAP = {
-  javascript: 'js',
-  graphql: 'graphql'
-}
+  javascript: "js",
+  graphql: "graphql"
+};
 
 function generate(
   schemaPath: string,
   outputPath: string,
-  options: { separateFiles: boolean, language: string }
+  options: { separateFiles: boolean; language: string, maxDepth: number }
 ): void {
-  const language = options.language || 'graphql';
+  const language = options.language || "graphql";
   const schemaContent = fs.readFileSync(schemaPath, "utf8").trim();
   const schemaData = JSON.parse(schemaContent);
   if (!schemaData.data && !schemaData.__schema) {
@@ -34,7 +34,7 @@ function generate(
   }
 
   const schema: IntrospectionQuery = schemaData.data || schemaData;
-  const gqlOperations : GQLAllOperations = generateAllOps(schema);
+  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth);
   registerPartials();
   const fileExtension = FILE_EXTENSION_MAP[language];
   if (options.separateFiles) {
@@ -43,24 +43,23 @@ function generate(
       fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql);
     });
   } else {
-    const gql = renderOps([
-      ...gqlOperations.queries,
-      ...gqlOperations.mutations,
-      ...gqlOperations.subscriptions
-    ], language);
+    const gql = renderOps(
+      [...gqlOperations.queries, ...gqlOperations.mutations, ...gqlOperations.subscriptions],
+      language
+    );
     fs.writeFileSync(path.resolve(outputPath), gql);
   }
 }
 
-function renderOps(operations: Array<GQLTemplateOp>, language: string='graphql') {
+function renderOps(operations: Array<GQLTemplateOp>, language: string = "graphql") {
   const templateFiles = {
-    javascript: 'javascript.hbs',
-    graphql: 'graphql.hbs'
+    javascript: "javascript.hbs",
+    graphql: "graphql.hbs"
   };
   const parserMap = {
-    javascript: 'babylon',
-    graphql: 'graphql'
-  }
+    javascript: "babylon",
+    graphql: "graphql"
+  };
   const templatePath = path.join(TEMPLATE_DIR, templateFiles[language]);
   const templateStr = fs.readFileSync(templatePath, "utf8");
 

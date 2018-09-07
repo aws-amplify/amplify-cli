@@ -1,4 +1,4 @@
-import { isRequired } from "../../../src/generator/utils/isRequired"
+import isRequired from "../../../src/generator/utils/isRequired";
 import {
   GraphQLScalarType,
   Kind,
@@ -14,7 +14,7 @@ describe("isRequired", () => {
     name: "Address",
     fields: {
       street: { type: GraphQLString },
-      requiredInt: { type: new GraphQLNonNull(GraphQLInt) },
+      requiredInt: { type: new GraphQLNonNull(GraphQLInt) }
     }
   });
 
@@ -25,5 +25,4 @@ describe("isRequired", () => {
   it("should return true for non null types", () => {
     expect(isRequired(testObj.getFields().requiredInt)).toEqual(true);
   });
-
 });

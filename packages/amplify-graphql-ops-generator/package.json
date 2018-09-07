@@ -18,30 +18,28 @@
   },
   "scripts": {
     "test": "jest",
-    "test-watch": "jest -w",
+    "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -rf ./lib",
-    "lint": "tslint -p ./tslint.json"
+    "lint": "tslint -p ./tslint.json",
+    "format": "prettier --write ./src/**/*.ts ./__tests__/**/*.ts"
   },
   "devDependencies": {
+    "@types/ejs": "^2.6.0",
     "@types/graphql": "^0.13.1",
-    "@types/jest": "^23.1.1",
+    "@types/handlebars": "^4.0.39",
+    "@types/jest": "^23.3.1",
     "@types/node": "^8.0.28",
+    "@types/prettier": "^1.13.2",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.5.2"
+    "typescript": "^2.8.3"
   },
   "dependencies": {
-    "@types/camel-case": "^1.2.1",
-    "@types/ejs": "^2.6.0",
-    "@types/handlebars": "^4.0.39",
-    "@types/pascal-case": "^1.1.2",
-    "@types/prettier": "^1.13.2",
     "camel-case": "^3.0.0",
     "commander": "^2.9.0",
-    "ejs": "^2.6.1",
     "fetch": "^1.1.0",
     "graphql": "^0.13.2",
     "handlebars": "^4.0.11",
@@ -57,12 +55,13 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/**/*.ts"],
     "moduleFileExtensions": [
       "ts",
       "tsx",
       "js",
       "jsx",
-      "json",
       "node"
     ]
   }
