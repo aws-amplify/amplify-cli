@@ -14,7 +14,7 @@
                 },
                 "CorsConfiguration": {
                     "CorsRules" : [ {
-                        "AllowedHeaders" : [ "Authorization" ],
+                        "AllowedHeaders" : [ "Authorization", "Content-Length"],
                         "AllowedMethods" : [ "GET"],
                         "AllowedOrigins" : [ "*" ],
                         "MaxAge" : 3000
@@ -75,7 +75,8 @@
                         "ViewerProtocolPolicy" : "allow-all", 
                         "DefaultTTL" : 86400,
                         "MaxTTL" : 31536000,
-                        "MinTTL" : 60
+                        "MinTTL" : 60,
+                        "Compress" : true
                     }, 
                     "DefaultRootObject" : "index.html",
                     "CustomErrorResponses" : [
