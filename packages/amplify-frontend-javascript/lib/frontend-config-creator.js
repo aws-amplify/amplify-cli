@@ -179,11 +179,11 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
     aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL,
   };
 
-  if(s3AndCloudfrontResource.output.CloudFrontSecureURL){
-    result.aws_content_delivery_url = s3AndCloudfrontResource.output.CloudFrontSecureURL; 
+  if (s3AndCloudfrontResource.output.CloudFrontSecureURL) {
+    result.aws_content_delivery_url = s3AndCloudfrontResource.output.CloudFrontSecureURL;
   }
 
-  return result; 
+  return result;
 }
 
 
