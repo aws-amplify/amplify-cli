@@ -11,6 +11,12 @@ const configureProjectWalkThrough = require('./walkthrough/configure')
 const constants = require('./constants')
 const { downloadIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('./utils')
 
+async function downloadSchema(context, apiId, downloadLocation) {
+  const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA)
+  downloadSpinner.start()
+  await downloadIntrospectionSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
+  downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS)
+}
 async function generate(context, forceDownloadSchema) {
   const config = loadConfig(context)
   const availableAppSyncApis = getAppSyncAPIDetails(context)
@@ -31,10 +37,7 @@ async function generate(context, forceDownloadSchema) {
     const output = cfg.amplifyExtension.generatedFileName
     const target = cfg.amplifyExtension.codeGenTarget
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
-      const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA)
-      downloadSpinner.start()
-      await downloadIntrospectionSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
-      downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS)
+      downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
     }
     if (frontend !== 'android') {
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED)
@@ -44,6 +47,35 @@ async function generate(context, forceDownloadSchema) {
       appSyncCodeGen.generate(queries, schema, output, '', target, 'gql', '', { addTypename: true })
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${output}`)
     }
+  })
+}
+
+function generateAllOps(context, forceDownloadSchema) {
+  const config = loadConfig(context)
+  const availableAppSyncApis = getAppSyncAPIDetails(context)
+  const availableApiIds = availableAppSyncApis.map(api => api.id)
+  const configuredProjects = config.getProjects()
+  const projects = configuredProjects.filter(proj =>
+    availableApiIds.includes(proj.amplifyExtension.graphQLApiId))
+
+  if (!projects.length) {
+    context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED)
+  }
+  projects.forEach(async (cfg) => {
+    const includeFiles = cfg.includes[0]
+    const opsGenDirectory = path.dirname(path.dirname(includeFiles))
+    const schema = path.resolve(cfg.schema)
+
+    if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
+      downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
+    }
+    const frontend = getFrontEndHandler(context)
+    const language = frontend === 'javascript' ? 'javascript' : 'graphql'
+    const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
+    opsGenSpinner.start()
+    jetpack.dir(opsGenDirectory)
+    generateOps(schema, opsGenDirectory, { separateFiles: true, language })
+    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory))
   })
 }
 
@@ -71,11 +103,11 @@ async function add(context) {
   config.addProject(newProject)
   if (answer.shouldGenerateOps) {
     const frontend = getFrontEndHandler(context)
-    const language = frontend === 'javascript' ? 'javascript' : 'graphql';
+    const language = frontend === 'javascript' ? 'javascript' : 'graphql'
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
     opsGenSpinner.start()
     const opsGenDirectory = path.resolve(answer.opsFilePath)
-    jetpack.dir(opsGenDirectory);
+    jetpack.dir(opsGenDirectory)
     generateOps(schema, opsGenDirectory, { separateFiles: true, language })
     opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory))
   }
@@ -99,5 +131,6 @@ async function configure(context) {
 module.exports = {
   configure,
   generate,
+  generateAllOps,
   add,
 }

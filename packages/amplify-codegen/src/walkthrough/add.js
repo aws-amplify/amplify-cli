@@ -6,7 +6,8 @@ const askTargetFileName = require('./questions/generatedFileName')
 const askShouldGenerateCode = require('./questions/generateCode')
 const askShouldGenerateOps = require('./questions/generateOps')
 
-const { getAppSyncAPIDetails, getFrontEndHandler, getSchemaDownloadLocation } = require('../utils/')
+
+const { getAppSyncAPIDetails, getFrontEndHandler, getSchemaDownloadLocation, getIncludePattern } = require('../utils/')
 const {
   AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
 } = require('../errors')
@@ -49,11 +50,9 @@ async function addWalkThrough(context, configs) {
   const api = newAPIs.find(a => a.id === apiId)
   const frontendHandler = getFrontEndHandler(context)
   const schemaLocation = getSchemaDownloadLocation(context, api.name)
-  const includePatternDefault = frontendHandler === 'android' ? dirname(schemaLocation) : 'graphql/'
-  const includePatternExtension = frontendHandler === 'javascript' ? '*.js' : '*.graphql'
-  includePattern = await askCodeGenQueryFilePattern([
-    join(includePatternDefault, '**', includePatternExtension),
-  ])
+  const includePatternDefault = getIncludePattern(frontendHandler, schemaLocation)
+  const includePathGlob = join(includePatternDefault.graphQLDirectory, '**', includePatternDefault.graphQLExtension)
+  includePattern = await askCodeGenQueryFilePattern([includePathGlob])
 
   if (frontendHandler !== 'android') {
     targetLanguage = await askCodeGenTargetLanguage(context)
@@ -71,7 +70,7 @@ async function addWalkThrough(context, configs) {
     shouldGenerateCode,
     schemaLocation,
     shouldGenerateOps,
-    opsFilePath: includePatternDefault,
+    opsFilePath: includePatternDefault.graphQLDirectory,
   }
 }
 module.exports = addWalkThrough

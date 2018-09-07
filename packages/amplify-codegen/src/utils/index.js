@@ -3,6 +3,7 @@ const getAppSyncAPIDetails = require('./getAppSyncAPIDetails')
 const getOutputFileName = require('./getOutputFileName')
 const downloadIntrospectionSchema = require('./downloadIntrospectionSchema')
 const getSchemaDownloadLocation = require('./getSchemaDownloadLocation')
+const getIncludePattern = require('./getIncludePattern')
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -10,4 +11,5 @@ module.exports = {
   getSchemaDownloadLocation,
   getOutputFileName,
   downloadIntrospectionSchema,
+  getIncludePattern,
 }
