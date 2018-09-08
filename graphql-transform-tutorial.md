@@ -12,7 +12,7 @@ The Transform can be run as an independent library, however it is integrated int
     1. Select the `GraphQL` option.
     1. When asked if you have a schema, choose **`No`**.
     1. Select one of the default samples. You can change it later.
-    1. Choose to edit the schema. It opens the schema.graphql in your editor.
+    1. Choose to edit the schema. It opens the `schema.graphql` in your editor.
     1. Make some changes to the schema. For details, see the reference docs at end of this page.
     1. Save the file and choose Enter on the command line.
     1. DO NOT CHOOSE ENTER AGAIN! 
@@ -33,7 +33,7 @@ This deploys your API after it has been transformed. Go to AWS CloudFormation to
 * `generate` - Generates Swift API code or TypeScript annotations based on a GraphQL schema and query documents. If you want to download schema each time before generating code pass a `--download` flag. _Note - Android codegen is done through Gradle, however this utility will still download the introspection schema._
 * configure - Change/Update codegen configuration 
 
-###Steps:
+### Steps:
 
 1. First run the amplify add codegen command 
 1. add query/mutation/subscription documents in your directory specified in the above setup (if you go with defaults, create query in <app>/graphql for ios)
