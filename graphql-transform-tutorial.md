@@ -37,7 +37,7 @@ This deploys your API after it has been transformed. Go to AWS CloudFormation to
 
 1. First run the amplify add codegen command 
 1. add query/mutation/subscription documents in your directory specified in the above setup (if you go with defaults, create query in <app>/graphql for ios)
-1. Run `amplify codegen generate`. For Android & iOS, this adds `schema.jso`n in `amplify/backend/introspections/`. For iOS, this also creates code `API.swift` at root level.
+1. Run `amplify codegen generate`. For Android & iOS, this adds `schema.json` in `amplify/backend/introspections/`. For iOS, this also creates code `API.swift` at root level.
 
 # Examples to Get Started
 
