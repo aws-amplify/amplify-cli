@@ -19,7 +19,7 @@ async function ensureAuth(context) {
 
 async function createPolicy(context) {
   const params = {
-    PolicyName: getPlicyName(context),
+    PolicyName: getPolicyName(context),
     PolicyDocument: getPolicyDoc(context),
   };
   const iamClient = await getIamClient(context);
@@ -116,7 +116,7 @@ function getPolicyDoc(context) {
   return JSON.stringify(policy);
 }
 
-function getPlicyName(context) {
+function getPolicyName(context) {
   return `pinpoint_amplify-${context.amplify.makeId(8)}`;
 }
 
