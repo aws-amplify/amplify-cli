@@ -42,7 +42,8 @@
     "optionator": "^0.8.2",
     "ora": "^2.1.0",
     "promise-sequential": "^1.1.1",
-    "util": "^0.11.0"
+    "util": "^0.11.0",
+    "yarn-global-modules": "^1.0.1"
   },
   "devDependencies": {
     "ava": "^0.22.0",
