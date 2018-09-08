@@ -54,9 +54,8 @@ jobs:
         - run: sudo apt-get install -y zip
         - run: sudo apt-get install -y lsof
         - run: sudo apt-get install -y python
-        - run: curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-        - run: python get-pip.py
-        - run: pip install awscli --upgrade --user 
+        - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+        - run: pip install awscli 
         - run: sudo npm run setup-dev
         - run: amplify
         - run: 
