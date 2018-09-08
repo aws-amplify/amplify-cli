@@ -1,0 +1,11 @@
+#!/usr/bin/expect
+spawn ./.circleci/aws_configure.sh
+expect  "AWS Access Key ID"
+send -- "$env(ACCESS_KEY_ID)\r"
+expect "AWS Secret Access Key"
+send -- "$env(SECRET_ACCESS_KEY)\r"
+expect "Default region name [None]:"
+send -- "\r"
+expect "Default output format [None]:"
+send -- "\r"
+interact
