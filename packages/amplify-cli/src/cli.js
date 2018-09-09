@@ -5,7 +5,7 @@ const yarnGlobalModules = require('yarn-global-modules');
 
 async function run(argv) {
   const nodeModulesDirPath = path.join(__dirname, '../node_modules');
-  const globalNodeModulesDirPath = getGlobalNodeModulesDirPath()
+  const globalNodeModulesDirPath = getGlobalNodeModulesDirPath();
 
   const cli = build()
     .brand('amplify')
@@ -25,13 +25,12 @@ async function run(argv) {
 }
 
 function getGlobalNodeModulesDirPath() {
-  const globalNodeModulesDirPath = path.join(globalPrefix, 'lib/node_modules');
   const globalYarnModulesDirPath = path.join(yarnGlobalModules(), 'node_modules');
 
   // if in yarn global directory, use yarn global path
   return __dirname.includes(globalYarnModulesDirPath)
-    ? path.join(yarnGlobalModules(), 'node_modules')
-    : path.join(globalPrefix, 'lib/node_modules')
+    ? globalYarnModulesDirPath
+    : path.join(globalPrefix, 'lib/node_modules');
 }
 
 function normalizeArgv(cli, argv) {
