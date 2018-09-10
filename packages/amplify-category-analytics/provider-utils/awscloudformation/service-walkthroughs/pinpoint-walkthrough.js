@@ -40,10 +40,10 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
   }
 
 
-  const appId = checkIfNotificationsCategoryExists(context);
+  const pinpointApp = checkIfNotificationsCategoryExists(context);
 
-  if (appId) {
-    Object.assign(defaultValues, { appId });
+  if (pinpointApp) {
+    Object.assign(defaultValues, pinpointApp);
   }
 
   const questions = [];
@@ -131,18 +131,20 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 function checkIfNotificationsCategoryExists(context) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
-  let appId;
+  let pinpointApp;
 
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
     Object.keys(categoryResources).forEach((resource) => {
       if (categoryResources[resource].service === serviceName) {
-        appId = categoryResources[resource].output.Id;
+        pinpointApp = {};
+        pinpointApp.appId = categoryResources[resource].output.Id;
+        pinpointApp.appName = categoryResources[resource].output.Name;
       }
     });
   }
 
-  return appId;
+  return pinpointApp;
 }
 
 function resourceAlreadyExists(context) {
