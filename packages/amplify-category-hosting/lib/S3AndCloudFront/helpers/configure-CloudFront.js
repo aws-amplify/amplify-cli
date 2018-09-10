@@ -29,7 +29,11 @@ async function configure(context) {
       const templateFilePath = path.join(__dirname, '../template.json');
       const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
       const { CloudFrontDistribution } = originalTemplate.Resources;
+      const { Outputs } = originalTemplate;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
+      context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
+      context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
+      context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
     }
   } else {
     const answer = await inquirer.prompt({

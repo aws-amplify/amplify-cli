@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
+const ora = require('ora');
 
 const channelName = 'SMS';
+const spinner = ora('');
 
 async function configure(context) {
   const isChannelEnabled =
@@ -38,13 +40,15 @@ function enable(context) {
       Enabled: true,
     },
   };
+
+  spinner.start('Updating SMS channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err, data) => {
       if (err) {
-        context.print.error('update channel error');
+        spinner.fail('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been successfully enabled.`);
+        spinner.succeed(`The ${channelName} channel has been successfully enabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }
@@ -59,13 +63,15 @@ function disable(context) {
       Enabled: false,
     },
   };
+
+  spinner.start('Updating SMS channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateSmsChannel(params, (err, data) => {
       if (err) {
-        context.print.error('update channel error');
+        spinner.fail('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been disabled.`);
+        spinner.succeed(`The ${channelName} channel has been disabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.SMSChannelResponse;
         resolve(data);
       }
