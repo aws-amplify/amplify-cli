@@ -1,6 +1,6 @@
 const { build } = require('gluegun');
 const path = require('path');
-const globalPrefix = require('./lib/get-global-prefix');
+const globalPrefix = require('global-prefix');
 
 async function run(argv) {
   const nodeModulesDirPath = path.join(__dirname, '../node_modules');
