@@ -16,7 +16,6 @@ function getAmplifyIgnore(context){
                         .filter(line=>line.length>0)
                         .filter(line=>!/^#/.test(line)); 
     }
-    console.log(result);
     return result; 
 }
 
