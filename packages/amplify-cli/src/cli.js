@@ -25,11 +25,9 @@ async function run(argv) {
 }
 
 function getGlobalNodeModulesDirPath() {
-  const globalYarnModulesDirPath = path.join(yarnGlobalModules(), 'node_modules');
-
-  // if in yarn global directory, use yarn global path
-  return __dirname.includes(globalYarnModulesDirPath)
-    ? globalYarnModulesDirPath
+  // if calling from yarn global directory, use yarn.
+  return __dirname.includes("yarn")
+    ? path.join(yarnGlobalModules(), 'node_modules')
     : path.join(globalPrefix, 'lib/node_modules');
 }
 
