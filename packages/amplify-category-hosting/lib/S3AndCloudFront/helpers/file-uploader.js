@@ -7,17 +7,13 @@ const constants = require('../../constants');
 
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
-const publishIgnore = {
-  DirectoryList: [],
-  FileList: [],
-};
 
 async function run(context, distributionDirPath) {
   const s3Client = await getS3Client(context);
   const hostingBucketName = getHostingBucketName(context);
 
   const fileList =
-    fileScanner.scan(distributionDirPath, publishIgnore.DirectoryList, publishIgnore.FileList);
+    fileScanner.scan(context, distributionDirPath);
 
   const uploadFileTasks = [];
 
