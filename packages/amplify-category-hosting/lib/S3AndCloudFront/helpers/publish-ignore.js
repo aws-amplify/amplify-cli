@@ -20,11 +20,15 @@ function getAmplifyIgnore(context){
     return result; 
 }
 
-function isIgnored(file, ignore){
+function isIgnored(filePath, amplifyIgnore, ignoreRoot){
     let result = false;
-    if(ignore.length>0){
-        for(let i=0; i<ignore.length; i++){
-            if(minimatch(file, ignore[i])){
+    if(amplifyIgnore.length>0){
+        for(let i=0; i<amplifyIgnore.length; i++){
+            let pattern = amplifyIgnore[i]; 
+            if(/^\/.*/.test(pattern)){
+                pattern = path.normalize(path.join(ignoreRoot, pattern)); 
+            }
+            if(minimatch(filePath, pattern, { matchBase: true })){
                 result = true; 
                 break; 
             }

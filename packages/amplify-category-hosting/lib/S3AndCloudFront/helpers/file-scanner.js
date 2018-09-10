@@ -2,25 +2,26 @@ const fs = require('fs-extra');
 const path = require('path');
 const publishIgnore = require('./publish-ignore'); 
 
-function scan(context, dir) {
+function scan(context, distributionDirPath) {
   let fileList = [];
-  if (fs.existsSync(dir)) {
+  if (fs.existsSync(distributionDirPath)) {
     const amplifyIgnore = publishIgnore.getAmplifyIgnore(context); 
-    fileList = recursiveScan(dir, [], amplifyIgnore);
+    fileList = recursiveScan(distributionDirPath, [], amplifyIgnore, distributionDirPath);
   }
   return fileList;
 }
 
-function recursiveScan(dir, filelist, amplifyIgnore) {
+function recursiveScan(dir, filelist, amplifyIgnore, ignoreRoot) {
   const files = fs.readdirSync(dir);
   filelist = filelist || [];
   files.forEach((file) => {
-    if (fs.statSync(path.join(dir, file)).isDirectory()) {
-      if (!publishIgnore.isIgnored(file, amplifyIgnore)) {
-        filelist = recursiveScan(path.join(dir, file), filelist, amplifyIgnore);
+    const filePath = path.join(dir, file); 
+    if (fs.statSync(filePath).isDirectory()) {
+      if (!publishIgnore.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {
+        filelist = recursiveScan(filePath, filelist, amplifyIgnore, ignoreRoot);
       }
-    } else if (!publishIgnore.isIgnored(file, amplifyIgnore)) {
-      filelist.push(path.join(dir, file));
+    } else if (!publishIgnore.isIgnored(filePath, amplifyIgnore, ignoreRoot)) {
+      filelist.push(filePath);
     }
   });
   return filelist;
