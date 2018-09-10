@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
+const ora = require('ora');
 
 const channelName = 'FCM';
+const spinner = ora('');
 
 async function configure(context) {
   const isChannelEnabled =
@@ -56,16 +58,18 @@ async function enable(context, successMessage) {
       ...answers,
     },
   };
+
+  spinner.start('Updating FCM channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
       if (err) {
-        context.print.error('update channel error');
+        spinner.fail('update channel error');
         reject(err);
       } else {
         if (!successMessage) {
           successMessage = `The ${channelName} channel has been successfully enabled.`;
         }
-        context.print.info(successMessage);
+        spinner.succeed(successMessage);
         context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }
@@ -80,13 +84,15 @@ function disable(context) {
       Enabled: false,
     },
   };
+
+  spinner.start('Updating FCM channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateGcmChannel(params, (err, data) => {
       if (err) {
-        context.print.error('update channel error');
+        spinner.fail('update channel error');
         reject(err);
       } else {
-        context.print.info(`The ${channelName} channel has been disabled.`);
+        spinner.succeed(`The ${channelName} channel has been disabled.`);
         context.exeInfo.serviceMeta.output[channelName] = data.GCMChannelResponse;
         resolve(data);
       }

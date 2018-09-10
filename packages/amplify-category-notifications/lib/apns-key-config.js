@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const p8decoder = require('./p8decoder');
+const validateFilePath = require('./validateFilepath');
 
 async function run() {
   const questions = [
@@ -22,6 +23,7 @@ async function run() {
       name: 'filePath',
       type: 'input',
       message: 'The key file path (.p8): ',
+      validate: validateFilePath,
     },
   ];
   const keyConfig = await inquirer.prompt(questions);
