@@ -1,5 +1,5 @@
 {
-  "name": "amplify-graphql-ops-generator",
+  "name": "amplify-graphql-docs-generator",
   "version": "0.0.1",
   "main": "lib/index.js",
   "author": "Yathi <yathiraj@amazon.com>",
@@ -56,7 +56,9 @@
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**/*.ts"],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

@@ -40,10 +40,17 @@ export function run(argv: Array<String>): void {
           demand: true,
           default: 'graphql',
           normalize: true,
+          choices: ['graphql', 'javascript', 'flow', 'typescript']
+        },
+        maxDepth: {
+          demand: true,
+          default: 3,
+          normalize: true,
+          type: 'number'
         }
       },
       async argv => {
-          generateAllOps(argv.schema, argv.output, { separateFiles: false, language: argv.language })
+          generateAllOps(argv.schema, argv.output, { separateFiles: false, language: argv.language, maxDepth: argv.maxDepth })
       }
     )
     .help()
