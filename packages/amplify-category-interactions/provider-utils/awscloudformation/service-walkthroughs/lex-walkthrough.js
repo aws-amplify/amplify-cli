@@ -624,8 +624,6 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
   }
   slotTypeChoice = await inquirer.prompt(slotTypeChoiceQuestion);
   if (slotTypeChoice[inputs[26].key] == "Amazon built-in slot type") {
-    // TODO: get slot names from lex/cloud
-    //const slotTypes = ['AMAZON.cities', 'AMAZON.actors', 'AMAZON.dates','AMAZON.months','AMAZON.food','AMAZON.games','AMAZON.EmailAddresses','AMAZON.countries'];
     let slotTypeOptions = '';
     let builtInSlotTypes = [];
     let builtInSlotTypesReturn;

@@ -21,6 +21,21 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       template: `cloudformation-templates/${cfnFilename}`,
       target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
     },
+    {
+      dir: pluginDir,
+      template: 'function-template-dir/index.js.ejs',
+      target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+    },
+    {
+      dir: pluginDir,
+      template: 'function-template-dir/package.json.ejs',
+      target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+    },
+    {
+      dir: pluginDir,
+      template: 'function-template-dir/cfn-response.js',
+      target: `${targetDir}/${category}/${options.resourceName}/src/cfn-response.js`,
+    }
   ];
 
   // copy over the files
