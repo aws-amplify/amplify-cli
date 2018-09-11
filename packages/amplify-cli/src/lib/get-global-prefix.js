@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
 const ini = require('ini');
-const which = require('which'); 
+const which = require('which');
 
 let prefix;
 
