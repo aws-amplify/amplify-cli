@@ -35,7 +35,7 @@
 			},
 			{
 				"key": "botName",
-				"question": "Enter a name for your bot",
+				"question": "Enter a name for your bot:",
 				"type": "input",
 				"validation": {
 					"operator": "regex",
@@ -155,7 +155,6 @@
 			{
 				"key": "slotType",
 				"question": "Choose a slot type:",
-				"type": "autocomplete",
 				"required": true
 			},
 			{
@@ -316,31 +315,36 @@
 							"name": "PickUpCity",
 							"type": "AMAZON.US_CITY",
 							"prompt": "In what city do you need to rent a car?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "PickUpDate",
 							"type": "AMAZON.DATE",
 							"prompt": "What day do you want to start your rental?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "ReturnDate",
 							"type": "AMAZON.DATE",
 							"prompt": "What day do you want to return the car?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "DriverAge",
 							"type": "AMAZON.NUMBER",
 							"prompt": "How old is the driver for this rental?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "CarType",
 							"type": "CarTypeValues",
 							"prompt": "What type of car would you like to rent? Our most popular options are economy, midsize, and luxury",
-							"required": true
+							"required": true,
+							"customType": true
 						}
 					],
 					"utterances": [
@@ -372,25 +376,29 @@
 							"name": "Location",
 							"type": "AMAZON.US_CITY",
 							"prompt": "What city will you be staying in?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "CheckInDate",
 							"type": "AMAZON.DATE",
-							"prompt": "Whaty day do you want to check in?",
-							"required": true
+							"prompt": "What day do you want to check in?",
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "Nights",
 							"type": "AMAZON.NUMBER",
 							"prompt": "How many nights will you be staying?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "RoomType",
 							"type": "RoomTypeValues",
 							"prompt": "What type of car would you like to rent? Our most popular options are economy, midsize, and luxury",
-							"required": true
+							"required": true,
+							"customType": true
 						}
 					],
 					"utterances": [
@@ -421,19 +429,22 @@
 							"name": "FlowerType",
 							"type": "FlowerTypes",
 							"prompt": "What type of flowers would you like to order?",
-							"required": true
+							"required": true,
+							"customType": true
 						},
 						{
 							"name": "PickupDate",
 							"type": "AMAZON.DATE",
 							"prompt": "What day do you want the {FlowerType} to be picked up?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "PickupTime",
 							"type": "AMAZON.TIME",
 							"prompt": "At what time do you want the {FlowerType} to be picked up?",
-							"required": true
+							"required": true,
+							"customType": false
 						}
 					],
 					"utterances": [
@@ -463,19 +474,22 @@
 							"name": "AppointmentType",
 							"type": "AppointmentTypeValue",
 							"prompt": "What type of appointment would you like to schedule?",
-							"required": true
+							"required": true,
+							"customType": true
 						},
 						{
 							"name": "Date",
 							"type": "AMAZON.DATE",
 							"prompt": "When should I schedule your appointment?",
-							"required": true
+							"required": true,
+							"customType": false
 						},
 						{
 							"name": "Time",
 							"type": "AMAZON.TIME",
 							"prompt": "At what time should I schedule your appointment?",
-							"required": true
+							"required": true,
+							"customType": false
 						}
 					],
 					"utterances": [

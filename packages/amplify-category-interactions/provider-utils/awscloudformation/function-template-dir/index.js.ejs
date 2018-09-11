@@ -53,12 +53,12 @@ exports.handler = function(event, context) {
                 '<%= props.intents[i].utterances[j] %>',
             <% } %>
             ],
-        <% if(props.intents[i].pathsAnswers) { %>
+        <% if(props.intents[i].pathsAnswer) { %>
             'fulfillmentActivity': {
                 'type': 'CodeHook',
                 'codeHook': {
                     'messageVersion': '$LATEST',
-                    'uri': '<%= props.intents[i].pathsAnswers.paths[0].lambdaArn %>'
+                    'uri': '<%= props.intents[i].pathsAnswer.paths[0].lambdaArn %>'
                 }
             }, 
         <% } else { %>
@@ -73,7 +73,7 @@ exports.handler = function(event, context) {
                     'slotConstraint': <% if(props.intents[i].slots[j].required) { %>'Required'<% } else { %>'Optional'<% } %>,
                     'priority': <%= j %>,
                     'slotType': '<%= props.intents[i].slots[j].type %>',
-                    'slotTypeVersion': '$LATEST',
+                    <% if(props.intents[i].slots[j].customType) { %>'slotTypeVersion': '$LATEST',<% } %>
                     'valueElicitationPrompt': {
                         'maxAttempts': 3,
                         'messages': [
@@ -133,27 +133,57 @@ exports.handler = function(event, context) {
         'idleSessionTTLInSeconds': '<%= props.sessionTimeout*60 %>'
         <% } %>
     };
-    if (event.RequestType == 'Update') {
-        newSlotTypeParams.checksum = '$LATEST'
-        intentParams.checksum = '$LATEST'
-        botParams.checksum = '$LATEST'
-    }
     let responseData = {};
-    newSlotTypeParams.forEach( slotType => lex.putSlotType(slotType,
-        function(err, data) {
-            if (err) console.log(err, err.stack); // an error occurred
-            else     console.log(data);           // successful response
+    let slotTypePromises = [];
+    newSlotTypeParams.forEach( slotType => {
+        lex.getSlotType({
+            'name': slotType.name,
+            'version': '$LATEST'
+        }).promise().then((returnSlotType) => {
+            slotType['checksum'] = returnSlotType.checksum;
+            slotTypePromises.push(lex.putSlotType(slotType,
+            function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+            }).promise())
+        }).catch((err) => {
+            slotTypePromises.push(lex.putSlotType(slotType,
+            function(err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else     console.log(data);           // successful response
+            }).promise())
         })
-    ).promise()
+    });
+    return Promise.all(slotTypePromises)
         .then(() => {
-            intentParams.forEach( intent => lex.putIntent(intent,
-                function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
+            let intentPromises = [];
+            intentParams.forEach( intent => {
+                lex.getIntent({
+                    'version': '$LATEST',
+                    'name': intent.name
+                }).promise().then((returnIntent) => {
+                    intent['checksum'] = returnIntent.checksum;
+                    intentPromises.push(lex.putIntent(intent,
+                        function(err, data) {
+                            if (err) console.log(err, err.stack); // an error occurred
+                            else     console.log(data);           // successful response
+                        }).promise())
+                }).catch((err) => {
+                    intentPromises.push(lex.putIntent(intent,
+                    function(err, data) {
+                        if (err) console.log(err, err.stack); // an error occurred
+                        else     console.log(data);           // successful response
+                    }).promise())
                 })
-            ).promise()
+            });
+            return Promise.all(intentPromises)
                 .then(() => {
-                    return lex.putBot(botParams).promise()
+                    lex.getBot({
+                        'name': botParams.name,
+                        'versionOrAlias': '$LATEST'
+                    }).promise().then((returnBot) => {
+                        botParams['checksum'] = returnBot.checksum;
+                        return lex.putBot(botParams).promise()
                         .then((res) => {
                             responseData = res.ApplicationResponse;
                             response.send(event, context, response.SUCCESS, responseData);
@@ -163,16 +193,23 @@ exports.handler = function(event, context) {
                             response.send(event, context, response.FAILED, responseData);
                             throw err;
                         })
-                }).catch((err) => {
-                        console.log(err.stack);
-                        responseData = {Error: err};
-                        response.send(event, context, response.FAILED, responseData);
-                        throw err;
+                    }).catch((err) => {
+                        return lex.putBot(botParams).promise()
+                        .then((res) => {
+                            responseData = res.ApplicationResponse;
+                            response.send(event, context, response.SUCCESS, responseData);
+                        }).catch((err) => {
+                            console.log(err.stack);
+                            responseData = {Error: err};
+                            response.send(event, context, response.FAILED, responseData);
+                            throw err;
+                        })
+                    })
                 })
-            }).catch((err) => {
+        }).catch((err) => {
             console.log(err.stack);
             responseData = {Error: err};
             response.send(event, context, response.FAILED, responseData);
             throw err;
-        })
-}
+        });
+};

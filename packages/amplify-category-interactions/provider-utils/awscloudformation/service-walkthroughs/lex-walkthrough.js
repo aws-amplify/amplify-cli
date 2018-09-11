@@ -110,7 +110,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     name: inputs[3].key,
     message: inputs[3].question,
     validate: amplify.inputValidation(inputs[3]),
-    default: defaultValues[inputs[3].key]
+    //default: defaultValues[inputs[3].key]
   } 
 
   const coppaQuestion = {
@@ -137,12 +137,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       message: inputs[2].question,
       choices: inputs[2].options
     }
-    let sampleName = await inquirer.prompt(sampleChatbotQuestion);
-    sampleName = sampleName[inputs[2].key];
-    //console.log(sampleName);
-
-    botName = await inquirer.prompt(botNameQuestion);
-    botName = botName[inputs[3].key];
+    let botName = await inquirer.prompt(sampleChatbotQuestion);
+    botName = botName[inputs[2].key];
 
     let coppa = await inquirer.prompt(coppaQuestion);
     coppa = coppa[inputs[4].key];
@@ -152,7 +148,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       print.info('');
     }
 
-    let intents = samples[sampleName];
+    let intents = samples[botName];
 
     answers = {
       "resourceName": resourceName,
@@ -190,7 +186,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     let utterances = [];
     let intents = [];
-    let slots;
+    let slots = [];
     let newSlotTypes = [];
     const intentChoice = await inquirer.prompt(addUpdateIntentQuestion);
     if (intentChoice[inputs[6].key] === "Update an existing intent") {
@@ -272,7 +268,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       deleteIntentConfirmed = deleteIntentConfirmed[inputs[31].key];
     }
     else {
-      context.print.error("No existing intents");
+      context.print.error("Valid option not chosen");
     }
     answers = {
       "resourceName": resourceName,
@@ -349,9 +345,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   else {
     context.print.error("Valid option not chosen");
   }
-  // console.log(answers);
 
-  // Write answers to parameters.json file
   if (parameters) {
     if (answers.intentName) {
       if (deleteIntentConfirmed) {
@@ -388,6 +382,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     answers = parameters;
   }
+  //console.log(answers);
+  //answers.intents.forEach( intent => console.log(intent.slots));
   return answers;
 }
 
@@ -425,16 +421,15 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   print.info('Now, add a slot to your intent. A slot is data the user must provide to fulfill the intent.');
   print.info('');
 
-  let slots;
+  let slots = [];
   let newSlotTypes = [];
   let slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
   if (slotReturn.length > 1) {
-    slots = slotReturn[0];
     newSlotTypes = slotReturn[1];
     // console.log(slots);
     // console.log(newSlotTypes);
   }
-  else { slots = slotReturn }
+  slots = slotReturn[0];
 
   const addConfirmationQuestion = {
     type: inputs[18].type,
@@ -567,7 +562,7 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     // console.log("Adding slot...");
     // console.log("resourceName:",resourceName,"botName:",botName,"intentName:",intentName);
 
-    let slot = {name:"", type:"", prompt:"", required: true};
+    let slot = {name:"", type:"", prompt:"", required: true, customType: false};
     slot.name = await inquirer.prompt(slotNameQuestion);
     slot.name = slot.name[inputs[14].key];
     
@@ -589,8 +584,15 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
         slotTypeDescription: slot.type.slotTypeDescription,
         slotValues: slot.type.slotValues
       });
+      slot.customType = true;
       newSlotTypeAdded = true;
       slot.type = newSlotTypes[newSlotTypes.length-1].slotType;
+    }
+    else if (slot.type[1]) {
+      slot.customType = true;
+      slot.type = slot.type[0];
+    } else {
+      slot.type = slot.type[0];
     }
 
     // console.log("newSlotTypes======", newSlotTypes);
@@ -606,13 +608,14 @@ async function addSlot(context, intentName, botName, resourceName, serviceMetada
     addAnotherSlot = await inquirer.prompt(addAnotherSlotQuestion);
     addAnotherSlot = addAnotherSlot[inputs[25].key];
   }
+  //console.log("slots", slots);
   if (newSlotTypeAdded) { return [slots, newSlotTypes]; }
-  return slots;
+  return [slots];
 }
 
 async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
   let { inputs } = serviceMetadata;
-  const { amplify } = context;
+  const { amplify, print } = context;
   let slotType;
   inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
   
@@ -647,13 +650,13 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     }
 
     const slotTypeQuestion = {
-      type: inputs[15].type,
+      type: "autocomplete",
       name: inputs[15].key,
       message: inputs[15].question,
       source: searchSlotTypes
     }
     slotType = await inquirer.prompt(slotTypeQuestion);
-    return slotType[inputs[15].key];
+    return [slotType[inputs[15].key], false];
   }
   else if (slotTypeChoice[inputs[26].key] == "Slot type I've already made") {
     let slotTypes = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getSlotTypes');
@@ -661,21 +664,25 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     if (newSlotTypes) {
       slotTypes = slotTypes.concat(newSlotTypes.map( slotType => slotType.slotType ));
     }
-    for (let i = 0; i < parameters.intents.length; i++) {
-      if (parameters.intents[i].newSlotTypes) {
-        slotTypes = slotTypes.concat(parameters.intents[i].newSlotTypes.map( slotType => slotType.slotType ));
+    if (parameters) {
+      if (parameters.intents) {
+        for (let i = 0; i < parameters.intents.length; i++) {
+          if (parameters.intents[i].newSlotTypes) {
+            slotTypes = slotTypes.concat(parameters.intents[i].newSlotTypes.map( slotType => slotType.slotType ));
+          }
+        }
       }
     }
     slotTypes = slotTypes.filter( (value, index, self) => self.indexOf(value) === index );
 
     const slotTypeQuestion = {
-      type: inputs[15].type,
+      type: "list",
       name: inputs[15].key,
       message: inputs[15].question,
       choices: slotTypes
     }
     slotType = await inquirer.prompt(slotTypeQuestion);
-    return slotType[inputs[15].key];
+    return [slotType[inputs[15].key], true];
   }
   else if (slotTypeChoice[inputs[26].key] == "Create a new slot type") {
     const slotTypeNameQuestion = {
@@ -712,7 +719,18 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
     let slotValues = []
     while (continueAddingSlotValues) {
       let slotValue = await inquirer.prompt(slotTypeValueQuestion);
-      slotValues.push(slotValue[inputs[29].key]);
+      slotValue = slotValue[inputs[29].key];
+      
+      // Checks for duplicate slot values
+      while (slotValues.filter( existingSlotValue => existingSlotValue === slotValue ).length > 0) {
+        print.info('');
+        print.info('Slot values must be unique');
+        print.info('');
+        slotValue = await inquirer.prompt(slotTypeValueQuestion);
+        slotValue = slotValue[inputs[29].key];
+      }
+        
+      slotValues.push(slotValue);
 
       continueAddingSlotValues = await inquirer.prompt(continueAddingSlotValuesQuestion);
       continueAddingSlotValues = continueAddingSlotValues[inputs[30].key];
