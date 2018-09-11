@@ -110,7 +110,6 @@ jobs:
             command: |
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
-        - run: cd aws-amplify-cypress-api/src && aws s3 rb --force s3://"$(grep -n "bucket " aws-exports.js | cut -d':' -f 3 | tr -d \' | tr -d ,)"
         - run: cd .circleci/ && chmod +x delete_api.sh
         - run: expect .circleci/delete_api.exp
         - store_artifacts:
