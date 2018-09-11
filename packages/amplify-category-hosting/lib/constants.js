@@ -1,4 +1,4 @@
 module.exports = {
   CategoryName: 'hosting',
-  AmplifyIgnoreFileName: '.amplifyignore'
+  AmplifyIgnoreFileName: '.amplifyignore',
 };

@@ -33,7 +33,6 @@
     "eslint": "^4.19.1",
     "folder-hash": "^2.0.0",
     "fs-extra": "^6.0.1",
-    "global-prefix": "^1.0.2",
     "gluegun": "next",
     "ini": "^1.3.5",
     "inquirer": "^3.2.1",
@@ -44,7 +43,6 @@
     "ora": "^2.1.0",
     "promise-sequential": "^1.1.1",
     "util": "^0.11.0",
-    "yarn-global-modules": "^1.0.1",
     "which": "^1.3.1"
   },
   "devDependencies": {
