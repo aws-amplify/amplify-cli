@@ -7,8 +7,7 @@ const constants = require('../../constants');
 
 function getAmplifyIgnore(context) {
   let result = [];
-  const { projectConfig } = context.exeInfo;
-  const filePath = path.join(projectConfig.projectPath, constants.AmplifyIgnoreFileName);
+  const filePath = context.amplify.pathManager.getAmplifyIgnoreFilePath();
   if (fs.existsSync(filePath)) {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     result = fileContents.split(os.EOL)

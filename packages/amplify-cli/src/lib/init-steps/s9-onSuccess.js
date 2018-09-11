@@ -38,15 +38,16 @@ function run(context) {
     const backendMetaFilePath = amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
 
-
     jsonString = JSON.stringify(context.exeInfo.rcData, null, 4);
     const amplifyRcFilePath = amplify.pathManager.getAmplifyRcFilePath(projectPath);
     fs.writeFileSync(amplifyRcFilePath, jsonString, 'utf8');
+    
+    const amplifyIgnoreFilePath = amplify.pathManager.getAmplifyIgnoreFilePath(projectPath);
+    fs.writeFileSync(amplifyIgnoreFilePath, amplify.constants.AmplifyCLIDirName, 'utf8');
 
     printWelcomeMessage();
   });
 }
-
 
 function printWelcomeMessage() {
   print.info('');
