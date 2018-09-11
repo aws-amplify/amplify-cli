@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
+const uuid = require('uuid');
 
 const parametersFileName = 'lex-params.json';
 const defaultValuesFilename = "lex-defaults.js";
@@ -79,6 +80,7 @@ function updateResource(context, category, service) {
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata)
     .then((answers) => {
+      answers.shortId = uuid().substring(0,8);
       copyCfnTemplate(context, category, answers, cfnFilename);
 
       const parameters = { ...answers };

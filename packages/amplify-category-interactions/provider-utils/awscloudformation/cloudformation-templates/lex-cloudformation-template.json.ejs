@@ -85,7 +85,7 @@
                 ]
             }
         },
-        "LambdaFunctionOutputs": {
+        "LambdaFunctionOutputs<%= props.shortId %>": {
             "Type": "Custom::LambdaCallout",
             "Properties": {
                 "ServiceToken": {
@@ -101,6 +101,14 @@
         "Region": {
             "Value": {
                 "Ref": "AWS::Region"
+            }
+        },
+        "FunctionArn": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "LambdaFunction",
+                    "Arn"
+                ]
             }
         }
     }
