@@ -139,19 +139,23 @@ exports.handler = function(event, context) {
         lex.getSlotType({
             'name': slotType.name,
             'version': '$LATEST'
-        }).promise().then((returnSlotType) => {
-            slotType['checksum'] = returnSlotType.checksum;
-            slotTypePromises.push(lex.putSlotType(slotType,
-            function(err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else     console.log(data);           // successful response
-            }).promise())
-        }).catch((err) => {
-            slotTypePromises.push(lex.putSlotType(slotType,
-            function(err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else     console.log(data);           // successful response
-            }).promise())
+        }, 
+        function(err, data) {
+            if (err) {
+                slotTypePromises.push(lex.putSlotType(slotType,
+                function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                }).promise())
+            }
+            else {
+                slotType['checksum'] = data.checksum;
+                slotTypePromises.push(lex.putSlotType(slotType,
+                function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else     console.log(data);           // successful response
+                }).promise())
+            }
         })
     });
     return Promise.all(slotTypePromises)
@@ -161,19 +165,23 @@ exports.handler = function(event, context) {
                 lex.getIntent({
                     'version': '$LATEST',
                     'name': intent.name
-                }).promise().then((returnIntent) => {
-                    intent['checksum'] = returnIntent.checksum;
-                    intentPromises.push(lex.putIntent(intent,
+                },
+                function(err, data) {
+                    if (err) {
+                        intentPromises.push(lex.putIntent(intent,
                         function(err, data) {
                             if (err) console.log(err, err.stack); // an error occurred
                             else     console.log(data);           // successful response
                         }).promise())
-                }).catch((err) => {
-                    intentPromises.push(lex.putIntent(intent,
-                    function(err, data) {
-                        if (err) console.log(err, err.stack); // an error occurred
-                        else     console.log(data);           // successful response
-                    }).promise())
+                    }
+                    else {
+                        intent['checksum'] = data.checksum;
+                        intentPromises.push(lex.putIntent(intent,
+                        function(err, data) {
+                            if (err) console.log(err, err.stack); // an error occurred
+                            else     console.log(data);           // successful response
+                        }).promise())
+                    }
                 })
             });
             return Promise.all(intentPromises)
@@ -181,29 +189,33 @@ exports.handler = function(event, context) {
                     lex.getBot({
                         'name': botParams.name,
                         'versionOrAlias': '$LATEST'
-                    }).promise().then((returnBot) => {
-                        botParams['checksum'] = returnBot.checksum;
-                        return lex.putBot(botParams).promise()
-                        .then((res) => {
-                            responseData = res.ApplicationResponse;
-                            response.send(event, context, response.SUCCESS, responseData);
-                        }).catch((err) => {
-                            console.log(err.stack);
-                            responseData = {Error: err};
-                            response.send(event, context, response.FAILED, responseData);
-                            throw err;
-                        })
-                    }).catch((err) => {
-                        return lex.putBot(botParams).promise()
-                        .then((res) => {
-                            responseData = res.ApplicationResponse;
-                            response.send(event, context, response.SUCCESS, responseData);
-                        }).catch((err) => {
-                            console.log(err.stack);
-                            responseData = {Error: err};
-                            response.send(event, context, response.FAILED, responseData);
-                            throw err;
-                        })
+                    },
+                    function(err, data) {
+                        if (err) {
+                            return lex.putBot(botParams).promise()
+                            .then((res) => {
+                                responseData = res.ApplicationResponse;
+                                response.send(event, context, response.SUCCESS, responseData);
+                            }).catch((err) => {
+                                console.log(err.stack);
+                                responseData = {Error: err};
+                                response.send(event, context, response.FAILED, responseData);
+                                throw err;
+                            })
+                        }
+                        else {
+                            botParams['checksum'] = data.checksum;
+                            return lex.putBot(botParams).promise()
+                            .then((res) => {
+                                responseData = res.ApplicationResponse;
+                                response.send(event, context, response.SUCCESS, responseData);
+                            }).catch((err) => {
+                                console.log(err.stack);
+                                responseData = {Error: err};
+                                response.send(event, context, response.FAILED, responseData);
+                                throw err;
+                            })
+                        }
                     })
                 })
         }).catch((err) => {
@@ -213,3 +225,4 @@ exports.handler = function(event, context) {
             throw err;
         });
 };
+
