@@ -276,10 +276,6 @@ export class ModelAuthTransformer extends Transformer {
      */
     private protectCreateMutation(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
         const resolver = ctx.getResource(resolverResourceId)
-        console.log('rules')
-        console.log(rules)
-        console.log('resolver')
-        console.log(resolver)
         if (!rules || rules.length === 0 || !resolver) {
             return
         }
