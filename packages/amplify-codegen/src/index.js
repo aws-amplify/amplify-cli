@@ -3,7 +3,7 @@ const glob = require('glob-all')
 const appSyncCodeGen = require('aws-appsync-codegen')
 const jetpack = require('fs-jetpack')
 const Ora = require('ora')
-const generateOps = require('amplify-graphql-ops-generator').default
+const generateOps = require('amplify-graphql-docs-generator').default
 
 const loadConfig = require('./codegen-config')
 const addWalkThrough = require('./walkthrough/add')
@@ -14,9 +14,10 @@ const { downloadIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } 
 async function downloadSchema(context, apiId, downloadLocation) {
   const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA)
   downloadSpinner.start()
-  await downloadIntrospectionSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
+  await downloadIntrospectionSchema(context, apiId, downloadLocation)
   downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS)
 }
+
 async function generate(context, forceDownloadSchema) {
   const config = loadConfig(context)
   const availableAppSyncApis = getAppSyncAPIDetails(context)
@@ -37,20 +38,18 @@ async function generate(context, forceDownloadSchema) {
     const output = cfg.amplifyExtension.generatedFileName
     const target = cfg.amplifyExtension.codeGenTarget
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
-      downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
+      await downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
     }
     if (frontend !== 'android') {
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED)
       codeGenSpinner.start()
-      const outputFolder = path.dirname(output)
-      jetpack.dir(outputFolder)
       appSyncCodeGen.generate(queries, schema, output, '', target, 'gql', '', { addTypename: true })
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${output}`)
     }
   })
 }
 
-function generateAllOps(context, forceDownloadSchema) {
+function generateDocs(context, forceDownloadSchema) {
   const config = loadConfig(context)
   const availableAppSyncApis = getAppSyncAPIDetails(context)
   const availableApiIds = availableAppSyncApis.map(api => api.id)
@@ -63,12 +62,13 @@ function generateAllOps(context, forceDownloadSchema) {
   }
   projects.forEach(async (cfg) => {
     const includeFiles = cfg.includes[0]
-    const opsGenDirectory = path.dirname(path.dirname(includeFiles))
+    const opsGenDirectory = cfg.docsFilePath || path.dirname(path.dirname(includeFiles))
     const schema = path.resolve(cfg.schema)
 
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
-      downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
+      await downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema)
     }
+
     const frontend = getFrontEndHandler(context)
     const language = frontend === 'javascript' ? 'javascript' : 'graphql'
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
@@ -97,19 +97,13 @@ async function add(context) {
       graphQLApiId: answer.api.id,
       codeGenTarget: answer.target,
       generatedFileName: answer.generatedFileName,
+      docsFilePath: answer.docsFilePath,
     },
     endpoint: answer.api.endpoint,
   }
   config.addProject(newProject)
   if (answer.shouldGenerateOps) {
-    const frontend = getFrontEndHandler(context)
-    const language = frontend === 'javascript' ? 'javascript' : 'graphql'
-    const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN)
-    opsGenSpinner.start()
-    const opsGenDirectory = path.resolve(answer.opsFilePath)
-    jetpack.dir(opsGenDirectory)
-    generateOps(schema, opsGenDirectory, { separateFiles: true, language })
-    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory))
+    generateDocs(context)
   }
   if (answer.shouldGenerateCode) {
     generate(context)
@@ -131,6 +125,6 @@ async function configure(context) {
 module.exports = {
   configure,
   generate,
-  generateAllOps,
+  generateDocs,
   add,
 }

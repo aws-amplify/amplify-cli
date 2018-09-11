@@ -17,6 +17,8 @@ module.exports = {
     'Generate API code or type annotations based on a GraphQL schema and query documents',
   CMD_DESCRIPTION_GENERATE:
     'Generate API code or type annotations based on a GraphQL schema and query documents.\nIf you want to download schema before generating code pass --download flag',
+  CMD_DESCRIPTION_GENERATE_DOCS:
+    'Generate GraphQL Documents(query, mutation and subscriptions) from schema.\nIf you want to download schema before generating docs pass --download flag',
   ERROR_NOT_CONFIGURED: '',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:

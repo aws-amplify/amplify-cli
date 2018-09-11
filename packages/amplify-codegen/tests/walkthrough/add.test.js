@@ -3,7 +3,13 @@ const askCodegenTargetLanguage = require('../../src/walkthrough/questions/langua
 const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern')
 const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName')
 const askGenerateCode = require('../../src/walkthrough/questions/generateCode')
-const { getAppSyncAPIDetails, getSchemaDownloadLocation, getFrontEndHandler } = require('../../src/utils')
+const askShouldGenerateOps = require('../../src/walkthrough/questions/generateDocs')
+const {
+  getAppSyncAPIDetails,
+  getSchemaDownloadLocation,
+  getFrontEndHandler,
+  getIncludePattern,
+} = require('../../src/utils')
 const add = require('../../src/walkthrough/add')
 const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors')
 
@@ -13,6 +19,7 @@ jest.mock('../../src/walkthrough/questions/queryFilePattern')
 jest.mock('../../src/walkthrough/questions/generatedFileName')
 jest.mock('../../src/utils')
 jest.mock('../../src/walkthrough/questions/generateCode')
+jest.mock('../../src/walkthrough/questions/generateDocs')
 
 describe('Add walk-through', () => {
   const mockAPI = 'two'
@@ -40,17 +47,19 @@ describe('Add walk-through', () => {
     askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage)
     askGeneratedFileName.mockReturnValue(mockGeneratedFileName)
     getAppSyncAPIDetails.mockReturnValue(mockAvailableApis)
-    askGenerateCode.mockReturnValue(true);
+    askGenerateCode.mockReturnValue(true)
+    askShouldGenerateOps.mockReturnValue(true)
     getSchemaDownloadLocation.mockReturnValue(mockDownloadLocation)
     askCodegneQueryFilePattern.mockReturnValue(mockIncludePattern)
     getFrontEndHandler.mockReturnValue('ios')
+    getIncludePattern.mockReturnValue({ graphQLDirectory: 'src/graphql', graphQLExtension: '*.js' })
   })
 
   it('should show questions in walkthrough', async () => {
     const results = await add(mockContext, mockConfigs)
     expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
     expect(askCodegenTargetLanguage).toHaveBeenCalledWith(mockContext)
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['graphql/**/*.graphql'])
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js'])
     expect(askGeneratedFileName).toHaveBeenCalledWith('API', mockTargetLanguage)
     expect(results).toEqual({
       api: mockAvailableApis[1],
@@ -60,15 +69,17 @@ describe('Add walk-through', () => {
       generatedFileName: mockGeneratedFileName,
       shouldGenerateCode: true,
       schemaLocation: mockDownloadLocation,
+      docsFilePath: 'src/graphql',
+      shouldGenerateDocs: true,
     })
   })
 
-  it('should ask schema include location only for android projects', async () => {
+  it('should not ask code generation specific questions in android projects', async () => {
     getFrontEndHandler.mockReturnValue('android')
     const results = await add(mockContext, mockConfigs)
     expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
     expect(askCodegenTargetLanguage).not.toHaveBeenCalled()
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/graphql/**/*.graphql'])
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js'])
     expect(askGeneratedFileName).not.toHaveBeenCalled()
     expect(results).toEqual({
       api: mockAvailableApis[1],
@@ -78,6 +89,8 @@ describe('Add walk-through', () => {
       generatedFileName: '',
       shouldGenerateCode: false,
       schemaLocation: mockDownloadLocation,
+      docsFilePath: 'src/graphql',
+      shouldGenerateDocs: true,
     })
   })
 
@@ -96,8 +109,8 @@ describe('Add walk-through', () => {
 
   it('should thrown an error if there are no APIs available', async () => {
     getAppSyncAPIDetails.mockReturnValue([])
-    await expect(add(mockContext, mockConfigs))
-      .rejects
-      .toBeInstanceOf(AmplifyCodeGenNoAppSyncAPIAvailableError)
+    await expect(add(mockContext, mockConfigs)).rejects.toBeInstanceOf(
+      AmplifyCodeGenNoAppSyncAPIAvailableError,
+    )
   })
 })

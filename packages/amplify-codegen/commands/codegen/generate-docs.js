@@ -1,13 +1,13 @@
-const codeGen = require('../../src/index')
+const codeGen = require('../../src')
 
-const featureName = 'generate-ops'
+const featureName = 'generate-docs'
 
 module.exports = {
   name: featureName,
   run: async (context) => {
     try {
       const forceDownloadSchema = context.parameters.options.download || false
-      await codeGen.generateAllOps(context, forceDownloadSchema)
+      await codeGen.generateDocs(context, forceDownloadSchema)
     } catch (ex) {
       context.print.info(ex)
       process.exit(1)

@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src/** tests/**",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "format": "prettier --write ./src/**/*.js ./__tests__/**/*.js"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -34,7 +35,6 @@
     "moduleFileExtensions": [
       "js",
       "jsx",
-      "json",
       "node"
     ]
   }

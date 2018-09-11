@@ -1,9 +1,9 @@
-const getFrontEndHandler = require('./getFrontEndHandler')
-const getAppSyncAPIDetails = require('./getAppSyncAPIDetails')
-const getOutputFileName = require('./getOutputFileName')
-const downloadIntrospectionSchema = require('./downloadIntrospectionSchema')
-const getSchemaDownloadLocation = require('./getSchemaDownloadLocation')
-const getIncludePattern = require('./getIncludePattern')
+const getFrontEndHandler = require('./getFrontEndHandler');
+const getAppSyncAPIDetails = require('./getAppSyncAPIDetails');
+const getOutputFileName = require('./getOutputFileName');
+const downloadIntrospectionSchema = require('./downloadIntrospectionSchema');
+const getSchemaDownloadLocation = require('./getSchemaDownloadLocation');
+const getIncludePattern = require('./getIncludePattern');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -12,4 +12,4 @@ module.exports = {
   getOutputFileName,
   downloadIntrospectionSchema,
   getIncludePattern,
-}
+};

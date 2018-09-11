@@ -6,4 +6,4 @@ module.exports = {
   AmplifyCodeGenNotSupportedError,
   AmplifyCodeGenNoAppSyncAPIAvailableError,
   AmplifyCodeGenNoPorjectAvailableError,
-}
+};

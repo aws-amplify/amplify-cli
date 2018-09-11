@@ -33,8 +33,8 @@ describe('graphQlToAmplifyConfig', () => {
       },
     }
 
-    const getProjectConfig = jest.fn()
-    getProjectConfig.mockReturnValue({ config: projects })
+
+    const getProjects = jest.fn().mockReturnValue(projects)
 
     const gqlConfig = {
       config: {
@@ -48,7 +48,7 @@ describe('graphQlToAmplifyConfig', () => {
           },
         },
       },
-      getProjectConfig,
+      getProjects,
     }
 
     const expectedAmplifyConfig = [

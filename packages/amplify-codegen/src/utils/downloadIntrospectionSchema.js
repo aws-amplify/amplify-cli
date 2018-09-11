@@ -1,8 +1,8 @@
-const jetpack = require('fs-jetpack')
-const { dirname, relative } = require('path')
+const jetpack = require('fs-jetpack');
+const { dirname, relative } = require('path');
 
 async function downloadIntrospectionSchema(context, apiId, downloadLocation) {
-  const { amplify } = context
+  const { amplify } = context;
   const schema = await context.amplify.executeProviderUtils(
     context,
     'awscloudformation',
@@ -10,11 +10,11 @@ async function downloadIntrospectionSchema(context, apiId, downloadLocation) {
     {
       apiId,
     },
-  )
-  const introspectionDir = dirname(downloadLocation)
-  jetpack.dir(introspectionDir)
-  jetpack.write(downloadLocation, schema)
-  return relative(amplify.getProjectDetails().projectConfig.projectPath, downloadLocation)
+  );
+  const introspectionDir = dirname(downloadLocation);
+  jetpack.dir(introspectionDir);
+  jetpack.write(downloadLocation, schema);
+  return relative(amplify.getProjectDetails().projectConfig.projectPath, downloadLocation);
 }
 
-module.exports = downloadIntrospectionSchema
+module.exports = downloadIntrospectionSchema;

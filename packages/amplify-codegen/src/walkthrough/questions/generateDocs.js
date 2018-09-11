@@ -2,7 +2,7 @@ const inquirer = require('inquirer')
 
 const constants = require('../../constants')
 
-async function askGenerateCode() {
+async function askGenerateDocs() {
   const answer = await inquirer.prompt([
     {
       name: 'confirmGenerateOperations',
@@ -15,4 +15,4 @@ async function askGenerateCode() {
   return answer.confirmGenerateOperations
 }
 
-module.exports = askGenerateCode
+module.exports = askGenerateDocs

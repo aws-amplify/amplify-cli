@@ -43,15 +43,22 @@ function generate(
   const fileExtension = FILE_EXTENSION_MAP[language]
   if (options.separateFiles) {
     ;['queries', 'mutations', 'subscriptions'].forEach((op) => {
-      const gql = renderOps(gqlOperations[op], language)
-      fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql)
+      const ops = gqlOperations[op]
+      if (ops.length) {
+        const gql = renderOps(gqlOperations[op], language)
+        fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql)
+      }
     })
   } else {
-    const gql = renderOps(
-      [...gqlOperations.queries, ...gqlOperations.mutations, ...gqlOperations.subscriptions],
-      language
-    )
-    fs.writeFileSync(path.resolve(outputPath), gql)
+    const ops = [
+      ...gqlOperations.queries,
+      ...gqlOperations.mutations,
+      ...gqlOperations.subscriptions,
+    ]
+    if (ops.length) {
+      const gql = renderOps(ops, language)
+      fs.writeFileSync(path.resolve(outputPath), gql)
+    }
   }
 }
 
@@ -94,7 +101,12 @@ function format(str: string, language: string = 'graphql'): string {
     typescript: 'typescript',
     flow: 'flow',
   }
-  return prettier.format(str, { parser: parserMap[language] })
+  try {
+    return prettier.format(str, { parser: parserMap[language] })
+  } catch (e) {
+    console.log('Error')
+    throw e
+  }
 }
 
 export default generate
