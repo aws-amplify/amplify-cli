@@ -792,39 +792,28 @@ async function askPaths(context) {
     },
   ];
 
-  let addAnotherPath;
   const paths = [];
   const dependsOn = [];
   const functionArns = [];
 
+  const answer = await inquirer.prompt(questions);
+  let path = { name: answer.name };
+  let lambda;
   do {
-    const answer = await inquirer.prompt(questions);
-    let path = { name: answer.name };
-    let lambda;
-    do {
-      lambda = await askLambdaSource(context, answer.functionType, answer.name);
-    } while (!lambda);
-    path = { ...path, ...lambda };
-    paths.push(path);
+    lambda = await askLambdaSource(context, answer.functionType, answer.name);
+  } while (!lambda);
+  path = { ...path, ...lambda };
+  paths.push(path);
 
-    if (lambda.lambdaFunction && !lambda.lambdaArn) {
-      dependsOn.push({
-        category: 'function',
-        resourceName: lambda.lambdaFunction,
-        attributes: ['Name', 'Arn'],
-      });
-    }
+  if (lambda.lambdaFunction && !lambda.lambdaArn) {
+    dependsOn.push({
+      category: 'function',
+      resourceName: lambda.lambdaFunction,
+      attributes: ['Name', 'Arn'],
+    });
+  }
 
-    functionArns.push(lambda);
-
-
-    addAnotherPath = (await inquirer.prompt({
-      name: 'anotherPath',
-      type: 'confirm',
-      message: 'Do you want to add another path?',
-      default: false,
-    })).anotherPath;
-  } while (addAnotherPath);
+  functionArns.push(lambda);
 
   return { paths, dependsOn, functionArns };
 }

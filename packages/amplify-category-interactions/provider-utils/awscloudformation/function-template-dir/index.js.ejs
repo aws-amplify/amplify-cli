@@ -10,12 +10,12 @@ exports.handler = function(event, context) {
         <% for(var i = 0; i < props.intents.length; i++) { %>
         <% for(var j = 0; j < props.intents[i].newSlotTypes.length; j++) { %>
         {
-            'name': '<%= props.intents[i].newSlotTypes[j].slotType %>',
-            'description': '<%= props.intents[i].newSlotTypes[j].slotTypeDescription %>',
-            'enumerationValues': [
+            "name": "<%= props.intents[i].newSlotTypes[j].slotType %>",
+            "description": "<%= props.intents[i].newSlotTypes[j].slotTypeDescription %>",
+            "enumerationValues": [
                 <% for(var k = 0; k < props.intents[i].newSlotTypes[j].slotValues.length; k++) { %>
                 {
-                    'value': '<%= props.intents[i].newSlotTypes[j].slotValues[k] %>'
+                    "value": "<%= props.intents[i].newSlotTypes[j].slotValues[k] %>"
                 },
                 <% } %>
             ]
@@ -26,60 +26,60 @@ exports.handler = function(event, context) {
     let intentParams = [
         <% for(var i = 0; i < props.intents.length; i++) { %>
         {
-            'name': '<%= props.intents[i].intentName %>',
+            "name": "<%= props.intents[i].intentName %>",
             <% if(props.intents[i].confirmationQuestion) { %>
-            'confirmationPrompt': {
-                'maxAttempts': 2, 
-                'messages': [
+            "confirmationPrompt": {
+                "maxAttempts": 2, 
+                "messages": [
                     {
-                        'content': '<%= props.intents[i].confirmationQuestion %>', 
-                        'contentType': 'PlainText'
+                        "content": "<%= props.intents[i].confirmationQuestion %>", 
+                        "contentType": "PlainText"
                     }
                 ]
             }, 
             <% } %>
             <% if(props.intents[i].cancelMessage) { %>
-            'rejectionStatement': {
-                'messages': [
+            "rejectionStatement": {
+                "messages": [
                     {
-                    'content': '<%= props.intents[i].cancelMessage %>', 
-                    'contentType': 'PlainText'
+                    "content": "<%= props.intents[i].cancelMessage %>", 
+                    "contentType": "PlainText"
                     }
                 ]
             }, 
         <% } %>
-            'sampleUtterances': [
+            "sampleUtterances": [
             <% for(var j = 0; j < props.intents[i].utterances.length; j++) { %>
-                '<%= props.intents[i].utterances[j] %>',
+                "<%= props.intents[i].utterances[j] %>",
             <% } %>
             ],
         <% if(props.intents[i].pathsAnswer) { %>
-            'fulfillmentActivity': {
-                'type': 'CodeHook',
-                'codeHook': {
-                    'messageVersion': '$LATEST',
-                    'uri': '<%= props.intents[i].pathsAnswer.paths[0].lambdaArn %>'
+            "fulfillmentActivity": {
+                "type": "CodeHook",
+                "codeHook": {
+                    "messageVersion": "1.0",
+                    "uri": "<%= props.intents[i].pathsAnswer.paths[0].lambdaArn %>"
                 }
             }, 
         <% } else { %>
-            'fulfillmentActivity': {
-                'type': 'ReturnIntent'
+            "fulfillmentActivity": {
+                "type": "ReturnIntent"
             },
         <% } %>
-            'slots': [
+            "slots": [
                 <% for(var j = 0; j < props.intents[i].slots.length; j++) { %>
                 {
-                    'name': '<%= props.intents[i].slots[j].name %>',
-                    'slotConstraint': <% if(props.intents[i].slots[j].required) { %>'Required'<% } else { %>'Optional'<% } %>,
-                    'priority': <%= j %>,
-                    'slotType': '<%= props.intents[i].slots[j].type %>',
-                    <% if(props.intents[i].slots[j].customType) { %>'slotTypeVersion': '$LATEST',<% } %>
-                    'valueElicitationPrompt': {
-                        'maxAttempts': 3,
-                        'messages': [
+                    "name": "<%= props.intents[i].slots[j].name %>",
+                    "slotConstraint": <% if(props.intents[i].slots[j].required) { %>"Required"<% } else { %>"Optional"<% } %>,
+                    "priority": <%= j %>,
+                    "slotType": "<%= props.intents[i].slots[j].type %>",
+                    <% if(props.intents[i].slots[j].customType) { %>"slotTypeVersion": "$LATEST",<% } %>
+                    "valueElicitationPrompt": {
+                        "maxAttempts": 3,
+                        "messages": [
                             {
-                                'content': '<%= props.intents[i].slots[j].prompt %>',
-                                'contentType': 'PlainText'
+                                "content": "<%= props.intents[i].slots[j].prompt %>",
+                                "contentType": "PlainText"
                             }
                         ]
                     }
@@ -90,47 +90,47 @@ exports.handler = function(event, context) {
         <% } %>
     ];
     let botParams = {
-        'name': '<%= props.botName %>',
-        'intents': [
+        "name": "<%= props.botName %>",
+        "intents": [
         <% for(var i = 0; i < props.intents.length; i++) { %>
             {
-                'intentName': '<%= props.intents[i].intentName %>',
-                'intentVersion': '$LATEST'
+                "intentName": "<%= props.intents[i].intentName %>",
+                "intentVersion": "$LATEST"
             },
         <% } %>
         ],
-        'childDirected': <%= props.coppa %>,
-        'locale': 'en-US',
-        'abortStatement': {
-            'messages': [
+        "childDirected": <%= props.coppa %>,
+        "locale": "en-US",
+        "abortStatement": {
+            "messages": [
                 {
-                    'content': 'I don\'t understand. Can you try again?', 
-                    'contentType': 'PlainText'
+                    "content": "I don't understand. Can you try again?", 
+                    "contentType": "PlainText"
                 }, 
                 {
-                    'content': 'I\'m sorry, I don\'t understand.', 
-                    'contentType': 'PlainText'
+                    "content": "I'm sorry, I don't understand.", 
+                    "contentType": "PlainText"
                 }
             ]
         }, 
-        'clarificationPrompt': {
-            'maxAttempts': 3, 
-            'messages': [
+        "clarificationPrompt": {
+            "maxAttempts": 3, 
+            "messages": [
                 {
-                    'content': 'I\'m sorry, I didn\'t hear that. Can you repeat what you just said?', 
-                    'contentType': 'PlainText'
+                    "content": "I'm sorry, I didn't hear that. Can you repeat what you just said?", 
+                    "contentType": "PlainText"
                 }, 
                 {
-                    'content': 'Can you say that again?', 
-                    'contentType': 'PlainText'
+                    "content": "Can you say that again?", 
+                    "contentType": "PlainText"
                 }
             ]
         }, 
         <% if(props.outputVoice) { %>
-        'voiceId': '<%= props.outputVoice %>',
+        "voiceId": "<%= props.outputVoice %>",
         <% } %>
         <% if(props.sessionTimeout) { %>
-        'idleSessionTTLInSeconds': '<%= props.sessionTimeout*60 %>'
+        "idleSessionTTLInSeconds": "<%= props.sessionTimeout*60 %>"
         <% } %>
     };
     let responseData = {};
