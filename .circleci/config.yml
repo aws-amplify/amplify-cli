@@ -86,7 +86,7 @@ jobs:
               git clone $API_CLONE_URL
               cd aws-amplify-cypress-api
               yarn
-        - run: cd .circleci/ && chmod +x com2.sh
+        - run: cd .circleci/ && chmod +x com_2.sh
         - run: expect .circleci/enable_api.exp
         - run: cd aws-amplify-cypress-api
         - run: yarn
