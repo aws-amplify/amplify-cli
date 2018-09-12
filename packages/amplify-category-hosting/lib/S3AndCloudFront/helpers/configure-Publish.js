@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
 
-const { PublishIgnoreRCLabel }= require('../../constants');
+const { PublishIgnoreRCLabel } = require('../../constants');
 
 async function configure(context) {
   const amplifyRCFilePath = context.amplify.pathManager.getAmplifyRcFilePath();
@@ -46,19 +46,19 @@ async function configurePublishIgnore(context, publishIgnore) {
 
   switch (answer.action) {
     case 'list':
-        listPublishIgnore(context, publishIgnore);
-        break;
+      listPublishIgnore(context, publishIgnore);
+      break;
     case 'add':
-        publishIgnore = await addIgnore(context, publishIgnore);
-        break;
+      publishIgnore = await addIgnore(context, publishIgnore);
+      break;
     case 'remove':
-        publishIgnore = await removeIgnore(context, publishIgnore);
-        break;
+      publishIgnore = await removeIgnore(context, publishIgnore);
+      break;
     case 'remove all':
-        publishIgnore = [];
-        break;
+      publishIgnore = [];
+      break;
     default:
-        break;
+      break;
   }
 
   if (answer.action !== DONE) {
@@ -70,11 +70,11 @@ async function configurePublishIgnore(context, publishIgnore) {
 
 
 function listPublishIgnore(context, publishIgnore) {
-    context.print.info(''); 
-    publishIgnore.forEach(element => {
-        context.print.info(element);
-    });
-    context.print.info(''); 
+  context.print.info('');
+  publishIgnore.forEach((element) => {
+    context.print.info(element);
+  });
+  context.print.info('');
 }
 
 async function addIgnore(context, publishIgnore) {
