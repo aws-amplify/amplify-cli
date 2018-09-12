@@ -468,7 +468,7 @@ export class ResourceFactory {
                         [
                             iff(
                                 raw('!$foreach.hasNext'),
-                                set(ref('nextToken'), str('$entry.sort.get(0)'))
+                                set(ref('nextToken'), ref('$forEach.count'))
                             ),
                             qref('$items.add($entry.get("_source"))')
                         ]
