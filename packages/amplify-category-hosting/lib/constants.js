@@ -1,3 +1,3 @@
 module.exports = {
-  CategoryName: 'hosting'
+  CategoryName: 'hosting',
 };
