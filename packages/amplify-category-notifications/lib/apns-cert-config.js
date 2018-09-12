@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const p12decoder = require('./p12decoder');
+const validateFilePath = require('./validateFilepath');
 
 async function run() {
   const questions = [
@@ -7,6 +8,7 @@ async function run() {
       name: 'filePath',
       type: 'input',
       message: 'The certificate file path (.p12): ',
+      validate: validateFilePath,
     },
     {
       name: 'password',

@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
+const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
 
 module.exports = {
   name: 'configure',
@@ -21,9 +22,9 @@ module.exports = {
       channelName = answer.selection;
     }
 
-    await pinpointHelper.checkPinpointApp(context);
+    await pinpointHelper.ensurePinpointApp(context);
     await notificationManager.configureChannel(context, channelName);
-    notificationManager.updateaServiceMeta(context);
+    writeAmplifyMeta(context);
 
     return context;
   },
