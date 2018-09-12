@@ -1,18 +1,18 @@
-const graphQlToAmplifyConfig = require('../../../src/codegen-config/utils/graphQlToAmplifyConfig')
+const graphQlToAmplifyConfig = require('../../../src/codegen-config/utils/graphQlToAmplifyConfig');
 
 describe('graphQlToAmplifyConfig', () => {
-  const schemaPath = './src/schema.json'
-  const includes = ['**/*.gql']
-  const excludes = ['temp/**/*.gql']
-  const graphQLApiId = 'gql-api-id'
-  const codeGenTarget = 'typescript'
+  const schemaPath = './src/schema.json';
+  const includes = ['**/*.gql'];
+  const excludes = ['temp/**/*.gql'];
+  const graphQLApiId = 'gql-api-id';
+  const codeGenTarget = 'typescript';
 
-  const projectName = 'proj1'
-  const schemaPath1 = './proj1/schema.json'
-  const includes1 = ['proj/**/*.gql']
-  const excludes1 = ['proj/temp/**/*.gql']
-  const graphQLApiId1 = 'proj1'
-  const codeGenTarget1 = 'flow'
+  const projectName = 'proj1';
+  const schemaPath1 = './proj1/schema.json';
+  const includes1 = ['proj/**/*.gql'];
+  const excludes1 = ['proj/temp/**/*.gql'];
+  const graphQLApiId1 = 'proj1';
+  const codeGenTarget1 = 'flow';
 
   it('should return items with amplify extensions', () => {
     const projects = {
@@ -31,10 +31,10 @@ describe('graphQlToAmplifyConfig', () => {
         schemaPath,
         includes: includes1,
       },
-    }
+    };
 
 
-    const getProjects = jest.fn().mockReturnValue(projects)
+    const getProjects = jest.fn().mockReturnValue(projects);
 
     const gqlConfig = {
       config: {
@@ -49,7 +49,7 @@ describe('graphQlToAmplifyConfig', () => {
         },
       },
       getProjects,
-    }
+    };
 
     const expectedAmplifyConfig = [
       {
@@ -73,8 +73,8 @@ describe('graphQlToAmplifyConfig', () => {
           codeGenTarget: codeGenTarget1,
         },
       },
-    ]
+    ];
 
-    expect(graphQlToAmplifyConfig(gqlConfig)).toEqual(expectedAmplifyConfig)
-  })
-})
+    expect(graphQlToAmplifyConfig(gqlConfig)).toEqual(expectedAmplifyConfig);
+  });
+});

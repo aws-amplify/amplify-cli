@@ -1,11 +1,11 @@
-const constants = require('../../src/constants')
+const constants = require('../../src/constants');
 
-const featureName = 'codegen'
+const featureName = 'codegen';
 
 module.exports = {
   name: featureName,
   run: async (context) => {
-    const header = `amplify ${featureName} <subcommand>`
+    const header = `amplify ${featureName} <subcommand>`;
 
     const commands = [
       {
@@ -24,10 +24,10 @@ module.exports = {
         name: 'configure',
         description: constants.CMD_DESCRIPTION_CONFIGURE,
       },
-    ]
+    ];
 
-    context.amplify.showHelp(header, commands)
+    context.amplify.showHelp(header, commands);
 
-    context.print.info('')
+    context.print.info('');
   },
-}
+};

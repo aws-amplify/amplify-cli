@@ -2,17 +2,17 @@ const inquirer = require('inquirer');
 
 const constants = require('../../constants');
 
-async function askGenerateCode() {
+async function askUpdateCode() {
   const answer = await inquirer.prompt([
     {
-      name: 'confirmGenerateCode',
-      message: constants.PROMPT_MSG_GENERATE_CODE,
+      name: 'confirmUpdateCode',
+      message: constants.PROMPT_MSG_UPDATE_CODE,
       type: 'confirm',
       default: true,
     },
   ]);
 
-  return answer.confirmGenerateCode;
+  return answer.confirmUpdateCode;
 }
 
-module.exports = askGenerateCode;
+module.exports = askUpdateCode;
