@@ -27,6 +27,7 @@
     "mockirer": "^2.0.1"
   },
   "jest": {
+    "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
