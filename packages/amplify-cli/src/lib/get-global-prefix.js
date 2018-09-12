@@ -107,4 +107,4 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = getPrefix();
+module.exports = getPrefix;
