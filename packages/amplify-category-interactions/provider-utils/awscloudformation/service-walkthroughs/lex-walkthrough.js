@@ -131,6 +131,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Chooses to start with a sample
   if (startChoice[inputs[1].key] === "Start with a sample"){
     // TODO: get list of samples from Lex, if possible
+    // Currently samples are hardcoded in supported-services.json
     const sampleChatbotQuestion = {
       type: inputs[2].type,
       name: inputs[2].key,
@@ -162,7 +163,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Chooses to start with an existing chatbot
   else if (startChoice[inputs[1].key] === "Update an existing chatbot") {
     //console.log('update');
-    // TODO: get list of chatbots from cloud/backend
     if (resourceName) {
       //console.log(resourceName);
       const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
@@ -190,7 +190,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     let newSlotTypes = [];
     const intentChoice = await inquirer.prompt(addUpdateIntentQuestion);
     if (intentChoice[inputs[6].key] === "Update an existing intent") {
-      // TODO: get intents from cloud/backend
       const intentList = parameters.intents.map(x => x.intentName);
       const chooseIntent = {
         type: inputs[7].type,
@@ -471,17 +470,6 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
   let pathsAnswer;
   if (intentFulfillment === "lambdaFunction") {
     pathsAnswer = await askPaths(context);
-    // console.log(pathsAnswer);
-    // TODO: get lambda functions from backend/cloud
-    /*lambdaFunctions = ["lambda1","lambda2","lambda3"];
-    const lambdaFunctionQuestion = {
-      type: inputs[22].type,
-      name: inputs[22].key,
-      message: inputs[22].question,
-      choices: lambdaFunctions
-    }
-    let lambdaFunction = await inquirer.prompt(lambdaFunctionQuestion);
-    lambdaFunction = lambdaFunction[inputs[22].key];*/
   }
 
   return {
