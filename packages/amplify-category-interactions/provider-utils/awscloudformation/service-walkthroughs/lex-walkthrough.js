@@ -224,12 +224,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         slotReturn = await addSlot(context, intentName, botName, resourceName, serviceMetadata, parameters);
       }
       if (slotReturn.length > 1) {
-        slots = slotReturn[0];
         newSlotTypes = slotReturn[1];
-        // console.log(slots);
-        // console.log(newSlotTypes);
       }
-      else { slots = slotReturn }
+      slots = slotReturn[0];
     }
     else if (intentChoice[inputs[6].key] === "Add an intent") {
       //console.log("resourceName:",resourceName);
