@@ -37,6 +37,7 @@ describe('channel-APNS', () => {
     }; 
 
     beforeAll(() => {
+        global.console = {log: jest.fn()}
         configureKey.run = jest.fn(()=>{
             return mockKeyConfig; 
         });
