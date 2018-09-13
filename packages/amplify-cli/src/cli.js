@@ -1,16 +1,15 @@
 const { build } = require('gluegun');
 const path = require('path');
-const globalPrefix = require('global-prefix');
-const yarnGlobalModules = require('yarn-global-modules');
+const globalPrefix = require('./lib/get-global-prefix');
 
 async function run(argv) {
-  const nodeModulesDirPath = path.join(__dirname, '../node_modules');
-  const globalNodeModulesDirPath = getGlobalNodeModulesDirPath();
+  const localNodeModulesDirPath = path.join(__dirname, '../node_modules');
+  const globalNodeModulesDirPath = globalPrefix();
 
   const cli = build()
     .brand('amplify')
     .src(__dirname)
-    .plugins(nodeModulesDirPath, { matching: 'amplify-*', hidden: false })
+    .plugins(localNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .version() // provides default for version, v, --version, -v
     .create();
@@ -22,13 +21,6 @@ async function run(argv) {
 
   // send it back (for testing, mostly)
   return context;
-}
-
-function getGlobalNodeModulesDirPath() {
-  // if calling from yarn global directory, use yarn.
-  return __dirname.includes('yarn')
-    ? path.join(yarnGlobalModules(), 'node_modules')
-    : path.join(globalPrefix, 'lib/node_modules');
 }
 
 function normalizeArgv(cli, argv) {
