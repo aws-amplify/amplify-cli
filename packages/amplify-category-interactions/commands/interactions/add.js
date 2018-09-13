@@ -16,7 +16,7 @@ module.exports = {
         options = {
           service: result.service,
           providerPlugin: result.providerName,
-          build: true
+          build: true,
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {

@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const uuid = require('uuid');
 
 const parametersFileName = 'lex-params.json';
-const defaultValuesFilename = "lex-defaults.js";
+const defaultValuesFilename = 'lex-defaults.js';
 
 let serviceMetadata;
 
@@ -36,7 +36,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       dir: pluginDir,
       template: 'function-template-dir/cfn-response.js',
       target: `${targetDir}/${category}/${options.resourceName}/src/cfn-response.js`,
-    }
+    },
   ];
 
   // copy over the files
@@ -45,7 +45,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 
 function addResource(context, category, service, options) {
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  let { cfnFilename } = serviceMetadata;
+  const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -72,7 +72,7 @@ function addResource(context, category, service, options) {
 
 function updateResource(context, category, service) {
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
-  let { cfnFilename } = serviceMetadata;
+  const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -80,7 +80,7 @@ function updateResource(context, category, service) {
 
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata)
     .then((answers) => {
-      answers.shortId = uuid().substring(0,8);
+      answers.shortId = uuid().substring(0, 8);
       copyCfnTemplate(context, category, answers, cfnFilename);
 
       const parameters = { ...answers };
