@@ -101,12 +101,7 @@ function format(str: string, language: string = 'graphql'): string {
     typescript: 'typescript',
     flow: 'flow',
   }
-  try {
-    return prettier.format(str, { parser: parserMap[language] })
-  } catch (e) {
-    console.log('Error')
-    throw e
-  }
+  return prettier.format(str, { parser: parserMap[language] })
 }
 
 export default generate
