@@ -13,13 +13,9 @@ const askShouldGenerateCode = require('./walkthrough/questions/generateCode');
 const askShouldUpdateCode = require('./walkthrough/questions/updateCode');
 const askShouldGenerateDocs = require('./walkthrough/questions/generateDocs');
 
-const {
-  getSchemaDownloadLocation,
-  getIncludePattern,
-} = require('./utils/');
+const { getSchemaDownloadLocation, getIncludePattern } = require('./utils/');
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
-
 
 const generateOps = require('amplify-graphql-docs-generator').default;
 
@@ -27,7 +23,11 @@ const loadConfig = require('./codegen-config');
 const addWalkThrough = require('./walkthrough/add');
 const configureProjectWalkThrough = require('./walkthrough/configure');
 const constants = require('./constants');
-const { downloadIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('./utils');
+const {
+  downloadIntrospectionSchema,
+  getFrontEndHandler,
+  getAppSyncAPIDetails,
+} = require('./utils');
 
 async function downloadSchema(context, apiId, downloadLocation) {
   const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
@@ -35,14 +35,14 @@ async function downloadSchema(context, apiId, downloadLocation) {
   await downloadIntrospectionSchema(context, apiId, downloadLocation);
   downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS);
 }
-
-async function generate(context, forceDownloadSchema) {
+async function generateTypes(context, forceDownloadSchema) {
   const config = loadConfig(context);
   const availableAppSyncApis = getAppSyncAPIDetails(context);
   const availableApiIds = availableAppSyncApis.map(api => api.id);
   const configuredProjects = config.getProjects();
   const projects = configuredProjects.filter(proj =>
-    availableApiIds.includes(proj.amplifyExtension.graphQLApiId));
+    availableApiIds.includes(proj.amplifyExtension.graphQLApiId),
+  );
 
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
@@ -61,19 +61,27 @@ async function generate(context, forceDownloadSchema) {
     if (frontend !== 'android') {
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      appSyncCodeGen.generate(queries, schema, output, '', target, 'gql', '', { addTypename: true });
+      appSyncCodeGen.generate(queries, schema, output, '', target, 'gql', '', {
+        addTypename: true,
+      });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${output}`);
     }
   });
 }
 
-function generateDocs(context, forceDownloadSchema) {
+async function generate(context, forceDownloadSchema) {
+  await generateStatements(context, forceDownloadSchema);
+  await generateTypes(context, false);
+}
+
+function generateStatements(context, forceDownloadSchema) {
   const config = loadConfig(context);
   const availableAppSyncApis = getAppSyncAPIDetails(context);
   const availableApiIds = availableAppSyncApis.map(api => api.id);
   const configuredProjects = config.getProjects();
   const projects = configuredProjects.filter(proj =>
-    availableApiIds.includes(proj.amplifyExtension.graphQLApiId));
+    availableApiIds.includes(proj.amplifyExtension.graphQLApiId),
+  );
 
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
@@ -93,7 +101,9 @@ function generateDocs(context, forceDownloadSchema) {
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
     generateOps(schema, opsGenDirectory, { separateFiles: true, language });
-    opsGenSpinner.succeed(constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory));
+    opsGenSpinner.succeed(
+      constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory),
+    );
   });
 }
 
@@ -140,8 +150,9 @@ async function prePushAddGraphQLCodegenHook(context, resourceName) {
 
 async function prePushUpdateGraphQLCodegenHook(context, resourceName) {
   const config = loadConfig(context);
-  const project = config.getProjects().find(projectItem =>
-    projectItem.projectName === resourceName);
+  const project = config
+    .getProjects()
+    .find(projectItem => projectItem.projectName === resourceName);
   if (project) {
     if (await askShouldUpdateCode()) {
       const shouldGenerateDocs = await askShouldGenerateDocs();
@@ -175,7 +186,7 @@ async function postPushGraphQLCodegenHook(context, graphQLConfig) {
   config.save();
 
   if (graphQLConfig.shouldGenerateDocs) {
-    generateDocs(context);
+    generateStatements(context);
   }
 
   generate(context);
@@ -205,10 +216,10 @@ async function add(context) {
   };
   config.addProject(newProject);
   if (answer.shouldGenerateOps) {
-    generateDocs(context);
+    await generateStatements(context);
   }
   if (answer.shouldGenerateCode) {
-    generate(context);
+    await generateTypes(context);
   }
   config.save();
 }
@@ -227,7 +238,8 @@ async function configure(context) {
 module.exports = {
   configure,
   generate,
-  generateDocs,
+  generateTypes,
+  generateStatements,
   add,
   prePushAddGraphQLCodegenHook,
   prePushUpdateGraphQLCodegenHook,

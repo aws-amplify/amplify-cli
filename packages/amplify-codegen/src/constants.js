@@ -17,10 +17,10 @@ module.exports = {
   ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED: 'All enabled AppSync APIs are already added',
   CMD_DESCRIPTION_ADD:
     'Generate API code or type annotations based on a GraphQL schema and query documents',
-  CMD_DESCRIPTION_GENERATE:
-    'Generate API code or type annotations based on a GraphQL schema and query documents.\nIf you want to download schema before generating code pass --download flag',
-  CMD_DESCRIPTION_GENERATE_DOCS:
-    'Generate GraphQL Documents(query, mutations and subscriptions) from schema.\nIf you want to download schema before generating docs pass --download flag',
+  CMD_DESCRIPTION_GENERATE_TYPES:
+    'Generate API code or type annotations based on a GraphQL schema and statements.\nIf don\'t want to download schema before generating code pass --nodownload flag',
+  CMD_DESCRIPTION_GENERATE_STATEMENTS:
+    'Generate GraphQL statements(query, mutations and subscriptions) from schema.\nIf don\'t want to download schema before generating code pass --nodownload flag',
   ERROR_NOT_CONFIGURED: '',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:
