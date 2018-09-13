@@ -3,10 +3,12 @@ module.exports = {
   PROMPT_MSG_FILE_NAME: 'Enter the file name for the generated code',
   PROMPT_MSG_CODEGEN_TARGET: 'Choose the code generation language target',
   PROMPT_MSG_GQL_FILE_PATTERN:
-    'Enter the file name pattern of graphql queries, mutation and subscriptions',
+    'Enter the file name pattern of graphql queries, mutations and subscriptions',
   PROMPT_MSG_GENERATE_CODE:
-    'Do you want to generate code',
-  PROMPT_MSG_GENERATE_OPS: 'Do you want to generate all possible GraphQL operations',
+    'Do you want to generate code for your newly created GraphQL API',
+  PROMPT_MSG_UPDATE_CODE:
+    'Do you want to update code for your updated GraphQL API',
+  PROMPT_MSG_GENERATE_OPS: 'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
   ERROR_CODEGEN_TARGET_NOT_SUPPORTED: 'is not supported by codegen plugin',
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
@@ -18,7 +20,7 @@ module.exports = {
   CMD_DESCRIPTION_GENERATE:
     'Generate API code or type annotations based on a GraphQL schema and query documents.\nIf you want to download schema before generating code pass --download flag',
   CMD_DESCRIPTION_GENERATE_DOCS:
-    'Generate GraphQL Documents(query, mutation and subscriptions) from schema.\nIf you want to download schema before generating docs pass --download flag',
+    'Generate GraphQL Documents(query, mutations and subscriptions) from schema.\nIf you want to download schema before generating docs pass --download flag',
   ERROR_NOT_CONFIGURED: '',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:
@@ -30,9 +32,9 @@ module.exports = {
   INFO_AUTO_SELECTED_API: 'Using AppSync API:',
   INFO_MSG_REMOVE_API_SUCCESS: 'removed project',
   INFO_MESSAGE_CODEGEN_GENERATE_STARTED: 'Generating',
-  INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS: 'code generated successfully and saved in file',
+  INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS: 'Code generated successfully and saved in file',
   INFO_MESSAGE_DOWNLOADING_SCHEMA: 'Downloading the introspection schema',
   INFO_MESSAGE_DOWNLOAD_SUCCESS: 'Downloaded the schema',
   INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
-}
+};

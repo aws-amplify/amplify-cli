@@ -1,6 +1,6 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 
-const constants = require('../../constants')
+const constants = require('../../constants');
 
 async function askGenerateDocs() {
   const answer = await inquirer.prompt([
@@ -10,9 +10,9 @@ async function askGenerateDocs() {
       type: 'confirm',
       default: true,
     },
-  ])
+  ]);
 
-  return answer.confirmGenerateOperations
+  return answer.confirmGenerateOperations;
 }
 
-module.exports = askGenerateDocs
+module.exports = askGenerateDocs;

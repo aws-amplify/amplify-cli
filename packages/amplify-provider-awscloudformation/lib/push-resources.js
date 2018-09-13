@@ -1,15 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 const cfnLint = require('cfn-lint');
+const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
+const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-codegen');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 
+const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
 async function run(context, category, resourceName) {
@@ -27,8 +30,10 @@ async function run(context, category, resourceName) {
   return packageResources(context, resources)
     .then(() => transformGraphQLSchema(context, { noConfig: true }))
     .then(() => uploadAppSyncFiles(context, resources))
+    .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
+      spinner.start();
       projectDetails = context.amplify.getProjectDetails();
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
@@ -37,6 +42,7 @@ async function run(context, category, resourceName) {
         );
       }
     })
+    .then(() => postPushGraphQLCodegen(context))
     .then(() => {
       if (resources.length > 0) {
         context.amplify.updateamplifyMetaAfterPush(resources);
@@ -65,10 +71,16 @@ async function run(context, category, resourceName) {
         }
       }
 
-
       return downloadAPIModels(context, newAPIresources);
     })
-    .then(() => displayHelpfulURLs(context, resources));
+    .then(() => {
+      spinner.succeed('All resources are updated in the cloud');
+      displayHelpfulURLs(context, resources);
+    })
+    .catch((err) => {
+      spinner.fail('An error occurred when pushing the resources to the cloud');
+      throw err;
+    });
 }
 
 function validateCfnTemplates(context, resourcesToBeUpdated) {

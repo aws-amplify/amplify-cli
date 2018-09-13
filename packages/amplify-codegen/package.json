@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src/** tests/**",
+    "lint-fix": "eslint src/** tests/** --fix",
     "test": "jest",
     "test-watch": "jest --watch",
     "format": "prettier --write ./src/**/*.js ./__tests__/**/*.js"
