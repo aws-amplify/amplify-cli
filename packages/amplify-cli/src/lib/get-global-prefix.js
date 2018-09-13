@@ -4,9 +4,27 @@ const os = require('os');
 const ini = require('ini');
 const which = require('which');
 
-let prefix;
-
 function getPrefix() {
+  const yarnPrefix = getYarnPrefix();
+  if (__dirname.includes(yarnPrefix)) {
+    return yarnPrefix;
+  }
+  return getNpmPrefix();
+}
+
+function getYarnPrefix() {
+  const home = os.homedir();
+
+  let yarnPrefix = path.join(home, '.config', 'yarn', 'global');
+  if (process.platform === 'win32' && process.env.LOCALAPPDATA) {
+    yarnPrefix = path.join(process.env.LOCALAPPDATA, 'Yarn', 'config', 'global');
+  }
+
+  return yarnPrefix;
+}
+
+function getNpmPrefix() {
+  let prefix;
   if (process.env.PREFIX) {
     prefix = process.env.PREFIX;
   } else {
@@ -28,7 +46,9 @@ function getPrefix() {
         }
       }
 
-      if (!prefix) fallback();
+      if (!prefix) {
+        prefix = fallback();
+      }
     }
   }
 
@@ -38,16 +58,18 @@ function getPrefix() {
 }
 
 function fallback() {
+  let result;
   if (/^win/.test(process.platform)) {
-    prefix = process.env.APPDATA
+    result = process.env.APPDATA
       ? path.join(process.env.APPDATA, 'npm')
       : path.dirname(process.execPath);
   } else {
-    prefix = path.dirname(path.dirname(process.execPath));
+    result = path.dirname(path.dirname(process.execPath));
     if (process.env.DESTDIR) {
-      prefix = path.join(process.env.DESTDIR, prefix);
+      result = path.join(process.env.DESTDIR, result);
     }
   }
+  return result;
 }
 
 function tryNpmPath() {
@@ -85,4 +107,4 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = getPrefix();
+module.exports = getPrefix;

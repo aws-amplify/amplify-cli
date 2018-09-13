@@ -4,6 +4,7 @@ const moment = require('moment');
 const configurables = {
   Website: './helpers/configure-Website',
   CloudFront: './helpers/configure-CloudFront',
+  Publish: './helpers/configure-Publish',
 };
 
 async function init(context) {
