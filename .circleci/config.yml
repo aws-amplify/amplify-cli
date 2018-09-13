@@ -152,6 +152,10 @@ workflows:
           requires:
             - build
       - integration_test:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
       - deploy:
