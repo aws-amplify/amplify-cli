@@ -38,7 +38,7 @@ function run(context) {
       }
     }
   } catch (e) {
-    // no need to do anything, configuSource stays the same as determined by previous steps.
+    // no need to do anything, configSource stays the same as determined by previous steps.
   }
 
   return configSource;

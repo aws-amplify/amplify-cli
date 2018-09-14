@@ -59,7 +59,6 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 function serviceSelectionPrompt(context, category, supportedServices) {
   const { providers } = getProjectConfig();
   supportedServices = filterServicesByEnabledProviders(providers, supportedServices);
-
   return serviceQuestionWalkthrough(context, supportedServices, category);
 }
 

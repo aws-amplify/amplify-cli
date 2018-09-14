@@ -3,6 +3,7 @@ const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
+const Lex = require('../src/aws-utils/aws-lex');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 
 
@@ -114,4 +115,26 @@ module.exports = {
       .catch(() => {
         throw new Error('Failed to download introspection schema');
       }),
+  getBuiltInSlotTypes: (context, options) => {
+    let params = {
+      locale: "en-US",
+      maxResults: 50
+    };
+    if (options) {
+      params.nextToken = options;
+    }
+    return new Lex(context)
+      .then((result) => {
+        return result.lex.getBuiltinSlotTypes(params).promise();
+      });
+  },
+  getSlotTypes: context => {
+    let params = {
+      maxResults: 50
+    };
+    return new Lex(context)
+      .then((result) => {
+        return result.lex.getSlotTypes(params).promise();
+      });
+  }
 };
