@@ -4,7 +4,7 @@
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc && zip -j lib/streaming-lambda.zip ./streaming-lambda/python_streaming_function.py",
+    "build": "tsc && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
     "clean": "rm -rf ./lib"
   },
   "keywords": [
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",
+    "bestzip": "^2.0.0",
     "graphql-dynamodb-transformer": "^1.0.12",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
