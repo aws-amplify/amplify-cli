@@ -54,6 +54,11 @@ jobs:
         - run: sudo apt-get install -y expect
         - run: sudo apt-get install -y zip
         - run: sudo apt-get install -y lsof
+        - run: sudo apt-get install -y python
+        - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+        - run: pip install awscli
+        - run: cd .circleci/ && chmod +x aws.sh
+        - run: expect .circleci/aws_configure.exp 
         - run: sudo npm run setup-dev
         - run: amplify
         - run:
@@ -62,7 +67,7 @@ jobs:
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
               yarn
-        - run: cd .circleci/ && chmod +x com_1.sh
+        - run: cd .circleci/ && chmod +x auth.sh
         - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth
         - run: yarn
@@ -81,13 +86,15 @@ jobs:
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
         - run: sudo kill -9 $(lsof -t -i:3000)
-        - run:
+        - run: cd .circleci/ && chmod +x delete_auth.sh
+        - run: expect .circleci/delete_auth.exp
+        - run: 
             name: "Clone API test package"
             command: |
               git clone $API_CLONE_URL
               cd aws-amplify-cypress-api
               yarn
-        - run: cd .circleci/ && chmod +x com_2.sh
+        - run: cd .circleci/ && chmod +x api.sh
         - run: expect .circleci/enable_api.exp
         - run: cd aws-amplify-cypress-api
         - run: yarn
@@ -104,6 +111,8 @@ jobs:
             command: |
               npm install --save cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
+        - run: cd .circleci/ && chmod +x delete_api.sh
+        - run: expect .circleci/delete_api.exp
         - store_artifacts:
             path: cypress/videos
         - store_artifacts:
@@ -144,6 +153,10 @@ workflows:
           requires:
             - build
       - integration_test:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
       - deploy:
