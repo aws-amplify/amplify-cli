@@ -26,7 +26,7 @@ describe('getArgs', () => {
     type: GraphQLString,
   }
 
-  const BlogArticle = new GraphQLObjectType({
+  const blogArticle = new GraphQLObjectType({
     name: 'BlogArticle',
     fields: {
       id: { type: GraphQLID },
@@ -40,7 +40,7 @@ describe('getArgs', () => {
       fields: {
         searchArticle: {
           args: { id, query },
-          type: BlogArticle,
+          type: blogArticle,
         },
       },
     }),

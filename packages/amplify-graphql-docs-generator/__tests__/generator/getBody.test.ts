@@ -23,7 +23,7 @@ describe('getBody', () => {
     name: 'id',
     type: GraphQLID,
   }
-  const BlogArticle = new GraphQLObjectType({
+  const blogArticle = new GraphQLObjectType({
     name: 'BlogArticle',
     fields: {
       id: { type: GraphQLID },
@@ -37,7 +37,7 @@ describe('getBody', () => {
       fields: {
         article: {
           args: { id: { type: GraphQLID } },
-          type: BlogArticle,
+          type: blogArticle,
         },
       },
     }),

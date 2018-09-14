@@ -42,7 +42,7 @@ function generate(
   registerPartials()
   const fileExtension = FILE_EXTENSION_MAP[language]
   if (options.separateFiles) {
-    ;['queries', 'mutations', 'subscriptions'].forEach((op) => {
+    ['queries', 'mutations', 'subscriptions'].forEach((op) => {
       const ops = gqlOperations[op]
       if (ops.length) {
         const gql = renderOps(gqlOperations[op], language)
