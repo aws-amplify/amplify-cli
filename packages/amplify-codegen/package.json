@@ -13,15 +13,16 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "amplify-graphql-docs-generator": "^0.0.1",
     "aws-appsync-codegen": "^0.17.4",
+    "chalk": "^2.4.1",
     "eslint": "^4.9.0",
     "fs-jetpack": "^2.1.0",
     "glob-all": "^3.1.0",
     "graphql-config": "^2.1.0",
     "inquirer": "^3.2.1",
     "ora": "^3.0.0",
-    "underscore": "^1.9.1",
-    "amplify-graphql-docs-generator": "^0.0.1"
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",

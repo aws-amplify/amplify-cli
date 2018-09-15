@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 module.exports = {
   PROMPT_MSG_API_LIST: 'Choose the AppSync API that you want to use in this project',
   PROMPT_MSG_FILE_NAME: 'Enter the file name for the generated code',
@@ -29,6 +31,7 @@ module.exports = {
     'No API is pushed to cloud. Did you forget to do \n amplify api push',
   WARNING_CODEGEN_PENDING_API_PUSH:
     'The APIs listed below are not pushed to the cloud. Run amplify api push',
+  MSG_CODEGEN_PENDING_API_PUSH: `${chalk.bold('WARNING:')} You have modified your schema locally and not pushed to the cloud, which may result in incomplete type generation.\nWe recommend you first run ${chalk.underline('$amplify push')}`,
   INFO_AUTO_SELECTED_API: 'Using AppSync API:',
   INFO_MSG_REMOVE_API_SUCCESS: 'removed project',
   INFO_MESSAGE_CODEGEN_GENERATE_STARTED: 'Generating',

@@ -29,13 +29,7 @@ const {
   getAppSyncAPIDetails,
 } = require('./utils');
 
-async function downloadSchema(context, apiId, downloadLocation) {
-  const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
-  downloadSpinner.start();
-  await downloadIntrospectionSchema(context, apiId, downloadLocation);
-  downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS);
-}
-async function generateTypes(context, forceDownloadSchema) {
+function getAvailableProjects(context) {
   const config = loadConfig(context);
   const availableAppSyncApis = getAppSyncAPIDetails(context);
   const availableApiIds = availableAppSyncApis.map(api => api.id);
@@ -43,9 +37,20 @@ async function generateTypes(context, forceDownloadSchema) {
   const projects = configuredProjects.filter(proj =>
     availableApiIds.includes(proj.amplifyExtension.graphQLApiId),
   );
+  return projects;
+}
+async function downloadSchema(context, apiId, downloadLocation) {
+  const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
+  downloadSpinner.start();
+  await downloadIntrospectionSchema(context, apiId, downloadLocation);
+  downloadSpinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS);
+}
 
+async function generateTypes(context, forceDownloadSchema) {
+  const projects = getAvailableProjects(context);
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+    return;
   }
   const frontend = getFrontEndHandler(context);
   projects.forEach(async (cfg) => {
@@ -70,22 +75,62 @@ async function generateTypes(context, forceDownloadSchema) {
 }
 
 async function generate(context, forceDownloadSchema) {
-  await generateStatements(context, forceDownloadSchema);
+  const projects = getAvailableProjects(context);
+  if (!projects.length) {
+    context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+    return;
+  }
+  if (forceDownloadSchema) {
+    const downloadPromises = projects.map(async cfg =>
+      downloadIntrospectionSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema),
+    );
+    await Promise.all(downloadPromises);
+  }
+  await generateStatements(context, false);
   await generateTypes(context, false);
+
+  const pendingPush = await hasAppSyncResourcesPendingPush(context);
+  if (pendingPush) {
+    context.print.info(constants.MSG_CODEGEN_PENDING_API_PUSH);
+  }
+}
+
+// function loadProviders(context) {
+//   const { providers } = context.amplify.getProjectConfig();
+//   const providerPluginMap = {};
+//   Object.keys(providers).forEach((providerName) => {
+//     const providerPlugin = require(providers[providerName]);
+//     providerPluginMap[providerName] = providerPlugin;
+//   });
+//   return providerPluginMap;
+// }
+// async function pushResources(context, resources) {
+//   const providerMap = loadProviders(context);
+//   const pushPromises = resources.map((resource) => {
+//     const { resourceName, providerPlugin } = resource;
+//     return providerMap[providerPlugin].pushResources(context, 'api', resourceName)
+//   });
+
+//   await Promise.all(pushPromises);
+// }
+
+async function hasAppSyncResourcesPendingPush(context) {
+  const resourceStatus = await context.amplify.getResourceStatus('api');
+  const appSyncResources = [];
+  ['resourcesToBeCreated', 'resourcesToBeUpdated', 'resourcesToBeDeleted'].forEach((opName) => {
+    const status = resourceStatus[opName];
+    status.forEach((resource) => {
+      if (resource.service === 'AppSync') {
+        appSyncResources.push(resource);
+      }
+    });
+  });
+
+  return appSyncResources.length > 0;
 }
 
 function generateStatements(context, forceDownloadSchema) {
-  const config = loadConfig(context);
-  const availableAppSyncApis = getAppSyncAPIDetails(context);
-  const availableApiIds = availableAppSyncApis.map(api => api.id);
-  const configuredProjects = config.getProjects();
-  const projects = configuredProjects.filter(proj =>
-    availableApiIds.includes(proj.amplifyExtension.graphQLApiId),
-  );
-
-  if (!projects.length) {
-    context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-  }
+  const projects = getAvailableProjects(context);
   projects.forEach(async (cfg) => {
     const includeFiles = cfg.includes[0];
     const opsGenDirectory = cfg.docsFilePath || path.dirname(path.dirname(includeFiles));
@@ -100,7 +145,7 @@ function generateStatements(context, forceDownloadSchema) {
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
-    generateOps(schema, opsGenDirectory, { separateFiles: true, language });
+    await generateOps(schema, opsGenDirectory, { separateFiles: true, language });
     opsGenSpinner.succeed(
       constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory),
     );

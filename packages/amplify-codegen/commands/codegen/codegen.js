@@ -35,7 +35,8 @@ module.exports = {
     try {
       await codeGen.generate(context, forceDownloadSchema);
     } catch (e) {
-      context.print.info(e.message);
+      // context.print.info(e.message);
+      context.print.info(e);
       process.exit(1);
     }
   },
