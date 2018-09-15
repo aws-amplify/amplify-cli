@@ -1,6 +1,7 @@
 const { join, dirname } = require('path');
 
 const getAndroidResDir = require('./getAndroidResDir');
+const getFrontEndHandler = require('./getFrontEndHandler');
 
 function getSchemaDownloadLocation(context, name) {
   const { amplify } = context;
@@ -9,8 +10,9 @@ function getSchemaDownloadLocation(context, name) {
     const androidResDir = getAndroidResDir(context);
     downloadDir = join(dirname(androidResDir), 'graphql');
   } catch (e) {
-    const outputPath = amplify.pathManager.getBackendDirPath();
-    downloadDir = join(outputPath, 'api', name);
+    const frontEnd = getFrontEndHandler(context);
+    const outputPath = frontEnd === 'javascript' ? 'src' : '';
+    downloadDir = join(outputPath, 'graphql');
   }
   return join(downloadDir, 'schema.json');
 }

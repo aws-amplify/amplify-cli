@@ -2,8 +2,10 @@ const { join, dirname } = require('path');
 
 const getSchemaDownloadLocation = require('../../src/utils/getSchemaDownloadLocation');
 const getAndroidResDir = require('../../src/utils/getAndroidResDir');
+const getFrontendHandler = require('../../src/utils/getFrontEndHandler');
 
 jest.mock('../../src/utils/getAndroidResDir');
+jest.mock('../../src/utils/getFrontEndHandler');
 
 let mockContext;
 const mockBackEndPath = 'MOCK_BACKEND_DIR';
@@ -19,6 +21,7 @@ describe('getSchemaDownloadLocation', () => {
     getAndroidResDir.mockImplementation(() => {
       throw new Error();
     });
+    getFrontendHandler.mockReturnValue('javascript');
     mockContext = {
       amplify: {
         pathManager: {
@@ -28,9 +31,15 @@ describe('getSchemaDownloadLocation', () => {
     };
   });
 
-  it('should use the backend api directory for schema', () => {
+  it('should use the src/graphql directory when used in JS frontend', () => {
     const downloadLocation = getSchemaDownloadLocation(mockContext, mockAPIName);
-    expect(downloadLocation).toEqual(join(mockBackEndPath, 'api', mockAPIName, 'schema.json'));
+    expect(downloadLocation).toEqual(join('src', 'graphql', 'schema.json'));
+  });
+
+  it('should use the graphql directory when used in iOS frontend', () => {
+    getFrontendHandler.mockReturnValue('iOS')
+    const downloadLocation = getSchemaDownloadLocation(mockContext, mockAPIName);
+    expect(downloadLocation).toEqual(join('graphql', 'schema.json'));
   });
 
   it('should use main directory in Android', () => {
