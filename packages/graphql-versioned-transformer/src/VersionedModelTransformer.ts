@@ -8,8 +8,7 @@ import {
 } from "graphql";
 import { printBlock, compoundExpression, set, ref, qref, obj, str, raw } from 'graphql-mapping-template'
 import {
-    ResourceConstants, blankObject, makeSchema,
-    makeOperationType,
+    ResourceConstants,
     ModelResourceIDs,
     ResolverResourceIDs,
     makeInputValueDefinition,
