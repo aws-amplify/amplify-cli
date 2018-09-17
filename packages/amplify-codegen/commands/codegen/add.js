@@ -6,9 +6,10 @@ module.exports = {
   name: featureName,
   run: async (context) => {
     try {
-      await codeGen.add(context);
+      const apiId = context.parameters.options.apiId || null;
+      await codeGen.add(context, apiId);
     } catch (ex) {
-      context.print.error(ex.message)
+      context.print.error(ex.message);
     }
   },
 };

@@ -19,39 +19,43 @@ const constants = require('../constants');
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
-async function addWalkThrough(context, configs) {
-  const availableAppSyncApis = getAppSyncAPIDetails(context); // published and up published
-  const alreadyAddedApis = configs.map(cfg => cfg.amplifyExtension.graphQLApiId);
-  const newAPIs = availableAppSyncApis.filter(api => api.id && !alreadyAddedApis.includes(api.id));
-  const unpublishedApis = availableAppSyncApis.filter(api => !api.id);
-
-  // No API GraphQL API is added to the project
-  if (availableAppSyncApis.length === 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE);
-  }
-
-  // GraphQL API is added but not pushed to cloud
-  if (newAPIs.length === 0 && unpublishedApis.length > 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_PENDING_API_PUSH);
-  }
-
-  // All GraphQL APIs are already configured
-  if (newAPIs.length === 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED);
-  }
-
-  // Some APIs are pending push
-  if (unpublishedApis.length) {
-    context.print.info(constants.WARNING_CODEGEN_PENDING_API_PUSH);
-    context.print.info(unpublishedApis.map(api => api.name).join('\n'));
-  }
+async function addWalkThrough(context, configs, api = null) {
   let targetLanguage = '';
   let includePattern = '';
   let generatedFileName = '';
   let shouldGenerateCode = false;
 
-  const apiId = await askAppSyncAPITarget(context, newAPIs, null);
-  const api = newAPIs.find(a => a.id === apiId);
+  if (!api) {
+    const availableAppSyncApis = getAppSyncAPIDetails(context); // published and un-published
+    const alreadyAddedApis = configs.map(cfg => cfg.amplifyExtension.graphQLApiId);
+    const newAPIs = availableAppSyncApis.filter(a => (
+      a.id && !alreadyAddedApis.includes(a.id)
+    ));
+    const unpublishedApis = availableAppSyncApis.filter(a => !a.id);
+
+    // No API GraphQL API is added to the project
+    if (availableAppSyncApis.length === 0) {
+      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE);
+    }
+
+    // GraphQL API is added but not pushed to cloud
+    if (newAPIs.length === 0 && unpublishedApis.length > 0) {
+      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_PENDING_API_PUSH);
+    }
+
+    // All GraphQL APIs are already configured
+    if (newAPIs.length === 0) {
+      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED);
+    }
+
+    // Some APIs are pending push
+    if (unpublishedApis.length) {
+      context.print.info(constants.WARNING_CODEGEN_PENDING_API_PUSH);
+      context.print.info(unpublishedApis.map(api => api.name).join('\n'));
+    }
+    api = await askAppSyncAPITarget(context, newAPIs, null);
+  }
+
   const frontendHandler = getFrontEndHandler(context);
   const schemaLocation = getSchemaDownloadLocation(context, api.name);
   const includePatternDefault = getIncludePattern(frontendHandler, schemaLocation);

@@ -27,6 +27,7 @@ const {
   downloadIntrospectionSchema,
   getFrontEndHandler,
   getAppSyncAPIDetails,
+  getAppSyncAPIInfo,
 } = require('./utils');
 
 function getAvailableProjects(context) {
@@ -39,6 +40,7 @@ function getAvailableProjects(context) {
   );
   return projects;
 }
+
 async function downloadSchema(context, apiId, downloadLocation) {
   const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
   downloadSpinner.start();
@@ -47,7 +49,9 @@ async function downloadSchema(context, apiId, downloadLocation) {
 }
 
 async function generateTypes(context, forceDownloadSchema) {
-  const projects = getAvailableProjects(context);
+  const config = loadConfig(context);
+  const projects = config.getProjects();
+  
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
@@ -75,7 +79,8 @@ async function generateTypes(context, forceDownloadSchema) {
 }
 
 async function generate(context, forceDownloadSchema) {
-  const projects = getAvailableProjects(context);
+  const config = loadConfig(context);
+  const projects = config.getProjects();
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
@@ -95,25 +100,6 @@ async function generate(context, forceDownloadSchema) {
   }
 }
 
-// function loadProviders(context) {
-//   const { providers } = context.amplify.getProjectConfig();
-//   const providerPluginMap = {};
-//   Object.keys(providers).forEach((providerName) => {
-//     const providerPlugin = require(providers[providerName]);
-//     providerPluginMap[providerName] = providerPlugin;
-//   });
-//   return providerPluginMap;
-// }
-// async function pushResources(context, resources) {
-//   const providerMap = loadProviders(context);
-//   const pushPromises = resources.map((resource) => {
-//     const { resourceName, providerPlugin } = resource;
-//     return providerMap[providerPlugin].pushResources(context, 'api', resourceName)
-//   });
-
-//   await Promise.all(pushPromises);
-// }
-
 async function hasAppSyncResourcesPendingPush(context) {
   const resourceStatus = await context.amplify.getResourceStatus('api');
   const appSyncResources = [];
@@ -130,7 +116,13 @@ async function hasAppSyncResourcesPendingPush(context) {
 }
 
 function generateStatements(context, forceDownloadSchema) {
-  const projects = getAvailableProjects(context);
+  const config = loadConfig(context);
+  const projects = config.getProjects();
+  if (!projects.length) {
+    context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+    return;
+  }
+
   projects.forEach(async (cfg) => {
     const includeFiles = cfg.includes[0];
     const opsGenDirectory = cfg.docsFilePath || path.dirname(path.dirname(includeFiles));
@@ -237,28 +229,32 @@ async function postPushGraphQLCodegenHook(context, graphQLConfig) {
   generate(context);
 }
 
-async function add(context) {
+async function add(context, apiId = null) {
   const config = loadConfig(context);
-  const answer = await addWalkThrough(context, config.getProjects());
+  const answer = await addWalkThrough(context, config.getProjects(), apiId);
 
   const { api } = answer;
+  const apiDetails = await getAppSyncAPIInfo(context, api);
+
   const spinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
   spinner.start();
-  const schema = await downloadIntrospectionSchema(context, api.id, answer.schemaLocation);
-  spinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS);
+  const schema = await downloadIntrospectionSchema(context, apiDetails.id, answer.schemaLocation);
+  spinner.succeed(constants.INFO_MESSAGE_DOWNLOAD_SUCCESS);    
+
   const newProject = {
-    projectName: answer.api.name,
+    projectName: apiDetails.name,
     includes: answer.includePattern,
     excludes: answer.excludePattern,
     schema,
     amplifyExtension: {
-      graphQLApiId: answer.api.id,
+      graphQLApiId: apiDetails.id,
       codeGenTarget: answer.target,
       generatedFileName: answer.generatedFileName,
       docsFilePath: answer.docsFilePath,
     },
-    endpoint: answer.api.endpoint,
+    endpoint: apiDetails.endpoint,
   };
+
   config.addProject(newProject);
   if (answer.shouldGenerateOps) {
     await generateStatements(context);
