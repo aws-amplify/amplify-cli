@@ -3,8 +3,7 @@ const { join, dirname } = require('path');
 const getAndroidResDir = require('./getAndroidResDir');
 const getFrontEndHandler = require('./getFrontEndHandler');
 
-function getSchemaDownloadLocation(context, name) {
-  const { amplify } = context;
+function getSchemaDownloadLocation(context) {
   let downloadDir;
   try {
     const androidResDir = getAndroidResDir(context);

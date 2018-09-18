@@ -14,6 +14,9 @@ const askShouldUpdateCode = require('./walkthrough/questions/updateCode');
 const askShouldGenerateDocs = require('./walkthrough/questions/generateDocs');
 
 const { getSchemaDownloadLocation, getIncludePattern } = require('./utils/');
+const {
+  AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
+} = require('./errors');
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
@@ -28,6 +31,7 @@ const {
   getFrontEndHandler,
   getAppSyncAPIDetails,
   getAppSyncAPIInfo,
+  getGraphQLDocPath,
 } = require('./utils');
 
 function getAvailableProjects(context) {
@@ -124,7 +128,7 @@ function generateStatements(context, forceDownloadSchema) {
 
   projects.forEach(async (cfg) => {
     const includeFiles = cfg.includes[0];
-    const opsGenDirectory = cfg.docsFilePath || path.dirname(path.dirname(includeFiles));
+    const opsGenDirectory = cfg.amplifyExtension.docsFilePath || path.dirname(path.dirname(includeFiles));
     const schema = path.resolve(cfg.schema);
 
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
@@ -145,41 +149,20 @@ function generateStatements(context, forceDownloadSchema) {
 
 async function prePushAddGraphQLCodegenHook(context, resourceName) {
   if (await askShouldGenerateCode()) {
-    let targetLanguage = '';
-    let includePattern = '';
-    let generatedFileName = '';
-
-    const frontendHandler = getFrontEndHandler(context);
-    const schemaLocation = getSchemaDownloadLocation(context, resourceName);
-    const includePatternDefault = getIncludePattern(frontendHandler, schemaLocation);
-    const includePathGlob = join(
-      includePatternDefault.graphQLDirectory,
-      '**',
-      includePatternDefault.graphQLExtension,
-    );
-    includePattern = await askCodeGenQueryFilePattern([includePathGlob]);
-
-    if (frontendHandler !== 'android') {
-      targetLanguage = await askCodeGenTargetLanguage(context);
-      generatedFileName = await askTargetFileName('API', targetLanguage);
-    }
-
+    const answers = await addWalkThrough(context, ['shouldGenerateCode']);
     const newProject = {
       projectName: resourceName,
-      includes: includePattern,
-      excludes: DEFAULT_EXCLUDE_PATTERNS,
+      includes: answers.includePattern,
+      excludes: answers.excludePattern,
       amplifyExtension: {
-        codeGenTarget: targetLanguage,
-        generatedFileName,
-        docsFilePath: includePatternDefault.graphQLDirectory,
+        codeGenTarget: answers.target || '',
+        generatedFileName: answers.generatedFileName || '',
+        docsFilePath: answers.docsFilePath,
       },
     };
-
-    const shouldGenerateDocs = await askShouldGenerateDocs();
-
     return {
       gqlConfig: newProject,
-      shouldGenerateDocs,
+      shouldGenerateDocs: answers.shouldGenerateDocs,
     };
   }
 }
@@ -207,10 +190,11 @@ async function postPushGraphQLCodegenHook(context, graphQLConfig) {
   const config = loadConfig(context);
   const newAPIs = getAppSyncAPIDetails(context);
 
-  const apiId = await askAppSyncAPITarget(context, newAPIs, null);
-  const api = newAPIs.find(a => a.id === apiId);
+  // const apiId = await askAppSyncAPITarget(context, newAPIs, null);
+  // const api = newAPIs.find(a => a.id === apiId);
+  const api = newAPIs[0];
   const schemaLocation = getSchemaDownloadLocation(context, graphQLConfig.gqlConfig.projectName);
-  const schema = await downloadIntrospectionSchema(context, apiId, schemaLocation);
+  const schema = await downloadIntrospectionSchema(context, api.id, schemaLocation);
 
   const newProject = graphQLConfig.gqlConfig;
   newProject.amplifyExtension.graphQLApiId = api.id;
@@ -230,10 +214,24 @@ async function postPushGraphQLCodegenHook(context, graphQLConfig) {
 
 async function add(context, apiId = null) {
   const config = loadConfig(context);
-  const answer = await addWalkThrough(context, config.getProjects(), apiId);
+  if (config.getProjects().length) {
+    throw new Error('Codegen supports only one GraphQLAPI to be added to project');
+  }
+  let apiDetails;
+  if (!apiId) {
+    const availableAppSyncApis = getAppSyncAPIDetails(context); // published and un-published
+    if (availableAppSyncApis.length === 0) {
+      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE);
+    }
+    [apiDetails] = availableAppSyncApis;
+  } else {
+    const apiDetailSpinner = new Ora();
+    apiDetailSpinner.start('getting API details');
+    apiDetails = await getAppSyncAPIInfo(context, api);
+    apiDetailSpinner.stop();
+  }
+  const answer = await addWalkThrough(context);
 
-  const { api } = answer;
-  const apiDetails = await getAppSyncAPIInfo(context, api);
 
   const spinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
   spinner.start();
@@ -247,8 +245,8 @@ async function add(context, apiId = null) {
     schema,
     amplifyExtension: {
       graphQLApiId: apiDetails.id,
-      codeGenTarget: answer.target,
-      generatedFileName: answer.generatedFileName,
+      codeGenTarget: answer.target || '',
+      generatedFileName: answer.generatedFileName || '',
       docsFilePath: answer.docsFilePath,
     },
     endpoint: apiDetails.endpoint,

@@ -5,6 +5,7 @@ const downloadIntrospectionSchema = require('./downloadIntrospectionSchema');
 const getSchemaDownloadLocation = require('./getSchemaDownloadLocation');
 const getIncludePattern = require('./getIncludePattern');
 const getAppSyncAPIInfo = require('./getAppSyncAPIInfo');
+const getGraphQLDocPath = require('./getGraphQLDocPath');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -14,4 +15,5 @@ module.exports = {
   downloadIntrospectionSchema,
   getIncludePattern,
   getAppSyncAPIInfo,
+  getGraphQLDocPath,
 };
