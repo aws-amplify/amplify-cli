@@ -59,15 +59,17 @@ must also be annotated with `@model`.
 ```graphql
 # When applied to a type, augments the application with
 # owner and group based authorization rules.
-directive @auth(
+directive @auth(rules: [AuthRule!]!) on OBJECT
+
+input AuthRule {
     allow: AuthStrategy!,
     ownerField: String = "owner",
+    identityField: String = "username",
     groupsField: String,
     groups: [String],
     queries: [ModelQuery],
     mutations: [ModelMutation]
-) on OBJECT
-
+}
 enum AuthStrategy { owner groups }
 enum ModelQuery { get list }
 enum ModelMutation { create update delete }
@@ -79,13 +81,13 @@ enum ModelMutation { create update delete }
 
 ```graphql
 # The simplest case
-type Post @model @auth(allow: owner) {
+type Post @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   title: String!
 }
 
 # The long form way
-type Post @model @auth(allow: owner, ownerField: "owner", mutations: [create, update, delete], queries: [get, list]) {
+type Post @model @auth(rules: [{ allow: owner, ownerField: "owner", mutations: [create, update, delete], queries: [get, list]}]) {
   id: ID!
   title: String!
   owner: String
@@ -108,7 +110,7 @@ You may use the *queries* and *mutations* arguments to specify which operations 
 
 ```graphql
 # TODO: (WORK IN PROGRESS) Does not yet support multi-owner
-type Post @model @auth(allow: owner, ownerField: "owners", mutations: [create, update, delete], queries: [get, list]) {
+type Post @model @auth(rules: [{ allow: owner, ownerField: "owners", mutations: [create, update, delete], queries: [get, list]}]) {
   id: ID!
   title: String!
   owners: [String]
@@ -121,7 +123,7 @@ type Post @model @auth(allow: owner, ownerField: "owners", mutations: [create, u
 
 ```graphql
 # Static group auth
-type Post @model @auth(allow: groups, groups: ["Admin"]) {
+type Post @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
   id: ID!
   title: String
 }
@@ -134,14 +136,14 @@ enrolled in the *Admin* group, throw an unauthorized error via `$util.unauthoriz
 
 ```graphql
 # Dynamic group auth with multiple groups
-type Post @model @auth(allow: groups, groupsField: "groups") {
+type Post @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
   id: ID!
   title: String
   groups: [String]
 }
 
 # Dynamic group auth with a single group
-type Post @model @auth(allow: groups, groupsField: "group") {
+type Post @model @auth(rules: [{ allow: groups, groupsField: "group" }]) {
   id: ID!
   title: String
   group: String
