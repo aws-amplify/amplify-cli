@@ -6,11 +6,10 @@ module.exports = {
   PROMPT_MSG_CODEGEN_TARGET: 'Choose the code generation language target',
   PROMPT_MSG_GQL_FILE_PATTERN:
     'Enter the file name pattern of graphql queries, mutations and subscriptions',
-  PROMPT_MSG_GENERATE_CODE:
-    'Do you want to generate code for your newly created GraphQL API',
-  PROMPT_MSG_UPDATE_CODE:
-    'Do you want to update code for your updated GraphQL API',
-  PROMPT_MSG_GENERATE_OPS: 'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
+  PROMPT_MSG_GENERATE_CODE: 'Do you want to generate code for your newly created GraphQL API',
+  PROMPT_MSG_UPDATE_CODE: 'Do you want to update code for your updated GraphQL API',
+  PROMPT_MSG_GENERATE_OPS:
+    'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
   ERROR_CODEGEN_TARGET_NOT_SUPPORTED: 'is not supported by codegen plugin',
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
@@ -20,9 +19,9 @@ module.exports = {
   CMD_DESCRIPTION_ADD:
     'Generate API code or type annotations based on a GraphQL schema and query documents',
   CMD_DESCRIPTION_GENERATE_TYPES:
-    'Generate API code or type annotations based on a GraphQL schema and statements.\nIf don\'t want to download schema before generating code pass --nodownload flag',
+    "Generate API code or type annotations based on a GraphQL schema and statements.\nIf don't want to download schema before generating code pass --nodownload flag",
   CMD_DESCRIPTION_GENERATE_STATEMENTS:
-    'Generate GraphQL statements(query, mutations and subscriptions) from schema.\nIf don\'t want to download schema before generating code pass --nodownload flag',
+    "Generate GraphQL statements(query, mutations and subscriptions) from schema.\nIf don't want to download schema before generating code pass --nodownload flag",
   ERROR_NOT_CONFIGURED: '',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:
@@ -31,7 +30,13 @@ module.exports = {
     'No API is pushed to cloud. Did you forget to do \n amplify api push',
   WARNING_CODEGEN_PENDING_API_PUSH:
     'The APIs listed below are not pushed to the cloud. Run amplify api push',
-  MSG_CODEGEN_PENDING_API_PUSH: `${chalk.bold('WARNING:')} You have modified your schema locally and not pushed to the cloud, which may result in incomplete type generation.\nWe recommend you first run ${chalk.underline('$amplify push')}`,
+  ERROR_APPSYNC_API_NOT_FOUND:
+    'Could not find the AppSync API. If you have removed the AppSync API in the console run amplify codegen remove',
+  MSG_CODEGEN_PENDING_API_PUSH: `${chalk.bold(
+    'WARNING:',
+  )} You have modified your schema locally and not pushed to the cloud, which may result in incomplete type generation.\nWe recommend you first run ${chalk.underline(
+    '$amplify push',
+  )}`,
   INFO_AUTO_SELECTED_API: 'Using AppSync API:',
   INFO_MSG_REMOVE_API_SUCCESS: 'removed project',
   INFO_MESSAGE_CODEGEN_GENERATE_STARTED: 'Generating',

@@ -41,7 +41,7 @@ function getAvailableProjects(context) {
   return projects;
 }
 
-async function downloadSchema(context, apiId, downloadLocation) {
+async function downloadSchemaWithProgressSpinner(context, apiId, downloadLocation) {
   const downloadSpinner = new Ora(constants.INFO_MESSAGE_DOWNLOADING_SCHEMA);
   downloadSpinner.start();
   await downloadIntrospectionSchema(context, apiId, downloadLocation);
@@ -51,7 +51,6 @@ async function downloadSchema(context, apiId, downloadLocation) {
 async function generateTypes(context, forceDownloadSchema) {
   const config = loadConfig(context);
   const projects = config.getProjects();
-  
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
@@ -65,7 +64,7 @@ async function generateTypes(context, forceDownloadSchema) {
     const output = cfg.amplifyExtension.generatedFileName;
     const target = cfg.amplifyExtension.codeGenTarget;
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
-      await downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema);
+      await downloadSchemaWithProgressSpinner(context, cfg.amplifyExtension.graphQLApiId, cfg.schema);
     }
     if (frontend !== 'android') {
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
@@ -129,7 +128,7 @@ function generateStatements(context, forceDownloadSchema) {
     const schema = path.resolve(cfg.schema);
 
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
-      await downloadSchema(context, cfg.amplifyExtension.graphQLApiId, cfg.schema);
+      await downloadSchemaWithProgressSpinner(context, cfg.amplifyExtension.graphQLApiId, cfg.schema);
     }
 
     const frontend = getFrontEndHandler(context);
@@ -226,7 +225,7 @@ async function postPushGraphQLCodegenHook(context, graphQLConfig) {
     generateStatements(context);
   }
 
-  generate(context);
+  generateTypes(context);
 }
 
 async function add(context, apiId = null) {
@@ -256,7 +255,7 @@ async function add(context, apiId = null) {
   };
 
   config.addProject(newProject);
-  if (answer.shouldGenerateOps) {
+  if (answer.shouldGenerateDocs) {
     await generateStatements(context);
   }
   if (answer.shouldGenerateCode) {

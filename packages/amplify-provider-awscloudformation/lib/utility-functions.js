@@ -112,9 +112,6 @@ module.exports = {
           .promise();
       })
       .then(result => result.schema.toString() || null)
-      .catch(() => {
-        throw new Error('Failed to download introspection schema');
-      })
   ),
   getGraphQLApiDetails: (context, options) => (
     new AppSync(context)
