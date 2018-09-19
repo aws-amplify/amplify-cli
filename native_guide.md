@@ -61,7 +61,7 @@ A new updated Swift file will be created (or run Gradle Build on Android for the
  
 **Flow 4: Shared schema, modified elsewhere (e.g. console or team workflows)**
 
-Suppose you are working in a team and the schema is updated either from the AWS AppSync console or on another system. Your types are not out of date because your GraphQL statement was generated off an outdated schema. The easiest way to resolve this is to regenerate your GraphQL statements, update them if necessary, and then generate your types again. Modify the schema in the console or on a separate system, then run:
+Suppose you are working in a team and the schema is updated either from the AWS AppSync console or on another system. Your types are now out of date because your GraphQL statement was generated off an outdated schema. The easiest way to resolve this is to regenerate your GraphQL statements, update them if necessary, and then generate your types again. Modify the schema in the console or on a separate system, then run:
 
 ```bash
 $amplify codegen statements
