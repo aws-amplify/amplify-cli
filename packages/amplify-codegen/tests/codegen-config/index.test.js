@@ -6,7 +6,6 @@ jest.mock('../../src/codegen-config/AmplifyCodeGenConfig');
 const MOCK_CONTEXT = 'MOCK_CONTEXT';
 
 describe('codegen-config', () => {
-
   it('is singleton', () => {
     loadConfig(MOCK_CONTEXT);
     expect(AmplifyCodeGenConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
