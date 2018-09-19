@@ -24,6 +24,7 @@ module.exports = {
   CMD_DESCRIPTION_GENERATE_STATEMENTS:
     "Generate GraphQL statements(query, mutations and subscriptions) from schema.\nIf don't want to download schema before generating code pass --nodownload flag",
   ERROR_NOT_CONFIGURED: '',
+  CMD_DESCRIPTION_NOT_SUPPORTED: 'invalid subcommand',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:
     'code generation is not configured. Configure it by running \namplify codegen add',

@@ -8,7 +8,7 @@ module.exports = {
   run: async (context) => {
     if (context.parameters.options.help) {
       const header = `amplify ${featureName} [subcommand] \nDescriptions:
-      Generates GraphQL statements(quries, mutations and subscriptions) and type annotations. \nSub Commands:`;
+      Generates GraphQL statements(queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
 
       const commands = [
         {
@@ -31,8 +31,13 @@ module.exports = {
       context.amplify.showHelp(header, commands);
       return;
     }
-    const forceDownloadSchema = !context.parameters.options.nodownload;
+    if (context.parameters.first) {
+      context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
+      process.exit(1);
+    }
+    
     try {
+      const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generate(context, forceDownloadSchema);
     } catch (e) {
       // context.print.info(e.message);
