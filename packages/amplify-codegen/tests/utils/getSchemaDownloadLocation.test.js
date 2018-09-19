@@ -37,7 +37,7 @@ describe('getSchemaDownloadLocation', () => {
   });
 
   it('should use the graphql directory when used in iOS frontend', () => {
-    getFrontendHandler.mockReturnValue('iOS')
+    getFrontendHandler.mockReturnValue('iOS');
     const downloadLocation = getSchemaDownloadLocation(mockContext, mockAPIName);
     expect(downloadLocation).toEqual(join('graphql', 'schema.json'));
   });

@@ -94,15 +94,16 @@ module.exports = {
       throw err;
     }
   },
-  getAppSyncAPIs: context =>
+  getAppSyncAPIs: context => (
     new AppSync(context)
       .then((result) => {
         const appSyncModel = result;
         context.print.debug(result);
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
-      .then(result => result.graphqlApis),
-  getIntrospectionSchema: (context, options) =>
+      .then(result => result.graphqlApis)
+  ),
+  getIntrospectionSchema: (context, options) => (
     new AppSync(context)
       .then((result) => {
         const appSyncModel = result;
@@ -111,7 +112,13 @@ module.exports = {
           .promise();
       })
       .then(result => result.schema.toString() || null)
-      .catch(() => {
-        throw new Error('Failed to download introspection schema');
-      }),
+  ),
+  getGraphQLApiDetails: (context, options) => (
+    new AppSync(context)
+      .then((result) => {
+        const appSyncModel = result;
+        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId })
+          .promise();
+      })
+  ),
 };
