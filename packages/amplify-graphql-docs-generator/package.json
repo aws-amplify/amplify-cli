@@ -2,8 +2,8 @@
   "name": "amplify-graphql-docs-generator",
   "version": "0.0.1",
   "main": "lib/index.js",
-  "author": "Yathi <yathiraj@amazon.com>",
-  "license": "MIT",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "private": true,
   "bin": {
     "amplify-query-generator": "./bin/cli.js"
