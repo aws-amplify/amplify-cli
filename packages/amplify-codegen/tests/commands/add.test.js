@@ -112,7 +112,7 @@ describe('command - add', () => {
   });
 
   it('should throw an error if no AppSync APIs is not pushed to cloud', async () => {
-    getAppSyncAPIDetails.mockReturnValue([{ name: ' pending push'}]);
+    getAppSyncAPIDetails.mockReturnValue([{ name: ' pending push' }]);
     await expect(add(MOCK_CONTEXT)).rejects.toBeInstanceOf(Error);
   });
   it('should not generate statements when user chooses not to', async () => {
