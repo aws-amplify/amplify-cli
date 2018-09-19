@@ -5,6 +5,7 @@ const generateStatements = require('./statements');
 const generateTypes = require('./types');
 const {
   AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
+  AmplifyCodeGenAPIPendingPush,
 } = require('../errors');
 const {
   downloadIntrospectionSchemaWithProgress,
@@ -23,6 +24,10 @@ async function add(context, apiId = null) {
     const availableAppSyncApis = getAppSyncAPIDetails(context); // published and un-published
     if (availableAppSyncApis.length === 0) {
       throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE);
+    }
+    const pendingPushAPIs = availableAppSyncApis.filter(a => !a.id);
+    if (pendingPushAPIs.length) {
+      throw new AmplifyCodeGenAPIPendingPush(constants.ERROR_CODEGEN_PENDING_API_PUSH);
     }
     [apiDetails] = availableAppSyncApis;
   } else {

@@ -14,7 +14,7 @@ module.exports = {
   ERROR_CODEGEN_TARGET_NOT_SUPPORTED: 'is not supported by codegen plugin',
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
   ERROR_CODEGEN_NO_API_AVAILABLE:
-    'There are no Code Gen APIs available.\n Add by running amplify codegen add',
+    'There are no GraphQL APIs available.\nAdd by running $amplify api add',
   ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED: 'All enabled AppSync APIs are already added',
   ERROR_CODEGEN_SUPPORT_MAX_ONE_API: 'Codegen support only one GraphQL API per project',
   CMD_DESCRIPTION_ADD:
@@ -27,9 +27,9 @@ module.exports = {
   CMD_DESCRIPTION_NOT_SUPPORTED: 'invalid subcommand',
   CMD_DESCRIPTION_CONFIGURE: 'Change/Update codegen configuration',
   ERROR_CODEGEN_NO_API_CONFIGURED:
-    'code generation is not configured. Configure it by running \namplify codegen add',
+    'code generation is not configured. Configure it by running \n$amplify codegen add',
   ERROR_CODEGEN_PENDING_API_PUSH:
-    'No API is pushed to cloud. Did you forget to do \n amplify api push',
+    'AppSync API is not pushed to the cloud. Did you forget to do \n$amplify api push',
   WARNING_CODEGEN_PENDING_API_PUSH:
     'The APIs listed below are not pushed to the cloud. Run amplify api push',
   ERROR_APPSYNC_API_NOT_FOUND:
