@@ -111,6 +111,10 @@ describe('command - add', () => {
     await expect(add(MOCK_CONTEXT)).rejects.toBeInstanceOf(Error);
   });
 
+  it('should throw an error if no AppSync APIs is not pushed to cloud', async () => {
+    getAppSyncAPIDetails.mockReturnValue([{ name: ' pending push'}]);
+    await expect(add(MOCK_CONTEXT)).rejects.toBeInstanceOf(Error);
+  });
   it('should not generate statements when user chooses not to', async () => {
     addWalkthrough.mockReturnValue({ ...MOCK_ANSWERS, shouldGenerateDocs: false });
     await add(MOCK_CONTEXT);
