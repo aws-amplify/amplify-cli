@@ -60,10 +60,12 @@ async function addResource(context, category, service) {
         result = Object.assign(result, generalDefaults(projectName));
       }
 
+      
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
 
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
+      console.log(props)
 
       await copyCfnTemplate(context, category, props, cfnFilename);
     })
@@ -95,13 +97,33 @@ function updateResource(context, category, service) {
         result.authSelections = 'identityPoolAndUserPool';
       }
 
+
       if (result.useDefault && result.useDefault === 'default') {
         /* if the user elects to use defaults during an edit,
-         * we simply grab all of the static defaults
-         * but make sure to pass existing resource name so we don't create a 2nd auth resource */
+         * we grab all of the static defaults
+         * but make sure to pass existing resource name so we don't create a 2nd auth resource
+         * and we strip out defaults that should not overwrite the originally entered values */
+
+        const defaults = getAllDefaults(context.updatingAuth.resourceName);
+        const immutables = {};
+
+        // loop through service questions
+        serviceMetadata.inputs.forEach((s) => {
+          // find those that would not be displayed if user was entering values manually
+          if (!context.amplify.getWhen(s, defaults, context.updatingAuth, context.amplify)()) {
+            // if a value wouldn't be displayed, we update the immutable object with they key/value from previous answers
+            if (context.updatingAuth[s.key]) {
+              immutables[s.key] = context.updatingAuth[s.key];
+            }
+          }
+        });
+
+        console.log(result)
+
         props = Object.assign(
-          getAllDefaults(context.updatingAuth.resourceName),
-          context.updatingAuth, result,
+          defaults,
+          immutables,
+          result,
         );
       } else {
         /* if the user does NOT choose defaults during an edit,
