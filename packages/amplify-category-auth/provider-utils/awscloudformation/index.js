@@ -65,7 +65,6 @@ async function addResource(context, category, service) {
        * ensuring that manual entries override defaults */
 
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
-      console.log(props)
 
       await copyCfnTemplate(context, category, props, cfnFilename);
     })
@@ -117,8 +116,6 @@ function updateResource(context, category, service) {
             }
           }
         });
-
-        console.log(result)
 
         props = Object.assign(
           defaults,
