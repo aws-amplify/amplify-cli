@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const uuid = require('uuid');
 
 const parametersFileName = 'lex-params.json';
-const defaultValuesFilename = 'lex-defaults.js';
 
 let serviceMetadata;
 
@@ -11,7 +10,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
-  const defaultValuesSrc = `${__dirname}/default-values/${defaultValuesFilename}`;
+  const defaultValuesSrc = `${__dirname}/default-values/lex-defaults.js`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
@@ -38,9 +37,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       target: `${targetDir}/${category}/${options.resourceName}/src/cfn-response.js`,
     },
   ];
-
+  Object.assign(defaultValues, options);
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, Object.assign(defaultValues, options), true, false);
+  return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
 }
 
 function addResource(context, category, service, options) {

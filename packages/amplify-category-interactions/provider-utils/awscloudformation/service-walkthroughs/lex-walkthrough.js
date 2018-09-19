@@ -436,7 +436,7 @@ async function addIntent(context, botName, resourceName, serviceMetadata, intent
 
 async function addUtterance(context, intentName, botName, resourceName, serviceMetadata) {
   const { inputs } = serviceMetadata;
-  const { amplify, print } = context;
+  const { amplify } = context;
   const addAnotherUtteranceQuestion = {
     type: inputs[24].type,
     name: inputs[24].key,
@@ -716,13 +716,13 @@ async function askPaths(context) {
   const functionArns = [];
 
   const answer = await inquirer.prompt(questions);
-  let path = { name: answer.name };
+  let name = { name: answer.name };
   let lambda;
   do {
     lambda = await askLambdaSource(context, answer.functionType, answer.name);
   } while (!lambda);
-  path = { ...path, ...lambda };
-  paths.push(path);
+  name = { ...name, ...lambda };
+  paths.push(name);
 
   if (lambda.lambdaFunction && !lambda.lambdaArn) {
     dependsOn.push({
@@ -757,16 +757,16 @@ function functionsExist(context) {
   return true;
 }
 
-async function askLambdaSource(context, functionType, path) {
+async function askLambdaSource(context, functionType, name) {
   switch (functionType) {
     case 'arn': return askLambdaArn(context);
     case 'projectFunction': return askLambdaFromProject(context);
-    case 'newFunction': return newLambdaFunction(context, path);
+    case 'newFunction': return newLambdaFunction(context, name);
     default: throw new Error('Type not supported');
   }
 }
 
-function newLambdaFunction(context, path) {
+function newLambdaFunction(context, name) {
   let add;
   try {
     ({ add } = require('amplify-category-function'));
@@ -774,7 +774,7 @@ function newLambdaFunction(context, path) {
     throw new Error('Function plugin not installed in the CLI. Install it to use this feature');
   }
   context.api = {
-    path,
+    name,
     functionTemplate: 'serverless',
   };
   return add(context, 'awscloudformation', 'Lambda')
