@@ -1,0 +1,5 @@
+#!/usr/bin/expect
+spawn ./.circleci/delete_api.sh
+expect "Are you sure you want to continue?(This would delete all the project from the cloud and wipe out all the local amplify resource files) (Y/n)"
+send -- "Y\r"
+interact
