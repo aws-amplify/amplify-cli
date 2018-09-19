@@ -5,7 +5,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "bin": {
-    "amplify-query-generator": "./bin/cli.js"
+    "amplify-graphql-docs-generator": "./bin/cli"
   },
   "keywords": [
     "graphql",
