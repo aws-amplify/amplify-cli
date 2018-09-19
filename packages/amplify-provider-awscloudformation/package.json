@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-storage": "^0.1.13",
+    "amplify-codegen": "^0.1.13",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
     "cfn-lint": "^1.7.2",

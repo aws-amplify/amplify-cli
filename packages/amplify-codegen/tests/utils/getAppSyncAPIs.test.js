@@ -1,4 +1,4 @@
-const getAppSyncAPIs = require('../../src/utils/getAppSyncAPIs')
+const getAppSyncAPIs = require('../../src/utils/getAppSyncAPIs');
 
 describe('getAppSyncAPIs', () => {
   const apiMeta = {
@@ -40,20 +40,20 @@ describe('getAppSyncAPIs', () => {
         PostDynamoDBTableDataSourceName: 'PostDynamoDBTable',
       },
     },
-  }
+  };
 
   it('should return the projects array with name', () => {
     const expectedApiList = [
       { ...apiMeta.appSync1, name: 'appSync1' },
       { ...apiMeta.appSync2, name: 'appSync2' },
-    ]
-    expect(getAppSyncAPIs(apiMeta)).toEqual(expectedApiList)
-  })
+    ];
+    expect(getAppSyncAPIs(apiMeta)).toEqual(expectedApiList);
+  });
 
   it('should return an empty list when there are no APIs in the meta data', () => {
-    expect(getAppSyncAPIs()).toEqual([])
-    expect(getAppSyncAPIs({})).toEqual([])
-    expect(getAppSyncAPIs([])).toEqual([])
-    expect(getAppSyncAPIs({ someRandomAPI: {} })).toEqual([])
-  })
-})
+    expect(getAppSyncAPIs()).toEqual([]);
+    expect(getAppSyncAPIs({})).toEqual([]);
+    expect(getAppSyncAPIs([])).toEqual([]);
+    expect(getAppSyncAPIs({ someRandomAPI: {} })).toEqual([]);
+  });
+});

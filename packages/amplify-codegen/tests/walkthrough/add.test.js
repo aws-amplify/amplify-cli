@@ -1,103 +1,115 @@
-const askAppSyncAPITarget = require('../../src/walkthrough/questions/apiTarget')
-const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget')
-const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern')
-const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName')
-const askGenerateCode = require('../../src/walkthrough/questions/generateCode')
-const { getAppSyncAPIDetails, getSchemaDownloadLocation, getFrontEndHandler } = require('../../src/utils')
-const add = require('../../src/walkthrough/add')
-const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors')
+const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget');
+const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern');
+const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
+const askGenerateCode = require('../../src/walkthrough/questions/generateCode');
+const askShouldGenerateDocs = require('../../src/walkthrough/questions/generateDocs');
 
-jest.mock('../../src/walkthrough/questions/apiTarget')
-jest.mock('../../src/walkthrough/questions/languageTarget')
-jest.mock('../../src/walkthrough/questions/queryFilePattern')
-jest.mock('../../src/walkthrough/questions/generatedFileName')
-jest.mock('../../src/utils')
-jest.mock('../../src/walkthrough/questions/generateCode')
+const {
+  getGraphQLDocPath,
+  getSchemaDownloadLocation,
+  getFrontEndHandler,
+  getIncludePattern,
+} = require('../../src/utils');
+const add = require('../../src/walkthrough/add');
+
+jest.mock('../../src/walkthrough/questions/languageTarget');
+jest.mock('../../src/walkthrough/questions/queryFilePattern');
+jest.mock('../../src/walkthrough/questions/generatedFileName');
+jest.mock('../../src/utils');
+jest.mock('../../src/walkthrough/questions/generateCode');
+jest.mock('../../src/walkthrough/questions/generateDocs');
 
 describe('Add walk-through', () => {
-  const mockAPI = 'two'
-  const mockTargetLanguage = 'MOCK_TARGET_LANGUAGE'
-  const mockIncludePattern = 'MOCK_INCLUDE_PATTERN'
-  const mockContext = 'MOCK_CONTEXT'
-  const mockGeneratedFileName = 'MOCK_FILE_NAME.ts'
-  const mockDownloadLocation = 'MOCK_SCHEMA_DIR/graphql/schema.json'
-
-  const mockAvailableApis = [
-    {
-      id: 'one',
-      name: 'One',
-    },
-    {
-      id: 'two',
-      name: 'Two',
-    },
-  ]
-  const mockConfigs = []
+  const MOCK_TARGET_LANGUAGE = 'MOCK_TARGET_LANGUAGE';
+  const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE_PATTERN';
+  const MOCK_CONTEXT = 'MOCK_CONTEXT';
+  const MOCK_GENERATED_FILE_NAME = 'MOCK_FILE_NAME.ts';
+  const MOCK_DOWNLOAD_LOCATION = 'MOCK_SCHEMA_DIR/graphql/schema.json';
+  const MOCK_DOCS_FILE_PATH = 'mockDocFilesPath';
+  const MOCK_FRONTEND_HANDLER = 'mockFrontEndHandler';
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    askAppSyncAPITarget.mockReturnValue(mockAPI)
-    askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage)
-    askGeneratedFileName.mockReturnValue(mockGeneratedFileName)
-    getAppSyncAPIDetails.mockReturnValue(mockAvailableApis)
+    jest.clearAllMocks();
+    askCodegenTargetLanguage.mockReturnValue(MOCK_TARGET_LANGUAGE);
+    askGeneratedFileName.mockReturnValue(MOCK_GENERATED_FILE_NAME);
     askGenerateCode.mockReturnValue(true);
-    getSchemaDownloadLocation.mockReturnValue(mockDownloadLocation)
-    askCodegneQueryFilePattern.mockReturnValue(mockIncludePattern)
-    getFrontEndHandler.mockReturnValue('ios')
-  })
+    askShouldGenerateDocs.mockReturnValue(true);
+    getSchemaDownloadLocation.mockReturnValue(MOCK_DOWNLOAD_LOCATION);
+    askCodegneQueryFilePattern.mockReturnValue(MOCK_INCLUDE_PATTERN);
+    getFrontEndHandler.mockReturnValue(MOCK_FRONTEND_HANDLER);
+    getGraphQLDocPath.mockReturnValue(MOCK_DOCS_FILE_PATH);
+    getIncludePattern.mockReturnValue({
+      graphQLDirectory: 'src/graphql',
+      graphQLExtension: '*.js',
+    });
+  });
 
   it('should show questions in walkthrough', async () => {
-    const results = await add(mockContext, mockConfigs)
-    expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
-    expect(askCodegenTargetLanguage).toHaveBeenCalledWith(mockContext)
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['graphql/**/*.graphql'])
-    expect(askGeneratedFileName).toHaveBeenCalledWith('API', mockTargetLanguage)
+    const results = await add(MOCK_CONTEXT);
+    expect(askCodegenTargetLanguage).toHaveBeenCalledWith(MOCK_CONTEXT);
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js']);
+    expect(askGeneratedFileName).toHaveBeenCalledWith('API', MOCK_TARGET_LANGUAGE);
+    expect(getGraphQLDocPath).toHaveBeenCalledWith(MOCK_FRONTEND_HANDLER, MOCK_DOWNLOAD_LOCATION);
     expect(results).toEqual({
-      api: mockAvailableApis[1],
-      target: mockTargetLanguage,
-      includePattern: mockIncludePattern,
+      target: MOCK_TARGET_LANGUAGE,
+      includePattern: MOCK_INCLUDE_PATTERN,
       excludePattern: ['./amplify/**'],
-      generatedFileName: mockGeneratedFileName,
+      generatedFileName: MOCK_GENERATED_FILE_NAME,
       shouldGenerateCode: true,
-      schemaLocation: mockDownloadLocation,
-    })
-  })
+      schemaLocation: MOCK_DOWNLOAD_LOCATION,
+      docsFilePath: MOCK_DOCS_FILE_PATH,
+      shouldGenerateDocs: true,
+    });
+  });
 
-  it('should ask schema include location only for android projects', async () => {
-    getFrontEndHandler.mockReturnValue('android')
-    const results = await add(mockContext, mockConfigs)
-    expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, mockAvailableApis, null)
-    expect(askCodegenTargetLanguage).not.toHaveBeenCalled()
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['MOCK_SCHEMA_DIR/graphql/**/*.graphql'])
-    expect(askGeneratedFileName).not.toHaveBeenCalled()
+  it('should not ask code generation specific questions in android projects', async () => {
+    getFrontEndHandler.mockReturnValue('android');
+    const results = await add(MOCK_CONTEXT);
+    expect(askCodegenTargetLanguage).not.toHaveBeenCalled();
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js']);
+    expect(askGeneratedFileName).not.toHaveBeenCalled();
     expect(results).toEqual({
-      api: mockAvailableApis[1],
-      target: '',
-      includePattern: mockIncludePattern,
+      includePattern: MOCK_INCLUDE_PATTERN,
       excludePattern: ['./amplify/**'],
-      generatedFileName: '',
-      shouldGenerateCode: false,
-      schemaLocation: mockDownloadLocation,
-    })
-  })
+      schemaLocation: MOCK_DOWNLOAD_LOCATION,
+      docsFilePath: MOCK_DOCS_FILE_PATH,
+      shouldGenerateDocs: true,
+    });
+  });
 
-  it('should filter out already added AppSync API when asking for API target', async () => {
-    const configs = [
-      {
-        amplifyExtension: {
-          graphQLApiId: mockAvailableApis[0].id,
-        },
-      },
-    ]
-    await add(mockContext, configs)
-    const filteredApiList = [mockAvailableApis[1]]
-    expect(askAppSyncAPITarget).toHaveBeenCalledWith(mockContext, filteredApiList, null)
-  })
+  it('should should skip includePattern when asked to skip', async () => {
+    const skip = ['includePattern'];
+    const results = await add(MOCK_CONTEXT, skip);
+    expect(askCodegneQueryFilePattern).not.toHaveBeenCalled();
+    expect(results).not.toHaveProperty('includePattern');
+  });
 
-  it('should thrown an error if there are no APIs available', async () => {
-    getAppSyncAPIDetails.mockReturnValue([])
-    await expect(add(mockContext, mockConfigs))
-      .rejects
-      .toBeInstanceOf(AmplifyCodeGenNoAppSyncAPIAvailableError)
-  })
-})
+  it('should should skip includePattern when asked to skip', async () => {
+    const skip = ['targetLanguage'];
+    const results = await add(MOCK_CONTEXT, skip);
+    expect(askCodegenTargetLanguage).not.toHaveBeenCalled();
+    expect(results).not.toHaveProperty('target');
+  });
+
+  it('should should skip generatedFileName when asked to skip', async () => {
+    const skip = ['generatedFileName'];
+    const results = await add(MOCK_CONTEXT, skip);
+    expect(askGeneratedFileName).not.toHaveBeenCalled();
+    expect(results).not.toHaveProperty('generatedFileName');
+  });
+
+  it('should should skip shouldGenerateCode when asked to skip', async () => {
+    const skip = ['shouldGenerateCode'];
+    const results = await add(MOCK_CONTEXT, skip);
+    expect(askGenerateCode).not.toHaveBeenCalled();
+    expect(results).not.toHaveProperty('shouldGenerateCode');
+  });
+
+  it('should should skip shouldGenerateDocs when asked to skip', async () => {
+    const skip = ['shouldGenerateDocs'];
+    const results = await add(MOCK_CONTEXT, skip);
+    expect(askShouldGenerateDocs).not.toHaveBeenCalled();
+    expect(results).not.toHaveProperty('shouldGenerateDocs');
+    expect(results).not.toHaveProperty('docsFilePath');
+  });
+});

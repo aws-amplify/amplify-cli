@@ -1,0 +1,8 @@
+// this is an auto generated file. This will be overwritten
+import gql from "graphql-tag";
+
+{{#each operations }}
+  export const {{name}} = gql `
+  {{> renderOp }}
+  `;
+{{/each}}

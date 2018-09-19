@@ -1,3 +1,3 @@
-const graphQlToAmplifyConfig = require('./graphQlToAmplifyConfig')
+const graphQlToAmplifyConfig = require('./graphQlToAmplifyConfig');
 
-module.exports = { graphQlToAmplifyConfig }
+module.exports = { graphQlToAmplifyConfig };

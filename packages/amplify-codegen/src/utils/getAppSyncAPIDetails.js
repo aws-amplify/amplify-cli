@@ -1,17 +1,17 @@
-const getAppSyncAPIs = require('./getAppSyncAPIs')
+const getAppSyncAPIs = require('./getAppSyncAPIs');
 
 function getAppSyncAPIDetails(context) {
-  const meta = context.amplify.getProjectMeta()
-  const appSyncAPIs = getAppSyncAPIs(meta.api)
+  const meta = context.amplify.getProjectMeta();
+  const appSyncAPIs = getAppSyncAPIs(meta.api);
   if (!appSyncAPIs.length) {
-    return []
+    return [];
   }
   return appSyncAPIs.map(api => ({
     name: api.name,
-    endPoint: api.output.GraphQLAPIEndpointOutput,
+    endpoint: api.output.GraphQLAPIEndpointOutput,
     id: api.output.GraphQLAPIIdOutput,
     securityType: api.output.securityType,
-  }))
+  }));
 }
 
-module.exports = getAppSyncAPIDetails
+module.exports = getAppSyncAPIDetails;
