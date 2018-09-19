@@ -16,6 +16,7 @@ module.exports = {
   ERROR_CODEGEN_NO_API_AVAILABLE:
     'There are no Code Gen APIs available.\n Add by running amplify codegen add',
   ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED: 'All enabled AppSync APIs are already added',
+  ERROR_CODEGEN_SUPPORT_MAX_ONE_API: 'Codegen support only one GraphQL API per project',
   CMD_DESCRIPTION_ADD:
     'Generate API code or type annotations based on a GraphQL schema and query documents',
   CMD_DESCRIPTION_GENERATE_TYPES:

@@ -10,7 +10,7 @@ const {
   getSchemaDownloadLocation,
   getIncludePattern,
   getGraphQLDocPath,
-} = require('../utils/');
+} = require('../utils');
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
@@ -21,7 +21,6 @@ async function addWalkThrough(context, skip = []) {
   const answers = {
     excludePattern: DEFAULT_EXCLUDE_PATTERNS,
     schemaLocation,
-    docsFilePath: getGraphQLDocPath(frontendHandler, schemaLocation),
   };
 
   const includePathGlob = join(
@@ -46,6 +45,7 @@ async function addWalkThrough(context, skip = []) {
   }
   if (!skip.includes('shouldGenerateDocs')) {
     answers.shouldGenerateDocs = await askShouldGenerateDocs();
+    answers.docsFilePath = getGraphQLDocPath(frontendHandler, schemaLocation);
   }
 
   return answers;
