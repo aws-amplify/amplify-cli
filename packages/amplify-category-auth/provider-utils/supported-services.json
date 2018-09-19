@@ -415,6 +415,9 @@
 				"map": "coreAttributes",
 				"andConditions": [
 					{
+						"preventEdit": "always"
+					},
+					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
