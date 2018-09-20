@@ -60,7 +60,6 @@ async function addResource(context, category, service) {
         result = Object.assign(result, generalDefaults(projectName));
       }
 
-
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
 
@@ -110,7 +109,6 @@ function updateResource(context, category, service) {
           }
         }
       });
-
 
       if (result.useDefault && result.useDefault === 'default') {
         /* if the user elects to use defaults during an edit,
