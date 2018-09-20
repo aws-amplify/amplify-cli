@@ -60,7 +60,7 @@ async function addResource(context, category, service) {
         result = Object.assign(result, generalDefaults(projectName));
       }
 
-      
+
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
 
@@ -110,7 +110,8 @@ function updateResource(context, category, service) {
         serviceMetadata.inputs.forEach((s) => {
           // find those that would not be displayed if user was entering values manually
           if (!context.amplify.getWhen(s, defaults, context.updatingAuth, context.amplify)()) {
-            // if a value wouldn't be displayed, we update the immutable object with they key/value from previous answers
+            // if a value wouldn't be displayed,
+            // we update the immutable object with they key/value from previous answers
             if (context.updatingAuth[s.key]) {
               immutables[s.key] = context.updatingAuth[s.key];
             }
