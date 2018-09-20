@@ -29,16 +29,19 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   };
 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
-    if (!input.requiredOptions || !currentAnswers[input.requiredOptions]) {
+    if (!input.requiredOptions || !question.when()) {
       question = Object.assign({
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
     } else {
+      const sourceValues = currentAnswers[input.requiredOptions] ||
+      context.updatingAuth[input.requiredOptions] ||
+      [];
       const requiredOptions = getAllMaps()[input.map]
-        .filter(x => currentAnswers[input.requiredOptions]
+        .filter(x => sourceValues
           .includes(x.value));
       const trueOptions = getAllMaps()[input.map]
-        .filter(x => !currentAnswers[input.requiredOptions]
+        .filter(x => !sourceValues
           .includes(x.value));
       /*eslint-disable*/
       question = Object.assign(question, {
