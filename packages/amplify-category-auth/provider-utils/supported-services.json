@@ -415,7 +415,8 @@
 				"map": "coreAttributes",
 				"andConditions": [
 					{
-						"preventEdit": "always"
+						"preventEdit": "exists",
+						"key": "userPoolName"
 					},
 					{
 						"key": "authSelections",
