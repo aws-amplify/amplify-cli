@@ -1,0 +1,69 @@
+{
+  "name": "amplify-graphql-docs-generator",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bin": {
+    "amplify-graphql-docs-generator": "./bin/cli"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -rf ./lib",
+    "lint": "tslint -p ./tslint.json",
+    "format": "prettier --write ./src/**/*.ts ./__tests__/**/*.ts"
+  },
+  "devDependencies": {
+    "@types/ejs": "^2.6.0",
+    "@types/graphql": "^0.13.1",
+    "@types/handlebars": "^4.0.39",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^8.0.28",
+    "@types/prettier": "^1.13.2",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "camel-case": "^3.0.0",
+    "commander": "^2.9.0",
+    "fetch": "^1.1.0",
+    "graphql": "^0.13.2",
+    "handlebars": "^4.0.11",
+    "lodash": "^4.17.4",
+    "node-fetch": "^1.6.3",
+    "pascal-case": "^2.0.1",
+    "prettier": "^1.14.2",
+    "yargs": "^12.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "node"
+    ]
+  }
+}

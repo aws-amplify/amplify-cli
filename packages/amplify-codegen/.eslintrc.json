@@ -12,7 +12,7 @@
     "global-require": "off",
     "import/no-dynamic-require": "off",
     "consistent-return": "off",
-    "semi": "off"
+    "function-paren-newline": "off"
   },
   "env": {
     "jest": true,

@@ -1,0 +1,22 @@
+query hero {
+  hero {
+    name,
+    friends {
+      name
+    }
+    friendsConnection {
+      totalCount,
+    }
+    appearsIn
+    ...HeroFragment
+    ...DroidFragment
+  }
+}
+
+fragment DroidFragment on Droid {
+  primaryFunction
+}
+
+fragment HeroFragment on Human {
+  height
+}

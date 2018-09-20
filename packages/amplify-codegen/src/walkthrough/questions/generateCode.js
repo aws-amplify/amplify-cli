@@ -1,6 +1,6 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 
-const constants = require('../../constants')
+const constants = require('../../constants');
 
 async function askGenerateCode() {
   const answer = await inquirer.prompt([
@@ -10,9 +10,9 @@ async function askGenerateCode() {
       type: 'confirm',
       default: true,
     },
-  ])
+  ]);
 
-  return answer.confirmGenerateCode
+  return answer.confirmGenerateCode;
 }
 
-module.exports = askGenerateCode
+module.exports = askGenerateCode;

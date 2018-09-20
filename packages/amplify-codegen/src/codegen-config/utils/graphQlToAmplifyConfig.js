@@ -1,16 +1,16 @@
 function graphQlToAmplifyConfig(gqlConfig) {
-  const amplifyConfig = []
-  let cfg = getAmplifyConfig(gqlConfig.config)
+  const amplifyConfig = [];
+  let cfg = getAmplifyConfig(gqlConfig.config);
   if (cfg) {
-    amplifyConfig.push({ ...cfg, __root__: true })
+    amplifyConfig.push({ ...cfg, __root__: true });
   }
-  const projects = gqlConfig.getProjectConfig().config || {}
+  const projects = gqlConfig.getProjects() || {};
   Object.keys(projects).forEach((projectName) => {
-    const project = projects[projectName]
-    cfg = getAmplifyConfig(project)
-    if (cfg) amplifyConfig.push({ ...cfg, __root__: false, projectName })
-  })
-  return amplifyConfig
+    const project = projects[projectName];
+    cfg = getAmplifyConfig(project);
+    if (cfg) amplifyConfig.push({ ...cfg, __root__: false, projectName });
+  });
+  return amplifyConfig;
 }
 
 function getAmplifyConfig(config = {}) {
@@ -22,8 +22,8 @@ function getAmplifyConfig(config = {}) {
       amplifyExtension: {
         ...config.extensions.amplify,
       },
-    }
+    };
   }
 }
 
-module.exports = graphQlToAmplifyConfig
+module.exports = graphQlToAmplifyConfig;

@@ -139,15 +139,19 @@ export class ModelAuthTransformer extends Transformer {
             if (rule.queries) {
                 const matchesOp = rule.queries.find(o => o === op)
                 return Boolean(matchesOp)
+            } else if (rule.queries === null) {
+                return false
             }
-            return false
+            return true
         }
         const matchMutation = (op: ModelMutation) => (rule: AuthRule) => {
             if (rule.mutations) {
                 const matchesOp = rule.mutations.find(o => o === op)
                 return Boolean(matchesOp)
+            } else if (rule.mutations === null) {
+                return false
             }
-            return false
+            return true
         }
         for (const rule of rules) {
             if (matchQuery('get')(rule)) {

@@ -1,0 +1,10 @@
+{{#each fields as |field index|}}
+  {{#if field.hasBody }}
+      {{field.name}} {
+        {{> renderFields fields=field.fields}}
+        {{> renderFragment fragments=field.fragments}}
+      }
+  {{else}}
+    {{field.name}}
+  {{/if}}
+{{/each}}

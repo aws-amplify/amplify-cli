@@ -74,6 +74,7 @@ The Amplify CLI supports the commands shown in the following table.
 - [React tutorial](amplifycli_react_tutorial.md)
 - [GraphQL transform tutorial](graphql-transform-tutorial.md)
 - [How to write your own GraphQL transformer](how-to-write-a-transformer.md)
+- [Native development with Amplify CLI and AWS AppSync](native_guide.md)
 
 
 ## Contributing
@@ -89,5 +90,5 @@ To test your category, do the following:<br>
 
 Before pushing code or sending a pull request, do the following:
 - At the command line, run `npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
-- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fx`
+- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fix`
 - If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step. 
