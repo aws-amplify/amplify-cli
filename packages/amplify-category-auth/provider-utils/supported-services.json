@@ -415,6 +415,10 @@
 				"map": "coreAttributes",
 				"andConditions": [
 					{
+						"preventEdit": "exists",
+						"key": "userPoolName"
+					},
+					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="

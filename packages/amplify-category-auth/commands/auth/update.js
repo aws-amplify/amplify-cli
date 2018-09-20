@@ -18,6 +18,8 @@ module.exports = {
       return context.print.warning('Auth has not yet been added to this project.');
     }
 
+    context.print.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
+
     const meta = amplify.getProjectDetails().amplifyMeta;
     const dependentResources = Object.keys(meta)
       .some((e) => { //eslint-disable-line
