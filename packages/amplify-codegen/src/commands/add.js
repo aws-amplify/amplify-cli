@@ -6,15 +6,19 @@ const generateTypes = require('./types');
 const {
   AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
   AmplifyCodeGenAPIPendingPush,
+  AmplifyCodeGenAPINotFoundError,
 } = require('../errors');
 const {
   downloadIntrospectionSchemaWithProgress,
   getAppSyncAPIDetails,
   getAppSyncAPIInfo,
+  getProjectAwsRegion,
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
+const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
 
 async function add(context, apiId = null) {
+  let region = getProjectAwsRegion(context);
   const config = loadConfig(context);
   if (config.getProjects().length) {
     throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
@@ -31,10 +35,28 @@ async function add(context, apiId = null) {
     }
     [apiDetails] = availableAppSyncApis;
   } else {
-    const apiDetailSpinner = new Ora();
-    apiDetailSpinner.start('getting API details');
-    apiDetails = await getAppSyncAPIInfo(context, apiId);
-    apiDetailSpinner.stop();
+    let shouldRetry = true;
+    while (shouldRetry) {
+      const apiDetailSpinner = new Ora();
+      try {
+        apiDetailSpinner.start('Getting API details');
+        apiDetails = await getAppSyncAPIInfo(context, apiId, region);
+        apiDetailSpinner.succeed();
+        break;
+      } catch (e) {
+        apiDetailSpinner.fail();
+        if (e instanceof AmplifyCodeGenAPINotFoundError) {
+          context.print.info(`AppSync API was not found in region ${region}`);
+          ({ shouldRetry, region } = await changeAppSyncRegion(context, region));
+        } else {
+          throw e;
+        }
+      }
+    }
+  }
+
+  if (!apiDetails) {
+    return;
   }
   const answer = await addWalkThrough(context);
 
@@ -42,6 +64,7 @@ async function add(context, apiId = null) {
     context,
     apiDetails.id,
     answer.schemaLocation,
+    region,
   );
 
   const newProject = {
@@ -54,6 +77,7 @@ async function add(context, apiId = null) {
       codeGenTarget: answer.target || '',
       generatedFileName: answer.generatedFileName || '',
       docsFilePath: answer.docsFilePath,
+      region,
     },
     endpoint: apiDetails.endpoint,
   };

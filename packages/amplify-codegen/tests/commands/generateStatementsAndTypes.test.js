@@ -27,6 +27,7 @@ const MOCK_SCHEMA = 'INTROSPECTION_SCHEMA.JSON';
 const MOCK_TARGET = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
+const MOCK_REGION = 'MOCK_AWS_REGION';
 
 const MOCK_PROJECT = {
   includes: [MOCK_INCLUDE_PATH],
@@ -36,6 +37,7 @@ const MOCK_PROJECT = {
     codeGenTarget: MOCK_TARGET,
     graphQLApiId: MOCK_API_ID,
     docsFilePath: MOCK_STATEMENTS_PATH,
+    region: MOCK_REGION,
   },
 };
 
@@ -63,6 +65,7 @@ describe('command - generateStatementsAndTypes', () => {
       MOCK_CONTEXT,
       MOCK_API_ID,
       MOCK_SCHEMA,
+      MOCK_REGION,
     );
   });
 

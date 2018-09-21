@@ -7,10 +7,12 @@ module.exports = {
   PROMPT_MSG_GQL_FILE_PATTERN:
     'Enter the file name pattern of graphql queries, mutations and subscriptions',
   PROMPT_MSG_GENERATE_CODE: 'Do you want to generate code for your newly created GraphQL API',
+  PROMPT_MSG_CHANGE_REGION: 'Do you want to choose a different region',
   PROMPT_MSG_UPDATE_CODE: 'Do you want to update code for your updated GraphQL API',
   PROMPT_MSG_GENERATE_OPS:
     'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
+  PROMPT_MSG_SELECT_REGION: 'Choose AWS Region',
   ERROR_CODEGEN_TARGET_NOT_SUPPORTED: 'is not supported by codegen plugin',
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
   ERROR_CODEGEN_NO_API_AVAILABLE:

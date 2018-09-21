@@ -2,6 +2,8 @@ const loadConfig = require('../../src/codegen-config');
 const generateStatements = require('../../src/commands/statements');
 const generateTypes = require('../../src/commands/types');
 const addWalkthrough = require('../../src/walkthrough/add');
+const changeAppSyncRegions = require('../../src/walkthrough/changeAppSyncRegions');
+const { AmplifyCodeGenAPINotFoundError } = require('../../src/errors');
 
 const add = require('../../src/commands/add');
 
@@ -9,6 +11,7 @@ const {
   downloadIntrospectionSchemaWithProgress,
   getAppSyncAPIDetails,
   getAppSyncAPIInfo,
+  getProjectAwsRegion,
 } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
@@ -17,6 +20,7 @@ const MOCK_CONTEXT = {
   },
 };
 jest.mock('../../src/walkthrough/add');
+jest.mock('../../src/walkthrough/changeAppSyncRegions');
 jest.mock('../../src/commands/types');
 jest.mock('../../src/commands/statements');
 jest.mock('../../src/codegen-config');
@@ -32,6 +36,7 @@ const MOCK_DOCS_FILE_PATH = 'MOCK_DOCS_FILE_PATH';
 const MOCK_ENDPOINT = 'MOCK_APPSYNC_ENDPOINT';
 const MOCK_API_NAME = 'MOCK_API_NAME';
 const MOCK_DOWNLOADED_SCHEMA_LOCATION = 'MOCK_DOWNLOADED_SCHEMA_LOCATION';
+const MOCK_AWS_REGION = 'MOCK_AWS_PROJECT_REGION';
 
 const MOCK_ANSWERS = {
   includePattern: MOCK_INCLUDE_PATTERN,
@@ -64,6 +69,7 @@ describe('command - add', () => {
     getAppSyncAPIDetails.mockReturnValue([MOCK_APPSYNC_API_DETAIL]);
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
     downloadIntrospectionSchemaWithProgress.mockReturnValue(MOCK_DOWNLOADED_SCHEMA_LOCATION);
+    getProjectAwsRegion.mockReturnValue(MOCK_AWS_REGION);
   });
 
   it('should walkthrough add questions', async () => {
@@ -75,6 +81,7 @@ describe('command - add', () => {
       MOCK_CONTEXT,
       MOCK_API_ID,
       MOCK_SCHEMA_LOCATION,
+      MOCK_AWS_REGION,
     );
     expect(LOAD_CONFIG_METHODS.addProject).toHaveBeenCalled();
     const newProjectConfig = LOAD_CONFIG_METHODS.addProject.mock.calls[0][0];
@@ -97,8 +104,37 @@ describe('command - add', () => {
   it('should fetch the info from cloud if an apiId is passed', async () => {
     getAppSyncAPIInfo.mockReturnValue(MOCK_APPSYNC_API_DETAIL);
     await add(MOCK_CONTEXT, MOCK_API_ID);
-    expect(getAppSyncAPIInfo).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID);
+    expect(getAppSyncAPIInfo).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, MOCK_AWS_REGION);
     expect(getAppSyncAPIDetails).not.toHaveBeenCalled();
+    expect(changeAppSyncRegions).not.toHaveBeenCalled();
+  });
+
+  describe('AppSync API in a different region', () => {
+    it('should use the user provided region', async () => {
+      const MOCK_NEW_REGION = 'NEW_AWS_REGION';
+      getAppSyncAPIInfo.mockImplementationOnce(() => {
+        getAppSyncAPIInfo.mockReturnValue(MOCK_APPSYNC_API_DETAIL);
+        throw new AmplifyCodeGenAPINotFoundError();
+      });
+      changeAppSyncRegions.mockReturnValue({ shouldRetry: true, region: MOCK_NEW_REGION });
+      await add(MOCK_CONTEXT, MOCK_API_ID);
+      expect(getAppSyncAPIInfo).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, MOCK_AWS_REGION);
+      expect(changeAppSyncRegions).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_AWS_REGION);
+      expect(getAppSyncAPIDetails).not.toHaveBeenCalled();
+      expect(LOAD_CONFIG_METHODS.save).toHaveBeenCalledWith();
+    });
+
+    it('should not add if user chooses not change region', async () => {
+      getAppSyncAPIInfo.mockImplementationOnce(() => {
+        throw new AmplifyCodeGenAPINotFoundError();
+      });
+      changeAppSyncRegions.mockReturnValue({ shouldRetry: false });
+      await add(MOCK_CONTEXT, MOCK_API_ID);
+      expect(getAppSyncAPIInfo).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, MOCK_AWS_REGION);
+      expect(changeAppSyncRegions).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_AWS_REGION);
+      expect(getAppSyncAPIDetails).not.toHaveBeenCalled();
+      expect(LOAD_CONFIG_METHODS.save).not.toHaveBeenCalled();
+    });
   });
 
   it('should throw an error if an AppSync API is already added', async () => {
