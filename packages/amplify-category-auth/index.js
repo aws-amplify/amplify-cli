@@ -65,7 +65,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
-    if (requirements.authSelections.includeS('userPoolOnly') && currentAuthParams.identityPoolName) {
+    if (requirements.authSelections.includes('userPoolOnly') && currentAuthParams.identityPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
 
