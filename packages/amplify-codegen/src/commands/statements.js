@@ -24,6 +24,7 @@ async function generateStatements(context, forceDownloadSchema) {
         context,
         cfg.amplifyExtension.graphQLApiId,
         cfg.schema,
+        cfg.amplifyExtension.region,
       );
     }
     const frontend = getFrontEndHandler(context);

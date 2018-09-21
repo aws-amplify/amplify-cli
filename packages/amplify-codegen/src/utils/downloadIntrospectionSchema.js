@@ -4,7 +4,7 @@ const { dirname, relative } = require('path');
 const { AmplifyCodeGenAPINotFoundError } = require('../errors');
 const constants = require('../constants');
 
-async function downloadIntrospectionSchema(context, apiId, downloadLocation) {
+async function downloadIntrospectionSchema(context, apiId, downloadLocation, region) {
   const { amplify } = context;
   try {
     const schema = await context.amplify.executeProviderUtils(
@@ -13,6 +13,7 @@ async function downloadIntrospectionSchema(context, apiId, downloadLocation) {
       'getIntrospectionSchema',
       {
         apiId,
+        region,
       },
     );
     const introspectionDir = dirname(downloadLocation);

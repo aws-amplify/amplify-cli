@@ -19,6 +19,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema) {
         context,
         cfg.amplifyExtension.graphQLApiId,
         cfg.schema,
+        cfg.amplifyExtension.region,
       ),
     );
     await Promise.all(downloadPromises);

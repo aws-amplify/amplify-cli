@@ -31,6 +31,7 @@ async function generateTypes(context, forceDownloadSchema) {
           context,
           cfg.amplifyExtension.graphQLApiId,
           cfg.schema,
+          cfg.amplifyExtension.region,
         );
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
