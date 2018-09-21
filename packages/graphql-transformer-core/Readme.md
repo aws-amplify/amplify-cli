@@ -245,12 +245,12 @@ and `Comment.post` fields to refer to opposite sides of the same relationship
 you would provide a name.
 
 ```graphql
-type Post {
+type Post @model {
     id: ID!
     title: String!
     comments: [Comment] @connection(name: "PostComments")
 }
-type Comment {
+type Comment @model {
     id: ID!
     content: String!
     post: Post @connection(name: "PostComments")
