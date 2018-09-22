@@ -5,13 +5,17 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src/** tests/**",
+    "lint-fix": "eslint src/** tests/** --fix",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "format": "prettier --write ./src/**/*.js ./__tests__/**/*.js"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "amplify-graphql-docs-generator": "^0.0.1",
     "aws-appsync-codegen": "^0.17.4",
+    "chalk": "^2.4.1",
     "eslint": "^4.9.0",
     "fs-jetpack": "^2.1.0",
     "glob-all": "^3.1.0",
@@ -33,7 +37,6 @@
     "moduleFileExtensions": [
       "js",
       "jsx",
-      "json",
       "node"
     ]
   }

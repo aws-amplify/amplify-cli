@@ -1,9 +1,14 @@
 class AmplifyCodeGenNotSupportedError extends Error {}
 
 class AmplifyCodeGenNoAppSyncAPIAvailableError extends Error {}
-class AmplifyCodeGenNoPorjectAvailableError extends Error {}
+class AmplifyCodeGenNoProjectAvailableError extends Error {}
+
+class AmplifyCodeGenAPINotFoundError extends Error {}
+class AmplifyCodeGenAPIPendingPush extends Error {}
 module.exports = {
   AmplifyCodeGenNotSupportedError,
   AmplifyCodeGenNoAppSyncAPIAvailableError,
-  AmplifyCodeGenNoPorjectAvailableError,
-}
+  AmplifyCodeGenNoProjectAvailableError,
+  AmplifyCodeGenAPINotFoundError,
+  AmplifyCodeGenAPIPendingPush,
+};

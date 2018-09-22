@@ -1,21 +1,21 @@
-const selectProject = require('../../src/walkthrough/questions/selectProject')
-const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget')
-const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern')
-const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName')
-const configure = require('../../src/walkthrough/configure')
+const selectProject = require('../../src/walkthrough/questions/selectProject');
+const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget');
+const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern');
+const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
+const configure = require('../../src/walkthrough/configure');
 
-jest.mock('../../src/walkthrough/questions/selectProject')
-jest.mock('../../src/walkthrough/questions/languageTarget')
-jest.mock('../../src/walkthrough/questions/queryFilePattern')
-jest.mock('../../src/walkthrough/questions/generatedFileName')
-jest.mock('../../src/utils')
+jest.mock('../../src/walkthrough/questions/selectProject');
+jest.mock('../../src/walkthrough/questions/languageTarget');
+jest.mock('../../src/walkthrough/questions/queryFilePattern');
+jest.mock('../../src/walkthrough/questions/generatedFileName');
+jest.mock('../../src/utils');
 
 describe('configure walk-through', () => {
-  const mockAPI = 'two'
-  const mockTargetLanguage = 'MOCK_TARGET_LANGUAGE'
-  const mockIncludes = 'MOCK_INCLUDE_PATTERN'
-  const mockContext = 'MOCK_CONTEXT'
-  const mockGeneratedFileName = 'MOCK_FILE_NAME.ts'
+  const mockAPI = 'two';
+  const mockTargetLanguage = 'MOCK_TARGET_LANGUAGE';
+  const mockIncludes = 'MOCK_INCLUDE_PATTERN';
+  const mockContext = 'MOCK_CONTEXT';
+  const mockGeneratedFileName = 'MOCK_FILE_NAME.ts';
   const mockConfigs = [
     {
       projectName: 'One',
@@ -36,18 +36,18 @@ describe('configure walk-through', () => {
         codeGenTarget: 'language-two',
       },
     },
-  ]
+  ];
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    selectProject.mockReturnValue(mockAPI)
-    askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage)
-    askCodegneQueryFilePattern.mockReturnValue(mockIncludes)
-    askGeneratedFileName.mockReturnValue(mockGeneratedFileName)
-  })
+    jest.clearAllMocks();
+    selectProject.mockReturnValue(mockAPI);
+    askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage);
+    askCodegneQueryFilePattern.mockReturnValue(mockIncludes);
+    askGeneratedFileName.mockReturnValue(mockGeneratedFileName);
+  });
 
   it('should pass the available list of AppSync APIs', async () => {
-    const results = await configure(mockContext, mockConfigs)
+    const results = await configure(mockContext, mockConfigs);
     const mockProjectSelect = [
       {
         name: mockConfigs[0].projectName,
@@ -57,17 +57,17 @@ describe('configure walk-through', () => {
         name: mockConfigs[1].projectName,
         value: mockConfigs[1].amplifyExtension.graphQLApiId,
       },
-    ]
-    expect(selectProject).toHaveBeenCalledWith(mockContext, mockProjectSelect)
+    ];
+    expect(selectProject).toHaveBeenCalledWith(mockContext, mockProjectSelect);
     expect(askCodegenTargetLanguage).toHaveBeenCalledWith(
       mockContext,
       mockConfigs[1].amplifyExtension.codeGenTarget,
-    )
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(mockConfigs[1].includes)
+    );
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(mockConfigs[1].includes);
     expect(askGeneratedFileName).toHaveBeenCalledWith(
       mockConfigs[1].amplifyExtension.generatedFileName,
       mockTargetLanguage,
-    )
+    );
     expect(results).toEqual({
       projectName: mockConfigs[1].projectName,
       includes: mockIncludes,
@@ -76,6 +76,6 @@ describe('configure walk-through', () => {
         generatedFileName: mockGeneratedFileName,
         codeGenTarget: mockTargetLanguage,
       },
-    })
-  })
-})
+    });
+  });
+});

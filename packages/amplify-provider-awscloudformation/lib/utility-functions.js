@@ -6,41 +6,51 @@ const AppSync = require('../src/aws-utils/aws-appsync');
 const Lex = require('../src/aws-utils/aws-lex');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 
-
 module.exports = {
   compileSchema: (context, options) => transformGraphQLSchema(context, options),
   getRegions: () => awsRegions.regions,
+  getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
   staticRoles: context => ({
-    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleName,
-    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleName,
-    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.UnauthRoleArn,
-    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleArn,
+    unAuthRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
+      .UnauthRoleName,
+    authRoleName: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
+      .AuthRoleName,
+    unAuthRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
+      .UnauthRoleArn,
+    authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation
+      .AuthRoleArn,
   }),
   /* eslint-enable */
-  getUserPools: (context, options) => new Cognito(context)
-    .then(cognitoModel => cognitoModel.cognito.listUserPools({ MaxResults: 60 }).promise()
-      .then((result) => {
-        let userPools = result.UserPools;
-        if (options && options.region) {
-          userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
-        }
-        return userPools;
-      }))
-    .catch((err) => {
-      context.print.error('Failed to fetch user pools');
-      throw err;
-    }),
+  getUserPools: (context, options) =>
+    new Cognito(context)
+      .then(cognitoModel =>
+        cognitoModel.cognito
+          .listUserPools({ MaxResults: 60 })
+          .promise()
+          .then((result) => {
+            let userPools = result.UserPools;
+            if (options && options.region) {
+              userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
+            }
+            return userPools;
+          }))
+      .catch((err) => {
+        context.print.error('Failed to fetch user pools');
+        throw err;
+      }),
   getLambdaFunctions: async (context) => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdafunctions = [];
     try {
       do {
-        const paginatedFunctions = await lambdaModel.lambda.listFunctions({
-          MaxItems: 10000,
-          Marker: nextMarker,
-        }).promise();
+        const paginatedFunctions = await lambdaModel.lambda
+          .listFunctions({
+            MaxItems: 10000,
+            Marker: nextMarker,
+          })
+          .promise();
         if (paginatedFunctions && paginatedFunctions.Functions) {
           lambdafunctions.push(...paginatedFunctions.Functions);
         }
@@ -61,7 +71,8 @@ module.exports = {
     try {
       do {
         const paginatedTables = await dynamodbModel.dynamodb
-          .listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
+          .listTables({ Limit: 100, ExclusiveStartTableName: nextToken })
+          .promise();
         const dynamodbTables = paginatedTables.TableNames;
         nextToken = paginatedTables.LastEvaluatedTableName;
         for (let i = 0; i < dynamodbTables.length; i += 1) {
@@ -103,18 +114,30 @@ module.exports = {
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
       .then(result => result.graphqlApis),
-  getIntrospectionSchema: (context, options) =>
-    new AppSync(context)
+  getIntrospectionSchema: (context, options) => {
+    const awsOptions = {};
+    if (options.region) {
+      awsOptions.region = options.region;
+    }
+    return new AppSync(context, { region: options.region })
       .then((result) => {
         const appSyncModel = result;
         return appSyncModel.appSync
           .getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' })
           .promise();
       })
-      .then(result => result.schema.toString() || null)
-      .catch(() => {
-        throw new Error('Failed to download introspection schema');
-      }),
+      .then(result => result.schema.toString() || null);
+  },
+  getGraphQLApiDetails: (context, options) => {
+    const awsOptions = {};
+    if (options.region) {
+      awsOptions.region = options.region;
+    }
+    return new AppSync(context, awsOptions).then((result) => {
+      const appSyncModel = result;
+      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+    });
+  },
   getBuiltInSlotTypes: (context, options) => {
     let params = {
       locale: "en-US",

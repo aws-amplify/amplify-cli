@@ -1,72 +1,53 @@
-const { dirname, join } = require('path')
-const askAppSyncAPITarget = require('./questions/apiTarget')
-const askCodeGenTargetLanguage = require('./questions/languageTarget')
-const askCodeGenQueryFilePattern = require('./questions/queryFilePattern')
-const askTargetFileName = require('./questions/generatedFileName')
-const askShouldGenerateCode = require('./questions/generateCode')
+const { join } = require('path');
+const askCodeGenTargetLanguage = require('./questions/languageTarget');
+const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
+const askTargetFileName = require('./questions/generatedFileName');
+const askShouldGenerateCode = require('./questions/generateCode');
+const askShouldGenerateDocs = require('./questions/generateDocs');
 
-const { getAppSyncAPIDetails, getFrontEndHandler, getSchemaDownloadLocation } = require('../utils/')
 const {
-  AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
-} = require('../errors')
-const constants = require('../constants')
+  getFrontEndHandler,
+  getSchemaDownloadLocation,
+  getIncludePattern,
+  getGraphQLDocPath,
+} = require('../utils');
 
-const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**']
+const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
-async function addWalkThrough(context, configs) {
-  const availableAppSyncApis = getAppSyncAPIDetails(context) // published and up published
-  const alreadyAddedApis = configs.map(cfg => cfg.amplifyExtension.graphQLApiId)
-  const newAPIs = availableAppSyncApis.filter(api => api.id && !alreadyAddedApis.includes(api.id))
-  const unpublishedApis = availableAppSyncApis.filter(api => !api.id)
-
-  // No API GraphQL API is added to the project
-  if (availableAppSyncApis.length === 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE)
-  }
-
-  // GraphQL API is added but not pushed to cloud
-  if (newAPIs.length === 0 && unpublishedApis.length > 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_PENDING_API_PUSH)
-  }
-
-  // All GraphQL APIs are already configured
-  if (newAPIs.length === 0) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED)
-  }
-
-  // Some APIs are pending push
-  if (unpublishedApis.length) {
-    context.print.info(constants.WARNING_CODEGEN_PENDING_API_PUSH)
-    context.print.info(unpublishedApis.map(api => api.name).join('\n'))
-  }
-  let targetLanguage = ''
-  let includePattern = ''
-  let generatedFileName = ''
-  let shouldGenerateCode = false
-
-  const apiId = await askAppSyncAPITarget(context, newAPIs, null)
-  const api = newAPIs.find(a => a.id === apiId)
-  const frontendHandler = getFrontEndHandler(context)
-  const schemaLocation = getSchemaDownloadLocation(context, api.name)
-  const includePatternDefault = frontendHandler === 'android' ? dirname(schemaLocation) : 'graphql/'
-  includePattern = await askCodeGenQueryFilePattern([
-    join(includePatternDefault, '**', '*.graphql'),
-  ])
-
-  if (frontendHandler !== 'android') {
-    targetLanguage = await askCodeGenTargetLanguage(context)
-    generatedFileName = await askTargetFileName('API', targetLanguage)
-    shouldGenerateCode = await askShouldGenerateCode()
-  }
-
-  return {
-    api,
-    target: targetLanguage,
-    includePattern,
+async function addWalkThrough(context, skip = []) {
+  const frontendHandler = getFrontEndHandler(context);
+  const schemaLocation = getSchemaDownloadLocation(context);
+  const includePatternDefault = getIncludePattern(frontendHandler, schemaLocation);
+  const answers = {
     excludePattern: DEFAULT_EXCLUDE_PATTERNS,
-    generatedFileName,
-    shouldGenerateCode,
     schemaLocation,
+  };
+
+  const includePathGlob = join(
+    includePatternDefault.graphQLDirectory,
+    '**',
+    includePatternDefault.graphQLExtension,
+  );
+
+  if (!skip.includes('includePattern')) {
+    answers.includePattern = await askCodeGenQueryFilePattern([includePathGlob]);
   }
+  if (frontendHandler !== 'android') {
+    if (!skip.includes('targetLanguage')) {
+      answers.target = await askCodeGenTargetLanguage(context);
+    }
+    if (!skip.includes('generatedFileName')) {
+      answers.generatedFileName = await askTargetFileName('API', answers.target || '');
+    }
+    if (!skip.includes('shouldGenerateCode')) {
+      answers.shouldGenerateCode = await askShouldGenerateCode();
+    }
+  }
+  if (!skip.includes('shouldGenerateDocs')) {
+    answers.shouldGenerateDocs = await askShouldGenerateDocs();
+    answers.docsFilePath = getGraphQLDocPath(frontendHandler, schemaLocation);
+  }
+
+  return answers;
 }
-module.exports = addWalkThrough
+module.exports = addWalkThrough;

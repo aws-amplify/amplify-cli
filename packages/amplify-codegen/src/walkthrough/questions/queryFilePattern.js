@@ -1,6 +1,6 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 
-const constants = require('../../constants')
+const constants = require('../../constants');
 
 async function askCodeGenQueryFilePattern(includePattern = ['**/*.graphql']) {
   const answers = await inquirer.prompt([
@@ -10,8 +10,8 @@ async function askCodeGenQueryFilePattern(includePattern = ['**/*.graphql']) {
       message: constants.PROMPT_MSG_GQL_FILE_PATTERN,
       default: includePattern.join(','),
     },
-  ])
-  return answers.includePattern.split(',').map(pattern => pattern.trim())
+  ]);
+  return answers.includePattern.split(',').map(pattern => pattern.trim());
 }
 
-module.exports = askCodeGenQueryFilePattern
+module.exports = askCodeGenQueryFilePattern;

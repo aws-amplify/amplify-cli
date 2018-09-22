@@ -1,8 +1,8 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 
-const constants = require('../../constants')
+const constants = require('../../constants');
 
-const { getOutputFileName } = require('../../utils')
+const { getOutputFileName } = require('../../utils');
 
 async function askGeneratedFileName(name, target) {
   const answers = await inquirer.prompt([
@@ -12,8 +12,8 @@ async function askGeneratedFileName(name, target) {
       message: constants.PROMPT_MSG_FILE_NAME,
       default: getOutputFileName(name, target),
     },
-  ])
-  return answers.generatedFileName
+  ]);
+  return answers.generatedFileName;
 }
 
-module.exports = askGeneratedFileName
+module.exports = askGeneratedFileName;
