@@ -1,0 +1,914 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`end 2 end tests should generate statements 1`] = `
+"# this is an auto generated file. This will be overwritten
+query Hero($episode: Episode) {
+  hero(episode: $episode) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+query Reviews($episode: Episode!) {
+  reviews(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+query Search($text: String) {
+  search(text: $text) {
+    ... on Human {
+      id
+      name
+      homePlanet
+      height
+      mass
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      id
+      name
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      primaryFunction
+    }
+    ... on Starship {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+query Character($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+query Droid($id: ID!) {
+  droid(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    primaryFunction
+  }
+}
+query Human($id: ID!) {
+  human(id: $id) {
+    id
+    name
+    homePlanet
+    height
+    mass
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    starships {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+query Starship($id: ID!) {
+  starship(id: $id) {
+    id
+    name
+    length
+    coordinates
+  }
+}
+mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+  createReview(episode: $episode, review: $review) {
+    episode
+    stars
+    commentary
+  }
+}
+subscription ReviewAdded($episode: Episode) {
+  reviewAdded(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+"
+`;
+
+exports[`end 2 end tests should generate statements in JS 1`] = `
+"// eslint-disable
+// this is an auto generated file. This will be overwritten
+
+export const hero = \`query Hero($episode: Episode) {
+  hero(episode: $episode) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const reviews = \`query Reviews($episode: Episode!) {
+  reviews(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const search = \`query Search($text: String) {
+  search(text: $text) {
+    ... on Human {
+      id
+      name
+      homePlanet
+      height
+      mass
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      id
+      name
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      primaryFunction
+    }
+    ... on Starship {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const character = \`query Character($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const droid = \`query Droid($id: ID!) {
+  droid(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    primaryFunction
+  }
+}
+\`;
+export const human = \`query Human($id: ID!) {
+  human(id: $id) {
+    id
+    name
+    homePlanet
+    height
+    mass
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    starships {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const starship = \`query Starship($id: ID!) {
+  starship(id: $id) {
+    id
+    name
+    length
+    coordinates
+  }
+}
+\`;
+export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+  createReview(episode: $episode, review: $review) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
+  reviewAdded(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+"
+`;
+
+exports[`end 2 end tests should generate statements in Typescript 1`] = `
+"// tslint:disable
+// this is an auto generated file. This will be overwritten
+
+export const hero = \`query Hero($episode: Episode) {
+  hero(episode: $episode) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const reviews = \`query Reviews($episode: Episode!) {
+  reviews(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const search = \`query Search($text: String) {
+  search(text: $text) {
+    ... on Human {
+      id
+      name
+      homePlanet
+      height
+      mass
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      id
+      name
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      primaryFunction
+    }
+    ... on Starship {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const character = \`query Character($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const droid = \`query Droid($id: ID!) {
+  droid(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    primaryFunction
+  }
+}
+\`;
+export const human = \`query Human($id: ID!) {
+  human(id: $id) {
+    id
+    name
+    homePlanet
+    height
+    mass
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    starships {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const starship = \`query Starship($id: ID!) {
+  starship(id: $id) {
+    id
+    name
+    length
+    coordinates
+  }
+}
+\`;
+export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+  createReview(episode: $episode, review: $review) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
+  reviewAdded(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+"
+`;
+
+exports[`end 2 end tests should generate statements in flow 1`] = `
+"// @flow
+// this is an auto generated file. This will be overwritten
+
+export const hero = \`query Hero($episode: Episode) {
+  hero(episode: $episode) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const reviews = \`query Reviews($episode: Episode!) {
+  reviews(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const search = \`query Search($text: String) {
+  search(text: $text) {
+    ... on Human {
+      id
+      name
+      homePlanet
+      height
+      mass
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      id
+      name
+      friends {
+        id
+        name
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      primaryFunction
+    }
+    ... on Starship {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const character = \`query Character($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+\`;
+export const droid = \`query Droid($id: ID!) {
+  droid(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    primaryFunction
+  }
+}
+\`;
+export const human = \`query Human($id: ID!) {
+  human(id: $id) {
+    id
+    name
+    homePlanet
+    height
+    mass
+    friends {
+      id
+      name
+      ... on Human {
+        homePlanet
+        height
+        mass
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+    }
+    appearsIn
+    starships {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+\`;
+export const starship = \`query Starship($id: ID!) {
+  starship(id: $id) {
+    id
+    name
+    length
+    coordinates
+  }
+}
+\`;
+export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+  createReview(episode: $episode, review: $review) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
+  reviewAdded(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+\`;
+"
+`;
