@@ -55,6 +55,8 @@ function createAWSExports(context, amplifyResources) {
         break;
       case 'S3AndCloudFront': Object.assign(configOutput, getS3AndCloudFrontConfig(serviceResourceMapping[service], projectRegion));
         break;
+      case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
+        break;
       default: break;
     }
   });
@@ -178,6 +180,22 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
     aws_content_delivery_bucket_region: s3AndCloudfrontResource.output.Region,
     aws_content_delivery_url: s3AndCloudfrontResource.output.CloudFrontSecureURL ||
       s3AndCloudfrontResource.output.WebsiteURL,
+  };
+}
+
+
+function getLexConfig(lexResources) {
+  const config = lexResources.map(r => {
+    return {
+      "name": r.output.BotName,
+      "alias": "$LATEST",
+      "region": r.output.Region
+    };
+  }); 
+
+  return {
+    'aws_bots': 'enable',
+    'aws_bots_config': config
   };
 }
 
