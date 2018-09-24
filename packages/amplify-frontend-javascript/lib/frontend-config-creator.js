@@ -183,7 +183,6 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
   };
 }
 
-
 function getLexConfig(lexResources) {
   const config = lexResources.map(r => {
     return {
@@ -198,6 +197,5 @@ function getLexConfig(lexResources) {
     'aws_bots_config': config
   };
 }
-
 
 module.exports = { createAWSExports, createAmplifyConfig };
