@@ -101,7 +101,7 @@
             "Properties": {
               "PolicyName": "<%= props.unauthPolicyName %>",
               "Roles": [ 
-                {"Ref": "<%= props.unauthRoleName %>" }
+                "<%= props.unauthRoleName %>"
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -125,7 +125,7 @@
             "Properties": {
                 "PolicyName": "<%= props.authPolicyName %>",
               "Roles": [ 
-                {"Ref": "<%= props.authRoleName %>" }
+                "<%= props.authRoleName %>"
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
