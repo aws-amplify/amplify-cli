@@ -1,6 +1,6 @@
 const loadConfig = require('../../src/codegen-config');
 const askShouldUpdateCode = require('../../src/walkthrough/questions/updateCode');
-const askShouldGenerateDocs = require('../../src/walkthrough/questions/generateCode');
+const askShouldUpdateStatements = require('../../src/walkthrough/questions/updateDocs');
 
 const prePushUpdateCallback = require('../../src/callbacks/prePushUpdateCallback');
 
@@ -12,7 +12,7 @@ const MOCK_CONTEXT = {
 
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/walkthrough/questions/updateCode');
-jest.mock('../../src/walkthrough/questions/generateCode');
+jest.mock('../../src/walkthrough/questions/updateDocs');
 
 const MOCK_PROJECT_NAME = 'MOCK_PROJECT';
 const MOCK_SELECTED_PROJECT = { projectName: MOCK_PROJECT_NAME, foo: 'bar' };
@@ -30,7 +30,7 @@ describe('callback - prepushUpdate AppSync API', () => {
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
     LOAD_CONFIG_METHODS.getProjects.mockReturnValue(MOCK_PROJECTS);
     askShouldUpdateCode.mockReturnValue(true);
-    askShouldGenerateDocs.mockReturnValue(true);
+    askShouldUpdateStatements.mockReturnValue(true);
   });
 
   it('should ask prompt user to update statements and types', async () => {
@@ -46,7 +46,7 @@ describe('callback - prepushUpdate AppSync API', () => {
   });
 
   it('should set shouldGenerateDocs when user declines statement generation', async () => {
-    askShouldGenerateDocs.mockReturnValue(false);
+    askShouldUpdateStatements.mockReturnValue(false);
     const result = await prePushUpdateCallback(MOCK_CONTEXT, MOCK_PROJECT_NAME);
     expect(result.shouldGenerateDocs).toEqual(false);
   });
