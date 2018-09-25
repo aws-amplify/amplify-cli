@@ -9,7 +9,7 @@ const getAllDefaults = (project) => {
   const unauthRoleName = project.amplifyMeta.providers.awscloudformation.UnauthRoleName;
   const authRoleArn = project.amplifyMeta.providers.awscloudformation.AuthRoleArn;
   const accountNumber = authRoleArn.split(':')[4];
-  const resourceArn = `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`,
+  const resourceArn = `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`;
 
   const defaults = {
     botName,

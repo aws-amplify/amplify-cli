@@ -44,8 +44,8 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
 }
 
-function addResource(context, category, service, options) {
-  authHelper.ensureAuth(context); 
+async function addResource(context, category, service, options) {
+  await authHelper.ensureAuth(context); 
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
