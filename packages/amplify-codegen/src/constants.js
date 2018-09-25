@@ -48,6 +48,7 @@ module.exports = {
   INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS: 'Code generated successfully and saved in file',
   INFO_MESSAGE_DOWNLOADING_SCHEMA: 'Downloading the introspection schema',
   INFO_MESSAGE_DOWNLOAD_SUCCESS: 'Downloaded the schema',
+  INFO_MESSAGE_DOWNLOAD_ERROR: 'Downloading schema failed',
   INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
 };

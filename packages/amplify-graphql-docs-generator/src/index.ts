@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as handlebars from 'handlebars'
 import * as prettier from 'prettier'
-const camelCase = require('camel-case');
+const camelCase = require('camel-case')
 
 import {
   buildClientSchema,
@@ -46,7 +46,7 @@ function generate(
 
   const fileExtension = FILE_EXTENSION_MAP[language]
   if (options.separateFiles) {
-    ['queries', 'mutations', 'subscriptions'].forEach((op) => {
+    ;['queries', 'mutations', 'subscriptions'].forEach((op) => {
       const ops = gqlOperations[op]
       if (ops.length) {
         const gql = renderOps(gqlOperations[op], language)
@@ -100,11 +100,11 @@ function registerPartials() {
 
 function registerHelpers() {
   handlebars.registerHelper('format', function(options: any) {
-    const result = options.fn(this);
-    return format(result);
-  });
+    const result = options.fn(this)
+    return format(result)
+  })
 
-  handlebars.registerHelper('camelCase', camelCase);
+  handlebars.registerHelper('camelCase', camelCase)
 }
 
 function format(str: string, language: string = 'graphql'): string {
