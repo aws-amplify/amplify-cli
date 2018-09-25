@@ -95,20 +95,39 @@ function updateResource(context, category, service) {
         result.authSelections = 'identityPoolAndUserPool';
       }
 
+      const defaults = getAllDefaults(context.updatingAuth.resourceName);
+
+      const immutables = {};
+      // loop through service questions
+      serviceMetadata.inputs.forEach((s) => {
+        // find those that would not be displayed if user was entering values manually
+        if (!context.amplify.getWhen(s, defaults, context.updatingAuth, context.amplify)()) {
+          // if a value wouldn't be displayed,
+          // we update the immutable object with they key/value from previous answers
+          if (context.updatingAuth[s.key]) {
+            immutables[s.key] = context.updatingAuth[s.key];
+          }
+        }
+      });
+
       if (result.useDefault && result.useDefault === 'default') {
         /* if the user elects to use defaults during an edit,
-         * we simply grab all of the static defaults
-         * but make sure to pass existing resource name so we don't create a 2nd auth resource */
+         * we grab all of the static defaults
+         * but make sure to pass existing resource name so we don't create a 2nd auth resource
+         * and we don't overwrite immutables from the originally entered values */
+
         props = Object.assign(
-          getAllDefaults(context.updatingAuth.resourceName),
-          context.updatingAuth, result,
+          defaults,
+          immutables,
+          result,
         );
       } else {
         /* if the user does NOT choose defaults during an edit,
          * we merge actual answers object into props object of previous answers,
          * and in turn merge these into the defaults
-         * ensuring that manual entries override previous which then override defaults */
-        props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, result); // eslint-disable-line max-len
+         * ensuring that manual entries override previous which then
+         * override defaults (except immutables) */
+        props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, immutables, result); // eslint-disable-line max-len
       }
 
       if (!result.thirdPartyAuth) {

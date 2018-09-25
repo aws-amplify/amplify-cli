@@ -7,6 +7,7 @@ module.exports = {
   PROMPT_MSG_GQL_FILE_PATTERN:
     'Enter the file name pattern of graphql queries, mutations and subscriptions',
   PROMPT_MSG_GENERATE_CODE: 'Do you want to generate code for your newly created GraphQL API',
+  PROMPT_MSG_UPDATE_STATEMENTS: 'Do you want to generate GraphQL statements (queries, mutations and subscription) based on your schema types? This will overwrite your current graphql queries, mutations and subscriptions',
   PROMPT_MSG_CHANGE_REGION: 'Do you want to choose a different region',
   PROMPT_MSG_UPDATE_CODE: 'Do you want to update code for your updated GraphQL API',
   PROMPT_MSG_GENERATE_OPS:

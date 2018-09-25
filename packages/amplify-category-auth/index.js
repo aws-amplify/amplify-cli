@@ -56,6 +56,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   let currentAuthParams;
   const [sharedId] = uuid().split('-');
 
+  const immutables = {};
   // if auth has already been enabled, grab the existing parameters
   if (authExists) {
     currentAuthName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0]; //eslint-disable-line
@@ -64,13 +65,29 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
+    if (requirements.authSelections.includes('userPoolOnly') && currentAuthParams.identityPoolName) {
+      requirements.authSelections = 'identityPoolAndUserPool';
+    }
+
+    const defaultVals = defaults.getAllDefaults(currentAuthName);
+    // loop through service questions
+    serviceMetadata.Cognito.inputs.forEach((s) => {
+      // find those that would not be displayed if user was entering values manually
+      if (!context.amplify.getWhen(s, defaultVals, currentAuthParams, context.amplify)()) {
+        // if a value wouldn't be displayed,
+        // we update the immutable object with they key/value from previous answers
+        if (currentAuthParams[s.key]) {
+          immutables[s.key] = currentAuthParams[s.key];
+        }
+      }
+    });
   } else {
     currentAuthName = projectName;
   }
 
   /* eslint-disable */
   const authPropsValues = authExists ?
-    Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, requirements) :
+    Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements) :
     Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, { resourceName: `cognito${sharedId}` }); //eslint-disable-line
   /* eslint-enable */
   const roles = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');

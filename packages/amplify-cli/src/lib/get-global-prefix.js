@@ -15,9 +15,9 @@ function getPrefix() {
 function getYarnPrefix() {
   const home = os.homedir();
 
-  let yarnPrefix = path.join(home, '.config', 'yarn', 'global');
+  let yarnPrefix = path.join(home, '.config', 'yarn', 'global', 'node_modules');
   if (process.platform === 'win32' && process.env.LOCALAPPDATA) {
-    yarnPrefix = path.join(process.env.LOCALAPPDATA, 'Yarn', 'config', 'global');
+    yarnPrefix = path.join(process.env.LOCALAPPDATA, 'Yarn', 'config', 'global', 'node_modules');
   }
 
   return yarnPrefix;
