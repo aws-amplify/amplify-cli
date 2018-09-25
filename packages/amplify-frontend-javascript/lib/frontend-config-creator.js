@@ -184,17 +184,15 @@ function getS3AndCloudFrontConfig(s3AndCloudfrontResources) {
 }
 
 function getLexConfig(lexResources) {
-  const config = lexResources.map(r => {
-    return {
-      "name": r.output.BotName,
-      "alias": "$LATEST",
-      "region": r.output.Region
-    };
-  }); 
+  const config = lexResources.map(r => ({
+    name: r.output.BotName,
+    alias: '$LATEST',
+    region: r.output.Region,
+  }));
 
   return {
-    'aws_bots': 'enable',
-    'aws_bots_config': config
+    aws_bots: 'enable',
+    aws_bots_config: config,
   };
 }
 

@@ -139,25 +139,21 @@ module.exports = {
     });
   },
   getBuiltInSlotTypes: (context, options) => {
-    let params = {
-      locale: "en-US",
-      maxResults: 50
+    const params = {
+      locale: 'en-US',
+      maxResults: 50,
     };
     if (options) {
       params.nextToken = options;
     }
     return new Lex(context)
-      .then((result) => {
-        return result.lex.getBuiltinSlotTypes(params).promise();
-      });
+      .then(result => result.lex.getBuiltinSlotTypes(params).promise());
   },
-  getSlotTypes: context => {
-    let params = {
-      maxResults: 50
+  getSlotTypes: (context) => {
+    const params = {
+      maxResults: 50,
     };
     return new Lex(context)
-      .then((result) => {
-        return result.lex.getSlotTypes(params).promise();
-      });
-  }
+      .then(result => result.lex.getSlotTypes(params).promise());
+  },
 };

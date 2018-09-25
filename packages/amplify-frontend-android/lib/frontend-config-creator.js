@@ -175,16 +175,16 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
 }
 
 function getLexConfig(lexResources) {
-  const config = {}; 
-  lexResources.forEach(r => {
+  const config = {};
+  lexResources.forEach((r) => {
     config[r.output.BotName] = {
-      "Name": r.output.BotName,
-      "Alias": "$LATEST",
-      "Region": r.output.Region
+      Name: r.output.BotName,
+      Alias: '$LATEST',
+      Region: r.output.Region,
     };
-  }); 
+  });
   return {
-    Lex: config
+    Lex: config,
   };
 }
 

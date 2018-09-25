@@ -24,7 +24,7 @@ const getAllDefaults = (project) => {
     unauthPolicyName: `lex_amplify_${shortId}`,
     roleName: `lexLambdaRole${shortId}`,
     functionName: `${name}_cfnlambda_${shortId}`,
-    cloudWatchPolicyName: `cloudWatchPolicy${shortId}`
+    cloudWatchPolicyName: `cloudWatchPolicy${shortId}`,
   };
   return defaults;
 };
