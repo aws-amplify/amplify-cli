@@ -9,7 +9,7 @@ function getGlobalNodeModuleDirPath() {
   if (__dirname.includes(yarnPrefix)) {
     return path.join(yarnPrefix, 'node_modules');
   }
-  return path.join(getNpmPrefix(), 'lib/node_modules');
+  return path.join(getNpmPrefix(), 'lib', 'node_modules');
 }
 
 function getYarnPrefix() {
