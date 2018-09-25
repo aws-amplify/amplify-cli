@@ -4,20 +4,20 @@ const os = require('os');
 const ini = require('ini');
 const which = require('which');
 
-function getPrefix() {
+function getGlobalNodeModuleDirPath() {
   const yarnPrefix = getYarnPrefix();
   if (__dirname.includes(yarnPrefix)) {
-    return yarnPrefix;
+    return path.join(yarnPrefix, 'node_modules');
   }
-  return getNpmPrefix();
+  return path.join(getNpmPrefix(), 'lib/node_modules');
 }
 
 function getYarnPrefix() {
   const home = os.homedir();
 
-  let yarnPrefix = path.join(home, '.config', 'yarn', 'global', 'node_modules');
+  let yarnPrefix = path.join(home, '.config', 'yarn', 'global');
   if (process.platform === 'win32' && process.env.LOCALAPPDATA) {
-    yarnPrefix = path.join(process.env.LOCALAPPDATA, 'Yarn', 'config', 'global', 'node_modules');
+    yarnPrefix = path.join(process.env.LOCALAPPDATA, 'Yarn', 'config', 'global');
   }
 
   return yarnPrefix;
@@ -107,4 +107,6 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = getPrefix;
+module.exports = {
+  getGlobalNodeModuleDirPath
+};
