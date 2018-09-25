@@ -105,7 +105,7 @@ function uploadAppSyncFile(context, fileName, filePath, s3LocationMap, buildTime
       return s3.uploadFile(s3Params);
     })
     .then((bucket) => {
-      s3LocationMap[formattedName] = `s3://${path.join(bucket, s3Key)}`;
+      s3LocationMap[formattedName] = `s3://${bucket}/${s3Key}`;
     });
 }
 
