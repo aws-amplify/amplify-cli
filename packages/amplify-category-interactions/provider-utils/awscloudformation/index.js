@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
 
+const authHelper = require('./auth-helper'); 
+
 const parametersFileName = 'lex-params.json';
 
 let serviceMetadata;
@@ -43,6 +45,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 }
 
 function addResource(context, category, service, options) {
+  authHelper.ensureAuth(context); 
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;

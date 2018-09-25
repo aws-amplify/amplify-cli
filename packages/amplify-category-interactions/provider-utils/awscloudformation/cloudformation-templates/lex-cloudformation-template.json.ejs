@@ -95,6 +95,54 @@
                     ]
                 }
             }
+        },
+        "CognitoUnauthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyName": "<%= props.unauthPolicyName %>",
+              "Roles": [ 
+                {"Ref": "<%= props.unauthRoleName %>" }
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [ 
+                    {
+                        "Action": [
+                            "lex:PostContent",
+                            "lex:PostText"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                            "<%= props.resourceArn %>"
+                        ]
+                    }
+                ]
+              }
+            }
+        },
+        "CognitoAuthPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "<%= props.authPolicyName %>",
+              "Roles": [ 
+                {"Ref": "<%= props.authRoleName %>" }
+              ],
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "lex:PostContent",
+                            "lex:PostText"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": [
+                            "<%= props.resourceArn %>"
+                        ]
+                    }
+                ]
+              }
+            }
         }
     },
     "Outputs": {
