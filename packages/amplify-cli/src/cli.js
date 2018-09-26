@@ -5,7 +5,7 @@ const globalPrefix = require('./lib/global-prefix');
 async function run(argv) {
   const localNodeModulesDirPath = path.join(__dirname, '../node_modules');
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
-  
+
   const cli = build()
     .brand('amplify')
     .src(__dirname)

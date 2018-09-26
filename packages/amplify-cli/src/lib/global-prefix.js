@@ -107,6 +107,4 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = {
-  getGlobalNodeModuleDirPath
-};
+module.exports = { getGlobalNodeModuleDirPath };
