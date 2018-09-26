@@ -22,7 +22,7 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notCont
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
 const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
-export function getNonModelFields(
+export function getNonModelObjectArray(
     obj: ObjectTypeDefinitionNode,
     ctx: TransformerContext,
     pMap: Map<string, ObjectTypeDefinitionNode>
@@ -35,14 +35,14 @@ export function getNonModelFields(
 
             if (
                 def &&
-                def.kind === 'ObjectTypeDefinition' &&
+                def.kind === Kind.OBJECT_TYPE_DEFINITION &&
                 !def.directives.find(e => e.name.value === 'model') &&
                 pMap.get(def.name.value) === undefined
             ) {
                 // recursively find any non @model types referenced by the current
                 // non @model type
                 pMap.set(def.name.value, def)
-                getNonModelFields(def, ctx, pMap)
+                getNonModelObjectArray(def, ctx, pMap)
             }
         }
     }
@@ -65,7 +65,7 @@ export function makeNonModelInputObject(
             if (
                 isScalar(field.type) ||
                 nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
-                (fieldType && fieldType.kind === 'EnumTypeDefinition')
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
             ) {
                 return true;
             }
@@ -117,7 +117,7 @@ export function makeCreateInputObject(
             if (
                 isScalar(field.type) ||
                 nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
-                (fieldType && fieldType.kind === 'EnumTypeDefinition')
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
             ) {
                 return true;
             }
@@ -166,7 +166,7 @@ export function makeUpdateInputObject(
             if (
                 isScalar(f.type) ||
                 nonModelTypes.find(e => e.name.value === getBaseType(f.type)) ||
-                (fieldType && fieldType.kind === 'EnumTypeDefinition')
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
             ) {
                 return true
             } else {

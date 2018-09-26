@@ -7,7 +7,7 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelFields, makeNonModelInputObject
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -96,7 +96,7 @@ export class DynamoDBModelTransformer extends Transformer {
         // Create the object type.
         // ctx.addObject(def)
 
-        let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelFields(
+        let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
                                                             def,
                                                             ctx,
                                                             new Map<string, ObjectTypeDefinitionNode>()
