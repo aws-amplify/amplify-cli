@@ -97,10 +97,10 @@ export class DynamoDBModelTransformer extends Transformer {
         // ctx.addObject(def)
 
         let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
-                                                            def,
-                                                            ctx,
-                                                            new Map<string, ObjectTypeDefinitionNode>()
-                                                        )
+            def,
+            ctx,
+            new Map<string, ObjectTypeDefinitionNode>()
+        )
 
         nonModelArray.forEach(
             (value: ObjectTypeDefinitionNode) => {

@@ -15,9 +15,25 @@ import {
     Kind,
     parse,
     EnumTypeDefinitionNode,
-    TypeDefinitionNode
+    TypeDefinitionNode,
+    DefinitionNode,
+    OperationTypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
+import DefaultSchemaDefinition from './defaultSchema'
+
+export function blankObject(name: string): ObjectTypeDefinitionNode {
+    return {
+        kind: 'ObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: [],
+        directives: [],
+        interfaces: []
+    }
+}
 
 export class TransformerContextMetadata {
 
@@ -61,6 +77,53 @@ export default class TransformerContext {
             }
         }
         this.inputDocument = doc
+        this.fillNodeMapWithInput();
+    }
+
+    /**
+     * Before running the transformers, first flush the input document
+     * into the node map. If a schema definition node then leave everything
+     * as is so customers can explicitly turn off mutations & subscriptions.
+     * If a SDN is not provided then we add the default schema and empty
+     * Query, Mutation, and Subscription
+     */
+    private fillNodeMapWithInput(): void {
+        for (const inputDef of this.inputDocument.definitions) {
+            switch (inputDef.kind) {
+                case Kind.OBJECT_TYPE_DEFINITION:
+                case Kind.SCALAR_TYPE_DEFINITION:
+                case Kind.INTERFACE_TYPE_DEFINITION:
+                case Kind.INPUT_OBJECT_TYPE_DEFINITION:
+                case Kind.ENUM_TYPE_DEFINITION:
+                case Kind.UNION_TYPE_DEFINITION:
+                    const typeDef = inputDef as TypeDefinitionNode
+                    if (!this.getType(typeDef.name.value)) {
+                        this.addType(typeDef)
+                    }
+                    break;
+                case Kind.SCHEMA_DEFINITION:
+                    if (!this.getSchema()) {
+                        const typeDef = inputDef as SchemaDefinitionNode
+                        this.putSchema(typeDef);
+                    }
+                    break;
+                default:
+                /* pass any others */
+            }
+        }
+        // If no schema definition is provided then fill with the default one.
+        if (!this.getSchema()) {
+            this.putSchema(DefaultSchemaDefinition);
+            if (!this.getType('Query')) {
+                this.addType(blankObject('Query'))
+            }
+            if (!this.getType('Mutation')) {
+                this.addType(blankObject('Mutation'))
+            }
+            if (!this.getType('Subscription')) {
+                this.addType(blankObject('Subscription'))
+            }
+        }
     }
 
     public mergeResources(resources: { [key: string]: Resource }) {
@@ -125,6 +188,40 @@ export default class TransformerContext {
      */
     public putSchema(obj: SchemaDefinitionNode) {
         this.nodeMap.__schema = obj
+    }
+
+    /**
+     * Returns the schema definition record. If the user provides a schema
+     * definition as part of the input document, that node is returned.
+     * Otherwise a blank schema definition with default operation types
+     * is returned.
+     */
+    public getSchema(): SchemaDefinitionNode {
+        return this.nodeMap.__schema as SchemaDefinitionNode;
+    }
+
+    public getQuery(): ObjectTypeDefinitionNode | undefined {
+        const schemaNode = this.getSchema();
+        const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
+        if (queryTypeName) {
+            return this.nodeMap[queryTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getMutation(): ObjectTypeDefinitionNode | undefined {
+        const schemaNode = this.getSchema();
+        const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
+        if (mutationTypeName) {
+            return this.nodeMap[mutationTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getSubscription(): ObjectTypeDefinitionNode | undefined {
+        const schemaNode = this.getSchema();
+        const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
+        if (subscriptionTypeName) {
+            return this.nodeMap[subscriptionTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+        }
     }
 
     /**

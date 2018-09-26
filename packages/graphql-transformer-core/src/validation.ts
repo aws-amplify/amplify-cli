@@ -122,10 +122,14 @@ export function validateModelSchema(doc: DocumentNode) {
         (acc, t) => ({ ...acc, [t.name]: { type: t } }),
         {}
     )
-    const queryType = new GraphQLObjectType({
-        name: 'Query',
-        fields
-    })
+    // TODO: Lookup the root schema query type name.
+    const existingQueryType = types.find(t => t.name === 'Query') as GraphQLObjectType;
+    const queryType = existingQueryType ?
+        existingQueryType :
+        new GraphQLObjectType({
+            name: 'Query',
+            fields
+        })
     const schema = new GraphQLSchema({ query: queryType, types, directives });
     return validate(schema, fullDocument, specifiedRules)
 }

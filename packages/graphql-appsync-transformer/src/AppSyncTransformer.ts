@@ -30,19 +30,6 @@ export class AppSyncTransformer extends Transformer {
     }
 
     public before = (ctx: TransformerContext): void => {
-        const queryType = blankObject('Query')
-        const mutationType = blankObject('Mutation')
-        const subscriptionType = blankObject('Subscription')
-        ctx.addObject(mutationType)
-        ctx.addObject(queryType)
-        ctx.addObject(subscriptionType)
-        const schema = makeSchema([
-            makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation'),
-            makeOperationType('subscription', 'Subscription')
-        ])
-        ctx.putSchema(schema)
-
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
@@ -55,26 +42,6 @@ export class AppSyncTransformer extends Transformer {
             this.printWithoutFilePath(ctx);
         } else {
             this.printWithFilePath(ctx);
-        }
-    }
-
-    private fillMissingNodes(ctx: TransformerContext): void {
-        for (const inputDef of ctx.inputDocument.definitions) {
-            switch (inputDef.kind) {
-                case Kind.OBJECT_TYPE_DEFINITION:
-                case Kind.SCALAR_TYPE_DEFINITION:
-                case Kind.INTERFACE_TYPE_DEFINITION:
-                case Kind.INPUT_OBJECT_TYPE_DEFINITION:
-                case Kind.ENUM_TYPE_DEFINITION:
-                case Kind.UNION_TYPE_DEFINITION:
-                    const typeDef = inputDef as TypeDefinitionNode
-                    if (!ctx.getType(typeDef.name.value)) {
-                        ctx.addType(typeDef)
-                    }
-                    break;
-                default:
-                /* pass any others */
-            }
         }
     }
 
