@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from 'graphql'
 import {
-    Kind, DocumentNode, TypeDefinitionNode, DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse
+    Kind, DocumentNode, TypeDefinitionNode, DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse, SchemaDefinitionNode
 } from 'graphql/language'
 import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type'
 import { validate } from 'graphql/validation'
@@ -122,12 +122,15 @@ export function validateModelSchema(doc: DocumentNode) {
         (acc, t) => ({ ...acc, [t.name]: { type: t } }),
         {}
     )
-    // TODO: Lookup the root schema query type name.
-    const existingQueryType = types.find(t => t.name === 'Query') as GraphQLObjectType;
+
+    const schemaRecord = doc.definitions.find(d => d.kind === Kind.SCHEMA_DEFINITION) as SchemaDefinitionNode;
+    const queryOp = schemaRecord ? schemaRecord.operationTypes.find(o => o.operation === 'query') : undefined;
+    const queryName = queryOp ? queryOp.type.name.value : 'Query';
+    const existingQueryType = types.find(t => t.name === queryName) as GraphQLObjectType;
     const queryType = existingQueryType ?
         existingQueryType :
         new GraphQLObjectType({
-            name: 'Query',
+            name: queryName,
             fields
         })
     const schema = new GraphQLSchema({ query: queryType, types, directives });
