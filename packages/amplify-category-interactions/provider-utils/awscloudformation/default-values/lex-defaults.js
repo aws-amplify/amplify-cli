@@ -8,15 +8,17 @@ const getAllDefaults = (project) => {
   const authRoleName = project.amplifyMeta.providers.awscloudformation.AuthRoleName;
   const unauthRoleName = project.amplifyMeta.providers.awscloudformation.UnauthRoleName;
   const authRoleArn = project.amplifyMeta.providers.awscloudformation.AuthRoleArn;
+  const unauthRoleArn = project.amplifyMeta.providers.awscloudformation.UnauthRoleArn;
   const accountNumber = authRoleArn.split(':')[4];
-  const resourceArn = `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`;
-
+  
   const defaults = {
     botName,
     region,
     authRoleName,
     unauthRoleName,
-    resourceArn,
+    authRoleArn,
+    unauthRoleArn,
+    botArn: `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`,
     resourceName: `lex${shortId}`,
     sessionTimeout: 5,
     lexPolicyName: `lexPolicy${shortId}`,

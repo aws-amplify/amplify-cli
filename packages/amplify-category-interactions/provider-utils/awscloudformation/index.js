@@ -40,8 +40,15 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     },
   ];
   Object.assign(defaultValues, options);
+  defaultValues.botArn = constructBotArn(defaultValues);
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
+}
+
+function constructBotArn(defaultValues){
+  const {authRoleArn, region, botName} = defaultValues; 
+  const accountNumber = authRoleArn.split(':')[4];
+  return `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`;
 }
 
 async function addResource(context, category, service, options) {
