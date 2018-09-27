@@ -29,7 +29,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 
 ## Install the CLI
 
- - Requires Node.js® version 8.x or later
+ - Requires Node.js® version 8.11.x or later
 
 
 Install and configure the Amplify CLI as follows:
