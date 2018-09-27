@@ -1,6 +1,8 @@
 import { GraphQLScalarType } from 'graphql'
 import {
-    Kind, DocumentNode, TypeDefinitionNode, DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse, SchemaDefinitionNode
+    Kind, DocumentNode, TypeSystemDefinitionNode,
+    DirectiveDefinitionNode, ScalarTypeDefinitionNode, parse,
+    SchemaDefinitionNode, TypeDefinitionNode
 } from 'graphql/language'
 import { GraphQLSchema, GraphQLObjectType, isOutputType } from 'graphql/type'
 import { validate } from 'graphql/validation'
@@ -85,12 +87,18 @@ scalar BigInt
 scalar Double
 `)
 
+const EXTRA_DIRECTIVES_DOCUMENT = parse(`
+directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
+`)
+
 export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
-    const nodeMap = doc.definitions.reduce(
-        (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
-            ...a,
-            [def.name.value]: def
-        }), {})
+    const nodeMap = doc.definitions
+        .filter((def: TypeSystemDefinitionNode) => def.kind !== Kind.SCHEMA_DEFINITION && Boolean(def.name))
+        .reduce(
+            (a: { [k: string]: TypeDefinitionNode }, def: TypeDefinitionNode) => ({
+                ...a,
+                [def.name.value]: def
+            }), {})
     return new ASTDefinitionBuilder(
         nodeMap,
         {},
@@ -105,7 +113,8 @@ export function validateModelSchema(doc: DocumentNode) {
         kind: Kind.DOCUMENT,
         definitions: [
             ...doc.definitions,
-            ...EXTRA_SCALARS_DOCUMENT.definitions
+            ...EXTRA_SCALARS_DOCUMENT.definitions,
+            ...EXTRA_DIRECTIVES_DOCUMENT.definitions
         ]
     }
     const builder = astBuilder(fullDocument)
@@ -113,7 +122,7 @@ export function validateModelSchema(doc: DocumentNode) {
         .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
         .map((d: DirectiveDefinitionNode) => builder.buildDirective(d))
     const types = fullDocument.definitions
-        .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION)
+        .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION)
         .map((d: TypeDefinitionNode) => builder.buildType(d))
     const outputTypes = types.filter(
         t => isOutputType(t)

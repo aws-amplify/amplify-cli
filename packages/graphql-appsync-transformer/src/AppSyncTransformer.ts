@@ -2,7 +2,8 @@ import { Transformer, TransformerContext, stripDirectives } from "graphql-transf
 import {
     print,
     TypeDefinitionNode,
-    Kind
+    Kind,
+    ObjectTypeDefinitionNode
 } from "graphql";
 
 import { ResourceFactory } from "./resources";
@@ -34,7 +35,6 @@ export class AppSyncTransformer extends Transformer {
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
-        this.fillMissingNodes(ctx)
     }
 
     public after = (ctx: TransformerContext): void => {
@@ -46,9 +46,9 @@ export class AppSyncTransformer extends Transformer {
     }
 
     private buildSchema(ctx: TransformerContext): string {
-        const mutationNode: any = ctx.nodeMap.Mutation
-        const queryNode: any = ctx.nodeMap.Query
-        const subscriptionNode: any = ctx.nodeMap.Subscription
+        const mutationNode: ObjectTypeDefinitionNode | undefined = ctx.getMutation()
+        const queryNode: ObjectTypeDefinitionNode | undefined = ctx.getQuery()
+        const subscriptionNode: ObjectTypeDefinitionNode | undefined = ctx.getSubscription()
         let includeMutation = true
         let includeQuery = true
         let includeSubscription = true
@@ -66,13 +66,13 @@ export class AppSyncTransformer extends Transformer {
         }
         const ops = []
         if (includeQuery) {
-            ops.push(makeOperationType('query', 'Query'))
+            ops.push(makeOperationType('query', queryNode.name.value))
         }
         if (includeMutation) {
-            ops.push(makeOperationType('mutation', 'Mutation'))
+            ops.push(makeOperationType('mutation', mutationNode.name.value))
         }
         if (includeSubscription) {
-            ops.push(makeOperationType('subscription', 'Subscription'))
+            ops.push(makeOperationType('subscription', subscriptionNode.name.value))
         }
         const schema = makeSchema(ops)
         ctx.putSchema(schema)

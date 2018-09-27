@@ -35,6 +35,19 @@ export function blankObject(name: string): ObjectTypeDefinitionNode {
     }
 }
 
+export function objectExtension(name: string, fields: FieldDefinitionNode[] = []): ObjectTypeExtensionNode {
+    return {
+        kind: Kind.OBJECT_TYPE_EXTENSION,
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields,
+        directives: [],
+        interfaces: []
+    }
+}
+
 export class TransformerContextMetadata {
 
     /**
@@ -114,15 +127,6 @@ export default class TransformerContext {
         // If no schema definition is provided then fill with the default one.
         if (!this.getSchema()) {
             this.putSchema(DefaultSchemaDefinition);
-            if (!this.getType('Query')) {
-                this.addType(blankObject('Query'))
-            }
-            if (!this.getType('Mutation')) {
-                this.addType(blankObject('Mutation'))
-            }
-            if (!this.getType('Subscription')) {
-                this.addType(blankObject('Subscription'))
-            }
         }
     }
 
@@ -200,27 +204,48 @@ export default class TransformerContext {
         return this.nodeMap.__schema as SchemaDefinitionNode;
     }
 
-    public getQuery(): ObjectTypeDefinitionNode | undefined {
+    public getQueryTypeName(): string | undefined {
         const schemaNode = this.getSchema();
         const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
+        if (queryTypeName && queryTypeName.type && queryTypeName.type.name) {
+            return queryTypeName.type.name.value;
+        }
+    }
+
+    public getQuery(): ObjectTypeDefinitionNode | undefined {
+        const queryTypeName = this.getQueryTypeName();
         if (queryTypeName) {
-            return this.nodeMap[queryTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+            return this.nodeMap[queryTypeName] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getMutationTypeName(): string | undefined {
+        const schemaNode = this.getSchema();
+        const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
+        if (mutationTypeName && mutationTypeName.type && mutationTypeName.type.name) {
+            return mutationTypeName.type.name.value;
         }
     }
 
     public getMutation(): ObjectTypeDefinitionNode | undefined {
-        const schemaNode = this.getSchema();
-        const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
+        const mutationTypeName = this.getMutationTypeName();
         if (mutationTypeName) {
-            return this.nodeMap[mutationTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+            return this.nodeMap[mutationTypeName] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getSubscriptionTypeName(): string | undefined {
+        const schemaNode = this.getSchema();
+        const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
+        if (subscriptionTypeName && subscriptionTypeName.type && subscriptionTypeName.type.name) {
+            return subscriptionTypeName.type.name.value;
         }
     }
 
     public getSubscription(): ObjectTypeDefinitionNode | undefined {
-        const schemaNode = this.getSchema();
-        const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
+        const subscriptionTypeName = this.getSubscriptionTypeName();
         if (subscriptionTypeName) {
-            return this.nodeMap[subscriptionTypeName.type.name.value] as ObjectTypeDefinitionNode | undefined;
+            return this.nodeMap[subscriptionTypeName] as ObjectTypeDefinitionNode | undefined;
         }
     }
 
@@ -261,6 +286,70 @@ export default class TransformerContext {
             if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
                 return node as ObjectTypeDefinitionNode;
             }
+        }
+    }
+
+    /**
+     * Extends the context query object with additional fields.
+     * If the customer uses a name other than 'Query' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the query type.
+     */
+    public addQueryFields(fields: FieldDefinitionNode[]) {
+        const schemaNode = this.getSchema();
+        const queryTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
+        const queryTypeName = queryTypeOperation && queryTypeOperation.type && queryTypeOperation.type.name && queryTypeOperation.type.name.value ?
+            queryTypeOperation.type.name.value : undefined;
+        if (queryTypeName) {
+            if (!this.getType(queryTypeName)) {
+                this.addType(blankObject(queryTypeName))
+            }
+            let queryType = objectExtension(queryTypeName, fields)
+            this.addObjectExtension(queryType);
+        }
+    }
+
+    /**
+     * Extends the context mutation object with additional fields.
+     * If the customer uses a name other than 'Mutation' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the mutation type.
+     */
+    public addMutationFields(fields: FieldDefinitionNode[]) {
+        const schemaNode = this.getSchema();
+        const mutationTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
+        const mutationTypeName = (
+            mutationTypeOperation && mutationTypeOperation.type &&
+            mutationTypeOperation.type.name && mutationTypeOperation.type.name.value
+        ) ? mutationTypeOperation.type.name.value : undefined;
+        if (mutationTypeName) {
+            if (!this.getType(mutationTypeName)) {
+                this.addType(blankObject(mutationTypeName))
+            }
+            let mutationType = objectExtension(mutationTypeName, fields)
+            this.addObjectExtension(mutationType);
+        }
+    }
+
+    /**
+     * Extends the context subscription object with additional fields.
+     * If the customer uses a name other than 'Subscription' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the subscription type.
+     */
+    public addSubscriptionFields(fields: FieldDefinitionNode[]) {
+        const schemaNode = this.getSchema();
+        const subscriptionTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
+        const subscriptionTypeName = (
+            subscriptionTypeOperation && subscriptionTypeOperation.type &&
+            subscriptionTypeOperation.type.name && subscriptionTypeOperation.type.name.value
+        ) ? subscriptionTypeOperation.type.name.value : undefined;
+        if (subscriptionTypeName) {
+            if (!this.getType(subscriptionTypeName)) {
+                this.addType(blankObject(subscriptionTypeName))
+            }
+            let subscriptionType = objectExtension(subscriptionTypeName, fields)
+            this.addObjectExtension(subscriptionType);
         }
     }
 

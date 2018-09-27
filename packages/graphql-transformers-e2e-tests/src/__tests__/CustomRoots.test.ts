@@ -47,6 +47,127 @@ test('Test custom root types with additional fields.', () => {
     expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'additionalSubscriptionField'])
 });
 
+test('Test custom root query with no mutations/subscriptions.', () => {
+    const validSchema = `
+    # If I intentionally leave out mutation/subscription then no mutations/subscriptions
+    # will be created even if @model is used.
+    schema {
+        query: Query
+    }
+    type Query {
+        additionalQueryField: String
+    }
+    type Post @model {
+        id: ID!
+        title: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query');
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    const mutationType = getObjectType(parsed, 'Mutation');
+    expect(mutationType).toBeUndefined();
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeUndefined();
+});
+
+test('Test custom root query & mutation with no subscriptions.', () => {
+    const validSchema = `
+    # If I intentionally leave out mutation/subscription then no mutations/subscriptions
+    # will be created even if @model is used.
+    schema {
+        query: Query2
+        mutation: Mutation2
+    }
+    type Query2 {
+        additionalQueryField: String
+    }
+    type Mutation2 {
+        additionalMutationField: String
+    }
+    type Post @model {
+        id: ID!
+        title: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query2');
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    const mutationType = getObjectType(parsed, 'Mutation2');
+    expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeUndefined();
+});
+
+test('Test custom root query, mutation, and subscriptions.', () => {
+    const validSchema = `
+    # If I intentionally leave out mutation/subscription then no mutations/subscriptions
+    # will be created even if @model is used.
+    schema {
+        query: Query2
+        mutation: Mutation2
+        subscription: Subscription2
+    }
+    type Query2 {
+        additionalQueryField: String
+    }
+    type Mutation2 {
+        additionalMutationField: String
+    }
+    type Subscription2 {
+        onCreateOrUpdate: Post
+            @aws_subscribe(mutations: ["createPost", "updatePost"])
+    }
+    type Post @model {
+        id: ID!
+        title: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query2');
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    const mutationType = getObjectType(parsed, 'Mutation2');
+    expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
+    const subscriptionType = getObjectType(parsed, 'Subscription2');
+    expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'onCreateOrUpdate'])
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
