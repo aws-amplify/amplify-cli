@@ -1,13 +1,13 @@
 import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
 import {
-    DirectiveNode, ObjectTypeDefinitionNode
+    DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -94,7 +94,20 @@ export class DynamoDBModelTransformer extends Transformer {
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Create the object type.
-        ctx.addObject(def)
+        // ctx.addObject(def)
+
+        let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
+                                                            def,
+                                                            ctx,
+                                                            new Map<string, ObjectTypeDefinitionNode>()
+                                                        )
+
+        nonModelArray.forEach(
+            (value: ObjectTypeDefinitionNode) => {
+                let nonModelObject = makeNonModelInputObject(value, nonModelArray, ctx)
+                ctx.addInput(nonModelObject)
+            }
+        )
 
         // Create the dynamodb table to hold the @model type
         // TODO: Handle types with more than a single "id" hash key
@@ -115,15 +128,20 @@ export class DynamoDBModelTransformer extends Transformer {
         )
 
         this.createQueries(def, directive, ctx)
-        this.createMutations(def, directive, ctx)
+        this.createMutations(def, directive, ctx, nonModelArray)
         this.createSubscriptions(def, directive, ctx)
     }
 
-    private createMutations = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createMutations = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+        nonModelArray: ObjectTypeDefinitionNode[]
+    ) => {
         const typeName = def.name.value
         // Create the input types.
-        const createInput = makeCreateInputObject(def)
-        const updateInput = makeUpdateInputObject(def)
+        const createInput = makeCreateInputObject(def, nonModelArray, ctx)
+        const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
         const deleteInput = makeDeleteInputObject(def)
         ctx.addInput(createInput)
         ctx.addInput(updateInput)

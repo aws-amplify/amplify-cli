@@ -47,13 +47,10 @@ export class AppSyncTransformer extends Transformer {
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
+        this.fillMissingNodes(ctx)
     }
 
     public after = (ctx: TransformerContext): void => {
-        // The transform allows transformer authors to manager the nodeMap
-        // themselves but if an input definition is not added manually
-        // this fills in the definitions in the map.
-        this.fillMissingNodes(ctx)
         if (!this.outputPath) {
             this.printWithoutFilePath(ctx);
         } else {

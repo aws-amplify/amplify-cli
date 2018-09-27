@@ -42,4 +42,7 @@ export class ModelResourceIDs {
     static ModelOnDeleteSubscriptionName(typeName: string): string {
         return graphqlName(`onDelete` + toUpper(typeName))
     }
+    static NonModelInputObjectName(typeName: string): string {
+        return graphqlName(toUpper(typeName) + 'Input')
+    }
 }

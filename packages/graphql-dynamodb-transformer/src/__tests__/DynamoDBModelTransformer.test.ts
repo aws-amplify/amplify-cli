@@ -1,6 +1,7 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, InputObjectTypeDefinitionNode, ListValueNode
+    DefinitionNode, Kind, InputObjectTypeDefinitionNode, ListValueNode,
+    InputValueDefinitionNode, TypeNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
@@ -337,11 +338,86 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
     expect(mutList).toContain('deletePost')
 })
 
+test('Test DynamoDBModelTransformer with non-model types and enums', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        metadata: [PostMetadata!]!
+        appearsIn: [Episode]!
+    }
+    type PostMetadata {
+        tags: Tag
+    }
+    type Tag {
+        published: Boolean
+        metadata: PostMetadata
+    }
+    enum Episode {
+        NEWHOPE
+        EMPIRE
+        JEDI
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+
+    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    expect(schema).toBeDefined()
+    const definition = schema.Properties.Definition
+    expect(definition).toBeDefined()
+    console.log(`OUTPUT SCHEMA\n${definition}`)
+    const parsed = parse(definition);
+
+    const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput')
+    expect(postMetaDataInputType).toBeDefined()
+    const tagInputType = getInputType(parsed, 'TagInput')
+    expect(tagInputType).toBeDefined()
+    expectFieldsOnInputType(tagInputType, ['metadata'])
+    const createPostInputType = getInputType(parsed, 'CreatePostInput')
+    expectFieldsOnInputType(createPostInputType, ['metadata', 'appearsIn'])
+    const updatePostInputType = getInputType(parsed, 'UpdatePostInput')
+    expectFieldsOnInputType(updatePostInputType, ['metadata', 'appearsIn'])
+
+    const postModelObject = getObjectType(parsed, 'Post')
+    const postMetaDataInputField = getFieldOnInputType(createPostInputType, 'metadata')
+    const postMetaDataField = getFieldOnObjectType(postModelObject, 'metadata')
+    // this checks that the non-model type was properly "unwrapped", renamed, and "rewrapped"
+    // in the generated CreatePostInput type - its types should be the same as in the Post @model type
+    verifyMatchingTypes(postMetaDataInputField.type, postMetaDataField.type)
+
+    expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
+    expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
         expect(foundField).toBeDefined()
     }
+}
+
+function expectFieldsOnInputType(type: InputObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: InputValueDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+    }
+}
+
+function getFieldOnInputType(type: InputObjectTypeDefinitionNode, field: string): InputValueDefinitionNode {
+    return type.fields.find((f: InputValueDefinitionNode) => f.name.value === field)
+}
+
+function getFieldOnObjectType(type: ObjectTypeDefinitionNode, field: string): FieldDefinitionNode {
+    return type.fields.find((f: FieldDefinitionNode) => f.name.value === field)
 }
 
 function doNotExpectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
@@ -366,4 +442,19 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
     return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+}
+
+function verifyMatchingTypes(t1: TypeNode, t2: TypeNode): boolean {
+    if (t1.kind !== t2.kind) {
+        return false
+    }
+
+    if (
+        t1.kind !== Kind.NAMED_TYPE &&
+        t2.kind !== Kind.NAMED_TYPE
+    ) {
+        verifyMatchingTypes(t1.type, t2.type)
+    } else {
+        return false
+    }
 }
