@@ -1,6 +1,7 @@
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
+const { amplifyMetricsQuestion } = require('./extensions/amplify-helpers/amplify-metrics-question');
 const fs = require('fs');
 
 async function run(argv) {
@@ -31,7 +32,7 @@ async function askAmplifyMetricsQuestion(context) {
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
 
   if (projectConfig.sendAmplifyMetrics === undefined) {
-    if (await context.prompt.confirm('We will occasionally send anonymous usage statistics and CLI crash logs to the AWS Amplify team to make the tool better. Do you want to send metrics and crash logs to the AWS Amplify team?')) {
+    if (await amplifyMetricsQuestion()) {
       projectConfig.sendAmplifyMetrics = true;
     } else {
       projectConfig.sendAmplifyMetrics = false;

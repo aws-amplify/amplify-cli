@@ -6,12 +6,10 @@ const onSuccess = require('../lib/init-steps/s9-onSuccess');
 
 module.exports = {
   name: 'init',
-  run: async (context) => {
-    analyzeProject.run(context)
-      .then(initFrontendHandler.run)
-      .then(initProviders.run)
-      .then(onSuccess.run)
-      .catch(onFailure.run);
-  },
+  run: async context => analyzeProject.run(context)
+    .then(initFrontendHandler.run)
+    .then(initProviders.run)
+    .then(onSuccess.run)
+    .catch(onFailure.run),
 };
 

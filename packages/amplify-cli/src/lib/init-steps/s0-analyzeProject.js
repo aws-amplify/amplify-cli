@@ -1,6 +1,7 @@
 const path = require('path');
 const inquirer = require('inquirer');
 const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
+const { amplifyMetricsQuestion } = require('../../extensions/amplify-helpers/amplify-metrics-question');
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
@@ -21,6 +22,7 @@ async function run(context) {
     }
 
     const defaultEditor = await editorSelection();
+    const sendAmplifyMetrics = await amplifyMetricsQuestion();
 
     context.exeInfo = {};
 
@@ -28,6 +30,8 @@ async function run(context) {
       projectName,
       projectPath,
       defaultEditor,
+      sendAmplifyMetrics,
+
     };
 
     context.exeInfo.metaData = {

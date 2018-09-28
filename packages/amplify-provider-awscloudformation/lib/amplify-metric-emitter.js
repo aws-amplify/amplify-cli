@@ -4,9 +4,9 @@ const moment = require('moment');
 const crypto = require('crypto');
 const fs = require('fs');
 
-const kinesisStreamName = 'aws_amplify_metrics_user_stream';
-const kinesisAmplifyRoleArn = 'arn:aws:iam::827149277658:role/aws-amplify-cli-metrics-putevent-role';
-const kinesisAmplifyRegion = 'us-east-1';
+const kinesisStreamName = require('./constants').KinesisMetricsStreamName;
+const kinesisAmplifyRoleArn = require('./constants').KinesisMetricsAmplifyRoleArn;
+const kinesisAmplifyRegion = require('./constants').KinesisMetricsAmplifyRegion;
 
 async function emitMetric(context, event) {
   try {
@@ -31,8 +31,8 @@ async function emitMetric(context, event) {
     const timestamp = String(moment().unix());
 
 
-    event.stackId = stackIdGuid;
-    event.accountId = hashedAccountId;
+    event.stack = stackIdGuid;
+    event.id = hashedAccountId;
     event.timestamp = timestamp;
     event.month = moment().month();
     event.year = moment().year();
@@ -68,7 +68,6 @@ async function emitMetric(context, event) {
       });
   } catch (e) {
     context.print.error('Failed to send metrics to Amplify');
-    context.print.error(e);
   }
 }
 

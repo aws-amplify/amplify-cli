@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
+const { amplifyMetricsQuestion } = require('../../extensions/amplify-helpers/amplify-metrics-question');
 
 function run(context) {
   return new Promise(async (resolve) => {
@@ -51,11 +52,13 @@ async function initializeConfig(context) {
   ({ projectName } = await inquirer.prompt(projectNameQuestion));
 
   const defaultEditor = await editorSelection(context.exeInfo.projectConfig.defaultEditor);
+  const sendAmplifyMetrics = await amplifyMetricsQuestion();
 
   const projectConfig = {
     projectName,
     projectPath,
     defaultEditor,
+    sendAmplifyMetrics,
   };
 
   Object.assign(context.exeInfo.projectConfig, projectConfig);
