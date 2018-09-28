@@ -35,7 +35,17 @@ beforeAll(async () => {
         createdAt: AWSDateTime
         updatedAt: AWSDateTime
         metadata: PostMetadata
+        entityMetadata: EntityMetadata
         appearsIn: [Episode!]
+    }
+    type Author @model {
+        id: ID!
+        name: String!
+        postMetadata: PostMetadata
+        entityMetadata: EntityMetadata
+    }
+    type EntityMetadata {
+        isActive: Boolean
     }
     type PostMetadata {
         tags: Tag
@@ -100,6 +110,35 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test createAuthor mutation', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation($input: CreateAuthorInput!) {
+            createAuthor(input: $input) {
+                id
+                name
+                entityMetadata {
+                    isActive
+                }
+            }
+        }`, {
+            input: {
+                name: 'Jeff B',
+                entityMetadata: {
+                    isActive: true
+                }
+            }
+        })
+        expect(response.data.createAuthor.id).toBeDefined()
+        expect(response.data.createAuthor.name).toEqual('Jeff B')
+        expect(response.data.createAuthor.entityMetadata).toBeDefined()
+        expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
 test('Test createPost mutation', async () => {
     try {
         const response = await GRAPHQL_CLIENT.query(`mutation {
