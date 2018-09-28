@@ -132,7 +132,6 @@ export class ResourceFactory {
 
     public makeUserPool() {
         return new Cognito.UserPool({
-            AliasAttributes: ['email'],
             UserPoolName: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolName),
             Policies: {
                 // TODO: Parameterize these as mappings so you have loose, medium, and strict options.
@@ -144,6 +143,13 @@ export class ResourceFactory {
                     RequireUppercase: true
                 }
             },
+            Schema: [
+                {
+                    Name: 'email',
+                    Required: true,
+                    Mutable: true
+                }
+            ],
             AutoVerifiedAttributes: ['email']
         }).condition(ResourceConstants.CONDITIONS.AuthShouldCreateUserPool)
     }

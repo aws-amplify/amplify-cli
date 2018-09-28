@@ -16,19 +16,20 @@ async function cleanupBucket(client: S3Client, directory: string, bucket: string
     }
 }
 
-async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string) {
+async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string, buildTimestamp: string) {
     let s3LocationMap = {}
     const files = fs.readdirSync(directory)
     for (const file of files) {
         const contentPath = path.join(directory, file)
         const s3Location = path.join(key, file)
         if (fs.lstatSync(contentPath).isDirectory()) {
-            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location)
+            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location, buildTimestamp)
             s3LocationMap = { ...recMap, ...s3LocationMap }
         } else {
-            await client.uploadFile(bucket, contentPath, s3Location)
+            const fileKey = s3Location + '.' + buildTimestamp
+            await client.uploadFile(bucket, contentPath, fileKey)
             const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
-            s3LocationMap[formattedName] = 's3://' + path.join(bucket, s3Location)
+            s3LocationMap[formattedName] = 's3://' + path.join(bucket, fileKey)
         }
     }
     return s3LocationMap
@@ -37,23 +38,26 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
 export async function deploy(
     s3Client: S3Client, cf: CloudFormationClient, stackName: string,
     template: any, params: any, buildPath: string, bucketName: string, rootKey: string) {
-    await cleanupBucket(s3Client, buildPath, bucketName, rootKey)
-    console.log('UPLOADING ASSETS')
-    const uploadedKeys = await uploadDirectory(s3Client, buildPath, bucketName, rootKey)
-    console.log('DONE UPLOADING')
-    console.log(uploadedKeys)
+    const buildTimeStamp = new Date().getTime().toString();
+    // await cleanupBucket(s3Client, buildPath, bucketName, rootKey)
+    console.log('[start] uploading assets...')
+    const uploadedKeys: any = await uploadDirectory(s3Client, buildPath, bucketName, rootKey, buildTimeStamp)
+    console.log('[done] uploading assets.')
     console.log('[start] creating stack ' + stackName)
+    console.log(uploadedKeys)
     const createStackResponse = await cf.createStack(
         template,
         stackName,
         {
             ...params,
-            ...uploadedKeys
+            ResolverBucket: bucketName,
+            ResolverRootKey: 'resolvers',
+            schemaGraphql: uploadedKeys.schemaGraphql,
+            DeploymentTimestamp: buildTimeStamp
         }
     )
     const finishedStack = await cf.waitForStack(stackName)
     console.log('[done] creating stack...')
-    console.log(JSON.stringify(finishedStack, null, 4))
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(10, () => Promise.resolve())
     return finishedStack
