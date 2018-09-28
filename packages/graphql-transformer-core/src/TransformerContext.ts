@@ -296,10 +296,7 @@ export default class TransformerContext {
      * @param fields The fields to add the query type.
      */
     public addQueryFields(fields: FieldDefinitionNode[]) {
-        const schemaNode = this.getSchema();
-        const queryTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
-        const queryTypeName = queryTypeOperation && queryTypeOperation.type && queryTypeOperation.type.name && queryTypeOperation.type.name.value ?
-            queryTypeOperation.type.name.value : undefined;
+        const queryTypeName = this.getQueryTypeName();
         if (queryTypeName) {
             if (!this.getType(queryTypeName)) {
                 this.addType(blankObject(queryTypeName))
@@ -316,12 +313,7 @@ export default class TransformerContext {
      * @param fields The fields to add the mutation type.
      */
     public addMutationFields(fields: FieldDefinitionNode[]) {
-        const schemaNode = this.getSchema();
-        const mutationTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
-        const mutationTypeName = (
-            mutationTypeOperation && mutationTypeOperation.type &&
-            mutationTypeOperation.type.name && mutationTypeOperation.type.name.value
-        ) ? mutationTypeOperation.type.name.value : undefined;
+        const mutationTypeName = this.getMutationTypeName();
         if (mutationTypeName) {
             if (!this.getType(mutationTypeName)) {
                 this.addType(blankObject(mutationTypeName))
@@ -338,12 +330,7 @@ export default class TransformerContext {
      * @param fields The fields to add the subscription type.
      */
     public addSubscriptionFields(fields: FieldDefinitionNode[]) {
-        const schemaNode = this.getSchema();
-        const subscriptionTypeOperation = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
-        const subscriptionTypeName = (
-            subscriptionTypeOperation && subscriptionTypeOperation.type &&
-            subscriptionTypeOperation.type.name && subscriptionTypeOperation.type.name.value
-        ) ? subscriptionTypeOperation.type.name.value : undefined;
+        const subscriptionTypeName = this.getSubscriptionTypeName();
         if (subscriptionTypeName) {
             if (!this.getType(subscriptionTypeName)) {
                 this.addType(blankObject(subscriptionTypeName))
