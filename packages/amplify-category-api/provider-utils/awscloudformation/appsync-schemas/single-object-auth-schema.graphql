@@ -1,8 +1,8 @@
 type Task 
   @model 
   @auth(rules: [
-      {allow: groups, groups: ["Managers"], mutations: [create, update, delete]},
-      {allow: groups, groups: ["Employees"], queries: [get, list]}
+      {allow: groups, groups: ["Managers"], queries: null, mutations: [create, update, delete]},
+      {allow: groups, groups: ["Employees"], queries: [get, list], mutations: null}
     ])
 {
   id: ID!

@@ -15,9 +15,38 @@ import {
     Kind,
     parse,
     EnumTypeDefinitionNode,
-    TypeDefinitionNode
+    TypeDefinitionNode,
+    DefinitionNode,
+    OperationTypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
+import DefaultSchemaDefinition from './defaultSchema'
+
+export function blankObject(name: string): ObjectTypeDefinitionNode {
+    return {
+        kind: 'ObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: [],
+        directives: [],
+        interfaces: []
+    }
+}
+
+export function objectExtension(name: string, fields: FieldDefinitionNode[] = []): ObjectTypeExtensionNode {
+    return {
+        kind: Kind.OBJECT_TYPE_EXTENSION,
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields,
+        directives: [],
+        interfaces: []
+    }
+}
 
 export class TransformerContextMetadata {
 
@@ -61,6 +90,44 @@ export default class TransformerContext {
             }
         }
         this.inputDocument = doc
+        this.fillNodeMapWithInput();
+    }
+
+    /**
+     * Before running the transformers, first flush the input document
+     * into the node map. If a schema definition node then leave everything
+     * as is so customers can explicitly turn off mutations & subscriptions.
+     * If a SDN is not provided then we add the default schema and empty
+     * Query, Mutation, and Subscription
+     */
+    private fillNodeMapWithInput(): void {
+        for (const inputDef of this.inputDocument.definitions) {
+            switch (inputDef.kind) {
+                case Kind.OBJECT_TYPE_DEFINITION:
+                case Kind.SCALAR_TYPE_DEFINITION:
+                case Kind.INTERFACE_TYPE_DEFINITION:
+                case Kind.INPUT_OBJECT_TYPE_DEFINITION:
+                case Kind.ENUM_TYPE_DEFINITION:
+                case Kind.UNION_TYPE_DEFINITION:
+                    const typeDef = inputDef as TypeDefinitionNode
+                    if (!this.getType(typeDef.name.value)) {
+                        this.addType(typeDef)
+                    }
+                    break;
+                case Kind.SCHEMA_DEFINITION:
+                    if (!this.getSchema()) {
+                        const typeDef = inputDef as SchemaDefinitionNode
+                        this.putSchema(typeDef);
+                    }
+                    break;
+                default:
+                /* pass any others */
+            }
+        }
+        // If no schema definition is provided then fill with the default one.
+        if (!this.getSchema()) {
+            this.putSchema(DefaultSchemaDefinition);
+        }
     }
 
     public mergeResources(resources: { [key: string]: Resource }) {
@@ -128,6 +195,61 @@ export default class TransformerContext {
     }
 
     /**
+     * Returns the schema definition record. If the user provides a schema
+     * definition as part of the input document, that node is returned.
+     * Otherwise a blank schema definition with default operation types
+     * is returned.
+     */
+    public getSchema(): SchemaDefinitionNode {
+        return this.nodeMap.__schema as SchemaDefinitionNode;
+    }
+
+    public getQueryTypeName(): string | undefined {
+        const schemaNode = this.getSchema();
+        const queryTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'query');
+        if (queryTypeName && queryTypeName.type && queryTypeName.type.name) {
+            return queryTypeName.type.name.value;
+        }
+    }
+
+    public getQuery(): ObjectTypeDefinitionNode | undefined {
+        const queryTypeName = this.getQueryTypeName();
+        if (queryTypeName) {
+            return this.nodeMap[queryTypeName] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getMutationTypeName(): string | undefined {
+        const schemaNode = this.getSchema();
+        const mutationTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'mutation');
+        if (mutationTypeName && mutationTypeName.type && mutationTypeName.type.name) {
+            return mutationTypeName.type.name.value;
+        }
+    }
+
+    public getMutation(): ObjectTypeDefinitionNode | undefined {
+        const mutationTypeName = this.getMutationTypeName();
+        if (mutationTypeName) {
+            return this.nodeMap[mutationTypeName] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    public getSubscriptionTypeName(): string | undefined {
+        const schemaNode = this.getSchema();
+        const subscriptionTypeName = schemaNode.operationTypes.find((op: OperationTypeDefinitionNode) => op.operation === 'subscription');
+        if (subscriptionTypeName && subscriptionTypeName.type && subscriptionTypeName.type.name) {
+            return subscriptionTypeName.type.name.value;
+        }
+    }
+
+    public getSubscription(): ObjectTypeDefinitionNode | undefined {
+        const subscriptionTypeName = this.getSubscriptionTypeName();
+        if (subscriptionTypeName) {
+            return this.nodeMap[subscriptionTypeName] as ObjectTypeDefinitionNode | undefined;
+        }
+    }
+
+    /**
      * Add a generic type.
      * @param obj The type to add
      */
@@ -164,6 +286,57 @@ export default class TransformerContext {
             if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
                 return node as ObjectTypeDefinitionNode;
             }
+        }
+    }
+
+    /**
+     * Extends the context query object with additional fields.
+     * If the customer uses a name other than 'Query' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the query type.
+     */
+    public addQueryFields(fields: FieldDefinitionNode[]) {
+        const queryTypeName = this.getQueryTypeName();
+        if (queryTypeName) {
+            if (!this.getType(queryTypeName)) {
+                this.addType(blankObject(queryTypeName))
+            }
+            let queryType = objectExtension(queryTypeName, fields)
+            this.addObjectExtension(queryType);
+        }
+    }
+
+    /**
+     * Extends the context mutation object with additional fields.
+     * If the customer uses a name other than 'Mutation' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the mutation type.
+     */
+    public addMutationFields(fields: FieldDefinitionNode[]) {
+        const mutationTypeName = this.getMutationTypeName();
+        if (mutationTypeName) {
+            if (!this.getType(mutationTypeName)) {
+                this.addType(blankObject(mutationTypeName))
+            }
+            let mutationType = objectExtension(mutationTypeName, fields)
+            this.addObjectExtension(mutationType);
+        }
+    }
+
+    /**
+     * Extends the context subscription object with additional fields.
+     * If the customer uses a name other than 'Subscription' this will proxy to the
+     * correct type.
+     * @param fields The fields to add the subscription type.
+     */
+    public addSubscriptionFields(fields: FieldDefinitionNode[]) {
+        const subscriptionTypeName = this.getSubscriptionTypeName();
+        if (subscriptionTypeName) {
+            if (!this.getType(subscriptionTypeName)) {
+                this.addType(blankObject(subscriptionTypeName))
+            }
+            let subscriptionType = objectExtension(subscriptionTypeName, fields)
+            this.addObjectExtension(subscriptionType);
         }
     }
 

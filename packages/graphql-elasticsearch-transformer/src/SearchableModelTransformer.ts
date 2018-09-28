@@ -85,7 +85,7 @@ export class SearchableModelTransformer extends Transformer {
         )
 
         //SearchablePostSortableFields
-        let queryType = blankObjectExtension('Query')
+        const queryFields = [];
 
         // Create listX
         if (shouldMakeSearch) {
@@ -94,24 +94,19 @@ export class SearchableModelTransformer extends Transformer {
 
             const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
-            queryType = extensionWithFields(
-                queryType,
+            queryFields.push(makeField(
+                searchResolver.Properties.FieldName,
                 [
-                    makeField(
-                        searchResolver.Properties.FieldName,
-                        [
-                            makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
-                            makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
-                            makeInputValueDefinition('limit', makeNamedType('Int')),
-                            makeInputValueDefinition('nextToken', makeNamedType('Int'))
-                        ],
-                        makeNamedType(`Searchable${def.name.value}Connection`)
-                    )
-                ]
-            )
+                    makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
+                    makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
+                    makeInputValueDefinition('limit', makeNamedType('Int')),
+                    makeInputValueDefinition('nextToken', makeNamedType('Int'))
+                ],
+                makeNamedType(`Searchable${def.name.value}Connection`)
+            ))
         }
 
-        ctx.addObjectExtension(queryType)
+        ctx.addQueryFields(queryFields)
     };
 
     private generateSearchableXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {

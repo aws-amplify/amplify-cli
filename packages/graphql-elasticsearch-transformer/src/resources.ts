@@ -413,13 +413,13 @@ export class ResourceFactory {
     /**
      * Create the ElasticSearch search resolver.
      */
-    public makeSearchResolver(type: string, nameOverride?: string) {
+    public makeSearchResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
-            TypeName: 'Query',
+            TypeName: queryTypeName,
             RequestMappingTemplate: Fn.Sub(
                 print(
                     compoundExpression([
