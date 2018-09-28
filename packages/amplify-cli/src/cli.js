@@ -1,4 +1,4 @@
-const fs = require('fs-extra'); 
+const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/get-global-prefix');
@@ -24,26 +24,26 @@ async function run(argv) {
   return context;
 }
 
-function getLocalNodeModulesDirPath(){
-  let result; 
-  let baseDirPath = path.join(__dirname, '../'); 
+function getLocalNodeModulesDirPath() {
+  let result;
+  let baseDirPath = path.join(__dirname, '../');
 
-  do{
+  do {
     const localNMDirPath = path.join(baseDirPath, 'node_modules');
-    if(fs.existsSync(localNMDirPath)){
-        result = localNMDirPath; 
-        break; 
-    }else{
-        let parentDirPath = path.dirname(baseDirPath) ;
-        if(baseDirPath === parentDirPath){
-          break;
-        }else{
-          baseDirPath = parentDirPath;
-        }
+    if (fs.existsSync(localNMDirPath)) {
+      result = localNMDirPath;
+      break;
+    } else {
+      const parentDirPath = path.dirname(baseDirPath);
+      if (baseDirPath === parentDirPath) {
+        break;
+      } else {
+        baseDirPath = parentDirPath;
+      }
     }
-  }while(true)
+  } while (true);
 
-  return result; 
+  return result;
 }
 
 
