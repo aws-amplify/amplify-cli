@@ -18,7 +18,7 @@ export class ResourceConstants {
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
-        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient'
+        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
     }
     public static PARAMETERS = {
         // AppSync
