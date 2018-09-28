@@ -6,8 +6,9 @@ const { getFrontEndHandler } = require('../../utils');
 
 const frontEndToTargetMappings = {
   ios: ['swift'],
-  javascript: ['typescript', 'flow'],
+  javascript: ['javascript', 'typescript', 'flow'],
 };
+
 async function askCodeGenTargetLanguage(context, target) {
   const frontend = getFrontEndHandler(context);
 

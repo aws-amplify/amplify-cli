@@ -39,6 +39,6 @@ describe('askCodegenTargetLanguage', () => {
     const questions = inquirer.prompt.mock.calls[0][0];
     expect(questions[0].type).toEqual('list');
     expect(questions[0].name).toEqual('target');
-    expect(questions[0].choices).toEqual(['typescript', 'flow']);
+    expect(questions[0].choices).toEqual(['javascript', 'typescript', 'flow']);
   });
 });
