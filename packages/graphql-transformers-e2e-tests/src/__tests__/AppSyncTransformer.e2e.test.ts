@@ -9,6 +9,8 @@ import { AppSyncTransformer } from 'graphql-appsync-transformer'
 import fs = require('fs');
 import path = require('path');
 
+jest.setTimeout(2000000);
+
 test('Test AppSyncTransformer validation happy case', () => {
     const validSchema = `
     type Post @model {

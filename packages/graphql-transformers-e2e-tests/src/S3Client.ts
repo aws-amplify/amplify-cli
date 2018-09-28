@@ -66,7 +66,7 @@ export class S3Client {
                 ContentType: contentType
             },
             this.client
-        ) 
+        )
     }
 
     async uploadFile(bucketName: string, filePath: string, s3key: string) {
@@ -150,12 +150,20 @@ export class S3Client {
         await this.deleteFile(bucketName, s3key)
         await this.deleteBucket(bucketName)
     }
-    
+
     private readFile(filePath: string) {
         return fs.readFileSync(filePath, "utf8")
     }
 
     private readZIPFile(filePath: string) {
         return fs.createReadStream(filePath)
+    }
+
+    public async wait<T>(secs: number, fun: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
+        return new Promise<T>((resolve) => {
+            setTimeout(() => {
+                resolve(fun.apply(this, args))
+            }, 1000 * secs)
+        })
     }
 }
