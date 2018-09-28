@@ -29,8 +29,8 @@ test('Test AppSyncTransformer validation happy case', () => {
     expect(out).toBeDefined()
 
     expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
-    expect(out.Parameters.QueryGetPostRequest).toBeTruthy()
-    expect(out.Parameters.MutationCreatePostRequest).toBeTruthy()
+    expect(out.Parameters.ResolverBucket).toBeTruthy()
+    expect(out.Parameters.ResolverRootKey).toBeTruthy()
 
     cleanUpFiles(directory)
 });
