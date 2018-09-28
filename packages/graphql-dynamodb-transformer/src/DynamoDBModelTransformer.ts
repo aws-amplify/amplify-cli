@@ -105,10 +105,9 @@ export class DynamoDBModelTransformer extends Transformer {
         nonModelArray.forEach(
             (value: ObjectTypeDefinitionNode) => {
                 let nonModelObject = makeNonModelInputObject(value, nonModelArray, ctx)
-                if (this.typeExist(nonModelObject.name.value, ctx)) {
-                    return
+                if (!this.typeExist(nonModelObject.name.value, ctx)) {
+                    ctx.addInput(nonModelObject)
                 }
-                ctx.addInput(nonModelObject)
             }
         )
 
