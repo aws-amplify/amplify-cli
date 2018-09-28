@@ -5,6 +5,7 @@ import {
   GraphQLScalarType,
   GraphQLSchema,
   GraphQLUnionType,
+  GraphQLList,
 } from 'graphql'
 import getFragment from './getFragment'
 import { GQLConcreteType, GQLTemplateField, GQLTemplateFragment } from './types'
@@ -30,7 +31,12 @@ export default function getFields(
   }
 
   const fields: Array<GQLTemplateField> = Object.keys(subFields)
-    .map((fieldName) => getFields(subFields[fieldName], schema, depth - 1))
+    .map((fieldName) => {
+      // Don't decrease the depth if its a list of items
+      const subField = subFields[fieldName];
+      const newDepth = subField.type instanceof GraphQLList ? depth : depth - 1;
+      return getFields(subField, schema, newDepth)
+    })
     .filter((field) => field)
   const fragments: Array<GQLTemplateFragment> = Object.keys(subFragments)
     .map((fragment) => getFragment(subFragments[fragment], schema, depth, fields))
