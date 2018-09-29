@@ -187,7 +187,6 @@ function updateCloudFormationNestedStack(
 
       userAgentAction += `${category}:c `;
     });
-    // userAgentAction = `create ${Array.from(uniqueCategoriesAdded).join(' ')}`;
   }
 
   if (uniqueCategoriesUpdated.length > 0) {
@@ -197,7 +196,6 @@ function updateCloudFormationNestedStack(
       }
       userAgentAction += `${category}:u `;
     });
-    // userAgentAction = `create ${Array.from(uniqueCategoriesAdded).join(' ')}`;
   }
 
   const jsonString = JSON.stringify(nestedStack, null, '\t');
