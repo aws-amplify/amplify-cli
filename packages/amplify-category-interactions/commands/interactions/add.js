@@ -1,8 +1,6 @@
-const fs = require('fs');
-
 const subcommand = 'add';
 const category = 'interactions';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
 
 let options;
 

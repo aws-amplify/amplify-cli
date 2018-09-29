@@ -10,7 +10,7 @@ const getAllDefaults = (project) => {
   const authRoleArn = project.amplifyMeta.providers.awscloudformation.AuthRoleArn;
   const unauthRoleArn = project.amplifyMeta.providers.awscloudformation.UnauthRoleArn;
   const accountNumber = authRoleArn.split(':')[4];
-  
+
   const defaults = {
     botName,
     region,

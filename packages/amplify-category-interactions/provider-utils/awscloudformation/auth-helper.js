@@ -1,8 +1,7 @@
 const CategoryName = 'interactions';
+const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
 async function ensureAuth(context) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-
   const interactionsRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
   const satisfiedRequirements = await checkRequirements(interactionsRequirements, context);
   const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);

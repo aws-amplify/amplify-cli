@@ -1,8 +1,6 @@
-const fs = require('fs');
-
 const subcommand = 'update';
 const category = 'interactions';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
 
 
 module.exports = {

@@ -45,8 +45,8 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
 }
 
-function constructBotArn(defaultValues){
-  const {authRoleArn, region, botName} = defaultValues; 
+function constructBotArn(defaultValues) {
+  const { authRoleArn, region, botName } = defaultValues;
   const accountNumber = authRoleArn.split(':')[4];
   return `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`;
 }
