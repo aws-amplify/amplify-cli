@@ -133,96 +133,113 @@ exports.handler = function(event, context) {
         "idleSessionTTLInSeconds": "<%= props.sessionTimeout*60 %>"
         <% } %>
     };
-    let responseData = {};
-    let slotTypePromises = [];
-    newSlotTypeParams.forEach( slotType => {
-        lex.getSlotType({
-            'name': slotType.name,
-            'version': '$LATEST'
-        }, 
-        function(err, data) {
-            if (err) {
-                slotTypePromises.push(lex.putSlotType(slotType,
-                function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                }).promise())
-            }
-            else {
-                slotType['checksum'] = data.checksum;
-                slotTypePromises.push(lex.putSlotType(slotType,
-                function(err, data) {
-                    if (err) console.log(err, err.stack); // an error occurred
-                    else     console.log(data);           // successful response
-                }).promise())
-            }
-        })
+    
+    return getSlotTypes(newSlotTypeParams)
+    .then(()=>{ return putSlotTypes(newSlotTypeParams);})
+    .then(()=>{ return getIntents(intentParams);})
+    .then(()=>{ return putIntents(intentParams);})
+    .then(()=>{ return getBot(botParams);})
+    .then(()=>{ return putBot(botParams);})
+    .then((res) => {
+        response.send(event, context, response.SUCCESS, res.ApplicationResponse);
+    })
+    .catch((err) => {
+        console.log(err.stack);
+        response.send(event, context, response.FAILED, {Error: err});
+        throw err;
     });
-    return Promise.all(slotTypePromises)
-        .then(() => {
-            let intentPromises = [];
-            intentParams.forEach( intent => {
-                lex.getIntent({
-                    'version': '$LATEST',
-                    'name': intent.name
-                },
-                function(err, data) {
-                    if (err) {
-                        intentPromises.push(lex.putIntent(intent,
-                        function(err, data) {
-                            if (err) console.log(err, err.stack); // an error occurred
-                            else     console.log(data);           // successful response
-                        }).promise())
-                    }
-                    else {
-                        intent['checksum'] = data.checksum;
-                        intentPromises.push(lex.putIntent(intent,
-                        function(err, data) {
-                            if (err) console.log(err, err.stack); // an error occurred
-                            else     console.log(data);           // successful response
-                        }).promise())
-                    }
-                })
-            });
-            return Promise.all(intentPromises)
-                .then(() => {
-                    lex.getBot({
-                        'name': botParams.name,
-                        'versionOrAlias': '$LATEST'
-                    },
-                    function(err, data) {
-                        if (err) {
-                            return lex.putBot(botParams).promise()
-                            .then((res) => {
-                                responseData = res.ApplicationResponse;
-                                response.send(event, context, response.SUCCESS, responseData);
-                            }).catch((err) => {
-                                console.log(err.stack);
-                                responseData = {Error: err};
-                                response.send(event, context, response.FAILED, responseData);
-                                throw err;
-                            })
-                        }
-                        else {
-                            botParams['checksum'] = data.checksum;
-                            return lex.putBot(botParams).promise()
-                            .then((res) => {
-                                responseData = res.ApplicationResponse;
-                                response.send(event, context, response.SUCCESS, responseData);
-                            }).catch((err) => {
-                                console.log(err.stack);
-                                responseData = {Error: err};
-                                response.send(event, context, response.FAILED, responseData);
-                                throw err;
-                            })
-                        }
-                    })
-                })
-        }).catch((err) => {
-            console.log(err.stack);
-            responseData = {Error: err};
-            response.send(event, context, response.FAILED, responseData);
-            throw err;
-        });
 };
 
+function getSlotTypes(newSlotTypeParams){
+    const tasks = []; 
+    newSlotTypeParams.forEach( slotType => {
+        const params = {
+            'name': slotType.name,
+            'version': '$LATEST'
+        };
+        tasks.push(lex.getSlotType(params, (err, data)=>{
+            if(err){
+                throw err; 
+            }
+            if(data){
+                slotType['checksum'] = data.checksum;
+            }
+        }).promise()); 
+    }); 
+    return Promise.all(tasks);
+}
+
+function putSlotTypes(newSlotTypeParams){
+    const tasks = []; 
+    newSlotTypeParams.forEach( slotType => {
+        tasks.push(lex.putSlotType(slotType, (err, data)=>{
+            if (err) {
+                throw err; 
+            }
+            if(data){
+                console.log(data);  
+            }    
+        }).promise()); 
+    }); 
+    return Promise.all(tasks);
+}
+
+function getIntents(intentParams){
+    const tasks = []; 
+    intentParams.forEach( intent => {
+        const params = {
+            'version': '$LATEST',
+            'name': intent.name
+        };
+        tasks.push(lex.getIntent(params, (err, data)=>{
+            if(err){
+                throw err; 
+            }
+            if(data){
+                intent['checksum'] = data.checksum;
+            }
+        }).promise()); 
+    });
+    return Promise.all(tasks);
+}
+
+function putIntents(intentParams){
+    const tasks = []; 
+    intentParams.forEach( intent => {
+        tasks.push(lex.putIntent(intent, (err, data)=>{
+            if (err) {
+                throw err; 
+            }
+            if(data){
+                console.log(data);  
+            }    
+        }).promise()); 
+    }); 
+    return Promise.all(tasks);
+}
+
+function getBot(botParams){
+    params = {
+        'name': botParams.name,
+        'versionOrAlias': '$LATEST'
+    }; 
+    return  lex.getBot(params, (err, data)=>{
+        if (err) {
+            throw err; 
+        }
+        if(data){
+            botParams['checksum'] = data.checksum;
+        }
+    }).promise(); 
+}
+
+function putBot(botParams){
+    return lex.putBot(botParams, (err, data)=>{
+        if (err) {
+            throw err; 
+        }
+        if(data){
+            console.log(data);  
+        }    
+    }).promise(); 
+}
