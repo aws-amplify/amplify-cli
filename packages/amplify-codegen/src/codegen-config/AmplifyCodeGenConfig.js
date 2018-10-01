@@ -11,7 +11,7 @@ class AmplifyCodeGenConfig {
     } catch (e) {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
-        const projectRoot = amplify.getProjectDetails().projectPath || process.cwd();
+        const projectRoot = amplify.getProjectDetails().projectConfig.projectPath || process.cwd();
         const configPath = join(projectRoot, '.graphqlconfig.yml');
         this.gqlConfig = new graphQLConfig.GraphQLConfig(null, configPath);
         this.gqlConfig.config = {};
