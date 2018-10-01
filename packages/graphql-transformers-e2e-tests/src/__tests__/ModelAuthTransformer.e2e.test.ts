@@ -11,6 +11,8 @@ import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
+import * as S3 from 'aws-sdk/clients/s3'
+import { CreateBucketRequest, CreateBucketOutput } from 'aws-sdk/clients/s3'
 import {
     CreateGroupRequest, CreateGroupResponse,
     AdminAddUserToGroupRequest
@@ -23,7 +25,7 @@ import { GraphQLClient } from '../GraphQLClient'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
-import { deploy } from '../deploy'
+import { deploy, cleanupS3Bucket } from '../deploy'
 import * as moment from 'moment';
 
 // to deal with bug in cognito-identity-js
@@ -33,8 +35,9 @@ jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `ModelAuthTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `ModelAuthTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-auth-transformer-test-bucket-${BUILD_TIMESTAMP}`
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -54,6 +57,8 @@ const TMP_PASSWORD = 'Password123!'
 const REAL_PASSWORD = 'Password1234!'
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' })
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
 function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -159,9 +164,25 @@ async function addUserToGroup(groupName: string, username: string, userPoolId: s
     })
 }
 
-const TMP_ROOT = '/tmp/graphql_transform_tests/'
+async function createBucket(name: string) {
+    return new Promise((res, rej) => {
+        const params: CreateBucketRequest = {
+            Bucket: name,
+        }
+        awsS3Client.createBucket(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
 
-const BUCKET_NAME = 'appsync-auth-transformer-test-assets-bucket'
+async function deleteBucket(name: string) {
+    return new Promise((res, rej) => {
+        const params: CreateBucketRequest = {
+            Bucket: name,
+        }
+        awsS3Client.deleteBucket(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+const TMP_ROOT = '/tmp/graphql_transform_tests/'
 
 const ROOT_KEY = ''
 
@@ -170,6 +191,7 @@ beforeAll(async () => {
     if (!fs.existsSync(TMP_ROOT)) {
         fs.mkdirSync(TMP_ROOT);
     }
+    await createBucket(BUCKET_NAME)
     const validSchema = `
     type Post @model @auth(rules: [{ allow: owner }]) {
         id: ID!
@@ -200,14 +222,14 @@ beforeAll(async () => {
             new ModelAuthTransformer()
         ]
     })
-    const s3Client = new S3Client('us-west-2')
     try {
         // Clean the bucket
         deleteDirectory(TMP_ROOT)
         const out = transformer.transform(validSchema)
 
         const finishedStack = await deploy(
-            s3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY
+            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
@@ -275,6 +297,15 @@ afterAll(async () => {
             console.error(e)
             expect(true).toEqual(false)
         }
+    }
+    try {
+        console.log('[start] deleting deployment bucket')
+        await cleanupS3Bucket(customS3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY, BUILD_TIMESTAMP)
+        await deleteBucket(BUCKET_NAME)
+        console.log('[done] deleting deployment bucket')
+    } catch (e) {
+        console.log(`[error] deleting deployment bucket`)
+        console.log(e);
     }
 })
 
