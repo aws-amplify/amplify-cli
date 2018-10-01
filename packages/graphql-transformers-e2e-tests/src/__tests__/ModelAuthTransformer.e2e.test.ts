@@ -12,6 +12,10 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import {
+    CreateGroupRequest, CreateGroupResponse,
+    AdminAddUserToGroupRequest
+} from 'aws-sdk/clients/cognitoidentityserviceprovider'
+import {
     AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 import TestStorage from '../TestStorage'
@@ -134,6 +138,27 @@ async function signupAndAuthenticateUser(userPoolId: string, username: string) {
     }
 }
 
+async function createGroup(userPoolId: string, name: string): Promise<CreateGroupResponse> {
+    return new Promise((res, rej) => {
+        const params: CreateGroupRequest = {
+            GroupName: name,
+            UserPoolId: userPoolId
+        }
+        cognitoClient.createGroup(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+async function addUserToGroup(groupName: string, username: string, userPoolId: string) {
+    return new Promise((res, rej) => {
+        const params: AdminAddUserToGroupRequest = {
+            GroupName: groupName,
+            Username: username,
+            UserPoolId: userPoolId
+        }
+        cognitoClient.adminAddUserToGroup(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
 const TMP_ROOT = '/tmp/graphql_transform_tests/'
 
 const BUCKET_NAME = 'appsync-auth-transformer-test-assets-bucket'
@@ -213,7 +238,12 @@ beforeAll(async () => {
         })
 
         const authRes: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
-        const idToken = authRes.getIdToken().getJwtToken()
+        const admingGroupName = 'Admin';
+        await createGroup(userPoolId, admingGroupName)
+        await addUserToGroup(admingGroupName, USERNAME1, userPoolId)
+        const authResAfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
+
+        const idToken = authResAfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
 
         const authRes2: any = await signupAndAuthenticateUser(userPoolId, USERNAME2)
