@@ -36,7 +36,19 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm run test
+      - run:
+          name: Run tests
+          command: npm run test
+  graphql_e2e_tests:
+    working_directory: ~/repo
+    docker:
+        - image: circleci/node:10.8
+    parallelism: 1
+    steps:
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: npm run e2e
+          no_output_timeout: 45m
   integration_test:
       working_directory: ~/repo
       docker:
@@ -147,6 +159,9 @@ workflows:
       - test:
           requires:
             - build
+      - graphql_e2e_tests:
+          requires:
+            - build
       - integration_test:
           filters:
             branches:
@@ -159,6 +174,7 @@ workflows:
             - build
             - test
             - integration_test
+            - graphql_e2e_tests
           filters:
             branches:
               only:
