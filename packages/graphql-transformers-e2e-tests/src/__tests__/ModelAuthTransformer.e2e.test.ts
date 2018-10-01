@@ -263,8 +263,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        // await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
