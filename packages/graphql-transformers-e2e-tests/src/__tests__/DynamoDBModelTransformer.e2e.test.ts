@@ -11,7 +11,7 @@ import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
 import * as moment from 'moment';
 
-jest.setTimeout(200000);
+jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
 
@@ -76,15 +76,16 @@ beforeAll(async () => {
         await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
+        console.log(finishedStack)
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         const endpoint = getApiEndpoint(finishedStack.Outputs)
         const apiKey = getApiKey(finishedStack.Outputs)
-        expect(apiKey).toBeDefined()
-        expect(endpoint).toBeDefined()
+        expect(apiKey).toBeTruthy()
+        expect(endpoint).toBeTruthy()
         GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
     } catch (e) {
-        console.error(e)
+        console.log(e)
         expect(true).toEqual(false)
     }
 });
@@ -101,8 +102,7 @@ afterAll(async () => {
             expect(true).toEqual(true)
             console.log('Successfully deleted stack ' + STACK_NAME)
         } else {
-            console.error(e)
-            expect(true).toEqual(false)
+            console.log(e)
         }
     }
 })
@@ -121,19 +121,19 @@ test('Test createAuthor mutation', async () => {
                 }
             }
         }`, {
-            input: {
-                name: 'Jeff B',
-                entityMetadata: {
-                    isActive: true
+                input: {
+                    name: 'Jeff B',
+                    entityMetadata: {
+                        isActive: true
+                    }
                 }
-            }
-        })
+            })
         expect(response.data.createAuthor.id).toBeDefined()
         expect(response.data.createAuthor.name).toEqual('Jeff B')
         expect(response.data.createAuthor.entityMetadata).toBeDefined()
         expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true)
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -154,7 +154,7 @@ test('Test createPost mutation', async () => {
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -182,7 +182,7 @@ test('Test updatePost mutation', async () => {
         console.log(JSON.stringify(updateResponse, null, 4))
         expect(updateResponse.data.updatePost.title).toEqual('Bye, World!')
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -218,7 +218,7 @@ test('Test deletePost mutation', async () => {
         console.log(JSON.stringify(getResponse, null, 4))
         expect(getResponse.data.getPost).toBeNull()
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -244,7 +244,7 @@ test('Test getPost query', async () => {
         }`, {})
         expect(getResponse.data.getPost.title).toEqual('Test Get')
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -274,7 +274,7 @@ test('Test listPosts query', async () => {
         const items = listResponse.data.listPosts.items
         expect(items.length).toBeGreaterThan(0)
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -310,7 +310,7 @@ test('Test listPosts query with filter', async () => {
         expect(items.length).toEqual(1)
         expect(items[0].title).toEqual('Test List with filter')
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -337,21 +337,21 @@ test('Test createPost mutation with non-model types', async () => {
                 appearsIn
             }
         }`, {
-            input: {
-                title: 'Check that metadata exists',
-                metadata: {
-                    tags: {
-                        published: true,
-                        metadata: {
-                            tags: {
-                                published: false
+                input: {
+                    title: 'Check that metadata exists',
+                    metadata: {
+                        tags: {
+                            published: true,
+                            metadata: {
+                                tags: {
+                                    published: false
+                                }
                             }
                         }
-                    }
-                },
-                appearsIn: ['NEWHOPE']
-            }
-        })
+                    },
+                    appearsIn: ['NEWHOPE']
+                }
+            })
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Check that metadata exists')
         expect(response.data.createPost.createdAt).toBeDefined()
@@ -361,7 +361,7 @@ test('Test createPost mutation with non-model types', async () => {
         expect(response.data.createPost.metadata.tags.metadata.tags.published).toEqual(false)
         expect(response.data.createPost.appearsIn).toEqual(['NEWHOPE'])
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }
@@ -399,22 +399,22 @@ test('Test updatePost mutation with non-model types', async () => {
                 appearsIn
             }
         }`, {
-            input: {
-                id: createResponse.data.createPost.id,
-                title: 'Add some metadata',
-                metadata: {
-                    tags: {
-                        published: true,
-                        metadata: {
-                            tags: {
-                                published: false
+                input: {
+                    id: createResponse.data.createPost.id,
+                    title: 'Add some metadata',
+                    metadata: {
+                        tags: {
+                            published: true,
+                            metadata: {
+                                tags: {
+                                    published: false
+                                }
                             }
                         }
-                    }
-                },
-                appearsIn: ['NEWHOPE', 'EMPIRE']
-            }
-        })
+                    },
+                    appearsIn: ['NEWHOPE', 'EMPIRE']
+                }
+            })
         console.log(JSON.stringify(updateResponse, null, 4))
         expect(updateResponse.data.updatePost.title).toEqual('Add some metadata')
         expect(updateResponse.data.updatePost.metadata).toBeDefined()
@@ -422,7 +422,7 @@ test('Test updatePost mutation with non-model types', async () => {
         expect(updateResponse.data.updatePost.metadata.tags.metadata.tags.published).toEqual(false)
         expect(updateResponse.data.updatePost.appearsIn).toEqual(['NEWHOPE', 'EMPIRE'])
     } catch (e) {
-        console.error(e)
+        console.log(e)
         // fail
         expect(e).toBeUndefined()
     }

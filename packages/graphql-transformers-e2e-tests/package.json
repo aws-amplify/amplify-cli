@@ -49,6 +49,10 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/__tests__/SearchableModelTransformer.e2e.test.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

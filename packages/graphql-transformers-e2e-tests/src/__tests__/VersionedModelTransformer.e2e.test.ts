@@ -12,7 +12,7 @@ import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
 import * as moment from 'moment';
 
-jest.setTimeout(200000);
+jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
 

@@ -3,15 +3,17 @@ import { CloudFormationClient } from './CloudFormationClient'
 import * as fs from 'fs'
 import * as path from 'path'
 
-async function cleanupBucket(client: S3Client, directory: string, bucket: string, key: string) {
+async function cleanupBucket(
+    client: S3Client, directory: string, bucket: string, key: string, buildTimestamp: string) {
     const files = fs.readdirSync(directory)
     for (const file of files) {
         const contentPath = path.join(directory, file)
         const s3Location = path.join(key, file)
         if (fs.lstatSync(contentPath).isDirectory()) {
-            await cleanupBucket(client, contentPath, bucket, s3Location)
+            await cleanupBucket(client, contentPath, bucket, s3Location, buildTimestamp)
         } else {
-            await client.deleteFile(bucket, s3Location)
+            const fileKey = s3Location + '.' + buildTimestamp
+            await client.deleteFile(bucket, fileKey)
         }
     }
 }
@@ -27,6 +29,7 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
             s3LocationMap = { ...recMap, ...s3LocationMap }
         } else {
             const fileKey = s3Location + '.' + buildTimestamp
+            await client.wait(.25, () => Promise.resolve())
             await client.uploadFile(bucket, contentPath, fileKey)
             const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
             s3LocationMap[formattedName] = 's3://' + path.join(bucket, fileKey)
@@ -35,11 +38,14 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
     return s3LocationMap
 }
 
+export async function cleanupS3Bucket(
+    s3Client: S3Client, buildPath: string, bucketName: string, rootKey: string, buildTimestamp: string) {
+    return cleanupBucket(s3Client, buildPath, bucketName, rootKey, buildTimestamp);
+}
+
 export async function deploy(
     s3Client: S3Client, cf: CloudFormationClient, stackName: string,
-    template: any, params: any, buildPath: string, bucketName: string, rootKey: string) {
-    const buildTimeStamp = new Date().getTime().toString();
-    // await cleanupBucket(s3Client, buildPath, bucketName, rootKey)
+    template: any, params: any, buildPath: string, bucketName: string, rootKey: string, buildTimeStamp: string) {
     console.log('[start] uploading assets...')
     const uploadedKeys: any = await uploadDirectory(s3Client, buildPath, bucketName, rootKey, buildTimeStamp)
     console.log('[done] uploading assets.')
