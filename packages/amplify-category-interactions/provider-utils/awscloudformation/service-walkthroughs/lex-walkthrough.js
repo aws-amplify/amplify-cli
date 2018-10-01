@@ -673,29 +673,29 @@ async function askPaths(context) {
   /* TODO: add spinner when
   checking if the account had
   functions deployed and hide the option from the menu */
-  const existingLambdaArns = true;
-  const existingFunctions = functionsExist(context);
+  // const existingLambdaArns = true;
+  // const existingFunctions = functionsExist(context);
 
-  const choices = [
-    {
-      name: 'Create a new Lambda function',
-      value: 'newFunction',
-    },
-  ];
+  // const choices = [
+  //   {
+  //     name: 'Create a new Lambda function',
+  //     value: 'newFunction',
+  //   },
+  // ];
 
-  if (existingLambdaArns) {
-    choices.push({
-      name: 'Use a Lambda function already deployed on AWS',
-      value: 'arn',
-    });
-  }
+  // if (existingLambdaArns) {
+  //   choices.push({
+  //     name: 'Use a Lambda function already deployed on AWS',
+  //     value: 'arn',
+  //   });
+  // }
 
-  if (existingFunctions) {
-    choices.push({
-      name: 'Use a Lambda function already added in the current Amplify project',
-      value: 'projectFunction',
-    });
-  }
+  // if (existingFunctions) {
+  //   choices.push({
+  //     name: 'Use a Lambda function already added in the current Amplify project',
+  //     value: 'projectFunction',
+  //   });
+  // }
   const questions = [
     {
       name: 'name',
@@ -703,12 +703,12 @@ async function askPaths(context) {
       message: 'Provide a path, e.g. /items',
       default: '/items',
     },
-    {
-      name: 'functionType',
-      type: 'list',
-      message: 'Select lambda source',
-      choices,
-    },
+    // {
+    //   name: 'functionType',
+    //   type: 'list',
+    //   message: 'Select lambda source',
+    //   choices,
+    // },
   ];
 
   const paths = [];
@@ -717,72 +717,78 @@ async function askPaths(context) {
 
   const answer = await inquirer.prompt(questions);
   let name = { name: answer.name };
+
+  // let lambda;
+  // do {
+  //   lambda = await askLambdaSource(context, answer.functionType, answer.name);
+  // } while (!lambda);
+  // if (lambda.lambdaFunction && !lambda.lambdaArn) {
+  //   dependsOn.push({
+  //     category: 'function',
+  //     resourceName: lambda.lambdaFunction,
+  //     attributes: ['Name', 'Arn'],
+  //   });
+  // }
+
   let lambda;
   do {
-    lambda = await askLambdaSource(context, answer.functionType, answer.name);
+    lambda = await askLambdaArn(context);
   } while (!lambda);
+
   name = { ...name, ...lambda };
   paths.push(name);
-
-  if (lambda.lambdaFunction && !lambda.lambdaArn) {
-    dependsOn.push({
-      category: 'function',
-      resourceName: lambda.lambdaFunction,
-      attributes: ['Name', 'Arn'],
-    });
-  }
 
   functionArns.push(lambda);
 
   return { paths, dependsOn, functionArns };
 }
 
-function functionsExist(context) {
-  if (!context.amplify.getProjectDetails().amplifyMeta.function) {
-    return false;
-  }
+// function functionsExist(context) {
+//   if (!context.amplify.getProjectDetails().amplifyMeta.function) {
+//     return false;
+//   }
 
-  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
-  const lambdaFunctions = [];
-  Object.keys(functionResources).forEach((resourceName) => {
-    if (functionResources[resourceName].service === 'Lambda') {
-      lambdaFunctions.push(resourceName);
-    }
-  });
+//   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+//   const lambdaFunctions = [];
+//   Object.keys(functionResources).forEach((resourceName) => {
+//     if (functionResources[resourceName].service === 'Lambda') {
+//       lambdaFunctions.push(resourceName);
+//     }
+//   });
 
-  if (lambdaFunctions.length === 0) {
-    return false;
-  }
+//   if (lambdaFunctions.length === 0) {
+//     return false;
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
-async function askLambdaSource(context, functionType, name) {
-  switch (functionType) {
-    case 'arn': return askLambdaArn(context);
-    case 'projectFunction': return askLambdaFromProject(context);
-    case 'newFunction': return newLambdaFunction(context, name);
-    default: throw new Error('Type not supported');
-  }
-}
+// async function askLambdaSource(context, functionType, name) {
+//   switch (functionType) {
+//     case 'arn': return askLambdaArn(context);
+//     case 'projectFunction': return askLambdaFromProject(context);
+//     case 'newFunction': return newLambdaFunction(context, name);
+//     default: throw new Error('Type not supported');
+//   }
+// }
 
-function newLambdaFunction(context, name) {
-  let add;
-  try {
-    ({ add } = require('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. Install it to use this feature');
-  }
-  context.api = {
-    name,
-    functionTemplate: 'serverless',
-  };
-  return add(context, 'awscloudformation', 'Lambda')
-    .then((resourceName) => {
-      context.print.success('Succesfully added Lambda function locally');
-      return { lambdaFunction: resourceName };
-    });
-}
+// function newLambdaFunction(context, name) {
+//   let add;
+//   try {
+//     ({ add } = require('amplify-category-function'));
+//   } catch (e) {
+//     throw new Error('Function plugin not installed in the CLI. Install it to use this feature');
+//   }
+//   context.api = {
+//     name,
+//     functionTemplate: 'serverless',
+//   };
+//   return add(context, 'awscloudformation', 'Lambda')
+//     .then((resourceName) => {
+//       context.print.success('Succesfully added Lambda function locally');
+//       return { lambdaFunction: resourceName };
+//     });
+// }
 
 async function askLambdaArn(context) {
   const regions = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getRegions');
@@ -824,23 +830,23 @@ async function askLambdaArn(context) {
   return { lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, lambdaFunction: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, '') };
 }
 
-async function askLambdaFromProject(context) {
-  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
-  const lambdaFunctions = [];
-  Object.keys(functionResources).forEach((resourceName) => {
-    if (functionResources[resourceName].service === 'Lambda') {
-      lambdaFunctions.push(resourceName);
-    }
-  });
+// async function askLambdaFromProject(context) {
+//   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
+//   const lambdaFunctions = [];
+//   Object.keys(functionResources).forEach((resourceName) => {
+//     if (functionResources[resourceName].service === 'Lambda') {
+//       lambdaFunctions.push(resourceName);
+//     }
+//   });
 
-  const answer = await inquirer.prompt({
-    name: 'lambdaFunction',
-    type: 'list',
-    message: 'Select lambda function to invoke by this path',
-    choices: lambdaFunctions,
-  });
+//   const answer = await inquirer.prompt({
+//     name: 'lambdaFunction',
+//     type: 'list',
+//     message: 'Select lambda function to invoke by this path',
+//     choices: lambdaFunctions,
+//   });
 
-  return { lambdaFunction: answer.lambdaFunction };
-}
+//   return { lambdaFunction: answer.lambdaFunction };
+// }
 
 module.exports = { addWalkthrough, updateWalkthrough };
