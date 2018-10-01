@@ -38,7 +38,7 @@ async function run(context, category, resourceName) {
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
           context,
-          formNestedStack(context, projectDetails), resourcesToBeCreated,
+          formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated,
         );
       }
     })
@@ -162,7 +162,11 @@ function packageResources(context, resources) {
 }
 
 
-function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated) {
+function updateCloudFormationNestedStack(
+  context, nestedStack,
+  resourcesToBeCreated,
+  resourcesToBeUpdated,
+) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const nestedStackFilepath = path.normalize(path.join(
     backEndDir,
@@ -171,16 +175,31 @@ function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCrea
   ));
 
   const uniqueCategoriesAdded = getAllUniqueCategories(resourcesToBeCreated);
+  const uniqueCategoriesUpdated = getAllUniqueCategories(resourcesToBeUpdated);
 
   let userAgentAction = '';
 
-  if (uniqueCategoriesAdded.size > 0) {
-    userAgentAction = `create ${Array.from(uniqueCategoriesAdded).join(' ')}`;
+  if (uniqueCategoriesAdded.length > 0) {
+    uniqueCategoriesAdded.forEach((category) => {
+      if (category.length >= 2) {
+        category = category.substring(0, 2);
+      }
+
+      userAgentAction += `${category}:c `;
+    });
+  }
+
+  if (uniqueCategoriesUpdated.length > 0) {
+    uniqueCategoriesUpdated.forEach((category) => {
+      if (category.length >= 2) {
+        category = category.substring(0, 2);
+      }
+      userAgentAction += `${category}:u `;
+    });
   }
 
   const jsonString = JSON.stringify(nestedStack, null, '\t');
   context.filesystem.write(nestedStackFilepath, jsonString);
-
 
   return new Cloudformation(context, undefined, userAgentAction)
     .then(cfnItem => cfnItem.updateResourceStack(
@@ -194,7 +213,7 @@ function getAllUniqueCategories(resources) {
 
   resources.forEach(resource => categories.add(resource.category));
 
-  return categories;
+  return [...categories];
 }
 
 function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
