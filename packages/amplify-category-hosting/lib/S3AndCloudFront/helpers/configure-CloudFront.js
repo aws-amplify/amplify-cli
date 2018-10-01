@@ -28,7 +28,9 @@ async function configure(context) {
       default: false,
     });
     if (answer.AddCloudFront) {
-      const { CloudFrontDistribution, OriginAccessIdentity, PrivateBucketPolicy } = originalTemplate.Resources;
+      const { CloudFrontDistribution, 
+              OriginAccessIdentity, 
+              PrivateBucketPolicy } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
       context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
@@ -55,7 +57,8 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
       context.exeInfo.template.Resources.BucketPolicy = BucketPolicy;
-      context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = S3Bucket.Properties.AccessControl;
+      const { AccessControl } = S3Bucket.Properties;
+      context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
     }
   }
 

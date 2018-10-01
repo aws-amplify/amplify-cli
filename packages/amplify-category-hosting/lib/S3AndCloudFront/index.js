@@ -108,9 +108,9 @@ function publish(context, args) {
     })
     .then(() => {
       const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
-      if ( CloudFrontSecureURL != undefined ) {
+      if (CloudFrontSecureURL !== undefined) {
         context.print.info('Your app is published successfully.');
-        context.print.info(chalk.green(CloudFrontSecureURL));        
+        context.print.info(chalk.green(CloudFrontSecureURL));
       } else {
         const { WebsiteURL } = context.exeInfo.serviceMeta.output;
         context.print.info('Your app is published successfully.');
