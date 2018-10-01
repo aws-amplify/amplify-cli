@@ -28,9 +28,11 @@ async function configure(context) {
       default: false,
     });
     if (answer.AddCloudFront) {
-      const { CloudFrontDistribution, 
-              OriginAccessIdentity, 
-              PrivateBucketPolicy } = originalTemplate.Resources;
+      const {
+        CloudFrontDistribution,
+        OriginAccessIdentity,
+        PrivateBucketPolicy,
+      } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
       context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
