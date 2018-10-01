@@ -157,14 +157,14 @@ function getSlotTypes(newSlotTypeParams){
             'name': slotType.name,
             'version': '$LATEST'
         };
-        tasks.push(lex.getSlotType(params, (err, data)=>{
-            if(err){
-                throw err; 
-            }
-            if(data){
+        tasks.push(
+            lex.getSlotType(params).promise()
+            .then((data)=>{
                 slotType['checksum'] = data.checksum;
-            }
-        }).promise()); 
+            })
+            .catch((err)=>{
+            })
+        ); 
     }); 
     return Promise.all(tasks);
 }
@@ -172,14 +172,16 @@ function getSlotTypes(newSlotTypeParams){
 function putSlotTypes(newSlotTypeParams){
     const tasks = []; 
     newSlotTypeParams.forEach( slotType => {
-        tasks.push(lex.putSlotType(slotType, (err, data)=>{
-            if (err) {
+        tasks.push(
+            lex.putSlotType(slotType).promise()
+            .then((data)=>{
+                console.log(data);
+            })
+            .catch((err)=>{
+                console.log(err); 
                 throw err; 
-            }
-            if(data){
-                console.log(data);  
-            }    
-        }).promise()); 
+            })
+        );
     }); 
     return Promise.all(tasks);
 }
@@ -191,14 +193,14 @@ function getIntents(intentParams){
             'version': '$LATEST',
             'name': intent.name
         };
-        tasks.push(lex.getIntent(params, (err, data)=>{
-            if(err){
-                throw err; 
-            }
-            if(data){
+        tasks.push(
+            lex.getIntent(params).promise()
+            .then((data)=>{
                 intent['checksum'] = data.checksum;
-            }
-        }).promise()); 
+            })
+            .catch((err)=>{
+            })
+        ); 
     });
     return Promise.all(tasks);
 }
@@ -206,14 +208,16 @@ function getIntents(intentParams){
 function putIntents(intentParams){
     const tasks = []; 
     intentParams.forEach( intent => {
-        tasks.push(lex.putIntent(intent, (err, data)=>{
-            if (err) {
+        tasks.push(
+            lex.putIntent(intent).promise()
+            .then((data)=>{
+                console.log(data);
+            })
+            .catch((err)=>{
+                console.log(err); 
                 throw err; 
-            }
-            if(data){
-                console.log(data);  
-            }    
-        }).promise()); 
+            })
+        );
     }); 
     return Promise.all(tasks);
 }
@@ -223,23 +227,22 @@ function getBot(botParams){
         'name': botParams.name,
         'versionOrAlias': '$LATEST'
     }; 
-    return  lex.getBot(params, (err, data)=>{
-        if (err) {
-            throw err; 
-        }
-        if(data){
-            botParams['checksum'] = data.checksum;
-        }
-    }).promise(); 
+    return  lex.getBot(params).promise()
+            .then((data)=>{
+                botParams['checksum'] = data.checksum;
+            })
+            .catch((err)=>{
+            });
 }
 
 function putBot(botParams){
-    return lex.putBot(botParams, (err, data)=>{
-        if (err) {
-            throw err; 
-        }
-        if(data){
-            console.log(data);  
-        }    
-    }).promise(); 
+    return lex.putBot(botParams).promise()
+            .then((data)=>{
+                console.log(data);
+                return data; 
+            })
+            .catch((err)=>{
+                console.log(err); 
+                throw err; 
+            });
 }
