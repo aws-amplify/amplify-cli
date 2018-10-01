@@ -25,5 +25,5 @@ module.exports = {
   getGraphQLDocPath,
   isAppSyncApiPendingPush,
   updateAmplifyMeta,
-  selectAPIKey
+  selectAPIKey,
 };

@@ -3,22 +3,22 @@ module.exports = (context, apiDetails) => {
   const fs = context.filesystem;
 
   const appsyncMetadata = {
-  	"service": "AppSync",
-  	"output": {
-		"securityType": apiDetails.securityType,
-		"GraphQLAPIIdOutput": apiDetails.id,
-		"GraphQLAPIEndpointOutput": apiDetails.endpoint
-	},
-	"lastPushTimeStamp": new Date()
+    service: 'AppSync',
+    output: {
+      securityType: apiDetails.securityType,
+      GraphQLAPIIdOutput: apiDetails.id,
+      GraphQLAPIEndpointOutput: apiDetails.endpoint,
+    },
+    lastPushTimeStamp: new Date(),
   };
-  if(apiDetails.apiKey) {
-  	appsyncMetadata.output.GraphQLAPIKeyOutput = apiDetails.apiKey;
+  if (apiDetails.apiKey) {
+    appsyncMetadata.output.GraphQLAPIKeyOutput = apiDetails.apiKey;
   }
 
-  let {amplifyMeta} = context.amplify.getProjectDetails();
+  const { amplifyMeta } = context.amplify.getProjectDetails();
 
-  if(!amplifyMeta.api) {
-  	amplifyMeta.api = {};
+  if (!amplifyMeta.api) {
+    amplifyMeta.api = {};
   }
 
   amplifyMeta.api[apiDetails.name] = appsyncMetadata;
@@ -29,8 +29,8 @@ module.exports = (context, apiDetails) => {
 
   const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
   const currentAmplifyMeta = JSON.parse(fs.read(currentAmplifyMetaFilePath));
-  if(!currentAmplifyMeta.api) {
-  	currentAmplifyMeta.api = {};
+  if (!currentAmplifyMeta.api) {
+    currentAmplifyMeta.api = {};
   }
   currentAmplifyMeta.api[apiDetails.name] = appsyncMetadata;
   fs.write(currentAmplifyMetaFilePath, currentAmplifyMeta);

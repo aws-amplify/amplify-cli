@@ -16,8 +16,7 @@ async function getAppSyncAPIInfo(context, apiId, region) {
 
     let apiKeys;
 
-    if(graphqlApi.authenticationType === 'API_KEY') {
-
+    if (graphqlApi.authenticationType === 'API_KEY') {
       apiKeys = await amplify.executeProviderUtils(
         context,
         'awscloudformation',
@@ -34,7 +33,7 @@ async function getAppSyncAPIInfo(context, apiId, region) {
       endpoint: graphqlApi.uris.GRAPHQL,
       name: graphqlApi.name,
       securityType: graphqlApi.authenticationType,
-      apiKeys
+      apiKeys,
     };
   } catch (e) {
     if (e.code === 'NotFoundException') {

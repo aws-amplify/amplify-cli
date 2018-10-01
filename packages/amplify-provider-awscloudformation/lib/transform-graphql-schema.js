@@ -13,6 +13,7 @@ const ModelConnectionTransformer = require('graphql-connection-transformer').def
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const providerName = require('./constants').ProviderName;
+
 const category = 'api';
 const parametersFileName = 'parameters.json';
 const templateFileName = 'cloudformation-template.json';
@@ -40,7 +41,7 @@ async function transformGraphQLSchema(context, options) {
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if(resource.provider !== providerName) {
+      if (resource.provider !== providerName) {
         return;
       }
       const { category, resourceName } = resource;

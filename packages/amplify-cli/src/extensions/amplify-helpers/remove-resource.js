@@ -46,9 +46,9 @@ function removeResource(context, category) {
                 });
               }
             });
-            let resourceValues = {
+            const resourceValues = {
               service: amplifyMeta[category][resourceName].service,
-              resourceName
+              resourceName,
             };
             if (amplifyMeta[category][resourceName] !== undefined) {
               delete amplifyMeta[category][resourceName];
