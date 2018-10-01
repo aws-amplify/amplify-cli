@@ -1,14 +1,19 @@
 const { join, dirname } = require('path');
 
-function getIncludePatterns(frontendHandler, schemaLocation) {
+function getIncludePatterns(language, schemaLocation) {
   let graphQLDirectory;
   let graphQLExtension;
-  switch (frontendHandler) {
+  switch (language) {
     case 'android':
       graphQLDirectory = dirname(schemaLocation);
       graphQLExtension = '*.graphql';
       break;
+    case 'typescript':
+      graphQLDirectory = join('src', 'graphql');
+      graphQLExtension = '*.ts';
+      break;
     case 'javascript':
+    case 'flow':
       graphQLDirectory = join('src', 'graphql');
       graphQLExtension = '*.js';
       break;

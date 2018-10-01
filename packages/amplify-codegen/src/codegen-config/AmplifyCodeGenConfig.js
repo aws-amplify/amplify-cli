@@ -1,5 +1,5 @@
 const graphQLConfig = require('graphql-config');
-const { join } = require('path');
+const { join, isAbsolute, relative } = require('path');
 
 const { graphQlToAmplifyConfig } = require('./utils');
 
@@ -38,8 +38,11 @@ class AmplifyCodeGenConfig {
     if (!this.constructor.isValidAmplifyProject(project)) {
       return false;
     }
+    const schemaPath = isAbsolute(project.schema)
+      ? relative(this.gqlConfig.configDir, project.schema)
+      : project.schema;
     const newProject = {
-      schemaPath: project.schema,
+      schemaPath,
       includes: project.includes,
       excludes: project.excludes,
     };

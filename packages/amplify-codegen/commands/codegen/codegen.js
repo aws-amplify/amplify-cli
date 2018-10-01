@@ -40,8 +40,7 @@ module.exports = {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generate(context, forceDownloadSchema);
     } catch (e) {
-      // context.print.info(e.message);
-      context.print.info(e);
+      context.print.info(e.message);
       process.exit(1);
     }
   },

@@ -28,7 +28,7 @@ async function generateStatements(context, forceDownloadSchema) {
       );
     }
     const frontend = getFrontEndHandler(context);
-    const language = frontend === 'javascript' ? 'javascript' : 'graphql';
+    const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);

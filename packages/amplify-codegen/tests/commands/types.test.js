@@ -66,7 +66,7 @@ describe('command - types', () => {
       MOCK_GENERATED_FILE_NAME,
       '',
       MOCK_TARGET,
-      'gql',
+      '',
       '',
       { addTypename: true },
     );

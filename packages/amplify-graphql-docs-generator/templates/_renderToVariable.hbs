@@ -1,0 +1,5 @@
+{{#each operations }}
+  export const {{camelCase name}} =  `{{#format }}
+      {{> renderOp }}
+    {{/format}}`;
+{{/each}}

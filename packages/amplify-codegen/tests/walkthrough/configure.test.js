@@ -1,8 +1,10 @@
+const { join } = require('path');
 const selectProject = require('../../src/walkthrough/questions/selectProject');
 const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget');
 const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern');
 const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
 const configure = require('../../src/walkthrough/configure');
+const { getIncludePattern } = require('../../src/utils');
 
 jest.mock('../../src/walkthrough/questions/selectProject');
 jest.mock('../../src/walkthrough/questions/languageTarget');
@@ -16,6 +18,9 @@ describe('configure walk-through', () => {
   const mockIncludes = 'MOCK_INCLUDE_PATTERN';
   const mockContext = 'MOCK_CONTEXT';
   const mockGeneratedFileName = 'MOCK_FILE_NAME.ts';
+  const mockGraphQLDirectory = 'MOCK_GQL_DIR';
+  const mockGraphQLExtension = 'MOCK_GQL_EXTENSION';
+
   const mockConfigs = [
     {
       projectName: 'One',
@@ -44,6 +49,10 @@ describe('configure walk-through', () => {
     askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage);
     askCodegneQueryFilePattern.mockReturnValue(mockIncludes);
     askGeneratedFileName.mockReturnValue(mockGeneratedFileName);
+    getIncludePattern.mockReturnValue({
+      graphQLDirectory: mockGraphQLDirectory,
+      graphQLExtension: mockGraphQLExtension,
+    });
   });
 
   it('should pass the available list of AppSync APIs', async () => {
@@ -63,7 +72,7 @@ describe('configure walk-through', () => {
       mockContext,
       mockConfigs[1].amplifyExtension.codeGenTarget,
     );
-    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(mockConfigs[1].includes);
+    expect(askCodegneQueryFilePattern).toHaveBeenCalledWith([join(mockGraphQLDirectory, '**', mockGraphQLExtension)]);
     expect(askGeneratedFileName).toHaveBeenCalledWith(
       mockConfigs[1].amplifyExtension.generatedFileName,
       mockTargetLanguage,
