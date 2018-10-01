@@ -1,13 +1,13 @@
 import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
 import {
-    DirectiveNode, ObjectTypeDefinitionNode
+    DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -94,7 +94,22 @@ export class DynamoDBModelTransformer extends Transformer {
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Create the object type.
-        ctx.addObject(def)
+        // ctx.addObject(def)
+
+        let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
+            def,
+            ctx,
+            new Map<string, ObjectTypeDefinitionNode>()
+        )
+
+        nonModelArray.forEach(
+            (value: ObjectTypeDefinitionNode) => {
+                let nonModelObject = makeNonModelInputObject(value, nonModelArray, ctx)
+                if (!this.typeExist(nonModelObject.name.value, ctx)) {
+                    ctx.addInput(nonModelObject)
+                }
+            }
+        )
 
         // Create the dynamodb table to hold the @model type
         // TODO: Handle types with more than a single "id" hash key
@@ -115,21 +130,26 @@ export class DynamoDBModelTransformer extends Transformer {
         )
 
         this.createQueries(def, directive, ctx)
-        this.createMutations(def, directive, ctx)
+        this.createMutations(def, directive, ctx, nonModelArray)
         this.createSubscriptions(def, directive, ctx)
     }
 
-    private createMutations = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createMutations = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+        nonModelArray: ObjectTypeDefinitionNode[]
+    ) => {
         const typeName = def.name.value
         // Create the input types.
-        const createInput = makeCreateInputObject(def)
-        const updateInput = makeUpdateInputObject(def)
+        const createInput = makeCreateInputObject(def, nonModelArray, ctx)
+        const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
         const deleteInput = makeDeleteInputObject(def)
         ctx.addInput(createInput)
         ctx.addInput(updateInput)
         ctx.addInput(deleteInput)
 
-        let mutationType = blankObjectExtension('Mutation')
+        const mutationFields = [];
         // Get any name overrides provided by the user. If an empty map it provided
         // then we do not generate those fields.
         const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
@@ -170,47 +190,38 @@ export class DynamoDBModelTransformer extends Transformer {
         if (shouldMakeCreate) {
             const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName), createResolver)
-            mutationType = extensionWithFields(
-                mutationType,
-                [makeField(
-                    createResolver.Properties.FieldName,
-                    [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))],
-                    makeNamedType(def.name.value)
-                )]
-            )
+            mutationFields.push(makeField(
+                createResolver.Properties.FieldName,
+                [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))],
+                makeNamedType(def.name.value)
+            ));
         }
 
         if (shouldMakeUpdate) {
             const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName), updateResolver)
-            mutationType = extensionWithFields(
-                mutationType,
-                [makeField(
-                    updateResolver.Properties.FieldName,
-                    [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
-                    makeNamedType(def.name.value)
-                )]
-            )
+            mutationFields.push(makeField(
+                updateResolver.Properties.FieldName,
+                [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
+                makeNamedType(def.name.value)
+            ));
         }
 
         if (shouldMakeDelete) {
             const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName), deleteResolver)
-            mutationType = extensionWithFields(
-                mutationType,
-                [makeField(
-                    deleteResolver.Properties.FieldName,
-                    [makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
-                    makeNamedType(def.name.value)
-                )]
-            )
+            mutationFields.push(makeField(
+                deleteResolver.Properties.FieldName,
+                [makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
+                makeNamedType(def.name.value)
+            ));
         }
-        ctx.addObjectExtension(mutationType)
+        ctx.addMutationFields(mutationFields)
     }
 
     private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const typeName = def.name.value
-        let queryType = blankObjectExtension('Query')
+        const queryFields = []
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
 
         // Configure queries based on *queries* argument
@@ -248,17 +259,14 @@ export class DynamoDBModelTransformer extends Transformer {
 
         // Create get queries
         if (shouldMakeGet) {
-            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride)
+            const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName), getResolver)
 
-            queryType = extensionWithFields(
-                queryType,
-                [makeField(
-                    getResolver.Properties.FieldName,
-                    [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
-                    makeNamedType(def.name.value)
-                )]
-            )
+            queryFields.push(makeField(
+                getResolver.Properties.FieldName,
+                [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
+                makeNamedType(def.name.value)
+            ))
         }
 
         if (shouldMakeList) {
@@ -266,19 +274,15 @@ export class DynamoDBModelTransformer extends Transformer {
             this.generateModelXConnectionType(ctx, def)
 
             // Create the list resolver
-            const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride)
+            const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
             this.generateFilterInputs(ctx, def)
 
-            // Extend the query type to include listX
-            queryType = extensionWithFields(
-                queryType,
-                [makeModelScanField(listResolver.Properties.FieldName, def.name.value)]
-            )
+            queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
         }
 
-        ctx.addObjectExtension(queryType)
+        ctx.addQueryFields(queryFields)
     }
 
     /**
@@ -303,7 +307,7 @@ export class DynamoDBModelTransformer extends Transformer {
      */
     private createSubscriptions = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const typeName = def.name.value
-        let subscriptionType = blankObjectExtension('Subscription')
+        const subscriptionFields = []
 
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
 
@@ -342,10 +346,7 @@ export class DynamoDBModelTransformer extends Transformer {
                     typeName,
                     subscriptionToMutationsMap[subFieldName]
                 )
-                subscriptionType = extensionWithFields(
-                    subscriptionType,
-                    [subField]
-                )
+                subscriptionFields.push(subField)
             }
         } else {
             // Add the default subscriptions
@@ -355,10 +356,7 @@ export class DynamoDBModelTransformer extends Transformer {
                     typeName,
                     [createResolver.Properties.FieldName]
                 )
-                subscriptionType = extensionWithFields(
-                    subscriptionType,
-                    [onCreateField]
-                )
+                subscriptionFields.push(onCreateField)
             }
             if (updateResolver) {
                 const onUpdateField = makeSubscriptionField(
@@ -366,10 +364,7 @@ export class DynamoDBModelTransformer extends Transformer {
                     typeName,
                     [updateResolver.Properties.FieldName]
                 )
-                subscriptionType = extensionWithFields(
-                    subscriptionType,
-                    [onUpdateField]
-                )
+                subscriptionFields.push(onUpdateField)
             }
             if (deleteResolver) {
                 const onDeleteField = makeSubscriptionField(
@@ -377,14 +372,11 @@ export class DynamoDBModelTransformer extends Transformer {
                     typeName,
                     [deleteResolver.Properties.FieldName]
                 )
-                subscriptionType = extensionWithFields(
-                    subscriptionType,
-                    [onDeleteField]
-                )
+                subscriptionFields.push(onDeleteField)
             }
         }
 
-        ctx.addObjectExtension(subscriptionType)
+        ctx.addSubscriptionFields(subscriptionFields)
     }
 
     private typeExist(type: string, ctx: TransformerContext): boolean {

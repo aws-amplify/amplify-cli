@@ -1,11 +1,11 @@
 const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
-const globalPrefix = require('./lib/get-global-prefix');
+const globalPrefix = require('./lib/global-prefix');
 
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
-  const globalNodeModulesDirPath = globalPrefix();
+  const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
 
   const cli = build()
     .brand('amplify')

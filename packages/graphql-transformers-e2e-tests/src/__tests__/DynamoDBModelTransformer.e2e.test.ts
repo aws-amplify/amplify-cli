@@ -34,6 +34,30 @@ beforeAll(async () => {
         title: String!
         createdAt: AWSDateTime
         updatedAt: AWSDateTime
+        metadata: PostMetadata
+        entityMetadata: EntityMetadata
+        appearsIn: [Episode!]
+    }
+    type Author @model {
+        id: ID!
+        name: String!
+        postMetadata: PostMetadata
+        entityMetadata: EntityMetadata
+    }
+    type EntityMetadata {
+        isActive: Boolean
+    }
+    type PostMetadata {
+        tags: Tag
+    }
+    type Tag {
+        published: Boolean
+        metadata: PostMetadata
+    }
+    enum Episode {
+        NEWHOPE
+        EMPIRE
+        JEDI
     }
     `
     const transformer = new GraphQLTransform({
@@ -86,6 +110,35 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test createAuthor mutation', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation($input: CreateAuthorInput!) {
+            createAuthor(input: $input) {
+                id
+                name
+                entityMetadata {
+                    isActive
+                }
+            }
+        }`, {
+            input: {
+                name: 'Jeff B',
+                entityMetadata: {
+                    isActive: true
+                }
+            }
+        })
+        expect(response.data.createAuthor.id).toBeDefined()
+        expect(response.data.createAuthor.name).toEqual('Jeff B')
+        expect(response.data.createAuthor.entityMetadata).toBeDefined()
+        expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
 test('Test createPost mutation', async () => {
     try {
         const response = await GRAPHQL_CLIENT.query(`mutation {
@@ -256,6 +309,118 @@ test('Test listPosts query with filter', async () => {
         const items = listWithFilterResponse.data.listPosts.items
         expect(items.length).toEqual(1)
         expect(items[0].title).toEqual('Test List with filter')
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test createPost mutation with non-model types', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation CreatePost($input: CreatePostInput!) {
+            createPost(input: $input) {
+                id
+                title
+                createdAt
+                updatedAt
+                metadata {
+                    tags {
+                        published
+                        metadata {
+                            tags {
+                                published
+                            }
+                        }
+                    }
+                }
+                appearsIn
+            }
+        }`, {
+            input: {
+                title: 'Check that metadata exists',
+                metadata: {
+                    tags: {
+                        published: true,
+                        metadata: {
+                            tags: {
+                                published: false
+                            }
+                        }
+                    }
+                },
+                appearsIn: ['NEWHOPE']
+            }
+        })
+        expect(response.data.createPost.id).toBeDefined()
+        expect(response.data.createPost.title).toEqual('Check that metadata exists')
+        expect(response.data.createPost.createdAt).toBeDefined()
+        expect(response.data.createPost.updatedAt).toBeDefined()
+        expect(response.data.createPost.metadata).toBeDefined()
+        expect(response.data.createPost.metadata.tags.published).toEqual(true)
+        expect(response.data.createPost.metadata.tags.metadata.tags.published).toEqual(false)
+        expect(response.data.createPost.appearsIn).toEqual(['NEWHOPE'])
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test updatePost mutation with non-model types', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "Test Update" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        console.log(JSON.stringify(createResponse, null, 4))
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual('Test Update')
+        const updateResponse = await GRAPHQL_CLIENT.query(`mutation UpdatePost($input: UpdatePostInput!) {
+            updatePost(input: $input) {
+                id
+                title
+                createdAt
+                updatedAt
+                metadata {
+                    tags {
+                        published
+                        metadata {
+                            tags {
+                                published
+                            }
+                        }
+                    }
+                }
+                appearsIn
+            }
+        }`, {
+            input: {
+                id: createResponse.data.createPost.id,
+                title: 'Add some metadata',
+                metadata: {
+                    tags: {
+                        published: true,
+                        metadata: {
+                            tags: {
+                                published: false
+                            }
+                        }
+                    }
+                },
+                appearsIn: ['NEWHOPE', 'EMPIRE']
+            }
+        })
+        console.log(JSON.stringify(updateResponse, null, 4))
+        expect(updateResponse.data.updatePost.title).toEqual('Add some metadata')
+        expect(updateResponse.data.updatePost.metadata).toBeDefined()
+        expect(updateResponse.data.updatePost.metadata.tags.published).toEqual(true)
+        expect(updateResponse.data.updatePost.metadata.tags.metadata.tags.published).toEqual(false)
+        expect(updateResponse.data.updatePost.appearsIn).toEqual(['NEWHOPE', 'EMPIRE'])
     } catch (e) {
         console.error(e)
         // fail

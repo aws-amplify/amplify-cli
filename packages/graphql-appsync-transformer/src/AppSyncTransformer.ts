@@ -2,7 +2,8 @@ import { Transformer, TransformerContext, stripDirectives } from "graphql-transf
 import {
     print,
     TypeDefinitionNode,
-    Kind
+    Kind,
+    ObjectTypeDefinitionNode
 } from "graphql";
 
 import { ResourceFactory } from "./resources";
@@ -30,19 +31,6 @@ export class AppSyncTransformer extends Transformer {
     }
 
     public before = (ctx: TransformerContext): void => {
-        const queryType = blankObject('Query')
-        const mutationType = blankObject('Mutation')
-        const subscriptionType = blankObject('Subscription')
-        ctx.addObject(mutationType)
-        ctx.addObject(queryType)
-        ctx.addObject(subscriptionType)
-        const schema = makeSchema([
-            makeOperationType('query', 'Query'),
-            makeOperationType('mutation', 'Mutation'),
-            makeOperationType('subscription', 'Subscription')
-        ])
-        ctx.putSchema(schema)
-
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
@@ -50,10 +38,6 @@ export class AppSyncTransformer extends Transformer {
     }
 
     public after = (ctx: TransformerContext): void => {
-        // The transform allows transformer authors to manager the nodeMap
-        // themselves but if an input definition is not added manually
-        // this fills in the definitions in the map.
-        this.fillMissingNodes(ctx)
         if (!this.outputPath) {
             this.printWithoutFilePath(ctx);
         } else {
@@ -61,30 +45,10 @@ export class AppSyncTransformer extends Transformer {
         }
     }
 
-    private fillMissingNodes(ctx: TransformerContext): void {
-        for (const inputDef of ctx.inputDocument.definitions) {
-            switch (inputDef.kind) {
-                case Kind.OBJECT_TYPE_DEFINITION:
-                case Kind.SCALAR_TYPE_DEFINITION:
-                case Kind.INTERFACE_TYPE_DEFINITION:
-                case Kind.INPUT_OBJECT_TYPE_DEFINITION:
-                case Kind.ENUM_TYPE_DEFINITION:
-                case Kind.UNION_TYPE_DEFINITION:
-                    const typeDef = inputDef as TypeDefinitionNode
-                    if (!ctx.getType(typeDef.name.value)) {
-                        ctx.addType(typeDef)
-                    }
-                    break;
-                default:
-                /* pass any others */
-            }
-        }
-    }
-
     private buildSchema(ctx: TransformerContext): string {
-        const mutationNode: any = ctx.nodeMap.Mutation
-        const queryNode: any = ctx.nodeMap.Query
-        const subscriptionNode: any = ctx.nodeMap.Subscription
+        const mutationNode: ObjectTypeDefinitionNode | undefined = ctx.getMutation()
+        const queryNode: ObjectTypeDefinitionNode | undefined = ctx.getQuery()
+        const subscriptionNode: ObjectTypeDefinitionNode | undefined = ctx.getSubscription()
         let includeMutation = true
         let includeQuery = true
         let includeSubscription = true
@@ -102,13 +66,13 @@ export class AppSyncTransformer extends Transformer {
         }
         const ops = []
         if (includeQuery) {
-            ops.push(makeOperationType('query', 'Query'))
+            ops.push(makeOperationType('query', queryNode.name.value))
         }
         if (includeMutation) {
-            ops.push(makeOperationType('mutation', 'Mutation'))
+            ops.push(makeOperationType('mutation', mutationNode.name.value))
         }
         if (includeSubscription) {
-            ops.push(makeOperationType('subscription', 'Subscription'))
+            ops.push(makeOperationType('subscription', subscriptionNode.name.value))
         }
         const schema = makeSchema(ops)
         ctx.putSchema(schema)

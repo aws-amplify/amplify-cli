@@ -1,7 +1,8 @@
 import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode,
-    EnumTypeDefinitionNode, ObjectTypeExtensionNode
+    EnumTypeDefinitionNode, ObjectTypeExtensionNode,
+    TypeDefinitionNode
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
@@ -10,8 +11,10 @@ import {
     ModelResourceIDs,
     makeDirective,
     makeArgument,
-    makeValueNode
+    makeValueNode,
+    withNamedNodeNamed
 } from 'graphql-transformer-common'
+import { TransformerContext } from 'graphql-transformer-core';
 
 const STRING_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
 const ID_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between', 'beginsWith']
@@ -19,19 +22,69 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notCont
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
 const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
-export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
-    const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value)
+export function getNonModelObjectArray(
+    obj: ObjectTypeDefinitionNode,
+    ctx: TransformerContext,
+    pMap: Map<string, ObjectTypeDefinitionNode>
+): ObjectTypeDefinitionNode[] {
+
+    // loop over all fields in the object, picking out all nonscalars that are not @model types
+    for (const field of obj.fields) {
+        if (!isScalar(field.type)) {
+            const def = ctx.getType(getBaseType(field.type))
+
+            if (
+                def &&
+                def.kind === Kind.OBJECT_TYPE_DEFINITION &&
+                !def.directives.find(e => e.name.value === 'model') &&
+                pMap.get(def.name.value) === undefined
+            ) {
+                // recursively find any non @model types referenced by the current
+                // non @model type
+                pMap.set(def.name.value, def)
+                getNonModelObjectArray(def, ctx, pMap)
+            }
+        }
+    }
+
+    return Array.from(pMap.values())
+}
+
+export function makeNonModelInputObject(
+    obj: ObjectTypeDefinitionNode,
+    nonModelTypes: ObjectTypeDefinitionNode[],
+    ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
+    const name = ModelResourceIDs.NonModelInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
-        .filter((field: FieldDefinitionNode) => field.name.value !== 'id' && isScalar(field.type))
+        .filter((field: FieldDefinitionNode) => {
+            const fieldType = ctx.getType(getBaseType(field.type))
+            if (field.name.value === 'id') {
+                return false;
+            }
+            if (
+                isScalar(field.type) ||
+                nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
+            ) {
+                return true;
+            }
+            return false;
+        })
         .map(
-            (field: FieldDefinitionNode) => ({
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                name: field.name,
-                type: field.type,
-                // TODO: Service does not support new style descriptions so wait.
-                // description: field.description,
-                directives: []
-            })
+            (field: FieldDefinitionNode) => {
+                const type = nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ?
+                    withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type))) :
+                    field.type
+                return {
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: field.name,
+                    type: type,
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+                }
+            }
         )
     return {
         kind: 'InputObjectTypeDefinition',
@@ -49,21 +102,97 @@ export function makeCreateInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeUpdateInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeCreateInputObject(
+    obj: ObjectTypeDefinitionNode,
+    nonModelTypes: ObjectTypeDefinitionNode[],
+    ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
+    const name = ModelResourceIDs.ModelCreateInputObjectName(obj.name.value)
+    const fields: InputValueDefinitionNode[] = obj.fields
+        .filter((field: FieldDefinitionNode) => {
+            const fieldType = ctx.getType(getBaseType(field.type))
+            if (field.name.value === 'id') {
+                return false;
+            }
+            if (
+                isScalar(field.type) ||
+                nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
+            ) {
+                return true;
+            }
+            return false;
+        })
+        .map(
+            (field: FieldDefinitionNode) => {
+                const type = nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ?
+                    withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type))) :
+                    field.type
+                return {
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: field.name,
+                    type: type,
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+                }
+            }
+        )
+    return {
+        kind: 'InputObjectTypeDefinition',
+        // TODO: Service does not support new style descriptions so wait.
+        // description: {
+        //     kind: 'StringValue',
+        //     value: `Input type for ${obj.name.value} mutations`
+        // },
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields,
+        directives: []
+    }
+}
+
+export function makeUpdateInputObject(
+    obj: ObjectTypeDefinitionNode,
+    nonModelTypes: ObjectTypeDefinitionNode[],
+    ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
     const name = ModelResourceIDs.ModelUpdateInputObjectName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
-        .filter(f => isScalar(f.type))
+        .filter(f => {
+            const fieldType = ctx.getType(getBaseType(f.type))
+            if (
+                isScalar(f.type) ||
+                nonModelTypes.find(e => e.name.value === getBaseType(f.type)) ||
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
+            ) {
+                return true
+            } else {
+                return false
+            }
+        })
         .map(
-            (field: FieldDefinitionNode) => ({
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                name: field.name,
-                type: field.name.value === 'id' ?
-                    wrapNonNull(field.type) :
-                    unwrapNonNull(field.type),
-                // TODO: Service does not support new style descriptions so wait.
-                // description: field.description,
-                directives: []
-            })
+            (field: FieldDefinitionNode) => {
+                let type;
+                if (field.name.value === 'id') {
+                    type = wrapNonNull(field.type)
+                } else {
+                    type = unwrapNonNull(field.type)
+                }
+                type = nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ?
+                    withNamedNodeNamed(type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type))) :
+                    type
+                return {
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: field.name,
+                    type: type,
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+                }
+            }
         )
     return {
         kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,

@@ -209,13 +209,13 @@ export class ResourceFactory {
      * Create a resolver that creates an item in DynamoDB.
      * @param type
      */
-    public makeCreateResolver(type: string, nameOverride?: string) {
+    public makeCreateResolver(type: string, nameOverride?: string, mutationTypeName: string = 'Mutation') {
         const fieldName = nameOverride ? nameOverride : graphqlName('create' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Mutation',
+            TypeName: mutationTypeName,
             RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
                 compoundExpression([
                     qref('$context.args.input.put("createdAt", $util.time.nowISO8601())'),
@@ -241,13 +241,13 @@ export class ResourceFactory {
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
-    public makeUpdateResolver(type: string, nameOverride?: string) {
+    public makeUpdateResolver(type: string, nameOverride?: string, mutationTypeName: string = 'Mutation') {
         const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Mutation',
+            TypeName: mutationTypeName,
             RequestMappingTemplate: print(
                 compoundExpression([
                     ifElse(
@@ -296,13 +296,13 @@ export class ResourceFactory {
      * Create a resolver that creates an item in DynamoDB.
      * @param type
      */
-    public makeGetResolver(type: string, nameOverride?: string) {
+    public makeGetResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('get' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Query',
+            TypeName: queryTypeName,
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
                     key: obj({
@@ -320,14 +320,14 @@ export class ResourceFactory {
      * Create a resolver that queries an item in DynamoDB.
      * @param type
      */
-    public makeQueryResolver(type: string, nameOverride?: string) {
+    public makeQueryResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName(`query${toUpper(type)}`)
         const defaultPageLimit = 10
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Query',
+            TypeName: queryTypeName,
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
@@ -381,7 +381,7 @@ export class ResourceFactory {
      * TODO: actually fill out the right filter expression. This is a placeholder only.
      * @param type
      */
-    public makeListResolver(type: string, nameOverride?: string) {
+    public makeListResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type)))
         const defaultPageLimit = 10
 
@@ -389,7 +389,7 @@ export class ResourceFactory {
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Query',
+            TypeName: queryTypeName,
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
@@ -419,13 +419,13 @@ export class ResourceFactory {
      * @param type The name of the type to delete an item of.
      * @param nameOverride A user provided override for the field name.
      */
-    public makeDeleteResolver(type: string, nameOverride?: string) {
+    public makeDeleteResolver(type: string, nameOverride?: string, mutationTypeName: string = 'Mutation') {
         const fieldName = nameOverride ? nameOverride : graphqlName('delete' + toUpper(type))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
             FieldName: fieldName,
-            TypeName: 'Mutation',
+            TypeName: mutationTypeName,
             RequestMappingTemplate: print(
                 compoundExpression([
                     ifElse(

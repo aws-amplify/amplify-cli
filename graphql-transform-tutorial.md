@@ -676,6 +676,8 @@ of the input field via the **versionField** and **versionInput** arguments on th
 The `@searchable` directive handles streaming the data of an `@model` object type to
 Amazon Elasticsearch Service and configures search resolvers that search that information.
 
+> Note: Support for adding the `@searchable` directive does not yet provide automatic indexing for any existing data to Elasticsearch. View the feature request [here](https://github.com/aws-amplify/amplify-cli/issues/98).
+
 #### Definition
 
 ```graphql
