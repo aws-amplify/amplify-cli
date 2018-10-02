@@ -4,6 +4,7 @@ module.exports = {
   PROMPT_MSG_API_LIST: 'Choose the AppSync API that you want to use in this project',
   PROMPT_MSG_FILE_NAME: 'Enter the file name for the generated code',
   PROMPT_MSG_CODEGEN_TARGET: 'Choose the code generation language target',
+  PROMPT_MSG_API_KEY: 'Choose the API Key to use',
   PROMPT_MSG_GQL_FILE_PATTERN:
     'Enter the file name pattern of graphql queries, mutations and subscriptions',
   PROMPT_MSG_GENERATE_CODE: 'Do you want to generate code for your newly created GraphQL API',
@@ -18,6 +19,7 @@ module.exports = {
   ERROR_CODEGEN_FRONTEND_NOT_SUPPORTED: 'The project frontend is not supported by codegen',
   ERROR_CODEGEN_NO_API_AVAILABLE:
     'There are no GraphQL APIs available.\nAdd by running $amplify api add',
+  ERROR_CODEGEN_NO_API_KEY_AVAILABLE: "Security mode is set to API Key but coudn't find any API Keys. Please add an API Key to your AppSync API using the AWS AppSync console",
   ERROR_CODEGEN_ALL_APIS_ALREADY_ADDED: 'All enabled AppSync APIs are already added',
   ERROR_CODEGEN_SUPPORT_MAX_ONE_API: 'Codegen support only one GraphQL API per project',
   CMD_DESCRIPTION_ADD:
@@ -48,6 +50,7 @@ module.exports = {
   INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS: 'Code generated successfully and saved in file',
   INFO_MESSAGE_DOWNLOADING_SCHEMA: 'Downloading the introspection schema',
   INFO_MESSAGE_DOWNLOAD_SUCCESS: 'Downloaded the schema',
+  INFO_MESSAGE_DOWNLOAD_ERROR: 'Downloading schema failed',
   INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
 };

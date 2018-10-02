@@ -21,7 +21,7 @@ jest.mock('fs-jetpack');
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_STATEMENTS_PATH = 'MOCK_STATEMENTS_PATH';
 const MOCK_SCHEMA = 'INTROSPECTION_SCHEMA.JSON';
-const MOCK_TARGET = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
+const MOCK_TARGET_LANGUAGE = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
@@ -31,7 +31,7 @@ const MOCK_PROJECT = {
   schema: MOCK_SCHEMA,
   amplifyExtension: {
     generatedFileName: MOCK_GENERATED_FILE_NAME,
-    codeGenTarget: MOCK_TARGET,
+    codeGenTarget: MOCK_TARGET_LANGUAGE,
     graphQLApiId: MOCK_API_ID,
     docsFilePath: MOCK_STATEMENTS_PATH,
     region: MOCK_REGION,
@@ -60,7 +60,7 @@ describe('command - statements', () => {
     expect(generate).toHaveBeenCalledWith(
       path.resolve(MOCK_SCHEMA),
       MOCK_STATEMENTS_PATH,
-      { separateFiles: true, language: 'javascript' },
+      { separateFiles: true, language: MOCK_TARGET_LANGUAGE },
     );
   });
 

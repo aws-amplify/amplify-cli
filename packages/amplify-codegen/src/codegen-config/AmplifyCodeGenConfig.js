@@ -1,5 +1,5 @@
 const graphQLConfig = require('graphql-config');
-const { join } = require('path');
+const { join, isAbsolute, relative } = require('path');
 
 const { graphQlToAmplifyConfig } = require('./utils');
 
@@ -11,7 +11,7 @@ class AmplifyCodeGenConfig {
     } catch (e) {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
-        const projectRoot = amplify.getProjectDetails().projectPath || process.cwd();
+        const projectRoot = amplify.getProjectDetails().projectConfig.projectPath || process.cwd();
         const configPath = join(projectRoot, '.graphqlconfig.yml');
         this.gqlConfig = new graphQLConfig.GraphQLConfig(null, configPath);
         this.gqlConfig.config = {};
@@ -38,8 +38,11 @@ class AmplifyCodeGenConfig {
     if (!this.constructor.isValidAmplifyProject(project)) {
       return false;
     }
+    const schemaPath = isAbsolute(project.schema)
+      ? relative(this.gqlConfig.configDir, project.schema)
+      : project.schema;
     const newProject = {
-      schemaPath: project.schema,
+      schemaPath,
       includes: project.includes,
       excludes: project.excludes,
     };

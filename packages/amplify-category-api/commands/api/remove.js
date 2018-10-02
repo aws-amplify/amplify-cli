@@ -1,5 +1,8 @@
+const path = require('path');
+
 const subcommand = 'remove';
 const category = 'api';
+const gqlConfigFilename = '.graphqlconfig.yml';
 
 module.exports = {
   name: subcommand,
@@ -8,6 +11,17 @@ module.exports = {
     const resourceName = parameters.first;
 
     return amplify.removeResource(context, category, resourceName)
+      .then((resourceValues) => {
+        if (resourceValues.service === 'AppSync') {
+          const { projectPath } = amplify.getProjectDetails().projectConfig;
+
+          const gqlConfigFile = path.normalize(path.join(
+            projectPath,
+            gqlConfigFilename,
+          ));
+          context.filesystem.remove(gqlConfigFile);
+        }
+      })
       .catch((err) => {
         context.print.info(err.stack);
         context.print.error('There was an error removing the api resource');

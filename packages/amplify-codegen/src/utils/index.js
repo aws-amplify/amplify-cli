@@ -9,6 +9,8 @@ const getProjectAwsRegion = require('./getProjectAWSRegion');
 const getGraphQLDocPath = require('./getGraphQLDocPath');
 const downloadIntrospectionSchemaWithProgress = require('./generateIntrospectionSchemaWithProgress');
 const isAppSyncApiPendingPush = require('./isAppSyncApiPendingPush');
+const updateAmplifyMeta = require('./updateAmplifyMeta');
+const selectAPIKey = require('./selectAPIKey');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -22,4 +24,6 @@ module.exports = {
   getProjectAwsRegion,
   getGraphQLDocPath,
   isAppSyncApiPendingPush,
+  updateAmplifyMeta,
+  selectAPIKey,
 };

@@ -6,6 +6,7 @@ const category = 'api';
 const serviceName = 'AppSync';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
+const providerName = 'awscloudformation';
 
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
@@ -183,6 +184,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
           }
           notCompiled = false;
         }
+
         return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
       });
   }
@@ -199,9 +201,14 @@ async function updateWalkthrough(context) {
   let resourceDir;
   let resourceName;
   const resources = allResources.filter(resource => resource.service === 'AppSync');
+
   // There can only be one appsync resource
   if (resources.length > 0) {
     const resource = resources[0];
+    if (resource.providerPlugin !== providerName) {
+      // TODO: Move message string to seperate file
+      throw new Error(`The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`);
+    }
     ({ resourceName } = resource);
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     resourceDir = path.normalize(path.join(backEndDir, category, resourceName));

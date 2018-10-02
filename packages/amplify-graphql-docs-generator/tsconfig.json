@@ -19,5 +19,8 @@
         "node_modules",
         "lib",
         "__tests__"
+    ],
+    "include": [
+        "src/"
     ]
 }
