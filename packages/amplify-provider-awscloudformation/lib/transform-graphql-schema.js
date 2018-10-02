@@ -41,7 +41,7 @@ async function transformGraphQLSchema(context, options) {
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
-      if (resource.provider !== providerName) {
+      if (resource.providerPlugin !== providerName) {
         return;
       }
       const { category, resourceName } = resource;
