@@ -1,6 +1,7 @@
 const response = require('cfn-response');
 const aws = require('aws-sdk');
 const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
+const lambdaClient = new aws.Lambda({ apiVersion: '2017-04-19' });
 exports.handler = function(event, context) {
     if (event.RequestType == 'Delete') {
         response.send(event, context, response.SUCCESS);
@@ -53,12 +54,18 @@ exports.handler = function(event, context) {
                 "<%= props.intents[i].utterances[j] %>",
             <% } %>
             ],
-        <% if(props.intents[i].pathsAnswer) { %>
+        <% if(props.intents[i].lambda) { %>
+            "fulfillmentLambda": {
+                "region": "<%= props.intents[i].lambda.region %>",
+                "accountId": "<%= props.intents[i].lambda.accountId %>",
+                "lambdaArn": "<%= props.intents[i].lambda.lambdaArn %>",
+                "lambdaName": "<%= props.intents[i].lambda.lambdaName %>",
+            },
             "fulfillmentActivity": {
                 "type": "CodeHook",
                 "codeHook": {
                     "messageVersion": "1.0",
-                    "uri": "<%= props.intents[i].pathsAnswer.paths[0].lambdaArn %>"
+                    "uri": "<%= props.intents[i].lambda.lambdaArn %>"
                 }
             }, 
         <% } else { %>
@@ -209,7 +216,11 @@ function putIntents(intentParams){
     const tasks = []; 
     intentParams.forEach( intent => {
         tasks.push(
-            lex.putIntent(intent).promise()
+            ensureLambdaFunctionAccess(intent)
+            .then(()=>{
+                delete intent.fulfillmentLambda;
+                lex.putIntent(intent).promise();
+            })
             .then((data)=>{
                 console.log(data);
             })
@@ -220,6 +231,30 @@ function putIntents(intentParams){
         );
     }); 
     return Promise.all(tasks);
+}
+
+function ensureLambdaFunctionAccess(intent){
+    if(intent.fulfillmentLambda){
+        const {region, accountId, lambdaArn, lambdaName} = intent.fulfillmentLambda;
+        const params = {
+            FunctionName: lambdaName,
+            StatementId: `Lex-${intent.name}`,
+            Action: 'lambda:InvokeFunction',
+            Principal: 'lex.amazonaws.com',
+            SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,
+        }
+        return lambdaClient.addPermission(params).promise()
+                .then((data)=>{
+                    console.log(data);
+                    return data; 
+                })
+                .catch((err)=>{
+                    console.log(err); 
+                    throw err; 
+                });
+    }else{
+        return Promise.resolve(undefined);
+    }
 }
 
 function getBot(botParams){
