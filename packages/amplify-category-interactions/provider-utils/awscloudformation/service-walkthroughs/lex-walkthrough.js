@@ -15,7 +15,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   // const resourceName = resourceAlreadyExists(context);
   const { amplify } = context;
   context.exeInfo = amplify.getProjectDetails();
-  const { amplifyMeta } = constext.exeInfo;
+  const { amplifyMeta } = context.exeInfo;
 
   const lexResources = {};
 
@@ -49,7 +49,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify, print } = context;
   context.exeInfo = amplify.getProjectDetails();
-  
+
   const { inputs, samples } = serviceMetadata;
 
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -688,7 +688,7 @@ async function askLambda(context) {
   }));
 
   if (lambdaOptions.length === 0) {
-    context.print.error('You do not have any lambda functions configured in the region ' + projectRegion);
+    context.print.error(`You do not have any lambda functions configured in the region ${projectRegion}`);
     return null;
   }
 
@@ -701,12 +701,12 @@ async function askLambda(context) {
 
   const lambdaCloudOptionAnswer = await inquirer.prompt([lambdaCloudOptionQuestion]);
 
-  return { 
+  return {
     region: projectRegion,
     accountId: accountID,
-    lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, 
+    lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn,
     lambdaName: lambdaCloudOptionAnswer.lambdaChoice.FunctionName,
-   };
+  };
 }
 
 module.exports = { addWalkthrough, updateWalkthrough };
