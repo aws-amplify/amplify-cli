@@ -18,6 +18,7 @@ const getAllDefaults = (project) => {
     unauthRoleName,
     authRoleArn,
     unauthRoleArn,
+    shortId,
     botArn: `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`,
     resourceName: `lex${shortId}`,
     sessionTimeout: 5,
