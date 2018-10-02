@@ -705,7 +705,7 @@ async function askLambda(context) {
     region: projectRegion,
     accountId: accountID,
     lambdaArn: lambdaCloudOptionAnswer.lambdaChoice.Arn, 
-    lambdaName: lambdaCloudOptionAnswer.lambdaChoice.FunctionName.replace(/[^0-9a-zA-Z]/gi, ''),
+    lambdaName: lambdaCloudOptionAnswer.lambdaChoice.FunctionName,
    };
 }
 

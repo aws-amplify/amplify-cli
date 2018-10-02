@@ -22,6 +22,7 @@ const getAllDefaults = (project) => {
     resourceName: `lex${shortId}`,
     sessionTimeout: 5,
     lexPolicyName: `lexPolicy${shortId}`,
+    lambdaPolicyName: `lambdaPolicy${shortId}`,
     authPolicyName: `lex_amplify_${shortId}`,
     unauthPolicyName: `lex_amplify_${shortId}`,
     roleName: `lexLambdaRole${shortId}`,

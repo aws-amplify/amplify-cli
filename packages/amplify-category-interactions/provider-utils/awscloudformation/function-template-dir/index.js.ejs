@@ -235,7 +235,13 @@ function putIntents(intentParams){
 
 function ensureLambdaFunctionAccess(intent){
     if(intent.fulfillmentLambda){
-        const {region, accountId, lambdaArn, lambdaName} = intent.fulfillmentLambda;
+        const { 
+            region,
+            accountId,
+            lambdaArn, 
+            lambdaName
+        } = intent.fulfillmentLambda;
+
         const params = {
             FunctionName: lambdaName,
             StatementId: `Lex-${intent.name}`,
@@ -243,6 +249,7 @@ function ensureLambdaFunctionAccess(intent){
             Principal: 'lex.amazonaws.com',
             SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,
         }
+
         return lambdaClient.addPermission(params).promise()
                 .then((data)=>{
                     console.log(data);
