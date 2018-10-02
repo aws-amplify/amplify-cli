@@ -207,8 +207,7 @@ async function updateWalkthrough(context) {
     const resource = resources[0];
     if (resource.providerPlugin !== providerName) {
       // TODO: Move message string to seperate file
-      context.print.error(`The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`);
-      throw new Error('Error updating resource');
+      throw new Error(`The selected resource is not managed using AWS Cloudformation. Please use the AWS AppSync Console to make updates to your API - ${resource.resourceName}`);
     }
     ({ resourceName } = resource);
     const backEndDir = context.amplify.pathManager.getBackendDirPath();

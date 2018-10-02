@@ -22,8 +22,7 @@ module.exports = {
       })
       .then(() => context.print.success('Successfully updated resource'))
       .catch((err) => {
-        context.print.info(err.stack);
-        context.print.error('There was an error updating the API resource');
+        context.print.error(err.message);
       });
   },
 };
