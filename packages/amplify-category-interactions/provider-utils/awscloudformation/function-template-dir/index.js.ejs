@@ -219,7 +219,7 @@ function putIntents(intentParams){
             ensureLambdaFunctionAccess(intent)
             .then(()=>{
                 delete intent.fulfillmentLambda;
-                lex.putIntent(intent).promise();
+                return lex.putIntent(intent).promise();
             })
             .then((data)=>{
                 console.log(data);
