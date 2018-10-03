@@ -14,12 +14,12 @@ jobs:
     steps:
       - checkout
       - run: npm cache clean --force
-      - run: cd packages && rm -rf */yarn.lock && rm -rf */node_modules
+      - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
       - run: yarn
       - run: yarn config set workspaces-experimental true
       - run: yarn run production-build
       - save_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -35,7 +35,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm run test
   integration_test:
       working_directory: ~/repo
@@ -47,7 +47,7 @@ jobs:
         - attach_workspace:
             at: ./
         - restore_cache:
-            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
         - run: apt-get install -y sudo
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
@@ -122,7 +122,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Update SSH configs"
           command: |
@@ -135,10 +135,14 @@ jobs:
       - run:
           name: "Publish Amplify CLI"
           command: |
-            git config --global user.email $GITHUB_EMAIL
-            git config --global user.name $GITHUB_USER
-            yarn run publish:circle-ci-publish-fix
-
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              git config --global user.name $GITHUB_USER
+              git config --global user.name $GITHUB_USER
+              yarn run publish:circle-ci-publish-fix
+              yarn run publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
 workflows:
   version: 2
   build_test_deploy:
@@ -158,3 +162,9 @@ workflows:
           requires:
             - build
             - test
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - circle-ci-publish-fix
