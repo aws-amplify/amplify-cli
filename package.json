@@ -18,6 +18,9 @@
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "main": "index.js",
   "repository": {
