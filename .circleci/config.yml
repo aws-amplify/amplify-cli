@@ -15,7 +15,7 @@ jobs:
       - checkout
       - run: npm cache clean --force
       - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-      - run: npm
+      - run: npm install
       - run: npm config set workspaces-experimental true
       - run: npm run production-build
       - save_cache:
