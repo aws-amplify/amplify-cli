@@ -23,6 +23,9 @@
     "graphql-transformer-core": "^1.0.12"
   },
   "devDependencies": {
+    "graphql-transformer-core": "^1.0.12",
+    "graphql-transformer-common": "^1.0.12",
+    "graphql-appsync-transformer": "^1.0.12",
     "@types/graphql": "^0.13.1",
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",

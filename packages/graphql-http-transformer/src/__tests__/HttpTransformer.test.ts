@@ -1,14 +1,8 @@
-import {
-    ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode
-} from 'graphql'
+import { parse } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
-import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
-import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
 import { HttpTransformer } from '../HttpTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
-import Resource from 'cloudform/types/resource';
 
 test('Test HttpTransformer simple one to many happy case', () => {
     const validSchema = `
