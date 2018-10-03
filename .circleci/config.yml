@@ -7,7 +7,6 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
-  parallelism: 8
 
 jobs:
   build:
@@ -139,11 +138,10 @@ jobs:
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
-              yarn run publish:$CIRCLE_BRANCH
+              yarn run publish:circle-ci-publish-fix
             else
               echo "Skipping deploy."
             fi
-
 workflows:
   version: 2
   build_test_deploy:
@@ -168,3 +166,4 @@ workflows:
               only:
                 - release
                 - master
+                - circle-ci-publish-fix
