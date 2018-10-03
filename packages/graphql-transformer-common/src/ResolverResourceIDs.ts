@@ -25,7 +25,4 @@ export class ResolverResourceIDs {
     static ResolverResourceID(typeName: string, fieldName: string): string {
         return `${typeName}${fieldName}Resolver`
     }
-    static HttpGetResolverResourceID(url: string): string {
-        return `${graphqlName(url)}GetResolver`
-    }
 }

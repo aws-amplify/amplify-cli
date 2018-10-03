@@ -1,9 +1,7 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
-import Table from 'cloudform/types/dynamoDb/table'
+import { Transformer, TransformerContext } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
-    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
-    InputValueDefinitionNode, StringValueNode
+    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
@@ -14,19 +12,11 @@ import {
     makeModelSortDirectionEnumObject,
 } from 'graphql-dynamodb-transformer'
 import {
-    getBaseType, isListType, getDirectiveArgument, blankObject,
-    toCamelCase, graphqlName
+    getDirectiveArgument
 } from 'graphql-transformer-common'
-import { ResolverResourceIDs, ModelResourceIDs, HttpResourceIDs } from 'graphql-transformer-common'
-import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
-import { Fn } from 'cloudform';
+import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common'
 
-enum HttpMethod {
-    GET,
-    POST,
-    PUT,
-    DELETE
-}
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 interface HttpDirectiveArgs {
     method?: HttpMethod,
@@ -34,10 +24,10 @@ interface HttpDirectiveArgs {
 }
 
 /**
- * The @connection transform.
+ * The @http transform.
  *
- * This transform configures the GSIs and resolvers needed to implement
- * relationships at the GraphQL level.
+ * This transform attaches http resolvers to any fields with the @http directive.
+ * Works with GET, POST, PUT, DELETE requests.
  */
 export class HttpTransformer extends Transformer {
 
@@ -89,7 +79,6 @@ export class HttpTransformer extends Transformer {
             }
             // extract just the base url, without "www" or path information
             const baseURL = url.replace(HttpTransformer.urlRegex, '$1')
-            console.log(`baseURL: ${baseURL}`)
             const dataSourceID = HttpResourceIDs.HttpDataSourceID(baseURL)
             // only create one DataSource per base URL
             if (!ctx.getResource(dataSourceID)) {
@@ -97,7 +86,6 @@ export class HttpTransformer extends Transformer {
                     dataSourceID,
                     this.resources.makeHttpDataSource(baseURL)
                 )
-                console.log(ctx.getResource(dataSourceID))
             }
         })
     }
@@ -112,37 +100,62 @@ export class HttpTransformer extends Transformer {
         ctx: TransformerContext
     ): void => {
 
-        const url = getDirectiveArgument(directive)("url")
-        const baseURL = url.replace(HttpTransformer.urlRegex, '$1')
+        const url: string = getDirectiveArgument(directive)("url")
+        const baseURL: string = url.replace(HttpTransformer.urlRegex, '$1')
         // split the url into pieces, and get the path part off the end
-        const path = url.split(/(http(s)?:\/\/|www\.)|(\/.*)/g).slice(-2, -1)
-        console.log(`the path we got is ${path}`)
+        const path: string = url.split(/(http(s)?:\/\/|www\.)|(\/.*)/g).slice(-2, -1)[0]
 
-        let method = getDirectiveArgument(directive)("method")
-        if (!method) {
-            method = HttpMethod.GET
+        let urlParams: string[] = path.match(/:\w+/g)
+        let pathWithParams
+
+        if (urlParams) {
+            /**
+             * TODO: add logic that checks if any of the arguments match any of the URL parameters in the path,
+             * and replace them in the resolver template if so
+             */
+            pathWithParams = path.replace(/:\w+/g, (str: string) => {
+                return `\$\{ctx.args.${str.replace(':', '')}\}`
+            })
+            // then actually replace?
         }
 
+        let method: HttpMethod = getDirectiveArgument(directive)("method")
+        if (!method) {
+            method = 'GET'
+        }
         // build the payload
         switch (method) {
-            case HttpMethod.GET:
-                const getResourceID = ResolverResourceIDs.HttpGetResolverResourceID(url)
+            case 'GET':
+                const getResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
                 if (!ctx.getResource(getResourceID)) {
                     const getResolver = this.resources.makeGetResolver(baseURL, path, parent.name.value, field.name.value)
                     ctx.setResource(getResourceID, getResolver)
-                    console.log(JSON.stringify(ctx.getResource(getResourceID), null, 2))
                 }
                 break;
-            case HttpMethod.POST:
-            case HttpMethod.PUT:
-            case HttpMethod.DELETE:
+            case 'POST':
+                const postResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
+                if (!ctx.getResource(postResourceID)) {
+                    const postResolver = this.resources.makePostResolver(baseURL, path, parent.name.value, field.name.value)
+                    ctx.setResource(postResourceID, postResolver)
+                }
+                break;
+            case 'PUT':
+                const putResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
+                if (!ctx.getResource(putResourceID)) {
+                    const putResolver = this.resources.makePutResolver(baseURL, path, parent.name.value, field.name.value)
+                    ctx.setResource(putResourceID, putResolver)
+                }
+                break;
+            case 'DELETE':
+                const deleteResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
+                if (!ctx.getResource(deleteResourceID)) {
+                    const deleteResolver = this.resources.makeDeleteResolver(baseURL, path, parent.name.value, field.name.value)
+                    ctx.setResource(deleteResourceID, deleteResolver)
+                }
+                break;
             default:
-            // nothin
+            // nothing
         }
 
-    }
-
-    private typeExist(type: string, ctx: TransformerContext): boolean {
-        return Boolean(type in ctx.nodeMap);
     }
 }

@@ -31,7 +31,7 @@ export class ResourceFactory {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Name: HttpResourceIDs.HttpDataSourceID(baseURL),
-            Type: 'AMAZON_HTTP',
+            Type: 'HTTP',
             HttpConfig: {
                 Endpoint: baseURL
             }
@@ -51,28 +51,36 @@ export class ResourceFactory {
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                    qref('$headers.remove("accept-encoding")'),
                     HttpMappingTemplate.getRequest({
                         resourcePath: path,
                         params: obj({
                             query: ref('util.toJson($ctx.args)'),
-                            headers: ref('utils.http.copyHeaders($ctx.request.headers)')
+                            headers: ref('util.toJson($headers)')
                         })
                     }),
+                ])
             ),
             ResponseMappingTemplate: print(
                 ifElse(
                     raw('$ctx.result.statusCode == 200'),
-                    ref('utils.xml.toJsonString($ctx.result.body)'),
-                    ref('utils.appendError($ctx.result.body, $ctx.result.statusCode)')
+                    ifElse(
+                        ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+                        ref('utils.xml.toJsonString($ctx.result.body)'),
+                        ref('ctx.result.body')
+                    ),
+                    ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
                 )
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })//.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     /**
-     * Create a resolver that makes a GET request. So far, it assumes the endpoint expects query parameters in the exact
-     * shape of the input arguments to the http directive. Returns the result in JSON format, or an error if the status code
-     * is not 200
+     * Create a resolver that makes a POST request. So far, it just puts the input arguments into the body of the
+     * request. Returns the result in JSON format, or an error if the status code is not 200.
+     * Forwards the headers from the request, adding that the content type is JSON.
      * @param type
      */
     public makePostResolver(baseURL: string, path: string, type: string, field: string) {
@@ -82,22 +90,107 @@ export class ResourceFactory {
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                    qref('$headers.put("Content-Type", "application/json")'),
+                    qref('$headers.remove("accept-encoding")'),
                     HttpMappingTemplate.postRequest({
                         resourcePath: path,
                         params: obj({
                             body: ref('util.toJson($ctx.args)'),
-                            // do we need to explicitly say Content-Type: application/json????
-                            headers: ref('utils.http.copyHeaders($ctx.request.headers)')
+                            headers: ref('util.toJson($headers)')
                         })
                     }),
+                ])
+            ),
+            ResponseMappingTemplate: print(
+                ifElse(
+                    raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
+                    // check if the content type returned is XML, and convert to JSON if so
+                    ifElse(
+                        ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+                        ref('utils.xml.toJsonString($ctx.result.body)'),
+                        ref('ctx.result.body')
+                    ),
+                    ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
+                )
+            )
+        })//.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+        /**
+     * Create a resolver that makes a PUT request. So far, it just puts the input arguments into the body of the
+     * request. Returns the result in JSON format, or an error if the status code is not 200.
+     * Forwards the headers from the request, adding that the content type is JSON.
+     * @param type
+     */
+    public makePutResolver(baseURL: string, path: string, type: string, field: string) {
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
+            FieldName: field,
+            TypeName: type,
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                    qref('$headers.put("Content-Type", "application/json")'),
+                    qref('$headers.remove("accept-encoding")'),
+                    HttpMappingTemplate.putRequest({
+                        resourcePath: path,
+                        params: obj({
+                            body: ref('util.toJson($ctx.args)'),
+                            headers: ref('util.toJson($headers)')
+                        })
+                    }),
+                ])
+            ),
+            ResponseMappingTemplate: print(
+                ifElse(
+                    raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
+                    ifElse(
+                        ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+                        ref('utils.xml.toJsonString($ctx.result.body)'),
+                        ref('ctx.result.body')
+                    ),
+                    ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
+                )
+            )
+        })//.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+    /**
+     * Create a resolver that makes a DELETE request. Has no parameters.
+     * @param type
+     */
+    public makeDeleteResolver(baseURL: string, path: string, type: string, field: string) {
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
+            FieldName: field,
+            TypeName: type,
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                    qref('$headers.remove("accept-encoding")'),
+                    HttpMappingTemplate.deleteRequest({
+                        resourcePath: path,
+                        params: obj({
+                            headers: ref('util.toJson($headers)')
+                        })
+                    }),
+                ])
             ),
             ResponseMappingTemplate: print(
                 ifElse(
                     raw('$ctx.result.statusCode == 200'),
-                    ref('utils.xml.toJsonString($ctx.result.body)'),
-                    ref('utils.appendError($ctx.result.body, $ctx.result.statusCode)')
+                    ifElse(
+                        ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+                        ref('utils.xml.toJsonString($ctx.result.body)'),
+                        ref('ctx.result.body')
+                    ),
+                    ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
                 )
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })//.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 }
