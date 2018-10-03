@@ -136,10 +136,9 @@ jobs:
           name: "Publish Amplify CLI"
           command: |
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              git config --global user.name $GITHUB_USER
+              git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
               yarn run publish:circle-ci-publish-fix
-              yarn run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
