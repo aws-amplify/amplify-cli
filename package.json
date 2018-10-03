@@ -21,6 +21,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "private": true,
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "main": "index.js",
   "repository": {
