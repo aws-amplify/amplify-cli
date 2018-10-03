@@ -5,13 +5,6 @@ import {
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
-    makeModelConnectionType,
-    makeModelConnectionField,
-    makeScalarFilterInputs,
-    makeModelXFilterInputObject,
-    makeModelSortDirectionEnumObject,
-} from 'graphql-dynamodb-transformer'
-import {
     getDirectiveArgument
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common'
