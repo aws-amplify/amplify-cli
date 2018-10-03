@@ -14,12 +14,12 @@ jobs:
     steps:
       - checkout
       - run: npm cache clean --force
-      - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
+      - run: cd packages && rm -rf */yarn.lock && rm -rf */node_modules
       - run: yarn
       - run: yarn config set workspaces-experimental true
       - run: yarn run production-build
       - save_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -35,7 +35,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run: npm run test
   integration_test:
       working_directory: ~/repo
@@ -47,7 +47,7 @@ jobs:
         - attach_workspace:
             at: ./
         - restore_cache:
-            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
         - run: apt-get install -y sudo
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
@@ -122,7 +122,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: "Update SSH configs"
           command: |
