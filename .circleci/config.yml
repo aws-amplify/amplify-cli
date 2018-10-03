@@ -137,7 +137,7 @@ jobs:
           command: |
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
-            yarn run publish:$CIRCLE_BRANCH
+            yarn run publish:circle-ci-publish-fix
 
 workflows:
   version: 2
