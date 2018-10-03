@@ -11,12 +11,12 @@ exports.handler = function(event, context) {
         <% for(var i = 0; i < props.intents.length; i++) { %>
         <% for(var j = 0; j < props.intents[i].newSlotTypes.length; j++) { %>
         {
-            "name": "<%= props.intents[i].newSlotTypes[j].slotType %>",
-            "description": "<%= props.intents[i].newSlotTypes[j].slotTypeDescription %>",
+            "name": "<%- props.intents[i].newSlotTypes[j].slotType %>",
+            "description": "<%- props.intents[i].newSlotTypes[j].slotTypeDescription %>",
             "enumerationValues": [
                 <% for(var k = 0; k < props.intents[i].newSlotTypes[j].slotValues.length; k++) { %>
                 {
-                    "value": "<%= props.intents[i].newSlotTypes[j].slotValues[k] %>"
+                    "value": "<%- props.intents[i].newSlotTypes[j].slotValues[k] %>"
                 },
                 <% } %>
             ]
@@ -27,13 +27,13 @@ exports.handler = function(event, context) {
     let intentParams = [
         <% for(var i = 0; i < props.intents.length; i++) { %>
         {
-            "name": "<%= props.intents[i].intentName %>",
+            "name": "<%- props.intents[i].intentName %>",
             <% if(props.intents[i].confirmationQuestion) { %>
             "confirmationPrompt": {
                 "maxAttempts": 2, 
                 "messages": [
                     {
-                        "content": "<%= props.intents[i].confirmationQuestion %>", 
+                        "content": "<%- props.intents[i].confirmationQuestion %>", 
                         "contentType": "PlainText"
                     }
                 ]
@@ -43,7 +43,7 @@ exports.handler = function(event, context) {
             "rejectionStatement": {
                 "messages": [
                     {
-                    "content": "<%= props.intents[i].cancelMessage %>", 
+                    "content": "<%- props.intents[i].cancelMessage %>", 
                     "contentType": "PlainText"
                     }
                 ]
@@ -51,21 +51,21 @@ exports.handler = function(event, context) {
         <% } %>
             "sampleUtterances": [
             <% for(var j = 0; j < props.intents[i].utterances.length; j++) { %>
-                "<%= props.intents[i].utterances[j] %>",
+                "<%- props.intents[i].utterances[j] %>",
             <% } %>
             ],
         <% if(props.intents[i].lambda) { %>
             "fulfillmentLambda": {
-                "region": "<%= props.intents[i].lambda.region %>",
-                "accountId": "<%= props.intents[i].lambda.accountId %>",
-                "lambdaArn": "<%= props.intents[i].lambda.lambdaArn %>",
-                "lambdaName": "<%= props.intents[i].lambda.lambdaName %>",
+                "region": "<%- props.intents[i].lambda.region %>",
+                "accountId": "<%- props.intents[i].lambda.accountId %>",
+                "lambdaArn": "<%- props.intents[i].lambda.lambdaArn %>",
+                "lambdaName": "<%- props.intents[i].lambda.lambdaName %>",
             },
             "fulfillmentActivity": {
                 "type": "CodeHook",
                 "codeHook": {
                     "messageVersion": "1.0",
-                    "uri": "<%= props.intents[i].lambda.lambdaArn %>"
+                    "uri": "<%- props.intents[i].lambda.lambdaArn %>"
                 }
             }, 
         <% } else { %>
@@ -76,16 +76,16 @@ exports.handler = function(event, context) {
             "slots": [
                 <% for(var j = 0; j < props.intents[i].slots.length; j++) { %>
                 {
-                    "name": "<%= props.intents[i].slots[j].name %>",
+                    "name": "<%- props.intents[i].slots[j].name %>",
                     "slotConstraint": <% if(props.intents[i].slots[j].required) { %>"Required"<% } else { %>"Optional"<% } %>,
-                    "priority": <%= j %>,
-                    "slotType": "<%= props.intents[i].slots[j].type %>",
+                    "priority": <%- j %>,
+                    "slotType": "<%- props.intents[i].slots[j].type %>",
                     <% if(props.intents[i].slots[j].customType) { %>"slotTypeVersion": "$LATEST",<% } %>
                     "valueElicitationPrompt": {
                         "maxAttempts": 3,
                         "messages": [
                             {
-                                "content": "<%= props.intents[i].slots[j].prompt %>",
+                                "content": "<%- props.intents[i].slots[j].prompt %>",
                                 "contentType": "PlainText"
                             }
                         ]
@@ -97,16 +97,16 @@ exports.handler = function(event, context) {
         <% } %>
     ];
     let botParams = {
-        "name": "<%= props.botName %>",
+        "name": "<%- props.botName %>",
         "intents": [
         <% for(var i = 0; i < props.intents.length; i++) { %>
             {
-                "intentName": "<%= props.intents[i].intentName %>",
+                "intentName": "<%- props.intents[i].intentName %>",
                 "intentVersion": "$LATEST"
             },
         <% } %>
         ],
-        "childDirected": <%= props.coppa %>,
+        "childDirected": <%- props.coppa %>,
         "locale": "en-US",
         "abortStatement": {
             "messages": [
@@ -134,10 +134,10 @@ exports.handler = function(event, context) {
             ]
         }, 
         <% if(props.outputVoice) { %>
-        "voiceId": "<%= props.outputVoice %>",
+        "voiceId": "<%- props.outputVoice %>",
         <% } %>
         <% if(props.sessionTimeout) { %>
-        "idleSessionTTLInSeconds": "<%= props.sessionTimeout*60 %>"
+        "idleSessionTTLInSeconds": "<%- props.sessionTimeout*60 %>"
         <% } %>
     };
     
@@ -244,7 +244,7 @@ function ensureLambdaFunctionAccess(intent){
 
         const params = {
             FunctionName: lambdaName,
-            StatementId: `Lex-${intent.name}`+ "<%= props.shortId %>",
+            StatementId: `Lex-${intent.name}`+ "<%- props.shortId %>",
             Action: 'lambda:InvokeFunction',
             Principal: 'lex.amazonaws.com',
             SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,
