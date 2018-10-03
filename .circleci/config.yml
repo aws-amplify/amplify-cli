@@ -7,7 +7,6 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
-  parallelism: 8
 
 jobs:
   build:
@@ -168,3 +167,4 @@ workflows:
               only:
                 - release
                 - master
+                - circle-ci-publish-fix
