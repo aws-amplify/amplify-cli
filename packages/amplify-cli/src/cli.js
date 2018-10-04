@@ -1,9 +1,10 @@
+const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
 
 async function run(argv) {
-  const localNodeModulesDirPath = path.join(__dirname, '../node_modules');
+  const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
 
   const cli = build()
@@ -22,6 +23,29 @@ async function run(argv) {
   // send it back (for testing, mostly)
   return context;
 }
+
+function getLocalNodeModulesDirPath() {
+  let result;
+  let baseDirPath = path.join(__dirname, '../');
+
+  do {
+    const localNMDirPath = path.join(baseDirPath, 'node_modules');
+    if (fs.existsSync(localNMDirPath)) {
+      result = localNMDirPath;
+      break;
+    } else {
+      const parentDirPath = path.dirname(baseDirPath);
+      if (baseDirPath === parentDirPath) {
+        break;
+      } else {
+        baseDirPath = parentDirPath;
+      }
+    }
+  } while (true);
+
+  return result;
+}
+
 
 function normalizeArgv(cli, argv) {
   const pluginNames = cli.plugins.map((plugin) => {
