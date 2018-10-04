@@ -8,7 +8,11 @@ describe('end 2 end tests', () => {
 
   afterEach(() => {
     // delete the generated file
-    fs.unlinkSync(outputpath);
+    try {
+      fs.unlinkSync(outputpath);
+    } catch (e) {
+      // CircleCI throws exception, no harm done if the file is not deleted
+    }
   });
 
   it('should generate statements', () => {
