@@ -122,7 +122,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          keys: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
