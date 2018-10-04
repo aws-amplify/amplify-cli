@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.13-publish-test.0"></a>
+## [1.0.13-publish-test.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-appsync-transformer@1.0.12...graphql-appsync-transformer@1.0.13-publish-test.0) (2018-10-04)
+
+
+
+
+**Note:** Version bump only for package graphql-appsync-transformer
+
 <a name="1.0.12"></a>
 ## [1.0.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-appsync-transformer@1.0.11...graphql-appsync-transformer@1.0.12) (2018-08-23)
 
