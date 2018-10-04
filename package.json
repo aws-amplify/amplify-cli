@@ -23,9 +23,20 @@
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "husky": "^1.1.0",
     "lerna": "^2.11.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.1.2",
+    "@commitlint/config-conventional": "^7.1.2",
+    "@commitlint/config-lerna-scopes": "^7.1.2"
   }
 }
