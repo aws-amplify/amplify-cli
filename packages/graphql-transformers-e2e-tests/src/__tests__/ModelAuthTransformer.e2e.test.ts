@@ -10,12 +10,22 @@ import ModelAuthTransformer from 'graphql-auth-transformer'
 import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
+import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
+import * as S3 from 'aws-sdk/clients/s3'
+import { CreateBucketRequest, CreateBucketOutput } from 'aws-sdk/clients/s3'
+import {
+    CreateGroupRequest, CreateGroupResponse,
+    AdminAddUserToGroupRequest
+} from 'aws-sdk/clients/cognitoidentityserviceprovider'
+import {
+    AuthenticationDetails,
+} from 'amazon-cognito-identity-js';
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
-import { deploy } from '../deploy'
+import { deploy, cleanupS3Bucket } from '../deploy'
 import * as moment from 'moment';
 
 // to deal with bug in cognito-identity-js
@@ -25,8 +35,9 @@ jest.setTimeout(1000000);
 
 const cf = new CloudFormationClient('us-west-2')
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `ModelAuthTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `ModelAuthTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-auth-transformer-test-bucket-${BUILD_TIMESTAMP}`
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -40,11 +51,14 @@ let GRAPHQL_CLIENT_1 = undefined;
  */
 let GRAPHQL_CLIENT_2 = undefined;
 
-const USERNAME1 = 'testuser'
-const USERPASSWORD1 = '9S^tp^nv5wWJ2jIv'
+const USERNAME1 = 'user1@test.com'
+const USERNAME2 = 'user2@test.com'
+const TMP_PASSWORD = 'Password123!'
+const REAL_PASSWORD = 'Password1234!'
 
-const USERNAME2 = 'invaliduser'
-const USERPASSWORD2 = 'HbD*D94xS86%ymhc'
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' })
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
 function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -66,9 +80,109 @@ function deleteDirectory(directory: string) {
     }
 }
 
-const TMP_ROOT = '/tmp/graphql_transform_tests/'
+async function signupUser(userPoolId: string, name: string, pw: string) {
+    return new Promise((res, rej) => {
+        const createUser = cognitoClient.adminCreateUser.bind(cognitoClient) as any;
+        createUser({
+            UserPoolId: userPoolId,
+            UserAttributes: [{ Name: 'email', Value: name }],
+            Username: name,
+            TemporaryPassword: pw
+        }, (err, data) => err ? rej(err) : res(data));
+    })
+}
 
-const BUCKET_NAME = 'appsync-auth-transformer-test-assets-bucket'
+async function authenticateUser(user: any, details: any) {
+    return new Promise((res, rej) => {
+        user.authenticateUser(details, {
+            onSuccess: function(result: any) {
+                res(result)
+            },
+            onFailure: function(err: any) {
+                rej(err)
+            },
+            newPasswordRequired: function(userAttributes: any, requiredAttributes: any) {
+                console.log('New password')
+                console.log(userAttributes)
+                console.log(userAttributes)
+                user.completeNewPasswordChallenge(REAL_PASSWORD, user.Attributes, this)
+            }
+        });
+    })
+}
+
+async function signupAndAuthenticateUser(userPoolId: string, username: string) {
+    try {
+        // Sign up then login user 1.ß
+        await signupUser(userPoolId, username, TMP_PASSWORD)
+    } catch (e) {
+        console.log(`Trying to login with temp password`)
+    }
+
+    try {
+        const authDetails = new AuthenticationDetails({
+            Username: username,
+            Password: TMP_PASSWORD
+        });
+        const user = Amplify.Auth.createCognitoUser(username)
+        const authRes = await authenticateUser(user, authDetails);
+        return authRes;
+    } catch (e) { console.log(`Trying to login with real password`) }
+
+    try {
+        const authDetails = new AuthenticationDetails({
+            Username: username,
+            Password: REAL_PASSWORD
+        });
+        const user = Amplify.Auth.createCognitoUser(username)
+        const authRes: any = await authenticateUser(user, authDetails);
+        console.log(`Logged in ${username} \n${authRes.getIdToken().getJwtToken()}`)
+        return authRes;
+    } catch (e) {
+        console.error(`Failed to login.\n${e}`)
+    }
+}
+
+async function createGroup(userPoolId: string, name: string): Promise<CreateGroupResponse> {
+    return new Promise((res, rej) => {
+        const params: CreateGroupRequest = {
+            GroupName: name,
+            UserPoolId: userPoolId
+        }
+        cognitoClient.createGroup(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+async function addUserToGroup(groupName: string, username: string, userPoolId: string) {
+    return new Promise((res, rej) => {
+        const params: AdminAddUserToGroupRequest = {
+            GroupName: groupName,
+            Username: username,
+            UserPoolId: userPoolId
+        }
+        cognitoClient.adminAddUserToGroup(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+async function createBucket(name: string) {
+    return new Promise((res, rej) => {
+        const params: CreateBucketRequest = {
+            Bucket: name,
+        }
+        awsS3Client.createBucket(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+async function deleteBucket(name: string) {
+    return new Promise((res, rej) => {
+        const params: CreateBucketRequest = {
+            Bucket: name,
+        }
+        awsS3Client.deleteBucket(params, (err, data) => err ? rej(err) : res(data))
+    })
+}
+
+const TMP_ROOT = '/tmp/graphql_transform_tests/'
 
 const ROOT_KEY = ''
 
@@ -77,6 +191,7 @@ beforeAll(async () => {
     if (!fs.existsSync(TMP_ROOT)) {
         fs.mkdirSync(TMP_ROOT);
     }
+    await createBucket(BUCKET_NAME)
     const validSchema = `
     type Post @model @auth(rules: [{ allow: owner }]) {
         id: ID!
@@ -107,33 +222,33 @@ beforeAll(async () => {
             new ModelAuthTransformer()
         ]
     })
-    const s3Client = new S3Client('us-west-2')
     try {
         // Clean the bucket
         deleteDirectory(TMP_ROOT)
         const out = transformer.transform(validSchema)
-        const userPoolId = 'us-west-2_21A7JBDkX'
-        console.log(`USING USER POOL ID: ${userPoolId}`)
-        if (!userPoolId) {
-            throw new Error(
-                `Could not find env var "GRAPHQL_TRANSFORM_AUTH_USER_POOL_ID".
-Set it to the id of a valid cognito user pool to continue tests. Also make sure you have two
-users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w/ ${USERPASSWORD2} in groups [Dev]`
-            )
-        }
+
         const finishedStack = await deploy(
-            s3Client, cf, STACK_NAME, out, {
-                [ResourceConstants.PARAMETERS.AuthCognitoUserPoolId]: userPoolId,
-            }, TMP_ROOT, BUCKET_NAME, ROOT_KEY)
-        // Arbitrary wait to make sure everything is ready.
+            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            BUILD_TIMESTAMP
+        )
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
-        const userPoolClientId = '7ikhu5mvro27dh4b0b0rap266c'
-        console.log(`UserPoolId: ${userPoolId}. UserPoolClientId: ${userPoolClientId}`)
-        expect(GRAPHQL_ENDPOINT).toBeDefined()
-        expect(userPoolId).toBeDefined()
-        expect(userPoolClientId).toBeDefined()
+        console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+
+        // Get the details of the created user pool
+        const userPoolIdSelector = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput)
+        const userPoolClientIdSelector = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolJSClientOutput)
+        const userPoolId = userPoolIdSelector(finishedStack.Outputs);
+        const userPoolClientId = userPoolClientIdSelector(finishedStack.Outputs);
+
+
+        // Verify we have all the details
+        expect(GRAPHQL_ENDPOINT).toBeTruthy()
+        expect(userPoolId).toBeTruthy()
+        expect(userPoolClientId).toBeTruthy()
+
+        // Configure Amplify, create users, and sign in.
         Amplify.configure({
             Auth: {
                 // REQUIRED - Amazon Cognito Region
@@ -143,22 +258,19 @@ users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w
                 storage: new TestStorage()
             }
         })
-        console.log(`Signing in as ${USERNAME1}`)
-        await Auth.signIn(USERNAME1, USERPASSWORD1)
-        const session = await Auth.currentSession()
-        const idToken = session.getIdToken().getJwtToken()
-        console.log("USER TOKEN!")
-        console.log(idToken)
+
+        const authRes: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
+        const admingGroupName = 'Admin';
+        await createGroup(userPoolId, admingGroupName)
+        await addUserToGroup(admingGroupName, USERNAME1, userPoolId)
+        const authResAfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
+
+        const idToken = authResAfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
 
-        console.log(`Signing in as ${USERNAME2}`)
-        await Auth.signIn(USERNAME2, USERPASSWORD2)
-        const session2 = await Auth.currentSession()
-        const idToken2 = session2.getIdToken().getJwtToken()
-        console.log("USER TOKEN 2!")
-        console.log(idToken2)
+        const authRes2: any = await signupAndAuthenticateUser(userPoolId, USERNAME2)
+        const idToken2 = authRes2.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 })
-        console.log(`Signing up for pool ${userPoolId} w/ client ${userPoolClientId}`)
 
         // Wait for any propagation to avoid random
         // "The security token included in the request is invalid" errors
@@ -168,6 +280,7 @@ users ${USERNAME1} w/ ${USERPASSWORD1} in groups [Admin, Dev] and ${USERNAME2} w
         expect(true).toEqual(false)
     }
 });
+
 
 afterAll(async () => {
     try {
@@ -185,6 +298,15 @@ afterAll(async () => {
             expect(true).toEqual(false)
         }
     }
+    try {
+        console.log('[start] deleting deployment bucket')
+        await cleanupS3Bucket(customS3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY, BUILD_TIMESTAMP)
+        await deleteBucket(BUCKET_NAME)
+        console.log('[done] deleting deployment bucket')
+    } catch (e) {
+        console.log(`[error] deleting deployment bucket`)
+        console.log(e);
+    }
 })
 
 /**
@@ -201,13 +323,14 @@ test('Test createPost mutation', async () => {
                 owner
             }
         }`, {})
+        console.log(response);
         expect(response.data.createPost.id).toBeDefined()
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
         expect(response.data.createPost.owner).toBeDefined()
     } catch (e) {
-        console.error(JSON.stringify(e.response.data))
+        console.error(e)
         // fail
         expect(e).toBeUndefined()
     }

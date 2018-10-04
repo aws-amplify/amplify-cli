@@ -4,6 +4,7 @@
   "description": "amplify-cli",
   "scripts": {
     "test": "lerna run lint && lerna run test",
+    "e2e": "lerna run e2e",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",
