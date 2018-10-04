@@ -4,6 +4,7 @@
   "description": "amplify-cli",
   "scripts": {
     "test": "lerna run lint && lerna run test",
+    "test-changed": "lerna run test --since master",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",
@@ -26,7 +27,8 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "npm run test-changed"
     }
   },
   "author": "Amazon Web Services",
