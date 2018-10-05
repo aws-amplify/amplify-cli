@@ -45,6 +45,10 @@ jobs:
         - image: circleci/node:10.8
     parallelism: 1
     steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Run GraphQL end-to-end tests
           command: npm run e2e
