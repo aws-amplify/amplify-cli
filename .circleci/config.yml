@@ -112,6 +112,13 @@ jobs:
               node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
         - run: cd .circleci/ && chmod +x delete_api.sh
         - run: expect .circleci/delete_api.exp
+        - run: 
+            name: clean up s3 bucket
+            command: |
+              sudo apt-get install -y jq
+              DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
+              aws s3 rb "$DEPLOYMENT_BUCKET" --force
+            when: always
         - store_artifacts:
             path: cypress/videos
         - store_artifacts:
