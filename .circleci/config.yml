@@ -40,10 +40,7 @@ jobs:
           name: Run tests
           command: npm run test
   graphql_e2e_tests:
-    working_directory: ~/repo
-    docker:
-        - image: circleci/node:10.8
-    parallelism: 1
+    <<: *defaults
     steps:
       - attach_workspace:
           at: ./
