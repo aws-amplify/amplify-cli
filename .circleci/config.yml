@@ -152,7 +152,7 @@ workflows:
           filters:
             branches:
               only:
-                - integration-test-cleanup
+                - master
           requires:
             - build
       - deploy:
