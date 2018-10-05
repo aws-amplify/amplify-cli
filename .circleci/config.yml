@@ -158,6 +158,7 @@ workflows:
           requires:
             - build
             - test
+            - integration_test
           filters:
             branches:
               only:
