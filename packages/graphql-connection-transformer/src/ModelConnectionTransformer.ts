@@ -15,7 +15,8 @@ import {
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
-    toCamelCase
+    toCamelCase,
+    isScalar, STANDARD_SCALARS
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
@@ -37,7 +38,7 @@ export class ModelConnectionTransformer extends Transformer {
     constructor() {
         super(
             'ModelConnectionTransformer',
-            `directive @connection(name: String, keyField: String) on FIELD_DEFINITION`
+            `directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -79,13 +80,18 @@ export class ModelConnectionTransformer extends Transformer {
         }
 
         let connectionName = getDirectiveArgument(directive)("name")
+        let associatedSortFieldName = null
+        let sortType = null
         // Find the associated connection field if one exists.
         const associatedConnectionField = relatedType.fields.find(
             (f: FieldDefinitionNode) => {
                 const relatedDirective = f.directives.find((dir: DirectiveNode) => dir.name.value === 'connection');
                 if (relatedDirective) {
                     const relatedDirectiveName = getDirectiveArgument(relatedDirective)("name")
-                    return connectionName && relatedDirectiveName && relatedDirectiveName === connectionName
+                    if (connectionName && relatedDirectiveName && relatedDirectiveName === connectionName) {
+                        associatedSortFieldName = getDirectiveArgument(relatedDirective)('sortField')
+                        return true
+                    }
                 }
                 return false
             }
@@ -102,6 +108,23 @@ export class ModelConnectionTransformer extends Transformer {
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
 
         let connectionAttributeName = getDirectiveArgument(directive)("keyField")
+        const associatedSortField = associatedSortFieldName &&
+            parent.fields.find((f: FieldDefinitionNode) => f.name.value === associatedSortFieldName)
+
+        if (associatedSortField) {
+            if (isListType(associatedSortField.type)) {
+                throw new InvalidDirectiveError(
+                    `sortField "${associatedSortFieldName}" is a list. It should be a scalar.`
+                )
+            }
+            sortType = getBaseType(associatedSortField.type)
+            if (!isScalar(associatedSortField.type) || sortType === STANDARD_SCALARS.Boolean) {
+                throw new InvalidDirectiveError(
+                    `sortField "${associatedSortFieldName}" is of type "${sortType}". ` +
+                    `It should be a scalar that maps to a DynamoDB "String", "Number", or "Binary"`
+                )
+            }
+        }
 
         // Relationship Cardinalities:
         // 1. [] to []
@@ -140,7 +163,8 @@ export class ModelConnectionTransformer extends Transformer {
             }
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(parentTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
-            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName)
+            const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName,
+                { name: associatedSortFieldName, type: sortType })
             ctx.setResource(tableLogicalId, updated)
 
             const getResolver = this.resources.makeGetItemConnectionResolver(
