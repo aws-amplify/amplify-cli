@@ -1,15 +1,15 @@
 {
   "name": "amplify-category-interactions",
-  "version": "0.1.0",
+  "version": "0.1.27",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
-    "amplify-category-auth": "^0.1.13",
+    "amplify-category-auth": "^0.1.27",
     "fs-extra": "^7.0.0",
     "uuid": "^3.3.2",
     "fuzzy": "^0.1.3",
     "inquirer": "^6.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
-    "amplify-category-function": "^0.1.13"
+    "amplify-category-function": "^0.1.27"
   },
   "scripts": {
     "lint": "eslint .",
