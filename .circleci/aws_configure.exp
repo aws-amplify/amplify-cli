@@ -9,5 +9,4 @@ expect "Default region name :"
 send -- "\r"
 expect "Default output format :"
 send -- "\r"
-stty echo
 interact
