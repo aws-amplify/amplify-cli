@@ -56,6 +56,10 @@ const USERNAME2 = 'user2@test.com'
 const TMP_PASSWORD = 'Password123!'
 const REAL_PASSWORD = 'Password1234!'
 
+const ADMIN_GROUP_NAME = 'Admin';
+const PARTICIPANT_GROUP_NAME = 'Participant';
+const WATCHER_GROUP_NAME = 'Watcher';
+
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' })
 const customS3Client = new S3Client('us-west-2')
 const awsS3Client = new S3({ region: 'us-west-2' })
@@ -214,6 +218,18 @@ beforeAll(async () => {
         value: Int
         group: String
     }
+    type PWProtected
+        @auth(rules: [
+            {allow: groups, groupsField: "participants", mutations: [update, delete], queries: [get, list]},
+            {allow: groups, groupsField: "watchers", mutations: [], queries: [get, list]}
+        ])
+        @model
+    {
+        id: ID!
+        content: String!
+        participants: String
+        watchers: String
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
@@ -260,9 +276,12 @@ beforeAll(async () => {
         })
 
         const authRes: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
-        const admingGroupName = 'Admin';
-        await createGroup(userPoolId, admingGroupName)
-        await addUserToGroup(admingGroupName, USERNAME1, userPoolId)
+        await createGroup(userPoolId, ADMIN_GROUP_NAME)
+        await createGroup(userPoolId, PARTICIPANT_GROUP_NAME)
+        await createGroup(userPoolId, WATCHER_GROUP_NAME)
+        await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, userPoolId)
+        await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, userPoolId)
+        await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, userPoolId)
         const authResAfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
 
         const idToken = authResAfterGroup.getIdToken().getJwtToken()
@@ -950,4 +969,166 @@ test(`Test createSingleGroupProtected w/ dynamic group protection when not autho
         console.error(e)
         expect(e).toBeUndefined()
     }
+})
+
+test(`Test listPWProtecteds when the user is authorized.`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createPWProtected(input: { content: "Foobie", participants: "${PARTICIPANT_GROUP_NAME}", watchers: "${WATCHER_GROUP_NAME}" }) {
+                id
+                content
+                participants
+                watchers
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createPWProtected).toBeTruthy()
+
+        const uReq = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            updatePWProtected(input: { id: "${req.data.createPWProtected.id}", content: "Foobie2" }) {
+                id
+                content
+                participants
+                watchers
+            }
+        }
+        `)
+        console.log(JSON.stringify(uReq, null, 4))
+        expect(uReq.data.updatePWProtected).toBeTruthy()
+
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        query {
+            listPWProtecteds {
+                items {
+                    id
+                    content
+                    participants
+                    watchers
+                }
+                nextToken
+            }
+        }
+        `)
+        expect(req2.data.listPWProtecteds.items.length).toEqual(1)
+        expect(req2.data.listPWProtecteds.items[0].id).toEqual(req.data.createPWProtected.id)
+        expect(req2.data.listPWProtecteds.items[0].content).toEqual("Foobie2")
+
+
+        const req3 = await GRAPHQL_CLIENT_1.query(`
+        query {
+            getPWProtected(id: "${req.data.createPWProtected.id}") {
+                id
+                content
+                participants
+                watchers
+            }
+        }
+        `)
+        console.log(JSON.stringify(req3, null, 4))
+        expect(req3.data.getPWProtected).toBeTruthy()
+
+        const dReq = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            deletePWProtected(input: { id: "${req.data.createPWProtected.id}" }) {
+                id
+                content
+                participants
+                watchers
+            }
+        }
+        `)
+        console.log(JSON.stringify(dReq, null, 4))
+        expect(dReq.data.deletePWProtected).toBeTruthy()
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test listPWProtecteds when the user is authorized.`, async () => {
+    const req = await GRAPHQL_CLIENT_1.query(`
+    mutation {
+        createPWProtected(input: { content: "Barbie", participants: "${PARTICIPANT_GROUP_NAME}", watchers: "${WATCHER_GROUP_NAME}" }) {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req, null, 4))
+    expect(req.data.createPWProtected).toBeTruthy()
+
+    const req2 = await GRAPHQL_CLIENT_2.query(`
+    query {
+        listPWProtecteds {
+            items {
+                id
+                content
+                participants
+                watchers
+            }
+            nextToken
+        }
+    }
+    `)
+    console.log(JSON.stringify(req2, null, 4))
+    expect(req2.data.listPWProtecteds.items.length).toEqual(0)
+    expect(req2.data.listPWProtecteds.nextToken).toBeNull()
+
+    const uReq = await GRAPHQL_CLIENT_2.query(`
+    mutation {
+        updatePWProtected(input: { id: "${req.data.createPWProtected.id}", content: "Foobie2" }) {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(uReq, null, 4))
+    expect(uReq.data.updatePWProtected).toBeNull()
+
+    const req3 = await GRAPHQL_CLIENT_2.query(`
+    query {
+        getPWProtected(id: "${req.data.createPWProtected.id}") {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req3, null, 4))
+    expect(req3.data.getPWProtected).toBeNull()
+
+    const dReq = await GRAPHQL_CLIENT_2.query(`
+    mutation {
+        deletePWProtected(input: { id: "${req.data.createPWProtected.id}" }) {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(dReq, null, 4))
+    expect(dReq.data.deletePWProtected).toBeNull()
+
+    // The record should still exist after delete.
+    const getReq = await GRAPHQL_CLIENT_1.query(`
+    query {
+        getPWProtected(id: "${req.data.createPWProtected.id}") {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(getReq, null, 4))
+    expect(getReq.data.getPWProtected).toBeTruthy()
 })
