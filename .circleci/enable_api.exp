@@ -16,6 +16,7 @@ expect -exact "Build Command:"
 send -- "\r"
 expect -exact "Start Command:"
 send -- "\r"
+log_user 0;
 expect "Using default provider awscloudformation\nAWS access credentials can not be detected\n.Setup new user"
 send -- "n\r"
 expect "accessKeyId:"
@@ -24,6 +25,7 @@ expect "secretAccessKey:"
 send -- "$env(SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
 send -- "\r"
+log_user 1;
 set timeout 70
 expect "Please select from one of the below mentioned services\r"
 send -- "\033\[B\r"
