@@ -4,14 +4,14 @@ import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-comm
 import { HttpTransformer } from '../HttpTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
-test('Test HttpTransformer simple one to many happy case', () => {
+test('Test HttpTransformer with four basic requests', () => {
     const validSchema = `
     type Comment {
         id: ID!
         content: String @http(method: POST, url: "http://www.api.com/ping")
         content2: String @http(method: PUT, url: "http://www.api.com/ping")
         more: String @http(url: "http://api.com/ping/me/2")
-        evenMore: String @http(method: DELETE, url: "http://www.google.com/query/:id")
+        evenMore: String @http(method: DELETE, url: "http://www.google.com/query/id")
     }
     `
     const transformer = new GraphQLTransform({
@@ -28,4 +28,100 @@ test('Test HttpTransformer simple one to many happy case', () => {
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')]).toBeTruthy()
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')]).toBeTruthy()
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')]).toBeTruthy()
+});
+
+test('Test HttpTransformer with URL params happy case', () => {
+    const validSchema = `
+    type Comment {
+        id: ID!
+        title: String
+        complex: CompObj @http(method: GET, url: "https://jsonplaceholder.typicode.com/posts/1")
+        complexAgain: CompObj @http(url: "https://jsonplaceholder.typicode.com/posts/2")
+        complexPost(
+            id: Int,
+            title: String,
+            body: String,
+            userId: Int
+        ): CompObj @http(method: POST, url: "https://jsonplaceholder.typicode.com/posts")
+        complexPut(
+            id: Int!,
+            title: String!,
+            body: String,
+            userId: Int
+        ): CompObj @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/:title/:id")
+        deleter: String @http(method: DELETE, url: "https://jsonplaceholder.typicode.com/posts/3")
+    }
+    type CompObj {
+        userId: Int
+        id: Int
+        title: String
+        body: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new HttpTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    // expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complex')]).toBeTruthy()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexAgain')]).toBeTruthy()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPost')]).toBeTruthy()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPut')]).toBeTruthy()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'deleter')]).toBeTruthy()
+});
+
+test('Test that HttpTransformer throws an error when missing protocol in URL argument', () => {
+    const validSchema = `
+    type Comment {
+        id: ID!
+        content: String @http(method: POST, url: "www.api.com/ping")
+    }
+    `
+    try {
+        const transformer = new GraphQLTransform({
+            transformers: [
+                new AppSyncTransformer(),
+                new HttpTransformer()
+            ]
+        })
+        const out = transformer.transform(validSchema);
+    } catch (e) {
+        expect(e.name).toEqual('TransformerContractError')
+    }
+});
+
+test('Test that HttpTransformer throws an error when missing a non-null argument provided as a URL parameter', () => {
+    const validSchema = `
+    type Comment {
+        id: ID!
+        complexPut(
+            title: String,
+            body: String,
+            userId: Int
+        ): CompObj @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/:id")
+        deleter: String @http(method: DELETE, url: "https://jsonplaceholder.typicode.com/posts/3")
+    }
+    type CompObj {
+        userId: Int
+        id: Int
+        title: String
+        body: String
+    }
+    `
+    try {
+        const transformer = new GraphQLTransform({
+            transformers: [
+                new AppSyncTransformer(),
+                new HttpTransformer()
+            ]
+        })
+        const out = transformer.transform(validSchema);
+    } catch (e) {
+        expect(e.name).toEqual('TransformerContractError')
+    }
 });

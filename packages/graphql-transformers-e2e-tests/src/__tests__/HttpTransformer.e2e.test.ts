@@ -33,8 +33,8 @@ beforeAll(async () => {
     type Comment @model {
         id: ID!
         title: String
-        complex: CompObj @http(method: GET, url: "https://jsonplaceholder.typicode.com/posts/1")
-        complexAgain: CompObj @http(url: "https://jsonplaceholder.typicode.com/posts/2")
+        simpleGet: CompObj @http(method: GET, url: "https://jsonplaceholder.typicode.com/posts/1")
+        simpleGet2: CompObj @http(url: "https://jsonplaceholder.typicode.com/posts/2")
         complexPost(
             id: Int,
             title: String,
@@ -42,17 +42,35 @@ beforeAll(async () => {
             userId: Int
         ): CompObj @http(method: POST, url: "https://jsonplaceholder.typicode.com/posts")
         complexPut(
-            id: Int,
+            id: Int!,
             title: String,
             body: String,
             userId: Int
-        ): CompObj @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/2")
+        ): CompObj @http(method: PUT, url: "https://jsonplaceholder.typicode.com/posts/:id")
         deleter: String @http(method: DELETE, url: "https://jsonplaceholder.typicode.com/posts/3")
+        complexGet(
+            data: String!,
+            userId: Int,
+            _limit: Int
+        ): [CompObj] @http(url: "https://jsonplaceholder.typicode.com/:data")
+        complexGet2(
+            dataType: String!,
+            postId: Int!,
+            secondType: String!,
+            id: Int
+        ): [PostComment] @http(url: "https://jsonplaceholder.typicode.com/:dataType/:postId/:secondType")
     }
     type CompObj {
         userId: Int
         id: Int
         title: String
+        body: String
+    }
+    type PostComment {
+        postId: Int
+        id: Int
+        name: String
+        email: String
         body: String
     }
     `
@@ -113,7 +131,7 @@ test('Test HTTP GET request', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complex {
+                simpleGet {
                     id
                     title
                     body
@@ -123,8 +141,8 @@ test('Test HTTP GET request', async () => {
         const post1Title = 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit'
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complex).toBeDefined()
-        expect(response.data.createComment.complex.title).toEqual(post1Title)
+        expect(response.data.createComment.simpleGet).toBeDefined()
+        expect(response.data.createComment.simpleGet.title).toEqual(post1Title)
     } catch (e) {
         console.error(e)
         // fail
@@ -138,7 +156,7 @@ test('Test HTTP GET request 2', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexAgain {
+                simpleGet2 {
                     id
                     title
                     body
@@ -148,8 +166,8 @@ test('Test HTTP GET request 2', async () => {
         const post2Title = 'qui est esse'
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
-        expect(response.data.createComment.complexAgain).toBeDefined()
-        expect(response.data.createComment.complexAgain.title).toEqual(post2Title)
+        expect(response.data.createComment.simpleGet2).toBeDefined()
+        expect(response.data.createComment.simpleGet2.title).toEqual(post2Title)
     } catch (e) {
         console.error(e)
         // fail
@@ -171,6 +189,7 @@ test('Test HTTP POST request', async () => {
                 }
             }
         }`, {})
+        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexPost).toBeDefined()
@@ -189,7 +208,7 @@ test('Test HTTP PUT request', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexPut(title: "foo", body: "bar", userId: 2) {
+                complexPut(id: 2, title: "foo", body: "bar", userId: 2) {
                     id
                     title
                     body
@@ -197,6 +216,7 @@ test('Test HTTP PUT request', async () => {
                 }
             }
         }`, {})
+        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexPut).toBeDefined()
@@ -221,6 +241,56 @@ test('Test HTTP DELETE request', async () => {
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.deleter).toBeDefined()
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test GET with URL param and query values', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input: { title: "Hello, World!" }) {
+                id
+                title
+                complexGet(data: "posts", userId: 1, _limit: 7) {
+                    id
+                    title
+                    body
+                }
+            }
+        }`, {})
+        // console.log(JSON.stringify(response, null, 4))
+        expect(response.data.createComment.id).toBeDefined()
+        expect(response.data.createComment.title).toEqual('Hello, World!')
+        expect(response.data.createComment.complexGet).toBeDefined()
+        expect(response.data.createComment.complexGet.length).toEqual(7)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test GET with multiple URL params and query values', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input: { title: "Hello, World!" }) {
+                id
+                title
+                complexGet2(dataType: "posts", postId: 1, secondType: "comments", id: 2) {
+                    id
+                    name
+                    email
+                }
+            }
+        }`, {})
+        // console.log(JSON.stringify(response, null, 4))
+        expect(response.data.createComment.id).toBeDefined()
+        expect(response.data.createComment.title).toEqual('Hello, World!')
+        expect(response.data.createComment.complexGet2).toBeDefined()
+        expect(response.data.createComment.complexGet2[0].email).toEqual('Jayne_Kuhic@sydney.com')
     } catch (e) {
         console.error(e)
         // fail
