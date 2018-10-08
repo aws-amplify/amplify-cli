@@ -1,6 +1,6 @@
 #!/usr/bin/expect
+log_user 0;
 spawn ./.circleci/aws.sh
-stty -echo;
 expect  "AWS Access Key ID"
 send -- "$env(ACCESS_KEY_ID)\r"
 expect "AWS Secret Access Key"
@@ -9,4 +9,5 @@ expect "Default region name :"
 send -- "\r"
 expect "Default output format :"
 send -- "\r"
+log_user 1;
 interact
