@@ -44,6 +44,8 @@ function createAWSConfig(context, amplifyResources) {
         break;
       case 'AppSync': Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
+      case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
+        break;
       default: break;
     }
   });
@@ -171,5 +173,20 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     },
   };
 }
+
+function getLexConfig(lexResources) {
+  const config = {};
+  lexResources.forEach((r) => {
+    config[r.output.BotName] = {
+      Name: r.output.BotName,
+      Alias: '$LATEST',
+      Region: r.output.Region,
+    };
+  });
+  return {
+    Lex: config,
+  };
+}
+
 
 module.exports = { createAWSConfig, createAmplifyConfig };

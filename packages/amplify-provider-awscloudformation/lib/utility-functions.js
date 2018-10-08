@@ -3,6 +3,7 @@ const Cognito = require('../src/aws-utils/aws-cognito');
 const Lambda = require('../src/aws-utils/aws-lambda');
 const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
+const Lex = require('../src/aws-utils/aws-lex');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 
 module.exports = {
@@ -136,6 +137,24 @@ module.exports = {
       const appSyncModel = result;
       return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
     });
+  },
+  getBuiltInSlotTypes: (context, options) => {
+    const params = {
+      locale: 'en-US',
+      maxResults: 50,
+    };
+    if (options) {
+      params.nextToken = options;
+    }
+    return new Lex(context)
+      .then(result => result.lex.getBuiltinSlotTypes(params).promise());
+  },
+  getSlotTypes: (context) => {
+    const params = {
+      maxResults: 50,
+    };
+    return new Lex(context)
+      .then(result => result.lex.getSlotTypes(params).promise());
   },
   getAppSyncApiKeys: (context, options) => {
     const awsOptions = {};
