@@ -6,6 +6,7 @@
     "test-changed": "lerna run test --since master",
     "test": "lerna run test",
     "pretest": "lerna run lint ",
+    "e2e": "lerna run e2e",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",

@@ -64,7 +64,7 @@ const createPosts = async () => {
 const runQuery = async (query: string, logContent: string) => {
     try {
         const q = [query, ...fragments].join('\n');
-        const response = await GRAPHQL_CLIENT.query(q,  {});
+        const response = await GRAPHQL_CLIENT.query(q, {});
         console.log(logContent + JSON.stringify(response, null, 4));
         return response;
     } catch (e) {
