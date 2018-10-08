@@ -413,7 +413,7 @@ export class ResourceFactory {
                     ref(ResourceConstants.SNIPPETS.AuthCondition),
                     obj({
                         expression: ref('groupAuthExpression'),
-                        expressionNames: obj({ groupsAttribute: str(groupsAttribute) }),
+                        expressionNames: obj({ '#groupsAttribute': str(groupsAttribute) }),
                         expressionValues: ref('groupAuthExpressionValues')
                     })
                 ),
@@ -422,7 +422,7 @@ export class ResourceFactory {
                         ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
                         str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
                     ),
-                    raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("groupsAttribute", "${groupsAttribute}"))`),
+                    raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("#groupsAttribute", "${groupsAttribute}"))`),
                     raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`),
                 ])
             )

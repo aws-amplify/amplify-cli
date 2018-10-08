@@ -304,8 +304,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -1048,7 +1048,7 @@ test(`Test listPWProtecteds when the user is authorized.`, async () => {
     }
 })
 
-test(`Test listPWProtecteds when the user is authorized.`, async () => {
+test(`Test Protecteds when the user is not authorized.`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
         createPWProtected(input: { content: "Barbie", participants: "${PARTICIPANT_GROUP_NAME}", watchers: "${WATCHER_GROUP_NAME}" }) {
