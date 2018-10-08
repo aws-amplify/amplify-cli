@@ -8,7 +8,7 @@ import {
     DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, ifElse, list, raw, printBlock,
     forEach, compoundExpression, qref, toJson, equals, comment,
-    IfNode, or, Expression
+    IfNode, or, Expression, SetNode
 } from 'graphql-mapping-template'
 import { ResourceConstants } from 'graphql-transformer-common'
 
@@ -254,6 +254,14 @@ export class ResourceFactory {
         ])
     }
 
+    public setUserGroups(): SetNode {
+        return set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")'));
+    }
+
+    public setUserGroupsString(): string {
+        return print(set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')));
+    }
+
 
     /**
      * Owner auth
@@ -412,7 +420,7 @@ export class ResourceFactory {
                 compoundExpression([
                     set(
                         ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
-                        raw(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
+                        str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
                     ),
                     raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("groupsAttribute", "${groupsAttribute}"))`),
                     raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`),

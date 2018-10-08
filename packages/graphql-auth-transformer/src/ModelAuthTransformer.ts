@@ -3,6 +3,7 @@ import GraphQLAPI from 'cloudform/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'
 import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
+import { Expression } from 'graphql-mapping-template';
 import { valueFromASTUntyped } from 'graphql'
 
 const OWNER_AUTH_STRATEGY = "owner"
@@ -229,7 +230,7 @@ export class ModelAuthTransformer extends Transformer {
         if (!rules || rules.length === 0 || !resolver) {
             return
         }
-        const beforeExpressions = []
+        const beforeExpressions: Expression[] = [this.resources.setUserGroups()]
         const itemEquivalenceExpressions = []
         const beforeItemEquivalenceExpression = []
         for (const rule of rules) {
@@ -320,7 +321,7 @@ export class ModelAuthTransformer extends Transformer {
         if (!rules || rules.length === 0 || !resolver) {
             return
         }
-        const beforeRequest = []
+        const beforeRequest: string[] = [this.resources.setUserGroupsString()]
         for (const rule of rules) {
             if (rule.allow === OWNER_AUTH_STRATEGY) {
                 const ownerField = rule.ownerField || DEFAULT_OWNER_FIELD
