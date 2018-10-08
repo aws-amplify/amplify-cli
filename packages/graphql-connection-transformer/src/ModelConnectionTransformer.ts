@@ -15,7 +15,7 @@ import {
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
-    toCamelCase
+    toCamelCase, isNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
@@ -99,7 +99,9 @@ export class ModelConnectionTransformer extends Transformer {
 
         connectionName = connectionName || `${parentTypeName}.${fieldName}`
         const leftConnectionIsList = isListType(field.type)
+        const leftConnectionIsNonNull = isNonNullType(field.type)
         const rightConnectionIsList = associatedConnectionField ? isListType(associatedConnectionField.type) : undefined
+        const rightConnectionIsNonNull = associatedConnectionField ? isNonNullType(associatedConnectionField.type) : undefined
 
         let connectionAttributeName = getDirectiveArgument(directive)("keyField")
 
@@ -155,7 +157,7 @@ export class ModelConnectionTransformer extends Transformer {
             const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName)
             const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
-                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
+                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull)
                 ctx.putType(updated)
             }
             const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName)
@@ -221,7 +223,7 @@ export class ModelConnectionTransformer extends Transformer {
             const createInputName = ModelResourceIDs.ModelCreateInputObjectName(parentTypeName)
             const createInput = ctx.getType(createInputName) as InputObjectTypeDefinitionNode
             if (createInput) {
-                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName)
+                const updated = updateCreateInputWithConnectionField(createInput, connectionAttributeName, leftConnectionIsNonNull)
                 ctx.putType(updated)
             }
             const updateInputName = ModelResourceIDs.ModelUpdateInputObjectName(parentTypeName)

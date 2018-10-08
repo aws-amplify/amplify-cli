@@ -9,6 +9,8 @@ import { AppSyncTransformer } from 'graphql-appsync-transformer'
 import fs = require('fs');
 import path = require('path');
 
+jest.setTimeout(2000000);
+
 test('Test AppSyncTransformer validation happy case', () => {
     const validSchema = `
     type Post @model {
@@ -29,8 +31,8 @@ test('Test AppSyncTransformer validation happy case', () => {
     expect(out).toBeDefined()
 
     expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
-    expect(out.Parameters.QueryGetPostRequest).toBeTruthy()
-    expect(out.Parameters.MutationCreatePostRequest).toBeTruthy()
+    expect(out.Parameters.ResolverBucket).toBeTruthy()
+    expect(out.Parameters.ResolverRootKey).toBeTruthy()
 
     cleanUpFiles(directory)
 });
