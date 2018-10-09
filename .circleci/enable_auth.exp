@@ -1,4 +1,5 @@
 #!/usr/bin/expect
+cd aws-amplify-cypress-auth
 spawn ./.circleci/amplify_init.sh
 set timeout 70
 spawn ./.circleci/auth.sh

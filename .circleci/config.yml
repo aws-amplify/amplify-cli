@@ -69,7 +69,7 @@ jobs:
               npm install
         - run: cd .circleci/ && chmod +x auth.sh
         - run: cd .circleci/ && chmod +x amplify_init.sh
-        - run: cd aws-amplify-cypress-auth && expect .circleci/enable_auth.exp
+        - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth
         - run: npm install
         - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
