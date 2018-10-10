@@ -67,4 +67,19 @@ export class HttpMappingTemplate {
             params
         })
     }
+
+    /**
+     * Create a mapping template for HTTP PATCH requests.
+     */
+    public static patchRequest({ resourcePath, params }: {
+        resourcePath: string,
+        params: ObjectNode
+    }): ObjectNode {
+        return obj({
+            version: str(this.httpVersionId),
+            method: str('PATCH'),
+            resourcePath: str(resourcePath),
+            params
+        })
+    }
 }

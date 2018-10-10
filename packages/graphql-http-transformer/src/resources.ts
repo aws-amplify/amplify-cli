@@ -5,9 +5,10 @@ import { Fn, Refs, AppSync } from 'cloudform'
 import {
     HttpMappingTemplate, str, print, printBlock, qref,
     ref, obj, set, nul,
-    ifElse, compoundExpression, bool, equals, iff, raw, Expression, comment
+    ifElse, compoundExpression, bool, equals, iff, raw, Expression, comment, or, and, parens
 } from 'graphql-mapping-template'
-import { ResourceConstants, ModelResourceIDs, HttpResourceIDs } from 'graphql-transformer-common'
+import { InputValueDefinitionNode } from 'graphql'
+import { ResourceConstants, ModelResourceIDs, HttpResourceIDs, makeNonNullType } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 export class ResourceFactory {
@@ -44,15 +45,28 @@ export class ResourceFactory {
         return returnArray.slice(0, -2) + `]`
     }
 
+    private makeNonNullChecks(nonNullArgs: string[]) {
+        return compoundExpression([
+            comment("START: Manually checking that all non-null arguments are provided either in the query or the body"),
+            iff(
+                or(nonNullArgs.map(
+                    (arg: string) => parens(and([raw(`!$ctx.args.body.${arg}`), raw(`!$ctx.args.query.${arg}`)]))
+                    )
+                ),
+                ref('util.error("An argument you marked as Non-Null is not present ' +
+                    'in the query nor the body of your request."))')
+            ),
+            comment("END: Manually checking that all non-null arguments are provided either in the query or the body"),
+        ])
+    }
+
     /**
-     * Create a resolver that makes a GET request. So far, it assumes the endpoint expects query parameters in the exact
+     * Create a resolver that makes a GET request. It assumes the endpoint expects query parameters in the exact
      * shape of the input arguments to the http directive. Returns the result in JSON format, or an error if the status code
      * is not 200
      * @param type
      */
-    public makeGetResolver(baseURL: string, path: string, type: string, field: string, urlParamList: string[]) {
-        let argsToRemove = urlParamList ? this.makeVtlStringArray(urlParamList) : null
-        // console.log(`args to remove are: ${argsToRemove}`)
+    public makeGetResolver(baseURL: string, path: string, type: string, field: string) {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -60,14 +74,12 @@ export class ResourceFactory {
             TypeName: type,
             RequestMappingTemplate: print(
                 compoundExpression([
-                    comment('Copy arguments from context, removing any URL parameters we used'),
-                    set(ref('argList'), ref(`util.map.copyAndRemoveAllKeys($ctx.args, ${argsToRemove})`)),
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.remove("accept-encoding")'),
+                    qref('$headers.put("accept-encoding", "application/json")'),
                     HttpMappingTemplate.getRequest({
                         resourcePath: path,
                         params: obj({
-                            query: ref('util.toJson($argList)'),
+                            query: ref('util.toJson($ctx.args.query)'),
                             headers: ref('util.toJson($headers)')
                         })
                     }),
@@ -88,14 +100,19 @@ export class ResourceFactory {
     }
 
     /**
-     * Create a resolver that makes a POST request. So far, it just puts the input arguments into the body of the
+     * Create a resolver that makes a POST request. It allows the user to provide arguments as either query
+     * parameters or in the body of the request.
      * request. Returns the result in JSON format, or an error if the status code is not 200.
      * Forwards the headers from the request, adding that the content type is JSON.
      * @param type
      */
-    public makePostResolver(baseURL: string, path: string, type: string, field: string, urlParamList: string[]) {
-        let argsToRemove = urlParamList ? this.makeVtlStringArray(urlParamList) : null
-        // console.log(`args to remove are: ${argsToRemove}`)
+    public makePostResolver(
+        baseURL: string,
+        path: string,
+        type: string,
+        field: string,
+        nonNullArgs: string[]
+    ) {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -103,15 +120,15 @@ export class ResourceFactory {
             TypeName: type,
             RequestMappingTemplate: print(
                 compoundExpression([
-                    comment('Copy arguments from context, removing any URL parameters we used'),
-                    set(ref('argList'), ref(`util.map.copyAndRemoveAllKeys($ctx.args, ${argsToRemove})`)),
+                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("Content-Type", "application/json")'),
-                    qref('$headers.remove("accept-encoding")'),
+                    qref('$headers.put("accept-encoding", "application/json")'),
                     HttpMappingTemplate.postRequest({
                         resourcePath: path,
                         params: obj({
-                            body: ref('util.toJson($argList)'),
+                            body: ref('util.toJson($ctx.args.body)'),
+                            query: ref('util.toJson($ctx.args.query)'),
                             headers: ref('util.toJson($headers)')
                         })
                     }),
@@ -133,14 +150,19 @@ export class ResourceFactory {
     }
 
     /**
-     * Create a resolver that makes a PUT request. So far, it just puts the input arguments into the body of the
-     * request. Returns the result in JSON format, or an error if the status code is not 200.
+     * Create a resolver that makes a PUT request. It allows the user to provide arguments as either query
+     * parameters or in the body of the request.
+     * Returns the result in JSON format, or an error if the status code is not 200.
      * Forwards the headers from the request, adding that the content type is JSON.
      * @param type
      */
-    public makePutResolver(baseURL: string, path: string, type: string, field: string, urlParamList: string[]) {
-        let argsToRemove = urlParamList ? this.makeVtlStringArray(urlParamList) : null
-        // console.log(`args to remove are: ${argsToRemove}`)
+    public makePutResolver(
+        baseURL: string,
+        path: string,
+        type: string,
+        field: string,
+        nonNullArgs: string[]
+    ) {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -148,15 +170,15 @@ export class ResourceFactory {
             TypeName: type,
             RequestMappingTemplate: print(
                 compoundExpression([
-                    comment('Copy arguments from context, removing any URL parameters we used'),
-                    set(ref('argList'), ref(`util.map.copyAndRemoveAllKeys($ctx.args, ${argsToRemove})`)),
+                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("Content-Type", "application/json")'),
-                    qref('$headers.remove("accept-encoding")'),
+                    qref('$headers.put("accept-encoding", "application/json")'),
                     HttpMappingTemplate.putRequest({
                         resourcePath: path,
                         params: obj({
-                            body: ref('util.toJson($argList)'),
+                            body: ref('util.toJson($ctx.args.body)'),
+                            query: ref('util.toJson($ctx.args.query)'),
                             headers: ref('util.toJson($headers)')
                         })
                     }),
@@ -177,8 +199,7 @@ export class ResourceFactory {
     }
 
     /**
-     * Create a resolver that makes a DELETE request. We aren't forwarding arguments, so we don't
-     * need to remove arguments that are also URL parameters.
+     * Create a resolver that makes a DELETE request.
      * @param type
      */
     public makeDeleteResolver(baseURL: string, path: string, type: string, field: string) {
@@ -190,7 +211,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.remove("accept-encoding")'),
+                    qref('$headers.put("accept-encoding", "application/json")'),
                     HttpMappingTemplate.deleteRequest({
                         resourcePath: path,
                         params: obj({
@@ -202,6 +223,55 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ifElse(
                     raw('$ctx.result.statusCode == 200'),
+                    ifElse(
+                        ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
+                        ref('utils.xml.toJsonString($ctx.result.body)'),
+                        ref('ctx.result.body')
+                    ),
+                    ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
+                )
+            )
+        })//.dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+    /**
+     * Create a resolver that makes a PUT request. It allows the user to provide arguments as either query
+     * parameters or in the body of the request.
+     * Returns the result in JSON format, or an error if the status code is not 200.
+     * Forwards the headers from the request, adding that the content type is JSON.
+     * @param type
+     */
+    public makePatchResolver(
+        baseURL: string,
+        path: string,
+        type: string,
+        field: string,
+        nonNullArgs: string[]
+    ) {
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
+            FieldName: field,
+            TypeName: type,
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
+                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                    qref('$headers.put("Content-Type", "application/json")'),
+                    qref('$headers.put("accept-encoding", "application/json")'),
+                    HttpMappingTemplate.patchRequest({
+                        resourcePath: path,
+                        params: obj({
+                            body: ref('util.toJson($ctx.args.body)'),
+                            query: ref('util.toJson($ctx.args.query)'),
+                            headers: ref('util.toJson($headers)')
+                        })
+                    }),
+                ])
+            ),
+            ResponseMappingTemplate: print(
+                ifElse(
+                    raw('$ctx.result.statusCode == 200 || $ctx.result.statusCode == 201'),
                     ifElse(
                         ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
                         ref('utils.xml.toJsonString($ctx.result.body)'),

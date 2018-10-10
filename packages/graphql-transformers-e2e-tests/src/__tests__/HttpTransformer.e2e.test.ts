@@ -1,7 +1,3 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -37,7 +33,7 @@ beforeAll(async () => {
         simpleGet2: CompObj @http(url: "https://jsonplaceholder.typicode.com/posts/2")
         complexPost(
             id: Int,
-            title: String,
+            title: String!,
             body: String,
             userId: Int
         ): CompObj @http(method: POST, url: "https://jsonplaceholder.typicode.com/posts")
@@ -50,7 +46,7 @@ beforeAll(async () => {
         deleter: String @http(method: DELETE, url: "https://jsonplaceholder.typicode.com/posts/3")
         complexGet(
             data: String!,
-            userId: Int,
+            userId: Int!,
             _limit: Int
         ): [CompObj] @http(url: "https://jsonplaceholder.typicode.com/:data")
         complexGet2(
@@ -181,7 +177,13 @@ test('Test HTTP POST request', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexPost(title: "foo", body: "bar", userId: 2) {
+                complexPost(
+                    body: {
+                        title: "foo",
+                        body: "bar",
+                        userId: 2
+                    }
+                ) {
                     id
                     title
                     body
@@ -189,7 +191,6 @@ test('Test HTTP POST request', async () => {
                 }
             }
         }`, {})
-        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexPost).toBeDefined()
@@ -208,7 +209,16 @@ test('Test HTTP PUT request', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexPut(id: 2, title: "foo", body: "bar", userId: 2) {
+                complexPut(
+                    params: {
+                        id: "2"
+                    },
+                    body: {
+                        title: "foo",
+                        body: "bar",
+                        userId: 2
+                    }
+                ) {
                     id
                     title
                     body
@@ -216,7 +226,6 @@ test('Test HTTP PUT request', async () => {
                 }
             }
         }`, {})
-        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexPut).toBeDefined()
@@ -254,14 +263,21 @@ test('Test GET with URL param and query values', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexGet(data: "posts", userId: 1, _limit: 7) {
+                complexGet(
+                    params: {
+                        data: "posts"
+                    },
+                    query: {
+                        userId: 1,
+                        _limit: 7
+                    }
+                ) {
                     id
                     title
                     body
                 }
             }
         }`, {})
-        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexGet).toBeDefined()
@@ -279,14 +295,22 @@ test('Test GET with multiple URL params and query values', async () => {
             createComment(input: { title: "Hello, World!" }) {
                 id
                 title
-                complexGet2(dataType: "posts", postId: 1, secondType: "comments", id: 2) {
+                complexGet2(
+                    params: {
+                        dataType: "posts",
+                        postId: "1",
+                        secondType: "comments"
+                    },
+                    query: {
+                        id: 2
+                    }
+                ) {
                     id
                     name
                     email
                 }
             }
         }`, {})
-        // console.log(JSON.stringify(response, null, 4))
         expect(response.data.createComment.id).toBeDefined()
         expect(response.data.createComment.title).toEqual('Hello, World!')
         expect(response.data.createComment.complexGet2).toBeDefined()
@@ -298,3 +322,53 @@ test('Test GET with multiple URL params and query values', async () => {
     }
 })
 
+test('Test that GET errors when missing a required Query input object', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input: { title: "Hello, World!" }) {
+                id
+                title
+                complexGet(
+                    params: {
+                        data: "posts",
+                    }
+                ) {
+                    id
+                    title
+                    body
+                }
+            }
+        }`, {})
+        expect(response.data).toBeNull()
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test that POST errors when missing a non-null arg in query/body', async () => {
+    try {
+        const response = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input: { title: "Hello, World!" }) {
+                id
+                title
+                complexPost(
+                    body: {
+                        id: 1,
+                        body: "bar"
+                    }
+                ) {
+                    id
+                    title
+                    body
+                }
+            }
+        }`, {})
+        expect(response.data.complexPost).toBeNull()
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})

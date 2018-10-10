@@ -1,15 +1,22 @@
 import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
-    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode
+    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
+    InputValueDefinitionNode, print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     getDirectiveArgument, isScalar
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, HttpResourceIDs } from 'graphql-transformer-common'
+import {
+    makeUrlParamInputObject,
+    makeHttpArgument,
+    makeHttpQueryInputObject,
+    makeHttpBodyInputObject
+} from './definitions';
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
 interface HttpDirectiveArgs {
     method?: HttpMethod,
@@ -41,6 +48,7 @@ export class HttpTransformer extends Transformer {
                 POST
                 PUT
                 DELETE
+                PATCH
             }
             `
         )
@@ -98,42 +106,69 @@ export class HttpTransformer extends Transformer {
         const baseURL: string = url.replace(HttpTransformer.urlRegex, '$1')
         // split the url into pieces, and get the path part off the end
         let path: string = url.split(/(http(s)?:\/\/|www\.)|(\/.*)/g).slice(-2, -1)[0]
-        // console.log(`the base path is: ${path}`)
+
         // extract any URL parameters from the path
         let urlParams: string[] = path.match(/:\w+/g)
+        let queryBodyArgsArray: InputValueDefinitionNode[] = field.arguments as InputValueDefinitionNode[]
+        let newFieldArgsArray: InputValueDefinitionNode[] = []
 
         if (urlParams) {
-            // Throw an error if any of the URL parameters is NOT given as a non-null argument on the field.
-            // If the parameter is not given, the path cannot be resolved and so there's no way to make the
-            // request.
-            // collect all of the non-null, scalar arguments from the field
             urlParams = urlParams.map((p) => p.replace(':', ''))
 
-            const fieldArgArray = field.arguments
+            // if there are URL parameters, remove them from the array we'll use
+            // to create the query and body types
+            queryBodyArgsArray = field.arguments
                 .filter((e) => (
-                    e.type.kind === Kind.NON_NULL_TYPE &&
                     isScalar(e.type) &&
-                    urlParams.includes(e.name.value))
+                    !urlParams.includes(e.name.value))
                 )
-                .map((e) => e.name.value)
 
-            if (fieldArgArray.length !== urlParams.length) {
-                throw new TransformerContractError(`Error while processing @http directive at location ` +
-                        `${directive.loc.start}, for field ${field.name.value} on type ${parent.name.value}. ` +
-                        `URL parameters in the path must be provided as non-null arguments on the field.`)
-            }
-
-            // replace each URL parameter with $ctx.args.parameter_name for use in resolver template
+            // replace each URL parameter with $ctx.args.params.parameter_name for use in resolver template
             path = path.replace(/:\w+/g, (str: string) => {
-                return `\$\{ctx.args.${str.replace(':', '')}\}`
+                return `\$\{ctx.args.params.${str.replace(':', '')}\}`
             })
-            // console.log(`we had some url params and the new path is: ${path}`)
+
+            const urlParamInputObject = makeUrlParamInputObject(parent, field, urlParams)
+            ctx.addInput(urlParamInputObject)
+
+            newFieldArgsArray.push(makeHttpArgument('params', urlParamInputObject, true))
         }
 
         let method: HttpMethod = getDirectiveArgument(directive)("method")
         if (!method) {
             method = 'GET'
         }
+
+        if (queryBodyArgsArray.length > 0) {
+            // for GET requests, leave the nullability of the query parameters unchanged -
+            // but for PUT, POST and PATCH, unwrap any non-nulls
+            const queryInputObject = makeHttpQueryInputObject(
+                parent,
+                field,
+                queryBodyArgsArray,
+                method === 'GET' ? false : true
+            )
+            const bodyInputObject = makeHttpBodyInputObject(
+                parent,
+                field,
+                queryBodyArgsArray,
+                true
+            )
+
+            // if any of the arguments for the query are non-null,
+            // make the newly generated type wrapper non-null too (only really applies for GET requests)
+            const makeNonNull = queryInputObject.fields
+                .filter(a => a.type.kind === Kind.NON_NULL_TYPE).length > 0 ? true : false
+
+            ctx.addInput(queryInputObject)
+            newFieldArgsArray.push(makeHttpArgument('query', queryInputObject, makeNonNull))
+
+            if (method !== 'GET' && method !== 'DELETE') {
+                ctx.addInput(bodyInputObject)
+                newFieldArgsArray.push(makeHttpArgument('body', bodyInputObject, makeNonNull))
+            }
+        }
+
         // build the payload
         switch (method) {
             case 'GET':
@@ -144,10 +179,8 @@ export class HttpTransformer extends Transformer {
                         path,
                         parent.name.value,
                         field.name.value,
-                        urlParams
                     )
                     ctx.setResource(getResourceID, getResolver)
-                    // console.log(JSON.stringify(ctx.getResource(getResourceID), null, 4))
                 }
                 break;
             case 'POST':
@@ -158,7 +191,9 @@ export class HttpTransformer extends Transformer {
                         path,
                         parent.name.value,
                         field.name.value,
-                        urlParams
+                        queryBodyArgsArray
+                            .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
+                            .map(a => a.name.value)
                     )
                     ctx.setResource(postResourceID, postResolver)
                 }
@@ -171,10 +206,11 @@ export class HttpTransformer extends Transformer {
                         path,
                         parent.name.value,
                         field.name.value,
-                        urlParams
+                        queryBodyArgsArray
+                            .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
+                            .map(a => a.name.value)
                     )
                     ctx.setResource(putResourceID, putResolver)
-                    // console.log(ctx.getResource(putResourceID))
                 }
                 break;
             case 'DELETE':
@@ -184,9 +220,42 @@ export class HttpTransformer extends Transformer {
                     ctx.setResource(deleteResourceID, deleteResolver)
                 }
                 break;
+            case 'PATCH':
+                const patchResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
+                if (!ctx.getResource(patchResourceID)) {
+                    const patchResolver = this.resources.makePatchResolver(
+                        baseURL,
+                        path,
+                        parent.name.value,
+                        field.name.value,
+                        queryBodyArgsArray
+                            .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
+                            .map(a => a.name.value)
+                    )
+                    ctx.setResource(patchResourceID, patchResolver)
+                }
+                break;
             default:
             // nothing
         }
 
+        // now update the field if necessary with the new arguments
+        if (newFieldArgsArray.length > 0) {
+            const updatedField = {
+                ...field,
+                arguments: newFieldArgsArray
+            }
+
+            const mostRecentParent = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
+            let updatedFieldsInParent = mostRecentParent.fields.filter(f => f.name.value !== field.name.value)
+            updatedFieldsInParent.push(updatedField)
+
+            const updatedParentType = {
+                ...mostRecentParent,
+                fields: updatedFieldsInParent
+            }
+
+            ctx.putType(updatedParentType)
+        }
     }
 }
