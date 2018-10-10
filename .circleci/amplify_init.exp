@@ -1,4 +1,5 @@
 #!/usr/bin/expect
+set repo [lindex $argv 0];
 spawn ./.circleci/amplify_init.sh $repo
 expect "Enter a name for the project"
 send -- "unauth\r"
