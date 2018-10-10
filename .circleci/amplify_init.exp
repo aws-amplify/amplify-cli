@@ -24,6 +24,7 @@ expect "accessKeyId:"
 send -- "$env(ACCESS_KEY_ID)\r"
 expect "secretAccessKey:"
 send -- "$env(SECRET_ACCESS_KEY)\r"
+log_user 1;
 expect -exact "region:"
 send -- "\r"
-log_user 1;
+interact;
