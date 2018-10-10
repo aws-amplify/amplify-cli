@@ -270,8 +270,14 @@ export class ResourceFactory {
     public ownerCreateResolverRequestMappingTemplateSnippet = (
         ownerAttribute: string, identityField: string) => printBlock('Inject Ownership Information')(
             compoundExpression([
-                iff(raw(`$util.isNullOrBlank($ctx.identity.${identityField})`), raw('$util.unauthorized()')),
-                qref(`$ctx.args.input.put("${ownerAttribute}", $ctx.identity.${identityField})`)
+                iff(
+                    raw(`$util.isNullOrBlank($ctx.identity.${identityField})`),
+                    raw('$util.unauthorized()')
+                ),
+                compoundExpression([
+                    qref(`$ctx.args.input.put("${ownerAttribute}", $ctx.identity.${identityField})`),
+                    raw('#set($isAuthorized = true)')
+                ])
             ])
         )
 

@@ -143,7 +143,8 @@ async function signupAndAuthenticateUser(userPoolId: string, username: string) {
         console.log(`Logged in ${username} \n${authRes.getIdToken().getJwtToken()}`)
         return authRes;
     } catch (e) {
-        console.error(`Failed to login.\n${e}`)
+        console.error(`Failed to login.\n`)
+        console.error(e)
     }
 }
 
@@ -204,9 +205,15 @@ beforeAll(async () => {
         updatedAt: String
         owner: String
     }
-    type Salary @model @auth(rules: [{allow: groups, groups: ["Admin"]}]) {
+    type Salary @model @auth(
+        rules: [
+            {allow: owner},
+            {allow: groups, groups: ["Admin"]}
+        ]
+    ) {
         id: ID!
         wage: Int
+        owner: String
     }
     type ManyGroupProtected @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
@@ -304,8 +311,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        // await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -763,9 +770,9 @@ test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
     }
 })
 
-test(`Test getSalary w/ Admin group protection authorized`, async () => {
+test(`Test and Admin can get a salary created by any user`, async () => {
     try {
-        const req = await GRAPHQL_CLIENT_1.query(`
+        const req = await GRAPHQL_CLIENT_2.query(`
         mutation {
             createSalary(input: { wage: 15 }) {
                 id
@@ -777,6 +784,35 @@ test(`Test getSalary w/ Admin group protection authorized`, async () => {
         expect(req.data.createSalary.id).toBeDefined()
         expect(req.data.createSalary.wage).toEqual(15)
         const req2 = await GRAPHQL_CLIENT_1.query(`
+        query {
+            getSalary(id: "${req.data.createSalary.id}") {
+                id
+                wage
+            }
+        }
+        `)
+        expect(req2.data.getSalary.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.getSalary.wage).toEqual(15)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test owner can create and get a salary when not admin`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createSalary(input: { wage: 15 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createSalary.id).toBeDefined()
+        expect(req.data.createSalary.wage).toEqual(15)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
         query {
             getSalary(id: "${req.data.createSalary.id}") {
                 id
