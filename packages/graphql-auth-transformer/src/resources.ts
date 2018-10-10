@@ -192,7 +192,7 @@ export class ResourceFactory {
             compoundExpression([
                 set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
                 set(ref('allowedGroups'), ref(`ctx.result.${groupsAttribute}`)),
-                set(ref('isAuthorized'), raw('false')),
+                raw('#set($isAuthorized = $util.defaultIfNull($isAuthorized, false))'),
                 forEach(ref('userGroup'), ref('userGroups'), [
                     iff(
                         raw('$util.isList($allowedGroups)'),
@@ -214,7 +214,7 @@ export class ResourceFactory {
                 set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
                 set(ref('items'), list([])),
                 forEach(ref('item'), ref('ctx.result.items'), [
-                    set(ref('isAuthorized'), raw('false')),
+                    raw('#set($isAuthorized = $util.defaultIfNull($isAuthorized, false))'),
                     set(ref('allowedGroups'), ref(`item.${groupsAttribute}`)),
                     forEach(ref('userGroup'), ref('userGroups'), [
                         iff(
@@ -437,6 +437,31 @@ export class ResourceFactory {
 
     public throwWhenUnauthorized(): string {
         return printBlock("Throw if Unauthorized")(iff(raw('!$isAuthorized'), raw('$util.unauthorized()')))
+    }
+
+    /**
+     * If the resolver is static group authorized then the conditional expression
+     * should succeed even if ownership or another condtion based auth flow do not.
+     * This will make the condition succeed as long as the object exists.
+     * If the user is not authorized by the group and there is no auth condition
+     * then fail.
+     */
+    public disableAuthConditionWhenStaticGroupAuthorized(): string {
+        return printBlock("If authorized via a group then disable any authorization condition expressions.")(
+            compoundExpression([
+                iff(
+                    raw(`$isAuthorized && !$util.isNull(\$${ResourceConstants.SNIPPETS.AuthCondition})`),
+                    set(
+                        ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
+                        str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression OR (attribute_exists(#id))`)
+                    ),
+                ),
+                iff(
+                    raw(`!$isAuthorized && $util.isNull(\$${ResourceConstants.SNIPPETS.AuthCondition})`),
+                    raw('$util.unauthorized()')
+                )
+            ])
+        )
     }
 
     public isAuthorized(): Expression {

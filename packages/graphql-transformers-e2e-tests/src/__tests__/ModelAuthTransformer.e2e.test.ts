@@ -215,6 +215,14 @@ beforeAll(async () => {
         wage: Int
         owner: String
     }
+    type AdminNote @model @auth(
+        rules: [
+            {allow: groups, groups: ["Admin"]}
+        ]
+    ) {
+        id: ID!
+        content: String!
+    }
     type ManyGroupProtected @model @auth(rules: [{allow: groups, groupsField: "groups"}]) {
         id: ID!
         value: Int
@@ -311,8 +319,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -633,7 +641,7 @@ test(`Test createSalary w/ Admin group protection authorized`, async () => {
     }
 })
 
-test(`Test createSalary w/ Admin group protection not unauthorized`, async () => {
+test(`Test update my own salary without admin permission`, async () => {
     try {
         const req = await GRAPHQL_CLIENT_2.query(`
         mutation {
@@ -644,17 +652,25 @@ test(`Test createSalary w/ Admin group protection not unauthorized`, async () =>
         }
         `)
         console.log(JSON.stringify(req, null, 4))
-        expect(req.data.createSalary).toEqual(null)
-        expect(req.errors.length).toEqual(1)
-        expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
+        expect(req.data.createSalary.wage).toEqual(10)
+        const req2 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            updateSalary(input: { id: "${req.data.createSalary.id}", wage: 14 }) {
+                id
+                wage
+            }
+        }
+        `)
+        console.log(JSON.stringify(req2, null, 4))
+        expect(req2.data.updateSalary.wage).toEqual(14)
     } catch (e) {
         expect(e).toBeUndefined()
     }
 })
 
-test(`Test updateSalary w/ Admin group protection authorized`, async () => {
+test(`Test updating someone else's salary as an admin`, async () => {
     try {
-        const req = await GRAPHQL_CLIENT_1.query(`
+        const req = await GRAPHQL_CLIENT_2.query(`
         mutation {
             createSalary(input: { wage: 11 }) {
                 id
@@ -673,6 +689,7 @@ test(`Test updateSalary w/ Admin group protection authorized`, async () => {
             }
         }
         `)
+        console.log(JSON.stringify(req2, null, 4))
         expect(req2.data.updateSalary.id).toEqual(req.data.createSalary.id)
         expect(req2.data.updateSalary.wage).toEqual(12)
     } catch (e) {
@@ -681,7 +698,7 @@ test(`Test updateSalary w/ Admin group protection authorized`, async () => {
     }
 })
 
-test(`Test updateSalary w/ Admin group protection not authorized`, async () => {
+test(`Test updating someone else's salary when I am not admin.`, async () => {
     try {
         const req = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -704,7 +721,7 @@ test(`Test updateSalary w/ Admin group protection not authorized`, async () => {
         `)
         expect(req2.data.updateSalary).toEqual(null)
         expect(req2.errors.length).toEqual(1)
-        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+        expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined()
@@ -732,6 +749,7 @@ test(`Test deleteSalary w/ Admin group protection authorized`, async () => {
             }
         }
         `)
+        console.log(JSON.stringify(req2, null, 4))
         expect(req2.data.deleteSalary.id).toEqual(req.data.createSalary.id)
         expect(req2.data.deleteSalary.wage).toEqual(15)
     } catch (e) {
@@ -763,7 +781,7 @@ test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
         `)
         expect(req2.data.deleteSalary).toEqual(null)
         expect(req2.errors.length).toEqual(1)
-        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+        expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined()
@@ -1167,4 +1185,101 @@ test(`Test Protecteds when the user is not authorized.`, async () => {
     `)
     console.log(JSON.stringify(getReq, null, 4))
     expect(getReq.data.getPWProtected).toBeTruthy()
+})
+
+test(`Test creating, updating, and deleting an admin note as an admin`, async () => {
+    try {
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAdminNote(input: { content: "Hello" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.data.createAdminNote.id).toBeDefined()
+        expect(req.data.createAdminNote.content).toEqual("Hello")
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            updateAdminNote(input: { id: "${req.data.createAdminNote.id}", content: "Hello 2" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req2, null, 4))
+        expect(req2.data.updateAdminNote.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.updateAdminNote.content).toEqual("Hello 2")
+        const req3 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            deleteAdminNote(input: { id: "${req.data.createAdminNote.id}" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req3, null, 4))
+        expect(req3.data.deleteAdminNote.id).toEqual(req.data.createSalary.id)
+        expect(req3.data.deleteAdminNote.content).toEqual("Hello 2")
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
+})
+
+test(`Test creating, updating, and deleting an admin note as a non admin`, async () => {
+    try {
+        const adminReq = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAdminNote(input: { content: "Hello" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(adminReq, null, 4))
+        expect(adminReq.data.createAdminNote.id).toBeDefined()
+        expect(adminReq.data.createAdminNote.content).toEqual("Hello")
+
+
+        const req = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAdminNote(input: { content: "Hello" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req, null, 4))
+        expect(req.errors.length).toEqual(1)
+        expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
+
+        const req2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            updateAdminNote(input: { id: "${req.data.createAdminNote.id}", content: "Hello 2" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req2, null, 4))
+        expect(req2.errors.length).toEqual(1)
+        expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
+
+        const req3 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            deleteAdminNote(input: { id: "${req.data.createAdminNote.id}" }) {
+                id
+                content
+            }
+        }
+        `)
+        console.log(JSON.stringify(req3, null, 4))
+        expect(req3.errors.length).toEqual(1)
+        expect((req3.errors[0] as any).errorType).toEqual('Unauthorized')
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined()
+    }
 })

@@ -332,7 +332,7 @@ export class ModelAuthTransformer extends Transformer {
                 if (rule.groups) {
                     const authSnippet = this.resources.staticGroupAuthorizationResponseMappingTemplate(rule.groups)
                     beforeRequest.push(authSnippet)
-                    beforeRequest.push(this.resources.throwWhenUnauthorized())
+                    beforeRequest.push(this.resources.disableAuthConditionWhenStaticGroupAuthorized())
                 } else if (rule.groupsField) {
                     const authSnippet = this.resources.dynamicGroupUpdateAndDeleteResolverRequestMappingTemplateSnippet(rule.groupsField)
                     beforeRequest.push(authSnippet)
