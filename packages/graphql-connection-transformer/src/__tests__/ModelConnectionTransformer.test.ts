@@ -109,7 +109,7 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     type Comment @model {
         id: ID!
         content: String!
-        post: Post @connection(name: "PostComments", keyField: "postId")
+        post: Post! @connection(name: "PostComments", keyField: "postId")
     }
     `
     const transformer = new GraphQLTransform({
@@ -138,10 +138,12 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
     const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionId).toBeTruthy()
+    expect(connectionId.type.kind).toEqual(Kind.NON_NULL_TYPE)
 
     const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
     const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
     expect(connectionUpdateId).toBeTruthy()
+    expect(connectionUpdateId.type.kind).toEqual(Kind.NAMED_TYPE)
 });
 
 test('Test ModelConnectionTransformer complex one to many happy case', () => {
@@ -288,6 +290,76 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     expect(postType).toBeDefined()
     expect(thingConnection).toBeDefined()
     expect(postConnection).toBeDefined()
+});
+
+test('Test ModelConnectionTransformer with non null @connections', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+
+        # A non null on the one in a 1-M does enforce a non-null
+        # on the CreatePostInput
+        singleComment: Comment! @connection
+
+        # A non null on the many in a 1-M does not enforce a non-null
+        # in the CommentCreateInput because it is not explicitly implied.
+        manyComments: [Comment]! @connection
+    }
+    type Comment @model {
+        id: ID!
+        content: String!
+
+        # A non-null on the one in 1-M again enforces a non null.
+        post: Post! @connection(name: "PostComments", keyField: "postId")
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+
+    // Post.comments field
+    const postType = getObjectType(schemaDoc, 'Post')
+    expectFields(postType, ['comments'])
+    const commentField = postType.fields.find(f => f.name.value === 'comments')
+    expect(commentField.arguments.length).toEqual(4)
+    expectArguments(commentField, ['filter', 'limit', 'nextToken', 'sortDirection'])
+    expect(commentField.type.kind).toEqual(Kind.NAMED_TYPE)
+    expect((commentField.type as any).name.value).toEqual('ModelCommentConnection')
+
+    // Check the Comment.commentPostId
+    // Check the Comment.commentPostId inputs
+    const commentCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Comment'))
+    const connectionId = commentCreateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionId).toBeTruthy()
+    expect(connectionId.type.kind).toEqual(Kind.NON_NULL_TYPE)
+
+    const manyCommentId = commentCreateInput.fields.find(f => f.name.value === 'postManyCommentsId')
+    expect(manyCommentId).toBeTruthy()
+    expect(manyCommentId.type.kind).toEqual(Kind.NAMED_TYPE)
+
+    const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'))
+    const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId')
+    expect(connectionUpdateId).toBeTruthy()
+    expect(connectionUpdateId.type.kind).toEqual(Kind.NAMED_TYPE)
+
+
+    // Check the post create type
+    const postCreateInput = getInputType(schemaDoc, ModelResourceIDs.ModelCreateInputObjectName('Post'))
+    const postConnectionId = postCreateInput.fields.find(f => f.name.value === 'postSingleCommentId')
+    expect(postConnectionId).toBeTruthy()
+    expect(postConnectionId.type.kind).toEqual(Kind.NON_NULL_TYPE)
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
