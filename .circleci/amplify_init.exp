@@ -1,7 +1,5 @@
 #!/usr/bin/expect
-set repo [lindex $argv 0];
-cd $repo
-spawn ./.circleci/amplify_init.sh
+spawn ./.circleci/amplify_init.sh $repo
 expect "Enter a name for the project"
 send -- "unauth\r"
 expect -exact "Choose your default editor:"
