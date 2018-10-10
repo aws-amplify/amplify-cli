@@ -1,7 +1,8 @@
 #!/usr/bin/expect
-spawn ./.circleci/amplify_init.sh
+set repo [lindex $argv 0];
+spawn ./.circleci/amplify_init.sh $repo
 expect "Enter a name for the project"
-send -- "test\r"
+send -- "unauth\r"
 expect -exact "Choose your default editor:"
 send -- "\r"
 expect "Choose the type of app that you're building"
@@ -17,12 +18,11 @@ send -- "\r"
 expect -exact "Start Command:"
 send -- "\r"
 log_user 0;
-expect "Using default provider awscloudformation\nAWS access credentials can not be detected\n.Setup new user"
-send -- "n\r"
 expect "accessKeyId:"
-send -- "$env(ACCESS_KEY_ID)\r"
+send -- "$env(AWS_ACCESS_KEY_ID)\r"
 expect "secretAccessKey:"
-send -- "$env(SECRET_ACCESS_KEY)\r"
+send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
-send -- "\r"
 log_user 1;
+send -- "\r"
+interact;

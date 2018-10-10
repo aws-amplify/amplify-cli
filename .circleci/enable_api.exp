@@ -1,6 +1,4 @@
 #!/usr/bin/expect
-spawn ./.circleci/amplify_init.sh
-set timeout 70
 spawn ./.circleci/api.sh
 expect "Please select from one of the below mentioned services\r"
 send -- "\033\[B\r"

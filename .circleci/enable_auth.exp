@@ -1,7 +1,4 @@
 #!/usr/bin/expect
-cd aws-amplify-cypress-auth
-spawn ./.circleci/amplify_init.sh
-set timeout 70
 spawn ./.circleci/auth.sh
 expect "Do you want to use default authentication and security configuration?\r"
 send -- "\r"
