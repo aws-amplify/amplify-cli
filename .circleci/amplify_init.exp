@@ -17,10 +17,12 @@ expect -exact "Build Command:"
 send -- "\r"
 expect -exact "Start Command:"
 send -- "\r"
+log_user 0;
 expect "accessKeyId:"
 send -- "$env(AWS_ACCESS_KEY_ID)\r"
 expect "secretAccessKey:"
 send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
+log_user 1;
 send -- "\r"
 interact;
