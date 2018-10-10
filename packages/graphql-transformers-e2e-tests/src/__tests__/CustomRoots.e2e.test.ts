@@ -10,6 +10,8 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import fs = require('fs');
 import path = require('path');
 
+jest.setTimeout(2000000);
+
 test('Test custom root types with additional fields.', () => {
     const validSchema = `
     type Query {
