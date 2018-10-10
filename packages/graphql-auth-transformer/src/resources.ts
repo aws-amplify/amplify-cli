@@ -446,7 +446,7 @@ export class ResourceFactory {
      * If the user is not authorized by the group and there is no auth condition
      * then fail.
      */
-    public disableAuthConditionWhenStaticGroupAuthorized(): string {
+    public handleStaticGroupAuthorizationCheck(): string {
         return printBlock("If authorized via a group then disable any authorization condition expressions.")(
             compoundExpression([
                 iff(

@@ -319,8 +319,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        // await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -1209,7 +1209,7 @@ test(`Test creating, updating, and deleting an admin note as an admin`, async ()
         }
         `)
         console.log(JSON.stringify(req2, null, 4))
-        expect(req2.data.updateAdminNote.id).toEqual(req.data.createSalary.id)
+        expect(req2.data.updateAdminNote.id).toEqual(req.data.createAdminNote.id)
         expect(req2.data.updateAdminNote.content).toEqual("Hello 2")
         const req3 = await GRAPHQL_CLIENT_1.query(`
         mutation {
@@ -1220,7 +1220,7 @@ test(`Test creating, updating, and deleting an admin note as an admin`, async ()
         }
         `)
         console.log(JSON.stringify(req3, null, 4))
-        expect(req3.data.deleteAdminNote.id).toEqual(req.data.createSalary.id)
+        expect(req3.data.deleteAdminNote.id).toEqual(req.data.createAdminNote.id)
         expect(req3.data.deleteAdminNote.content).toEqual("Hello 2")
     } catch (e) {
         console.error(e)
@@ -1243,7 +1243,7 @@ test(`Test creating, updating, and deleting an admin note as a non admin`, async
         expect(adminReq.data.createAdminNote.content).toEqual("Hello")
 
 
-        const req = await GRAPHQL_CLIENT_1.query(`
+        const req = await GRAPHQL_CLIENT_2.query(`
         mutation {
             createAdminNote(input: { content: "Hello" }) {
                 id
@@ -1255,9 +1255,9 @@ test(`Test creating, updating, and deleting an admin note as a non admin`, async
         expect(req.errors.length).toEqual(1)
         expect((req.errors[0] as any).errorType).toEqual('Unauthorized')
 
-        const req2 = await GRAPHQL_CLIENT_1.query(`
+        const req2 = await GRAPHQL_CLIENT_2.query(`
         mutation {
-            updateAdminNote(input: { id: "${req.data.createAdminNote.id}", content: "Hello 2" }) {
+            updateAdminNote(input: { id: "${adminReq.data.createAdminNote.id}", content: "Hello 2" }) {
                 id
                 content
             }
@@ -1267,9 +1267,9 @@ test(`Test creating, updating, and deleting an admin note as a non admin`, async
         expect(req2.errors.length).toEqual(1)
         expect((req2.errors[0] as any).errorType).toEqual('Unauthorized')
 
-        const req3 = await GRAPHQL_CLIENT_1.query(`
+        const req3 = await GRAPHQL_CLIENT_2.query(`
         mutation {
-            deleteAdminNote(input: { id: "${req.data.createAdminNote.id}" }) {
+            deleteAdminNote(input: { id: "${adminReq.data.createAdminNote.id}" }) {
                 id
                 content
             }
