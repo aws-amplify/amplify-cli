@@ -365,7 +365,7 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
                 }
             }
         }`, {})
-        expect(response.data.complexPost).toBeNull()
+        expect(response.data.createComment.complexPost).toBeNull()
     } catch (e) {
         console.error(e)
         // fail
