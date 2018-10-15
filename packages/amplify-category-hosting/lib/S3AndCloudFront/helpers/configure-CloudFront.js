@@ -17,6 +17,8 @@ const originErrorCodes = {
 };
 
 async function configure(context) {
+  const templateFilePath = path.join(__dirname, '../template.json');
+  const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
   if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
     context.print.info('CloudFront is NOT in the current hosting');
     const answer = await inquirer.prompt({
@@ -26,14 +28,20 @@ async function configure(context) {
       default: false,
     });
     if (answer.AddCloudFront) {
-      const templateFilePath = path.join(__dirname, '../template.json');
-      const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
-      const { CloudFrontDistribution } = originalTemplate.Resources;
+      const {
+        CloudFrontDistribution,
+        OriginAccessIdentity,
+        PrivateBucketPolicy,
+      } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
+      context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
+      context.exeInfo.template.Resources.PrivateBucketPolicy = PrivateBucketPolicy;
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
+      delete context.exeInfo.template.Resources.BucketPolicy;
+      delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
     }
   } else {
     const answer = await inquirer.prompt({
@@ -43,10 +51,16 @@ async function configure(context) {
       default: false,
     });
     if (answer.RemoveCloudFront) {
+      const { BucketPolicy, S3Bucket } = originalTemplate.Resources;
+      delete context.exeInfo.template.Resources.OriginAccessIdentity;
       delete context.exeInfo.template.Resources.CloudFrontDistribution;
+      delete context.exeInfo.template.Resources.PrivateBucketPolicy;
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+      context.exeInfo.template.Resources.BucketPolicy = BucketPolicy;
+      const { AccessControl } = S3Bucket.Properties;
+      context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
     }
   }
 

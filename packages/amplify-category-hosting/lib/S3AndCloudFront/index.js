@@ -64,14 +64,23 @@ async function checkCDN(context) {
   const answer = await inquirer.prompt(selectEnvironment);
   if (answer.environment === DEV) {
     removeCDN(context);
+  } else {
+    makeBucketPrivate(context);
   }
 }
 
 function removeCDN(context) {
+  delete context.exeInfo.template.Resources.OriginAccessIdentity;
   delete context.exeInfo.template.Resources.CloudFrontDistribution;
+  delete context.exeInfo.template.Resources.PrivateBucketPolicy;
   delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
   delete context.exeInfo.template.Outputs.CloudFrontDomainName;
   delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
+}
+
+function makeBucketPrivate(context) {
+  delete context.exeInfo.template.Resources.BucketPolicy;
+  delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
 }
 
 async function configure(context) {
@@ -98,10 +107,16 @@ function publish(context, args) {
       return cloudFrontManager.invalidateCloudFront(context);
     })
     .then(() => {
-      const { WebsiteURL } = context.exeInfo.serviceMeta.output;
-      context.print.info('Your app is published successfully.');
-      context.print.info(chalk.green(WebsiteURL));
-      opn(WebsiteURL, { wait: false });
+      const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
+      if (CloudFrontSecureURL !== undefined) {
+        context.print.info('Your app is published successfully.');
+        context.print.info(chalk.green(CloudFrontSecureURL));
+      } else {
+        const { WebsiteURL } = context.exeInfo.serviceMeta.output;
+        context.print.info('Your app is published successfully.');
+        context.print.info(chalk.green(WebsiteURL));
+        opn(WebsiteURL, { wait: false });
+      }
     })
     .catch((e) => {
       spinner.fail('Error has occured during publish.');
