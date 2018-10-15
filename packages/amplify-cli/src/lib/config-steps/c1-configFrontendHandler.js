@@ -26,9 +26,9 @@ function run(context) {
 
   return inquirer.prompt(selectFrontendHandler)
     .then((answers) => {
+      context.exeInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] =
+              frontendPlugins[answers.selectedFrontendHandler];
       if (answers.selectedFrontendHandler !== currentHandlerName) {
-        context.exeInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] =
-                frontendPlugins[answers.selectedFrontendHandler];
         delete context.exeInfo.projectConfig.frontendHandler[currentHandlerName];
         delete context.exeInfo.projectConfig[currentHandlerName];
         const handlerModule = require(frontendPlugins[answers.selectedFrontendHandler]);
