@@ -85,15 +85,15 @@ async function configureAccess(context){
 }
 
 async function configure(context){
-  const { amplifyMeta } = context.exeInfo; 
-  if(isXRSetup(amplifyMeta)){
+  if(isXRSetup(context)){
     configureAccess(context);
   }else{
     context.print.error('You have NOT added the XR category yet.')
   }
 }
 
-function isXRSetup(amplifyMeta){
+function isXRSetup(context){
+  const { amplifyMeta } = context.exeInfo; 
   return amplifyMeta[constants.CategoryName] &&
     amplifyMeta[constants.CategoryName][constants.ServiceName];
 }
@@ -108,6 +108,7 @@ function removeScene(context){
 }
 
 module.exports = {
+  isXRSetup,
   ensureSetup,
   configure,
   getExistingScenes,
