@@ -166,6 +166,10 @@ workflows:
           requires:
             - build
       - graphql_e2e_tests:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
       - integration_test:
