@@ -3,7 +3,7 @@ import {
     ParensNode, EqualsNode, NotEqualsNode, ForEachNode,
     StringNode, IntNode, NullNode, ReferenceNode, QuietReferenceNode,
     ObjectNode, ListNode, FloatNode, QuotesNode, RawNode, SetNode, CompoundExpressionNode,
-    CommentNode, ToJsonNode, BooleanNode, compoundExpression, comment
+    CommentNode, ToJsonNode, BooleanNode, compoundExpression, comment, NotNode
 } from './ast';
 
 const TAB = '  ';
@@ -121,6 +121,10 @@ function printToJson(node: ToJsonNode, indent: string = ''): string {
     return `${indent}$util.toJson(${printExpr(node.expr, '')})`
 }
 
+function printNot(node: NotNode, indent: string = ''): string {
+    return `${indent}!${printExpr(node.expr)}`
+}
+
 function printExpr(expr: Expression, indent: string = ''): string {
     if (!expr) { return ''; }
     switch (expr.kind) {
@@ -170,6 +174,8 @@ function printExpr(expr: Expression, indent: string = ''): string {
             return printCompoundExpression(expr, indent)
         case 'Util.ToJson':
             return printToJson(expr, indent)
+        case 'Not':
+            return printNot(expr, indent)
         default:
             return '';
     }

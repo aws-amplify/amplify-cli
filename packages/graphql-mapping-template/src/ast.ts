@@ -111,6 +111,20 @@ export function notEquals(leftExpr: Expression, rightExpr: Expression): NotEqual
 }
 
 /**
+ * Compares two expressions for unequality.
+ */
+export interface NotNode {
+    kind: 'Not';
+    expr: Expression;
+}
+export function not(expr: Expression): NotNode {
+    return {
+        kind: 'Not',
+        expr,
+    }
+}
+
+/**
  * Iterates through a collection.
  */
 export interface ForEachNode {
@@ -363,4 +377,5 @@ export type Expression =
     | SetNode
     | CommentNode
     | CompoundExpressionNode
-    | ToJsonNode;
+    | ToJsonNode
+    | NotNode;
