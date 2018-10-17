@@ -4,6 +4,7 @@ const opn = require('opn');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
+const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 async function ensureSetup(context){
   const { amplifyMeta } = context.exeInfo; 
@@ -112,31 +113,69 @@ function isXRSetup(context){
 }
 
 function getExistingScenes(context){
-  let result; 
+  let result = []; 
   if(isXRSetup(context)){
     const { amplifyMeta } = context.exeInfo; 
-    result = Object.keys([constants.CategoryName][constants.ServiceName]['output']);
+    result = Object.keys(amplifyMeta[constants.CategoryName][constants.ServiceName]['output']);
   }
   return result; 
 }
 
 function addScene(context){
-  if(isXRSetup(context))
-  {
-    const existingScenes = getExistingScenes(context); 
-  }else{
-    context.print.error('You must first setup summerian access policy before scenes can be added to your project.');
-  }
+  await ensureSetup(context); 
+  context.print.info('Open the Amazon Sumerian console, and publish the scene you want to add.')
+  context.print.info('Copy the scene\'s JSON configuration');
+  const existingScenes = getExistingScenes(context); 
+  let sceneConfig; 
+  const answers = await inquirer.prompt([
+    {
+      name: 'sceneConfigString',
+      type: 'input',
+      message: 'Paste the published scene configuration',
+      validate: (sceneConfigString)=>{
+        try{
+          sceneConfig = JSON.parse(sceneConfigString.trim());
+        }catch{
+        }
+        if(sceneConfig){
+          return true;
+        }else{
+          return `The scene configuration you entered is invalid`;
+        }
+      }
+    },
+    {
+      name: 'sceneName',
+      type: 'input',
+      message: 'Provide a name for the scene',
+      validate: (sceneName)=>{
+        if(!existingScenes.includes(sceneName)){
+          return true;
+        }else{
+          return `${sceneName} already exists, scene name must ben unique within the project`;
+        }
+      }
+    }
+  ]);
+
+  const { amplifyMeta } = context.exeInfo; 
+  amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][answers.sceneName] = sceneConfig;
+  writeAmplifyMeta(context);
 }
+
 
 function removeScene(context){
   const existingScenes = getExistingScenes(context); 
   if(existingScenes && existingScenes.length > 0){
     inquirer.prompt({
-
+      name: 'existingScenes',
+      message: 'Choose the scene to delete',
+      type: 'list',
+      choices: existingScenes,
     }).then((answer)=>{
-      delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][answer.scene];
-    })
+      delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][answer.existingScenes];
+      writeAmplifyMeta(context);
+    });
   }else{
     context.print.error('No scenes have been added to your project.');
   }
