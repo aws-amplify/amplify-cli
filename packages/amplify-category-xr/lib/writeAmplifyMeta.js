@@ -8,9 +8,11 @@ module.exports = (context) => {
 
   const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
   const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetaFilePath));
-  currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
-  jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
-  fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+  if(currentAmplifyMeta[constants.CategoryName]){
+    currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
+    jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
+    fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+  }
 
   context.amplify.onCategoryOutputsChange(context);
 };

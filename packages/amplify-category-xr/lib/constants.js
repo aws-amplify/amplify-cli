@@ -1,6 +1,6 @@
 module.exports = {
     CategoryName: 'xr',
-    ServiceName: 'sumerian',
+    ServiceName: 'Sumerian',
     IAMService: 'IAM',
     TemplateFileName: 'template.json',
     ParametersFileName: 'parameters.json',

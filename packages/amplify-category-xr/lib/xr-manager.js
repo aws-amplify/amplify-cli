@@ -8,7 +8,7 @@ const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 async function ensureSetup(context){
   const { amplifyMeta } = context.exeInfo; 
-  if(!isXRSetup(amplifyMeta)){
+  if(!isXRSetup(context)){
     authHelper.ensureAuth(context);
     await setupAccess(context); 
   }
@@ -16,7 +16,7 @@ async function ensureSetup(context){
 
 async function setupAccess(context){
   let templateFilePath = path.join(__dirname, constants.TemplateFileName);
-  context.exeInfo.template = require(templateFilePath);
+  let template = require(templateFilePath);
 
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
@@ -26,41 +26,43 @@ async function setupAccess(context){
   });
 
   if(!answer.allowUnAuthAccess){
-    delete context.exeInfo.template.Resources.CognitoUnauthPolicy;
+    delete template.Resources.CognitoUnauthPolicy;
   }
 
   let parametersFilePath = path.join(__dirname, constants.ParametersFileName);
-  context.exeInfo.parameters = require(parametersFilePath);
+  let parameters = require(parametersFilePath);
 
   const { projectConfig, amplifyMeta } = context.exeInfo; 
   const providerInfo = amplifyMeta.providers[constants.ProviderPlugin];
   const decoratedProjectName = projectConfig.projectName + context.amplify.makeId(5);
-  context.exeInfo.parameters.AuthRoleName = providerInfo.AuthRoleName;
-  context.exeInfo.parameters.UnauthRoleName = providerInfo.UnauthRoleName;
-  context.exeInfo.parameters.AuthPolicyName = 'sumerian-auth-' + decoratedProjectName;
-  context.exeInfo.parameters.UnauthPolicyName = 'sumerian-unauth-' + decoratedProjectName;
+  parameters.AuthRoleName = providerInfo.AuthRoleName;
+  parameters.UnauthRoleName = providerInfo.UnauthRoleName;
+  parameters.AuthPolicyName = 'sumerian-auth-' + decoratedProjectName;
+  parameters.UnauthPolicyName = 'sumerian-unauth-' + decoratedProjectName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
   fs.ensureDirSync(serviceDirPath);
 
   templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
-  const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+  const jsonString = JSON.stringify(template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
   parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
-  const jsonString = JSON.stringify(context.exeInfo.parameters, null, 4);
+  const jsonString = JSON.stringify(parameters, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
   const metaData = {
     service: constants.ServiceName,
     providerPlugin: constants.ProviderPlugin
   };
-  return context.amplify.updateamplifyMetaAfterResourceAdd(
+  await context.amplify.updateamplifyMetaAfterResourceAdd(
     constants.CategoryName,
     constants.IAMService,
     metaData,
   );
+
+  context.exeInfo = context.amplify.getProjectDetails();
 }
 
 async function configureAccess(context){
@@ -116,53 +118,72 @@ function getExistingScenes(context){
   let result = []; 
   if(isXRSetup(context)){
     const { amplifyMeta } = context.exeInfo; 
-    result = Object.keys(amplifyMeta[constants.CategoryName][constants.ServiceName]['output']);
+    if(amplifyMeta[constants.CategoryName][constants.ServiceName]['output']){
+      result = Object.keys(amplifyMeta[constants.CategoryName][constants.ServiceName]['output']);
+    }
   }
   return result; 
 }
 
-function addScene(context){
+async function addScene(context){
   await ensureSetup(context); 
   context.print.info('Open the Amazon Sumerian console, and publish the scene you want to add.')
-  context.print.info('Copy the scene\'s JSON configuration');
-  const existingScenes = getExistingScenes(context); 
+  context.print.info('Then download the JSON configuration to your local computer.');
+  await inquirer.prompt({
+    name: 'pressEnter',
+    type: 'input',
+    message: 'Press Enter when ready.'
+  }); 
+
   let sceneConfig; 
-  const answers = await inquirer.prompt([
+  let sceneName; 
+
+  await inquirer.prompt(
     {
-      name: 'sceneConfigString',
+      name: 'configFilePath',
       type: 'input',
-      message: 'Paste the published scene configuration',
-      validate: (sceneConfigString)=>{
+      message: 'Enter the path to the downloaded JSON configuration file.',
+      validate: (configFilePath)=>{
         try{
-          sceneConfig = JSON.parse(sceneConfigString.trim());
-        }catch{
+          if(fs.existsSync(configFilePath)){
+            sceneConfig = require(configFilePath);
+          }
+        }catch(e){
         }
         if(sceneConfig){
           return true;
         }else{
-          return `The scene configuration you entered is invalid`;
+          return `Can NOT ready the configuration, make sure it is valid.`;
         }
       }
-    },
+    }
+  );
+
+  const existingScenes = getExistingScenes(context);
+  await inquirer.prompt(
     {
       name: 'sceneName',
       type: 'input',
       message: 'Provide a name for the scene',
-      validate: (sceneName)=>{
-        if(!existingScenes.includes(sceneName)){
+      validate: (name)=>{
+        if(!existingScenes.includes(name)){
           return true;
         }else{
-          return `${sceneName} already exists, scene name must ben unique within the project`;
+          return `${name} already exists, scene name must ben unique within the project`;
         }
       }
     }
-  ]);
+  ).then((answer)=>{
+    sceneName = answer.sceneName
+  })
 
   const { amplifyMeta } = context.exeInfo; 
-  amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][answers.sceneName] = sceneConfig;
+  if(!amplifyMeta[constants.CategoryName][constants.ServiceName]['output']){
+    amplifyMeta[constants.CategoryName][constants.ServiceName]['output'] = {}; 
+  }
+  amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][sceneName] = sceneConfig;
   writeAmplifyMeta(context);
 }
-
 
 function removeScene(context){
   const existingScenes = getExistingScenes(context); 
