@@ -1,12 +1,7 @@
-const opn = require('opn');
+const xrManager = require('./lib/xr-manager');
 
-function console(context) {
-    const amplifyMeta = context.amplify.getProjectMeta();
-    const region = amplifyMeta.providers.awscloudformation.Region; 
-    const consoleUrl =
-            `https://console.aws.amazon.com/sumerian/home/start?region=${region}`;
-    context.print.info(chalk.green(consoleUrl));
-    opn(consoleUrl, { wait: false });
+function console(context){
+    return xrManager.console(context); 
 }
 
 module.exports = {

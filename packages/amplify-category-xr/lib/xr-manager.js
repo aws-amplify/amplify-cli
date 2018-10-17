@@ -1,4 +1,6 @@
+const fs = require('fs-extra');
 const inquirer = require('inquirer'); 
+const opn = require('opn');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
@@ -55,12 +57,14 @@ async function setupAccess(context){
   };
   return context.amplify.updateamplifyMetaAfterResourceAdd(
     constants.CategoryName,
-    constants.ServiceName,
+    constants.IAMService,
     metaData,
   );
 }
 
 async function configureAccess(context){
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
   const templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
   const template = require(templateFilePath);
 
@@ -84,6 +88,15 @@ async function configureAccess(context){
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 }
 
+async function removeAccess(context){
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
+  const templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
+  const parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
+  fs.removeSync(templateFilePath);
+  fs.removeSync(parametersFilePath);
+}
+
 async function configure(context){
   if(isXRSetup(context)){
     configureAccess(context);
@@ -99,12 +112,43 @@ function isXRSetup(context){
 }
 
 function getExistingScenes(context){
+  let result; 
+  if(isXRSetup(context)){
+    const { amplifyMeta } = context.exeInfo; 
+    result = Object.keys([constants.CategoryName][constants.ServiceName]['output']);
+  }
+  return result; 
 }
 
 function addScene(context){
+  if(isXRSetup(context))
+  {
+    const existingScenes = getExistingScenes(context); 
+  }else{
+    context.print.error('You must first setup summerian access policy before scenes can be added to your project.');
+  }
 }
 
 function removeScene(context){
+  const existingScenes = getExistingScenes(context); 
+  if(existingScenes && existingScenes.length > 0){
+    inquirer.prompt({
+
+    }).then((answer)=>{
+      delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName]['output'][answer.scene];
+    })
+  }else{
+    context.print.error('No scenes have been added to your project.');
+  }
+}
+
+function console(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const region = amplifyMeta.providers.awscloudformation.Region; 
+  const consoleUrl =
+          `https://console.aws.amazon.com/sumerian/home/start?region=${region}`;
+  context.print.info(chalk.green(consoleUrl));
+  opn(consoleUrl, { wait: false });
 }
 
 module.exports = {
@@ -114,4 +158,5 @@ module.exports = {
   getExistingScenes,
   addScene,
   removeScene,
+  console
 };
