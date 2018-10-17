@@ -1,9 +1,9 @@
-const index = require('../../index')
+const xrManager = require('../../lib/xr-manager');
 
 module.exports = {
     name: 'console',
     run: async (context) => {
-        return index.console(context);
+        return xrManager.console(context); 
     },
   };
   
