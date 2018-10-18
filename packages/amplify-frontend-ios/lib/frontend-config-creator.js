@@ -42,6 +42,8 @@ function createAWSConfig(context, amplifyResources) {
         break;
       case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
         break;
+      case 'Sumerian': Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
+        break;
       default: break;
     }
   });
@@ -185,5 +187,18 @@ function getLexConfig(lexResources) {
     Lex: config,
   };
 }
+
+function getSumerianConfig(sumerianResources) {
+  const config = {}; 
+  sumerianResources.forEach((r) => {
+    const { output } = r;
+    Object.assign(config, output);
+  });
+  delete config.service;
+  return {
+    Sumerian: config,
+  };
+}
+
 
 module.exports = { createAWSConfig, createAmplifyConfig };
