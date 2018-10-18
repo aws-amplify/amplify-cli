@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const path = require('path');
 const inquirer = require('inquirer'); 
 const opn = require('opn');
 
@@ -7,7 +8,6 @@ const authHelper = require('./auth-helper');
 const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 async function ensureSetup(context){
-  const { amplifyMeta } = context.exeInfo; 
   if(!isXRSetup(context)){
     authHelper.ensureAuth(context);
     await setupAccess(context); 
@@ -45,11 +45,11 @@ async function setupAccess(context){
   fs.ensureDirSync(serviceDirPath);
 
   templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
-  const jsonString = JSON.stringify(template, null, 4);
+  let jsonString = JSON.stringify(template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
   parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
-  const jsonString = JSON.stringify(parameters, null, 4);
+  jsonString = JSON.stringify(parameters, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
   const metaData = {
@@ -58,7 +58,7 @@ async function setupAccess(context){
   };
   await context.amplify.updateamplifyMetaAfterResourceAdd(
     constants.CategoryName,
-    constants.IAMService,
+    constants.ServiceName,
     metaData,
   );
 

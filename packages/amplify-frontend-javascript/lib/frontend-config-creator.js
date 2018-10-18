@@ -199,8 +199,14 @@ function getLexConfig(lexResources) {
 }
 
 function getSumerianConfig(sumerianResources) {
+  const config = {}; 
+  sumerianResources.forEach((r) => {
+    const { output } = r;
+    Object.assign(config, output);
+  });
+  delete config.service;
   return {
-    aws_sumerian_config: sumerianResources,
+    aws_sumerian_config: config,
   };
 }
 
