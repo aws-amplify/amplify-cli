@@ -9,7 +9,7 @@ describe('withAuthenticator Sign In', function() {
     cy.get('input[name=username]').type('testuser')
     cy.get('input[name=password]').type('testPassword')
     cy.get('button').contains('Sign In').click()
-    cy.get('.amplify-error-section').contains('User does not exist')
+    cy.get('div').contains('User does not exist')
   })
 })
 
