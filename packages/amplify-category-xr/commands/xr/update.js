@@ -1,5 +1,5 @@
 const subcommand = 'update';
-const xrManager = require('../../lib/xr-manager')
+const xrManager = require('../../lib/xr-manager');
 
 module.exports = {
   name: subcommand,
