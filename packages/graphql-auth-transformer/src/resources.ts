@@ -21,7 +21,7 @@ export class ResourceFactory {
                 Default: ResourceConstants.NONE
             }),
             [ResourceConstants.PARAMETERS.AuthCognitoUserPoolName]: new StringParameter({
-                Description: 'The name of the AppSync API',
+                Description: 'The name of the user pool.',
                 Default: 'AppSyncUserPool'
             }),
             [ResourceConstants.PARAMETERS.AuthCognitoUserPoolMobileClientName]: new StringParameter({
