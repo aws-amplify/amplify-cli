@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer'); 
 const opn = require('opn');
+const chalk = require('chalk');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
@@ -68,13 +69,16 @@ async function setupAccess(context){
 async function configureAccess(context){
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
-  const templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
-  const template = require(templateFilePath);
+  const backendTemplateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
+  const backendTemplate = require(backendTemplateFilePath);
 
   let isUnAuthAccessAllowed = false; 
-  if(template.Resources.CognitoUnauthPolicy){
+  if(backendTemplate.Resources.CognitoUnauthPolicy){
     isUnAuthAccessAllowed = true; 
   }
+
+  let templateFilePath = path.join(__dirname, constants.TemplateFileName);
+  let template = require(templateFilePath);
 
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
@@ -83,12 +87,17 @@ async function configureAccess(context){
     default: isUnAuthAccessAllowed,
   });
 
-  if(!answer.allowUnAuthAccess){
-    delete template.Resources.CognitoUnauthPolicy;
+  if(isUnAuthAccessAllowed && !answer.allowUnAuthAccess){
+    delete backendTemplate.Resources.CognitoUnauthPolicy;
+  }
+  
+  if(!isUnAuthAccessAllowed && answer.allowUnAuthAccess){
+    backendTemplate.Resources.CognitoUnauthPolicy = 
+                  template.Resources.CognitoUnauthPolicy;
   }
 
-  const jsonString = JSON.stringify(template, null, 4);
-  fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+  const jsonString = JSON.stringify(backendTemplate, null, 4);
+  fs.writeFileSync(backendTemplateFilePath, jsonString, 'utf8');
 }
 
 async function removeAccess(context){
