@@ -154,7 +154,7 @@ async function addScene(context) {
   await inquirer.prompt({
     name: 'configFilePath',
     type: 'input',
-    message: 'Enter the path to the downloaded JSON configuration file.',
+    message: 'Enter the path to the downloaded JSON configuration file:',
     validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
@@ -174,7 +174,7 @@ async function addScene(context) {
   await inquirer.prompt({
     name: 'sceneName',
     type: 'input',
-    message: 'Provide a name for the scene',
+    message: 'Provide a name for the scene:',
     validate: (name) => {
       if (!existingScenes.includes(name)) {
         return true;
@@ -199,7 +199,7 @@ function remove(context) {
     if (existingScenes && existingScenes.length > 0) {
       inquirer.prompt({
         name: 'existingScenes',
-        message: 'Choose the scene to remove',
+        message: 'Choose the scene to remove:',
         type: 'list',
         choices: existingScenes,
       }).then((answer) => {
