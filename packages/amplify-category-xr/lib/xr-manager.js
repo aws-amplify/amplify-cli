@@ -100,14 +100,26 @@ async function configureAccess(context) {
   fs.writeFileSync(backendTemplateFilePath, jsonString, 'utf8');
 }
 
-// async function removeAccess(context) {
-//   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-//   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
-//   const templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
-//   const parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
-//   fs.removeSync(templateFilePath);
-//   fs.removeSync(parametersFilePath);
-// }
+async function removeAccess(context) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
+  const templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
+  const parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
+  fs.removeSync(templateFilePath);
+  fs.removeSync(parametersFilePath);
+  
+  const metaData = {
+    service: constants.ServiceName,
+    providerPlugin: constants.ProviderPlugin,
+  };
+  await context.amplify.updateamplifyMetaAfterResourceAdd(
+    constants.CategoryName,
+    constants.ServiceName,
+    metaData,
+  );
+
+  context.exeInfo = context.amplify.getProjectDetails();
+}
 
 async function configure(context) {
   if (isXRSetup(context)) {
@@ -202,7 +214,17 @@ function removeScene(context) {
       writeAmplifyMeta(context);
     });
   } else {
-    context.print.error('No scenes have been added to your project.');
+    context.print.info('Your project does NOT have xr scenes.');
+    inquirer.prompt({
+      name: 'removePolicies',
+      message: 'Remove IAM policies for sumerian scene access',
+      type: 'confirm',
+      default: false
+    }).then((answer) => {
+      if(answer.removePolicies){
+        removeAccess(context);
+      }
+    });
   }
 }
 
