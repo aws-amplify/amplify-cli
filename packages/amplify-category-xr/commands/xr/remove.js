@@ -1,4 +1,4 @@
-const subcommand = 'rmeove';
+const subcommand = 'remove';
 const xrManager = require('../../lib/xr-manager')
 
 module.exports = {
