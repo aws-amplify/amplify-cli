@@ -351,6 +351,23 @@ export function toJson(expr: Expression): ToJsonNode {
     }
 }
 
+export type NewLineNode = {
+    kind: 'NewLine'
+}
+export function newline(): NewLineNode {
+    return {
+        kind: 'NewLine',
+    }
+}
+
+export function block(name: string, exprs: Expression[]): CompoundExpressionNode {
+    return compoundExpression([
+        comment(`[Start] ${name}`),
+        ...exprs,
+        comment(`[End] ${name}`)
+    ])
+}
+
 /**
  * A flow expression is one that dictates program flow e.g. if, ifelse, for, while, etc.
  */
@@ -378,4 +395,5 @@ export type Expression =
     | CommentNode
     | CompoundExpressionNode
     | ToJsonNode
-    | NotNode;
+    | NotNode
+    | NewLineNode;

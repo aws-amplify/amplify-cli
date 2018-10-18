@@ -9,7 +9,8 @@ import {
     DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
     print, str, ref, obj, set, iff, ifElse, list, raw, printBlock,
     forEach, compoundExpression, qref, toJson, equals, comment,
-    IfNode, or, Expression, SetNode, and, not, parens
+    IfNode, or, Expression, SetNode, and, not, parens, newline,
+    block
 } from 'graphql-mapping-template'
 import { ResourceConstants } from 'graphql-transformer-common'
 
@@ -532,8 +533,7 @@ export class ResourceFactory {
             }
         }
         // TODO: Enhance cognito:groups to work with non cognito based auth.
-        return compoundExpression([
-            comment(`[Start] Static Group Authorization Checks`),
+        return block('Static Group Authorization Checks', [
             this.setUserGroups(),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
@@ -545,8 +545,144 @@ export class ResourceFactory {
                         set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
                     )
                 ])
-            ]),
-            comment(`[End] Static Group Authorization Checks`),
+            ])
+        ])
+    }
+
+    /**
+     * Given a set of dynamic group authorization rules verifies that input
+     * value satisfies at least one dynamic group authorization rule.
+     * @param rules The list of authorization rules.
+     * @param variableToCheck The name of the value containing the input.
+     * @param variableToSet The name of the variable to set when auth is satisfied.
+     */
+    public dynamicGroupAuthorizationExpressionForCreateOperations(
+        rules: AuthRule[],
+        variableToCheck: string = 'ctx.args.input',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
+    ): Expression {
+        if (!rules || rules.length === 0) {
+            return comment(`No Dynamic Group Authorization Rules`)
+        }
+        let groupAuthorizationExpressions = []
+        for (const rule of rules) {
+            const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
+            groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
+                comment(`Authorization rule: { allow: "${rule.allow}", groupsField: "${groupsAttribute}" }`),
+                set(
+                    ref(variableToSet),
+                    raw(`$util.defaultIfNull($${variableToSet}, false)`)
+                ),
+                forEach(ref('userGroup'), ref('userGroups'), [
+                    iff(
+                        ref(`$util.isList($ctx.args.input.${groupsAttribute})`),
+                        iff(
+                            ref(`${variableToCheck}.${groupsAttribute}.contains($userGroup)`),
+                            set(ref(variableToSet), raw('true'))
+                        ),
+                    ),
+                    iff(
+                        raw(`$util.isString($ctx.args.input.${groupsAttribute})`),
+                        iff(
+                            raw(`$ctx.args.input.${groupsAttribute} == $userGroup`),
+                            set(ref(variableToSet), raw('true'))
+                        ),
+                    )
+                ])
+            )
+        }
+        return block('Dynamic Group Authorization Checks', [
+            this.setUserGroups(),
+            ...groupAuthorizationExpressions,
+        ])
+    }
+
+    /**
+     * Given a set of owner authorization rules verifies that input
+     * value satisfies at least one rule.
+     * @param rules The list of authorization rules.
+     * @param variableToCheck The name of the value containing the input.
+     * @param variableToSet The name of the variable to set when auth is satisfied.
+     */
+    public ownerAuthorizationExpressionForCreateOperations(
+        rules: AuthRule[],
+        fieldIsList: (fieldName: string) => boolean,
+        variableToCheck: string = 'ctx.args.input',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
+    ): Expression {
+        if (!rules || rules.length === 0) {
+            return comment(`No Owner Authorization Rules`)
+        }
+        let groupAuthorizationExpressions = []
+        let ruleNumber = 0;
+        for (const rule of rules) {
+            const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
+            const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const ownerFieldIsList = fieldIsList(ownerAttribute)
+            const allowedOwnersVariable = `allowedOwners${ruleNumber}`
+            groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
+                comment(`Authorization rule: { allow: "${rule.allow}", ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
+                set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.${identityAttribute}, "${NONE_VALUE}")`)),
+                // If a list of owners check for at least one.
+                iff(
+                    raw(`$util.isList($${allowedOwnersVariable})`),
+                    forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
+                        iff(
+                            raw(`$allowedOwner == $identityValue`),
+                            set(ref(variableToSet), raw('true'))),
+                    ])
+                ),
+                // If a single owner check for at least one.
+                iff(
+                    raw(`$util.isString($${allowedOwnersVariable})`),
+                    iff(
+                        raw(`$${allowedOwnersVariable} == $identityValue`),
+                        set(ref(variableToSet), raw('true'))),
+                )
+            )
+            // If the owner field is not a list and the user does not
+            // provide a value for the owner, set the owner automatically.
+            if (!ownerFieldIsList) {
+                groupAuthorizationExpressions.push(
+                    // If the owner is not provided set it automatically.
+                    // If the user explicitly provides null this will be false and we leave it null.
+                    iff(
+                        and([
+                            raw(`$util.isNull($${allowedOwnersVariable})`),
+                            parens(raw(`! $${variableToCheck}.containsKey("${ownerAttribute}")`)),
+                        ]),
+                        compoundExpression([
+                            qref(`$${variableToCheck}.put("${ownerAttribute}", $identityValue)`),
+                            set(ref(variableToSet), raw('true'))
+                        ])
+                    )
+                )
+            } else {
+                // If the owner field is a list and the user does not
+                // provide a list of values for the owner, set the list with
+                // the owner as the sole member.
+                groupAuthorizationExpressions.push(
+                    // If the owner is not provided set it automatically.
+                    // If the user explicitly provides null this will be false and we leave it null.
+                    iff(
+                        and([
+                            raw(`$util.isNull($${allowedOwnersVariable})`),
+                            parens(raw(`! $${variableToCheck}.containsKey("${ownerAttribute}")`)),
+                        ]),
+                        compoundExpression([
+                            qref(`$${variableToCheck}.put("${ownerAttribute}", ["$identityValue"])`),
+                            set(ref(variableToSet), raw('true'))
+                        ])
+                    )
+                )
+            }
+            ruleNumber++
+        }
+        return block('Owner Authorization Checks', [
+            this.setUserGroups(),
+            set(ref(variableToSet), raw(`false`)),
+            ...groupAuthorizationExpressions,
         ])
     }
 
@@ -586,12 +722,10 @@ export class ResourceFactory {
                 ])
             )
         }
-        return compoundExpression([
-            comment(`[Start] Dynamic Group Authorization Checks`),
+        return block('Dynamic Group Authorization Checks', [
             this.setUserGroups(),
             set(ref(variableToSet), defaultValue),
             ...groupAuthorizationExpressions,
-            comment(`[End] Dynamic Group Authorization Checks`),
         ])
     }
 
@@ -610,39 +744,40 @@ export class ResourceFactory {
             return comment(`No Owner Authorization Rules`)
         }
         let ownerAuthorizationExpressions = [];
+        let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: "${rule.allow}", ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
-                set(ref('allowedOwners'), ref(`${variableToCheck}.${ownerAttribute}`)),
+                set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
                 set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.${identityAttribute}, "${NONE_VALUE}")`)),
                 iff(
-                    raw('$util.isList($allowedOwners)'),
-                    forEach(ref('allowedOwner'), ref('allowedOwners'), [
+                    raw(`$util.isList($${allowedOwnersVariable})`),
+                    forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
                         iff(
                             raw(`$allowedOwner == $identityValue`),
                             set(ref(variableToSet), raw('true'))),
                     ])
                 ),
                 iff(
-                    raw(`$util.isString($allowedOwners)`),
+                    raw(`$util.isString($${allowedOwnersVariable})`),
                     iff(
-                        raw(`$allowedOwners == $identityValue`),
+                        raw(`$${allowedOwnersVariable} == $identityValue`),
                         set(ref(variableToSet), raw('true'))),
                 )
             )
+            ruleNumber++
         }
-        return compoundExpression([
-            comment(`[Start] Owner Authorization Checks`),
+        return block('Owner Authorization Checks', [
             set(ref(variableToSet), defaultValue),
-            ...ownerAuthorizationExpressions,
-            comment(`[End] Owner Authorization Checks`),
+            ...ownerAuthorizationExpressions
         ])
     }
 
-    public throwIfUnauthorizedForReadOperations(): Expression {
-        return iff(
+    public throwIfUnauthorized(): Expression {
+        const ifUnauthThrow = iff(
             not(parens(
                 or([
                     equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
@@ -651,6 +786,9 @@ export class ResourceFactory {
                 ])
             )), raw('$util.unauthorized()')
         )
+        return block('Throw if unauthorized', [
+            ifUnauthThrow,
+        ])
     }
 
     public appendItemIfLocallyAuthorized(): Expression {

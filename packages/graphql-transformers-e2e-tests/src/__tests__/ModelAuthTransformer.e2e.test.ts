@@ -1567,7 +1567,6 @@ test(`Test getAllThree as a member of the alternative group.`, async () => {
     }
 })
 
-// here
 test(`Test listAllThrees as admin.`, async () => {
     try {
         const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
@@ -1849,3 +1848,336 @@ test(`Test getAllThree as a member of the alternative group.`, async () => {
         expect(e).toBeUndefined();
     }
 })
+
+// here
+test(`Test createAllThree as admin.`, async () => {
+    try {
+        const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAllThree(input: {
+                owner: "user2@test.com"
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2, null, 4))
+        expect(ownedBy2.data.createAllThree).toBeTruthy()
+        // set by input
+        expect(ownedBy2.data.createAllThree.owner).toEqual("user2@test.com")
+        // auto filled as logged in user.
+        expect(ownedBy2.data.createAllThree.editors[0]).toEqual("user1@test.com")
+        expect(ownedBy2.data.createAllThree.groups).toBeNull()
+        expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull()
+
+        const ownedBy2NoEditors = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAllThree(input: {
+                owner: "user2@test.com",
+                editors: []
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2NoEditors, null, 4))
+        expect(ownedBy2NoEditors.data.createAllThree).toBeTruthy()
+        // set by input
+        expect(ownedBy2NoEditors.data.createAllThree.owner).toEqual("user2@test.com")
+        // set by input
+        expect(ownedBy2NoEditors.data.createAllThree.editors).toHaveLength(0)
+        expect(ownedBy2NoEditors.data.createAllThree.groups).toBeNull()
+        expect(ownedBy2NoEditors.data.createAllThree.alternativeGroup).toBeNull()
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedBy2.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id)
+
+        const deleteReq2 = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedBy2NoEditors.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq2, null, 4))
+        expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2NoEditors.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test createAllThree as owner.`, async () => {
+    try {
+        const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: "user2@test.com",
+                editors: []
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2, null, 4))
+        expect(ownedBy2.data.createAllThree).toBeTruthy()
+        expect(ownedBy2.data.createAllThree.owner).toEqual("user2@test.com")
+        expect(ownedBy2.data.createAllThree.editors).toHaveLength(0)
+        expect(ownedBy2.data.createAllThree.groups).toBeNull()
+        expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull()
+
+        const ownedBy1 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: "user1@test.com",
+                editors: []
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy1, null, 4))
+        expect(ownedBy1.errors.length).toEqual(1)
+        expect((ownedBy1.errors[0] as any).errorType).toEqual('Unauthorized')
+
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedBy2.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test createAllThree as one of a set of editors.`, async () => {
+    try {
+        const ownedBy2 = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: ["user2@test.com"]
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2, null, 4))
+        expect(ownedBy2.data.createAllThree).toBeTruthy()
+        expect(ownedBy2.data.createAllThree.owner).toBeNull()
+        expect(ownedBy2.data.createAllThree.editors[0]).toEqual("user2@test.com")
+        expect(ownedBy2.data.createAllThree.groups).toBeNull()
+        expect(ownedBy2.data.createAllThree.alternativeGroup).toBeNull()
+
+        const ownedBy2WithDefaultOwner = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                editors: ["user2@test.com"]
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2WithDefaultOwner, null, 4))
+        expect(ownedBy2WithDefaultOwner.data.createAllThree).toBeTruthy()
+        expect(ownedBy2WithDefaultOwner.data.createAllThree.owner).toEqual("user2@test.com")
+        expect(ownedBy2WithDefaultOwner.data.createAllThree.editors[0]).toEqual("user2@test.com")
+        expect(ownedBy2WithDefaultOwner.data.createAllThree.groups).toBeNull()
+        expect(ownedBy2WithDefaultOwner.data.createAllThree.alternativeGroup).toBeNull()
+
+        const ownedByEditorsUnauthed = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: ["user1@test.com"]
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByEditorsUnauthed, null, 4))
+        expect(ownedByEditorsUnauthed.errors.length).toEqual(1)
+        expect((ownedByEditorsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized')
+
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedBy2.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id)
+
+        const deleteReq2 = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedBy2WithDefaultOwner.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq2, null, 4))
+        expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2WithDefaultOwner.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test createAllThree as a member of a dynamic group.`, async () => {
+    try {
+        const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: [],
+                groups: ["Admin"]
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByAdmins, null, 4))
+        expect(ownedByAdmins.data.createAllThree).toBeTruthy()
+        expect(ownedByAdmins.data.createAllThree.owner).toBeNull()
+        expect(ownedByAdmins.data.createAllThree.editors).toHaveLength(0)
+        expect(ownedByAdmins.data.createAllThree.groups[0]).toEqual("Admin")
+        expect(ownedByAdmins.data.createAllThree.alternativeGroup).toBeNull()
+
+        const ownedByAdminsUnauthed = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: [],
+                groups: ["Admin"]
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4))
+        expect(ownedByAdminsUnauthed.errors.length).toEqual(1)
+        expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized')
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedByAdmins.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test createAllThree as a member of the alternative group.`, async () => {
+    try {
+        const ownedByAdmins = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: [],
+                alternativeGroup: "Admin"
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByAdmins, null, 4))
+        expect(ownedByAdmins.data.createAllThree).toBeTruthy()
+        expect(ownedByAdmins.data.createAllThree.owner).toBeNull()
+        expect(ownedByAdmins.data.createAllThree.editors).toHaveLength(0)
+        expect(ownedByAdmins.data.createAllThree.alternativeGroup).toEqual("Admin")
+
+        const ownedByAdminsUnauthed = await GRAPHQL_CLIENT_2.query(`
+        mutation {
+            createAllThree(input: {
+                owner: null,
+                editors: [],
+                alternativeGroup: "Admin"
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4))
+        expect(ownedByAdminsUnauthed.errors.length).toEqual(1)
+        expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized')
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedByAdmins.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
