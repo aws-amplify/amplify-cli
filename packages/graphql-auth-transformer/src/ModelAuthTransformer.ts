@@ -4,7 +4,9 @@ import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation } from './AuthRule'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'
 import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
-import { Expression, print } from 'graphql-mapping-template';
+import {
+    Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression
+} from 'graphql-mapping-template';
 import { valueFromASTUntyped } from 'graphql'
 
 import {
@@ -169,7 +171,7 @@ export class ModelAuthTransformer extends Transformer {
         // this.protectUpdateMutation(ctx, ResolverResourceIDs.DynamoDBUpdateResolverResourceID(def.name.value), mutationRules.update)
         // this.protectDeleteMutation(ctx, ResolverResourceIDs.DynamoDBDeleteResolverResourceID(def.name.value), mutationRules.delete)
         this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get)
-        // this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
+        this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
     }
 
     /**
@@ -185,37 +187,39 @@ export class ModelAuthTransformer extends Transformer {
      */
     private protectGetQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
         const resolver = ctx.getResource(resolverResourceId)
-        let responseMappingTemplatePrefixExpressions = [];
         if (!rules || rules.length === 0 || !resolver) {
-            responseMappingTemplatePrefixExpressions.push(this.resources.isNotAuthProtectedSnippet());
+            return
         } else {
-            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
-            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
 
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
             const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
+            const ownerAuthorizationRules = this.getOwnerRules(rules)
+
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
             const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
                 dynamicGroupAuthorizationRules
             )
-
-            const ownerAuthorizationRules = this.getOwnerRules(rules)
             const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
                 ownerAuthorizationRules
             )
+            const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorizedForReadOperations()
 
-            responseMappingTemplatePrefixExpressions = [
+            // Update the existing resolver with the authorization checks.
+            const responseMappingTemplatePrefixExpressions = [
                 staticGroupAuthorizationExpression,
                 dynamicGroupAuthorizationExpression,
-                ownerAuthorizationExpression
+                ownerAuthorizationExpression,
+                throwIfUnauthorizedExpression
             ]
+            const templateParts = [
+                print(compoundExpression(responseMappingTemplatePrefixExpressions)),
+                resolver.Properties.ResponseMappingTemplate
+            ]
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+            ctx.setResource(resolverResourceId, resolver)
         }
-        responseMappingTemplatePrefixExpressions.push(this.resources.throwIfUnauthorizedForReadOperations())
-        const printedResponseMappingTemplatePrefixExpressions = responseMappingTemplatePrefixExpressions.map(e => print(e))
-        const templateParts = [
-            ...printedResponseMappingTemplatePrefixExpressions,
-            resolver.Properties.ResponseMappingTemplate
-        ]
-        resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
-        ctx.setResource(resolverResourceId, resolver)
     }
 
     /**
@@ -233,43 +237,60 @@ export class ModelAuthTransformer extends Transformer {
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
-        }
-        const beforeExpressions: Expression[] = [this.resources.setUserGroups()]
-        const itemEquivalenceExpressions = []
-        const beforeItemEquivalenceExpression = []
-        for (const rule of rules) {
-            if (rule.allow === OWNER_AUTH_STRATEGY) {
-                const ownerField = rule.ownerField || OWNER_AUTH_STRATEGY
-                const identityField = rule.identityField || DEFAULT_IDENTITY_FIELD
-                const authSnippet = this.resources.ownerListResolverItemCheck(ownerField, identityField)
-                itemEquivalenceExpressions.push(authSnippet)
-            } else if (rule.allow === GROUPS_AUTH_STRATEGY) {
-                if (rule.groups) {
-                    const authSnippet = this.resources.staticGroupAuthorizationResponseMappingTemplateAST(rule.groups)
+        } else {
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
+            const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
+            const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-                    // At the beginning of the resolver we run the static group check. If isAuthorized is set to true
-                    // then allow every item to be appended.
-                    beforeExpressions.push(authSnippet)
-                    itemEquivalenceExpressions.push(this.resources.isAuthorized())
-                } else if (rule.groupsField) {
-                    const authSnippet = this.resources.dynamicGroupListBeforeItemEquivalenceExpressionAST(rule.groupsField)
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
 
-                    // Run some logic within the loop before the item equivalence expression to compare the fetched values
-                    // groupsField against the logged in identity and updating $isAuthorized appropriately.
-                    beforeItemEquivalenceExpression.push(authSnippet)
-                    itemEquivalenceExpressions.push(this.resources.isAuthorizedLocallyOrGlobally())
-                } else {
-                    throw new InvalidDirectiveError(`@auth(allow: groups ...) must also be passed "groups" or "groupsField".`)
-                }
-            }
+            // In list queries, the dynamic group and ownership authorization checks
+            // occur on a per item basis. The helpers take the variable names
+            // as parameters to allow for this use case.
+            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
+                dynamicGroupAuthorizationRules,
+                'item',
+                ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable,
+                raw(`false`)
+            )
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
+                ownerAuthorizationRules,
+                'item',
+                ResourceConstants.SNIPPETS.IsLocalOwnerAuthorizedVariable,
+                raw(`false`)
+            )
+            const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized()
+
+            const ifNotStaticallyAuthedFilterObjects = iff(
+                equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('false')),
+                compoundExpression([
+                    set(ref('items'), list([])),
+                    forEach(
+                        ref('item'),
+                        ref('ctx.result.items'),
+                        [
+                            dynamicGroupAuthorizationExpression,
+                            ownerAuthorizationExpression,
+                            appendIfLocallyAuthorized
+                        ]
+                    ),
+                    set(ref('ctx.result.items'), ref('items'))
+                ])
+            )
+            const templateParts = [
+                print(
+                    compoundExpression([
+                        staticGroupAuthorizationExpression,
+                        ifNotStaticallyAuthedFilterObjects
+                    ])
+                ),
+                resolver.Properties.ResponseMappingTemplate
+            ]
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+            ctx.setResource(resolverResourceId, resolver)
         }
-        // Join together the authorization expressions and update the resolver.
-        const templateParts = [
-            this.resources.loopThroughResultItemsAppendingAuthorized(itemEquivalenceExpressions, beforeExpressions, beforeItemEquivalenceExpression),
-            resolver.Properties.ResponseMappingTemplate
-        ]
-        resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
-        ctx.setResource(resolverResourceId, resolver)
     }
 
     /**

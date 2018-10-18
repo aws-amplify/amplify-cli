@@ -399,7 +399,7 @@ export class ResourceFactory {
         this.staticGroupAuthorizationResponseMappingTemplateAST(groups)
     )
     public staticGroupAuthorizationResponseMappingTemplateAST = (groups: string[]) => compoundExpression([
-        set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
+        this.setUserGroups(),
         set(ref('allowedGroups'), list(groups.map(s => str(s)))),
         // tslint:disable-next-line
         raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
@@ -418,7 +418,7 @@ export class ResourceFactory {
      */
     public dynamicGroupCreateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
         compoundExpression([
-            set(ref("userGroups"), ref('ctx.identity.claims.get("cognito:groups")')),
+            this.setUserGroups(),
             iff(raw('!$userGroups'), raw('$util.unauthorized()')),
             // tslint:disable
             raw(`#set($${ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable}, false))`),
@@ -534,7 +534,7 @@ export class ResourceFactory {
         // TODO: Enhance cognito:groups to work with non cognito based auth.
         return compoundExpression([
             comment(`[Start] Static Group Authorization Checks`),
-            set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
+            this.setUserGroups(),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
             raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
@@ -555,12 +555,16 @@ export class ResourceFactory {
      * statisies at least one of the auth rules.
      * @param rules The list of dynamic group authorization rules.
      */
-    public dynamicGroupAuthorizationExpressionForReadOperations(rules: AuthRule[], variableToCheck: string = 'ctx.result'): Expression {
+    public dynamicGroupAuthorizationExpressionForReadOperations(
+        rules: AuthRule[],
+        variableToCheck: string = 'ctx.result',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
+        defaultValue: Expression = raw(`$util.defaultIfNull($${variableToSet}, false)`)
+    ): Expression {
         if (!rules || rules.length === 0) {
             return comment(`No Dynamic Group Authorization Rules`)
         }
         let groupAuthorizationExpressions = [];
-        const variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable
         for (const rule of rules) {
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
@@ -584,7 +588,8 @@ export class ResourceFactory {
         }
         return compoundExpression([
             comment(`[Start] Dynamic Group Authorization Checks`),
-            set(ref(variableToSet), raw(`$util.defaultIfNull($${variableToSet}, false)`)),
+            this.setUserGroups(),
+            set(ref(variableToSet), defaultValue),
             ...groupAuthorizationExpressions,
             comment(`[End] Dynamic Group Authorization Checks`),
         ])
@@ -595,12 +600,16 @@ export class ResourceFactory {
      * statisies at least one of the auth rules.
      * @param rules The list of dynamic group authorization rules.
      */
-    public ownerAuthorizationExpressionForReadOperations(rules: AuthRule[], variableToCheck: string = 'ctx.result'): Expression {
+    public ownerAuthorizationExpressionForReadOperations(
+        rules: AuthRule[],
+        variableToCheck: string = 'ctx.result',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
+        defaultValue: Expression = raw(`$util.defaultIfNull($${variableToSet}, false)`)
+    ): Expression {
         if (!rules || rules.length === 0) {
             return comment(`No Owner Authorization Rules`)
         }
         let ownerAuthorizationExpressions = [];
-        const variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
@@ -626,29 +635,32 @@ export class ResourceFactory {
         }
         return compoundExpression([
             comment(`[Start] Owner Authorization Checks`),
-            set(ref(variableToSet), raw(`$util.defaultIfNull($${variableToSet}, false)`)),
+            set(ref(variableToSet), defaultValue),
             ...ownerAuthorizationExpressions,
             comment(`[End] Owner Authorization Checks`),
         ])
-    }
-
-    /**
-     * Set the IsNotAuthProtectedVariable to true for the final auth check.
-     */
-    public isNotAuthProtectedSnippet(): Expression {
-        return set(ref(ResourceConstants.SNIPPETS.IsNotAuthProtectedVariable), raw('true'));
     }
 
     public throwIfUnauthorizedForReadOperations(): Expression {
         return iff(
             not(parens(
                 or([
-                    equals(ref(ResourceConstants.SNIPPETS.IsNotAuthProtectedVariable), raw('true')),
                     equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
                     equals(ref(ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable), raw('true')),
                     equals(ref(ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable), raw('true'))
                 ])
             )), raw('$util.unauthorized()')
+        )
+    }
+
+    public appendItemIfLocallyAuthorized(): Expression {
+        return iff(
+            parens(
+                or([
+                    equals(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('true')),
+                    equals(ref(ResourceConstants.SNIPPETS.IsLocalOwnerAuthorizedVariable), raw('true'))
+                ])
+            ), qref('$items.add($item)')
         )
     }
 }
