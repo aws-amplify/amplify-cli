@@ -5,6 +5,6 @@ module.exports = {
   name: subcommand,
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
-    xrManager.removeScene(context);
+    xrManager.remove(context);
   },
 };

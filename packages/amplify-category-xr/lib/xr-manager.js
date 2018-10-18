@@ -107,16 +107,8 @@ async function removeAccess(context) {
   const parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
   fs.removeSync(templateFilePath);
   fs.removeSync(parametersFilePath);
-  
-  const metaData = {
-    service: constants.ServiceName,
-    providerPlugin: constants.ProviderPlugin,
-  };
-  await context.amplify.updateamplifyMetaAfterResourceAdd(
-    constants.CategoryName,
-    constants.ServiceName,
-    metaData,
-  );
+
+  await context.amplify.removeResource(context, constants.CategoryName, undefined);
 
   context.exeInfo = context.amplify.getProjectDetails();
 }
@@ -201,30 +193,34 @@ async function addScene(context) {
   writeAmplifyMeta(context);
 }
 
-function removeScene(context) {
-  const existingScenes = getExistingScenes(context);
-  if (existingScenes && existingScenes.length > 0) {
-    inquirer.prompt({
-      name: 'existingScenes',
-      message: 'Choose the scene to delete',
-      type: 'list',
-      choices: existingScenes,
-    }).then((answer) => {
-      delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName].output[answer.existingScenes];
-      writeAmplifyMeta(context);
-    });
+function remove(context) {
+  if (isXRSetup(context)) {
+    const existingScenes = getExistingScenes(context);
+    if (existingScenes && existingScenes.length > 0) {
+      inquirer.prompt({
+        name: 'existingScenes',
+        message: 'Choose the scene to remove',
+        type: 'list',
+        choices: existingScenes,
+      }).then((answer) => {
+        delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName].output[answer.existingScenes];
+        writeAmplifyMeta(context);
+      });
+    } else {
+      context.print.warning('Your project does NOT have xr scenes.');
+      inquirer.prompt({
+        name: 'removePolicies',
+        message: 'Do you want to remove IAM policies for sumerian scene access',
+        type: 'confirm',
+        default: false,
+      }).then((answer) => {
+        if (answer.removePolicies) {
+          removeAccess(context);
+        }
+      });
+    }
   } else {
-    context.print.info('Your project does NOT have xr scenes.');
-    inquirer.prompt({
-      name: 'removePolicies',
-      message: 'Remove IAM policies for sumerian scene access',
-      type: 'confirm',
-      default: false
-    }).then((answer) => {
-      if(answer.removePolicies){
-        removeAccess(context);
-      }
-    });
+    context.print.error('You have NOT added the XR category yet.');
   }
 }
 
@@ -243,6 +239,6 @@ module.exports = {
   configure,
   getExistingScenes,
   addScene,
-  removeScene,
+  remove,
   console,
 };
