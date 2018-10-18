@@ -199,7 +199,7 @@ function getLexConfig(lexResources) {
 }
 
 function getSumerianConfig(sumerianResources) {
-  const config = {}; 
+  const config = {};
   sumerianResources.forEach((r) => {
     const { output } = r;
     Object.assign(config, output);
