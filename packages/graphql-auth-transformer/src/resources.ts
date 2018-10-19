@@ -2,14 +2,12 @@ import Template from 'cloudform/types/template'
 import Cognito from 'cloudform/types/cognito'
 import Output from 'cloudform/types/output'
 import GraphQLAPI, { UserPoolConfig } from 'cloudform/types/appSync/graphQlApi'
-import Resolver from 'cloudform/types/appSync/resolver'
 import { Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform'
 import { AuthRule } from './AuthRule'
 import {
-    DynamoDBMappingTemplate, ElasticSearchMappingTemplate,
-    print, str, ref, obj, set, iff, ifElse, list, raw, printBlock,
-    forEach, compoundExpression, qref, toJson, equals, comment,
-    IfNode, or, Expression, SetNode, and, not, parens, newline,
+    str, ref, obj, set, iff, list, raw,
+    forEach, compoundExpression, qref, equals, comment,
+    or, Expression, SetNode, and, not, parens,
     block
 } from 'graphql-mapping-template'
 import { ResourceConstants } from 'graphql-transformer-common'
@@ -197,323 +195,6 @@ export class ResourceFactory {
     }
 
     /**
-     * Methods that return the static resolver template snipets.
-     */
-    public dynamicGroupGetResolverResponseMappingTemplateSnippet(groupsAttribute: string) {
-        return printBlock('Dynamic Group Authorization')(
-            compoundExpression([
-                set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
-                set(ref('allowedGroups'), ref(`ctx.result.${groupsAttribute}`)),
-                set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('false')),
-                forEach(ref('userGroup'), ref('userGroups'), [
-                    iff(
-                        raw('$util.isList($allowedGroups)'),
-                        iff(
-                            raw(`$allowedGroups.contains($userGroup)`),
-                            set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('true'))),
-                    ),
-                    iff(
-                        raw(`$util.isString($allowedGroups)`),
-                        iff(
-                            raw(`$allowedGroups == $userGroup`),
-                            set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('true'))),
-                    )
-                ]),
-                iff(raw(`!$${ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable}`), raw('$util.unauthorized()')),
-            ])
-        )
-    }
-
-    public dynamicGroupListResolverResponseMappingTemplateSnippet(groupsAttribute: string) {
-        return printBlock('Dynamic Group Authorization')(
-            compoundExpression([
-                set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')),
-                set(ref('items'), list([])),
-                forEach(ref('item'), ref('ctx.result.items'), [
-                    // tslint:disable
-                    set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('false')),
-                    set(ref('allowedGroups'), ref(`item.${groupsAttribute}`)),
-                    forEach(ref('userGroup'), ref('userGroups'), [
-                        iff(
-                            raw('$util.isList($allowedGroups)'),
-                            iff(raw(`$allowedGroups.contains($userGroup)`), set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('true'))),
-                        ),
-                        iff(
-                            raw(`$util.isString($allowedGroups)`),
-                            iff(raw(`$allowedGroups == $userGroup`), set(ref(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('true'))),
-                        )
-                    ]),
-                    iff(raw(ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable), raw('$util.qr($items.add($item))')),
-                    // tslint:enable
-                ])
-            ])
-        )
-    }
-
-    public dynamicGroupListBeforeItemEquivalenceExpression(groupsAttribute: string) {
-        return printBlock('Dynamic Group Authorization')(
-            this.dynamicGroupListBeforeItemEquivalenceExpressionAST(groupsAttribute)
-        )
-    }
-
-    /**
-     * Returns an expression that looks as a single $item and determines if the
-     * logged in user is dynamic group authorized to access that item. If the
-     * user is authorized, set ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable
-     * to true.
-     * @param groupsAttribute The name of the groupsAttribute.
-     */
-    public dynamicGroupListBeforeItemEquivalenceExpressionAST(
-        groupsAttribute: string, itemName: string = 'item', variableName: string = ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable
-    ) {
-        return compoundExpression([
-            set(ref(variableName), raw('false')),
-            set(ref('allowedGroups'), ref(`${itemName}.${groupsAttribute}`)),
-            forEach(ref('userGroup'), ref('userGroups'), [
-                iff(
-                    raw('$util.isList($allowedGroups)'),
-                    iff(
-                        raw(`$allowedGroups.contains($userGroup)`),
-                        set(ref(variableName), raw('true'))),
-                ),
-                iff(
-                    raw(`$util.isString($allowedGroups)`),
-                    iff(
-                        raw(`$allowedGroups == $userGroup`),
-                        set(ref(variableName), raw('true'))),
-                )
-            ]),
-        ])
-    }
-
-    public setUserGroups(): SetNode {
-        return set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")'));
-    }
-
-    public setUserGroupsString(): string {
-        return print(set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")')));
-    }
-
-
-    /**
-     * Owner auth
-     * @param ownerAttribute The name of the owner attribute.
-     */
-    public ownerCreateResolverRequestMappingTemplateSnippet = (
-        ownerAttribute: string, identityField: string) => printBlock('Inject Ownership Information')(
-            compoundExpression([
-                iff(
-                    raw(`$util.isNullOrBlank($ctx.identity.${identityField})`),
-                    raw('$util.unauthorized()')
-                ),
-                compoundExpression([
-                    qref(`$ctx.args.input.put("${ownerAttribute}", $ctx.identity.${identityField})`),
-                    set(ref(ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable), raw('true'))
-                ])
-            ])
-        )
-
-    public ownerUpdateAndDeleteResolverRequestMappingTemplateSnippet =
-        (ownerAttribute: string, identityField: string) => printBlock('Prepare Ownership Condition')(
-            compoundExpression([
-                ifElse(
-                    raw(`!$${ResourceConstants.SNIPPETS.AuthCondition}`),
-                    set(
-                        ref(ResourceConstants.SNIPPETS.AuthCondition),
-                        obj({
-                            expression: str("#owner = :username"),
-                            expressionNames: obj({
-                                "#owner": str(`${ownerAttribute}`)
-                            }),
-                            expressionValues: obj({
-                                ":username": obj({
-                                    "S": str(`$ctx.identity.${identityField}`)
-                                })
-                            })
-                        })
-                    ),
-                    compoundExpression([
-                        set(
-                            ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
-                            str(`($${ResourceConstants.SNIPPETS.AuthCondition}.expression) AND #owner = :username`)
-                        ),
-                        raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("#owner", "${ownerAttribute}"))`),
-                        // tslint:disable-next-line
-                        raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.put(":username", { "S": "$ctx.identity.${identityField}"}))`),
-                    ])
-                )
-            ])
-        )
-
-    public ownerGetResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock('Validate Ownership')(
-        iff(
-            equals(ref(`ctx.result.${ownerAttribute}`), ref(`ctx.identity.${identityField}`)),
-            raw(`#set($${ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable} = true)`))
-    )
-
-    public ownerListResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock("Filter Owned Items")(
-        compoundExpression([
-            set(ref('items'), list([])),
-            forEach(ref('item'), ref('ctx.result.items'), [
-                iff(raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`), qref('$items.add($item)'))
-            ]),
-            set(ref('ctx.result.items'), ref('items'))
-        ])
-    )
-
-    public ownerListResolverItemCheck = (ownerAttribute: string, identityField: string) =>
-        raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`)
-
-    public loopThroughResultItemsAppendingAuthorized(
-        ifExprs: Expression[],
-        beforeExprs: Expression[] = [],
-        beforeItemExprs: Expression[] = []
-    ): string {
-        return printBlock("Filter Authorized Items")(
-            compoundExpression([
-                ...beforeExprs,
-                set(ref('items'), list([])),
-                forEach(ref('item'), ref('ctx.result.items'), [
-                    ...beforeItemExprs,
-                    iff(or(ifExprs), qref('$items.add($item)'))
-                ]),
-                set(ref('ctx.result.items'), ref('items'))
-            ])
-        )
-    }
-
-
-    public ownerQueryResolverResponseMappingTemplateSnippet = (ownerAttribute: string, identityField: string) => printBlock('Filter Owned Items')(
-        compoundExpression([
-            set(ref('items'), list([])),
-            forEach(ref('item'), ref('ctx.result.items'), [
-                iff(raw(`$item.${ownerAttribute} == $ctx.identity.${identityField}`), qref('$items.add($item)'))
-            ]),
-            set(ref('ctx.result.items'), ref('items'))
-        ])
-    )
-
-    /**
-     * Static group auth conditions
-     */
-    public staticGroupAuthorizationResponseMappingTemplate = (groups: string[]) => printBlock('Static Group Authorization')(
-        this.staticGroupAuthorizationResponseMappingTemplateAST(groups)
-    )
-    public staticGroupAuthorizationResponseMappingTemplateAST = (groups: string[]) => compoundExpression([
-        this.setUserGroups(),
-        set(ref('allowedGroups'), list(groups.map(s => str(s)))),
-        // tslint:disable-next-line
-        raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
-        forEach(ref('userGroup'), ref('userGroups'), [
-            forEach(ref('allowedGroup'), ref('allowedGroups'), [
-                iff(
-                    raw('$allowedGroup == $userGroup'),
-                    set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
-                )
-            ])
-        ])
-    ])
-
-    /**
-     * Dynamic Group Auth Conditions.
-     */
-    public dynamicGroupCreateResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
-        compoundExpression([
-            this.setUserGroups(),
-            iff(raw('!$userGroups'), raw('$util.unauthorized()')),
-            // tslint:disable
-            raw(`#set($${ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable}, false))`),
-            forEach(ref('userGroup'), ref('userGroups'), [
-                iff(
-                    raw(`$util.isList($ctx.args.input.${groupsAttribute})`),
-                    iff(
-                        raw(`$ctx.args.input.${groupsAttribute}.contains($userGroup)`),
-                        set(ref(ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable), raw('true'))
-                    ),
-                ),
-                iff(
-                    raw(`$util.isString($ctx.args.input.${groupsAttribute})`),
-                    iff(
-                        raw(`$ctx.args.input.${groupsAttribute} == $userGroup`),
-                        set(ref(ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable), raw('true'))
-                    ),
-                )
-            ])
-            // tslint:enable
-        ])
-    )
-
-    public dynamicGroupUpdateAndDeleteResolverRequestMappingTemplateSnippet = (groupsAttribute: string) => printBlock('Dynamic Group Authorization')(
-        compoundExpression([
-            set(ref('groupAuthExpression'), str('')),
-            set(ref('groupAuthExpressionValues'), obj({})),
-            // Add the new auth expression and values
-            forEach(ref('userGroup'), ref('userGroups'), [
-                set(ref('groupAuthExpression'), str(`$groupAuthExpression contains(#groupsAttribute, :group$foreach.count)`)),
-                raw(`$util.qr($groupAuthExpressionValues.put(":group$foreach.count", { "S": $userGroup }))`),
-                iff(ref('foreach.hasNext'), set(ref('groupAuthExpression'), str(`$groupAuthExpression OR`)))
-            ]),
-            // If there is no auth condition, initialize it.
-            ifElse(
-                raw(`!$${ResourceConstants.SNIPPETS.AuthCondition}`),
-                set(
-                    ref(ResourceConstants.SNIPPETS.AuthCondition),
-                    obj({
-                        expression: ref('groupAuthExpression'),
-                        expressionNames: obj({ '#groupsAttribute': str(groupsAttribute) }),
-                        expressionValues: ref('groupAuthExpressionValues')
-                    })
-                ),
-                compoundExpression([
-                    set(
-                        ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
-                        str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression AND ($groupAuthExpression)`)
-                    ),
-                    raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.put("#groupsAttribute", "${groupsAttribute}"))`),
-                    raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`),
-                ])
-            )
-        ])
-    )
-
-    public throwWhenUnauthorized(): string {
-        return printBlock("Throw if Unauthorized")(iff(raw('!$isAuthorized'), raw('$util.unauthorized()')))
-    }
-
-    /**
-     * If the resolver is static group authorized then the conditional expression
-     * should succeed even if ownership or another condtion based auth flow do not.
-     * This will make the condition succeed as long as the object exists.
-     * If the user is not authorized by the group and there is no auth condition
-     * then fail.
-     */
-    public handleStaticGroupAuthorizationCheck(): string {
-        return printBlock("If authorized via a group then disable any authorization condition expressions.")(
-            compoundExpression([
-                iff(
-                    raw(`$isAuthorized && !$util.isNull(\$${ResourceConstants.SNIPPETS.AuthCondition})`),
-                    set(
-                        ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`),
-                        str(`$${ResourceConstants.SNIPPETS.AuthCondition}.expression OR (attribute_exists(#id))`)
-                    ),
-                ),
-                iff(
-                    raw(`!$isAuthorized && $util.isNull(\$${ResourceConstants.SNIPPETS.AuthCondition})`),
-                    raw('$util.unauthorized()')
-                )
-            ])
-        )
-    }
-
-    public isAuthorized(): Expression {
-        return raw('$isAuthorized == true')
-    }
-
-    public isAuthorizedLocallyOrGlobally(): Expression {
-        return raw('$isAuthorized == true or $isAuthorizedLocal == true')
-    }
-
-    /**
      * Builds a VTL expression that will set the
      * ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable variable to
      * true if the user is static group authorized.
@@ -687,6 +368,100 @@ export class ResourceFactory {
     }
 
     /**
+     * Given a set of dynamic group authorization rules verifies w/ a conditional
+     * expression that the existing object has the correct group expression.
+     * @param rules The list of authorization rules.
+     * @param variableToCheck The name of the value containing the input.
+     * @param variableToSet The name of the variable to set when auth is satisfied.
+     */
+    public dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
+        rules: AuthRule[],
+        variableToCheck: string = 'ctx.args.input',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsDynamicGroupAuthorizedVariable,
+    ): Expression {
+        if (!rules || rules.length === 0) {
+            return comment(`No Dynamic Group Authorization Rules`)
+        }
+
+        let groupAuthorizationExpressions = []
+        let ruleNumber = 0
+        for (const rule of rules) {
+            const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
+            const groupsAttributeName = `groupsAttribute${ruleNumber}`
+            const groupName = `group${ruleNumber}`
+            groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
+                comment(`Authorization rule: { allow: "${rule.allow}", groupsField: "${groupsAttribute}" }`),
+                // Add the new auth expression and values
+                forEach(ref('userGroup'), ref('userGroups'), [
+                    raw(`$util.qr($groupAuthExpressions.add("contains(#${groupsAttributeName}, :${groupName}$foreach.count)"))`),
+                    raw(`$util.qr($groupAuthExpressionValues.put(":${groupName}$foreach.count", { "S": $userGroup }))`),
+                ]),
+                raw(`$util.qr($groupAuthExpressionNames.put("#${groupsAttributeName}", "${groupsAttribute}"))`),
+            )
+            ruleNumber++
+        }
+        return block('Dynamic Group Authorization Checks', [
+            this.setUserGroups(),
+            set(ref('groupAuthExpressions'), list([])),
+            set(ref('groupAuthExpressionValues'), obj({})),
+            set(ref('groupAuthExpressionNames'), obj({})),
+            ...groupAuthorizationExpressions,
+        ])
+    }
+
+    /**
+     * Given a set of owner authorization rules verifies with a conditional
+     * expression that the existing object is owned.
+     * @param rules The list of authorization rules.
+     * @param variableToCheck The name of the value containing the input.
+     * @param variableToSet The name of the variable to set when auth is satisfied.
+     */
+    public ownerAuthorizationExpressionForUpdateOrDeleteOperations(
+        rules: AuthRule[],
+        fieldIsList: (fieldName: string) => boolean,
+        variableToCheck: string = 'ctx.args.input',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
+    ): Expression {
+        if (!rules || rules.length === 0) {
+            return comment(`No Owner Authorization Rules`)
+        }
+        let ownerAuthorizationExpressions = []
+        let ruleNumber = 0;
+        for (const rule of rules) {
+            const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
+            const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const ownerFieldIsList = fieldIsList(ownerAttribute)
+            const ownerName = `owner${ruleNumber}`
+            const identityName = `identity${ruleNumber}`
+
+            ownerAuthorizationExpressions.push(
+                comment(`Authorization rule: { allow: "${rule.allow}", ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+            )
+            if (ownerFieldIsList) {
+                ownerAuthorizationExpressions.push(
+                    raw(`$util.qr($ownerAuthExpressions.add("contains(#${ownerName}, :${identityName})"))`)
+                )
+            } else {
+                ownerAuthorizationExpressions.push(
+                    raw(`$util.qr($ownerAuthExpressions.add("#${ownerName} = :${identityName}"))`)
+                )
+            }
+            ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
+                raw(`$util.qr($ownerAuthExpressionNames.put("#${ownerName}", "${ownerAttribute}"))`),
+                raw(`$util.qr($ownerAuthExpressionValues.put(":${identityName}", { "S": "$ctx.identity.${identityAttribute}"}))`)
+            )
+            ruleNumber++
+        }
+        return block('Owner Authorization Checks', [
+            this.setUserGroups(),
+            set(ref('ownerAuthExpressions'), list([])),
+            set(ref('ownerAuthExpressionValues'), obj({})),
+            set(ref('ownerAuthExpressionNames'), obj({})),
+            ...ownerAuthorizationExpressions,
+        ])
+    }
+
+    /**
      * Given a list of rules return a VTL expression that checks if the given variableToCheck
      * statisies at least one of the auth rules.
      * @param rules The list of dynamic group authorization rules.
@@ -776,6 +551,8 @@ export class ResourceFactory {
         ])
     }
 
+    //
+
     public throwIfUnauthorized(): Expression {
         const ifUnauthThrow = iff(
             not(parens(
@@ -791,6 +568,76 @@ export class ResourceFactory {
         ])
     }
 
+    // A = IsStaticallyAuthed
+    // B = AuthConditionIsNotNull
+    // ! (A OR B) == (!A AND !B)
+    public throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty(): Expression {
+        const ifUnauthThrow = iff(
+            not(parens(
+                or([
+                    equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
+                    raw('$authCondition && $authCondition.expression != ""')
+                ])
+            )), raw('$util.unauthorized()')
+        )
+        return block('Throw if unauthorized', [
+            ifUnauthThrow,
+        ])
+    }
+
+    public collectAuthCondition(): Expression {
+        return block('Collect Auth Condition', [
+            set(
+                ref(ResourceConstants.SNIPPETS.AuthCondition),
+                obj({
+                    expression: str(""),
+                    expressionNames: obj({}),
+                    expressionValues: obj({})
+                })
+            ),
+            set(ref('totalAuthExpression'), str('')),
+            comment('Add dynamic group auth conditions if they exist'),
+            iff(
+                ref('groupAuthExpressions'),
+                forEach(ref('authExpr'), ref('groupAuthExpressions'), [
+                    set(ref('totalAuthExpression'), str(`$totalAuthExpression $authExpr`)),
+                    iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`)))
+                ])
+            ),
+            iff(
+                ref('groupAuthExpressionNames'),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.putAll($groupAuthExpressionNames))`)),
+            iff(
+                ref('groupAuthExpressionValues'),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($groupAuthExpressionValues))`)),
+
+            comment('Add owner auth conditions if they exist'),
+            iff(
+                raw(`$totalAuthExpression != "" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0`),
+                set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`))
+            ),
+            iff(
+                ref('ownerAuthExpressions'),
+                forEach(ref('authExpr'), ref('ownerAuthExpressions'), [
+                    set(ref('totalAuthExpression'), str(`$totalAuthExpression $authExpr`)),
+                    iff(ref('foreach.hasNext'), set(ref('totalAuthExpression'), str(`$totalAuthExpression OR`)))
+                ])),
+            iff(
+                ref('ownerAuthExpressionNames'),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionNames.putAll($ownerAuthExpressionNames))`)),
+
+            iff(
+                ref('ownerAuthExpressionValues'),
+                raw(`$util.qr($${ResourceConstants.SNIPPETS.AuthCondition}.expressionValues.putAll($ownerAuthExpressionValues))`)),
+
+            comment('Set final expression if it has changed.'),
+            iff(
+                raw(`$totalAuthExpression != ""`),
+                set(ref(`${ResourceConstants.SNIPPETS.AuthCondition}.expression`), str('($totalAuthExpression)'))
+            )
+        ])
+    }
+
     public appendItemIfLocallyAuthorized(): Expression {
         return iff(
             parens(
@@ -800,5 +647,9 @@ export class ResourceFactory {
                 ])
             ), qref('$items.add($item)')
         )
+    }
+
+    public setUserGroups(): SetNode {
+        return set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")'));
     }
 }
