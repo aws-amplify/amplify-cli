@@ -1,4 +1,4 @@
-# Amplify CLI Analytics Plugin
+# Amplify CLI Interactions Plugin
 
 ## Commands Summary
 
