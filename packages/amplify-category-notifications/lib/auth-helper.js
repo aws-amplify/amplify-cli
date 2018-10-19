@@ -96,7 +96,7 @@ function getPolicyDoc(context) {
       {
         Effect: 'Allow',
         Action: [
-          'mobileanalytics:PutEvents',
+          'mobiletargeting:PutEvents',
         ],
         Resource: [
           '*',
