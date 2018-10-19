@@ -306,7 +306,7 @@ This section will walk through the steps needed to take an Android Studio projec
 After completing the [Amplify Getting Started](https://aws-amplify.github.io/media/get_started) navigate in your terminal to an Android Studio project directory and run the following:
 
 ```bash
-$amplify init       ## Select iOS as your platform
+$amplify init       ## Select Android as your platform
 $amplify add api    ## Select GraphQL, API key, "Single object with fields Todo application"
 $amplify push       ## Sets up backend and prompts you for codegen, accept the defaults
 ```
