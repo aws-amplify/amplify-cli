@@ -2478,7 +2478,7 @@ test(`Test updateAllThree and deleteAllThree as a member of a dynamic group.`, a
     }
 })
 
-test(`Test createAllThree as a member of the alternative group.`, async () => {
+test(`Test updateAllThree and deleteAllThree as a member of the alternative group.`, async () => {
     try {
         const ownedByDevs = await GRAPHQL_CLIENT_1.query(`
         mutation {
