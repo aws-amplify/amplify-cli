@@ -576,7 +576,7 @@ export class ResourceFactory {
             not(parens(
                 or([
                     equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
-                    raw('$authCondition && $authCondition.expression != ""')
+                    parens(raw('$authCondition && $authCondition.expression != ""'))
                 ])
             )), raw('$util.unauthorized()')
         )
