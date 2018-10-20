@@ -7,6 +7,7 @@ const onSuccess = require('../lib/init-steps/s9-onSuccess');
 module.exports = {
   name: 'init',
   run: async (context) => {
+    constructExeInfo(context);
     analyzeProject.run(context)
       .then(initFrontendHandler.run)
       .then(initProviders.run)
@@ -15,3 +16,15 @@ module.exports = {
   },
 };
 
+function constructExeInfo(context){
+  const inputParams = {};
+  Object.keys(context.parameters.options).forEach((key)=>{
+    if(key === 'y'){
+      key = 'yes';
+    }
+    inputParams[key] = JSON.parse(context.parameters.options[key]);
+  })
+  context.exeInfo = {
+    inputParams
+  }; 
+}
