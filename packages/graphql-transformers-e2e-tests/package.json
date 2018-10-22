@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "1.0.12",
+  "version": "1.0.28",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "scripts": {
@@ -19,9 +19,9 @@
     "axios": "^0.18.0",
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^1.0.12",
-    "graphql-transformer-common": "^1.0.12",
-    "graphql-transformer-core": "^1.0.12",
+    "graphql-mapping-template": "^1.0.28",
+    "graphql-transformer-common": "^1.0.28",
+    "graphql-transformer-core": "^1.0.28",
     "moment": "^2.22.2"
   },
   "devDependencies": {
@@ -29,14 +29,14 @@
     "@types/graphql": "^0.13.1",
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",
-    "aws-amplify": "^1.0.4",
+    "aws-amplify": "^1.1.4",
     "aws-sdk": "^2.259.1",
-    "graphql-appsync-transformer": "^1.0.12",
-    "graphql-auth-transformer": "^1.0.12",
-    "graphql-connection-transformer": "^1.0.12",
-    "graphql-dynamodb-transformer": "^1.0.12",
-    "graphql-elasticsearch-transformer": "^1.0.12",
-    "graphql-versioned-transformer": "^1.0.12",
+    "graphql-appsync-transformer": "^1.0.28",
+    "graphql-auth-transformer": "^1.0.28",
+    "graphql-connection-transformer": "^1.0.28",
+    "graphql-dynamodb-transformer": "^1.0.28",
+    "graphql-elasticsearch-transformer": "^1.0.28",
+    "graphql-versioned-transformer": "^1.0.28",
     "jest": "^23.1.0",
     "node-fetch": "^2.2.0",
     "ts-jest": "^22.4.6",
@@ -49,6 +49,10 @@
     },
     "testURL": "http://localhost",
     "testRegex": "(src/__tests__/.*.test.*)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/__tests__/SearchableModelTransformer.e2e.test.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

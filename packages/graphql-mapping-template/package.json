@@ -1,44 +1,44 @@
 {
-    "name": "graphql-mapping-template",
-    "version": "1.0.12",
-    "description": "An AST wrapper around AWS AppSync resolvers",
-    "main": "lib/index.js",
-    "scripts": {
-        "test": "jest",
-        "build": "tsc",
-        "clean": "rm -rf ./lib"
+  "name": "graphql-mapping-template",
+  "version": "1.0.28",
+  "description": "An AST wrapper around AWS AppSync resolvers",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "clean": "rm -rf ./lib"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "cloudformation",
+    "aws"
+  ],
+  "dependencies": {
+    "cloudform": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "jest": "^23.0.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
     },
-    "keywords": [
-        "graphql",
-        "appsync",
-        "cloudformation",
-        "aws"
-    ],
-    "dependencies": {
-        "cloudform": "^2.2.1"
-    },
-    "devDependencies": {
-        "@types/jest": "^22.2.3",
-        "jest": "^23.0.0",
-        "ts-jest": "^22.4.6",
-        "tslint": "^5.10.0",
-        "typescript": "^2.8.3"
-    },
-    "author": "Amazon Web Services",
-    "license": "Apache-2.0",
-    "jest": {
-        "transform": {
-            "^.+\\.tsx?$": "ts-jest"
-        },
-        "testURL": "http://localhost",
-        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-        "moduleFileExtensions": [
-            "ts",
-            "tsx",
-            "js",
-            "jsx",
-            "json",
-            "node"
-        ]
-    }
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
 }

@@ -3,29 +3,54 @@
   "version": "0.1.0",
   "description": "amplify-cli",
   "scripts": {
-    "test": "lerna run lint && lerna run test",
+    "test-changed": "lerna run test --since master",
+    "test": "lerna run test",
+    "pretest": "lerna run lint ",
+    "e2e": "lerna run e2e",
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",
     "production-build": "lerna exec -- rm -f package-lock.json && lerna bootstrap --hoist && lerna run build",
     "setup-dev": "lerna exec -- rm -f package-lock.json && lerna bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && lerna run build",
     "setup-dev-win": "lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link",
-    "publish:master": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=unstable --preid=unstable --message 'chore(release): Publish [ci skip]'",
+    "publish:master": "lerna publish --canary --yes --independent  --preid=alpha --message 'chore(release): Publish [ci skip]' --no-git-tag-version --no-push",
     "publish:beta": "lerna publish --conventional-commits --cd-version=prerelease --yes --independent --npm-tag=beta --preid=beta --message 'chore(release): Publish [ci skip]'",
-    "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'"
+    "publish:release": "lerna publish --conventional-commits --cd-version=patch --yes --independent --message 'chore(release): Publish [ci skip]'",
+    "postpublish:release": "git fetch . release:master && git push",
+    "commit": "git-cz"
   },
   "bugs": {
     "url": "https://github.com/aws-amplify/amplify-cli/issues"
   },
+  "private": true,
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git"
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "npm run test-changed"
+    }
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
     "lerna": "^2.11.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.1.2",
+    "@commitlint/config-conventional": "^7.1.2",
+    "@commitlint/config-lerna-scopes": "^7.1.2",
+    "commitizen": "^3.0.2",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^1.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

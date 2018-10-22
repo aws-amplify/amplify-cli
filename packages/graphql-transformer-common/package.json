@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "1.0.12",
+  "version": "1.0.28",
   "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
@@ -18,8 +18,8 @@
   "dependencies": {
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^1.0.12",
-    "graphql-transformer-core": "^1.0.12"
+    "graphql-mapping-template": "^1.0.28",
+    "graphql-transformer-core": "^1.0.28"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",

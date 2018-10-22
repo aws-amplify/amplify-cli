@@ -9,7 +9,7 @@ async function run(context) {
     let projectName = path.basename(projectPath);
     projectName = projectName.replace(/[^a-zA-Z0-9]/g, '');
 
-    if (projectName.length > 20) {
+    if (projectName.length > 20 || projectName.length < 3) {
       const projectNameQuestion = {
         type: 'input',
         name: 'projectName',

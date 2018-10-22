@@ -52,9 +52,58 @@
                 }
             }
         },
+        "PrivateBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "DependsOn": "OriginAccessIdentity",
+            "Properties": {
+                "PolicyDocument": {
+                    "Id": "MyPolicy",
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "APIReadForGetBucketObjects",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "CanonicalUser": {
+                                    "Fn::GetAtt": [
+                                        "OriginAccessIdentity",
+                                        "S3CanonicalUserId"
+                                    ]
+                                }
+                            },
+                            "Action": "s3:GetObject",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {"Ref": "S3Bucket"},
+                                        "/*"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Bucket": {
+                    "Ref": "S3Bucket"
+                }
+            }
+        },
+        "OriginAccessIdentity": {
+            "Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties" : {
+                "CloudFrontOriginAccessIdentityConfig" : {
+                    "Comment": "CloudFrontOriginAccessIdentityConfig"
+                }
+            }
+        },
         "CloudFrontDistribution" : {
             "Type" : "AWS::CloudFront::Distribution",
-            "DependsOn" : "S3Bucket",
+            "DependsOn" : [
+                "S3Bucket",
+                "OriginAccessIdentity"
+            ],
             "Properties" : {
                 "DistributionConfig" : {
                     "Origins" : [ 
@@ -62,7 +111,18 @@
                             "DomainName" :  {"Fn::GetAtt": ["S3Bucket", "DomainName"]},
                             "Id" : "hostingS3Bucket",
                             "S3OriginConfig" : {
-                            }
+                                "OriginAccessIdentity": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "origin-access-identity/cloudfront/",
+                                            {
+                                                "Ref": "OriginAccessIdentity"
+                                            }
+                                        ]
+                                    ]
+                                }
+                           }
                         }
                     ],
                     "Enabled" : "true",

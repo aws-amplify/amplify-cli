@@ -30,7 +30,7 @@ module.exports = {
         print.success(`Successfully added resource ${resourceName} locally.`);
         print.info('');
         print.success('Next steps:');
-        print.info(`Check out sample function code generated in <project-dir>/amplify/backend/${resourceName}/src`);
+        print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${resourceName}/src`);
         print.info('"amplify function build" builds all of your functions currently in the project');
         print.info(`"amplify function invoke ${resourceName}" enables you to test a function locally`);
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');

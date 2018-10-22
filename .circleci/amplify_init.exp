@@ -1,0 +1,28 @@
+#!/usr/bin/expect
+set repo [lindex $argv 0];
+spawn ./.circleci/amplify_init.sh $repo
+expect "Enter a name for the project"
+send -- "unauth\r"
+expect -exact "Choose your default editor:"
+send -- "\r"
+expect "Choose the type of app that you're building"
+send -- "\r"
+expect "Please tell us about your project\rWhat javascript framework are you using"
+send -- "\r"
+expect -exact "Source Directory Path:"
+send -- "\r"
+expect -exact "Distribution Directory Path:"
+send -- "\r"
+expect -exact "Build Command:"
+send -- "\r"
+expect -exact "Start Command:"
+send -- "\r"
+log_user 0;
+expect "accessKeyId:"
+send -- "$env(AWS_ACCESS_KEY_ID)\r"
+expect "secretAccessKey:"
+send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
+expect -exact "region:"
+log_user 1;
+send -- "\r"
+interact;

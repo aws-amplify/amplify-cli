@@ -7,7 +7,6 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
-  parallelism: 8
 
 jobs:
   build:
@@ -16,9 +15,9 @@ jobs:
       - checkout
       - run: npm cache clean --force
       - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-      - run: yarn
-      - run: yarn config set workspaces-experimental true
-      - run: yarn run production-build
+      - run: npm install
+      - run: npm config set workspaces-experimental true
+      - run: npm run production-build
       - save_cache:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
@@ -37,7 +36,20 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm run test
+      - run:
+          name: Run tests
+          command: npm run test
+  graphql_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: npm run e2e
+          no_output_timeout: 45m
   integration_test:
       working_directory: ~/repo
       docker:
@@ -56,6 +68,7 @@ jobs:
         - run: sudo apt-get install -y lsof
         - run: sudo apt-get install -y python
         - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+        - run: sudo apt-get install -y jq
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh
         - run: expect .circleci/aws_configure.exp 
@@ -66,18 +79,21 @@ jobs:
             command: |
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
-              yarn
+              npm install
         - run: cd .circleci/ && chmod +x auth.sh
+        - run: cd .circleci/ && chmod +x amplify_init.sh
+        - run: cd .circleci/ && chmod +x amplify_init.exp
+        - run: expect .circleci/amplify_init.exp aws-amplify-cypress-auth
         - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth
-        - run: yarn
+        - run: npm install
         - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start Auth test server in background"
             command: |
               cd aws-amplify-cypress-auth
               pwd
-              yarn start
+              npm start
             background: true
         - run: cat $(find . -type f -name 'auth_spec*')
         - run:
@@ -93,18 +109,19 @@ jobs:
             command: |
               git clone $API_CLONE_URL
               cd aws-amplify-cypress-api
-              yarn
+              npm install
         - run: cd .circleci/ && chmod +x api.sh
+        - run: expect .circleci/amplify_init.exp aws-amplify-cypress-api
         - run: expect .circleci/enable_api.exp
         - run: cd aws-amplify-cypress-api
-        - run: yarn
+        - run: npm install
         - run: cd aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start API test server in background"
             command: |
               cd aws-amplify-cypress-api
               pwd
-              yarn start
+              npm start
             background: true
         - run:
             name: "Run cypress tests for api"
@@ -123,13 +140,10 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: "Update SSH configs"
-          command: |
-            mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+          keys: 
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
+            - amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
@@ -139,11 +153,10 @@ jobs:
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
-              yarn run publish:$CIRCLE_BRANCH
+              npm run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
-
 workflows:
   version: 2
   build_test_deploy:
@@ -152,19 +165,31 @@ workflows:
       - test:
           requires:
             - build
-      - integration_test:
+      - graphql_e2e_tests:
           filters:
             branches:
               only:
                 - master
+          requires:
+            - build
+      - integration_test:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - beta
           requires:
             - build
       - deploy:
           requires:
             - build
             - test
+            - integration_test
+            - graphql_e2e_tests
           filters:
             branches:
               only:
                 - release
                 - master
+                - beta
