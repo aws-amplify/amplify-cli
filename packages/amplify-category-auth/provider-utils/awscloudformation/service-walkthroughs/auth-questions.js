@@ -12,7 +12,7 @@ async function serviceWalkthrough(
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
-  const projectType = Object.keys(amplify.getProjectConfig().frontendHandler)[0];
+  const projectType = amplify.getProjectConfig().frontendHandler;
 
 
   let coreAnswers = {};
