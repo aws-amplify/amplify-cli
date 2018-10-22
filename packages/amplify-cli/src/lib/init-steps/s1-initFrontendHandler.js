@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 
-function run(context) {
+async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
   let suitableHandler;
   let fitToHandleScore = -1;
@@ -15,34 +15,44 @@ function run(context) {
     }
   });
 
-  const frontEndPluginMap = Object.keys(frontendPlugins).map((plugin) => {
-    const pluginSplit = plugin.split('-');
-    const frameWork = pluginSplit[2];
-    return {
-      name: frameWork,
-      value: plugin,
+  const frontend = await getFrontendHandler(context, frontendPlugins, suitableHandler);
+
+  context.exeInfo.projectConfig.frontendHandler = frontend;
+  const handler = require(frontendPlugins[frontend]);
+  return handler.init(context);
+}
+
+
+async function getFrontendHandler(context, frontendPlugins, suitableHandler) {
+  let frontend;
+  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.frontend) {
+    frontend = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend);
+  }
+
+  if (!frontend && context.exeInfo.inputParams.yes) {
+    frontend = 'javascript';
+  }
+
+  if (!frontend) {
+    const selectFrontendHandler = {
+      type: 'list',
+      name: 'selectedFrontendHandler',
+      message: "Choose the type of app that you're building",
+      choices: Object.keys(frontendPlugins),
+      default: suitableHandler,
     };
-  });
+    const answer = await inquirer.prompt(selectFrontendHandler);
+    frontend = answer.selectedFrontendHandler;
+  }
 
-  const selectFrontendHandler = {
-    type: 'list',
-    name: 'selectedFrontendHandler',
-    message: "Choose the type of app that you're building",
-    choices: frontEndPluginMap,
-    default: suitableHandler,
-  };
+  return frontend;
+}
 
-  return inquirer.prompt(selectFrontendHandler)
-    .then((answers) => {
-      context.exeInfo.projectConfig.frontendHandler = {};
-      context.exeInfo.projectConfig.frontendHandler[answers.selectedFrontendHandler] =
-        frontendPlugins[answers.selectedFrontendHandler];
-      return context;
-    })
-    .then((ctxt) => {
-      const handler = require(Object.values(context.exeInfo.projectConfig.frontendHandler)[0]);
-      return handler.init(ctxt);
-    });
+function normalizeFrontendHandlerName(name, frontendPlugins) {
+  const nameSplit = name.split('-');
+  name = nameSplit[nameSplit.length - 1];
+  name = Object.keys(frontendPlugins).includes(name) ? name : undefined;
+  return name;
 }
 
 module.exports = {

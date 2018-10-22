@@ -2,46 +2,62 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 
-function run(context) {
+async function run(context) {
   const providerPlugins = getProviderPlugins(context);
-  const providerPluginList = Object.keys(providerPlugins);
 
-  const selectProviders = {
-    type: 'checkbox',
-    name: 'selectedProviders',
-    message: 'Select the backend providers.',
-    choices: providerPluginList,
-    default: ['awscloudformation'],
-  };
+  const providers = await getProviders(context, providerPlugins);
 
-  const providerQuestion = providerPluginList.length === 1 ?
-    Promise.resolve({ selectedProviders: providerPluginList }) :
-    inquirer.prompt(selectProviders);
+  context.exeInfo.projectConfig.providers = providers;
 
-  if (providerPluginList.length === 1) {
-    context.print.info(`Using default provider ${providerPluginList[0]}`);
+  const initializationTasks = [];
+  providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    initializationTasks.push(() => providerModule.init(context));
+  });
+  return sequential(initializationTasks)
+    .then(() => context)
+    .catch((err) => {
+      throw err;
+    });
+}
+
+
+async function getProviders(context, providerPlugins) {
+  let providers = [];
+  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.providers) {
+    context.exeInfo.inputParams.amplify.providers.forEach((p) => {
+      const providerName = normalizeProviderName(p, providerPlugins);
+      if (providerName) {
+        providers.push(providerName);
+      }
+    });
   }
 
-  return providerQuestion
-    .then((answers) => {
-      context.exeInfo.projectConfig.providers = {};
-      answers.selectedProviders.forEach((providerKey) => {
-        context.exeInfo.projectConfig.providers[providerKey] =
-                    providerPlugins[providerKey];
-      });
-    }).then(() => {
-      const { providers } = context.exeInfo.projectConfig;
-      const initializationTasks = [];
-      Object.keys(providers).forEach((providerKey) => {
-        const provider = require(providers[providerKey]);
-        initializationTasks.push(() => provider.init(context));
-      });
-      return sequential(initializationTasks)
-        .then(() => context)
-        .catch((err) => {
-          throw err;
-        });
-    });
+  if (providers.length === 0) {
+    const providerPluginList = Object.keys(providerPlugins);
+    if (context.exeInfo.inputParams.yes || providerPluginList.length === 1) {
+      context.print.info(`Using default provider ${providerPluginList[0]}`);
+      providers.push(providerPluginList[0]);
+    } else {
+      const selectProviders = {
+        type: 'checkbox',
+        name: 'selectedProviders',
+        message: 'Select the backend providers.',
+        choices: providerPluginList,
+        default: providerPluginList[0],
+      };
+      const answer = await inquirer.prompt(selectProviders);
+      providers = answer.selectedProviders;
+    }
+  }
+  return providers;
+}
+
+function normalizeProviderName(name, providerPlugins) {
+  const nameSplit = name.split('-');
+  name = nameSplit[nameSplit.length - 1];
+  name = Object.keys(providerPlugins).includes(name) ? name : undefined;
+  return name;
 }
 
 module.exports = {

@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
+const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const { print } = require('gluegun/print');
 
 function run(context) {
@@ -15,17 +17,22 @@ function run(context) {
   fs.ensureDirSync(dotConfigDirPath);
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
+
+
+  const providerPlugins = getProviderPlugins(context);
+  console.log(context.exeInfo.projectConfig);
+  console.log(providerPlugins)
   const providerOnSuccessTasks = [];
-  const { providers } = context.exeInfo.projectConfig;
-  Object.keys(providers).forEach((providerKey) => {
-    const provider = require(providers[providerKey]);
-    providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
+  context.exeInfo.projectConfig.providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
 
   return sequential(providerOnSuccessTasks).then(() => {
-    const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
-    const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
-    return frontendHandler.onInitSuccessful(context);
+    const frontendPlugins = getFrontendPlugins(context);
+    console.log(frontendPlugins)
+    const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontendHandler]);
+    return frontendModule.onInitSuccessful(context);
   }).then(() => {
     let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
     const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);

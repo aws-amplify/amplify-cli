@@ -16,15 +16,23 @@ module.exports = {
   },
 };
 
-function constructExeInfo(context){
+function constructExeInfo(context) {
   const inputParams = {};
-  Object.keys(context.parameters.options).forEach((key)=>{
-    if(key === 'y'){
-      key = 'yes';
-    }
+  Object.keys(context.parameters.options).forEach((key) => {
+    key = normalizeKey(key);
     inputParams[key] = JSON.parse(context.parameters.options[key]);
-  })
+  });
   context.exeInfo = {
-    inputParams
-  }; 
+    inputParams,
+  };
+}
+
+function normalizeKey(key) {
+  if (key === 'y') {
+    key = 'yes';
+  }
+  if (key === 'aws') {
+    key = 'awscloudformation';
+  }
+  return key;
 }
