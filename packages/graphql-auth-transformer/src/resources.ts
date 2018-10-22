@@ -361,7 +361,6 @@ export class ResourceFactory {
             ruleNumber++
         }
         return block('Owner Authorization Checks', [
-            this.setUserGroups(),
             set(ref(variableToSet), raw(`false`)),
             ...groupAuthorizationExpressions,
         ])
@@ -453,7 +452,6 @@ export class ResourceFactory {
             ruleNumber++
         }
         return block('Owner Authorization Checks', [
-            this.setUserGroups(),
             set(ref('ownerAuthExpressions'), list([])),
             set(ref('ownerAuthExpressionValues'), obj({})),
             set(ref('ownerAuthExpressionNames'), obj({})),
