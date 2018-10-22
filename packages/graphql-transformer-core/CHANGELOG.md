@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.28"></a>
+## [1.0.28](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@1.0.28-beta.0...graphql-transformer-core@1.0.28) (2018-10-18)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-core
+
+<a name="1.0.28-beta.0"></a>
+## [1.0.28-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@1.0.12...graphql-transformer-core@1.0.28-beta.0) (2018-10-12)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** Fix Readme.md docs for the `[@auth](https://github.com/auth)` directive ([db6ff7a](https://github.com/aws-amplify/amplify-cli/commit/db6ff7a))
+
+
+
+
 <a name="1.0.12"></a>
 ## [1.0.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@1.0.11...graphql-transformer-core@1.0.12) (2018-08-23)
 
