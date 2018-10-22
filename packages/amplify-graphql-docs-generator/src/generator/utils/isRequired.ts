@@ -1,4 +1,8 @@
-import { GraphQLArgument, GraphQLNonNull } from "graphql";
-export default function isRequired(arg: GraphQLArgument): boolean {
-  return arg.type instanceof GraphQLNonNull ? true : false;
+import { GraphQLType, isNonNullType, isListType } from "graphql";
+export default function isRequired(typeObj: GraphQLType): boolean {
+  if (isNonNullType(typeObj) && isListType(typeObj.ofType)) {
+    console.log('inside condition');
+    return isRequired(typeObj.ofType.ofType)
+  }
+  return isNonNullType(typeObj);
 }
