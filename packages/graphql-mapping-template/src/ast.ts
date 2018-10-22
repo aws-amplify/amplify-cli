@@ -111,6 +111,20 @@ export function notEquals(leftExpr: Expression, rightExpr: Expression): NotEqual
 }
 
 /**
+ * Compares two expressions for unequality.
+ */
+export interface NotNode {
+    kind: 'Not';
+    expr: Expression;
+}
+export function not(expr: Expression): NotNode {
+    return {
+        kind: 'Not',
+        expr,
+    }
+}
+
+/**
  * Iterates through a collection.
  */
 export interface ForEachNode {
@@ -337,6 +351,23 @@ export function toJson(expr: Expression): ToJsonNode {
     }
 }
 
+export type NewLineNode = {
+    kind: 'NewLine'
+}
+export function newline(): NewLineNode {
+    return {
+        kind: 'NewLine',
+    }
+}
+
+export function block(name: string, exprs: Expression[]): CompoundExpressionNode {
+    return compoundExpression([
+        comment(`[Start] ${name}`),
+        ...exprs,
+        comment(`[End] ${name}`)
+    ])
+}
+
 /**
  * A flow expression is one that dictates program flow e.g. if, ifelse, for, while, etc.
  */
@@ -363,4 +394,6 @@ export type Expression =
     | SetNode
     | CommentNode
     | CompoundExpressionNode
-    | ToJsonNode;
+    | ToJsonNode
+    | NotNode
+    | NewLineNode;
