@@ -97,14 +97,6 @@ function getPolicyDoc(context) {
         Effect: 'Allow',
         Action: [
           'mobiletargeting:PutEvents',
-        ],
-        Resource: [
-          '*',
-        ],
-      },
-      {
-        Effect: 'Allow',
-        Action: [
           'mobiletargeting:UpdateEndpoint',
         ],
         Resource: [
