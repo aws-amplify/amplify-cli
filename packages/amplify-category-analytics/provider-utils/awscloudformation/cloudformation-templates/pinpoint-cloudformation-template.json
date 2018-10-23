@@ -208,15 +208,7 @@
                   {
                     "Effect": "Allow",
                     "Action": [
-                        "mobileanalytics:PutEvents"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
+                        "mobiletargeting:PutEvents",
                         "mobiletargeting:UpdateEndpoint"
                     ],
                     "Resource": [
@@ -284,15 +276,7 @@
                   {
                     "Effect": "Allow",
                     "Action": [
-                        "mobileanalytics:PutEvents"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                  },
-                  {
-                    "Effect": "Allow",
-                    "Action": [
+                        "mobiletargeting:PutEvents",
                         "mobiletargeting:UpdateEndpoint"
                     ],
                     "Resource": [
