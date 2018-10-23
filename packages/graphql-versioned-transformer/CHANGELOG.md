@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.29-beta.0"></a>
+## [1.0.29-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@1.0.12...graphql-versioned-transformer@1.0.29-beta.0) (2018-10-23)
+
+
+### Bug Fixes
+
+* **graphql-versioned-transformer:** Remove unused imports ([0975ad1](https://github.com/aws-amplify/amplify-cli/commit/0975ad1))
+
+
+
+
 <a name="1.0.28"></a>
 ## [1.0.28](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@1.0.28-beta.0...graphql-versioned-transformer@1.0.28) (2018-10-18)
 
