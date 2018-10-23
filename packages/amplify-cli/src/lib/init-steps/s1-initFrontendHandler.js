@@ -15,25 +15,24 @@ async function run(context) {
     }
   });
 
-  const frontend = await getFrontendHandler(context, frontendPlugins, suitableHandler);
+  const frontendHandler = await getFrontendHandler(context, frontendPlugins, suitableHandler);
 
-  context.exeInfo.projectConfig.frontendHandler = frontend;
-  const handler = require(frontendPlugins[frontend]);
+  context.exeInfo.projectConfig.frontendHandler = frontendHandler;
+  const handler = require(frontendPlugins[frontendHandler]);
   return handler.init(context);
 }
 
-
 async function getFrontendHandler(context, frontendPlugins, suitableHandler) {
-  let frontend;
+  let frontendHandler;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.frontend) {
-    frontend = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend);
+    frontendHandler = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend);
   }
 
-  if (!frontend && context.exeInfo.inputParams.yes) {
-    frontend = 'javascript';
+  if (!frontendHandler && context.exeInfo.inputParams.yes) {
+    frontendHandler = 'javascript';
   }
 
-  if (!frontend) {
+  if (!frontendHandler) {
     const selectFrontendHandler = {
       type: 'list',
       name: 'selectedFrontendHandler',
@@ -42,10 +41,10 @@ async function getFrontendHandler(context, frontendPlugins, suitableHandler) {
       default: suitableHandler,
     };
     const answer = await inquirer.prompt(selectFrontendHandler);
-    frontend = answer.selectedFrontendHandler;
+    frontendHandler = answer.selectedFrontendHandler;
   }
 
-  return frontend;
+  return frontendHandler;
 }
 
 function normalizeFrontendHandlerName(name, frontendPlugins) {

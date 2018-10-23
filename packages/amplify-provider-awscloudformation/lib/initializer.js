@@ -81,10 +81,10 @@ function processStackCreationData(context, stackDescriptiondata) {
     metaData[element.OutputKey] = element.OutputValue;
   });
 
-  if (!context.exeInfo.metaData.providers) {
-    context.exeInfo.metaData.providers = {};
+  if (!context.exeInfo.amplifyMeta.providers) {
+    context.exeInfo.amplifyMeta.providers = {};
   }
-  context.exeInfo.metaData.providers[constants.ProviderName] = metaData;
+  context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metaData;
 
   if (!context.exeInfo.rcData.providers) {
     context.exeInfo.rcData.providers = {};

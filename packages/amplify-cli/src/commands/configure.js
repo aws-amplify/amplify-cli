@@ -13,6 +13,7 @@ module.exports = {
     }
 
     if (context.parameters.first === 'project') {
+      constructExeInfo(context);
       return analyzeProject.run(context)
         .then(configFrontendHandler.run)
         .then(configProviders.run)
@@ -22,3 +23,23 @@ module.exports = {
   },
 };
 
+function constructExeInfo(context) {
+  const inputParams = {};
+  Object.keys(context.parameters.options).forEach((key) => {
+    key = normalizeKey(key);
+    inputParams[key] = JSON.parse(context.parameters.options[key]);
+  });
+  context.exeInfo = {
+    inputParams,
+  };
+}
+
+function normalizeKey(key) {
+  if (key === 'y') {
+    key = 'yes';
+  }
+  if (key === 'aws') {
+    key = 'awscloudformation';
+  }
+  return key;
+}

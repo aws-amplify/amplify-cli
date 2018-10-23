@@ -6,25 +6,24 @@ const { makeId } = require('../../extensions/amplify-helpers/make-id');
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
-  return new Promise(async (resolve) => {
-    const projectPath = process.cwd();
-    const projectName = await getProjectName(context);
-    const defaultEditor = await getEditor(context);
 
-    context.exeInfo.projectConfig = {
-      projectName,
-      projectPath,
-      defaultEditor,
-    };
+  const projectPath = process.cwd();
+  const projectName = await getProjectName(context);
+  const defaultEditor = await getEditor(context);
 
-    context.exeInfo.metaData = {
-    };
+  context.exeInfo.projectConfig = {
+    projectName,
+    projectPath,
+    defaultEditor,
+  };
 
-    context.exeInfo.rcData = {
-    };
+  context.exeInfo.amplifyMeta = {
+  };
 
-    resolve(context);
-  });
+  context.exeInfo.rcData = {
+  };
+
+  return context;
 }
 
 /* Begin getProjectName */
@@ -78,7 +77,6 @@ function normalizeProjectName(projectName) {
 /* Begin getEditor */
 async function getEditor(context) {
   let editor;
-
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.editor) {
     editor = normalizeEditorCode(context.exeInfo.inputParams.amplify.editor);
   } else {

@@ -38,7 +38,7 @@ function run(context) {
     const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
     fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
 
-    jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
+    jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
     const currentBackendMetaFilePath =
               amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');

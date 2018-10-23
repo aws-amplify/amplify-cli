@@ -7,7 +7,7 @@ async function run(context) {
 
   const providers = await getProviders(context, providerPlugins);
 
-  context.exeInfo.projectConfig.providers = providers;
+  context.exeInfo.projectConfig.providers = providers;context.exeInfo.inputParams.yes
 
   const initializationTasks = [];
   providers.forEach((provider) => {
