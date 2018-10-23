@@ -3,7 +3,7 @@ const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-fro
 
 async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
-  let suitableHandler;
+  let suitableFrontend;
   let fitToHandleScore = -1;
 
   Object.keys(frontendPlugins).forEach((key) => {
@@ -11,40 +11,42 @@ async function run(context) {
     const newScore = scanProject(context.exeInfo.projectConfig.projectPath);
     if (newScore > fitToHandleScore) {
       fitToHandleScore = newScore;
-      suitableHandler = key;
+      suitableFrontend = key;
     }
   });
 
-  const frontendHandler = await getFrontendHandler(context, frontendPlugins, suitableHandler);
+  const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
-  context.exeInfo.projectConfig.frontendHandler = frontendHandler;
-  const handler = require(frontendPlugins[frontendHandler]);
-  return handler.init(context);
+  context.exeInfo.projectConfig.frontend = frontend;
+  const handler = require(frontendPlugins[frontend]);
+  await handler.init(context);
+
+  return context;
 }
 
-async function getFrontendHandler(context, frontendPlugins, suitableHandler) {
-  let frontendHandler;
+async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
+  let frontend;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.frontend) {
-    frontendHandler = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend);
+    frontend = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend, frontendPlugins);
   }
 
-  if (!frontendHandler && context.exeInfo.inputParams.yes) {
-    frontendHandler = 'javascript';
+  if (!frontend && context.exeInfo.inputParams.yes) {
+    frontend = 'javascript';
   }
 
-  if (!frontendHandler) {
+  if (!frontend) {
     const selectFrontendHandler = {
       type: 'list',
       name: 'selectedFrontendHandler',
       message: "Choose the type of app that you're building",
       choices: Object.keys(frontendPlugins),
-      default: suitableHandler,
+      default: suitableFrontend,
     };
     const answer = await inquirer.prompt(selectFrontendHandler);
-    frontendHandler = answer.selectedFrontendHandler;
+    frontend = answer.selectedFrontendHandler;
   }
 
-  return frontendHandler;
+  return frontend;
 }
 
 function normalizeFrontendHandlerName(name, frontendPlugins) {

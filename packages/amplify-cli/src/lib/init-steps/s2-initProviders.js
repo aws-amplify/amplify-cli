@@ -14,11 +14,10 @@ async function run(context) {
     const providerModule = require(providerPlugins[provider]);
     initializationTasks.push(() => providerModule.init(context));
   });
-  return sequential(initializationTasks)
-    .then(() => context)
-    .catch((err) => {
-      throw err;
-    });
+  
+  await sequential(initializationTasks);
+   
+  return context;
 }
 
 

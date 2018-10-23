@@ -1,5 +1,5 @@
 const analyzeProject = require('../lib/init-steps/s0-analyzeProject');
-const initFrontendHandler = require('../lib/init-steps/s1-initFrontendHandler');
+const initFrontendHandler = require('../lib/init-steps/s1-initFrontend');
 const initProviders = require('../lib/init-steps/s2-initProviders');
 const onFailure = require('../lib/init-steps/s9-onFailure');
 const onSuccess = require('../lib/init-steps/s9-onSuccess');
@@ -19,8 +19,8 @@ module.exports = {
 function constructExeInfo(context) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach((key) => {
-    key = normalizeKey(key);
-    inputParams[key] = JSON.parse(context.parameters.options[key]);
+    normalizedKey = normalizeKey(key);
+    inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
   });
   context.exeInfo = {
     inputParams,
@@ -30,9 +30,6 @@ function constructExeInfo(context) {
 function normalizeKey(key) {
   if (key === 'y') {
     key = 'yes';
-  }
-  if (key === 'aws') {
-    key = 'awscloudformation';
   }
   return key;
 }

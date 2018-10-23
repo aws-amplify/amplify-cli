@@ -1,5 +1,5 @@
 const analyzeProject = require('../lib/config-steps/c0-analyzeProject');
-const configFrontendHandler = require('../lib/config-steps/c1-configFrontendHandler');
+const configFrontendHandler = require('../lib/config-steps/c1-configFrontend');
 const configProviders = require('../lib/config-steps/c2-configProviders');
 const configureNewUser = require('../lib/configure-new-user');
 const onFailure = require('../lib/config-steps/c9-onFailure');
@@ -37,9 +37,6 @@ function constructExeInfo(context) {
 function normalizeKey(key) {
   if (key === 'y') {
     key = 'yes';
-  }
-  if (key === 'aws') {
-    key = 'awscloudformation';
   }
   return key;
 }
