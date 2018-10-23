@@ -21,13 +21,12 @@ async function run(context) {
       onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(context));
     }
   });
-  return sequential(configTasks)
-    .then(sequential(initializationTasks))
-    .then(sequential(onInitSuccessfulTasks))
-    .then(() => context)
-    .catch((err) => {
-      throw err;
-    });
+  
+  await sequential(configTasks);
+  await sequential(initializationTasks);
+  await sequential(onInitSuccessfulTasks);
+  
+  return context;
 }
 
 async function configureProviders(context, providerPlugins, currentProviders) {

@@ -14,11 +14,10 @@ async function run(context) {
     await handlerModule.init(context)
       .then(() => handlerModule.createFrontendConfigs(context, getResourceOutputs()));
     context.exeInfo.projectConfig.frontendHandler = selectedFrontendHandler;
+  }else{
+    const handlerModule = require(frontendPlugins[selectedFrontendHandler]);
+    await handlerModule.configure(context);
   }
-  const handlerModule = require(frontendPlugins[selectedFrontendHandler]);
-  await handlerModule.configure(context);
-
-  console.log(context.exeInfo.projectConfig);
 
   return context;
 }
