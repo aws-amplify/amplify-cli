@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.13-beta.0"></a>
+## 1.0.13-beta.0 (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package graphql-http-transformer
+
 <a name="1.0.12"></a>
 ## [1.0.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@1.0.11...graphql-connection-transformer@1.0.12) (2018-08-23)
 
