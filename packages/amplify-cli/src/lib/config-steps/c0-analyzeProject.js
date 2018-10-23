@@ -1,7 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const { editorSelection } = require('../../extensions/amplify-helpers/editor-selection');
+const { normalizeEditorCode, editorSelection } =
+  require('../../extensions/amplify-helpers/editor-selection');
 
 async function run(context) {
   const projectDetails = context.amplify.getProjectDetails();

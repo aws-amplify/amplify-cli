@@ -13,7 +13,7 @@ async function run(context) {
     const frontendModule = require(frontendPlugins[selectedFrontend]);
     await frontendModule.init(context)
       .then(() => frontendModule.createFrontendConfigs(context, getResourceOutputs()));
-    context.exeInfo.projectConfig.frontendHandler = selectedFrontend;
+    context.exeInfo.projectConfig.frontend = selectedFrontend;
   }else{
     const frontendModule = require(frontendPlugins[selectedFrontend]);
     await frontendModule.configure(context);

@@ -26,8 +26,8 @@ module.exports = {
 function constructExeInfo(context) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach((key) => {
-    key = normalizeKey(key);
-    inputParams[key] = JSON.parse(context.parameters.options[key]);
+    const normalizedKey = normalizeKey(key);
+    inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
   });
   context.exeInfo = {
     inputParams,

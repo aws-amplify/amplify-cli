@@ -31,7 +31,7 @@ function run(context) {
   return sequential(providerOnSuccessTasks).then(() => {
     const frontendPlugins = getFrontendPlugins(context);
     console.log(frontendPlugins)
-    const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontendHandler]);
+    const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     return frontendModule.onInitSuccessful(context);
   }).then(() => {
     let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
