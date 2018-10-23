@@ -1,9 +1,11 @@
 const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
+const archiver = require('archiver');
 const fs = require('fs-extra');
 const ora = require('ora');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
+const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 
@@ -86,17 +88,61 @@ function processStackCreationData(context, stackDescriptiondata) {
   }
   context.exeInfo.metaData.providers[constants.ProviderName] = metaData;
 
-  if (!context.exeInfo.rcData.providers) {
-    context.exeInfo.rcData.providers = {};
+  if (context.exeInfo.isNewEnv) {
+    const { envName } = context.exeInfo.localEnvInfo;
+    context.exeInfo.teamProviderInfo[envName] = {};
+    context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metaData;
   }
-  context.exeInfo.rcData.providers[constants.ProviderName] = metaData;
 }
 
 function onInitSuccessful(context) {
-  return new Promise((resolve) => {
-    configurationManager.onInitSuccessful(context);
-    resolve(context);
-  });
+  configurationManager.onInitSuccessful(context);
+  return storeCurrentCloudBackend(context);
+}
+
+function storeCurrentCloudBackend(context) {
+  const zipFilename = '#current-cloud-backend.zip';
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const tempDir = `${backendDir}/.temp`;
+  const currentCloudBackendDir = context.exeInfo ?
+    context.exeInfo.localEnvInfo.projectPath :
+    context.amplify.pathManager.getCurrentCloudBackendDirPath();
+
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+
+  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
+  const output = fs.createWriteStream(zipFilePath);
+
+  return new Promise((resolve, reject) => {
+    output.on('close', () => {
+      resolve({ zipFilePath, zipFilename });
+    });
+    output.on('error', () => {
+      reject(new Error('Failed to zip code.'));
+    });
+
+    const zip = archiver.create('zip', {});
+    zip.pipe(output);
+    zip.directory(currentCloudBackendDir, false);
+    zip.finalize();
+  })
+    .then((result) => {
+      const s3Key = `${result.zipFilename}`;
+      return new S3(context)
+        .then((s3) => {
+          const s3Params = {
+            Body: fs.createReadStream(result.zipFilePath),
+            Key: s3Key,
+          };
+          return s3.uploadFile(s3Params);
+        });
+    })
+    .then(() => {
+      fs.removeSync(tempDir);
+      return context;
+    });
 }
 
 function normalizeStackName(stackName) {

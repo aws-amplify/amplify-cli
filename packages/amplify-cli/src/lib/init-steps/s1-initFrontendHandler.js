@@ -2,13 +2,21 @@ const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 
 function run(context) {
+  if (!context.exeInfo.isNewProject) {
+    const currentProjectConfig = context.amplify.getProjectConfig();
+    Object.assign(currentProjectConfig, context.exeInfo.projectConfig);
+    context.exeInfo.projectConfig = currentProjectConfig;
+    return context;
+  }
+
+
   const frontendPlugins = getFrontendPlugins(context);
   let suitableHandler;
   let fitToHandleScore = -1;
 
   Object.keys(frontendPlugins).forEach((key) => {
     const { scanProject } = require(frontendPlugins[key]);
-    const newScore = scanProject(context.exeInfo.projectConfig.projectPath);
+    const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
     if (newScore > fitToHandleScore) {
       fitToHandleScore = newScore;
       suitableHandler = key;

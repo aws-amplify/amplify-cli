@@ -7,7 +7,7 @@ const constants = require('./constants');
 function init(context) {
   context.print.info('Please tell us about your project');
   context.exeInfo.projectConfig[constants.Label] = {
-    framework: guessFramework(context.exeInfo.projectConfig.projectPath),
+    framework: guessFramework(context.exeInfo.localEnvInfo.projectPath),
   };
   return promptForConfiguration(context);
 }
@@ -25,7 +25,7 @@ function configure(context) {
 
   if (!context.exeInfo.projectConfig[constants.Label].framework) {
     context.exeInfo.projectConfig[constants.Label].framework =
-            guessFramework(context.exeInfo.projectConfig.projectPath);
+            guessFramework(context.exeInfo.localEnvInfo.projectPath);
   }
 
   return promptForConfiguration(context);

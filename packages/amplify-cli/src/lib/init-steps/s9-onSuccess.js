@@ -1,9 +1,10 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const { print } = require('gluegun/print');
+const { initializeEnv } = require('../initialize-env');
 
 function run(context) {
-  const { projectPath } = context.exeInfo.projectConfig;
+  const { projectPath } = context.exeInfo.localEnvInfo;
   const { amplify } = context;
 
   const amplifyDirPath = amplify.pathManager.getAmplifyDirPath(projectPath);
@@ -17,33 +18,86 @@ function run(context) {
   fs.ensureDirSync(currentBackendDirPath);
   const providerOnSuccessTasks = [];
   const { providers } = context.exeInfo.projectConfig;
-  Object.keys(providers).forEach((providerKey) => {
-    const provider = require(providers[providerKey]);
-    providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
-  });
 
-  return sequential(providerOnSuccessTasks).then(() => {
-    const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
-    const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
-    return frontendHandler.onInitSuccessful(context);
-  }).then(() => {
-    let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-    const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
-    fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
+  const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
+  const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
+  return frontendHandler.onInitSuccessful(context)
+    .then(async () => {
+      generateLocalRuntimeFiles(context);
+      generateNonRuntimeFiles(context);
+      await initializeEnv(context);
+      if (context.exeInfo.isNewEnv) {
+        Object.keys(providers).forEach((providerKey) => {
+          const provider = require(providers[providerKey]);
+          providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
+        });
+      }
+      return sequential(providerOnSuccessTasks);
+    })
+    .then(() => printWelcomeMessage());
+}
 
-    jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
+function generateLocalRuntimeFiles(context) {
+  generateLocalEnvInfoFile(context);
+  generateAmplifyMetaFile(context);
+}
+
+function generateLocalEnvInfoFile(context) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
+  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
+  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+}
+
+function generateAmplifyMetaFile(context) {
+  if (context.exeInfo.isNewEnv) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
     const currentBackendMetaFilePath =
-              amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
+              context.amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
-    const backendMetaFilePath = amplify.pathManager.getAmplifyMetaFilePath(projectPath);
+    const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+  }
+}
 
-    jsonString = JSON.stringify(context.exeInfo.rcData, null, 4);
-    const amplifyRcFilePath = amplify.pathManager.getAmplifyRcFilePath(projectPath);
-    fs.writeFileSync(amplifyRcFilePath, jsonString, 'utf8');
+function generateNonRuntimeFiles(context) {
+  generateProjectConfigFile(context);
+  generateBackendConfigFile(context);
+  generateProviderInfoFile(context);
+}
 
-    printWelcomeMessage();
-  });
+function generateProjectConfigFile(context) {
+  // won't modify on new env
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
+    const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
+    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+  }
+}
+
+function generateProviderInfoFile(context) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  let teamProviderInfo = {};
+  const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
+  if (fs.existsSync(providerInfoFilePath)) {
+    teamProviderInfo = JSON.parse(fs.readFileSync(providerInfoFilePath));
+    Object.assign(teamProviderInfo, context.exeInfo.teamProviderInfo);
+  } else {
+    ({ teamProviderInfo } = context.exeInfo);
+  }
+
+  const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+  fs.writeFileSync(providerInfoFilePath, jsonString, 'utf8');
+}
+
+function generateBackendConfigFile(context) {
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
+    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+  }
 }
 
 function printWelcomeMessage() {

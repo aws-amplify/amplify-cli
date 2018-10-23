@@ -101,6 +101,27 @@ function getProjectConfigFilePath(projectPath) {
   ));
 }
 
+function getLocalEnvFilePath(projectPath) {
+  return path.normalize(path.join(
+    getDotConfigDirPath(projectPath),
+    amplifyCLIConstants.LocalEnvFileName,
+  ));
+}
+
+function getProviderInfoFilePath(projectPath) {
+  return path.normalize(path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.ProviderInfoFileName,
+  ));
+}
+
+function getBackendConfigFilePath(projectPath) {
+  return path.normalize(path.join(
+    getDotConfigDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
+  ));
+}
+
 function getPluginConfigFilePath(projectPath) {
   return path.normalize(path.join(
     getDotConfigDirPath(projectPath),
@@ -135,4 +156,7 @@ module.exports = {
   getPluginConfigFilePath,
   getAmplifyMetaFilePath,
   getCurentAmplifyMetaFilePath,
+  getLocalEnvFilePath,
+  getProviderInfoFilePath,
+  getBackendConfigFilePath,
 };

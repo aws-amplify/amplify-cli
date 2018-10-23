@@ -260,8 +260,16 @@ function createProjectConfig(context) {
     awsConfigInfo.awsConfigFilePath = awsConfigFilePath;
   }
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
-  const jsonString = JSON.stringify(awsConfigInfo, null, 4);
+  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
+  const { envName } = context.exeInfo.localEnvInfo;
+
+  let envAwsInfo = {};
+  if (fs.existsSync(configInfoFilePath)) {
+    envAwsInfo = JSON.parse(fs.readFileSync(configInfoFilePath));
+  }
+
+  envAwsInfo[envName] = awsConfigInfo;
+  const jsonString = JSON.stringify(envAwsInfo, null, 4);
   fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
   return context;
 }
@@ -272,10 +280,13 @@ function getProjectConfig(context) {
   } = context;
   projectConfigInfo.projectConfigExists = false;
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
+  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
+
   if (fs.existsSync(configInfoFilePath)) {
     try {
-      const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
+      const { envName } = context.amplify.getEnvInfo();
+      const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
+
       if (configInfo.useProfile && configInfo.profileName) {
         projectConfigInfo.useProfile = configInfo.useProfile;
         projectConfigInfo.profileName = configInfo.profileName;
@@ -288,7 +299,7 @@ function getProjectConfig(context) {
       }
       projectConfigInfo.projectConfigExists = true;
     } catch (e) {
-      fs.removeSync(configInfoFilePath);
+      // fs.removeSync(configInfoFilePath);
     }
   }
   return context;
@@ -302,13 +313,17 @@ function updateProjectConfig(context) {
 
 function removeProjectConfig(context) {
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
+  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
+    const { envName } = context.amplify.getEnvInfo();
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
     if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
       fs.removeSync(configInfo.awsConfigFilePath);
     }
-    fs.removeSync(configInfoFilePath);
+    delete configInfo[envName];
+    const jsonString = JSON.stringify(configInfo, null, 4);
+
+    fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
   }
   return context;
 }
@@ -343,9 +358,10 @@ async function newUserCheck(context) {
 
 function logProjectSpecificConfg(context, awsClient) {
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
+  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
-    const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
+    const { envName } = context.amplify.getEnvInfo();
+    const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
     if (configInfo.useProfile && configInfo.profileName) {
       process.env.AWS_PROFILE = configInfo.profileName;
       const credentials = new awsClient.SharedIniFileCredentials({

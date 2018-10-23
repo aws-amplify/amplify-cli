@@ -10,19 +10,11 @@ function run(context) {
     if (fs.existsSync(projectConfigFilePath)) {
       context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
     }
+    const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
+    context.exeInfo.localEnvInfo = JSON.parse(fs.readFileSync(envFilePath));
 
     await initializeConfig(context);
 
-    const { projectPath } = context.exeInfo.projectConfig;
-    const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
-    if (fs.existsSync(backendMetaFilePath)) {
-      context.exeInfo.metaData = JSON.parse(fs.readFileSync(backendMetaFilePath));
-    }
-
-    const amplifyRcFilePath = context.amplify.pathManager.getAmplifyRcFilePath(projectPath);
-    if (fs.existsSync(amplifyRcFilePath)) {
-      context.exeInfo.rcData = JSON.parse(fs.readFileSync(amplifyRcFilePath));
-    }
     resolve(context);
   });
 }
@@ -54,11 +46,15 @@ async function initializeConfig(context) {
 
   const projectConfig = {
     projectName,
+  };
+
+  const localEnvInfo = {
     projectPath,
     defaultEditor,
   };
 
-  Object.assign(context.exeInfo.projectConfig, projectConfig);
+  Object.assign(context.exeInfo, projectConfig, projectConfig);
+  Object.assign(context.exeInfo.localEnvInfo, localEnvInfo);
 }
 
 module.exports = {

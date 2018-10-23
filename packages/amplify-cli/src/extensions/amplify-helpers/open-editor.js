@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const openInEditor = require('open-in-editor');
 const { editorSelection } = require('./editor-selection');
-const { getProjectDetails } = require('./get-project-details');
+const { getEnvInfo } = require('./get-env-info');
 
 async function openEditor(context, filePath) {
   const continueQuestion = {
@@ -12,10 +12,10 @@ async function openEditor(context, filePath) {
   let editorSelected;
 
   // Check if default editor is chosen in init step
-  const { projectConfig } = getProjectDetails();
+  const { defaultEditor } = getEnvInfo();
 
-  if (projectConfig.defaultEditor) {
-    editorSelected = projectConfig.defaultEditor;
+  if (defaultEditor) {
+    editorSelected = defaultEditor;
   } else {
     editorSelected = await editorSelection();
   }

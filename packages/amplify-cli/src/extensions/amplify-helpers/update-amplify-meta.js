@@ -3,6 +3,9 @@ const { filesystem } = require('gluegun/filesystem');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
+const {
+  updateBackendConfigAfterResourceAdd,
+} = require('./update-backend-config');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
   const amplifyMeta = JSON.parse(fs.readFileSync(filePath));
@@ -68,6 +71,8 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
     const jsonString = JSON.stringify(amplifyMeta, null, '\t');
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
   }
+
+  updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
 
 function updateProvideramplifyMeta(providerName, options) {
