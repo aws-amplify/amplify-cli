@@ -37,7 +37,7 @@ function normalizeInputParams(context){
   if(inputParams && inputParams.framework){
     if(!Object.keys(frameworkConfigMapping).includes(inputParams.framework.toLowerCase())){
       context.print.warning(`Unsupported javascript framework: ${inputParams.framework}`);
-      inputParams.framework = undefined;
+      inputParams.framework = 'none';
     }else{
       inputParams.framework = inputParams.framework.toLowerCase();
     }
