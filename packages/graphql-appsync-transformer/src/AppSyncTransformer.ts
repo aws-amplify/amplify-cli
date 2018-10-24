@@ -79,7 +79,7 @@ export class AppSyncTransformer extends Transformer {
         const astSansDirectives = stripDirectives({
             kind: 'Document',
             definitions: Object.keys(ctx.nodeMap).map((k: string) => ctx.getType(k))
-        }, ['aws_subscribe'])
+        }, ['aws_subscribe', 'aws_auth'])
         const SDL = print(astSansDirectives)
         return SDL;
     }
