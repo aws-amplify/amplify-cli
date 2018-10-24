@@ -1,1 +1,1 @@
-<meta http-equiv="refresh" content="0; URL='https://github.com/aws-amplify/docs/blob/master/js/graphql.md'" />
+<meta http-equiv="refresh" content="0; URL='https://aws-amplify.github.io/aws-amplify/docs/js/graphql'" />
