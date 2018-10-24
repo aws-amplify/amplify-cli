@@ -4,21 +4,20 @@ const inquirer = require('inquirer');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const constants = require('./constants');
 
-function init(context) {
-  context.print.info('Please tell us about your project');
+async function init(context) {
+  normalizeInputParams(context);
   context.exeInfo.projectConfig[constants.Label] = {
     framework: guessFramework(context.exeInfo.projectConfig.projectPath),
   };
-  return promptForConfiguration(context);
+  await confirmConfiguration(context);
 }
 
 function onInitSuccessful(context) {
-  return new Promise((resolve) => {
-    resolve(context);
-  });
+  return context;
 }
 
-function configure(context) {
+async function configure(context) {
+  normalizeInputParams(context);
   if (!context.exeInfo.projectConfig[constants.Label]) {
     context.exeInfo.projectConfig[constants.Label] = {};
   }
@@ -27,75 +26,105 @@ function configure(context) {
     context.exeInfo.projectConfig[constants.Label].framework =
             guessFramework(context.exeInfo.projectConfig.projectPath);
   }
-
-  return promptForConfiguration(context);
+  await confirmConfiguration(context);
 }
 
-function promptForConfiguration(context) {
-  return confirmFramework(context)
-    .then(confirmConfiguration);
-}
-
-function confirmFramework(context) {
-  const frameworkComfirmation = {
-    type: 'list',
-    name: 'framework',
-    message: 'What javascript framework are you using',
-    choices: Object.keys(frameworkConfigMapping),
-    default: context.exeInfo.projectConfig[constants.Label].framework,
-  };
-  return inquirer.prompt(frameworkComfirmation)
-    .then((answers) => {
-      if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
-        context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-        context.exeInfo.projectConfig[constants.Label].config =
-            frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
-      }
-      return context;
-    });
-}
-
-function confirmConfiguration(context) {
-  if (!context.exeInfo.projectConfig[constants.Label].config) {
-    context.exeInfo.projectConfig[constants.Label].config =
-        frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
+function normalizeInputParams(context){
+  let inputParams; 
+  if(context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]){
+    inputParams = context.exeInfo.inputParams[constants.Label];
   }
-  const { config } = context.exeInfo.projectConfig[constants.Label];
-  const configurationSettings = [
-    {
-      type: 'input',
-      name: 'SourceDir',
-      message: 'Source Directory Path: ',
-      default: config.SourceDir,
-    },
-    {
-      type: 'input',
-      name: 'DistributionDir',
-      message: 'Distribution Directory Path:',
-      default: config.DistributionDir,
-    },
-    {
-      type: 'input',
-      name: 'BuildCommand',
-      message: 'Build Command: ',
-      default: config.BuildCommand,
-    },
-    {
-      type: 'input',
-      name: 'StartCommand',
-      message: 'Start Command:',
-      default: config.StartCommand,
-    },
-  ];
+  if(inputParams && inputParams.framework){
+    if(!Object.keys(frameworkConfigMapping).includes(inputParams.framework.toLowerCase())){
+      context.print.warning(`Unsupported javascript framework: ${inputParams.framework}`);
+      inputParams.framework = undefined;
+    }else{
+      inputParams.framework = inputParams.framework.toLowerCase();
+    }
+  }
+  if(inputParams && inputParams.config){
+    if(!inputParams.config.SourceDir ||
+       !inputParams.config.DistributionDir ||
+       !inputParams.config.BuildCommand ||
+       !inputParams.config.StartCommand ){
+      throw new Error('The command line parameter for javascript frontend configuration is incomplete.')
+    }
+  }
+  context.exeInfo.inputParams[constants.Label] = inputParams; 
+}
 
-  return inquirer.prompt(configurationSettings)
-    .then((answers) => {
-      config.SourceDir = answers.SourceDir;
-      config.DistributionDir = answers.DistributionDir;
-      config.BuildCommand = answers.BuildCommand;
-      config.StartCommand = answers.StartCommand;
-      return context;
-    });
+async function confirmConfiguration(context) {
+  await confirmFramework(context);
+  await confirmFrameworkConfiguration(context);
+}
+
+async function confirmFramework(context) {
+  const inputParams = context.exeInfo.inputParams[constants.Label];
+  if(inputParams.framework){
+    if(context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework){
+      context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
+      context.exeInfo.projectConfig[constants.Label].config =
+          frameworkConfigMapping[inputParams.framework];
+    }
+  }else if(!context.exeInfo.inputParams.yes){
+    context.print.info('Please tell us about your project');
+    const frameworkComfirmation = {
+      type: 'list',
+      name: 'framework',
+      message: 'What javascript framework are you using',
+      choices: Object.keys(frameworkConfigMapping),
+      default: context.exeInfo.projectConfig[constants.Label].framework,
+    };
+    const answers = await inquirer.prompt(frameworkComfirmation);
+    if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
+      context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
+      context.exeInfo.projectConfig[constants.Label].config = 
+          frameworkConfigMapping[answers.framework];
+    }
+  }
+}
+
+async function confirmFrameworkConfiguration(context) {
+  const inputParams = context.exeInfo.inputParams[constants.Label];
+
+  if(inputParams.config){
+    Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
+  }else if(!context.exeInfo.inputParams.yes){
+
+    if (!context.exeInfo.projectConfig[constants.Label].config) {
+      context.exeInfo.projectConfig[constants.Label].config =
+          frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
+    }
+    const { config } = context.exeInfo.projectConfig[constants.Label];
+    const configurationSettings = [
+      {
+        type: 'input',
+        name: 'SourceDir',
+        message: 'Source Directory Path: ',
+        default: config.SourceDir,
+      },
+      {
+        type: 'input',
+        name: 'DistributionDir',
+        message: 'Distribution Directory Path:',
+        default: config.DistributionDir,
+      },
+      {
+        type: 'input',
+        name: 'BuildCommand',
+        message: 'Build Command: ',
+        default: config.BuildCommand,
+      },
+      {
+        type: 'input',
+        name: 'StartCommand',
+        message: 'Start Command:',
+        default: config.StartCommand,
+      },
+    ];
+    const answers = await inquirer.prompt(configurationSettings);
+    Object.assign(context.exeInfo.projectConfig[constants.Label].config, answers);
+  }
 }
 
 function guessFramework(projectPath) {

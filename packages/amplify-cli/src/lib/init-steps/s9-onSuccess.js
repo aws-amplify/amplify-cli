@@ -20,8 +20,6 @@ function run(context) {
 
 
   const providerPlugins = getProviderPlugins(context);
-  console.log(context.exeInfo.projectConfig);
-  console.log(providerPlugins)
   const providerOnSuccessTasks = [];
   context.exeInfo.projectConfig.providers.forEach((provider) => {
     const providerModule = require(providerPlugins[provider]);
