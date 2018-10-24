@@ -362,6 +362,29 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
     expect(postConnectionId.type.kind).toEqual(Kind.NON_NULL_TYPE)
 });
 
+test('Test ModelConnectionTransformer with sortField fails if not specified in associated type', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "PostComments", sortField: "createdAt")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+        post: Post @connection(name: "PostComments")
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+    expect(() => { transformer.transform(validSchema) }).toThrowError()
+});
+
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
@@ -397,5 +420,5 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 function verifyInputCount(doc: DocumentNode, type: string, count: number): boolean {
-    return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length == count;
+    return doc.definitions.filter(def => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type).length === count;
 }
