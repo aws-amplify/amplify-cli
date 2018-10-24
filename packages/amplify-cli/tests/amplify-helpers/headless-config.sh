@@ -10,4 +10,6 @@ AMPLIFY="{\
 \"providers\":$PROVIDERS,\
 \"frontend\":$FRONTEND\
 }"
-amplify configure project --amplify $AMPLIFY -y
+amplify configure project \
+--amplify $AMPLIFY \
+-y

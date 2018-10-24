@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
+IFS='|'
 PROJECTNAME=\"headlessProjectName\"
 EDITOR=\"code\"
-FRONTEND=\"react\"
+FRONTEND=\"javascript\"
 PROVIDERS="[\"awscloudformation\"]"
 AMPLIFY="{\
 \"projectName\":$PROJECTNAME,\
@@ -10,4 +11,17 @@ AMPLIFY="{\
 \"providers\":$PROVIDERS,\
 \"frontend\":$FRONTEND\
 }"
-amplify init --amplify $AMPLIFY -y
+REACTCONFIG="{\
+\"SourceDir\":\"src\",\
+\"DistributionDir\":\"build\",\
+\"BuildCommand\":\"npm run-script build\",\
+\"StartCommand\":\"npm run-script start\"\
+}"
+JAVASCRIPT="{\
+\"framework\":\"react\",\
+\"config\":$REACTCONFIG\
+}"
+amplify init \
+--amplify $AMPLIFY \
+--javascript $JAVASCRIPT \
+--yes
