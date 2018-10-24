@@ -35,7 +35,7 @@ export class ResourceFactory {
         table: Table,
         connectionName: string,
         connectionAttributeName: string,
-        sortField?: { name: string, type: string }
+        sortField: { name: string, type: string } = null
     ): Table {
         const gsis = table.Properties.GlobalSecondaryIndexes || [] as GlobalSecondaryIndex[]
         if (gsis.length >= 5) {
@@ -52,7 +52,6 @@ export class ResourceFactory {
             if (sortField) {
                 keySchema.push(new KeySchema({ AttributeName: sortField.name, KeyType: 'RANGE' }))
             }
-            const rangeKey = sortField ? [] : []
             gsis.push(new GlobalSecondaryIndex({
                 IndexName: connectionGSIName,
                 KeySchema: keySchema,
@@ -76,6 +75,7 @@ export class ResourceFactory {
             }))
         }
 
+        // If the attribute definition does not exist yet, add it.
         if (sortField) {
             const existingSortAttribute = attributeDefinitions.find(attr => attr.AttributeName === sortField.name)
             if (!existingSortAttribute) {

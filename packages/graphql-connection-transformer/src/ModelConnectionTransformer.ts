@@ -160,13 +160,22 @@ export class ModelConnectionTransformer extends Transformer {
             // Store foreign key on this table and wire up a GetItem resolver.
             // This is the inverse of 2.
 
+            // if the sortField is not defined as a field, throw an error
+            // Cannot assume the required type of the field
+            if (associatedSortFieldName && !associatedSortField) {
+                throw new InvalidDirectiveError(
+                    `sortField "${associatedSortFieldName}" not found on type "${parent.name.value}", other half of connection "${connectionName}".`
+                )
+            }
+
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(parentTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
+            const sortField = associatedSortField ? { name: associatedSortFieldName, type: sortType } : null
             const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName,
-                { name: associatedSortFieldName, type: sortType })
+                sortField)
             ctx.setResource(tableLogicalId, updated)
 
             const getResolver = this.resources.makeGetItemConnectionResolver(
