@@ -136,6 +136,9 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     }
     type Query2 {
         additionalQueryField: String
+
+        authedField: String
+            @aws_auth(cognito_groups: ["Bloggers", "Readers"])
     }
     type Mutation2 {
         additionalMutationField: String
@@ -163,7 +166,10 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');
-    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField', 'authedField'])
+    const authedField = queryType.fields.find(f => f.name.value === 'authedField')
+    expect(authedField.directives.length).toEqual(1)
+    expect(authedField.directives[0].name.value).toEqual('aws_auth')
     const mutationType = getObjectType(parsed, 'Mutation2');
     expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
     const subscriptionType = getObjectType(parsed, 'Subscription2');
