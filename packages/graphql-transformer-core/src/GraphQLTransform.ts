@@ -188,7 +188,7 @@ export default class GraphQLTransform {
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
             (acc: any, t: Transformer) => ({ ...acc, [t.directive.name.value]: true }),
-            { aws_subscribe: true }
+            { aws_subscribe: true, aws_auth: true }
         )
         let allModelDefinitions = [...context.inputDocument.definitions]
         for (const transformer of this.transformers) {
@@ -259,7 +259,7 @@ export default class GraphQLTransform {
     private transformObject(
         transformer: Transformer,
         def: ObjectTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -289,7 +289,7 @@ export default class GraphQLTransform {
         transformer: Transformer,
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         def: FieldDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -320,7 +320,7 @@ export default class GraphQLTransform {
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         field: FieldDefinitionNode,
         arg: InputValueDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of arg.directives) {
@@ -346,7 +346,7 @@ export default class GraphQLTransform {
     private transformInterface(
         transformer: Transformer,
         def: InterfaceTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext) {
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
@@ -374,7 +374,7 @@ export default class GraphQLTransform {
     private transformScalar(
         transformer: Transformer,
         def: ScalarTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -400,7 +400,7 @@ export default class GraphQLTransform {
     private transformUnion(
         transformer: Transformer,
         def: UnionTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -426,7 +426,7 @@ export default class GraphQLTransform {
     private transformEnum(
         transformer: Transformer,
         def: EnumTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -456,7 +456,7 @@ export default class GraphQLTransform {
         transformer: Transformer,
         enm: EnumTypeDefinitionNode,
         def: EnumValueDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -482,7 +482,7 @@ export default class GraphQLTransform {
     private transformInputObject(
         transformer: Transformer,
         def: InputObjectTypeDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
@@ -512,7 +512,7 @@ export default class GraphQLTransform {
         transformer: Transformer,
         input: InputObjectTypeDefinitionNode,
         def: InputValueDefinitionNode,
-        validDirectiveNameMap: { [k: string]: boolean},
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
         for (const dir of def.directives) {
