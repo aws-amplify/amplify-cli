@@ -52,7 +52,7 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify configure project | Updates configuration settings used to setup the project during the init step |
 | amplify add `<category>` | Adds cloud features to your app. |
 | amplify update `<category>` | Updates existing cloud features in your app. |
-| amplify push [--no-gql-override]| Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and override your local AppSync resolvers and templates. |
+| amplify push [--no-gql-override]| Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates. |
 | amplify publish | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (*hosting category is required). |
 | amplify status | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete). |
 | amplify serve | Runs `amplify push`, and then executes the project's start command to test run the client-side application. |
