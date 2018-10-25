@@ -72,8 +72,8 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Tutorials
 
-- [React & React Native tutorial](https://github.com/aws-amplify/docs/blob/master/js/react.md)
-- [GraphQL transform tutorial](https://github.com/aws-amplify/docs/blob/master/js/graphql.md)
+- [React & React Native tutorial](https://aws-amplify.github.io/docs/js/react)
+- [GraphQL transform tutorial](https://aws-amplify.github.io/docs/js/graphql)
 - [Native development with Amplify CLI and AWS AppSync](native_guide.md)
 
 ## Contributing
