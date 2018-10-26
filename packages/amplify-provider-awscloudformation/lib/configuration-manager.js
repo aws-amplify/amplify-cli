@@ -51,7 +51,6 @@ function normalizeInputParams(context) {
     }
   }
   if (inputParams) {
-    console.log(inputParams);
     if (!inputParams.configLevel) {
       inputParams.configLevel = inputParams.config ? 'project' : 'general';
     }

@@ -55,7 +55,7 @@ function getConfiguredAwsCfnClient(context) {
   const { awsConfigInfo } = context.exeInfo;
   process.env.AWS_SDK_LOAD_CONFIG = true;
   if (awsConfigInfo.config.useProfile && awsConfigInfo.config.profileName) {
-    process.env.AWS_PROFILE = awsConfigInfo.profileName;
+    process.env.AWS_PROFILE = awsConfigInfo.config.profileName;
     const credentials = new aws.SharedIniFileCredentials({
       profile: awsConfigInfo.config.profileName,
     });
