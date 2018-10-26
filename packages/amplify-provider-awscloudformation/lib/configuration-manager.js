@@ -155,7 +155,7 @@ async function update(context) {
     await promptForProjectConfigConfirmation(context);
   }
   validateConfig(context);
-  if(awsConfigInfo.configValidated) {
+  if (awsConfigInfo.configValidated) {
     updateProjectConfig(context);
   } else {
     throw new Error('Invalid configuration settings');
