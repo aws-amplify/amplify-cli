@@ -1,7 +1,7 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, InputObjectTypeDefinitionNode,
-    InputValueDefinitionNode
+    InputValueDefinitionNode, NamedTypeNode
 } from 'graphql'
 import GraphQLTransform, { InvalidDirectiveError } from 'graphql-transformer-core'
 import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
@@ -328,6 +328,7 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
     expect(out).toBeDefined()
     expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
     const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    console.log(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
 
     // Post.comments field
     const postType = getObjectType(schemaDoc, 'Post')
@@ -360,6 +361,19 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
     const postConnectionId = postCreateInput.fields.find(f => f.name.value === 'postSingleCommentId')
     expect(postConnectionId).toBeTruthy()
     expect(postConnectionId.type.kind).toEqual(Kind.NON_NULL_TYPE)
+
+    // Check the filter input types
+    const commentFilterInput = getInputType(schemaDoc, ModelResourceIDs.ModelFilterInputTypeName('Comment'))
+    const postFilterInput = getInputType(schemaDoc, ModelResourceIDs.ModelFilterInputTypeName('Post'))
+    const postIdInputField = commentFilterInput.fields.find(f => f.name.value === 'postId')
+    expect(postIdInputField).toBeTruthy()
+    expect((postIdInputField.type as NamedTypeNode).name.value).toEqual('ModelIDFilterInput')
+    const postManyCommentsIdInputField = commentFilterInput.fields.find(f => f.name.value === 'postManyCommentsId')
+    expect(postManyCommentsIdInputField).toBeTruthy()
+    expect((postManyCommentsIdInputField.type as NamedTypeNode).name.value).toEqual('ModelIDFilterInput')
+    const postSingleCommentIdInputField = postFilterInput.fields.find(f => f.name.value === 'postSingleCommentId')
+    expect(postSingleCommentIdInputField).toBeTruthy()
+    expect((postSingleCommentIdInputField.type as NamedTypeNode).name.value).toEqual('ModelIDFilterInput')
 });
 
 test('Test ModelConnectionTransformer with sortField fails if not specified in associated type', () => {

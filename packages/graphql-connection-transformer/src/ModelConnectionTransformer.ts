@@ -19,7 +19,7 @@ import {
     toCamelCase, isNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
-import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
+import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField, updateFilterInputWithConnectionField } from './definitions';
 
 function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
@@ -224,6 +224,13 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.putType(updated)
             }
 
+            const filterInputName = ModelResourceIDs.ModelFilterInputTypeName(parentTypeName)
+            const filterInput = ctx.getType(filterInputName) as InputObjectTypeDefinitionNode
+            if (filterInput) {
+                const updated = updateFilterInputWithConnectionField(filterInput, connectionAttributeName)
+                ctx.putType(updated)
+            }
+
         } else if (leftConnectionIsList) {
             // 4. [] to ?
             // Store foreign key on the related table and wire up a Query resolver.
@@ -265,6 +272,13 @@ export class ModelConnectionTransformer extends Transformer {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
                 ctx.putType(updated)
             }
+
+            const filterInputName = ModelResourceIDs.ModelFilterInputTypeName(relatedTypeName)
+            const filterInput = ctx.getType(filterInputName) as InputObjectTypeDefinitionNode
+            if (filterInput) {
+                const updated = updateFilterInputWithConnectionField(filterInput, connectionAttributeName)
+                ctx.putType(updated)
+            }
         } else {
             // 5. {} to ?
             // Store foreign key on this table and wire up a GetItem resolver.
@@ -296,6 +310,13 @@ export class ModelConnectionTransformer extends Transformer {
             const updateInput = ctx.getType(updateInputName) as InputObjectTypeDefinitionNode
             if (updateInput) {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
+                ctx.putType(updated)
+            }
+
+            const filterInputName = ModelResourceIDs.ModelFilterInputTypeName(parentTypeName)
+            const filterInput = ctx.getType(filterInputName) as InputObjectTypeDefinitionNode
+            if (filterInput) {
+                const updated = updateFilterInputWithConnectionField(filterInput, connectionAttributeName)
                 ctx.putType(updated)
             }
         }
