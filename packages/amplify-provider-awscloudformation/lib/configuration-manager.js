@@ -11,9 +11,9 @@ const systemConfigManager = require('./system-config-manager');
 
 async function init(context) {
   normalizeInputParams(context);
-  context.exeInfo.awsConfigInfo =  {
+  context.exeInfo.awsConfigInfo = {
     configLevel: 'general',
-    config: {}
+    config: {},
   };
   await newUserCheck(context);
   printInfo(context);
@@ -30,52 +30,50 @@ async function configure(context) {
   return carryOutConfigAction(context);
 }
 
-function normalizeInputParams(context){
-  let inputParams; 
-  if(context.exeInfo.inputParams){
-    if(context.exeInfo.inputParams[constants.Label]){
+function normalizeInputParams(context) {
+  let inputParams;
+  if (context.exeInfo.inputParams) {
+    if (context.exeInfo.inputParams[constants.Label]) {
       inputParams = context.exeInfo.inputParams[constants.Label];
-    }else{
-      for(let i = 0; i<constants.Aliases.length; i++){
+    } else {
+      for (let i = 0; i < constants.Aliases.length; i++) {
         const alias = constants.Aliases[i];
-        if(context.exeInfo.inputParams[alias]){
+        if (context.exeInfo.inputParams[alias]) {
           inputParams = context.exeInfo.inputParams[alias];
           break;
         }
       }
     }
   }
-  if(inputParams){
+  if (inputParams) {
     console.log(inputParams);
-    if(!inputParams.configLevel){
-      inputParams.configLevel = inputParams.config ? 'project' : 'general'; 
+    if (!inputParams.configLevel) {
+      inputParams.configLevel = inputParams.config ? 'project' : 'general';
     }
-    if(inputParams.configLevel === 'project'){
-      let errorMessage; 
-      if(!inputParams.config){
+    if (inputParams.configLevel === 'project') {
+      let errorMessage;
+      if (!inputParams.config) {
         errorMessage = 'configLevel set to "project" but project level config is missing.';
-      }else{
-        if(!inputParams.config.useProfile){
+      } else {
+        if (!inputParams.config.useProfile) {
           inputParams.config.useProfile = false;
         }
-        if(inputParams.config.useProfile){
-          if(!inputParams.config.profileName){
+        if (inputParams.config.useProfile) {
+          if (!inputParams.config.profileName) {
             errorMessage = 'project level config set useProfile to true, but profile name is missing.';
           }
-        }else{
-          if(!inputParams.config.accessKeyId ||
+        } else if (!inputParams.config.accessKeyId ||
             !inputParams.config.secretAccessKey ||
-            !inputParams.config.region){
-              errorMessage = 'project level config set useProfile to false, but access key or region is missing.';
-          }
+            !inputParams.config.region) {
+          errorMessage = 'project level config set useProfile to false, but access key or region is missing.';
         }
       }
-      if(errorMessage){
+      if (errorMessage) {
         context.print.error('Error in the command line parameter for awscloudformation configuration.');
         throw new Error(errorMessage);
       }
     }
-    context.exeInfo.inputParams[constants.Label] = inputParams; 
+    context.exeInfo.inputParams[constants.Label] = inputParams;
   }
   console.log(inputParams);
 }
@@ -112,36 +110,36 @@ async function initialize(context) {
 }
 
 function onInitSuccessful(context) {
-  if (context.exeInfo.awsConfigInfo.action === 'init' && 
+  if (context.exeInfo.awsConfigInfo.action === 'init' &&
   context.exeInfo.awsConfigInfo.configLevel === 'project') {
-    createProjectConfig(context);
+    persistProjectConfig(context);
   }
   return context;
 }
 
-function create(context) {
+async function create(context) {
   await setConfiguration(context);
   validateConfig(context);
   if (!context.awsConfigInfo.configValidated) {
     throw new Error('Invalid configuration settings');
-  }else{
-    createProjectConfig(context);
+  } else {
+    persistProjectConfig(context);
   }
   return context;
 }
 
-function update(context) {
+async function update(context) {
   await setConfiguration(context);
   validateConfig(context);
   if (!context.awsConfigInfo.configValidated) {
     throw new Error('Invalid configuration settings');
-  }else{
+  } else {
     updateProjectConfig(context);
   }
   return context;
 }
 
-function remove(context) {
+async function remove(context) {
   await confirmProjectConfigRemoval(context);
   if (context.awsConfigInfo.action !== 'cancel') {
     removeProjectConfig(context);
@@ -159,26 +157,24 @@ function printInfo(context) {
 }
 
 function setProjectConfigAction(context) {
-  if(context.exeInfo.inputParams[constants.Label]){
+  if (context.exeInfo.inputParams[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
-    if (context.exeInfo.awsConfigInfo.configLevel === 'project'){
-      if(inputParams.configLevel === 'project'){
+    if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
+      if (inputParams.configLevel === 'project') {
         context.exeInfo.awsConfigInfo.action = 'update';
-      }else{
+      } else {
         context.exeInfo.awsConfigInfo.action = 'remove';
       }
-    }else{
-      if(inputParams.configLevel === 'project'){
-        context.exeInfo.awsConfigInfo.configLevel = 'project';
-        context.exeInfo.awsConfigInfo.action = 'create';
-      }else{
-        context.exeInfo.awsConfigInfo.configLevel = 'general';
-        context.exeInfo.awsConfigInfo.action = 'none';
-      }
+    } else if (inputParams.configLevel === 'project') {
+      context.exeInfo.awsConfigInfo.configLevel = 'project';
+      context.exeInfo.awsConfigInfo.action = 'create';
+    } else {
+      context.exeInfo.awsConfigInfo.configLevel = 'general';
+      context.exeInfo.awsConfigInfo.action = 'none';
     }
   } else {
     context.exeInfo.awsConfigInfo.action = 'none';
-    context.print.info('For the awscloudformation provider.')
+    context.print.info('For the awscloudformation provider.');
     if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
       const updateOrRemove = {
         type: 'list',
@@ -191,29 +187,28 @@ function setProjectConfigAction(context) {
         .then((answers) => {
           context.exeInfo.awsConfigInfo.action = answers.action;
         });
-    }else{
-      const updateOrRemove = {
-        type: 'confirm',
-        name: 'projectLevelConfig',
-        message: 'Do you want to set the project level configuration',
-        default: true,
-      };
-      return inquirer.prompt(updateOrRemove)
-        .then((answers) => {
-          if(answers.projectLevelConfig){
-            context.exeInfo.awsConfigInfo.configLevel = 'project';
-            context.exeInfo.awsConfigInfo.action = 'create';
-          }else{
-            context.exeInfo.awsConfigInfo.configLevel = 'general';
-            context.exeInfo.awsConfigInfo.action = 'none';
-          }
-        });
     }
+    const updateOrRemove = {
+      type: 'confirm',
+      name: 'projectLevelConfig',
+      message: 'Do you want to set the project level configuration',
+      default: true,
+    };
+    return inquirer.prompt(updateOrRemove)
+      .then((answers) => {
+        if (answers.projectLevelConfig) {
+          context.exeInfo.awsConfigInfo.configLevel = 'project';
+          context.exeInfo.awsConfigInfo.action = 'create';
+        } else {
+          context.exeInfo.awsConfigInfo.configLevel = 'general';
+          context.exeInfo.awsConfigInfo.action = 'none';
+        }
+      });
   }
 }
 
 async function confirmProjectConfigRemoval(context) {
-  if(!context.exeInfo.inputParams.yes){
+  if (!context.exeInfo.inputParams.yes) {
     const removeProjectComfirmation = {
       type: 'confirm',
       name: 'removeProjectConfig',
@@ -228,16 +223,16 @@ async function confirmProjectConfigRemoval(context) {
 
 async function setConfiguration(context) {
   const { awsConfigInfo } = context.exeInfo;
-  if(context.exeInfo.inputParams[constants.Label]){
-    const inputParams = context.exeInfo.inputParams[constants.Label]; 
+  if (context.exeInfo.inputParams[constants.Label]) {
+    const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
-  }else if(awsConfigInfo.configLevel == 'project'){
+  } else if (awsConfigInfo.configLevel === 'project') {
     await promptForConfirmation(context);
   }
   return context;
 }
 
-async function promptForConfirmation(context){
+async function promptForConfirmation(context) {
   const {
     awsConfigInfo,
   } = context;
@@ -331,16 +326,17 @@ function validateConfig(context) {
   return context;
 }
 
-function createProjectConfig(context) {
+function persistProjectConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
-  const awsConfigInfo = {
+
+  const awsInfo = {
     useProfile: awsConfigInfo.useProfile,
   };
 
   if (awsConfigInfo.useProfile) {
-    awsConfigInfo.profileName = awsConfigInfo.config.profileName;
+    awsInfo.profileName = awsConfigInfo.config.profileName;
   } else {
-    const awsConfigInfo = {
+    const awsSecrets = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
       secretAccessKey: awsConfigInfo.config.secretAccessKey,
       region: awsConfigInfo.config.region,
@@ -348,24 +344,24 @@ function createProjectConfig(context) {
     const sharedConfigDirPath =
       path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
     fs.ensureDirSync(sharedConfigDirPath);
-    const configFileName = context.amplify.makeId(10);
-    const awsConfigFilePath = path.join(sharedConfigDirPath, configFileName);
-    const jsonString = JSON.stringify(awsConfigInfo, null, 4);
-    fs.writeFileSync(awsConfigFilePath, jsonString, 'utf8');
+    const awsSecretsFileName = context.amplify.makeId(10);
+    const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
+    const jsonString = JSON.stringify(awsSecrets, null, 4);
+    fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
 
-    awsConfigInfo.awsConfigFilePath = awsConfigFilePath;
+    awsInfo.awsConfigFilePath = awsSecretsFilePath;
   }
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
-  const jsonString = JSON.stringify(awsConfigInfo, null, 4);
-  fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+  const awsInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
+  const jsonString = JSON.stringify(awsInfo, null, 4);
+  fs.writeFileSync(awsInfoFilePath, jsonString, 'utf8');
   return context;
 }
 
 function getCurrentConfig(context) {
-  const  awsConfigInfo = {
+  let awsConfigInfo = {
     configLevel: 'general',
-    config: {}
+    config: {},
   };
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
@@ -386,7 +382,7 @@ function getCurrentConfig(context) {
     } catch (e) {
       awsConfigInfo = {
         configLevel: 'general',
-        config: {}
+        config: {},
       };
       fs.removeSync(configInfoFilePath);
     }
@@ -396,7 +392,7 @@ function getCurrentConfig(context) {
 
 function updateProjectConfig(context) {
   removeProjectConfig(context);
-  createProjectConfig(context);
+  persistProjectConfig(context);
   return context;
 }
 
@@ -426,19 +422,19 @@ async function loadConfiguration(context, awsClient) {
 
 async function newUserCheck(context) {
   const configSource = configScanner.run(context);
-  if(configSource === 'none'){
-    let needToSetupNewUser = true; 
-    if(context.exeInfo.inputParams[constants.Label]){
+  if (configSource === 'none') {
+    let needToSetupNewUser = true;
+    if (context.exeInfo.inputParams[constants.Label]) {
       const inputParams = context.exeInfo.inputParams[constants.Label];
       const inputConfigSufficient = (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
-      if(inputConfigSufficient){
+      if (inputConfigSufficient) {
         needToSetupNewUser = false;
       }
     }
-    if(needToSetupNewUser){
-      if(context.exeInfo.inputParams.yes){
+    if (needToSetupNewUser) {
+      if (context.exeInfo.inputParams.yes) {
         throw new Error('AWS access credentials can not be found.');
-      }else{
+      } else {
         context.print.info('AWS access credentials can not be found.');
         const answer = await inquirer.prompt([{
           type: 'confirm',
