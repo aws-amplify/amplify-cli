@@ -53,7 +53,7 @@ async function confirmConfiguration(context) {
         default: config.ResDir || 'app/src/main/res',
       },
     ];
-    await inquirer.prompt(configurationSettings);
+    const answers = await inquirer.prompt(configurationSettings);
     config.ResDir = answers.ResDir;
   }
 }

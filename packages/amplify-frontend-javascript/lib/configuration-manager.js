@@ -60,7 +60,7 @@ async function confirmConfiguration(context) {
 
 async function confirmFramework(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
-  if(inputParams.framework){
+  if(inputParams && inputParams.framework){
     if(context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework){
       context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
       context.exeInfo.projectConfig[constants.Label].config =
@@ -87,7 +87,7 @@ async function confirmFramework(context) {
 async function confirmFrameworkConfiguration(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
 
-  if(inputParams.config){
+  if(inputParams && inputParams.config){
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
   }else if(!context.exeInfo.inputParams.yes){
 

@@ -21,7 +21,19 @@ JAVASCRIPT="{\
 \"framework\":\"react\",\
 \"config\":$REACTCONFIG\
 }"
+AWSCLOUDFORMATIONPPROJECTCONFIG="{\
+\"useProfile\":\"true\",\
+\"profileName\":\"default\",\
+\"accessKeyId\":\"headlessaccesskeyid\",\
+\"secretAccessKey\":\"headlesssecrectaccesskey\",\
+\"region\":\"us-east-1\"\
+}"
+AWSCLOUDFORMATION="{\
+\"configLevel\":\"project\",\
+\"config\":$AWSCLOUDFORMATIONPPROJECTCONFIG\
+}"
 amplify init \
 --amplify $AMPLIFY \
 --javascript $JAVASCRIPT \
+--aws $AWSCLOUDFORMATION \
 --yes
