@@ -121,8 +121,8 @@ async function initialize(context) {
 }
 
 function onInitSuccessful(context) {
-  if (context.exeInfo.awsConfigInfo.action === 'init' &&
-  context.exeInfo.awsConfigInfo.configLevel === 'project') {
+  const { awsConfigInfo } = context.exeInfo;
+  if (awsConfigInfo.configLevel === 'project') {
     persistProjectConfig(context);
   }
   return context;
@@ -138,7 +138,7 @@ async function create(context) {
   }
 
   validateConfig(context);
-  if (!awsConfigInfo.configValidated) {
+  if (awsConfigInfo.configValidated) {
     persistProjectConfig(context);
   } else {
     throw new Error('Invalid configuration settings');
@@ -164,8 +164,9 @@ async function update(context) {
 }
 
 async function remove(context) {
+  const { awsConfigInfo } = context.exeInfo;
   await confirmProjectConfigRemoval(context);
-  if (context.awsConfigInfo.action !== 'cancel') {
+  if (awsConfigInfo.action !== 'cancel') {
     removeProjectConfig(context);
   }
   return context;
@@ -240,7 +241,7 @@ async function confirmProjectConfigRemoval(context) {
       default: false,
     };
     const asnwer = await inquirer.prompt(removeProjectComfirmation);
-    context.exeInfo.awsConfigInfo.action = asnwer.removeProjectConfig ? 'confirmed-remove' : 'cancel';
+    context.exeInfo.awsConfigInfo.action = asnwer.removeProjectConfig ? 'remove' : 'cancel';
   }
   return context;
 }
@@ -341,10 +342,10 @@ function persistProjectConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
 
   const awsInfo = {
-    useProfile: awsConfigInfo.useProfile,
+    useProfile: awsConfigInfo.config.useProfile,
   };
 
-  if (awsConfigInfo.useProfile) {
+  if (awsConfigInfo.config.useProfile) {
     awsInfo.profileName = awsConfigInfo.config.profileName;
   } else {
     const awsSecrets = {

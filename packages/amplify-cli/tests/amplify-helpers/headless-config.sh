@@ -22,7 +22,7 @@ JAVASCRIPT="{\
 \"config\":$REACTCONFIG\
 }"
 AWSCLOUDFORMATIONPPROJECTCONFIG="{\
-\"useProfile\":\"true\",\
+\"useProfile\":true,\
 \"profileName\":\"default\",\
 \"accessKeyId\":\"headlessaccesskeyid\",\
 \"secretAccessKey\":\"headlesssecrectaccesskey\",\
