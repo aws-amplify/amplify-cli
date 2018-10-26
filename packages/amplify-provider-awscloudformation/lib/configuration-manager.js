@@ -9,11 +9,16 @@ const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
 
+const defaultAWSConfig = {
+  useProfile: true,
+  profileName: 'default',
+};
+
 async function init(context) {
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = {
-    configLevel: 'general',
-    config: {},
+    configLevel: 'project',
+    config: defaultAWSConfig,
   };
   await newUserCheck(context);
   printInfo(context);
@@ -75,7 +80,6 @@ function normalizeInputParams(context) {
     }
     context.exeInfo.inputParams[constants.Label] = inputParams;
   }
-  console.log(inputParams);
 }
 
 
@@ -101,9 +105,17 @@ function carryOutConfigAction(context) {
 }
 
 async function initialize(context) {
-  await setConfiguration(context);
+  const { awsConfigInfo } = context.exeInfo;
+  if (context.exeInfo.inputParams[constants.Label]) {
+    const inputParams = context.exeInfo.inputParams[constants.Label];
+    Object.assign(awsConfigInfo, inputParams);
+  } else if (awsConfigInfo.configLevel === 'project' &&
+          !context.exeInfo.inputParams.yes) {
+    await promptForProjectConfigConfirmation(context);
+  }
+
   validateConfig(context);
-  if (!context.awsConfigInfo.configValidated) {
+  if (!awsConfigInfo.configValidated) {
     throw new Error('Invalid configuration settings');
   }
   return context;
@@ -118,23 +130,36 @@ function onInitSuccessful(context) {
 }
 
 async function create(context) {
-  await setConfiguration(context);
-  validateConfig(context);
-  if (!context.awsConfigInfo.configValidated) {
-    throw new Error('Invalid configuration settings');
+  const { awsConfigInfo } = context.exeInfo;
+  if (context.exeInfo.inputParams[constants.Label]) {
+    const inputParams = context.exeInfo.inputParams[constants.Label];
+    Object.assign(awsConfigInfo, inputParams);
   } else {
+    await promptForProjectConfigConfirmation(context);
+  }
+
+  validateConfig(context);
+  if (!awsConfigInfo.configValidated) {
     persistProjectConfig(context);
+  } else {
+    throw new Error('Invalid configuration settings');
   }
   return context;
 }
 
 async function update(context) {
-  await setConfiguration(context);
-  validateConfig(context);
-  if (!context.awsConfigInfo.configValidated) {
-    throw new Error('Invalid configuration settings');
+  const { awsConfigInfo } = context.exeInfo;
+  if (context.exeInfo.inputParams[constants.Label]) {
+    const inputParams = context.exeInfo.inputParams[constants.Label];
+    Object.assign(awsConfigInfo, inputParams);
   } else {
+    await promptForProjectConfigConfirmation(context);
+  }
+  validateConfig(context);
+  if(awsConfigInfo.configValidated) {
     updateProjectConfig(context);
+  } else {
+    throw new Error('Invalid configuration settings');
   }
   return context;
 }
@@ -156,7 +181,7 @@ function printInfo(context) {
   context.print.info('');
 }
 
-function setProjectConfigAction(context) {
+async function setProjectConfigAction(context) {
   if (context.exeInfo.inputParams[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
     if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
@@ -166,11 +191,12 @@ function setProjectConfigAction(context) {
         context.exeInfo.awsConfigInfo.action = 'remove';
       }
     } else if (inputParams.configLevel === 'project') {
-      context.exeInfo.awsConfigInfo.configLevel = 'project';
       context.exeInfo.awsConfigInfo.action = 'create';
+      context.exeInfo.awsConfigInfo.configLevel = 'project';
+      context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
     } else {
-      context.exeInfo.awsConfigInfo.configLevel = 'general';
       context.exeInfo.awsConfigInfo.action = 'none';
+      context.exeInfo.awsConfigInfo.configLevel = 'general';
     }
   } else {
     context.exeInfo.awsConfigInfo.action = 'none';
@@ -183,28 +209,27 @@ function setProjectConfigAction(context) {
         choices: ['update', 'remove', 'cancel'],
         default: 'update',
       };
-      return inquirer.prompt(updateOrRemove)
-        .then((answers) => {
-          context.exeInfo.awsConfigInfo.action = answers.action;
-        });
+      const answer = await inquirer.prompt(updateOrRemove);
+      context.exeInfo.awsConfigInfo.action = answer.action;
+    } else {
+      const confirmCreate = {
+        type: 'confirm',
+        name: 'setProjectLevelConfig',
+        message: 'Do you want to set the project level configuration',
+        default: true,
+      };
+      const answer = await inquirer.prompt(confirmCreate);
+      if (answer.setProjectLevelConfig) {
+        context.exeInfo.awsConfigInfo.action = 'create';
+        context.exeInfo.awsConfigInfo.configLevel = 'project';
+        context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
+      } else {
+        context.exeInfo.awsConfigInfo.action = 'none';
+        context.exeInfo.awsConfigInfo.configLevel = 'general';
+      }
     }
-    const updateOrRemove = {
-      type: 'confirm',
-      name: 'projectLevelConfig',
-      message: 'Do you want to set the project level configuration',
-      default: true,
-    };
-    return inquirer.prompt(updateOrRemove)
-      .then((answers) => {
-        if (answers.projectLevelConfig) {
-          context.exeInfo.awsConfigInfo.configLevel = 'project';
-          context.exeInfo.awsConfigInfo.action = 'create';
-        } else {
-          context.exeInfo.awsConfigInfo.configLevel = 'general';
-          context.exeInfo.awsConfigInfo.action = 'none';
-        }
-      });
   }
+  return context;
 }
 
 async function confirmProjectConfigRemoval(context) {
@@ -221,21 +246,8 @@ async function confirmProjectConfigRemoval(context) {
   return context;
 }
 
-async function setConfiguration(context) {
+async function promptForProjectConfigConfirmation(context) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams[constants.Label]) {
-    const inputParams = context.exeInfo.inputParams[constants.Label];
-    Object.assign(awsConfigInfo, inputParams);
-  } else if (awsConfigInfo.configLevel === 'project') {
-    await promptForConfirmation(context);
-  }
-  return context;
-}
-
-async function promptForConfirmation(context) {
-  const {
-    awsConfigInfo,
-  } = context;
 
   let availableProfiles = [];
   const systemConfig = systemConfigManager.getFullConfig();
@@ -312,7 +324,7 @@ async function promptForConfirmation(context) {
 function validateConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
-  if (awsConfigInfo.useProfile) {
+  if (awsConfigInfo.config.useProfile) {
     if (awsConfigInfo.config.profileName && awsConfigInfo.config.profileName.length > 0) {
       awsConfigInfo.configValidated = true;
     }
