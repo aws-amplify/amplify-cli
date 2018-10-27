@@ -7,7 +7,7 @@ module.exports = {
     
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule = 
-      require(frontendPlugins[context.exeInfo.projectConfig.frontendHandler]);
+      require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     frontendHandlerModule.run(context);
   },
 };

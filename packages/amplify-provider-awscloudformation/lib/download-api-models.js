@@ -7,7 +7,7 @@ function downloadAPIModels(context, allResources) {
   const { amplify } = context;
   const projectConfig = amplify.getProjectConfig();
 
-  const framework = projectConfig.frontendHandler;
+  const framework = projectConfig.frontend;
 
   if (framework === 'javascript') {
     return;

@@ -5,10 +5,10 @@ const { getResourceOutputs } = require('./get-resource-outputs');
 function onCategoryOutputsChange(context) {
   const projectConfigFilePath = pathManager.getProjectConfigFilePath();
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-  if (projectConfig.frontendHandler) {
+  if (projectConfig.frontend) {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule = 
-      require(frontendPlugins[context.exeInfo.projectConfig.frontendHandler]);
+      require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs());
   }
 }

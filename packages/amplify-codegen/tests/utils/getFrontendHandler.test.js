@@ -3,7 +3,7 @@ const getFrontendHandler = require('../../src/utils/getFrontEndHandler');
 describe('getFrontendHandler', () => {
   const mockFrontEndHandler = 'someRandomHandler';
   const mockProjectConfig = {
-    frontendHandler: {
+    frontend: {
       [mockFrontEndHandler]: '/roo/amplify/package/node_modules/',
     },
   };

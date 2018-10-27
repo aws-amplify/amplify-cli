@@ -26,8 +26,8 @@ async function run(context, distributionDirPath) {
 }
 
 async function getS3Client(context) {
-  const { projectConfig } = context.exeInfo;
-  const provider = require(projectConfig.providers[providerName]);
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
   const aws = await provider.getConfiguredAWSClient(context);
   return new aws.S3();
 }
