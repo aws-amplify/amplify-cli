@@ -17,17 +17,17 @@ async function configure(context) {
   return context;
 }
 
-function normalizeInputParams(context){
-  let inputParams; 
-  if(context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]){
+function normalizeInputParams(context) {
+  let inputParams;
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
     inputParams = context.exeInfo.inputParams[constants.Label];
   }
-  if(inputParams && inputParams.config){
-    if(!inputParams.config.ResDir){
-      throw new Error('The command line parameter for android frontend configuration is incomplete.')
+  if (inputParams && inputParams.config) {
+    if (!inputParams.config.ResDir) {
+      throw new Error('The command line parameter for android frontend configuration is incomplete.');
     }
   }
-  context.exeInfo.inputParams[constants.Label] = inputParams; 
+  context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
 async function confirmConfiguration(context) {
@@ -39,12 +39,12 @@ async function confirmConfiguration(context) {
   }
 
   const inputParams = context.exeInfo.inputParams[constants.Label];
-  if(inputParams){
+  if (inputParams) {
     Object.assign(context.exeInfo.projectConfig[constants.Label], inputParams);
-  }else if(!context.exeInfo.inputParams.yes){
+  } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
     const { config } = context.exeInfo.projectConfig[constants.Label];
-  
+
     const configurationSettings = [
       {
         type: 'input',

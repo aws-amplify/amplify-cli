@@ -29,28 +29,28 @@ async function configure(context) {
   await confirmConfiguration(context);
 }
 
-function normalizeInputParams(context){
-  let inputParams; 
-  if(context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]){
+function normalizeInputParams(context) {
+  let inputParams;
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
     inputParams = context.exeInfo.inputParams[constants.Label];
   }
-  if(inputParams && inputParams.framework){
-    if(!Object.keys(frameworkConfigMapping).includes(inputParams.framework.toLowerCase())){
+  if (inputParams && inputParams.framework) {
+    if (!Object.keys(frameworkConfigMapping).includes(inputParams.framework.toLowerCase())) {
       context.print.warning(`Unsupported javascript framework: ${inputParams.framework}`);
       inputParams.framework = 'none';
-    }else{
+    } else {
       inputParams.framework = inputParams.framework.toLowerCase();
     }
   }
-  if(inputParams && inputParams.config){
-    if(!inputParams.config.SourceDir ||
+  if (inputParams && inputParams.config) {
+    if (!inputParams.config.SourceDir ||
        !inputParams.config.DistributionDir ||
        !inputParams.config.BuildCommand ||
-       !inputParams.config.StartCommand ){
-      throw new Error('The command line parameter for javascript frontend configuration is incomplete.')
+       !inputParams.config.StartCommand) {
+      throw new Error('The command line parameter for javascript frontend configuration is incomplete.');
     }
   }
-  context.exeInfo.inputParams[constants.Label] = inputParams; 
+  context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
 async function confirmConfiguration(context) {
@@ -60,13 +60,13 @@ async function confirmConfiguration(context) {
 
 async function confirmFramework(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
-  if(inputParams && inputParams.framework){
-    if(context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework){
+  if (inputParams && inputParams.framework) {
+    if (context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
       context.exeInfo.projectConfig[constants.Label].config =
           frameworkConfigMapping[inputParams.framework];
     }
-  }else if(!context.exeInfo.inputParams.yes){
+  } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
     const frameworkComfirmation = {
       type: 'list',
@@ -78,7 +78,7 @@ async function confirmFramework(context) {
     const answers = await inquirer.prompt(frameworkComfirmation);
     if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-      context.exeInfo.projectConfig[constants.Label].config = 
+      context.exeInfo.projectConfig[constants.Label].config =
           frameworkConfigMapping[answers.framework];
     }
   }
@@ -87,10 +87,9 @@ async function confirmFramework(context) {
 async function confirmFrameworkConfiguration(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
 
-  if(inputParams && inputParams.config){
+  if (inputParams && inputParams.config) {
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
-  }else if(!context.exeInfo.inputParams.yes){
-
+  } else if (!context.exeInfo.inputParams.yes) {
     if (!context.exeInfo.projectConfig[constants.Label].config) {
       context.exeInfo.projectConfig[constants.Label].config =
           frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];

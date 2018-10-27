@@ -7,7 +7,7 @@ function onCategoryOutputsChange(context) {
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
   if (projectConfig.frontend) {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = 
+    const frontendHandlerModule =
       require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs());
   }

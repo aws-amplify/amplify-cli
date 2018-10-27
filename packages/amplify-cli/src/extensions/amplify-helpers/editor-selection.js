@@ -49,9 +49,10 @@ async function editorSelection(defaultEditor) {
 }
 
 function normalizeEditorCode(editorCode) {
-  if(editorCode){
+  if (editorCode) {
     editorCode = editorCode.toLowerCase();
-    editorCode = editors.findIndex(editor => editor.value === editorCode) > -1 ? editorCode : undefined;
+    editorCode = editors.findIndex(editor => editor.value === editorCode) > -1 ?
+      editorCode : undefined;
   }
   return editorCode;
 }

@@ -26,11 +26,12 @@ async function run(context) {
 
 async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   let frontend;
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.frontend) {
-    frontend = normalizeFrontendHandlerName(context.exeInfo.inputParams.amplify.frontend, frontendPlugins);
+  const { inputParams } = context.exeInfo;
+  if (inputParams.amplify && inputParams.amplify.frontend) {
+    frontend = normalizeFrontendHandlerName(inputParams.amplify.frontend, frontendPlugins);
   }
 
-  if (!frontend && context.exeInfo.inputParams.yes) {
+  if (!frontend && inputParams.yes) {
     frontend = 'javascript';
   }
 

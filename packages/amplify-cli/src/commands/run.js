@@ -4,9 +4,9 @@ module.exports = {
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
     await context.amplify.pushResources(context);
-    
+
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = 
+    const frontendHandlerModule =
       require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     frontendHandlerModule.run(context);
   },

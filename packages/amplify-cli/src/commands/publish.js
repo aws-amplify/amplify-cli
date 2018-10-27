@@ -15,7 +15,7 @@ module.exports = {
     await context.amplify.pushResources(context);
 
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = 
+    const frontendHandlerModule =
       require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     frontendHandlerModule.publish(context);
   },

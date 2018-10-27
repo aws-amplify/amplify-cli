@@ -21,39 +21,40 @@ async function run(context) {
       onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(context));
     }
   });
-  
+
   await sequential(configTasks);
   await sequential(initializationTasks);
   await sequential(onInitSuccessfulTasks);
-  
+
   return context;
 }
 
 async function configureProviders(context, providerPlugins, currentProviders) {
   let selectedProviders = [];
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.providers) {
-    context.exeInfo.inputParams.amplify.providers.forEach((provider) => {
-      provder = normalizeProviderName(provider, providerPlugins);
-      if (provder) {
-        selectedProviders.push(provder);
+  const { inputParams } = context.exeInfo;
+  if (inputParams.amplify && inputParams.amplify.providers) {
+    inputParams.amplify.providers.forEach((provider) => {
+      provider = normalizeProviderName(provider, providerPlugins);
+      if (provider) {
+        selectedProviders.push(provider);
       }
     });
   }
   if (selectedProviders.length === 0) {
     const providerPluginList = Object.keys(providerPlugins);
-    if (context.exeInfo.inputParams.yes || providerPluginList.length === 1) {
+    if (inputParams.yes || providerPluginList.length === 1) {
       context.print.info(`Using default provider ${providerPluginList[0]}`);
       selectedProviders.push(providerPluginList[0]);
     } else {
       const selectProviders = {
         type: 'checkbox',
-        name: 'selectedProviders',
+        name: 'userSelectedProviders',
         message: 'Select the backend providers.',
         choices: providerPluginList,
         default: currentProviders,
       };
       const answer = await inquirer.prompt(selectProviders);
-      selectedProviders = answer.selectedProviders;
+      selectedProviders = answer.userSelectedProviders;
     }
   }
   return selectedProviders;

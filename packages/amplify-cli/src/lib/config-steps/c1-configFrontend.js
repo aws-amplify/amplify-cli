@@ -4,7 +4,7 @@ const { getResourceOutputs } = require('../../extensions/amplify-helpers/get-res
 
 async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
-  let { frontend } = context.exeInfo.projectConfig;
+  const { frontend } = context.exeInfo.projectConfig;
 
   const selectedFrontend = await configreFrontendHandler(context, frontendPlugins, frontend);
 
@@ -14,7 +14,7 @@ async function run(context) {
     await frontendModule.init(context)
       .then(() => frontendModule.createFrontendConfigs(context, getResourceOutputs()));
     context.exeInfo.projectConfig.frontend = selectedFrontend;
-  }else{
+  } else {
     const frontendModule = require(frontendPlugins[selectedFrontend]);
     await frontendModule.configure(context);
   }
