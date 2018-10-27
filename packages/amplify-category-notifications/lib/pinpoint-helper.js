@@ -214,8 +214,8 @@ function console(context) {
 }
 
 async function getPinpointClient(context) {
-  const { projectConfig } = context.exeInfo;
-  const provider = require(projectConfig.providers[providerName]);
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
   const aws = await provider.getConfiguredAWSClient(context);
   aws.config.update({ region: 'us-east-1' });
   return new aws.Pinpoint();
