@@ -22,7 +22,7 @@ JAVASCRIPT="{\
 \"config\":$REACTCONFIG\
 }"
 AWSCLOUDFORMATIONPPROJECTCONFIG="{\
-\"useProfile\":true,\
+\"useProfile\":false,\
 \"profileName\":\"default\",\
 \"accessKeyId\":\"headlessaccesskeyid\",\
 \"secretAccessKey\":\"headlesssecrectaccesskey\",\
@@ -35,5 +35,4 @@ AWSCLOUDFORMATION="{\
 amplify configure project \
 --amplify $AMPLIFY \
 --javascript $JAVASCRIPT \
---awscloudformation $AWSCLOUDFORMATION \
---yes
+--awscloudformation $AWSCLOUDFORMATION

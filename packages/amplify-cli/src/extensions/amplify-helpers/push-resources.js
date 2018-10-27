@@ -1,6 +1,7 @@
 const { getProjectConfig } = require('./get-project-config');
 const { showResourceTable } = require('./resource-status');
 const { onCategoryOutputsChange } = require('./on-category-outputs-change');
+const { getProviderPlugins } = require('./get-provider-plugins');
 
 async function pushResources(context, category, resourceName) {
   await showResourceTable(category, resourceName);
@@ -11,8 +12,9 @@ async function pushResources(context, category, resourceName) {
         const { providers } = getProjectConfig();
         const providerPromises = [];
 
-        Object.keys(providers).forEach((providerName) => {
-          const pluginModule = require(providers[providerName]);
+        const providerPlugins = getProviderPlugins(context);
+        providers.forEach((providerName) => {
+          const pluginModule = require(providerPlugins[providerName]);
           providerPromises.push(pluginModule.pushResources(context, category, resourceName));
         });
 
