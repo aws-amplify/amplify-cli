@@ -8,7 +8,7 @@ function onCategoryOutputsChange(context) {
   if (projectConfig.frontend) {
     const frontendPlugins = context.amplify.getFrontendPlugins(context);
     const frontendHandlerModule =
-      require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+      require(frontendPlugins[projectConfig.frontend]);
     frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs());
   }
 }

@@ -6,8 +6,11 @@ const constants = require('./constants');
 
 async function init(context) {
   normalizeInputParams(context);
+  const framework = guessFramework(context.exeInfo.projectConfig.projectPath);
+  const config = frameworkConfigMapping[framework];
   context.exeInfo.projectConfig[constants.Label] = {
-    framework: guessFramework(context.exeInfo.projectConfig.projectPath),
+    framework,
+    config,
   };
   await confirmConfiguration(context);
 }
@@ -21,10 +24,12 @@ async function configure(context) {
   if (!context.exeInfo.projectConfig[constants.Label]) {
     context.exeInfo.projectConfig[constants.Label] = {};
   }
-
-  if (!context.exeInfo.projectConfig[constants.Label].framework) {
-    context.exeInfo.projectConfig[constants.Label].framework =
-            guessFramework(context.exeInfo.projectConfig.projectPath);
+  const currentCongiuration = context.exeInfo.projectConfig[constants.Label];
+  if (!currentCongiuration.framework) {
+    currentCongiuration.framework = guessFramework(context.exeInfo.projectConfig.projectPath);
+  }
+  if (!currentCongiuration.config) {
+    currentCongiuration.config = frameworkConfigMapping[currentCongiuration.framework];
   }
   await confirmConfiguration(context);
 }
@@ -86,7 +91,6 @@ async function confirmFramework(context) {
 
 async function confirmFrameworkConfiguration(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
-
   if (inputParams && inputParams.config) {
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
   } else if (!context.exeInfo.inputParams.yes) {

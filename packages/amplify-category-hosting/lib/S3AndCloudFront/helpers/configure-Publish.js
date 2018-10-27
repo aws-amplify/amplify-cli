@@ -11,12 +11,14 @@ async function configure(context) {
   let publishIgnore;
 
   if (fs.existsSync(amplifyRCFilePath)) {
-    amplifyRC = JSON.parse(fs.readFileSync(amplifyRCFilePath, 'utf8'));
-    publishIgnore = amplifyRC[PublishIgnoreRCLabel];
+    try {
+      amplifyRC = require(amplifyRCFilePath);
+    } catch (e) {
+      amplifyRC = {};
+    }
   }
 
-  amplifyRC = amplifyRC || {};
-  publishIgnore = publishIgnore || [];
+  publishIgnore = amplifyRC[PublishIgnoreRCLabel] || [];
 
   publishIgnore = publishIgnore
     .map(ignore => ignore.trim())
@@ -118,8 +120,12 @@ function getIgnore(context) {
   let result;
   const amplifyRCFilePath = context.amplify.pathManager.getAmplifyRcFilePath();
   if (fs.existsSync(amplifyRCFilePath)) {
-    const amplifyRC = JSON.parse(fs.readFileSync(amplifyRCFilePath, 'utf8'));
-    result = amplifyRC[PublishIgnoreRCLabel];
+    try {
+      const amplifyRC = require(amplifyRCFilePath);
+      result = amplifyRC[PublishIgnoreRCLabel];
+    } catch (e) {
+      result = undefined;
+    }
   }
   return result;
 }
