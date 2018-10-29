@@ -3,7 +3,7 @@ import {
     DefinitionNode, Kind, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode
 } from 'graphql'
-import GraphQLTransform from 'graphql-transformer-core'
+import GraphQLTransform, { InvalidDirectiveError } from 'graphql-transformer-core'
 import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer'
@@ -384,6 +384,128 @@ test('Test ModelConnectionTransformer with sortField fails if not specified in a
     })
     expect(() => { transformer.transform(validSchema) }).toThrowError()
 });
+
+test('Test ModelConnectionTransformer throws with invalid key fields', () => {
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const invalidSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: [String]
+    }
+    `
+    expect(() => transformer.transform(invalidSchema)).toThrow();
+
+    const invalidSchema2 = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: [String]
+
+        post: Post @connection(name: "PostComments", keyField: "postId")
+    }
+    `
+    expect(() => transformer.transform(invalidSchema2)).toThrow();
+
+    const invalidSchema3 = `
+    type Post @model {
+        id: ID!
+        title: String!
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: [String]
+
+        post: Post @connection(keyField: "postId")
+    }
+    `
+    expect(() => transformer.transform(invalidSchema3)).toThrow();
+})
+
+test('Test ModelConnectionTransformer does not throw with valid key fields', () => {
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new AppSyncTransformer(),
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: String
+    }
+    `
+    expect(() => transformer.transform(validSchema)).toBeTruthy();
+
+    const validSchema2 = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: ID
+
+        post: Post @connection(name: "PostComments", keyField: "postId")
+    }
+    `
+    expect(() => transformer.transform(validSchema2)).toBeTruthy();
+
+    const validSchema3 = `
+    type Post @model {
+        id: ID!
+        title: String!
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+
+        # Key fields must be String or ID.
+        postId: String
+
+        post: Post @connection(keyField: "postId")
+    }
+    `
+    expect(() => transformer.transform(validSchema3)).toBeTruthy();
+})
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {

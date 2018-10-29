@@ -247,3 +247,38 @@ test('Test queryPost query with sortField', async () => {
         expect(e).toBeUndefined()
     }
 })
+
+test('Test create comment without a post and then querying the comment.', async () => {
+    try {
+        const createCommentResponse1 = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input:
+                { content: "${comment1}" }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse1.data.createComment.id).toBeDefined()
+        expect(createCommentResponse1.data.createComment.content).toEqual(comment1)
+        expect(createCommentResponse1.data.createComment.post).toBeNull()
+
+        const queryResponseDesc = await GRAPHQL_CLIENT.query(`query {
+            getComment(id: "${createCommentResponse1.data.createComment.id}") {
+                id
+                content
+                post {
+                    id
+                }
+            }
+        }`, {})
+        expect(queryResponseDesc.data.getComment).toBeDefined()
+        expect(queryResponseDesc.data.getComment.post).toBeNull()
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
