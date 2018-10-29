@@ -93,8 +93,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.deleteStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -188,6 +188,64 @@ test('Test updatePost mutation', async () => {
     }
 })
 
+test('Test createPost and updatePost mutation with a client generated id.', async () => {
+    try {
+        const clientId = 'a-client-side-generated-id';
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { id: "${clientId}" title: "Test Update" }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`, {})
+        console.log(JSON.stringify(createResponse, null, 4))
+        expect(createResponse.data.createPost.id).toEqual(clientId)
+        expect(createResponse.data.createPost.title).toEqual('Test Update')
+        const updateResponse = await GRAPHQL_CLIENT.query(`mutation {
+            updatePost(input: { id: "${clientId}", title: "Bye, World!" }) {
+                id
+                title
+            }
+        }`, {})
+        console.log(JSON.stringify(updateResponse, null, 4))
+        expect(updateResponse.data.updatePost.id).toEqual(clientId)
+        expect(updateResponse.data.updatePost.title).toEqual('Bye, World!')
+        const getResponse = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${clientId}") {
+                id
+                title
+            }
+        }`, {})
+        console.log(JSON.stringify(getResponse, null, 4))
+        expect(getResponse.data.getPost.id).toEqual(clientId)
+        expect(getResponse.data.getPost.title).toEqual('Bye, World!')
+
+        const deleteResponse = await GRAPHQL_CLIENT.query(`mutation {
+            deletePost(input: { id: "${clientId}" }) {
+                id
+                title
+            }
+        }`, {})
+        console.log(JSON.stringify(deleteResponse, null, 4))
+        expect(deleteResponse.data.deletePost.id).toEqual(clientId)
+        expect(deleteResponse.data.deletePost.title).toEqual('Bye, World!')
+
+        const getResponse2 = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${clientId}") {
+                id
+                title
+            }
+        }`, {})
+        console.log(JSON.stringify(getResponse2, null, 4))
+        expect(getResponse2.data.getPost).toBeNull()
+    } catch (e) {
+        console.log(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
 test('Test deletePost mutation', async () => {
     try {
         const createResponse = await GRAPHQL_CLIENT.query(`mutation {
@@ -234,7 +292,7 @@ test('Test getPost query', async () => {
                 updatedAt
             }
         }`, {})
-        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.id).toBeTruthy()
         expect(createResponse.data.createPost.title).toEqual('Test Get')
         const getResponse = await GRAPHQL_CLIENT.query(`query {
             getPost(id: "${createResponse.data.createPost.id}") {
