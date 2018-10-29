@@ -10,9 +10,9 @@ async function pushResources(context, category, resourceName) {
     .then((answer) => {
       if (answer) {
         const { providers } = getProjectConfig();
+        const providerPlugins = getProviderPlugins(context);
         const providerPromises = [];
 
-        const providerPlugins = getProviderPlugins(context);
         providers.forEach((providerName) => {
           const pluginModule = require(providerPlugins[providerName]);
           providerPromises.push(pluginModule.pushResources(context, category, resourceName));
