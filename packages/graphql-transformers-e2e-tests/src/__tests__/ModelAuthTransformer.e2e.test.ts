@@ -194,7 +194,7 @@ async function deleteBucket(name: string) {
     })
 }
 
-const TMP_ROOT = '/tmp/graphql_transform_tests/'
+const TMP_ROOT = '/tmp/model_auth_transform_tests/'
 
 const ROOT_KEY = ''
 
