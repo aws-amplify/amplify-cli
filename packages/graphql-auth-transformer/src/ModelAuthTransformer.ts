@@ -71,7 +71,7 @@ export class ModelAuthTransformer extends Transformer {
             input AuthRule {
                 allow: AuthStrategy!
                 ownerField: String # defaults to "owner"
-                identityField: String # defaults to "username"
+                identityField: String # defaults to "cognito:username"
                 groupsField: String
                 groups: [String]
                 queries: [ModelQuery]
