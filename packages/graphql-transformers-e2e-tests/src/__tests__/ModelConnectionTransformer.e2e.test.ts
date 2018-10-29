@@ -143,27 +143,6 @@ test('Test connection queries', async () => {
         const items = queryResponse.data.getPost.comments.items
         expect(items.length).toEqual(1)
         expect(items[0].id).toEqual(createCommentResponse.data.createComment.id)
-
-        const queryWithConnectionFilterResponse = await GRAPHQL_CLIENT.query(`query {
-            getPost(id: "${createResponse.data.createPost.id}") {
-                id
-                title
-                comments(
-                    filter: { postId: { eq: "${createResponse.data.createPost.id}" }},
-                    limit: 100
-                ) {
-                    items {
-                        id
-                        content
-                    }
-                }
-            }
-        }`, {})
-        console.log(JSON.stringify(queryWithConnectionFilterResponse, null, 4))
-        expect(queryWithConnectionFilterResponse.data.getPost).toBeDefined()
-        const resItems = queryWithConnectionFilterResponse.data.getPost.comments.items
-        expect(resItems.length).toEqual(1)
-        expect(resItems[0].id).toEqual(createCommentResponse.data.createComment.id)
     } catch (e) {
         console.error(e)
         // fail
