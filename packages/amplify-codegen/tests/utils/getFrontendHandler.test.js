@@ -3,9 +3,7 @@ const getFrontendHandler = require('../../src/utils/getFrontEndHandler');
 describe('getFrontendHandler', () => {
   const mockFrontEndHandler = 'someRandomHandler';
   const mockProjectConfig = {
-    frontend: {
-      [mockFrontEndHandler]: '/roo/amplify/package/node_modules/',
-    },
+    frontend: 'someRandomHandler',
   };
   const mockGetProjectConfig = jest.fn();
   const mockContext = {
