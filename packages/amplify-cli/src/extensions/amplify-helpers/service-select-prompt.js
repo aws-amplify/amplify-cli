@@ -1,9 +1,9 @@
 const inquirer = require('inquirer');
 const { getProjectConfig } = require('./get-project-config');
-const { getProviderPlugins } =  require('./get-provider-plugins');
+const { getProviderPlugins } = require('./get-provider-plugins');
 
 function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
-  const providerPlugins = getProviderPlugins(context); 
+  const providerPlugins = getProviderPlugins(context);
 
   const filteredServices = [];
 
