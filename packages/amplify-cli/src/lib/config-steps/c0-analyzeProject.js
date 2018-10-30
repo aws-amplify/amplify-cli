@@ -5,9 +5,6 @@ const { normalizeEditorCode, editorSelection } =
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 
 async function run(context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  Object.assign(context.exeInfo, projectDetails);
-
   await configureProjectName(context);
   await configureEditor(context);
 
