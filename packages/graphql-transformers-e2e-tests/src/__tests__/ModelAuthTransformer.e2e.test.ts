@@ -194,7 +194,7 @@ async function deleteBucket(name: string) {
     })
 }
 
-const TMP_ROOT = '/tmp/graphql_transform_tests/'
+const TMP_ROOT = '/tmp/model_auth_transform_tests/'
 
 const ROOT_KEY = ''
 
@@ -254,8 +254,8 @@ beforeAll(async () => {
     }
     type AllThree
         @auth(rules: [
-            {allow: owner},
-            {allow: owner, ownerField: "editors"},
+            {allow: owner, identityField: "username" },
+            {allow: owner, ownerField: "editors", identityField: "cognito:username" },
             {allow: groups, groups: ["Admin"]},
             {allow: groups, groups: ["Execs"]},
             {allow: groups, groupsField: "groups"},
@@ -268,6 +268,12 @@ beforeAll(async () => {
         editors: [String]
         groups: [String]
         alternativeGroup: String
+    }
+    # The owner should always start with https://cognito-idp
+    type TestIdentity @model @auth(rules: [{ allow: owner, identityField: "iss" }]) {
+        id: ID!
+        title: String!
+        owner: String
     }
     `
     const transformer = new GraphQLTransform({
@@ -2582,6 +2588,94 @@ test(`Test updateAllThree and deleteAllThree as a member of the alternative grou
         `)
         console.log(JSON.stringify(deleteReq, null, 4))
         expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+test(`Test createTestIdentity as admin.`, async () => {
+    try {
+        const ownedBy2 = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createTestIdentity(input: {
+                title: "Test title"
+            }) {
+                id
+                title
+                owner
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedBy2, null, 4))
+        expect(ownedBy2.data.createTestIdentity).toBeTruthy()
+        expect(ownedBy2.data.createTestIdentity.title).toEqual("Test title")
+        expect(ownedBy2.data.createTestIdentity.owner.slice(0, 19)).toEqual("https://cognito-idp")
+
+        // user 2 should be able to update because they share the same issuer.
+        const update = await GRAPHQL_CLIENT_3.query(`
+        mutation {
+            updateTestIdentity(input: {
+                id: "${ownedBy2.data.createTestIdentity.id}",
+                title: "Test title update"
+            }) {
+                id
+                title
+                owner
+            }
+        }
+        `)
+        console.log(JSON.stringify(update, null, 4))
+        expect(update.data.updateTestIdentity).toBeTruthy()
+        expect(update.data.updateTestIdentity.title).toEqual("Test title update")
+        expect(update.data.updateTestIdentity.owner.slice(0, 19)).toEqual("https://cognito-idp")
+
+        // user 2 should be able to get because they share the same issuer.
+        const getReq = await GRAPHQL_CLIENT_3.query(`
+        query {
+            getTestIdentity(id: "${ownedBy2.data.createTestIdentity.id}") {
+                id
+                title
+                owner
+            }
+        }
+        `)
+        console.log(JSON.stringify(getReq, null, 4))
+        expect(getReq.data.getTestIdentity).toBeTruthy()
+        expect(getReq.data.getTestIdentity.title).toEqual("Test title update")
+        expect(getReq.data.getTestIdentity.owner.slice(0, 19)).toEqual("https://cognito-idp")
+
+        const listResponse = await GRAPHQL_CLIENT_3.query(`query {
+            listTestIdentitys(filter: { title: { eq: "Test title update" } }, limit: 100) {
+                items {
+                    id
+                    title
+                    owner
+                }
+            }
+        }`, {})
+        const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id)
+        console.log(JSON.stringify(listResponse, null, 4))
+        expect(relevantPost).toBeTruthy()
+        expect(relevantPost.title).toEqual("Test title update")
+        expect(relevantPost.owner.slice(0, 19)).toEqual("https://cognito-idp")
+
+        // user 2 should be able to delete because they share the same issuer.
+        const delReq = await GRAPHQL_CLIENT_3.query(`
+        mutation {
+            deleteTestIdentity(input: {
+                id: "${ownedBy2.data.createTestIdentity.id}"
+            }) {
+                id
+                title
+                owner
+            }
+        }
+        `)
+        console.log(JSON.stringify(delReq, null, 4))
+        expect(delReq.data.deleteTestIdentity).toBeTruthy()
+        expect(delReq.data.deleteTestIdentity.title).toEqual("Test title update")
+        expect(delReq.data.deleteTestIdentity.owner.slice(0, 19)).toEqual("https://cognito-idp")
     } catch (e) {
         console.error(e)
         expect(e).toBeUndefined();

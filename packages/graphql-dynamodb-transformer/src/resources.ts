@@ -202,7 +202,7 @@ export class ResourceFactory {
                 AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(tableId, 'Arn'))),
                 TableName: Fn.Ref(tableId)
             }
-        })
+        }).dependsOn(tableId).dependsOn(iamRoleLogicalID)
     }
 
     /**
@@ -223,7 +223,7 @@ export class ResourceFactory {
                     qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
                         key: obj({
-                            id: obj({ S: str(`$util.autoId()`) })
+                            id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`)
                         }),
                         attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
                         condition: obj({

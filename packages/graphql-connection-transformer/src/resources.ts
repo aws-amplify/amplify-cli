@@ -7,7 +7,7 @@ import {
     ref, obj, set, nul,
     ifElse, compoundExpression, bool, equals, iff, raw
 } from 'graphql-mapping-template'
-import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS } from 'graphql-transformer-common'
+import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 export class ResourceFactory {
@@ -106,7 +106,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
                     key: obj({
-                        id: ref(`util.dynamodb.toDynamoDBJson($ctx.source.${connectionAttribute})`)
+                        id: ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
                     })
                 })
             ),

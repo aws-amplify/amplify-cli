@@ -25,6 +25,22 @@ function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
 }
 
+function validateKeyField(field: FieldDefinitionNode): void {
+    if (!field) {
+        return
+    }
+    const baseType = getBaseType(field.type);
+    const isAList = isListType(field.type)
+    // The only valid key fields are single String and ID fields.
+    if (
+        (baseType === 'ID' || baseType === 'String') &&
+        (!isAList)
+    ) {
+        return;
+    }
+    throw new InvalidDirectiveError(`If you define a field and specify it as a 'keyField', it must be of type 'ID' or 'String'.`)
+}
+
 /**
  * The @connection transform.
  *
@@ -145,6 +161,10 @@ export class ModelConnectionTransformer extends Transformer {
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
             }
+            // Validate the provided key field is legit.
+            const existingKeyField = relatedType.fields.find(f => f.name.value === connectionAttributeName)
+            validateKeyField(existingKeyField);
+
             const queryResolver = this.resources.makeQueryConnectionResolver(
                 parentTypeName,
                 fieldName,
@@ -171,6 +191,10 @@ export class ModelConnectionTransformer extends Transformer {
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
+            // Validate the provided key field is legit.
+            const existingKeyField = parent.fields.find(f => f.name.value === connectionAttributeName)
+            validateKeyField(existingKeyField);
+
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(parentTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
             const sortField = associatedSortField ? { name: associatedSortFieldName, type: sortType } : null
@@ -208,6 +232,10 @@ export class ModelConnectionTransformer extends Transformer {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
 
+            // Validate the provided key field is legit.
+            const existingKeyField = relatedType.fields.find(f => f.name.value === connectionAttributeName)
+            validateKeyField(existingKeyField);
+
             const tableLogicalId = ModelResourceIDs.ModelTableResourceID(relatedTypeName)
             const table = ctx.getResource(tableLogicalId) as Table
             const updated = this.resources.updateTableForConnection(table, connectionName, connectionAttributeName)
@@ -244,6 +272,11 @@ export class ModelConnectionTransformer extends Transformer {
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
+
+            // Validate the provided key field is legit.
+            const existingKeyField = parent.fields.find(f => f.name.value === connectionAttributeName)
+            validateKeyField(existingKeyField);
+
             const getResolver = this.resources.makeGetItemConnectionResolver(
                 parentTypeName,
                 fieldName,

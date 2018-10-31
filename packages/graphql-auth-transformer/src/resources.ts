@@ -22,6 +22,10 @@ import {
 
 const NONE_VALUE = '___xamznone____'
 
+function replaceIfUsername(identityField: string): string {
+    return (identityField === 'username') ? 'cognito:username' : identityField;
+}
+
 export class ResourceFactory {
 
     public makeParams() {
@@ -298,13 +302,13 @@ export class ResourceFactory {
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const identityAttribute = replaceIfUsername(rule.identityField || DEFAULT_IDENTITY_FIELD)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: "${rule.allow}", ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
-                set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.${identityAttribute}, "${NONE_VALUE}")`)),
+                set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
                 // If a list of owners check for at least one.
                 iff(
                     raw(`$util.isList($${allowedOwnersVariable})`),
@@ -428,7 +432,7 @@ export class ResourceFactory {
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const identityAttribute = replaceIfUsername(rule.identityField || DEFAULT_IDENTITY_FIELD)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
             const ownerName = `owner${ruleNumber}`
             const identityName = `identity${ruleNumber}`
@@ -447,7 +451,8 @@ export class ResourceFactory {
             }
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
                 raw(`$util.qr($ownerAuthExpressionNames.put("#${ownerName}", "${ownerAttribute}"))`),
-                raw(`$util.qr($ownerAuthExpressionValues.put(":${identityName}", { "S": "$ctx.identity.${identityAttribute}"}))`)
+                // tslint:disable-next-line
+                raw(`$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($ctx.identity.claims.get("${identityAttribute}"))))`)
             )
             ruleNumber++
         }
@@ -520,12 +525,12 @@ export class ResourceFactory {
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const identityAttribute = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const identityAttribute = replaceIfUsername(rule.identityField || DEFAULT_IDENTITY_FIELD)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: "${rule.allow}", ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
-                set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.${identityAttribute}, "${NONE_VALUE}")`)),
+                set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
                 iff(
                     raw(`$util.isList($${allowedOwnersVariable})`),
                     forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [

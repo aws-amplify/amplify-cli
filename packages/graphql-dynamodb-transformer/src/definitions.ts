@@ -111,9 +111,6 @@ export function makeCreateInputObject(
     const fields: InputValueDefinitionNode[] = obj.fields
         .filter((field: FieldDefinitionNode) => {
             const fieldType = ctx.getType(getBaseType(field.type))
-            if (field.name.value === 'id') {
-                return false;
-            }
             if (
                 isScalar(field.type) ||
                 nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
@@ -125,9 +122,22 @@ export function makeCreateInputObject(
         })
         .map(
             (field: FieldDefinitionNode) => {
-                const type = nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ?
-                    withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type))) :
-                    field.type
+                let type;
+                if (field.name.value === 'id') {
+                    // ids are always optional. when provided the value is used.
+                    // when not provided the value is not used.
+                    type = {
+                        kind: Kind.NAMED_TYPE,
+                        name: {
+                            kind: Kind.NAME,
+                            value: 'ID'
+                        }
+                    }
+                } else {
+                    type = nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ?
+                        withNamedNodeNamed(field.type, ModelResourceIDs.NonModelInputObjectName(getBaseType(field.type))) :
+                        field.type
+                }
                 return {
                     kind: Kind.INPUT_VALUE_DEFINITION,
                     name: field.name,

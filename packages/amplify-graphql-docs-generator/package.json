@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-docs-generator",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "main": "lib/index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
