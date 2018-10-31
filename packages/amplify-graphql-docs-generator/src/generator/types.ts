@@ -37,6 +37,8 @@ export type GQLTemplateArgDeclaration = {
   name: string
   type: string
   isRequired: boolean
+  isList: boolean
+  isListRequired: boolean
   defaultValue: string | null
 }
 
