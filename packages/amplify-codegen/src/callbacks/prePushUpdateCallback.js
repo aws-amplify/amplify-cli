@@ -8,8 +8,10 @@ async function prePushUpdateCallback(context, resourceName) {
     .getProjects()
     .find(projectItem => projectItem.projectName === resourceName);
   if (project) {
-    if (await askShouldUpdateCode()) {
-      const shouldGenerateDocs = await askShouldUpdateStatements();
+    const yesFlag = context.exeInfo.inputParams && context.exeInfo.inputParams.yes; 
+    const shouldUpdateCode = yesFlag ? true : await askShouldUpdateCode();
+    if ( shouldUpdateCode ) {
+      const shouldGenerateDocs = yesFlag ? true : await askShouldUpdateStatements();
       return {
         gqlConfig: project,
         shouldGenerateDocs,

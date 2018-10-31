@@ -2,7 +2,10 @@ const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
 
 async function prePushAddCallback(context, resourceName) {
-  if (await askShouldGenerateCode()) {
+  let yesFlag = context.exeInfo.inputParams && context.exeInfo.inputParams.yes; 
+  const shouldGenerateCode = yesFlag ? true : await askShouldGenerateCode();
+
+  if (shouldGenerateCode) {
     const answers = await addWalkThrough(context, ['shouldGenerateCode']);
     const newProject = {
       projectName: resourceName,
