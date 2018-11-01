@@ -6,7 +6,7 @@ async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
   const { frontend } = context.exeInfo.projectConfig;
 
-  const selectedFrontend = await configreFrontendHandler(context, frontendPlugins, frontend);
+  const selectedFrontend = await configureFrontendHandler(context, frontendPlugins, frontend);
 
   if (selectedFrontend !== frontend) {
     delete context.exeInfo.projectConfig[frontend];
@@ -22,7 +22,7 @@ async function run(context) {
   return context;
 }
 
-async function configreFrontendHandler(context, frontendPlugins, currentFrontend) {
+async function configureFrontendHandler(context, frontendPlugins, currentFrontend) {
   let frontend;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.frontend) {
     frontend = normalizeFrontendName(context.exeInfo.inputParams.amplify.frontend, frontendPlugins);

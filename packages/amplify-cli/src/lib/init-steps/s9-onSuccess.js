@@ -28,7 +28,6 @@ function run(context) {
 
   return sequential(providerOnSuccessTasks).then(() => {
     const frontendPlugins = getFrontendPlugins(context);
-    console.log(frontendPlugins);
     const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
     return frontendModule.onInitSuccessful(context);
   }).then(() => {

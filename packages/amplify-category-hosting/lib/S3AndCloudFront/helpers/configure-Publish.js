@@ -122,7 +122,7 @@ async function removeIgnore(context, publishIgnore) {
 }
 
 function getIgnore(context) {
-  let result;
+  let publishIgnore;
   const publishIgnoreFilePath = getPublishIgnoreFilePath(context); 
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
@@ -130,8 +130,10 @@ function getIgnore(context) {
     } catch (e) {
       publishIgnore = [];
     }
+  }else{
+    publishIgnore = [];
   }
-  return result;
+  return publishIgnore;
 }
 
 function isIgnored(filePath, publishIgnore, ignoreRoot) {
