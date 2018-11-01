@@ -49,7 +49,6 @@ function run(context, providerMetadata) {
     })
     .then(() => new Cloudformation(context))
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName));
-  // .then(() => resourcePusher.run(context));
 }
 
 module.exports = {

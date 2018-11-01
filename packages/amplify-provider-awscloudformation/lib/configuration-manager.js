@@ -362,6 +362,7 @@ function logProjectSpecificConfg(context, awsClient) {
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
+
     if (configInfo.useProfile && configInfo.profileName) {
       process.env.AWS_PROFILE = configInfo.profileName;
       const credentials = new awsClient.SharedIniFileCredentials({

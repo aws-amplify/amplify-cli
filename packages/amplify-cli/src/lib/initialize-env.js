@@ -3,7 +3,6 @@ const sequential = require('promise-sequential');
 
 async function initializeEnv(context) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  // Generate amplify-meta.json
 
   const amplifyMeta = {};
   const { projectPath } = context.exeInfo.localEnvInfo;
@@ -25,6 +24,7 @@ async function initializeEnv(context) {
   const { providers } = context.exeInfo.projectConfig;
 
   const initializationTasks = [];
+  const providerPushTasks = [];
 
   Object.keys(amplifyMeta.providers).forEach((providerKey) => {
     const provider = require(providers[providerKey]);
@@ -32,9 +32,18 @@ async function initializeEnv(context) {
   });
 
   await sequential(initializationTasks);
+
+  if (!context.exeInfo.noPush) {
+    if (context.exeInfo.forcePush || await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?')) {
+      Object.keys(providers).forEach((providerKey) => {
+        const provider = require(providers[providerKey]);
+        providerPushTasks.push(() => provider.pushResources(context));
+      });
+      await sequential(providerPushTasks);
+    }
+  }
 }
 
 module.exports = {
   initializeEnv,
 };
-

@@ -21,14 +21,7 @@ async function run(context) {
       ({ projectName } = await inquirer.prompt(projectNameQuestion));
     }
 
-    const envNameQuestion = {
-      type: 'input',
-      name: 'envName',
-      message: 'Enter a name for the enivronment',
-      validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 2 || /[^a-zA-Z0-9]/g.test(input)) ? reject(new Error('Env name should be between 2 and 10 characters and alphanumeric')) : resolvePromise(true))),
-    };
-
-    const { envName } = await inquirer.prompt(envNameQuestion);
+    const envName = await getEnvName(context);
 
     let defaultEditor = getDefaultEditor(context);
 
@@ -40,6 +33,8 @@ async function run(context) {
 
     context.exeInfo.isNewEnv = isNewEnv(context, envName);
     context.exeInfo.isNewProject = isNewProject(context);
+    context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
+
 
     context.exeInfo.projectConfig = {
       projectName,
@@ -59,6 +54,46 @@ async function run(context) {
 
     resolve(context);
   });
+}
+
+async function getEnvName(context) {
+  let envName;
+
+  const newEnvQuestion = async () => {
+    const envNameQuestion = {
+      type: 'input',
+      name: 'envName',
+      message: 'Enter a name for the enivronment',
+      validate: input => new Promise((resolvePromise, reject) => ((input.length > 10 || input.length < 2 || /[^a-zA-Z0-9]/g.test(input)) ? reject(new Error('Env name should be between 2 and 10 characters and alphanumeric')) : resolvePromise(true))),
+    };
+
+    ({ envName } = await inquirer.prompt(envNameQuestion));
+  };
+
+  if (isNewProject(context)) {
+    await newEnvQuestion();
+  } else {
+    const allEnvs = context.amplify.getAllEnvs();
+
+    if (allEnvs.length > 0) {
+      if (await context.prompt.confirm('Do you want to use an existing environment?')) {
+        const envQuestion = {
+          type: 'list',
+          name: 'envName',
+          message: 'Choose the environment you would like to use:',
+          choices: allEnvs,
+        };
+
+        ({ envName } = await inquirer.prompt(envQuestion));
+      } else {
+        await newEnvQuestion();
+      }
+    } else {
+      await newEnvQuestion();
+    }
+  }
+
+  return envName;
 }
 
 function isNewEnv(context, envName) {

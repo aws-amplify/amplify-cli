@@ -126,7 +126,7 @@ function storeCurrentCloudBackend(context) {
         });
     })
     .then(() => {
-      // fs.removeSync(tempDir);
+      fs.removeSync(tempDir);
     });
 }
 
