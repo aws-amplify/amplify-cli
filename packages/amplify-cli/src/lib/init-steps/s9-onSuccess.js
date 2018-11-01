@@ -25,12 +25,11 @@ function run(context) {
     .then(async () => {
       generateLocalRuntimeFiles(context);
       generateNonRuntimeFiles(context);
-      if (context.exeInfo.isNewEnv) {
-        Object.keys(providers).forEach((providerKey) => {
-          const provider = require(providers[providerKey]);
-          providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
-        });
-      }
+      Object.keys(providers).forEach((providerKey) => {
+        const provider = require(providers[providerKey]);
+        providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
+      });
+
       await sequential(providerOnSuccessTasks);
       await initializeEnv(context);
     })

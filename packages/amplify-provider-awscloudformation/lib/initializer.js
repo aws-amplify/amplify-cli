@@ -12,46 +12,48 @@ const configurationManager = require('./configuration-manager');
 function run(context) {
   return configurationManager.init(context)
     .then((ctxt) => {
-      const awscfn = getConfiguredAwsCfnClient(ctxt);
-      const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
-      const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
-      const stackName = normalizeStackName(ctxt.exeInfo.projectConfig.projectName + timeStamp);
-      const deploymentBucketName = `${stackName}-deployment`;
-      const authRoleName = `${stackName}-authRole`;
-      const unauthRoleName = `${stackName}-unauthRole`;
-      const params = {
-        StackName: stackName,
-        Capabilities: ['CAPABILITY_NAMED_IAM'],
-        TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
-        Parameters: [
-          {
-            ParameterKey: 'DeploymentBucketName',
-            ParameterValue: deploymentBucketName,
-          },
-          {
-            ParameterKey: 'AuthRoleName',
-            ParameterValue: authRoleName,
-          },
-          {
-            ParameterKey: 'UnauthRoleName',
-            ParameterValue: unauthRoleName,
-          },
-        ],
-      };
+      if (!ctxt.exeInfo || (ctxt.exeInfo.isNewEnv)) {
+        const awscfn = getConfiguredAwsCfnClient(ctxt);
+        const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
+        const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
+        const stackName = normalizeStackName(ctxt.exeInfo.projectConfig.projectName + timeStamp);
+        const deploymentBucketName = `${stackName}-deployment`;
+        const authRoleName = `${stackName}-authRole`;
+        const unauthRoleName = `${stackName}-unauthRole`;
+        const params = {
+          StackName: stackName,
+          Capabilities: ['CAPABILITY_NAMED_IAM'],
+          TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
+          Parameters: [
+            {
+              ParameterKey: 'DeploymentBucketName',
+              ParameterValue: deploymentBucketName,
+            },
+            {
+              ParameterKey: 'AuthRoleName',
+              ParameterValue: authRoleName,
+            },
+            {
+              ParameterKey: 'UnauthRoleName',
+              ParameterValue: unauthRoleName,
+            },
+          ],
+        };
 
-      const spinner = ora();
-      spinner.start('Initializing project in the cloud...');
-      return new Cloudformation(ctxt, awscfn, 'init')
-        .then(cfnItem => cfnItem.createResourceStack(params))
-        .then((waitData) => {
-          processStackCreationData(ctxt, waitData);
-          spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
-          return ctxt;
-        })
-        .catch((e) => {
-          spinner.fail('Root stack creation failed');
-          throw e;
-        });
+        const spinner = ora();
+        spinner.start('Initializing project in the cloud...');
+        return new Cloudformation(ctxt, awscfn, 'init')
+          .then(cfnItem => cfnItem.createResourceStack(params))
+          .then((waitData) => {
+            processStackCreationData(ctxt, waitData);
+            spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+            return ctxt;
+          })
+          .catch((e) => {
+            spinner.fail('Root stack creation failed');
+            throw e;
+          });
+      }
     });
 }
 
@@ -105,7 +107,7 @@ function storeCurrentCloudBackend(context) {
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const tempDir = `${backendDir}/.temp`;
   const currentCloudBackendDir = context.exeInfo ?
-    context.exeInfo.localEnvInfo.projectPath :
+    `${context.exeInfo.localEnvInfo.projectPath}/amplify/#current-cloud-backend` :
     context.amplify.pathManager.getCurrentCloudBackendDirPath();
 
   if (!fs.existsSync(tempDir)) {

@@ -11,6 +11,10 @@ const systemConfigManager = require('./system-config-manager');
 
 async function init(context) {
   context.projectConfigInfo = {};
+  if (!context.exeInfo.isNewProject && doesAwsConfigExists(context)) {
+    return context;
+  }
+
   await newUserCheck(context);
   printInfo(context);
   context.projectConfigInfo.action = 'init';
@@ -24,6 +28,22 @@ async function configure(context) {
   printInfo(context);
   await promptForProjectConfigUpdate(context);
   return carryOutConfigAction(context);
+}
+
+function doesAwsConfigExists(context) {
+  let configExists = false;
+  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
+  const { envName } = context.exeInfo ? context.exeInfo.localEnvInfo : context.amplify.getEnv();
+
+  if (fs.existsSync(configInfoFilePath)) {
+    const envAwsInfo = JSON.parse(fs.readFileSync(configInfoFilePath));
+    if (envAwsInfo[envName]) {
+      configExists = true;
+    }
+  }
+
+  return configExists;
 }
 
 function carryOutConfigAction(context) {
@@ -365,6 +385,7 @@ function logProjectSpecificConfg(context, awsClient) {
 
     if (configInfo.useProfile && configInfo.profileName) {
       process.env.AWS_PROFILE = configInfo.profileName;
+
       const credentials = new awsClient.SharedIniFileCredentials({
         profile: configInfo.profileName,
       });

@@ -3,9 +3,6 @@ const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 
 function run(context) {
-  if (!context.exeInfo.isNewEnv) {
-    return context;
-  }
   const providerPlugins = getProviderPlugins(context);
   const providerPluginList = Object.keys(providerPlugins);
 
