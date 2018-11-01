@@ -2,18 +2,17 @@ const path = require('path');
 const inquirer = require('inquirer');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
-
-const { PublishIgnoreFileName } = require('../../constants');
+const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 
 async function configure(context) {
   const publishIgnoreFilePath = getPublishIgnoreFilePath(context); 
-  let publishIgnore;
+  let publishIgnore = [];
 
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
       publishIgnore = require(publishIgnoreFilePath);
-    } catch (e) {
-      publishIgnore = {};
+    } catch (e){
+      publishIgnore = [];
     }
   }
 
@@ -32,9 +31,12 @@ async function configure(context) {
 }
 
 function getPublishIgnoreFilePath(context){
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
-  return path.join(serviceDirPath, PublishIgnoreFileName);
+  const projectPath = context.amplify.pathManager.searchProjectRootPath();
+  if(projectPath || fs.existsSync(projectPath)){
+    return path.join(projectPath, PublishIgnoreFileName);
+  }
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' \
+  in the root of your app directory to initialize your project with Amplify');
 }
 
 
