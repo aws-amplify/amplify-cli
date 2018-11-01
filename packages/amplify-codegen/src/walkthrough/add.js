@@ -4,6 +4,8 @@ const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askShouldGenerateCode = require('./questions/generateCode');
 const askShouldGenerateDocs = require('./questions/generateDocs');
+const { normalizeInputParams } = require('./normalizeInputParams');
+const constants = require('../constants');
 
 const {
   getFrontEndHandler,
@@ -15,6 +17,17 @@ const {
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
 async function addWalkThrough(context, skip = []) {
+
+  normalizeInputParams(context);
+  let inputParams = {}; 
+  let yetFlag = false; 
+  if(context.exeInfo.inputParams){
+    yetFlag = context.exeInfo.inputParams.yes;
+    if(context.exeInfo.inputParams[constants.Label]){
+      inputParams = context.exeInfo.inputParams[constants.Label];
+    }
+  }
+
   const frontend = getFrontEndHandler(context);
   const schemaLocation = getSchemaDownloadLocation(context);
   const answers = {

@@ -1,6 +1,7 @@
+const { normalizeInputParams } = require('../walkthrough/normalizeInputParams');
 const loadConfig = require('../codegen-config');
 const askShouldUpdateCode = require('../walkthrough/questions/updateCode');
-const askShouldUpdateStatements = require('../walkthrough/questions/updateDocs');
+const askShouldUpdateDocs = require('../walkthrough/questions/updateDocs');
 
 async function prePushUpdateCallback(context, resourceName) {
   const config = loadConfig(context);
@@ -8,15 +9,37 @@ async function prePushUpdateCallback(context, resourceName) {
     .getProjects()
     .find(projectItem => projectItem.projectName === resourceName);
   if (project) {
-    const yesFlag = context.exeInfo.inputParams && context.exeInfo.inputParams.yes; 
-    const shouldUpdateCode = yesFlag ? true : await askShouldUpdateCode();
-    if ( shouldUpdateCode ) {
-      const shouldGenerateDocs = yesFlag ? true : await askShouldUpdateStatements();
+
+    let shouldGenerateCode = false;
+    let shouldGenerateDocs = false; 
+    normalizeInputParams(context);
+    if(context.exeInfo.inputParams){
+      if(context.exeInfo.inputParams[constants.Label]){
+        shouldGenerateCode = context.exeInfo.inputParams[constants.Label].generateCode;
+        shouldGenerateDocs = context.exeInfo.inputParams[constants.Label].generateDocs;
+      }else if(context.exeInfo.inputParams.yes){
+        shouldGenerateCode = true; 
+        shouldGenerateDocs = true;
+      }else{
+        shouldGenerateCode = await askShouldUpdateCode();
+        if(shouldGenerateCode){
+          shouldGenerateDocs = await askShouldUpdateDocs();
+        }
+      }
+    }else{
+      shouldGenerateCode = await askShouldUpdateCode();
+      if(shouldGenerateCode){
+        shouldGenerateDocs = await askShouldUpdateDocs();
+      }
+    }
+
+    if ( shouldGenerateCode ) {
       return {
         gqlConfig: project,
         shouldGenerateDocs,
       };
     }
+
   }
 }
 
