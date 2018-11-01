@@ -1,0 +1,91 @@
+{
+  "name": "amplify-graphql-types-generator",
+  "version": "0.1.0",
+  "description": "Generate API code or type annotations based on a GraphQL schema and statements",
+  "main": "./lib/index.js",
+  "bin": "./lib/cli.js",
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test-ci": "jest --ci -i",
+    "test:smoke": "npm install && npm run build && rm -rf node_modules && npm install --prod && node ./lib/cli.js && echo 'Smoke Test Passed'"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "original-author": "Martijn Walraven <martijn@martijnwalraven.com>",
+  "author": "Amazon Web Services",
+  "contributors": [
+    "Min Bi",
+    "Rohan Dubal",
+    "Martijn Walraven <martijn@martijnwalraven.com>",
+    "Yathiraj"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.0"
+  },
+  "devDependencies": {
+    "@types/common-tags": "^1.2.5",
+    "@types/glob": "^5.0.30",
+    "@types/graphql": "^14.0.3",
+    "@types/inflected": "^1.1.29",
+    "@types/jest": "^20.0.6",
+    "@types/mkdirp": "^0.5.0",
+    "@types/node-fetch": "^1.6.7",
+    "@types/yargs": "^12.0.1",
+    "jest-matcher-utils": "^23.6.0",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "@babel/generator": "7.0.0-beta.4",
+    "@babel/types": "7.0.0-beta.4",
+    "@types/babel-generator": "^6.25.0",
+    "@types/babylon": "^6.16.3",
+    "@types/prettier": "^1.13.2",
+    "@types/rimraf": "^2.0.2",
+    "babel-generator": "^6.26.1",
+    "babylon": "^6.18.0",
+    "change-case": "^3.0.1",
+    "common-tags": "^1.4.0",
+    "core-js": "^2.5.0",
+    "glob": "^7.1.2",
+    "graphql": "^14.0.2",
+    "inflected": "^2.0.2",
+    "mkdirp": "^0.5.1",
+    "prettier": "^1.14.3",
+    "rimraf": "^2.6.2",
+    "source-map-support": "^0.5.9",
+    "yargs": "^12.0.2"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/polyfills.js"
+    ],
+    "testURL": "http://localhost",
+    "setupTestFrameworkScriptFile": "<rootDir>/test/test-utils/matchers.ts",
+    "testMatch": [
+      "**/test/**/*.(js|ts)",
+      "**/test/*.(js|ts)",
+      "**/__tests__/*.(js|ts)"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/lib/",
+      "<rootDir>/test/fixtures/",
+      "<rootDir>/test/test-utils"
+    ],
+    "transform": {
+      "^.+\\.(ts|js)x?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
+  }
+}
