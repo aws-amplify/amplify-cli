@@ -20,6 +20,7 @@ const FILE_EXTENSION_MAP = {
   graphql: 'graphql',
   flow: 'js',
   typescript: 'ts',
+  angular: 'graphql',
 }
 
 function generate(
@@ -72,6 +73,7 @@ function renderOps(operations: Array<GQLTemplateOp>, language: string = 'graphql
     graphql: 'graphql.hbs',
     typescript: 'typescript.hbs',
     flow: 'flow.hbs',
+    angular: 'graphql.hbs',
   }
 
   const templatePath = path.join(TEMPLATE_DIR, templateFiles[language])
@@ -113,6 +115,7 @@ function format(str: string, language: string = 'graphql'): string {
     graphql: 'graphql',
     typescript: 'typescript',
     flow: 'flow',
+    angular: 'graphql',
   }
   return prettier.format(str, { parser: parserMap[language] })
 }
