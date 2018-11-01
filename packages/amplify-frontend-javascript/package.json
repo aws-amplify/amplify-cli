@@ -15,9 +15,5 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
-  },
-  "devDependencies": {
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
   }
 }

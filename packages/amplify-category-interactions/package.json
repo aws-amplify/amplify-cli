@@ -3,8 +3,8 @@
   "version": "0.1.29",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
-    "amplify-category-auth": "^0.1.29",
-    "amplify-category-function": "^0.1.29",
+    "amplify-category-auth": "file:../amplify-category-auth",
+    "amplify-category-function": "file:../amplify-category-function",
     "fs-extra": "^7.0.0",
     "fuzzy": "^0.1.3",
     "inquirer": "^6.0.0",
@@ -15,10 +15,5 @@
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
   },
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
-  }
+  "license": "Apache-2.0"
 }

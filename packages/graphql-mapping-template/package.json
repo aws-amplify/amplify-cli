@@ -17,13 +17,6 @@
   "dependencies": {
     "cloudform": "^2.2.1"
   },
-  "devDependencies": {
-    "@types/jest": "^22.2.3",
-    "jest": "^23.0.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
-  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "jest": {

@@ -10,17 +10,13 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-auth": "^0.1.29",
-    "amplify-category-function": "^0.1.29",
-    "amplify-category-storage": "^0.1.29",
+    "amplify-category-auth": "file:../amplify-category-auth",
+    "amplify-category-function": "file:../amplify-category-function",
+    "amplify-category-storage": "file:../amplify-category-storage",
     "eslint": "^4.9.0",
     "fs-extra": "^6.0.1",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
     "uuid": "^2.0.3"
-  },
-  "devDependencies": {
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
   }
 }

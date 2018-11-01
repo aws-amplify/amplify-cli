@@ -19,11 +19,6 @@
     "lodash": "^4.17.10",
     "uuid": "^2.0.3"
   },
-  "devDependencies": {
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0",
-    "jest": "^23.5.0"
-  },
   "jest": {
     "collectCoverage": true,
     "testURL": "http://localhost",

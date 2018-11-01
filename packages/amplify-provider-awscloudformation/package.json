@@ -6,8 +6,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-category-storage": "^0.1.29",
-    "amplify-codegen": "^0.1.29",
+    "amplify-category-storage": "file:../amplify-category-storage",
+    "amplify-codegen": "file:../amplify-codegen",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
     "cfn-lint": "^1.7.2",
@@ -16,14 +16,14 @@
     "eslint": "^4.19.1",
     "extract-zip": "^1.6.7",
     "fs-extra": "^4.0.2",
-    "graphql-appsync-transformer": "^1.0.29",
-    "graphql-auth-transformer": "^1.0.29",
-    "graphql-connection-transformer": "^1.0.29",
-    "graphql-dynamodb-transformer": "^1.0.29",
-    "graphql-elasticsearch-transformer": "^1.0.29",
-    "graphql-transformer-common": "^1.0.29",
-    "graphql-transformer-core": "^1.0.29",
-    "graphql-versioned-transformer": "^1.0.29",
+    "graphql-appsync-transformer": "file:../graphql-appsync-transformer",
+    "graphql-auth-transformer": "file:../graphql-auth-transformer",
+    "graphql-connection-transformer": "file:../graphql-connection-transformer",
+    "graphql-dynamodb-transformer": "file:../graphql-dynamodb-transformer",
+    "graphql-elasticsearch-transformer": "file:../graphql-elasticsearch-transformer",
+    "graphql-transformer-common": "file:../graphql-transformer-common",
+    "graphql-transformer-core": "file:../graphql-transformer-core",
+    "graphql-versioned-transformer": "file:../graphql-versioned-transformer",
     "ini": "^1.3.5",
     "inquirer": "^6.0.0",
     "lodash": "^4.17.10",
@@ -38,9 +38,5 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix"
-  },
-  "devDependencies": {
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
   }
 }
