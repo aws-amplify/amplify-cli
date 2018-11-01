@@ -13,13 +13,13 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: npm cache clean --force
-      - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
-      - run: npm install
-      - run: npm config set workspaces-experimental true
-      - run: npm run production-build
+      - run: yarn cache clean
+      - run: cd packages && rm -rf */yarn.lock && rm -rf */node_modules
+      - run: yarn
+      - run: yarn config set workspaces-experimental true
+      - run: yarn run production-build
       - save_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
@@ -35,20 +35,20 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests
-          command: npm run test
+          command: yarn run test
   graphql_e2e_tests:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
-          command: npm run e2e
+          command: yarn run e2e
           no_output_timeout: 45m
   integration_test:
       working_directory: ~/repo
@@ -60,7 +60,7 @@ jobs:
         - attach_workspace:
             at: ./
         - restore_cache:
-            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
         - run: apt-get install -y sudo
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
@@ -72,34 +72,34 @@ jobs:
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh
         - run: expect .circleci/aws_configure.exp 
-        - run: sudo npm run setup-dev
+        - run: sudo yarn run setup-dev
         - run: amplify
         - run:
             name: "Clone auth test package"
             command: |
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
-              npm install
+              yarn
         - run: cd .circleci/ && chmod +x auth.sh
         - run: cd .circleci/ && chmod +x amplify_init.sh
         - run: cd .circleci/ && chmod +x amplify_init.exp
         - run: expect .circleci/amplify_init.exp aws-amplify-cypress-auth
         - run: expect .circleci/enable_auth.exp
         - run: cd aws-amplify-cypress-auth
-        - run: npm install
+        - run: yarn
         - run: cd aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start Auth test server in background"
             command: |
               cd aws-amplify-cypress-auth
               pwd
-              npm start
+              yarn start
             background: true
         - run: cat $(find . -type f -name 'auth_spec*')
         - run:
             name: "Run cypress tests for auth"
             command: |
-              npm install --save cypress
+              yarn add cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'auth_spec*')
         - run: sudo kill -9 $(lsof -t -i:3000)
         - run: cd .circleci/ && chmod +x delete_auth.sh
@@ -109,24 +109,24 @@ jobs:
             command: |
               git clone $API_CLONE_URL
               cd aws-amplify-cypress-api
-              npm install
+              yarn
         - run: cd .circleci/ && chmod +x api.sh
         - run: expect .circleci/amplify_init.exp aws-amplify-cypress-api
         - run: expect .circleci/enable_api.exp
         - run: cd aws-amplify-cypress-api
-        - run: npm install
+        - run: yarn
         - run: cd aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start API test server in background"
             command: |
               cd aws-amplify-cypress-api
               pwd
-              npm start
+              yarn start
             background: true
         - run:
             name: "Run cypress tests for api"
             command: |
-              npm install --save cypress
+              yarn install cypress
               node_modules/.bin/cypress run --spec $(find . -type f -name 'api_spec*')
         - run: cd .circleci/ && chmod +x delete_api.sh
         - run: expect .circleci/delete_api.exp
@@ -143,7 +143,7 @@ jobs:
           keys: 
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
-            - amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
@@ -153,7 +153,7 @@ jobs:
             if [ -z "$CIRCLE_PULL_REQUEST" ]; then
               git config --global user.email $GITHUB_EMAIL
               git config --global user.name $GITHUB_USER
-              npm run publish:$CIRCLE_BRANCH
+              yarn run publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
@@ -170,6 +170,7 @@ workflows:
             branches:
               only:
                 - master
+                - yarn-migration-test
           requires:
             - build
       - integration_test:
@@ -179,6 +180,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - yarn-migration-test
           requires:
             - build
       - deploy:
