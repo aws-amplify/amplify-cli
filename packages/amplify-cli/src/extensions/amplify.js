@@ -15,6 +15,7 @@ const { getFrontendPlugins } = require('./amplify-helpers/get-frontend-plugins')
 const { getProviderPlugins } = require('./amplify-helpers/get-provider-plugins');
 const { getProjectConfig } = require('./amplify-helpers/get-project-config');
 const { getEnvInfo } = require('./amplify-helpers/get-env-info');
+const { getEnvDetails } = require('./amplify-helpers/get-env-details');
 const { getAllEnvs } = require('./amplify-helpers/get-all-envs');
 const { getProjectDetails } = require('./amplify-helpers/get-project-details');
 const { getProjectMeta } = require('./amplify-helpers/get-project-meta');
@@ -61,6 +62,7 @@ module.exports = (context) => {
     getPlugin,
     getCategoryPlugins,
     getFrontendPlugins,
+    getEnvDetails,
     getEnvInfo,
     getProviderPlugins,
     getProjectConfig,
