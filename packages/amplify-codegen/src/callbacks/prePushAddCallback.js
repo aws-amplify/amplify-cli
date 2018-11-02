@@ -11,13 +11,9 @@ async function prePushAddCallback(context, resourceName) {
     const inputParams = context.exeInfo.inputParams[constants.Label]; 
     const yesFlag = context.exeInfo.inputParams.yes;
 
-    if(inputParams && inputParams.hasOwnProperty('generateCode')){
-      shouldGenerateCode = inputParams.generateCode;
-    }else if(yesFlag){
-      shouldGenerateCode = true; 
-    }else{
-      shouldGenerateCode = await askShouldUpdateCode();
-    }
+    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
+      return askShouldGenerateCode();
+    });
   }else{
     shouldGenerateCode = await askShouldGenerateCode();
   }
@@ -39,6 +35,18 @@ async function prePushAddCallback(context, resourceName) {
       shouldGenerateDocs: answers.shouldGenerateDocs,
     };
   }
+}
+
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
+  let result; 
+  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+    result = inputParams[propertyName];
+  }else if(yesFlag && defaultValue != undefined){
+    result = defaultValue; 
+  }else{
+    result = await askFunction();
+  }
+  return result; 
 }
 
 module.exports = prePushAddCallback;

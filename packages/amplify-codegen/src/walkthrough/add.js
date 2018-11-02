@@ -4,8 +4,10 @@ const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askShouldGenerateCode = require('./questions/generateCode');
 const askShouldGenerateDocs = require('./questions/generateDocs');
-const { normalizeInputParams } = require('./normalizeInputParams');
+const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
+const { getOutputFileName } = require('../utils');
+
 
 const {
   getFrontEndHandler,
@@ -19,13 +21,12 @@ const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 async function addWalkThrough(context, skip = []) {
 
   normalizeInputParams(context);
-  let inputParams = {}; 
+  let inputParams; 
   let yetFlag = false; 
   if(context.exeInfo.inputParams){
+    normalizeInputParams(context);
+    inputParams = context.exeInfo.inputParams[constants.Label]; 
     yetFlag = context.exeInfo.inputParams.yes;
-    if(context.exeInfo.inputParams[constants.Label]){
-      inputParams = context.exeInfo.inputParams[constants.Label];
-    }
   }
 
   const frontend = getFrontEndHandler(context);
@@ -39,7 +40,9 @@ async function addWalkThrough(context, skip = []) {
 
   if (frontend !== 'android') {
     if (!skip.includes('targetLanguage')) {
-      answers.target = await askCodeGenTargetLanguage(context);
+      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', ()=>{
+        return askCodeGenTargetLanguage(context);
+      });
       targetLanguage = answers.target;
     }
   }
@@ -52,22 +55,48 @@ async function addWalkThrough(context, skip = []) {
   );
 
   if (!skip.includes('includePattern')) {
-    answers.includePattern = await askCodeGenQueryFilePattern([includePathGlob]);
+    answers.target = 
+    await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, ()=>{
+      return askCodeGenQueryFilePattern([includePathGlob]);
+    });
   }
   if (!skip.includes('shouldGenerateDocs')) {
-    answers.shouldGenerateDocs = await askShouldGenerateDocs();
+    answers.shouldGenerateDocs = 
+    await determineValue(inputParams, yesFlag, 'generateDocs', true, ()=>{
+      return askShouldGenerateDocs();
+    });
     answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {
     if (!skip.includes('generatedFileName')) {
-      answers.generatedFileName = await askTargetFileName('API', answers.target || '');
+      const defaultValue = getOutputFileName('API', answers.target || '');
+      answers.generatedFileName = 
+      await determineValue(inputParams, yesFlag, 'generatedFileName', defaultValue, ()=>{
+        return askTargetFileName('API', answers.target || '');
+      });
     }
     if (!skip.includes('shouldGenerateCode')) {
-      answers.shouldGenerateCode = await askShouldGenerateCode();
+      answers.shouldGenerateCode = 
+      await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
+        return askShouldGenerateCode();
+      });
     }
   }
 
   return answers;
 }
+
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
+  let result; 
+  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+    result = inputParams[propertyName];
+  }else if(yesFlag && defaultValue != undefined){
+    result = defaultValue; 
+  }else{
+    result = await askFunction();
+  }
+  return result; 
+}
+
 module.exports = addWalkThrough;

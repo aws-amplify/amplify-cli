@@ -36,8 +36,8 @@ function normalizeKey(key) {
   if (['targetLanguage', 'target-language', 'codeLanguage', 'code-language'].includes(key)) {
     key = 'targetLanguage';
   }
-  if (['fileNamePattern', 'file-name-pattern'].includes(key)) {
-    key = 'fileNamePattern';
+  if (['includePattern', 'include-pattern', 'fileNamePattern', 'file-name-pattern'].includes(key)) {
+    key = 'includePattern';
   }
   return key;
 }

@@ -18,22 +18,14 @@ async function prePushUpdateCallback(context, resourceName) {
       const inputParams = context.exeInfo.inputParams[constants.Label]; 
       const yesFlag = context.exeInfo.inputParams.yes;
 
-      if(inputParams && inputParams.hasOwnProperty('generateCode')){
-        shouldGenerateCode = inputParams.generateCode;
-      }else if(yesFlag){
-        shouldGenerateCode = true; 
-      }else{
-        shouldGenerateCode = await askShouldUpdateCode();
-      }
+      shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
+        return askShouldUpdateCode();
+      });
 
       if(shouldGenerateCode){
-        if(inputParams && inputParams.hasOwnProperty('generateDocs')){
-          shouldGenerateDocs = inputParams.generateDocs;
-        }else if(yesFlag){
-          shouldGenerateDocs = true; 
-        }else{
-          shouldGenerateDocs = await askShouldUpdateDocs();
-        }
+        shouldGenerateDocs = await determineValue(inputParams, yesFlag, 'generateDocs', true, ()=>{
+          return askShouldUpdateDocs();
+        });
       }
     }else{
       shouldGenerateCode = await askShouldUpdateCode();
@@ -50,6 +42,18 @@ async function prePushUpdateCallback(context, resourceName) {
     }
 
   }
+}
+
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
+  let result; 
+  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+    result = inputParams[propertyName];
+  }else if(yesFlag && defaultValue != undefined){
+    result = defaultValue; 
+  }else{
+    result = await askFunction();
+  }
+  return result; 
 }
 
 module.exports = prePushUpdateCallback;
