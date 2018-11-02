@@ -4,6 +4,7 @@ const configProviders = require('../lib/config-steps/c2-configProviders');
 const configureNewUser = require('../lib/configure-new-user');
 const onFailure = require('../lib/config-steps/c9-onFailure');
 const onSuccess = require('../lib/config-steps/c9-onSuccess');
+const { normalizeInputParams }= require('../lib/input-params-manager'); 
 
 module.exports = {
   name: 'configure',
@@ -24,19 +25,7 @@ module.exports = {
 };
 
 function constructExeInfo(context) {
-  const inputParams = {};
-  Object.keys(context.parameters.options).forEach((key) => {
-    const normalizedKey = normalizeKey(key);
-    inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
-  });
   context.exeInfo = {
-    inputParams,
+    inputParams: normalizeInputParams(context)
   };
-}
-
-function normalizeKey(key) {
-  if (key === 'y') {
-    key = 'yes';
-  }
-  return key;
 }

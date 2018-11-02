@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
+const { normalizeFrontendHandlerName }= require('../input-params-manager'); 
 
 async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -18,17 +19,18 @@ async function run(context) {
   const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
   context.exeInfo.projectConfig.frontend = frontend;
-  const handler = require(frontendPlugins[frontend]);
-  await handler.init(context);
+  const frontendModule = require(frontendPlugins[frontend]);
+  await frontendModule.init(context);
 
   return context;
 }
 
 async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   let frontend;
+  const frontendPluginList = Object.keys(frontendPlugins);
   const { inputParams } = context.exeInfo;
-  if (inputParams.amplify && inputParams.amplify.frontend) {
-    frontend = normalizeFrontendHandlerName(inputParams.amplify.frontend, frontendPlugins);
+  if (inputParams.amplify.frontend) {
+    frontend = normalizeFrontendHandlerName(inputParams.amplify.frontend, frontendPluginList);
   }
 
   if (!frontend && inputParams.yes) {
@@ -40,7 +42,7 @@ async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
       type: 'list',
       name: 'selectedFrontendHandler',
       message: "Choose the type of app that you're building",
-      choices: Object.keys(frontendPlugins),
+      choices: frontendPluginList,
       default: suitableFrontend,
     };
     const answer = await inquirer.prompt(selectFrontendHandler);
@@ -48,13 +50,6 @@ async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   }
 
   return frontend;
-}
-
-function normalizeFrontendHandlerName(name, frontendPlugins) {
-  const nameSplit = name.split('-');
-  name = nameSplit[nameSplit.length - 1];
-  name = Object.keys(frontendPlugins).includes(name) ? name : undefined;
-  return name;
 }
 
 module.exports = {

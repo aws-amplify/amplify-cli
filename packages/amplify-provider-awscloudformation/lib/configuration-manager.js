@@ -51,12 +51,19 @@ function normalizeInputParams(context) {
     }
   }
   if (inputParams) {
-    if (!inputParams.configLevel) {
-      inputParams.configLevel = inputParams.config ? 'project' : 'general';
+    const normalizedInputParams = {}; 
+
+    if(inputParams.configLevel && inputParams.configLevel === 'general'){
+      normalizedInputParams.configLevel = 'general';
+    }else{
+      delete inputParams.configLevel; 
+      normalizedInputParams.configLevel = 'project';
+      normalizedInputParams.config = inputParams; 
     }
-    if (inputParams.configLevel === 'project') {
+
+    if (normalizedInputParams.configLevel === 'project') {
       let errorMessage;
-      if (!inputParams.config) {
+      if (!normalizedInputParams.config || Object.keys(normalizedInputParams.config).length < 1) {
         errorMessage = 'configLevel set to "project" but project level config is missing.';
       } else {
         if (!inputParams.config.useProfile) {
@@ -77,7 +84,9 @@ function normalizeInputParams(context) {
         throw new Error(errorMessage);
       }
     }
-    context.exeInfo.inputParams[constants.Label] = inputParams;
+
+
+    context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
   }
 }
 
