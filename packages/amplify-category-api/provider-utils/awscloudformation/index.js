@@ -30,6 +30,21 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
 
+
+function console(context, service) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { openConsole } = require(serviceWalkthroughSrc);
+
+  if (!openConsole) {
+    context.print.error('Opening console functionality not available for this option');
+    process.exit(0);
+  }
+
+  return openConsole(context);
+}
+
 function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
@@ -122,4 +137,4 @@ async function updateResource(context, category, service) {
     });
 }
 
-module.exports = { addResource, updateResource };
+module.exports = { addResource, updateResource, console };

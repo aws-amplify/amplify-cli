@@ -17,7 +17,8 @@
     "fs-extra": "^6.0.1",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
-    "uuid": "^2.0.3"
+    "uuid": "^2.0.3",
+    "opn": "^5.3.0"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
