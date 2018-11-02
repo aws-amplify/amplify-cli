@@ -19,6 +19,7 @@
     "eslint": "^4.9.0",
     "fs-jetpack": "^2.1.0",
     "glob-all": "^3.1.0",
+    "graphql": "^14.0.2",
     "graphql-config": "^2.1.0",
     "inquirer": "^3.2.1",
     "ora": "^3.0.0",
