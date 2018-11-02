@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.30-beta.0"></a>
+## [0.1.30-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.13...amplify-category-api@0.1.30-beta.0) (2018-11-02)
+
+
+### Features
+
+* add option to open AppSync console using the CLI ([#386](https://github.com/aws-amplify/amplify-cli/issues/386)) ([3874a57](https://github.com/aws-amplify/amplify-cli/commit/3874a57))
+
+
+
+
 <a name="0.1.29"></a>
 ## [0.1.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.29-beta.0...amplify-category-api@0.1.29) (2018-10-23)
 
