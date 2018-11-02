@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.30"></a>
+## [0.1.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@0.1.30-beta.0...amplify-frontend-android@0.1.30) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-android
+
 <a name="0.1.30-beta.0"></a>
 ## [0.1.30-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@0.1.12...amplify-frontend-android@0.1.30-beta.0) (2018-11-02)
 
