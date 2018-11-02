@@ -1,7 +1,8 @@
-const category = 'api';
+const { run } = require('./commands/api/console');
+
 
 async function console(context) {
-  context.print.info(`to be implemented: ${category} console`);
+  await run(context);
 }
 
 module.exports = {

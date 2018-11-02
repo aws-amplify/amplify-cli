@@ -18,6 +18,10 @@ module.exports = {
         }
 
         return providerController.console(context, result.service);
+      })
+      .catch((err) => {
+        context.print.error('Error opening console.');
+        context.print.info(err.message);
       });
   },
 };
