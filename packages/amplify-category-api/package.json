@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "0.1.29",
+  "version": "0.1.30-beta.0",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -10,15 +10,15 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-auth": "^0.1.29",
-    "amplify-category-function": "^0.1.29",
-    "amplify-category-storage": "^0.1.29",
+    "amplify-category-auth": "^0.1.30-beta.0",
+    "amplify-category-function": "^0.1.30-beta.0",
+    "amplify-category-storage": "^0.1.30-beta.0",
     "eslint": "^4.9.0",
     "fs-extra": "^6.0.1",
     "inquirer": "^3.2.1",
     "moment": "^2.22.2",
-    "uuid": "^2.0.3",
-    "opn": "^5.3.0"
+    "opn": "^5.3.0",
+    "uuid": "^2.0.3"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
