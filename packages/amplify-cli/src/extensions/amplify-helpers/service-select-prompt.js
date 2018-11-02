@@ -1,11 +1,14 @@
 const inquirer = require('inquirer');
 const { getProjectConfig } = require('./get-project-config');
+const { getProviderPlugins } = require('./get-provider-plugins');
 
-function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
+function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
+  const providerPlugins = getProviderPlugins(context);
+
   const filteredServices = [];
 
   Object.keys(supportedServices).forEach((service) => {
-    if (providerPlugins[supportedServices[service].provider]) {
+    if (enabledProviders.includes(supportedServices[service].provider)) {
       filteredServices.push({
         service,
         providerPlugin: providerPlugins[supportedServices[service].provider],
@@ -58,7 +61,7 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
 
 function serviceSelectionPrompt(context, category, supportedServices) {
   const { providers } = getProjectConfig();
-  supportedServices = filterServicesByEnabledProviders(providers, supportedServices);
+  supportedServices = filterServicesByEnabledProviders(context, providers, supportedServices);
   return serviceQuestionWalkthrough(context, supportedServices, category);
 }
 
