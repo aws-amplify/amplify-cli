@@ -107,13 +107,13 @@ describe('get-when helper: ', () => {
 
     it('...should return true when a single andCondition is met (operator: configMatch)', () => {
       mockProjectConfig.mockReturnValue({
-        frontendHandler: {
+        frontend: {
           ios: 'iamios',
         },
       });
       input.andConditions = [
         {
-          key: 'frontendHandler',
+          key: 'frontend',
           value: 'ios',
           operator: 'configMatch',
         },
@@ -160,13 +160,13 @@ describe('get-when helper: ', () => {
 
     it('...should return false when a single andCondition is not met (operator: configMatch)', () => {
       mockProjectConfig.mockReturnValue({
-        frontendHandler: {
+        frontend: {
           ios: 'iamios',
         },
       });
       input.andConditions = [
         {
-          key: 'frontendHandler',
+          key: 'frontend',
           value: 'android',
           operator: 'configMatch',
         },
@@ -279,13 +279,13 @@ describe('get-when helper: ', () => {
 
     it('...should return true when a single orConditions is met (operator: configMatch)', () => {
       mockProjectConfig.mockReturnValue({
-        frontendHandler: {
+        frontend: {
           ios: 'iamios',
         },
       });
       input.orConditions = [
         {
-          key: 'frontendHandler',
+          key: 'frontend',
           value: 'ios',
           operator: 'configMatch',
         },
@@ -332,13 +332,13 @@ describe('get-when helper: ', () => {
 
     it('...should return false when a single orConditions is not met (operator: configMatch)', () => {
       mockProjectConfig.mockReturnValue({
-        frontendHandler: {
+        frontend: {
           ios: 'iamios',
         },
       });
       input.orConditions = [
         {
-          key: 'frontendHandler',
+          key: 'frontend',
           value: 'android',
           operator: 'configMatch',
         },

@@ -1,5 +1,7 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
+const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const { print } = require('gluegun/print');
 
 function run(context) {
@@ -15,23 +17,25 @@ function run(context) {
   fs.ensureDirSync(dotConfigDirPath);
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
+
+
+  const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks = [];
-  const { providers } = context.exeInfo.projectConfig;
-  Object.keys(providers).forEach((providerKey) => {
-    const provider = require(providers[providerKey]);
-    providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
+  context.exeInfo.projectConfig.providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
   });
 
   return sequential(providerOnSuccessTasks).then(() => {
-    const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
-    const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
-    return frontendHandler.onInitSuccessful(context);
+    const frontendPlugins = getFrontendPlugins(context);
+    const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+    return frontendModule.onInitSuccessful(context);
   }).then(() => {
     let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
     const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
     fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
 
-    jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
+    jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
     const currentBackendMetaFilePath =
               amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');

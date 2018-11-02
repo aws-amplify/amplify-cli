@@ -1,6 +1,7 @@
 const ora = require('ora');
 const { getProjectConfig } = require('./get-project-config');
 const { getCategoryPlugins } = require('./get-category-plugins');
+const { getProviderPlugins } = require('./get-provider-plugins');
 const pathManager = require('./path-manager');
 
 const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
@@ -10,10 +11,11 @@ async function deleteProject(context) {
     .then((answer) => {
       if (answer) {
         const { providers } = getProjectConfig();
+        const providerPlugins = getProviderPlugins(context);
         const providerPromises = [];
 
-        Object.keys(providers).forEach((providerName) => {
-          const pluginModule = require(providers[providerName]);
+        providers.forEach((providerName) => {
+          const pluginModule = require(providerPlugins[providerName]);
           providerPromises.push(pluginModule.deleteProject(context));
         });
 

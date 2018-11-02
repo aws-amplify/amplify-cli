@@ -7,7 +7,7 @@ function getAvailableServices(context) {
   const availableServices = [];
   const projectConfig = context.amplify.getProjectConfig();
   Object.keys(supportedServices).forEach((service) => {
-    if (Object.keys(projectConfig.providers).includes(supportedServices[service].provider)) {
+    if (projectConfig.providers.includes(supportedServices[service].provider)) {
       availableServices.push(service);
     }
   });
