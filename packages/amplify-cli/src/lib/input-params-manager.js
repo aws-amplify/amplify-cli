@@ -30,8 +30,8 @@ function transform(inputParams) {
   inputParams.amplify.frontend = inputParams.frontend.type || inputParams.frontend.frontend;
 
   if (inputParams.amplify.frontend) {
-    delete inputParams.frontend.type; 
-    delete inputParams.frontend.frontend
+    delete inputParams.frontend.type;
+    delete inputParams.frontend.frontend;
     inputParams[inputParams.amplify.frontend] = inputParams.frontend;
   }
   if (inputParams.amplify.providers.length > 0) {

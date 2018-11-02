@@ -50,7 +50,7 @@ function normalizeInputParams(context) {
       }
     }
   }
-  
+
   if (inputParams) {
     const normalizedInputParams = {};
 
