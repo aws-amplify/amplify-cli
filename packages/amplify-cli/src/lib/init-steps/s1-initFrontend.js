@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
-const { normalizeFrontendHandlerName }= require('../input-params-manager'); 
+const { normalizeFrontendHandlerName } = require('../input-params-manager');
 
 async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);

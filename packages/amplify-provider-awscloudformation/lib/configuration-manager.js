@@ -51,14 +51,14 @@ function normalizeInputParams(context) {
     }
   }
   if (inputParams) {
-    const normalizedInputParams = {}; 
+    const normalizedInputParams = {};
 
-    if(inputParams.configLevel && inputParams.configLevel === 'general'){
+    if (inputParams.configLevel && inputParams.configLevel === 'general') {
       normalizedInputParams.configLevel = 'general';
-    }else{
-      delete inputParams.configLevel; 
+    } else {
+      delete inputParams.configLevel;
       normalizedInputParams.configLevel = 'project';
-      normalizedInputParams.config = inputParams; 
+      normalizedInputParams.config = inputParams;
     }
 
     if (normalizedInputParams.configLevel === 'project') {

@@ -2,16 +2,17 @@ const path = require('path');
 const inquirer = require('inquirer');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
+
 const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 
 async function configure(context) {
-  const publishIgnoreFilePath = getPublishIgnoreFilePath(context); 
+  const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
   let publishIgnore = [];
 
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
       publishIgnore = require(publishIgnoreFilePath);
-    } catch (e){
+    } catch (e) {
       publishIgnore = [];
     }
   }
@@ -30,13 +31,12 @@ async function configure(context) {
   fs.writeFileSync(publishIgnoreFilePath, jsonString, 'utf8');
 }
 
-function getPublishIgnoreFilePath(context){
+function getPublishIgnoreFilePath(context) {
   const projectPath = context.amplify.pathManager.searchProjectRootPath();
-  if(projectPath || fs.existsSync(projectPath)){
+  if (projectPath || fs.existsSync(projectPath)) {
     return path.join(projectPath, PublishIgnoreFileName);
   }
-  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' \
-  in the root of your app directory to initialize your project with Amplify');
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
 }
 
 
@@ -123,14 +123,14 @@ async function removeIgnore(context, publishIgnore) {
 
 function getIgnore(context) {
   let publishIgnore;
-  const publishIgnoreFilePath = getPublishIgnoreFilePath(context); 
+  const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
       publishIgnore = require(publishIgnoreFilePath);
     } catch (e) {
       publishIgnore = [];
     }
-  }else{
+  } else {
     publishIgnore = [];
   }
   return publishIgnore;

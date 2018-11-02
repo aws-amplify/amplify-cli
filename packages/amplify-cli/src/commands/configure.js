@@ -4,7 +4,7 @@ const configProviders = require('../lib/config-steps/c2-configProviders');
 const configureNewUser = require('../lib/configure-new-user');
 const onFailure = require('../lib/config-steps/c9-onFailure');
 const onSuccess = require('../lib/config-steps/c9-onSuccess');
-const { normalizeInputParams }= require('../lib/input-params-manager'); 
+const { normalizeInputParams } = require('../lib/input-params-manager');
 
 module.exports = {
   name: 'configure',
@@ -26,6 +26,6 @@ module.exports = {
 
 function constructExeInfo(context) {
   context.exeInfo = {
-    inputParams: normalizeInputParams(context)
+    inputParams: normalizeInputParams(context),
   };
 }

@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 const { getResourceOutputs } = require('../../extensions/amplify-helpers/get-resource-outputs');
-const { normalizeFrontendHandlerName }= require('../input-params-manager'); 
+const { normalizeFrontendHandlerName } = require('../input-params-manager');
 
 async function run(context) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -34,7 +34,7 @@ async function selectFrontendHandler(context, frontendPlugins, currentFrontend) 
   if (!frontend && inputParams.yes) {
     frontend = 'javascript';
   }
-  
+
   if (!frontend) {
     const selectFrontend = {
       type: 'list',

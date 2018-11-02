@@ -3,7 +3,7 @@ const initFrontendHandler = require('../lib/init-steps/s1-initFrontend');
 const initProviders = require('../lib/init-steps/s2-initProviders');
 const onFailure = require('../lib/init-steps/s9-onFailure');
 const onSuccess = require('../lib/init-steps/s9-onSuccess');
-const { normalizeInputParams }= require('../lib/input-params-manager'); 
+const { normalizeInputParams } = require('../lib/input-params-manager');
 
 module.exports = {
   name: 'init',
@@ -19,6 +19,6 @@ module.exports = {
 
 function constructExeInfo(context) {
   context.exeInfo = {
-    inputParams: normalizeInputParams(context)
+    inputParams: normalizeInputParams(context),
   };
 }

@@ -36,7 +36,7 @@ async function configure(context) {
 
 function normalizeInputParams(context) {
   let inputParams;
-  if (context.exeInfo.inputParams && 
+  if (context.exeInfo.inputParams &&
     context.exeInfo.inputParams[constants.Label]) {
     inputParams = context.exeInfo.inputParams[constants.Label];
   }

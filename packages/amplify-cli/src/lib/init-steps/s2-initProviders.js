@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
-const { normalizeProviderName }= require('../input-params-manager'); 
+const { normalizeProviderName } = require('../input-params-manager');
 
 async function run(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -35,11 +35,11 @@ async function getProviders(context, providerPlugins) {
     });
   }
 
-  if (providers.length === 0){
-    if(inputParams.yes || providerPluginList.length == 1) {
+  if (providers.length === 0) {
+    if (inputParams.yes || providerPluginList.length === 1) {
       context.print.info(`Using default provider  ${providerPluginList[0]}`);
       providers.push(providerPluginList[0]);
-    }else {
+    } else {
       const selectProviders = {
         type: 'checkbox',
         name: 'selectedProviders',
