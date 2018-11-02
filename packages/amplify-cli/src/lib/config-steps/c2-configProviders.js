@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
+const { normalizeProviderName } = require('../input-params-manager');
 
 async function run(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -30,43 +31,36 @@ async function run(context) {
 }
 
 async function configureProviders(context, providerPlugins, currentProviders) {
-  let selectedProviders = [];
+  let providers = [];
+  const providerPluginList = Object.keys(providerPlugins);
   const { inputParams } = context.exeInfo;
-  if (inputParams.amplify && inputParams.amplify.providers) {
+  if (inputParams.amplify.providers) {
     inputParams.amplify.providers.forEach((provider) => {
-      provider = normalizeProviderName(provider, providerPlugins);
+      provider = normalizeProviderName(provider, providerPluginList);
       if (provider) {
-        selectedProviders.push(provider);
+        providers.push(provider);
       }
     });
   }
-  if (selectedProviders.length === 0) {
-    const providerPluginList = Object.keys(providerPlugins);
+
+  if (providers.length === 0) {
     if (inputParams.yes || providerPluginList.length === 1) {
-      context.print.info(`Using default provider ${providerPluginList[0]}`);
-      selectedProviders.push(providerPluginList[0]);
+      context.print.info(`Using default provider  ${providerPluginList[0]}`);
+      providers.push(providerPluginList[0]);
     } else {
       const selectProviders = {
         type: 'checkbox',
-        name: 'userSelectedProviders',
+        name: 'selectedProviders',
         message: 'Select the backend providers.',
         choices: providerPluginList,
         default: currentProviders,
       };
       const answer = await inquirer.prompt(selectProviders);
-      selectedProviders = answer.userSelectedProviders;
+      providers = answer.selectedProviders;
     }
   }
-  return selectedProviders;
+  return providers;
 }
-
-function normalizeProviderName(name, providerPlugins) {
-  const nameSplit = name.split('-');
-  name = nameSplit[nameSplit.length - 1];
-  name = Object.keys(providerPlugins).includes(name) ? name : undefined;
-  return name;
-}
-
 
 module.exports = {
   run,

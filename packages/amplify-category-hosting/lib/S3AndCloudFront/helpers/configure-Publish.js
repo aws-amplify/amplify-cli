@@ -3,22 +3,19 @@ const inquirer = require('inquirer');
 const minimatch = require('minimatch');
 const fs = require('fs-extra');
 
-const { PublishIgnoreRCLabel } = require('../../constants');
+const PublishIgnoreFileName = 'amplifyPublishIgnore.json';
 
 async function configure(context) {
-  const amplifyRCFilePath = context.amplify.pathManager.getAmplifyRcFilePath();
-  let amplifyRC;
-  let publishIgnore;
+  const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
+  let publishIgnore = [];
 
-  if (fs.existsSync(amplifyRCFilePath)) {
+  if (fs.existsSync(publishIgnoreFilePath)) {
     try {
-      amplifyRC = require(amplifyRCFilePath);
+      publishIgnore = require(publishIgnoreFilePath);
     } catch (e) {
-      amplifyRC = {};
+      publishIgnore = [];
     }
   }
-
-  publishIgnore = amplifyRC[PublishIgnoreRCLabel] || [];
 
   publishIgnore = publishIgnore
     .map(ignore => ignore.trim())
@@ -29,11 +26,19 @@ async function configure(context) {
   context.print.info('Use glob patterns as in the .gitignore file.');
 
   publishIgnore = await configurePublishIgnore(context, publishIgnore);
-  amplifyRC[PublishIgnoreRCLabel] = publishIgnore;
 
-  const jsonString = JSON.stringify(amplifyRC, null, 4);
-  fs.writeFileSync(amplifyRCFilePath, jsonString, 'utf8');
+  const jsonString = JSON.stringify(publishIgnore, null, 4);
+  fs.writeFileSync(publishIgnoreFilePath, jsonString, 'utf8');
 }
+
+function getPublishIgnoreFilePath(context) {
+  const projectPath = context.amplify.pathManager.searchProjectRootPath();
+  if (projectPath || fs.existsSync(projectPath)) {
+    return path.join(projectPath, PublishIgnoreFileName);
+  }
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+}
+
 
 async function configurePublishIgnore(context, publishIgnore) {
   const DONE = "I'm done.";
@@ -117,17 +122,18 @@ async function removeIgnore(context, publishIgnore) {
 }
 
 function getIgnore(context) {
-  let result;
-  const amplifyRCFilePath = context.amplify.pathManager.getAmplifyRcFilePath();
-  if (fs.existsSync(amplifyRCFilePath)) {
+  let publishIgnore;
+  const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
+  if (fs.existsSync(publishIgnoreFilePath)) {
     try {
-      const amplifyRC = require(amplifyRCFilePath);
-      result = amplifyRC[PublishIgnoreRCLabel];
+      publishIgnore = require(publishIgnoreFilePath);
     } catch (e) {
-      result = undefined;
+      publishIgnore = [];
     }
+  } else {
+    publishIgnore = [];
   }
-  return result;
+  return publishIgnore;
 }
 
 function isIgnored(filePath, publishIgnore, ignoreRoot) {

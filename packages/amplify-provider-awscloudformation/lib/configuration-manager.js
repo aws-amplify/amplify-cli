@@ -50,25 +50,33 @@ function normalizeInputParams(context) {
       }
     }
   }
+
   if (inputParams) {
-    if (!inputParams.configLevel) {
-      inputParams.configLevel = inputParams.config ? 'project' : 'general';
+    const normalizedInputParams = {};
+
+    if (inputParams.configLevel && inputParams.configLevel === 'general') {
+      normalizedInputParams.configLevel = 'general';
+    } else {
+      delete inputParams.configLevel;
+      normalizedInputParams.configLevel = 'project';
+      normalizedInputParams.config = inputParams;
     }
-    if (inputParams.configLevel === 'project') {
+
+    if (normalizedInputParams.configLevel === 'project') {
       let errorMessage;
-      if (!inputParams.config) {
+      if (!normalizedInputParams.config || Object.keys(normalizedInputParams.config).length < 1) {
         errorMessage = 'configLevel set to "project" but project level config is missing.';
       } else {
-        if (!inputParams.config.useProfile) {
-          inputParams.config.useProfile = false;
+        if (!normalizedInputParams.config.useProfile) {
+          normalizedInputParams.config.useProfile = false;
         }
-        if (inputParams.config.useProfile) {
-          if (!inputParams.config.profileName) {
+        if (normalizedInputParams.config.useProfile) {
+          if (!normalizedInputParams.config.profileName) {
             errorMessage = 'project level config set useProfile to true, but profile name is missing.';
           }
-        } else if (!inputParams.config.accessKeyId ||
-            !inputParams.config.secretAccessKey ||
-            !inputParams.config.region) {
+        } else if (!normalizedInputParams.config.accessKeyId ||
+            !normalizedInputParams.config.secretAccessKey ||
+            !normalizedInputParams.config.region) {
           errorMessage = 'project level config set useProfile to false, but access key or region is missing.';
         }
       }
@@ -77,7 +85,9 @@ function normalizeInputParams(context) {
         throw new Error(errorMessage);
       }
     }
-    context.exeInfo.inputParams[constants.Label] = inputParams;
+
+
+    context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
   }
 }
 

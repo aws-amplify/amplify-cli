@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
+const { normalizeProviderName } = require('../input-params-manager');
 
 async function run(context) {
   const providerPlugins = getProviderPlugins(context);
@@ -20,22 +21,22 @@ async function run(context) {
   return context;
 }
 
-
 async function getProviders(context, providerPlugins) {
   let providers = [];
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.providers) {
-    context.exeInfo.inputParams.amplify.providers.forEach((p) => {
-      const providerName = normalizeProviderName(p, providerPlugins);
-      if (providerName) {
-        providers.push(providerName);
+  const providerPluginList = Object.keys(providerPlugins);
+  const { inputParams } = context.exeInfo;
+  if (inputParams.amplify.providers) {
+    inputParams.amplify.providers.forEach((provider) => {
+      provider = normalizeProviderName(provider, providerPluginList);
+      if (provider) {
+        providers.push(provider);
       }
     });
   }
 
   if (providers.length === 0) {
-    const providerPluginList = Object.keys(providerPlugins);
-    if (context.exeInfo.inputParams.yes || providerPluginList.length === 1) {
-      context.print.info(`Using default provider ${providerPluginList[0]}`);
+    if (inputParams.yes || providerPluginList.length === 1) {
+      context.print.info(`Using default provider  ${providerPluginList[0]}`);
       providers.push(providerPluginList[0]);
     } else {
       const selectProviders = {
@@ -50,13 +51,6 @@ async function getProviders(context, providerPlugins) {
     }
   }
   return providers;
-}
-
-function normalizeProviderName(name, providerPlugins) {
-  const nameSplit = name.split('-');
-  name = nameSplit[nameSplit.length - 1];
-  name = Object.keys(providerPlugins).includes(name) ? name : undefined;
-  return name;
 }
 
 module.exports = {

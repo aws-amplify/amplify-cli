@@ -4,6 +4,7 @@ const configProviders = require('../lib/config-steps/c2-configProviders');
 const configureNewUser = require('../lib/configure-new-user');
 const onFailure = require('../lib/config-steps/c9-onFailure');
 const onSuccess = require('../lib/config-steps/c9-onSuccess');
+const { normalizeInputParams } = require('../lib/input-params-manager');
 
 module.exports = {
   name: 'configure',
@@ -13,7 +14,7 @@ module.exports = {
     }
 
     if (context.parameters.first === 'project') {
-      context.amplify.constructExeInfo(context); 
+      constructExeInfo(context);
       return analyzeProject.run(context)
         .then(configFrontendHandler.run)
         .then(configProviders.run)
@@ -22,3 +23,9 @@ module.exports = {
     }
   },
 };
+
+function constructExeInfo(context) {
+  context.exeInfo = context.amplify.getProjectDetails();
+  context.exeInfo.inputParams = normalizeInputParams(context);
+}
+
