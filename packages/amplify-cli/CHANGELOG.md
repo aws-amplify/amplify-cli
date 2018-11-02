@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.31"></a>
+## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.13...@aws-amplify/cli@0.1.31) (2018-11-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/cli:** lint errors ([73d1ff6](https://github.com/aws-amplify/amplify-cli/commit/73d1ff6))
+* **@aws-amplify/cli:** support yarn ([59cc5c2](https://github.com/aws-amplify/amplify-cli/commit/59cc5c2))
+* **yarn:** support symlink dotfiles ([b604ed2](https://github.com/aws-amplify/amplify-cli/commit/b604ed2))
+
+
+
+
 <a name="0.1.30"></a>
 ## [0.1.30](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.30-beta.0...@aws-amplify/cli@0.1.30) (2018-11-02)
 
