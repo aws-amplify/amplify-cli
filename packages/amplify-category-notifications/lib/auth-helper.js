@@ -79,8 +79,8 @@ async function checkAuth(context) {
 }
 
 async function getIamClient(context) {
-  const { projectConfig } = context.exeInfo;
-  const provider = require(projectConfig.providers[providerName]);
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
   const aws = await provider.getConfiguredAWSClient(context);
   return new aws.IAM();
 }

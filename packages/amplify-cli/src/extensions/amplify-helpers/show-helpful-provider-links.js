@@ -1,16 +1,18 @@
 const { getProjectConfig } = require('./get-project-config');
 const { getResourceStatus } = require('./resource-status');
+const { getProviderPlugins } = require('./get-provider-plugins');
 
 async function showHelpfulProviderLinks(context) {
   const { providers } = getProjectConfig();
+  const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 
   const {
     allResources,
   } = await getResourceStatus();
 
-  Object.keys(providers).forEach((providerName) => {
-    const pluginModule = require(providers[providerName]);
+  providers.forEach((providerName) => {
+    const pluginModule = require(providerPlugins[providerName]);
     providerPromises.push(pluginModule.showHelpfulLinks(context, allResources));
   });
 
