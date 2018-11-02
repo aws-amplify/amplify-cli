@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.30-beta.1"></a>
+## [1.0.30-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.30-beta.0...graphql-transformer-common@1.0.30-beta.1) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
 <a name="1.0.30-beta.0"></a>
 ## [1.0.30-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.30-beta.0) (2018-11-02)
 

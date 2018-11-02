@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "0.1.30-beta.0",
+  "version": "0.1.30-beta.1",
   "description": "amplify-cli authentication plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
