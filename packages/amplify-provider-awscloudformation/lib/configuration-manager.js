@@ -50,6 +50,7 @@ function normalizeInputParams(context) {
       }
     }
   }
+  
   if (inputParams) {
     const normalizedInputParams = {};
 
@@ -66,16 +67,16 @@ function normalizeInputParams(context) {
       if (!normalizedInputParams.config || Object.keys(normalizedInputParams.config).length < 1) {
         errorMessage = 'configLevel set to "project" but project level config is missing.';
       } else {
-        if (!inputParams.config.useProfile) {
-          inputParams.config.useProfile = false;
+        if (!normalizedInputParams.config.useProfile) {
+          normalizedInputParams.config.useProfile = false;
         }
-        if (inputParams.config.useProfile) {
-          if (!inputParams.config.profileName) {
+        if (normalizedInputParams.config.useProfile) {
+          if (!normalizedInputParams.config.profileName) {
             errorMessage = 'project level config set useProfile to true, but profile name is missing.';
           }
-        } else if (!inputParams.config.accessKeyId ||
-            !inputParams.config.secretAccessKey ||
-            !inputParams.config.region) {
+        } else if (!normalizedInputParams.config.accessKeyId ||
+            !normalizedInputParams.config.secretAccessKey ||
+            !normalizedInputParams.config.region) {
           errorMessage = 'project level config set useProfile to false, but access key or region is missing.';
         }
       }

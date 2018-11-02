@@ -5,10 +5,7 @@ function normalizeInputParams(context) {
     inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
   });
   transform(inputParams);
-
-  context.exeInfo = {
-    inputParams,
-  };
+  return inputParams;
 }
 
 function normalizeKey(key) {
@@ -26,22 +23,24 @@ function normalizeKey(key) {
 
 function transform(inputParams) {
   inputParams.amplify = inputParams.amplify || {};
-  inputParams.providiers = inputParams.providiers || {};
+  inputParams.providers = inputParams.providers || {};
   inputParams.frontend = inputParams.frontend || {};
 
-  inputParams.amplify.providers = Object.keys(inputParams.providiers);
+  inputParams.amplify.providers = Object.keys(inputParams.providers);
   inputParams.amplify.frontend = inputParams.frontend.type || inputParams.frontend.frontend;
 
   if (inputParams.amplify.frontend) {
+    delete inputParams.frontend.type; 
+    delete inputParams.frontend.frontend
     inputParams[inputParams.amplify.frontend] = inputParams.frontend;
   }
   if (inputParams.amplify.providers.length > 0) {
     inputParams.amplify.providers.forEach((provider) => {
-      inputParams[provider] = inputParams.providiers[provider];
+      inputParams[provider] = inputParams.providers[provider];
     });
   }
   delete inputParams.frontend;
-  delete inputParams.providiers;
+  delete inputParams.providers;
 }
 
 function normalizeProviderName(name, providerPluginList) {

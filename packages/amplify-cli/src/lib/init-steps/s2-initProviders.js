@@ -21,7 +21,6 @@ async function run(context) {
   return context;
 }
 
-
 async function getProviders(context, providerPlugins) {
   let providers = [];
   const providerPluginList = Object.keys(providerPlugins);
