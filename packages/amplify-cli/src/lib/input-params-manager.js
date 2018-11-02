@@ -2,7 +2,8 @@ function normalizeInputParams(context) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach((key) => {
     const normalizedKey = normalizeKey(key);
-    inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
+    const normalizedValue = normalizeValue(normalizedKey, context.parameters.options[key]);
+    inputParams[normalizedKey] = normalizedValue;
   });
   transform(inputParams);
   return inputParams;
@@ -12,13 +13,26 @@ function normalizeKey(key) {
   if (['y', 'yes'].includes(key)) {
     key = 'yes';
   }
-  if (['p', 'provider', 'providers', 'providers-config'].includes(key)) {
+  if (['a', 'amplify', 'amplify-config', 'amplifyConfig'].includes(key)) {
+    key = 'amplify';
+  }
+  if (['p', 'provider', 'providers', 'providers-config', 'providersConfig'].includes(key)) {
     key = 'providers';
   }
-  if (['f', 'frontend', 'frontend-config'].includes(key)) {
+  if (['f', 'frontend', 'frontend-config', 'frontendConfig'].includes(key)) {
     key = 'frontend';
   }
   return key;
+}
+
+function normalizeValue(key, value) {
+  let normalizedValue = JSON.parse(value);
+  if(key === 'providers'){
+    if(!Array.isArray(normalizedValue)){
+      normalizedValue = [ normalizedValue ]; 
+    }
+  }
+  return normalizedValue;
 }
 
 function transform(inputParams) {

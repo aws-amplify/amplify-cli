@@ -1,4 +1,5 @@
-const { normalizeInputParams } = require('../walkthrough/normalizeInputParams');
+const { normalizeInputParams } = require('../utils/input-params-manager');
+const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const askShouldUpdateCode = require('../walkthrough/questions/updateCode');
 const askShouldUpdateDocs = require('../walkthrough/questions/updateDocs');
@@ -12,17 +13,25 @@ async function prePushUpdateCallback(context, resourceName) {
 
     let shouldGenerateCode = false;
     let shouldGenerateDocs = false; 
-    normalizeInputParams(context);
     if(context.exeInfo.inputParams){
-      if(context.exeInfo.inputParams[constants.Label]){
-        shouldGenerateCode = context.exeInfo.inputParams[constants.Label].generateCode;
-        shouldGenerateDocs = context.exeInfo.inputParams[constants.Label].generateDocs;
-      }else if(context.exeInfo.inputParams.yes){
+      normalizeInputParams(context);
+      const inputParams = context.exeInfo.inputParams[constants.Label]; 
+      const yesFlag = context.exeInfo.inputParams.yes;
+
+      if(inputParams && inputParams.hasOwnProperty('generateCode')){
+        shouldGenerateCode = inputParams.generateCode;
+      }else if(yesFlag){
         shouldGenerateCode = true; 
-        shouldGenerateDocs = true;
       }else{
         shouldGenerateCode = await askShouldUpdateCode();
-        if(shouldGenerateCode){
+      }
+
+      if(shouldGenerateCode){
+        if(inputParams && inputParams.hasOwnProperty('generateDocs')){
+          shouldGenerateDocs = inputParams.generateDocs;
+        }else if(yesFlag){
+          shouldGenerateDocs = true; 
+        }else{
           shouldGenerateDocs = await askShouldUpdateDocs();
         }
       }

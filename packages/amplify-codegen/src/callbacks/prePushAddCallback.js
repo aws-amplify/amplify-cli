@@ -1,18 +1,22 @@
-const { normalizeInputParams } = require('../walkthrough/normalizeInputParams');
+const { normalizeInputParams } = require('../utils/input-params-manager');
+const constants = require('../constants');
 const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
 const constants = require('../constants');
 
 async function prePushAddCallback(context, resourceName) {
   let shouldGenerateCode = false;
-  normalizeInputParams(context);
   if(context.exeInfo.inputParams){
-    if(context.exeInfo.inputParams[constants.Label]){
-      shouldGenerateCode = context.exeInfo.inputParams[constants.Label].generateCode;
-    }else if(context.exeInfo.inputParams.yes){
+    normalizeInputParams(context);
+    const inputParams = context.exeInfo.inputParams[constants.Label]; 
+    const yesFlag = context.exeInfo.inputParams.yes;
+
+    if(inputParams && inputParams.hasOwnProperty('generateCode')){
+      shouldGenerateCode = inputParams.generateCode;
+    }else if(yesFlag){
       shouldGenerateCode = true; 
     }else{
-      shouldGenerateCode = await askShouldGenerateCode();
+      shouldGenerateCode = await askShouldUpdateCode();
     }
   }else{
     shouldGenerateCode = await askShouldGenerateCode();
