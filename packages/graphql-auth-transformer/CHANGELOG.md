@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.31-beta.0"></a>
+## [1.0.31-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@1.0.12...graphql-auth-transformer@1.0.31-beta.0) (2018-11-02)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** Modifies the name of the user pool resource ([d613481](https://github.com/aws-amplify/amplify-cli/commit/d613481))
+
+
+
+
 <a name="1.0.30"></a>
 ## [1.0.30](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@1.0.30-beta.0...graphql-auth-transformer@1.0.30) (2018-11-02)
 

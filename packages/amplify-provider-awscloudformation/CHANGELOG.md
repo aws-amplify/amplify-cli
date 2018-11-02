@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.31-beta.0"></a>
+## [0.1.31-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.12...amplify-provider-awscloudformation@0.1.31-beta.0) (2018-11-02)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Fixes lambda function src files changes detection ([b0f216f](https://github.com/aws-amplify/amplify-cli/commit/b0f216f))
+
+
+
+
 <a name="0.1.30"></a>
 ## [0.1.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.30-beta.0...amplify-provider-awscloudformation@0.1.30) (2018-11-02)
 
