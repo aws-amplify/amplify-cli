@@ -4,7 +4,7 @@ const { print } = require('gluegun/print');
 const chalk = require('chalk');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
-const {getEnvInfo} = require('./get-env-info');
+const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
@@ -253,8 +253,7 @@ async function getResourceStatus(category, resourceName, providerName) {
 }
 
 async function showResourceTable(category, resourceName) {
-
-  const {envName} = getEnvInfo();
+  const { envName } = getEnvInfo();
 
   print.info('');
   print.info(`${chalk.green('Current Environment')}: ${envName}`);
