@@ -2,7 +2,6 @@ const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
-const constants = require('../constants');
 
 async function prePushAddCallback(context, resourceName) {
   let shouldGenerateCode = false;

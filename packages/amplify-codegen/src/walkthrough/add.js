@@ -22,11 +22,11 @@ async function addWalkThrough(context, skip = []) {
 
   normalizeInputParams(context);
   let inputParams; 
-  let yetFlag = false; 
+  let yesFlag = false; 
   if(context.exeInfo.inputParams){
     normalizeInputParams(context);
     inputParams = context.exeInfo.inputParams[constants.Label]; 
-    yetFlag = context.exeInfo.inputParams.yes;
+    yesFlag = context.exeInfo.inputParams.yes;
   }
 
   const frontend = getFrontEndHandler(context);
