@@ -33,14 +33,16 @@ async function initializeEnv(context) {
 
   await sequential(initializationTasks);
 
-  if (!context.exeInfo.noPush) {
-    if (context.exeInfo.forcePush || await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?')) {
-      Object.keys(providers).forEach((providerKey) => {
-        const provider = require(providers[providerKey]);
-        providerPushTasks.push(() => provider.pushResources(context));
-      });
-      await sequential(providerPushTasks);
-    }
+  if (context.exeInfo.forcePush === undefined) {
+    context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
+  }
+
+  if (context.exeInfo.forcePush) {
+    Object.keys(providers).forEach((providerKey) => {
+      const provider = require(providers[providerKey]);
+      providerPushTasks.push(() => provider.pushResources(context));
+    });
+    await sequential(providerPushTasks);
   }
 }
 

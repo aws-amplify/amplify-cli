@@ -32,10 +32,12 @@ function run(context) {
     }).then(() => {
       const { providers } = context.exeInfo.projectConfig;
       const initializationTasks = [];
-      Object.keys(providers).forEach((providerKey) => {
-        const provider = require(providers[providerKey]);
-        initializationTasks.push(() => provider.init(context));
-      });
+      if (context.exeInfo.isNewEnv) {
+        Object.keys(providers).forEach((providerKey) => {
+          const provider = require(providers[providerKey]);
+          initializationTasks.push(() => provider.init(context));
+        });
+      }
       return sequential(initializationTasks)
         .then(() => context)
         .catch((err) => {

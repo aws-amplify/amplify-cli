@@ -10,7 +10,7 @@ async function pushResources(context, category, resourceName) {
     const allEnvs = context.amplify.getAllEnvs(context);
     if (allEnvs.findIndex(env => env === envName) !== -1) {
       context.exeInfo = {};
-      context.exeInfo.noPush = true;
+      context.exeInfo.forcePush = false;
       const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
       if (fs.existsSync(projectConfigFilePath)) {
         context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
