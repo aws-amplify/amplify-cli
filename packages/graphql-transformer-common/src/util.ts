@@ -17,3 +17,5 @@ export function toCamelCase(words: string[]): string {
     const formatted = words.map((w, i) => i === 0 ? w.charAt(0).toLowerCase() + w.slice(1) : w.charAt(0).toUpperCase() + w.slice(1))
     return formatted.join('')
 }
+
+export const NONE_VALUE = '___xamznone____'

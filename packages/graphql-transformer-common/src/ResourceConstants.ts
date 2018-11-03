@@ -18,7 +18,7 @@ export class ResourceConstants {
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
-        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient'
+        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
     }
     public static PARAMETERS = {
         // AppSync
@@ -74,6 +74,11 @@ export class ResourceConstants {
 
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
-        VersionedCondition: "versionedCondition"
+        VersionedCondition: "versionedCondition",
+        IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",
+        IsLocalDynamicGroupAuthorizedVariable: "isLocalDynamicGroupAuthorized",
+        IsStaticGroupAuthorizedVariable: "isStaticGroupAuthorized",
+        IsOwnerAuthorizedVariable: "isOwnerAuthorized",
+        IsLocalOwnerAuthorizedVariable: "isLocalOwnerAuthorized"
     }
 }

@@ -36,11 +36,18 @@ beforeAll(async () => {
         createdAt: String
         updatedAt: String
         comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+        sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
     type Comment @model {
         id: ID!
         content: String!
         post: Post @connection(name: "PostComments", keyField: "postId")
+    }
+    type SortedComment @model{
+        id: ID!
+        content: String!
+        when: String!
+        post: Post @connection(name: "SortedPostComments", keyField: "postId")
     }
     `
     const transformer = new GraphQLTransform({
@@ -135,6 +142,140 @@ test('Test queryPost query', async () => {
         const items = queryResponse.data.getPost.comments.items
         expect(items.length).toEqual(1)
         expect(items[0].id).toEqual(createCommentResponse.data.createComment.id)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+const title = "Test Query with Sort Field"
+const comment1 = "a comment and a date! - 1"
+const comment2 = "a comment and a date! - 2"
+const when1 = "2018-10-01T00:00:00.000Z"
+const when2 = "2018-10-01T00:00:01.000Z"
+
+test('Test queryPost query with sortField', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "${title}" }) {
+                id
+                title
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual(title)
+        const createCommentResponse1 = await GRAPHQL_CLIENT.query(`mutation {
+            createSortedComment(input:
+                { content: "${comment1}",
+                    when: "${when1}"
+                    postId: "${createResponse.data.createPost.id}"
+                }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse1.data.createSortedComment.id).toBeDefined()
+        expect(createCommentResponse1.data.createSortedComment.content).toEqual(comment1)
+        expect(createCommentResponse1.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id)
+        expect(createCommentResponse1.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title)
+
+        // create 2nd comment, 1 second later
+        const createCommentResponse2 = await GRAPHQL_CLIENT.query(`mutation {
+            createSortedComment(input:
+                { content: "${comment2}",
+                    when: "${when2}"
+                    postId: "${createResponse.data.createPost.id}"
+                }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse2.data.createSortedComment.id).toBeDefined()
+        expect(createCommentResponse2.data.createSortedComment.content).toEqual(comment2)
+        expect(createCommentResponse2.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id)
+        expect(createCommentResponse2.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title)
+
+        const queryResponse = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${createResponse.data.createPost.id}") {
+                id
+                title
+                sortedComments {
+                    items {
+                        id
+                        when
+                        content
+                    }
+                }
+            }
+        }`, {})
+        expect(queryResponse.data.getPost).toBeDefined()
+        const items = queryResponse.data.getPost.sortedComments.items
+        expect(items.length).toEqual(2)
+        expect(items[0].id).toEqual(createCommentResponse1.data.createSortedComment.id)
+        expect(items[1].id).toEqual(createCommentResponse2.data.createSortedComment.id)
+
+        const queryResponseDesc = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${createResponse.data.createPost.id}") {
+                id
+                title
+                sortedComments(sortDirection: DESC) {
+                    items {
+                        id
+                        when
+                        content
+                    }
+                }
+            }
+        }`, {})
+        expect(queryResponseDesc.data.getPost).toBeDefined()
+        const itemsDesc = queryResponseDesc.data.getPost.sortedComments.items
+        expect(itemsDesc.length).toEqual(2)
+        expect(itemsDesc[0].id).toEqual(createCommentResponse2.data.createSortedComment.id)
+        expect(itemsDesc[1].id).toEqual(createCommentResponse1.data.createSortedComment.id)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test create comment without a post and then querying the comment.', async () => {
+    try {
+        const createCommentResponse1 = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input:
+                { content: "${comment1}" }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse1.data.createComment.id).toBeDefined()
+        expect(createCommentResponse1.data.createComment.content).toEqual(comment1)
+        expect(createCommentResponse1.data.createComment.post).toBeNull()
+
+        const queryResponseDesc = await GRAPHQL_CLIENT.query(`query {
+            getComment(id: "${createCommentResponse1.data.createComment.id}") {
+                id
+                content
+                post {
+                    id
+                }
+            }
+        }`, {})
+        expect(queryResponseDesc.data.getComment).toBeDefined()
+        expect(queryResponseDesc.data.getComment.post).toBeNull()
     } catch (e) {
         console.error(e)
         // fail

@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
+const opn = require('opn');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -8,6 +9,29 @@ const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const providerName = 'awscloudformation';
 
+function openConsole(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const categoryAmplifyMeta = amplifyMeta[category];
+  let appSyncMeta;
+  Object.keys((categoryAmplifyMeta)).forEach((resourceName) => {
+    if (categoryAmplifyMeta[resourceName].service === serviceName &&
+      categoryAmplifyMeta[resourceName].output) {
+      appSyncMeta = categoryAmplifyMeta[resourceName].output;
+    }
+  });
+
+
+  if (appSyncMeta) {
+    const { GraphQLAPIIdOutput } = appSyncMeta;
+    const { Region } = amplifyMeta.providers[providerName];
+
+    const consoleUrl =
+          `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+    opn(consoleUrl, { wait: false });
+  } else {
+    context.print.error('AppSync API is not pushed in the cloud.');
+  }
+}
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
@@ -326,4 +350,4 @@ function checkIfAuthExists(context) {
 }
 
 
-module.exports = { serviceWalkthrough, updateWalkthrough };
+module.exports = { serviceWalkthrough, updateWalkthrough, openConsole };

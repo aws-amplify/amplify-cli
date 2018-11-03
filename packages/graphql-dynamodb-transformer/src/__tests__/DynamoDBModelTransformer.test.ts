@@ -1,7 +1,7 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
     DefinitionNode, Kind, InputObjectTypeDefinitionNode, ListValueNode,
-    InputValueDefinitionNode, TypeNode
+    InputValueDefinitionNode, TypeNode, NamedTypeNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
@@ -48,6 +48,13 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     const definition = schema.Properties.Definition
     expect(definition).toBeDefined()
     const parsed = parse(definition);
+    const createPostInput = getInputType(parsed, 'CreatePostInput')
+    expectFieldsOnInputType(createPostInput, ['id', 'title', 'createdAt', 'updatedAt'])
+    // This id should always be optional.
+    // aka a named type node aka name.value would not be set if it were a non null node
+    const idField = createPostInput.fields.find(f => f.name.value === 'id')
+    console.log(idField)
+    expect((idField.type as NamedTypeNode).name.value).toEqual('ID');
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
     expectFields(queryType, ['customGetPost'])

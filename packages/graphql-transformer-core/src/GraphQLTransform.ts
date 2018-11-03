@@ -38,6 +38,9 @@ function makeSeenTransformationKey(
  * @param nodeKind The kind of the current node where the directive was found.
  */
 function matchDirective(definition: DirectiveDefinitionNode, directive: DirectiveNode, node: TypeSystemDefinitionNode) {
+    if (!directive) {
+        return false;
+    }
     if (definition.name.value !== directive.name.value) {
         // The definition is for the wrong directive. Do not match.
         return false;
@@ -185,7 +188,7 @@ export default class GraphQLTransform {
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
             (acc: any, t: Transformer) => ({ ...acc, [t.directive.name.value]: true }),
-            { aws_subscribe: true }
+            { aws_subscribe: true, aws_auth: true }
         )
         let allModelDefinitions = [...context.inputDocument.definitions]
         for (const transformer of this.transformers) {
@@ -209,36 +212,29 @@ export default class GraphQLTransform {
 
             // Apply each transformer and accumulate the context.
             for (const def of context.inputDocument.definitions as TypeDefinitionNode[]) {
-                for (const dir of def.directives) {
-                    if (!validDirectiveNameMap[dir.name.value]) {
-                        throw new UnknownDirectiveError(
-                            `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
-                        )
-                    }
-                    switch (def.kind) {
-                        case 'ObjectTypeDefinition':
-                            this.transformObject(transformer, def, dir, context)
-                            // Walk the fields and call field transformers.
-                            break
-                        case 'InterfaceTypeDefinition':
-                            this.transformInterface(transformer, def, dir, context)
-                            // Walk the fields and call field transformers.
-                            break;
-                        case 'ScalarTypeDefinition':
-                            this.transformScalar(transformer, def, dir, context)
-                            break;
-                        case 'UnionTypeDefinition':
-                            this.transformUnion(transformer, def, dir, context)
-                            break;
-                        case 'EnumTypeDefinition':
-                            this.transformEnum(transformer, def, dir, context)
-                            break;
-                        case 'InputObjectTypeDefinition':
-                            this.transformInputObject(transformer, def, dir, context)
-                            break;
-                        default:
-                            continue
-                    }
+                switch (def.kind) {
+                    case 'ObjectTypeDefinition':
+                        this.transformObject(transformer, def, validDirectiveNameMap, context)
+                        // Walk the fields and call field transformers.
+                        break
+                    case 'InterfaceTypeDefinition':
+                        this.transformInterface(transformer, def, validDirectiveNameMap, context)
+                        // Walk the fields and call field transformers.
+                        break;
+                    case 'ScalarTypeDefinition':
+                        this.transformScalar(transformer, def, validDirectiveNameMap, context)
+                        break;
+                    case 'UnionTypeDefinition':
+                        this.transformUnion(transformer, def, validDirectiveNameMap, context)
+                        break;
+                    case 'EnumTypeDefinition':
+                        this.transformEnum(transformer, def, validDirectiveNameMap, context)
+                        break;
+                    case 'InputObjectTypeDefinition':
+                        this.transformInputObject(transformer, def, validDirectiveNameMap, context)
+                        break;
+                    default:
+                        continue
                 }
             }
         }
@@ -260,22 +256,32 @@ export default class GraphQLTransform {
         return context.template
     }
 
-    private transformObject(transformer: Transformer, def: ObjectTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.object)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.object(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+    private transformObject(
+        transformer: Transformer,
+        def: ObjectTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
+    ) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.object)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.object(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`)
             }
         }
         for (const field of def.fields) {
-            for (const fDir of field.directives) {
-                this.transformField(transformer, def, field, fDir, context)
-            }
+            this.transformField(transformer, def, field, validDirectiveNameMap, context)
         }
     }
 
@@ -283,24 +289,29 @@ export default class GraphQLTransform {
         transformer: Transformer,
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         def: FieldDefinitionNode,
-        dir: DirectiveNode,
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
-        if (matchFieldDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.field)) {
-                const transformKey = makeSeenTransformationKey(dir, parent, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.field(parent, def, dir, context)
-                    this.seenTransformations[transformKey] = true
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchFieldDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.field)) {
+                    const transformKey = makeSeenTransformationKey(dir, parent, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.field(parent, def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
             }
         }
         for (const arg of def.arguments) {
-            for (const aDir of arg.directives) {
-                this.transformArgument(transformer, parent, def, arg, aDir, context)
-            }
+            this.transformArgument(transformer, parent, def, arg, validDirectiveNameMap, context)
         }
     }
 
@@ -309,136 +320,217 @@ export default class GraphQLTransform {
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         field: FieldDefinitionNode,
         arg: InputValueDefinitionNode,
-        dir: DirectiveNode,
+        validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
-        if (matchArgumentDirective(transformer.directive, dir, arg)) {
-            if (isFunction(transformer.argument)) {
-                const transformKey = makeSeenTransformationKey(dir, parent, field, arg)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.argument(arg, dir, context)
-                    this.seenTransformations[transformKey] = true
+        for (const dir of arg.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchArgumentDirective(transformer.directive, dir, arg)) {
+                if (isFunction(transformer.argument)) {
+                    const transformKey = makeSeenTransformationKey(dir, parent, field, arg)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.argument(arg, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'argument()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'argument()' method`)
             }
         }
     }
 
-    private transformInterface(transformer: Transformer, def: InterfaceTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.interface)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.interface(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+    private transformInterface(
+        transformer: Transformer,
+        def: InterfaceTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.interface)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.interface(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'interface()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'interface()' method`)
             }
         }
         for (const field of def.fields) {
-            for (const fDir of field.directives) {
-                this.transformField(transformer, def, field, fDir, context)
+            this.transformField(transformer, def, field, validDirectiveNameMap, context)
+        }
+    }
+
+    private transformScalar(
+        transformer: Transformer,
+        def: ScalarTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
+    ) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.scalar)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.scalar(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'scalar()' method`)
+                }
             }
         }
     }
 
-    private transformScalar(transformer: Transformer, def: ScalarTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.scalar)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.scalar(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+    private transformUnion(
+        transformer: Transformer,
+        def: UnionTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
+    ) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.union)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.union(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'union()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'scalar()' method`)
             }
         }
     }
 
-    private transformUnion(transformer: Transformer, def: UnionTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.union)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.union(def, dir, context)
-                    this.seenTransformations[transformKey] = true
-                }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'union()' method`)
+    private transformEnum(
+        transformer: Transformer,
+        def: EnumTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
+    ) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
             }
-        }
-    }
-
-    private transformEnum(transformer: Transformer, def: EnumTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.enum)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.enum(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.enum)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.enum(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enum()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enum()' method`)
             }
         }
         for (const value of def.values) {
-            for (const vDir of value.directives) {
-                this.transformEnumValue(transformer, def, value, vDir, context)
-            }
+            this.transformEnumValue(transformer, def, value, validDirectiveNameMap, context)
         }
     }
 
     private transformEnumValue(
-        transformer: Transformer, enm: EnumTypeDefinitionNode, def: EnumValueDefinitionNode, dir: DirectiveNode, context: TransformerContext
+        transformer: Transformer,
+        enm: EnumTypeDefinitionNode,
+        def: EnumValueDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
     ) {
-        if (matchEnumValueDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.enumValue)) {
-                const transformKey = makeSeenTransformationKey(dir, enm, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.enumValue(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchEnumValueDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.enumValue)) {
+                    const transformKey = makeSeenTransformationKey(dir, enm, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.enumValue(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enumValue()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enumValue()' method`)
             }
         }
     }
 
-    private transformInputObject(transformer: Transformer, def: InputObjectTypeDefinitionNode, dir: DirectiveNode, context: TransformerContext) {
-        if (matchDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.input)) {
-                const transformKey = makeSeenTransformationKey(dir, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.input(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+    private transformInputObject(
+        transformer: Transformer,
+        def: InputObjectTypeDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
+    ) {
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.input)) {
+                    const transformKey = makeSeenTransformationKey(dir, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.input(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'input()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'input()' method`)
             }
         }
         for (const field of def.fields) {
-            for (const fDir of field.directives) {
-                this.transformInputField(transformer, def, field, fDir, context)
-            }
+            this.transformInputField(transformer, def, field, validDirectiveNameMap, context)
         }
     }
 
     private transformInputField(
-        transformer: Transformer, input: InputObjectTypeDefinitionNode, def: InputValueDefinitionNode,
-        dir: DirectiveNode, context: TransformerContext
+        transformer: Transformer,
+        input: InputObjectTypeDefinitionNode,
+        def: InputValueDefinitionNode,
+        validDirectiveNameMap: { [k: string]: boolean },
+        context: TransformerContext
     ) {
-        if (matchInputFieldDirective(transformer.directive, dir, def)) {
-            if (isFunction(transformer.inputValue)) {
-                const transformKey = makeSeenTransformationKey(dir, input, def)
-                if (!this.seenTransformations[transformKey]) {
-                    transformer.inputValue(def, dir, context)
-                    this.seenTransformations[transformKey] = true
+        for (const dir of def.directives) {
+            if (!validDirectiveNameMap[dir.name.value]) {
+                throw new UnknownDirectiveError(
+                    `Unknown directive '${dir.name.value}'. Either remove the directive from the schema or add a transformer to handle it.`
+                )
+            }
+            if (matchInputFieldDirective(transformer.directive, dir, def)) {
+                if (isFunction(transformer.inputValue)) {
+                    const transformKey = makeSeenTransformationKey(dir, input, def)
+                    if (!this.seenTransformations[transformKey]) {
+                        transformer.inputValue(def, dir, context)
+                        this.seenTransformations[transformKey] = true
+                    }
+                } else {
+                    throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'inputValue()' method`)
                 }
-            } else {
-                throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'inputValue()' method`)
             }
         }
     }

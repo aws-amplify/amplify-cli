@@ -19,10 +19,10 @@ describe("isRequired", () => {
   });
 
   it("should return false for null types", () => {
-    expect(isRequired(testObj.getFields().street)).toEqual(false);
+    expect(isRequired(testObj.getFields().street.type)).toEqual(false);
   });
 
   it("should return true for non null types", () => {
-    expect(isRequired(testObj.getFields().requiredInt)).toEqual(true);
+    expect(isRequired(testObj.getFields().requiredInt.type)).toEqual(true);
   });
 });

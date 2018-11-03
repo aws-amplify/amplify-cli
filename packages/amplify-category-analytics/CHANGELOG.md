@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.30"></a>
+## [0.1.30](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.30-beta.0...amplify-category-analytics@0.1.30) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package amplify-category-analytics
+
+<a name="0.1.30-beta.0"></a>
+## [0.1.30-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.13...amplify-category-analytics@0.1.30-beta.0) (2018-11-02)
+
+
+### Bug Fixes
+
+* update pinpoint IAM policy to use mobiletargeting instead of mobileanalytics ([#326](https://github.com/aws-amplify/amplify-cli/issues/326)) ([96fcde6](https://github.com/aws-amplify/amplify-cli/commit/96fcde6))
+
+
+
+
+<a name="0.1.29"></a>
+## [0.1.29](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.29-beta.1...amplify-category-analytics@0.1.29) (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package amplify-category-analytics
+
+<a name="0.1.29-beta.1"></a>
+## [0.1.29-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.29-beta.0...amplify-category-analytics@0.1.29-beta.1) (2018-10-23)
+
+
+### Bug Fixes
+
+* update pinpoint IAM policy to use mobiletargeting instead of mobileanalytics ([#326](https://github.com/aws-amplify/amplify-cli/issues/326)) ([96fcde6](https://github.com/aws-amplify/amplify-cli/commit/96fcde6))
+
+
+
+
+<a name="0.1.29-beta.0"></a>
+## [0.1.29-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.13...amplify-category-analytics@0.1.29-beta.0) (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package amplify-category-analytics
+
 <a name="0.1.28"></a>
 ## [0.1.28](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.28-beta.0...amplify-category-analytics@0.1.28) (2018-10-18)
 

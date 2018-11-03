@@ -27,6 +27,11 @@ Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authoriz
 }
 
 async function transformGraphQLSchema(context, options) {
+  const flags = context.parameters.options;
+  if ('gql-override' in flags && !flags['gql-override']) {
+    return;
+  }
+
   let { resourceDir, parameters } = options;
   // const { noConfig } = options;
 
