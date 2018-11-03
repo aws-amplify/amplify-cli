@@ -15,7 +15,7 @@
     "amplify-category-storage": "^0.1.30",
     "eslint": "^4.9.0",
     "fs-extra": "^6.0.1",
-    "inquirer": "^3.2.1",
+    "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "opn": "^5.3.0",
     "uuid": "^2.0.3"
