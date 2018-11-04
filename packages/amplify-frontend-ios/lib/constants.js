@@ -1,5 +1,5 @@
 module.exports = {
-  Label: 'amplify-frontend-ios',
+  Label: 'ios',
   ProjectScanBaseScore: 0,
   ProjectScanMaxScore: 100,
   awsConfigFilename: 'awsconfiguration.json',

@@ -1,9 +1,11 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
+const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const { print } = require('gluegun/print');
 const { initializeEnv } = require('../initialize-env');
 
-function run(context) {
+async function run(context) {
   const { projectPath } = context.exeInfo.localEnvInfo;
   const { amplify } = context;
 
@@ -16,25 +18,28 @@ function run(context) {
   fs.ensureDirSync(dotConfigDirPath);
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
-  const providerOnSuccessTasks = [];
-  const { providers } = context.exeInfo.projectConfig;
 
-  const handlerName = Object.keys(context.exeInfo.projectConfig.frontendHandler)[0];
-  const frontendHandler = require(context.exeInfo.projectConfig.frontendHandler[handlerName]);
-  return frontendHandler.onInitSuccessful(context)
-    .then(async () => {
-      generateLocalRuntimeFiles(context);
-      generateNonRuntimeFiles(context);
-      if (context.exeInfo.isNewEnv) {
-        Object.keys(providers).forEach((providerKey) => {
-          const provider = require(providers[providerKey]);
-          providerOnSuccessTasks.push(() => provider.onInitSuccessful(context));
-        });
-      }
-      await sequential(providerOnSuccessTasks);
-      await initializeEnv(context);
-    })
-    .then(() => printWelcomeMessage());
+
+  const providerPlugins = getProviderPlugins(context);
+  const providerOnSuccessTasks = [];
+
+  const frontendPlugins = getFrontendPlugins(context);
+  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+
+  await frontendModule.onInitSuccessful(context);
+
+  generateLocalRuntimeFiles(context);
+  generateNonRuntimeFiles(context);
+  if (context.exeInfo.isNewEnv) {
+    context.exeInfo.projectConfig.providers.forEach((provider) => {
+      const providerModule = require(providerPlugins[provider]);
+      providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
+    });
+  }
+  await sequential(providerOnSuccessTasks);
+  await initializeEnv(context);
+
+  printWelcomeMessage();
 }
 
 function generateLocalRuntimeFiles(context) {
@@ -52,7 +57,7 @@ function generateLocalEnvInfoFile(context) {
 function generateAmplifyMetaFile(context) {
   if (context.exeInfo.isNewEnv) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const jsonString = JSON.stringify(context.exeInfo.metaData, null, 4);
+    const jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
     const currentBackendMetaFilePath =
               context.amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
     fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');

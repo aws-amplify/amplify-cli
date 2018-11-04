@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
 
 async function initializeEnv(context) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -21,14 +22,18 @@ async function initializeEnv(context) {
 
   fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
 
-  const { providers } = context.exeInfo.projectConfig;
+  const providerPlugins = getProviderPlugins(context);
 
   const initializationTasks = [];
   const providerPushTasks = [];
 
-  Object.keys(amplifyMeta.providers).forEach((providerKey) => {
-    const provider = require(providers[providerKey]);
-    initializationTasks.push(() => provider.initEnv(context, amplifyMeta.providers[providerKey]));
+
+  context.exeInfo.projectConfig.providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    initializationTasks.push(() => providerModule.initEnv(
+      context,
+      amplifyMeta.providers[provider],
+    ));
   });
 
   await sequential(initializationTasks);
@@ -38,9 +43,9 @@ async function initializeEnv(context) {
   }
 
   if (context.exeInfo.forcePush) {
-    Object.keys(providers).forEach((providerKey) => {
-      const provider = require(providers[providerKey]);
-      providerPushTasks.push(() => provider.pushResources(context));
+    context.exeInfo.projectConfig.providers.forEach((provider) => {
+      const providerModule = require(providerPlugins[provider]);
+      providerPushTasks.push(() => providerModule.pushResources(context));
     });
     await sequential(providerPushTasks);
   }
