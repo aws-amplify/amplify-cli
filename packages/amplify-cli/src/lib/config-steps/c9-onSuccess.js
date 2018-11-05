@@ -9,12 +9,9 @@ function run(context) {
   const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
   fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
 
-  jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, 4);
-  const currentBackendMetaFilePath =
-            amplify.pathManager.getCurentAmplifyMetaFilePath(projectPath);
-  fs.writeFileSync(currentBackendMetaFilePath, jsonString, 'utf8');
-  const backendMetaFilePath = amplify.pathManager.getAmplifyMetaFilePath(projectPath);
-  fs.writeFileSync(backendMetaFilePath, jsonString, 'utf8');
+  jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
+  const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
+  fs.writeFileSync(envFilePath, jsonString, 'utf8');
 
   printWelcomeMessage();
 }
@@ -22,7 +19,7 @@ function run(context) {
 
 function printWelcomeMessage() {
   print.info('');
-  print.info('Configuration done.');
+  print.success('Successfully made configuration changes to your project.');
   print.info('');
 }
 

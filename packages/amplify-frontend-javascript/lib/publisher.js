@@ -14,8 +14,9 @@ function run(context) {
 
 function publishToHostingBucket(context) {
   const { projectConfig } = context.exeInfo;
+  const { projectPath } = context.amplify.getEnvInfo();
   const distributionDirName = projectConfig[constants.Label].config.DistributionDir;
-  const distributionDirPath = path.join(projectConfig.projectPath, distributionDirName);
+  const distributionDirPath = path.join(projectPath, distributionDirName);
   const hostingPluginModule = require(context.amplify.getPlugin(context, hostingPlugin));
   return hostingPluginModule.publish(context, publishService, { distributionDirPath });
 }
