@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.13...amplify-category-auth@0.1.32-beta.0) (2018-11-05)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** Fix auth add not found on Windows. ([d9202fe](https://github.com/aws-amplify/amplify-cli/commit/d9202fe))
+
+
+
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.13...amplify-category-auth@0.1.31) (2018-11-02)
 

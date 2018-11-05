@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-ios",
-  "version": "0.1.31",
+  "version": "0.1.32-beta.0",
   "description": "amplify-cli front-end plugin for xcode projects",
   "main": "index.js",
   "author": "Amazon Web Services",
