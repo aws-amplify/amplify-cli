@@ -18,8 +18,8 @@ function normalizeInputParams(context) {
   if (inputParams) {
     const normalizedInputParams = {};
     Object.keys(inputParams).forEach((key) => {
-      const normalizedKey = normalizeKey(key);  
-      const normalizedValue = normalizeValue(normalizedKey, inputParams[key]); 
+      const normalizedKey = normalizeKey(key);
+      const normalizedValue = normalizeValue(normalizedKey, inputParams[key]);
       normalizedInputParams[normalizedKey] = normalizedValue;
     });
     context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
@@ -31,8 +31,8 @@ function normalizeKey(key) {
     key = 'generateCode';
   }
   if (['generateDocs', 'generate-docs', 'shouldGenerateDocs', 'should-generate-docs',
-      'generateStatements', 'generate-statements', 
-      'shouldGenerateStatements', 'should-generate-statements'].includes(key)) {
+    'generateStatements', 'generate-statements',
+    'shouldGenerateStatements', 'should-generate-statements'].includes(key)) {
     key = 'generateDocs';
   }
   if (['targetLanguage', 'target-language', 'codeLanguage', 'code-language'].includes(key)) {
@@ -44,18 +44,18 @@ function normalizeKey(key) {
   if (['generatedFileName', 'generated-file-name'].includes(key)) {
     key = 'generatedFileName';
   }
-  
-  
+
+
   return key;
 }
 
-function normalizeValue(key, value){
-  if(key === 'targetLanguage'){
-    value = value.toLowerCase(); 
+function normalizeValue(key, value) {
+  if (key === 'targetLanguage') {
+    value = value.toLowerCase();
   }
-  return value; 
+  return value;
 }
 
 module.exports = {
-  normalizeInputParams
+  normalizeInputParams,
 };

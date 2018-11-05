@@ -5,15 +5,13 @@ const addWalkThrough = require('../walkthrough/add');
 
 async function prePushAddCallback(context, resourceName) {
   let shouldGenerateCode = false;
-  if(context.exeInfo.inputParams){
+  if (context.exeInfo.inputParams) {
     normalizeInputParams(context);
-    const inputParams = context.exeInfo.inputParams[constants.Label]; 
+    const inputParams = context.exeInfo.inputParams[constants.Label];
     const yesFlag = context.exeInfo.inputParams.yes;
 
-    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
-      return askShouldGenerateCode();
-    });
-  }else{
+    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+  } else {
     shouldGenerateCode = await askShouldGenerateCode();
   }
 
@@ -36,16 +34,16 @@ async function prePushAddCallback(context, resourceName) {
   }
 }
 
-async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
-  let result; 
-  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction) {
+  let result;
+  if (inputParams && inputParams.hasOwnProperty(propertyName)) {
     result = inputParams[propertyName];
-  }else if(yesFlag && defaultValue != undefined){
-    result = defaultValue; 
-  }else{
+  } else if (yesFlag && defaultValue !== undefined) {
+    result = defaultValue;
+  } else {
     result = await askFunction();
   }
-  return result; 
+  return result;
 }
 
 module.exports = prePushAddCallback;

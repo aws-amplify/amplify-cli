@@ -10,50 +10,44 @@ async function prePushUpdateCallback(context, resourceName) {
     .getProjects()
     .find(projectItem => projectItem.projectName === resourceName);
   if (project) {
-
     let shouldGenerateCode = false;
-    let shouldGenerateDocs = false; 
-    if(context.exeInfo.inputParams){
+    let shouldGenerateDocs = false;
+    if (context.exeInfo.inputParams) {
       normalizeInputParams(context);
-      const inputParams = context.exeInfo.inputParams[constants.Label]; 
+      const inputParams = context.exeInfo.inputParams[constants.Label];
       const yesFlag = context.exeInfo.inputParams.yes;
 
-      shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
-        return askShouldUpdateCode();
-      });
+      shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldUpdateCode());
 
-      if(shouldGenerateCode){
-        shouldGenerateDocs = await determineValue(inputParams, yesFlag, 'generateDocs', true, ()=>{
-          return askShouldUpdateDocs();
-        });
+      if (shouldGenerateCode) {
+        shouldGenerateDocs = await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldUpdateDocs());
       }
-    }else{
+    } else {
       shouldGenerateCode = await askShouldUpdateCode();
-      if(shouldGenerateCode){
+      if (shouldGenerateCode) {
         shouldGenerateDocs = await askShouldUpdateDocs();
       }
     }
 
-    if ( shouldGenerateCode ) {
+    if (shouldGenerateCode) {
       return {
         gqlConfig: project,
         shouldGenerateDocs,
       };
     }
-
   }
 }
 
-async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
-  let result; 
-  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction) {
+  let result;
+  if (inputParams && inputParams.hasOwnProperty(propertyName)) {
     result = inputParams[propertyName];
-  }else if(yesFlag && defaultValue != undefined){
-    result = defaultValue; 
-  }else{
+  } else if (yesFlag && defaultValue !== undefined) {
+    result = defaultValue;
+  } else {
     result = await askFunction();
   }
-  return result; 
+  return result;
 }
 
 module.exports = prePushUpdateCallback;

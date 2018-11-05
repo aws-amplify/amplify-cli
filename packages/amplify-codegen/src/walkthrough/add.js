@@ -19,13 +19,12 @@ const {
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
 async function addWalkThrough(context, skip = []) {
-
   normalizeInputParams(context);
-  let inputParams; 
-  let yesFlag = false; 
-  if(context.exeInfo.inputParams){
+  let inputParams;
+  let yesFlag = false;
+  if (context.exeInfo.inputParams) {
     normalizeInputParams(context);
-    inputParams = context.exeInfo.inputParams[constants.Label]; 
+    inputParams = context.exeInfo.inputParams[constants.Label];
     yesFlag = context.exeInfo.inputParams.yes;
   }
 
@@ -40,9 +39,7 @@ async function addWalkThrough(context, skip = []) {
 
   if (frontend !== 'android') {
     if (!skip.includes('targetLanguage')) {
-      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', ()=>{
-        return askCodeGenTargetLanguage(context);
-      });
+      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context));
       targetLanguage = answers.target;
     }
   }
@@ -55,48 +52,40 @@ async function addWalkThrough(context, skip = []) {
   );
 
   if (!skip.includes('includePattern')) {
-    answers.includePattern = 
-    await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, ()=>{
-      return askCodeGenQueryFilePattern([includePathGlob]);
-    });
+    answers.includePattern =
+    await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, () => askCodeGenQueryFilePattern([includePathGlob]));
   }
   if (!skip.includes('shouldGenerateDocs')) {
-    answers.shouldGenerateDocs = 
-    await determineValue(inputParams, yesFlag, 'generateDocs', true, ()=>{
-      return askShouldGenerateDocs();
-    });
+    answers.shouldGenerateDocs =
+    await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
     answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {
     if (!skip.includes('generatedFileName')) {
       const defaultValue = getOutputFileName('API', answers.target || '');
-      answers.generatedFileName = 
-      await determineValue(inputParams, yesFlag, 'generatedFileName', defaultValue, ()=>{
-        return askTargetFileName('API', answers.target || '');
-      });
+      answers.generatedFileName =
+      await determineValue(inputParams, yesFlag, 'generatedFileName', defaultValue, () => askTargetFileName('API', answers.target || ''));
     }
     if (!skip.includes('shouldGenerateCode')) {
-      answers.shouldGenerateCode = 
-      await determineValue(inputParams, yesFlag, 'generateCode', true, ()=>{
-        return askShouldGenerateCode();
-      });
+      answers.shouldGenerateCode =
+      await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
     }
   }
 
   return answers;
 }
 
-async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction){
-  let result; 
-  if(inputParams && inputParams.hasOwnProperty(propertyName)){
+async function determineValue(inputParams, yesFlag, propertyName, defaultValue, askFunction) {
+  let result;
+  if (inputParams && inputParams.hasOwnProperty(propertyName)) {
     result = inputParams[propertyName];
-  }else if(yesFlag && defaultValue != undefined){
-    result = defaultValue; 
-  }else{
+  } else if (yesFlag && defaultValue !== undefined) {
+    result = defaultValue;
+  } else {
     result = await askFunction();
   }
-  return result; 
+  return result;
 }
 
 module.exports = addWalkThrough;
