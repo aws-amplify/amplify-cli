@@ -1,4 +1,5 @@
 const initializer = require('./lib/initializer');
+const initializeEnv = require('./lib/initialize-env');
 const resourcePusher = require('./lib/push-resources');
 const projectRemover = require('./lib/delete-project');
 const resourceBuilder = require('./lib/build-resources');
@@ -12,6 +13,10 @@ const consoleCommand = require('./lib/console');
 
 function init(context) {
   return initializer.run(context);
+}
+
+function initEnv(context, providerMetadata) {
+  return initializeEnv.run(context, providerMetadata);
 }
 
 function onInitSuccessful(context) {
@@ -53,6 +58,7 @@ function console(context) {
 module.exports = {
   console,
   init,
+  initEnv,
   onInitSuccessful,
   configure,
   configureNewUser,

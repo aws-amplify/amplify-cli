@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer');
 const pathManager = require('./path-manager');
+const {
+  updateBackendConfigAfterResourceRemove,
+} = require('./update-backend-config');
 
 function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
@@ -59,6 +62,8 @@ function removeResource(context, category) {
 
             // Remove resource directory from backend/
             context.filesystem.remove(resourceDir);
+
+            updateBackendConfigAfterResourceRemove(category, resourceName);
 
             context.print.success('Successfully removed resource');
             return resourceValues;

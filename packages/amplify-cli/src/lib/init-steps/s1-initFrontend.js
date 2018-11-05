@@ -3,13 +3,20 @@ const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-fro
 const { normalizeFrontendHandlerName } = require('../input-params-manager');
 
 async function run(context) {
+  if (!context.exeInfo.isNewProject) {
+    const currentProjectConfig = context.amplify.getProjectConfig();
+    Object.assign(currentProjectConfig, context.exeInfo.projectConfig);
+    context.exeInfo.projectConfig = currentProjectConfig;
+    return context;
+  }
+
   const frontendPlugins = getFrontendPlugins(context);
   let suitableFrontend;
   let fitToHandleScore = -1;
 
   Object.keys(frontendPlugins).forEach((key) => {
     const { scanProject } = require(frontendPlugins[key]);
-    const newScore = scanProject(context.exeInfo.projectConfig.projectPath);
+    const newScore = scanProject(context.exeInfo.localEnvInfo.projectPath);
     if (newScore > fitToHandleScore) {
       fitToHandleScore = newScore;
       suitableFrontend = key;
@@ -29,11 +36,11 @@ async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
   let frontend;
   const frontendPluginList = Object.keys(frontendPlugins);
   const { inputParams } = context.exeInfo;
-  if (inputParams.amplify.frontend) {
+  if (inputParams && inputParams.amplify.frontend) {
     frontend = normalizeFrontendHandlerName(inputParams.amplify.frontend, frontendPluginList);
   }
 
-  if (!frontend && inputParams.yes) {
+  if (!frontend && inputParams && inputParams.yes) {
     frontend = 'javascript';
   }
 
