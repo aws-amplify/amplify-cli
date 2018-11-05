@@ -2,7 +2,7 @@ module.exports = {
   name: 'run',
   alias: ['serve'],
   run: async (context) => {
-    context.amplify.constructExeInfo(context); 
+    context.amplify.constructExeInfo(context);
     await context.amplify.pushResources(context);
 
     const frontendPlugins = context.amplify.getFrontendPlugins(context);

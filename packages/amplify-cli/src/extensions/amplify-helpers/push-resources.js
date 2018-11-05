@@ -1,5 +1,4 @@
 const fs = require('fs-extra');
-const { getProjectConfig } = require('./get-project-config');
 const { showResourceTable } = require('./resource-status');
 const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 const { initializeEnv } = require('../../lib/initialize-env');
@@ -37,26 +36,26 @@ async function pushResources(context, category, resourceName) {
 
   await showResourceTable(category, resourceName);
 
-  let continueToPush = context.exeInfo.inputParams.yes; 
-  if(!continueToPush){
+  let continueToPush = context.exeInfo.inputParams.yes;
+  if (!continueToPush) {
     continueToPush = await context.prompt.confirm('Are you sure you want to continue?');
   }
 
-  if(continueToPush){
-    try{
+  if (continueToPush) {
+    try {
       await providersPush(context);
       await onCategoryOutputsChange(context);
-    }catch(err){
+    } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
-    };
+    }
   }
-  
-  return context; 
+
+  return context;
 }
 
-function providersPush(context, category, resourceName){
-  const { providers } = context.exeInfo.projectConfig; 
+function providersPush(context, category, resourceName) {
+  const { providers } = context.exeInfo.projectConfig;
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 

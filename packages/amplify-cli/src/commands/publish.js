@@ -1,7 +1,7 @@
 module.exports = {
   name: 'publish',
   run: async (context) => {
-    context.amplify.constructExeInfo(context); 
+    context.amplify.constructExeInfo(context);
     const { amplifyMeta } = context.exeInfo;
     if (!amplifyMeta.hosting || Object.keys(amplifyMeta.hosting).length < 1) {
       context.print.info('');
