@@ -27,10 +27,12 @@ function normalizeInputParams(context) {
 }
 
 function normalizeKey(key) {
-  if (['generateCode', 'generate-code'].includes(key)) {
+  if (['generateCode', 'generate-code', 'shouldGenerateCode', 'should-generate-code'].includes(key)) {
     key = 'generateCode';
   }
-  if (['generateDocs', 'generate-docs', 'generateStatements', 'generate-statements'].includes(key)) {
+  if (['generateDocs', 'generate-docs', 'shouldGenerateDocs', 'should-generate-docs',
+      'generateStatements', 'generate-statements', 
+      'shouldGenerateStatements', 'should-generate-statements'].includes(key)) {
     key = 'generateDocs';
   }
   if (['targetLanguage', 'target-language', 'codeLanguage', 'code-language'].includes(key)) {

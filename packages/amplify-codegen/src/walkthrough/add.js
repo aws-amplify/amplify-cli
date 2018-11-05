@@ -55,7 +55,7 @@ async function addWalkThrough(context, skip = []) {
   );
 
   if (!skip.includes('includePattern')) {
-    answers.target = 
+    answers.includePattern = 
     await determineValue(inputParams, yesFlag, 'includePattern', includePathGlob, ()=>{
       return askCodeGenQueryFilePattern([includePathGlob]);
     });
