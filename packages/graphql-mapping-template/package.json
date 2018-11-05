@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
+    "test-ci": "jest --ci -i",
     "build": "tsc",
     "clean": "rm -rf ./lib"
   },

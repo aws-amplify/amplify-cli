@@ -5,6 +5,7 @@
   "scripts": {
     "test-changed": "lerna run test --since master",
     "test": "lerna run test",
+    "test-ci": "lerna run lint && lerna run test-ci",
     "pretest": "lerna run lint ",
     "e2e": "lerna run e2e",
     "lint": "lerna run lint",
