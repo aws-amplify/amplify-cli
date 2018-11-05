@@ -15,7 +15,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test-ci": "jest --ci -i"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

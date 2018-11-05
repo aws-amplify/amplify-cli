@@ -38,7 +38,7 @@ jobs:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Run tests
-          command: npm run test
+          command: npm run test-ci
   graphql_e2e_tests:
     <<: *defaults
     steps:
