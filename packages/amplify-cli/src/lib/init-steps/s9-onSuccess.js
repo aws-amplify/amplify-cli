@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
+const os = require('os');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 const { print } = require('gluegun/print');
@@ -70,6 +71,7 @@ function generateNonRuntimeFiles(context) {
   generateProjectConfigFile(context);
   generateBackendConfigFile(context);
   generateProviderInfoFile(context);
+  generateGitIgnoreFile(context);
 }
 
 function generateProjectConfigFile(context) {
@@ -102,6 +104,30 @@ function generateBackendConfigFile(context) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
     fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+  }
+}
+
+function generateGitIgnoreFile(context) {
+  if (context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+
+    const getGitIgnoreAppendString = () => {
+      const toAppend = `${os.EOL + os.EOL
+      }amplify/\\#current-cloud-backend${os.EOL
+      }amplify/.config/local-*${os.EOL
+      }amplify/backend/amplify-meta.json${os.EOL
+      }aws-exports.js${os.EOL
+      }awsconfiguration.json`;
+
+      return toAppend;
+    };
+
+    const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath(projectPath);
+    if (fs.existsSync(gitIgnoreFilePath)) {
+      fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
+    } else {
+      fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreAppendString().trim());
+    }
   }
 }
 

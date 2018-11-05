@@ -92,6 +92,19 @@ function getAmplifyRcFilePath(projectPath) {
   throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
 }
 
+function getGitIgnoreFilePath(projectPath) {
+  if (!projectPath) {
+    projectPath = searchProjectRootPath();
+  }
+  if (projectPath) {
+    return path.normalize(path.join(
+      projectPath,
+      '.gitignore',
+    ));
+  }
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+}
+
 // ///////////////////level 2
 
 function getProjectConfigFilePath(projectPath) {
@@ -155,6 +168,7 @@ module.exports = {
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
   getAmplifyMetaFilePath,
+  getGitIgnoreFilePath,
   getCurentAmplifyMetaFilePath,
   getLocalEnvFilePath,
   getProviderInfoFilePath,
