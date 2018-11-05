@@ -13,7 +13,7 @@ module.exports = {
     return amplify.removeResource(context, category, resourceName)
       .then((resourceValues) => {
         if (resourceValues.service === 'AppSync') {
-          const { projectPath } = amplify.getProjectDetails().projectConfig;
+          const { projectPath } = amplify.getEnvInfo();
 
           const gqlConfigFile = path.normalize(path.join(
             projectPath,

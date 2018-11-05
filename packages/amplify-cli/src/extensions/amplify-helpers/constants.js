@@ -14,4 +14,8 @@ module.exports = {
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',
   DefaultAWSSecretAccessKey: '<YOUR_SECRET_ACCESS_KEY>',
   DefaultAWSRegion: 'us-east-1',
+  LocalEnvFileName: 'local-env-info.json',
+  ProviderInfoFileName: 'team-provider-info.json',
+  BackendConfigFileName: 'backend-config.json',
+
 };
