@@ -6,6 +6,7 @@ CODEGEN="{\
 \"generateCode\":true,\
 \"codeLanguage\":\"javascript\",\
 \"fileNamePattern\":\"src/graphql/**/*.js\",\
+\"generatedFileName\":\"API\",\
 \"generateDocs\":true\
 }"
 
