@@ -73,7 +73,7 @@ jobs:
         - run: cd .circleci/ && chmod +x aws.sh
         - run: expect .circleci/aws_configure.exp 
         - run: npm install
-        - run: sudo npm run clean
+        - run: npm run clean
         - run: sudo npm setup-dev
         - run: amplify
         - run:
