@@ -365,8 +365,8 @@ beforeAll(async () => {
 afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
-        // await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -644,7 +644,7 @@ test('Test deletePost mutation when authorized', async () => {
         expect(responseAccess.data.createPost.updatedAt).toBeDefined()
         expect(responseAccess.data.createPost.owner).toEqual(USERNAME1)
         const deleteResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`mutation {
-            deletePost(input: { id: "${response.data.createPost.id}" }) {
+            deletePost(input: { id: "${responseAccess.data.createPost.id}" }) {
                 id
             }
         }`, {})
