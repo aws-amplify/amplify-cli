@@ -21,7 +21,7 @@
     "glob-all": "^3.1.0",
     "graphql": "^14.0.2",
     "graphql-config": "^2.1.0",
-    "inquirer": "^3.2.1",
+    "inquirer": "^6.0.0",
     "ora": "^3.0.0",
     "underscore": "^1.9.1"
   },
