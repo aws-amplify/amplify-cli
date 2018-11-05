@@ -1,5 +1,6 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
+const archiver = require('archiver');
 const cfnLint = require('cfn-lint');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
@@ -20,6 +21,7 @@ async function run(context, category, resourceName) {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
+    allResources,
   } = await context.amplify.getResourceStatus(category, resourceName, providerName);
 
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
@@ -31,7 +33,7 @@ async function run(context, category, resourceName) {
     .then(() => transformGraphQLSchema(context, { noConfig: true }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
-    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
+    .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
     .then(() => {
       spinner.start();
       projectDetails = context.amplify.getProjectDetails();
@@ -43,9 +45,9 @@ async function run(context, category, resourceName) {
       }
     })
     .then(() => postPushGraphQLCodegen(context))
-    .then(() => {
+    .then(async () => {
       if (resources.length > 0) {
-        context.amplify.updateamplifyMetaAfterPush(resources);
+        await context.amplify.updateamplifyMetaAfterPush(resources);
       }
       for (let i = 0; i < resourcesToBeDeleted.length; i += 1) {
         context.amplify.updateamplifyMetaAfterResourceDelete(
@@ -73,6 +75,9 @@ async function run(context, category, resourceName) {
 
       return downloadAPIModels(context, newAPIresources);
     })
+    .then(() =>
+      // Store current cloud backend in S3 deployment bcuket
+      storeCurrentCloudBackend(context))
     .then(() => {
       spinner.succeed('All resources are updated in the cloud');
       displayHelpfulURLs(context, resources);
@@ -80,6 +85,48 @@ async function run(context, category, resourceName) {
     .catch((err) => {
       spinner.fail('An error occurred when pushing the resources to the cloud');
       throw err;
+    });
+}
+
+function storeCurrentCloudBackend(context) {
+  const zipFilename = '#current-cloud-backend.zip';
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const tempDir = `${backendDir}/.temp`;
+  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
+
+  const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
+  const output = fs.createWriteStream(zipFilePath);
+
+  return new Promise((resolve, reject) => {
+    output.on('close', () => {
+      resolve({ zipFilePath, zipFilename });
+    });
+    output.on('error', () => {
+      reject(new Error('Failed to zip code.'));
+    });
+
+    const zip = archiver.create('zip', {});
+    zip.pipe(output);
+    zip.directory(currentCloudBackendDir, false);
+    zip.finalize();
+  })
+    .then((result) => {
+      const s3Key = `${result.zipFilename}`;
+      return new S3(context)
+        .then((s3) => {
+          const s3Params = {
+            Body: fs.createReadStream(result.zipFilePath),
+            Key: s3Key,
+          };
+          return s3.uploadFile(s3Params);
+        });
+    })
+    .then(() => {
+      fs.removeSync(tempDir);
     });
 }
 
@@ -265,7 +312,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails) {
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
-  const { projectConfig, amplifyMeta } = projectDetails;
+  const { amplifyMeta } = projectDetails;
 
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'provider');
@@ -275,9 +322,10 @@ function formNestedStack(context, projectDetails) {
     resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
       const resourceKey = category + resource;
+      const { projectPath } = context.amplify.getEnvInfo();
       let templateURL;
-      if (resourceDetails.providerMetadata) {
-        const parameters = getResourceParameters(context, projectConfig, category, resource);
+      if (resourceDetails.providerPlugin) {
+        const parameters = getResourceParameters(context, projectPath, category, resource);
         const { dependsOn } = resourceDetails;
 
         if (dependsOn) {
@@ -301,6 +349,10 @@ function formNestedStack(context, projectDetails) {
           }
         }
 
+        const currentEnv = context.amplify.getEnvInfo().envName;
+
+        Object.assign(parameters, { env: currentEnv });
+
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         nestedStack.Resources[resourceKey] = {
           Type: 'AWS::CloudFormation::Stack',
@@ -315,9 +367,9 @@ function formNestedStack(context, projectDetails) {
   return nestedStack;
 }
 
-function getResourceParameters(context, projectConfig, category, resource) {
+function getResourceParameters(context, projectPath, category, resource) {
   let parameters = {};
-  const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectConfig.projectPath);
+  const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectPath);
   const resourceDirPath = path.join(backendDirPath, category, resource);
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
   if (fs.existsSync(parametersFilePath)) {

@@ -31,7 +31,10 @@ class CloudFormation {
     const initializeAwsClient = awsClientWithCreds ?
       Promise.resolve(awsClientWithCreds) : aws.configureWithCreds(context);
 
-    const userAgentParam = formUserAgentParam(context, userAgentAction);
+    let userAgentParam;
+    if (userAgentAction) {
+      userAgentParam = formUserAgentParam(context, userAgentAction);
+    }
 
     return initializeAwsClient
       .then((awsItem) => {
@@ -293,6 +296,7 @@ class CloudFormation {
           const cfnNestedStackParams = {
             StackName: resources[i].PhysicalResourceId,
           };
+
           promises.push(cfnModel.describeStacks(cfnNestedStackParams).promise());
         }
 

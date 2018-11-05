@@ -1,10 +1,21 @@
 const path = require('path');
+const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const { normalizeEditorCode, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 
 async function run(context) {
+  const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
+  if (fs.existsSync(projectConfigFilePath)) {
+    context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  }
+  const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
+  context.exeInfo.localEnvInfo = JSON.parse(fs.readFileSync(envFilePath));
+
+  const projectPath = process.cwd();
+  Object.assign(context.exeInfo.localEnvInfo, { projectPath });
+
   await configureProjectName(context);
   await configureEditor(context);
 
@@ -34,7 +45,8 @@ async function configureProjectName(context) {
       projectName = answer.inputProjectName;
     }
   }
-  context.exeInfo.projectConfig.projectName = projectName;
+
+  Object.assign(context.exeInfo.projectConfig, { projectName });
 }
 
 function isProjectNameValid(projectName) {
@@ -62,14 +74,13 @@ function normalizeProjectName(projectName) {
 
 /* Begin configureEditor */
 async function configureEditor(context) {
-  let { defaultEditor } = context.exeInfo.projectConfig;
+  let { defaultEditor } = context.exeInfo.localEnvInfo;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     defaultEditor = normalizeEditorCode(context.exeInfo.inputParams.amplify.editor);
   } else if (!context.exeInfo.inputParams.yes) {
     defaultEditor = await editorSelection(defaultEditor);
   }
-
-  context.exeInfo.projectConfig.defaultEditor = defaultEditor;
+  Object.assign(context.exeInfo.localEnvInfo, { defaultEditor });
 }
 /* End configureEditor */
 

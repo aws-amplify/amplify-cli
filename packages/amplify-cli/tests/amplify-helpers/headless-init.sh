@@ -18,6 +18,7 @@ AWSCLOUDFORMATIONCONFIG="{\
 }"
 AMPLIFY="{\
 \"projectName\":\"headlessProjectName\",\
+\"envName\":\"myenvname\",\
 \"defaultEditor\":\"code\"\
 }"
 FRONTEND="{\

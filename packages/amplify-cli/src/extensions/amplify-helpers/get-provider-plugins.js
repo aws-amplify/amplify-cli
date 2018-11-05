@@ -4,7 +4,7 @@ function getProviderPlugins(context) {
     if (plugin.name.includes('provider')) {
       const strs = plugin.name.split('-');
       const providerName = strs[strs.length - 1];
-      providers[providerName] = plugin.directory;
+      providers[providerName] = plugin.name;
     }
   });
   return providers;

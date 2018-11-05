@@ -20,6 +20,15 @@ class S3 {
       .then(() => projectBucket);
   }
 
+  getFile(s3Params) {
+    const projectDetails = this.context.amplify.getProjectDetails();
+    const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+    s3Params.Bucket = projectBucket;
+
+    return this.s3.getObject(s3Params).promise()
+      .then(result => result.Body);
+  }
+
   createBucket(bucketName) {
     // Check if bucket exists;
     const params = {

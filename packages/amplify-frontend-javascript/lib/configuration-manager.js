@@ -6,7 +6,7 @@ const constants = require('./constants');
 
 async function init(context) {
   normalizeInputParams(context);
-  const framework = guessFramework(context.exeInfo.projectConfig.projectPath);
+  const framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
   const config = frameworkConfigMapping[framework];
   context.exeInfo.projectConfig[constants.Label] = {
     framework,
@@ -24,12 +24,13 @@ async function configure(context) {
   if (!context.exeInfo.projectConfig[constants.Label]) {
     context.exeInfo.projectConfig[constants.Label] = {};
   }
-  const currentCongiuration = context.exeInfo.projectConfig[constants.Label];
-  if (!currentCongiuration.framework) {
-    currentCongiuration.framework = guessFramework(context.exeInfo.projectConfig.projectPath);
+
+  const currentConfiguration = context.exeInfo.projectConfig[constants.Label];
+  if (!currentConfiguration.framework) {
+    currentConfiguration.framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
   }
-  if (!currentCongiuration.config) {
-    currentCongiuration.config = frameworkConfigMapping[currentCongiuration.framework];
+  if (!currentConfiguration.config) {
+    currentConfiguration.config = frameworkConfigMapping[currentConfiguration.framework];
   }
   await confirmConfiguration(context);
 }
@@ -55,6 +56,9 @@ function normalizeInputParams(context) {
        !inputParams.config.StartCommand) {
       throw new Error('The command line parameter for javascript frontend configuration is incomplete.');
     }
+  }
+  if (!context.exeInfo.inputParams) {
+    context.exeInfo.inputParams = {};
   }
   context.exeInfo.inputParams[constants.Label] = inputParams;
 }
