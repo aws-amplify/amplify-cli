@@ -39,6 +39,11 @@ function normalizeKey(key) {
   if (['includePattern', 'include-pattern', 'fileNamePattern', 'file-name-pattern'].includes(key)) {
     key = 'includePattern';
   }
+  if (['generatedFileName', 'generated-file-name'].includes(key)) {
+    key = 'generatedFileName';
+  }
+  
+  
   return key;
 }
 
