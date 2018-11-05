@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-android",
-  "version": "0.1.32-beta.0",
+  "version": "0.1.32",
   "description": "amplify-cli front-end plugin for Android project",
   "main": "index.js",
   "author": "Amazon Web Services",
