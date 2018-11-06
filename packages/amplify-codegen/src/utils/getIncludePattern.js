@@ -17,6 +17,10 @@ function getIncludePatterns(language, schemaLocation) {
       graphQLDirectory = join('src', 'graphql');
       graphQLExtension = '*.js';
       break;
+    case 'angular':
+      graphQLDirectory = join('src', 'graphql');
+      graphQLExtension = '*.graphql';
+      break;
     default:
       graphQLDirectory = 'graphql';
       graphQLExtension = '*.graphql';

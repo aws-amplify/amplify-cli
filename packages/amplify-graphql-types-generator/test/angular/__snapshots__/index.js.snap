@@ -1,0 +1,710 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Angular code generation #generateSource() should generate correct list with custom fragment 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\" // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+export type HeroAndFriendsNamesQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+  // The friends of the character, or an empty list if they have none
+  friends: Array<
+    | (
+        | {
+            __typename: \\"Human\\";
+            // The name of the character
+            name: string;
+          }
+        | {
+            __typename: \\"Droid\\";
+            // The name of the character
+            name: string;
+          })
+    | null
+  > | null;
+};
+
+export type FriendFragment =
+  | {
+      __typename: \\"Human\\";
+      // The name of the character
+      name: string;
+    }
+  | {
+      __typename: \\"Droid\\";
+      // The name of the character
+      name: string;
+    };
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroAndFriendsNames(
+    episode?: Episode
+  ): Promise<HeroAndFriendsNamesQuery> {
+    const statement = \`query HeroAndFriendsNames($episode: Episode) {
+        hero(episode: $episode) {
+          __typename
+          name
+          friends {
+            __typename
+            ...Friend
+          }
+        }
+      }\`;
+    const gqlAPIServiceArguments: any = {};
+    if (episode) {
+      gqlAPIServiceArguments.episode = episode;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <HeroAndFriendsNamesQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate fragmented query operations 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type HeroAndFriendsNamesQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+  // The friends of the character, or an empty list if they have none
+  friends: Array<
+    | (
+        | {
+            __typename: \\"Human\\";
+            // The name of the character
+            name: string;
+          }
+        | {
+            __typename: \\"Droid\\";
+            // The name of the character
+            name: string;
+          })
+    | null
+  > | null;
+};
+
+export type heroFriendsFragment =
+  | {
+      __typename: \\"Human\\";
+      // The friends of the character, or an empty list if they have none
+      friends: Array<
+        | (
+            | {
+                __typename: \\"Human\\";
+                // The name of the character
+                name: string;
+              }
+            | {
+                __typename: \\"Droid\\";
+                // The name of the character
+                name: string;
+              })
+        | null
+      > | null;
+    }
+  | {
+      __typename: \\"Droid\\";
+      // The friends of the character, or an empty list if they have none
+      friends: Array<
+        | (
+            | {
+                __typename: \\"Human\\";
+                // The name of the character
+                name: string;
+              }
+            | {
+                __typename: \\"Droid\\";
+                // The name of the character
+                name: string;
+              })
+        | null
+      > | null;
+    };
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroAndFriendsNames(): Promise<HeroAndFriendsNamesQuery> {
+    const statement = \`query HeroAndFriendsNames {
+        hero {
+          __typename
+          name
+          ...heroFriends
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <HeroAndFriendsNamesQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate mutation operations with complex input types 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\" // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+export type ReviewInput = {
+  // 0-5 stars
+  stars: number;
+  // Comment about the movie, optional
+  commentary?: string | null;
+  // Favorite color, optional
+  favorite_color?: ColorInput | null;
+};
+
+export type ColorInput = {
+  red: number;
+  green: number;
+  blue: number;
+};
+
+export type ReviewMovieMutation = {
+  __typename: string;
+  // The number of stars this review gave, 1-5
+  stars: number;
+  // Comment about the movie
+  commentary: string | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async ReviewMovie(
+    episode?: Episode,
+    review?: ReviewInput
+  ): Promise<ReviewMovieMutation> {
+    const statement = \`mutation ReviewMovie($episode: Episode, $review: ReviewInput) {
+        createReview(episode: $episode, review: $review) {
+          __typename
+          stars
+          commentary
+        }
+      }\`;
+    const gqlAPIServiceArguments: any = {};
+    if (episode) {
+      gqlAPIServiceArguments.episode = episode;
+    }
+    if (review) {
+      gqlAPIServiceArguments.review = review;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <ReviewMovieMutation>response.data.createReview;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate query operations with inline fragments 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type HeroAndDetailsQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+};
+
+export type HeroDetailsFragment =
+  | {
+      __typename: \\"Human\\";
+      // Height in the preferred unit, default is meters
+      height: number | null;
+    }
+  | {
+      __typename: \\"Droid\\";
+      // This droid's primary function
+      primaryFunction: string | null;
+    };
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroAndDetails(): Promise<HeroAndDetailsQuery> {
+    const statement = \`query HeroAndDetails {
+        hero {
+          __typename
+          name
+          ...HeroDetails
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <HeroAndDetailsQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate simple nested query operations including input variables 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\" // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+export type HeroAndFriendsNamesQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+  // The friends of the character, or an empty list if they have none
+  friends: Array<
+    | (
+        | {
+            __typename: \\"Human\\";
+            // The name of the character
+            name: string;
+          }
+        | {
+            __typename: \\"Droid\\";
+            // The name of the character
+            name: string;
+          })
+    | null
+  > | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroAndFriendsNames(
+    episode?: Episode
+  ): Promise<HeroAndFriendsNamesQuery> {
+    const statement = \`query HeroAndFriendsNames($episode: Episode) {
+        hero(episode: $episode) {
+          __typename
+          name
+          friends {
+            __typename
+            name
+          }
+        }
+      }\`;
+    const gqlAPIServiceArguments: any = {};
+    if (episode) {
+      gqlAPIServiceArguments.episode = episode;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <HeroAndFriendsNamesQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate simple nested with required elements in lists 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type StarshipCoordsQuery = {
+  __typename: string;
+  coordinates: Array<Array<number>> | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async StarshipCoords(): Promise<StarshipCoordsQuery> {
+    const statement = \`query StarshipCoords {
+        starship {
+          __typename
+          coordinates
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <StarshipCoordsQuery>response.data.starship;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate simple query operations 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type HeroNameQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroName(): Promise<HeroNameQuery> {
+    const statement = \`query HeroName {
+        hero {
+          __typename
+          name
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <HeroNameQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should generate simple query operations including input variables 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\" // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+export type HeroNameQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroName(episode?: Episode): Promise<HeroNameQuery> {
+    const statement = \`query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          __typename
+          name
+        }
+      }\`;
+    const gqlAPIServiceArguments: any = {};
+    if (episode) {
+      gqlAPIServiceArguments.episode = episode;
+    }
+    const response = (await API.graphql(
+      graphqlOperation(statement, gqlAPIServiceArguments)
+    )) as any;
+    return <HeroNameQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should handle comments in enums 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export enum EnumCommentTestCase {
+  first = \\"first\\", // This is a single-line comment
+  // This is a multi-line
+  // comment.
+  second = \\"second\\"
+}
+
+export type CustomScalarQuery = {
+  __typename: string;
+  enumCommentTest: EnumCommentTestCase | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<CustomScalarQuery> {
+    const statement = \`query CustomScalar {
+        commentTest {
+          __typename
+          enumCommentTest
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <CustomScalarQuery>response.data.commentTest;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should handle interfaces at root 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type CustomScalarQuery = {
+  __typename: string;
+  prop: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<CustomScalarQuery> {
+    const statement = \`query CustomScalar {
+        interfaceTest {
+          __typename
+          prop
+          ... on ImplA {
+            propA
+          }
+          ... on ImplB {
+            propB
+          }
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <CustomScalarQuery>response.data.interfaceTest;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should handle multi-line comments 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type CustomScalarQuery = {
+  __typename: string;
+  // This is a multi-line
+  // comment.
+  multiLine: string | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<CustomScalarQuery> {
+    const statement = \`query CustomScalar {
+        commentTest {
+          __typename
+          multiLine
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <CustomScalarQuery>response.data.commentTest;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should handle single line comments 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type CustomScalarQuery = {
+  __typename: string;
+  // This is a single-line comment
+  singleLine: string | null;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<CustomScalarQuery> {
+    const statement = \`query CustomScalar {
+        commentTest {
+          __typename
+          singleLine
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <CustomScalarQuery>response.data.commentTest;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should handle unions at root 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type CustomScalarQuery = {
+  __typename: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async CustomScalar(): Promise<CustomScalarQuery> {
+    const statement = \`query CustomScalar {
+        unionTest {
+          __typename
+          ... on PartialA {
+            prop
+          }
+          ... on PartialB {
+            prop
+          }
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <CustomScalarQuery>response.data.unionTest;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should have __typename value matching fragment type on generic type 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type HeroNameQuery = {
+  __typename: string;
+  // The name of the character
+  name: string;
+};
+
+export type HeroWithNameFragment =
+  | {
+      __typename: \\"Human\\";
+      // The name of the character
+      name: string;
+    }
+  | {
+      __typename: \\"Droid\\";
+      // The name of the character
+      name: string;
+    };
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async HeroName(): Promise<HeroNameQuery> {
+    const statement = \`query HeroName {
+        hero {
+          __typename
+          ...HeroWithName
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <HeroNameQuery>response.data.hero;
+  }
+}
+"
+`;
+
+exports[`Angular code generation #generateSource() should have __typename value matching fragment type on specific type 1`] = `
+"/* tslint:disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import * as Observable from \\"zen-observable\\";
+
+export type DroidNameQuery = {
+  __typename: string;
+  // What others call this droid
+  name: string;
+};
+
+export type DroidWithNameFragment = {
+  __typename: \\"Droid\\";
+  // What others call this droid
+  name: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  async DroidName(): Promise<DroidNameQuery> {
+    const statement = \`query DroidName {
+        droid {
+          __typename
+          ...DroidWithName
+        }
+      }\`;
+    const response = (await API.graphql(graphqlOperation(statement))) as any;
+    return <DroidNameQuery>response.data.droid;
+  }
+}
+"
+`;

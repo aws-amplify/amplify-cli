@@ -212,6 +212,43 @@ function getDefaultEditor(context) {
 }
 
 
+function isNewEnv(context, envName) {
+  let newEnv = true;
+  const projectPath = process.cwd();
+  const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
+
+  if (fs.existsSync(providerInfoFilePath)) {
+    const envProviderInfo = JSON.parse(fs.readFileSync(providerInfoFilePath));
+    if (envProviderInfo[envName]) {
+      newEnv = false;
+    }
+  }
+
+  return newEnv;
+}
+
+function isNewProject(context) {
+  let newProject = true;
+  const projectPath = process.cwd();
+  const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
+  if (fs.existsSync(projectConfigFilePath)) {
+    newProject = false;
+  }
+  return newProject;
+}
+
+function getDefaultEditor(context) {
+  let defaultEditor;
+  const projectPath = process.cwd();
+  const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
+  if (fs.existsSync(localEnvFilePath)) {
+    ({ defaultEditor } = JSON.parse(fs.readFileSync(localEnvFilePath)));
+  }
+
+  return defaultEditor;
+}
+
+
 module.exports = {
   run,
 };

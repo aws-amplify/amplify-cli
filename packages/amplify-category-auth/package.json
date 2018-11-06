@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "amplify-cli authentication plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -8,7 +8,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "test": "jest"
+    "test": "jest",
+    "test-ci": "jest --ci -i"
   },
   "dependencies": {
     "chalk": "^2.4.1",

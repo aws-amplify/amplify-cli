@@ -80,6 +80,7 @@ async function configureEditor(context) {
   } else if (!context.exeInfo.inputParams.yes) {
     defaultEditor = await editorSelection(defaultEditor);
   }
+
   Object.assign(context.exeInfo.localEnvInfo, { defaultEditor });
 }
 /* End configureEditor */

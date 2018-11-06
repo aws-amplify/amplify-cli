@@ -1,20 +1,21 @@
 {
   "name": "amplify-codegen",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src/** tests/**",
     "lint-fix": "eslint src/** tests/** --fix",
     "test": "jest",
+    "test-ci": "jest --ci -i",
     "test-watch": "jest --watch",
     "format": "prettier --write ./src/**/*.js ./__tests__/**/*.js"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-graphql-docs-generator": "^0.1.30",
-    "aws-appsync-codegen": "^0.17.4",
+    "amplify-graphql-docs-generator": "^0.1.31",
+    "amplify-graphql-types-generator": "^0.1.0",
     "chalk": "^2.4.1",
     "eslint": "^4.9.0",
     "fs-jetpack": "^2.1.0",

@@ -47,6 +47,11 @@ let GRAPHQL_ENDPOINT = undefined;
 let GRAPHQL_CLIENT_1 = undefined;
 
 /**
+ * Client 1 is logged in and is a member of the Admin group via an access token.
+ */
+let GRAPHQL_CLIENT_1_ACCESS = undefined;
+
+/**
  * Client 2 is logged in and is a member of the Devs group.
  */
 let GRAPHQL_CLIENT_2 = undefined;
@@ -337,6 +342,9 @@ beforeAll(async () => {
         const idToken = authResAfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
 
+        const accessToken = authResAfterGroup.getAccessToken().getJwtToken()
+        GRAPHQL_CLIENT_1_ACCESS = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: accessToken })
+
         const authRes2AfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME2)
         const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 })
@@ -400,7 +408,23 @@ test('Test createPost mutation', async () => {
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
-        expect(response.data.createPost.owner).toBeDefined()
+        expect(response.data.createPost.owner).toEqual(USERNAME1)
+
+        const response2 = await GRAPHQL_CLIENT_1_ACCESS.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        console.log(response2);
+        expect(response2.data.createPost.id).toBeDefined()
+        expect(response2.data.createPost.title).toEqual('Hello, World!')
+        expect(response2.data.createPost.createdAt).toBeDefined()
+        expect(response2.data.createPost.updatedAt).toBeDefined()
+        expect(response2.data.createPost.owner).toEqual(USERNAME1)
     } catch (e) {
         console.error(e)
         // fail
@@ -423,7 +447,7 @@ test('Test getPost query when authorized', async () => {
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
-        expect(response.data.createPost.owner).toBeDefined()
+        expect(response.data.createPost.owner).toEqual(USERNAME1)
         const getResponse = await GRAPHQL_CLIENT_1.query(`query {
             getPost(id: "${response.data.createPost.id}") {
                 id
@@ -437,7 +461,22 @@ test('Test getPost query when authorized', async () => {
         expect(getResponse.data.getPost.title).toEqual('Hello, World!')
         expect(getResponse.data.getPost.createdAt).toBeDefined()
         expect(getResponse.data.getPost.updatedAt).toBeDefined()
-        expect(getResponse.data.getPost.owner).toBeDefined()
+        expect(getResponse.data.getPost.owner).toEqual(USERNAME1)
+
+        const getResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`query {
+            getPost(id: "${response.data.createPost.id}") {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        expect(getResponseAccess.data.getPost.id).toBeDefined()
+        expect(getResponseAccess.data.getPost.title).toEqual('Hello, World!')
+        expect(getResponseAccess.data.getPost.createdAt).toBeDefined()
+        expect(getResponseAccess.data.getPost.updatedAt).toBeDefined()
+        expect(getResponseAccess.data.getPost.owner).toEqual(USERNAME1)
     } catch (e) {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
@@ -497,7 +536,7 @@ test('Test updatePost mutation when authorized', async () => {
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
-        expect(response.data.createPost.owner).toBeDefined()
+        expect(response.data.createPost.owner).toEqual(USERNAME1)
         const updateResponse = await GRAPHQL_CLIENT_1.query(`mutation {
             updatePost(input: { id: "${response.data.createPost.id}", title: "Bye, World!" }) {
                 id
@@ -510,6 +549,19 @@ test('Test updatePost mutation when authorized', async () => {
         expect(updateResponse.data.updatePost.id).toEqual(response.data.createPost.id)
         expect(updateResponse.data.updatePost.title).toEqual('Bye, World!')
         expect(updateResponse.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true)
+
+        const updateResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`mutation {
+            updatePost(input: { id: "${response.data.createPost.id}", title: "Bye, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        expect(updateResponseAccess.data.updatePost.id).toEqual(response.data.createPost.id)
+        expect(updateResponseAccess.data.updatePost.title).toEqual('Bye, World!')
+        expect(updateResponseAccess.data.updatePost.updatedAt > response.data.createPost.updatedAt).toEqual(true)
     } catch (e) {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
@@ -569,13 +621,34 @@ test('Test deletePost mutation when authorized', async () => {
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
-        expect(response.data.createPost.owner).toBeDefined()
+        expect(response.data.createPost.owner).toEqual(USERNAME1)
         const deleteResponse = await GRAPHQL_CLIENT_1.query(`mutation {
             deletePost(input: { id: "${response.data.createPost.id}" }) {
                 id
             }
         }`, {})
         expect(deleteResponse.data.deletePost.id).toEqual(response.data.createPost.id)
+
+        const responseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`mutation {
+            createPost(input: { title: "Hello, World!" }) {
+                id
+                title
+                createdAt
+                updatedAt
+                owner
+            }
+        }`, {})
+        expect(responseAccess.data.createPost.id).toBeDefined()
+        expect(responseAccess.data.createPost.title).toEqual('Hello, World!')
+        expect(responseAccess.data.createPost.createdAt).toBeDefined()
+        expect(responseAccess.data.createPost.updatedAt).toBeDefined()
+        expect(responseAccess.data.createPost.owner).toEqual(USERNAME1)
+        const deleteResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`mutation {
+            deletePost(input: { id: "${responseAccess.data.createPost.id}" }) {
+                id
+            }
+        }`, {})
+        expect(deleteResponseAccess.data.deletePost.id).toEqual(responseAccess.data.createPost.id)
     } catch (e) {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
@@ -599,7 +672,7 @@ test('Test deletePost mutation when not authorized', async () => {
         expect(response.data.createPost.title).toEqual('Hello, World!')
         expect(response.data.createPost.createdAt).toBeDefined()
         expect(response.data.createPost.updatedAt).toBeDefined()
-        expect(response.data.createPost.owner).toBeDefined()
+        expect(response.data.createPost.owner).toEqual(USERNAME1)
         const deleteResponse = await GRAPHQL_CLIENT_2.query(`mutation {
             deletePost(input: { id: "${response.data.createPost.id}" }) {
                 id
@@ -630,7 +703,7 @@ test('Test listPosts query when authorized', async () => {
         expect(firstPost.data.createPost.title).toEqual('testing list')
         expect(firstPost.data.createPost.createdAt).toBeDefined()
         expect(firstPost.data.createPost.updatedAt).toBeDefined()
-        expect(firstPost.data.createPost.owner).toBeDefined()
+        expect(firstPost.data.createPost.owner).toEqual(USERNAME1)
         const secondPost = await GRAPHQL_CLIENT_2.query(`mutation {
             createPost(input: { title: "testing list" }) {
                 id
@@ -650,6 +723,16 @@ test('Test listPosts query when authorized', async () => {
         }`, {})
         console.log(JSON.stringify(listResponse, null, 4))
         expect(listResponse.data.listPosts.items.length).toEqual(1)
+
+        const listResponseAccess = await GRAPHQL_CLIENT_1_ACCESS.query(`query {
+            listPosts(filter: { title: { eq: "testing list" } }, limit: 25) {
+                items {
+                    id
+                }
+            }
+        }`, {})
+        console.log(JSON.stringify(listResponseAccess, null, 4))
+        expect(listResponseAccess.data.listPosts.items.length).toEqual(1)
     } catch (e) {
         console.error(e)
         console.error(JSON.stringify(e.response.data))
