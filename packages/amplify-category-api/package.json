@@ -14,7 +14,7 @@
     "amplify-category-function": "^0.1.33",
     "amplify-category-storage": "^0.1.33",
     "eslint": "^4.9.0",
-    "fs-extra": "^6.0.1",
+    "fs-extra": "^7.0.0",
     "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "opn": "^5.3.0",

@@ -144,7 +144,7 @@ function storeCurrentCloudBackend(context) {
 }
 
 function normalizeStackName(stackName) {
-  let result = stackName.replace(/[^-a-z0-9]/g, '');
+  let result = stackName.toLowerCase().replace(/[^-a-z0-9]/g, '');
   if (/^[^a-zA-Z]/.test(result) || result.length === 0) {
     result = `a${result}`;
   }

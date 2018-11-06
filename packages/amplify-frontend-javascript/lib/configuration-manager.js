@@ -25,12 +25,12 @@ async function configure(context) {
     context.exeInfo.projectConfig[constants.Label] = {};
   }
 
-  const currentCongiuration = context.exeInfo.projectConfig[constants.Label];
-  if (!currentCongiuration.framework) {
-    currentCongiuration.framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
+  const currentConfiguration = context.exeInfo.projectConfig[constants.Label];
+  if (!currentConfiguration.framework) {
+    currentConfiguration.framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
   }
-  if (!currentCongiuration.config) {
-    currentCongiuration.config = frameworkConfigMapping[currentCongiuration.framework];
+  if (!currentConfiguration.config) {
+    currentConfiguration.config = frameworkConfigMapping[currentConfiguration.framework];
   }
   await confirmConfiguration(context);
 }

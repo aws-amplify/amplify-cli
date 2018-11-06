@@ -1,6 +1,8 @@
 const chalk = require('chalk');
 
 module.exports = {
+  Label: 'codegen',
+  Aliases: ['codeGen'],
   PROMPT_MSG_API_LIST: 'Choose the AppSync API that you want to use in this project',
   PROMPT_MSG_FILE_NAME: 'Enter the file name for the generated code',
   PROMPT_MSG_CODEGEN_TARGET: 'Choose the code generation language target',

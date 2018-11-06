@@ -4,6 +4,7 @@ const askShouldGenerateCode = require('../../src/walkthrough/questions/generateC
 const prePushAddCallback = require('../../src/callbacks/prePushAddCallback');
 
 const MOCK_CONTEXT = {
+  exeInfo: {},
   print: {
     info: jest.fn(),
   },

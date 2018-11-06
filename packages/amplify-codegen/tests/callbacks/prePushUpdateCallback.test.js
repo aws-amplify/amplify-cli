@@ -5,6 +5,7 @@ const askShouldUpdateStatements = require('../../src/walkthrough/questions/updat
 const prePushUpdateCallback = require('../../src/callbacks/prePushUpdateCallback');
 
 const MOCK_CONTEXT = {
+  exeInfo: {},
   print: {
     info: jest.fn(),
   },

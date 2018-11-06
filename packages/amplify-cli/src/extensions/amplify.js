@@ -5,6 +5,7 @@
 
 const constants = require('./amplify-helpers/constants');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
+const { constructExeInfo } = require('./amplify-helpers/construct-exeInfo');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
 const { deleteProject } = require('./amplify-helpers/delete-project');
@@ -55,6 +56,7 @@ module.exports = (context) => {
   const amplify = {
     buildResources,
     constants,
+    constructExeInfo,
     copyBatch,
     deleteProject,
     executeProviderUtils,
