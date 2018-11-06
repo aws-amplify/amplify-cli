@@ -2,17 +2,20 @@ const inquirer = require('inquirer');
 
 const constants = require('../../constants');
 const { AmplifyCodeGenNotSupportedError } = require('../../errors');
-const { getFrontEndHandler } = require('../../utils');
+const { getFrontEndHandler, getFrontEndFramework } = require('../../utils');
 
 const frontEndToTargetMappings = {
   ios: ['swift'],
   javascript: ['javascript', 'typescript', 'flow'],
+  angular: ['angular', 'typescript'],
 };
 
 async function askCodeGenTargetLanguage(context, target) {
   const frontend = getFrontEndHandler(context);
-
-  const targetMapping = frontEndToTargetMappings[frontend];
+  const isAngular = frontend === 'javascript' && getFrontEndFramework(context) === 'angular';
+  const isIonic = frontend === 'javascript' && getFrontEndFramework(context) === 'ionic';
+  const targetLanguage = isAngular || isIonic ? 'angular' : frontend;
+  const targetMapping = frontEndToTargetMappings[targetLanguage];
   if (!targetMapping || !targetMapping.length) {
     throw new AmplifyCodeGenNotSupportedError(`${frontend} ${constants.ERROR_CODEGEN_TARGET_NOT_SUPPORTED}`);
   }

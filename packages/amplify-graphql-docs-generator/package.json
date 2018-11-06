@@ -17,6 +17,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test-ci": "jest --ci -i",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",

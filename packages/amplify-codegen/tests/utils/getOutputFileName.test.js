@@ -9,6 +9,14 @@ describe('getOutputFileName', () => {
     expect(getOutputFileName('Foo.swift', 'swift')).toEqual('Foo.swift');
   });
 
+  it('should add .service.ts extension when the target is angular', () => {
+    expect(getOutputFileName('Foo', 'angular')).toEqual('Foo.service.ts');
+  });
+
+  it('should return api.service.ts when input name is missing and target is angular', () => {
+    expect(getOutputFileName(null, 'angular')).toEqual('src/app/api.service.ts');
+  });
+
   it('should not add any extension if the code generation target is unknown', () => {
     expect(getOutputFileName('Foo', 'bar')).toEqual('Foo');
   });

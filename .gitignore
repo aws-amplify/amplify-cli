@@ -9,5 +9,6 @@ package-lock.json
 packages/amplify-cli/amplify/.config/
 .vscode
 packages/graphql*/lib
+packages/amplify-graphql*/lib
 packages/*/node_modules
 packages/*/package-lock.json
