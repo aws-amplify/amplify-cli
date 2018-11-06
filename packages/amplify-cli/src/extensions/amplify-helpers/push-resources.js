@@ -36,27 +36,27 @@ async function pushResources(context, category, resourceName) {
 
 
   await showResourceTable(category, resourceName);
-    
-  let continueToPush = context.exeInfo.inputParams.yes; 
-  if(!continueToPush){
+
+  let continueToPush = context.exeInfo.inputParams.yes;
+  if (!continueToPush) {
     continueToPush = await context.prompt.confirm('Are you sure you want to continue?');
   }
 
-  if(continueToPush){
-    try{
+  if (continueToPush) {
+    try {
       await providersPush(context);
       await onCategoryOutputsChange(context);
-    }catch(err){
+    } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
-    };
+    }
   }
-  
-  return context; 
+
+  return context;
 }
 
-function providersPush(context, category, resourceName){
-  const { providers } = getProjectConfig(); 
+function providersPush(context, category, resourceName) {
+  const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 
