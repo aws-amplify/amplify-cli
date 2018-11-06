@@ -8,9 +8,13 @@ function getProjectDetails() {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
+  const envFilepath = pathManager.getLocalEnvFilePath();
+  const localEnvInfo = JSON.parse(fs.readFileSync(envFilepath));
+
   return {
     projectConfig,
     amplifyMeta,
+    localEnvInfo,
   };
 }
 

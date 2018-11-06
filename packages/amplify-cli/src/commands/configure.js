@@ -25,8 +25,7 @@ module.exports = {
 };
 
 function constructExeInfo(context) {
-  context.exeInfo = {
-    inputParams: normalizeInputParams(context),
-  };
+  context.exeInfo = context.amplify.getProjectDetails();
+  context.exeInfo.inputParams = normalizeInputParams(context);
 }
 
