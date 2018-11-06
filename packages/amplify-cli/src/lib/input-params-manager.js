@@ -2,12 +2,8 @@ function normalizeInputParams(context) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach((key) => {
     const normalizedKey = normalizeKey(key);
-<<<<<<< HEAD
     const normalizedValue = normalizeValue(normalizedKey, context.parameters.options[key]);
     inputParams[normalizedKey] = normalizedValue;
-=======
-    inputParams[normalizedKey] = JSON.parse(context.parameters.options[key]);
->>>>>>> 7b4a0c7569678c6927119ccf90405dc7f18ebf8d
   });
   transform(inputParams);
   return inputParams;
