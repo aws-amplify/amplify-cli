@@ -179,7 +179,6 @@ workflows:
                 - release
                 - master
                 - beta
-                - angular-codegen-test
           requires:
             - build
       - deploy:
