@@ -434,11 +434,7 @@ function getCurrentConfig(context) {
       }
       awsConfigInfo.configLevel = 'project';
     } catch (e) {
-      awsConfigInfo = {
-        configLevel: 'general',
-        config: {},
-      };
-      fs.removeSync(configInfoFilePath);
+      throw e; 
     }
   }
   return awsConfigInfo;
