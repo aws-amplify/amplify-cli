@@ -410,7 +410,7 @@ function persistProjectConfig(context) {
 }
 
 function getCurrentConfig(context) {
-  let awsConfigInfo = {
+  const awsConfigInfo = {
     configLevel: 'general',
     config: {},
   };
@@ -434,7 +434,7 @@ function getCurrentConfig(context) {
       }
       awsConfigInfo.configLevel = 'project';
     } catch (e) {
-      throw e; 
+      throw e;
     }
   }
   return awsConfigInfo;
