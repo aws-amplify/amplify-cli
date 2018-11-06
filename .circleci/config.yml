@@ -17,7 +17,7 @@ jobs:
       - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
       - run: npm install
       - run: npm config set workspaces-experimental true
-      - run: sudo npm run setup-dev
+      - run: npm run production-build
       - save_cache:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
