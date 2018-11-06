@@ -3,6 +3,7 @@
   "version": "1.0.31",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
+  "private": true,
   "scripts": {
     "e2e": "jest",
     "build": "tsc",
