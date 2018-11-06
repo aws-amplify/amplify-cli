@@ -17,7 +17,7 @@ jobs:
       - run: cd packages && rm -rf */package-lock.json && rm -rf */node_modules
       - run: npm install
       - run: npm config set workspaces-experimental true
-      - run: npm run setup-dev
+      - run: sudo npm run setup-dev
       - save_cache:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
@@ -72,7 +72,7 @@ jobs:
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh
         - run: expect .circleci/aws_configure.exp 
-        - run: npm run setup-dev
+        - run: sudo npm run setup-dev
         - run: amplify
         - run:
             name: "Clone auth test package"
