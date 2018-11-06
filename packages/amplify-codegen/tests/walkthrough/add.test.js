@@ -22,7 +22,10 @@ jest.mock('../../src/walkthrough/questions/generateDocs');
 describe('Add walk-through', () => {
   const MOCK_TARGET_LANGUAGE = 'MOCK_TARGET_LANGUAGE';
   const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE_PATTERN';
-  const MOCK_CONTEXT = 'MOCK_CONTEXT';
+  const MOCK_CONTEXT = {
+    exeInfo: {
+    },
+  };
   const MOCK_GENERATED_FILE_NAME = 'MOCK_FILE_NAME.ts';
   const MOCK_DOWNLOAD_LOCATION = 'MOCK_SCHEMA_DIR/graphql/schema.json';
   const MOCK_DOCS_FILE_PATH = 'mockDocFilesPath';
