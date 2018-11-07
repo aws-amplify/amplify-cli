@@ -132,7 +132,7 @@ function carryOutConfigAction(context) {
 
 async function initialize(context) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams && context.exeInfo.inputParams.providers[constants.Label]) {
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
   } else if (awsConfigInfo.configLevel === 'project' &&
@@ -496,7 +496,7 @@ async function newUserCheck(context) {
     let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.Label]) {
       const inputParams = context.exeInfo.inputParams[constants.Label];
-      const inputConfigSufficient =
+      const inputConfigSufficient = (inputParams.configLevel === 'general') ||
         (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
       if (inputConfigSufficient) {
         needToSetupNewUser = false;
