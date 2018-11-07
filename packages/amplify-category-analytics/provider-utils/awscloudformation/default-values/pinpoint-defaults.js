@@ -4,16 +4,20 @@ const getAllDefaults = (project) => {
   const appName = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
 
-  const { amplifyMeta } = project;
-  const providerInfo = amplifyMeta.providers.awscloudformation;
+  const authRoleName = {
+    Ref: 'AuthRoleName',
+  };
 
-  const authRoleName = providerInfo.AuthRoleName;
-  const unauthRoleName = providerInfo.UnauthRoleName;
+  const unauthRoleName = {
+    Ref: 'UnauthRoleName',
+  };
 
-  const authRoleArn = providerInfo.AuthRoleArn;
-
-  const splitArn = authRoleArn.split(':');
-  const IAMPrefix = splitArn[4];
+  const authRoleArn = {
+    'Fn::GetAtt': [
+      'AuthRole',
+      'Arn',
+    ],
+  };
 
   const defaults = {
     appName,
@@ -25,7 +29,7 @@ const getAllDefaults = (project) => {
     unauthPolicyName: `pinpoint_amplify_${shortId}`,
     authRoleName,
     unauthRoleName,
-    IAMPrefix,
+    authRoleArn,
   };
 
   return defaults;
