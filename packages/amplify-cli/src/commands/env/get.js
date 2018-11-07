@@ -11,6 +11,15 @@ module.exports = {
     let envFound = false;
     const allEnvs = context.amplify.getEnvDetails();
 
+    if (context.parameters.options.json) {
+      if (allEnvs[envName]) {
+        context.print.info(allEnvs[envName]);
+      } else {
+        context.print.error('No environment found with the corresponding name provided');
+      }
+      return;
+    }
+
     Object.keys(allEnvs).forEach((env) => {
       if (env === envName) {
         envFound = true;

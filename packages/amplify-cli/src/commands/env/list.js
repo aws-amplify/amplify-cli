@@ -7,7 +7,10 @@ module.exports = {
 
     if (context.parameters.options.details) {
       const allEnvs = context.amplify.getEnvDetails();
-
+      if (context.parameters.options.json) {
+        context.print.info(allEnvs);
+        return;
+      }
       Object.keys(allEnvs).forEach((env) => {
         context.print.info('');
         if (envName === env) {
@@ -32,6 +35,10 @@ module.exports = {
       });
     } else {
       const allEnvs = context.amplify.getAllEnvs();
+      if (context.parameters.options.json) {
+        context.print.info({ envs: allEnvs });
+        return;
+      }
       const { table } = context.print;
       const tableOptions = [['Environments']];
       for (let i = 0; i < allEnvs.length; i += 1) {
