@@ -1,6 +1,6 @@
 {
   "name": "graphql-appsync-transformer",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "An AppSync model transform that takes a cloudformation document and writes mapping templates,lambda function, and schema if a path is specified.",
   "main": "lib/index.js",
   "scripts": {
@@ -19,9 +19,9 @@
   "dependencies": {
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^1.0.31",
-    "graphql-transformer-common": "^1.0.31",
-    "graphql-transformer-core": "^1.0.31"
+    "graphql-mapping-template": "^1.0.32",
+    "graphql-transformer-common": "^1.0.32",
+    "graphql-transformer-core": "^1.0.32"
   },
   "devDependencies": {
     "@types/jest": "^23.1.1",

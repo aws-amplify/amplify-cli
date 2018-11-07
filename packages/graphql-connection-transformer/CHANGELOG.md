@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.32"></a>
+## [1.0.32](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@1.0.32-beta.0...graphql-connection-transformer@1.0.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+<a name="1.0.32-beta.0"></a>
+## [1.0.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@1.0.12...graphql-connection-transformer@1.0.32-beta.0) (2018-11-05)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** Remove unused types ([87c3e0a](https://github.com/aws-amplify/amplify-cli/commit/87c3e0a))
+
+
+
+
 <a name="1.0.31"></a>
 ## [1.0.31](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@1.0.12...graphql-connection-transformer@1.0.31) (2018-11-02)
 
