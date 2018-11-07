@@ -26,12 +26,7 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  let normalizedValue = JSON.parse(value);
-  if (key === 'providers') {
-    if (!Array.isArray(normalizedValue)) {
-      normalizedValue = [normalizedValue];
-    }
-  }
+  const normalizedValue = JSON.parse(value);
   return normalizedValue;
 }
 
