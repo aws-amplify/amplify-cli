@@ -133,7 +133,6 @@ function carryOutConfigAction(context) {
 async function initialize(context) {
   const { awsConfigInfo } = context.exeInfo;
   if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
-
     const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
   } else if (awsConfigInfo.configLevel === 'project' &&
@@ -149,10 +148,7 @@ async function initialize(context) {
 }
 
 function onInitSuccessful(context) {
-  const { awsConfigInfo } = context.exeInfo;
-  if (awsConfigInfo.configLevel === 'project') {
-    persistProjectConfig(context);
-  }
+  persistLocalEnvConfig(context);
   return context;
 }
 
@@ -167,7 +163,7 @@ async function create(context) {
 
   validateConfig(context);
   if (awsConfigInfo.configValidated) {
-    persistProjectConfig(context);
+    persistLocalEnvConfig(context);
   } else {
     throw new Error('Invalid configuration settings');
   }
@@ -352,9 +348,9 @@ async function promptForProjectConfigConfirmation(context) {
 function validateConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
-  if(awsConfigInfo.configLevel === 'general'){
+  if (awsConfigInfo.configLevel === 'general') {
     awsConfigInfo.configValidated = true;
-  }else if(awsConfigInfo.config){
+  } else if (awsConfigInfo.config) {
     if (awsConfigInfo.config.useProfile) {
       if (awsConfigInfo.config.profileName && awsConfigInfo.config.profileName.length > 0) {
         awsConfigInfo.configValidated = true;
@@ -370,22 +366,22 @@ function validateConfig(context) {
   return context;
 }
 
-function persistProjectConfig(context) {
+function persistLocalEnvConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
 
   const awsInfo = {
-    configLevel: awsConfigInfo.configLevel
+    configLevel: awsConfigInfo.configLevel,
   };
 
-  if(awsConfigInfo.configLevel === 'general'){
+  if (awsConfigInfo.configLevel === 'general') {
     awsInfo.configLevel = 'general';
-  }else{
+  } else {
     awsInfo.configLevel = 'project';
     if (awsConfigInfo.config.useProfile) {
       awsInfo.useProfile = true;
       awsInfo.profileName = awsConfigInfo.config.profileName;
     } else {
-      awsInfo.useProfile = false; 
+      awsInfo.useProfile = false;
       const awsSecrets = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
@@ -398,7 +394,7 @@ function persistProjectConfig(context) {
       const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
       const jsonString = JSON.stringify(awsSecrets, null, 4);
       fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
-  
+
       awsInfo.awsConfigFilePath = awsSecretsFilePath;
     }
   }
@@ -432,7 +428,7 @@ function getCurrentConfig(context) {
       const { envName } = context.amplify.getEnvInfo();
       const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
 
-      if(configInfo && configInfo.configLevel !== "general"){
+      if (configInfo && configInfo.configLevel !== 'general') {
         if (configInfo.useProfile && configInfo.profileName) {
           awsConfigInfo.config.useProfile = configInfo.useProfile;
           awsConfigInfo.config.profileName = configInfo.profileName;
@@ -442,7 +438,7 @@ function getCurrentConfig(context) {
           awsConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
           awsConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
           awsConfigInfo.config.region = awsSecrets.region;
-        }else{
+        } else {
           throw new Error('Corrupt file contents in local-aws-info.json');
         }
         awsConfigInfo.configLevel = 'project';
@@ -456,7 +452,7 @@ function getCurrentConfig(context) {
 
 function updateProjectConfig(context) {
   removeProjectConfig(context);
-  persistProjectConfig(context);
+  persistLocalEnvConfig(context);
   return context;
 }
 
@@ -466,12 +462,13 @@ function removeProjectConfig(context) {
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
-    if(configInfo[envName]){
-      if (configInfo[envName].awsConfigFilePath && fs.existsSync(configInfo[envName].awsConfigFilePath)) {
+    if (configInfo[envName]) {
+      if (configInfo[envName].awsConfigFilePath &&
+        fs.existsSync(configInfo[envName].awsConfigFilePath)) {
         fs.removeSync(configInfo[envName].awsConfigFilePath);
       }
       configInfo[envName] = {
-        configLevel: 'general'
+        configLevel: 'general',
       };
     }
     const jsonString = JSON.stringify(configInfo, null, 4);
@@ -485,9 +482,9 @@ async function loadConfiguration(context, awsClient) {
   if (configSource === 'none') {
     context.print.error('Can not resolve aws access settings.');
     throw new Error('Can not resolve aws access settings.');
-  } else if(configSource === 'project'){
+  } else if (configSource === 'project') {
     return logProjectSpecificConfg(context, awsClient);
-  }else{
+  } else {
     return awsClient;
   }
 }
@@ -498,7 +495,8 @@ async function newUserCheck(context) {
     let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.Label]) {
       const inputParams = context.exeInfo.inputParams[constants.Label];
-      const inputConfigSufficient = (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
+      const inputConfigSufficient =
+        (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
       if (inputConfigSufficient) {
         needToSetupNewUser = false;
       }
@@ -528,18 +526,19 @@ function logProjectSpecificConfg(context, awsClient) {
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
     const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-    if(envConfigInfo && envConfigInfo.configLevel !== "general"){
+    if (envConfigInfo && envConfigInfo.configLevel !== 'general') {
       if (envConfigInfo.useProfile && envConfigInfo.profileName) {
         process.env.AWS_PROFILE = envConfigInfo.profileName;
-  
+
         const credentials = new awsClient.SharedIniFileCredentials({
           profile: envConfigInfo.profileName,
         });
         awsClient.config.credentials = credentials;
-      } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
+      } else if (envConfigInfo.awsConfigFilePath &&
+        fs.existsSync(envConfigInfo.awsConfigFilePath)) {
         awsClient.config.loadFromPath(envConfigInfo.awsConfigFilePath);
       } else {
-        throw new Error("awscloudformation can not load project level configuration.");
+        throw new Error('awscloudformation can not load project level configuration.');
       }
     }
   }
@@ -568,11 +567,12 @@ function scanConfig(context) {
     if (fs.existsSync(configInfoFilePath)) {
       const { envName } = context.amplify.getEnvInfo();
       const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-      if(envConfigInfo && envConfigInfo.configLevel !== "general"){
+      if (envConfigInfo && envConfigInfo.configLevel !== 'general') {
         if (envConfigInfo.useProfile && envConfigInfo.profileName &&
-              systemConfigs && systemConfigs[configInfo.profileName]) {
+              systemConfigs && systemConfigs[envConfigInfo.profileName]) {
           configSource = 'project';
-        } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
+        } else if (envConfigInfo.awsConfigFilePath &&
+          fs.existsSync(envConfigInfo.awsConfigFilePath)) {
           configSource = 'project';
         }
       }
@@ -580,7 +580,7 @@ function scanConfig(context) {
   } catch (e) {
     // no need to do anything, configSource stays the same as determined by previous steps.
   }
-  
+
   return configSource;
 }
 

@@ -26,7 +26,7 @@ function normalizeKey(key) {
 }
 
 function normalizeValue(key, value) {
-  let normalizedValue = JSON.parse(value);
+  const normalizedValue = JSON.parse(value);
   return normalizedValue;
 }
 
