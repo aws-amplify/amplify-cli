@@ -412,7 +412,7 @@ function persistProjectConfig(context) {
     envAwsInfo = JSON.parse(fs.readFileSync(configInfoFilePath));
   }
 
-  envAwsInfo[envName] = awsConfigInfo.config;
+  envAwsInfo[envName] = awsInfo;
   const jsonString = JSON.stringify(envAwsInfo, null, 4);
   fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
 
@@ -437,11 +437,11 @@ function getCurrentConfig(context) {
           awsConfigInfo.config.useProfile = configInfo.useProfile;
           awsConfigInfo.config.profileName = configInfo.profileName;
         } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-          const awsConfigInfo = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
+          const awsSecrets = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
           awsConfigInfo.config.useProfile = false;
-          awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId;
-          awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey;
-          awsConfigInfo.config.region = awsConfigInfo.config.region;
+          awsConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
+          awsConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
+          awsConfigInfo.config.region = awsSecrets.region;
         }else{
           throw new Error('Corrupt file contents in local-aws-info.json');
         }
@@ -470,12 +470,13 @@ function removeProjectConfig(context) {
       if (configInfo[envName].awsConfigFilePath && fs.existsSync(configInfo[envName].awsConfigFilePath)) {
         fs.removeSync(configInfo[envName].awsConfigFilePath);
       }
-      delete configInfo[envName];
+      configInfo[envName] = {
+        configLevel: 'general'
+      };
     }
     const jsonString = JSON.stringify(configInfo, null, 4);
     fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
   }
-  return context;
 }
 
 async function loadConfiguration(context, awsClient) {
