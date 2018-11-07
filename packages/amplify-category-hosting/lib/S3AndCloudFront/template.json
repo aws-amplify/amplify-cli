@@ -1,12 +1,51 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Hosting resource stack creation using Amplify CLI",
+    "Parameters": {
+        "env": {
+            "Type": "String"
+        },
+        "bucketName": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
     "Resources": {
         "S3Bucket": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy" : "Retain",
             "Properties": {
-                "BucketName": "HostingBucket",
+                "BucketName": {
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        {
+                           "Ref": "bucketName"
+                        }, 
+                        {
+                            "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Ref": "bucketName"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "env"
+                                  }
+                                ]
+                            ]
+                        }      
+                    ]
+                },
                 "AccessControl": "PublicRead",
                 "WebsiteConfiguration": {
                     "IndexDocument": "index.html",

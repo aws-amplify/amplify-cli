@@ -12,6 +12,7 @@ const constants = require('../constants');
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
+const parametersFileName = 'parameters.json';
 
 
 const DEV = 'DEV (S3 only with HTTP)';
@@ -22,8 +23,11 @@ const Environments = [
 ];
 
 async function enable(context) {
-  let templateFilePath = path.join(__dirname, 'template.json');
+  let templateFilePath = path.join(__dirname, templateFileName);
   context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
+
+  let parametersFilePath = path.join(__dirname, parametersFileName);
+  context.exeInfo.parameters = JSON.parse(fs.readFileSync(parametersFilePath));
 
   // will take this out once cloudformation invoke and wait are separated;
   await checkCDN(context);
@@ -39,8 +43,12 @@ async function enable(context) {
   fs.ensureDirSync(serviceDirPath);
 
   templateFilePath = path.join(serviceDirPath, templateFileName);
-  const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+  let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+  parametersFilePath = path.join(serviceDirPath, parametersFileName);
+  jsonString = JSON.stringify(context.exeInfo.parameters, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
   const metaData = {
     service: serviceName,
@@ -91,8 +99,10 @@ async function configure(context) {
   if (fs.existsSync(templateFilePath)) {
     context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
     await configManager.configure(context);
+
     const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
     fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
     return context;
   }
   throw new Error('Missing CloudFormation template for hosting.');
