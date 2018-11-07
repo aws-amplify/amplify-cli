@@ -4,11 +4,13 @@ const getAllDefaults = (project) => {
   const name = project.projectConfig.projectName.toLowerCase();
   const [shortId] = uuid().split('-');
 
-  const { amplifyMeta } = project;
-  const providerInfo = amplifyMeta.providers.awscloudformation;
+  const authRoleName = {
+    Ref: 'AuthRoleName',
+  };
 
-  const authRoleName = providerInfo.AuthRoleName;
-  const unauthRoleName = providerInfo.UnauthRoleName;
+  const unauthRoleName = {
+    Ref: 'UnauthRoleName',
+  };
 
   const defaults = {
     resourceName: `s3${shortId}`,
