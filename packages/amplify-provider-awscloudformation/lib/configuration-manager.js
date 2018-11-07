@@ -135,7 +135,7 @@ function carryOutConfigAction(context) {
 
 async function initialize(context) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams.providers[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
   } else if (awsConfigInfo.configLevel === 'project' &&
@@ -214,6 +214,7 @@ function printInfo(context) {
 async function setProjectConfigAction(context) {
   if (context.exeInfo.inputParams[constants.Label]) {
     const inputParams = context.exeInfo.inputParams[constants.Label];
+
     if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
       if (inputParams.configLevel === 'project') {
         context.exeInfo.awsConfigInfo.action = 'update';
@@ -510,7 +511,7 @@ function logProjectSpecificConfg(context, awsClient) {
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-    if (configInfo.useProfile && configInfo.profileName) {
+    if (configInfo && configInfo.useProfile && configInfo.profileName) {
       process.env.AWS_PROFILE = configInfo.profileName;
 
       const credentials = new awsClient.SharedIniFileCredentials({

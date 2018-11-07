@@ -30,7 +30,10 @@
         "unauthRoleName": {
             "Type":  "String"
         },
-        "IAMPrefix": {
+        "authRoleArn": {
+            "Type":  "String"
+        },
+        "env": {
             "Type":  "String"
         }
     },
@@ -53,6 +56,14 @@
             "Fn::Equals": [
                 {
                     "Ref": "appId"
+                },
+                "NONE"
+            ]
+        },
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
                 },
                 "NONE"
             ]
@@ -190,7 +201,27 @@
                     ]
                 },
                 "appName": {
-                    "Ref": "appName"
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        {
+                           "Ref": "appName"
+                        }, 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Ref": "appName"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "env"
+                                  }
+                                ]
+                            ]
+                        },       
+                    ]
                 }
             }
         },
@@ -222,9 +253,7 @@
                                         "",
                                         [
                                           "arn:aws:mobiletargeting:*:",
-                                          {
-                                            "Ref": "IAMPrefix"
-                                          },
+                                          { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                           ":apps/",
                                           {
                                             "Fn::GetAtt": [
@@ -242,9 +271,7 @@
                                         "",
                                         [
                                           "arn:aws:mobiletargeting:*:",
-                                          {
-                                            "Ref": "IAMPrefix"
-                                          },
+                                          { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                           ":apps/",
                                           {
                                             "Ref": "appId"
@@ -290,9 +317,7 @@
                                         "",
                                         [
                                           "arn:aws:mobiletargeting:*:",
-                                          {
-                                            "Ref": "IAMPrefix"
-                                          },
+                                          { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                           ":apps/",
                                           {
                                             "Fn::GetAtt": [
@@ -310,9 +335,7 @@
                                         "",
                                         [
                                           "arn:aws:mobiletargeting:*:",
-                                          {
-                                            "Ref": "IAMPrefix"
-                                          },
+                                          { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                           ":apps/",
                                           {
                                             "Ref": "appId"
