@@ -4,7 +4,6 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const awsRegions = require('./aws-regions');
 const constants = require('./constants');
-const configScanner = require('./configuration-scanner');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
@@ -105,8 +104,6 @@ function normalizeInputParams(context) {
         throw new Error(errorMessage);
       }
     }
-
-
     context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
   }
 }
@@ -136,6 +133,7 @@ function carryOutConfigAction(context) {
 async function initialize(context) {
   const { awsConfigInfo } = context.exeInfo;
   if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
+
     const inputParams = context.exeInfo.inputParams[constants.Label];
     Object.assign(awsConfigInfo, inputParams);
   } else if (awsConfigInfo.configLevel === 'project' &&
@@ -354,16 +352,20 @@ async function promptForProjectConfigConfirmation(context) {
 function validateConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
-  if (awsConfigInfo.config.useProfile) {
-    if (awsConfigInfo.config.profileName && awsConfigInfo.config.profileName.length > 0) {
-      awsConfigInfo.configValidated = true;
+  if(awsConfigInfo.configLevel === 'general'){
+    awsConfigInfo.configValidated = true;
+  }else if(awsConfigInfo.config){
+    if (awsConfigInfo.config.useProfile) {
+      if (awsConfigInfo.config.profileName && awsConfigInfo.config.profileName.length > 0) {
+        awsConfigInfo.configValidated = true;
+      }
+    } else {
+      awsConfigInfo.configValidated = awsConfigInfo.config.accessKeyId &&
+        awsConfigInfo.config.accessKeyId !== constants.DefaultAWSAccessKeyId &&
+        awsConfigInfo.config.secretAccessKey &&
+        awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
+        awsConfigInfo.config.region && awsRegions.regions.includes(awsConfigInfo.config.region);
     }
-  } else {
-    awsConfigInfo.configValidated = awsConfigInfo.config.accessKeyId &&
-      awsConfigInfo.config.accessKeyId !== constants.DefaultAWSAccessKeyId &&
-      awsConfigInfo.config.secretAccessKey &&
-      awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
-      awsConfigInfo.config.region && awsRegions.regions.includes(awsConfigInfo.config.region);
   }
   return context;
 }
@@ -372,27 +374,35 @@ function persistProjectConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
 
   const awsInfo = {
-    useProfile: awsConfigInfo.config.useProfile,
+    configLevel: awsConfigInfo.configLevel
   };
 
-  if (awsConfigInfo.config.useProfile) {
-    awsInfo.profileName = awsConfigInfo.config.profileName;
-  } else {
-    const awsSecrets = {
-      accessKeyId: awsConfigInfo.config.accessKeyId,
-      secretAccessKey: awsConfigInfo.config.secretAccessKey,
-      region: awsConfigInfo.config.region,
-    };
-    const sharedConfigDirPath =
-      path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
-    fs.ensureDirSync(sharedConfigDirPath);
-    const awsSecretsFileName = context.amplify.makeId(10);
-    const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
-    const jsonString = JSON.stringify(awsSecrets, null, 4);
-    fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
-
-    awsInfo.awsConfigFilePath = awsSecretsFilePath;
+  if(awsConfigInfo.configLevel === 'general'){
+    awsInfo.configLevel = 'general';
+  }else{
+    awsInfo.configLevel = 'project';
+    if (awsConfigInfo.config.useProfile) {
+      awsInfo.useProfile = true;
+      awsInfo.profileName = awsConfigInfo.config.profileName;
+    } else {
+      awsInfo.useProfile = false; 
+      const awsSecrets = {
+        accessKeyId: awsConfigInfo.config.accessKeyId,
+        secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        region: awsConfigInfo.config.region,
+      };
+      const sharedConfigDirPath =
+        path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+      fs.ensureDirSync(sharedConfigDirPath);
+      const awsSecretsFileName = context.amplify.makeId(10);
+      const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
+      const jsonString = JSON.stringify(awsSecrets, null, 4);
+      fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
+  
+      awsInfo.awsConfigFilePath = awsSecretsFilePath;
+    }
   }
+
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
   const { envName } = context.exeInfo.localEnvInfo;
@@ -422,17 +432,21 @@ function getCurrentConfig(context) {
       const { envName } = context.amplify.getEnvInfo();
       const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
 
-      if (configInfo.useProfile && configInfo.profileName) {
-        awsConfigInfo.config.useProfile = configInfo.useProfile;
-        awsConfigInfo.config.profileName = configInfo.profileName;
-      } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-        const awsConfigInfo = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
-        awsConfigInfo.config.useProfile = false;
-        awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId;
-        awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey;
-        awsConfigInfo.config.region = awsConfigInfo.config.region;
+      if(configInfo && configInfo.configLevel !== "general"){
+        if (configInfo.useProfile && configInfo.profileName) {
+          awsConfigInfo.config.useProfile = configInfo.useProfile;
+          awsConfigInfo.config.profileName = configInfo.profileName;
+        } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
+          const awsConfigInfo = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
+          awsConfigInfo.config.useProfile = false;
+          awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId;
+          awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey;
+          awsConfigInfo.config.region = awsConfigInfo.config.region;
+        }else{
+          throw new Error('Corrupt file contents in local-aws-info.json');
+        }
+        awsConfigInfo.configLevel = 'project';
       }
-      awsConfigInfo.configLevel = 'project';
     } catch (e) {
       throw e;
     }
@@ -452,12 +466,13 @@ function removeProjectConfig(context) {
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
     const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'));
-    if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-      fs.removeSync(configInfo.awsConfigFilePath);
+    if(configInfo[envName]){
+      if (configInfo[envName].awsConfigFilePath && fs.existsSync(configInfo[envName].awsConfigFilePath)) {
+        fs.removeSync(configInfo[envName].awsConfigFilePath);
+      }
+      delete configInfo[envName];
     }
-    delete configInfo[envName];
     const jsonString = JSON.stringify(configInfo, null, 4);
-
     fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
   }
   return context;
@@ -465,17 +480,19 @@ function removeProjectConfig(context) {
 
 async function loadConfiguration(context, awsClient) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  const configSource = configScanner.run(context);
+  const configSource = scanConfig(context);
   if (configSource === 'none') {
     context.print.error('Can not resolve aws access settings.');
     throw new Error('Can not resolve aws access settings.');
-  } else {
+  } else if(configSource === 'project'){
     return logProjectSpecificConfg(context, awsClient);
+  }else{
+    return awsClient;
   }
 }
 
 async function newUserCheck(context) {
-  const configSource = configScanner.run(context);
+  const configSource = scanConfig(context);
   if (configSource === 'none') {
     let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.Label]) {
@@ -509,19 +526,61 @@ function logProjectSpecificConfg(context, awsClient) {
   const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
-    const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-    if (configInfo.useProfile && configInfo.profileName) {
-      process.env.AWS_PROFILE = configInfo.profileName;
-
-      const credentials = new awsClient.SharedIniFileCredentials({
-        profile: configInfo.profileName,
-      });
-      awsClient.config.credentials = credentials;
-    } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-      awsClient.config.loadFromPath(configInfo.awsConfigFilePath);
+    const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
+    if(envConfigInfo && envConfigInfo.configLevel !== "general"){
+      if (envConfigInfo.useProfile && envConfigInfo.profileName) {
+        process.env.AWS_PROFILE = envConfigInfo.profileName;
+  
+        const credentials = new awsClient.SharedIniFileCredentials({
+          profile: envConfigInfo.profileName,
+        });
+        awsClient.config.credentials = credentials;
+      } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
+        awsClient.config.loadFromPath(envConfigInfo.awsConfigFilePath);
+      } else {
+        throw new Error("awscloudformation can not load project level configuration.");
+      }
     }
   }
   return awsClient;
+}
+
+
+function scanConfig(context) {
+  let configSource = 'none';
+  const systemConfigs = systemConfigManager.getFullConfig();
+  if (systemConfigs && Object.keys(systemConfigs).length > 0) {
+    configSource = 'profile-available';
+  }
+  if (systemConfigs && systemConfigs.default) {
+    configSource = 'system';
+  }
+  if ((process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) ||
+        (process.env.AWS_PROFILE && systemConfigs &&
+            systemConfigs[process.env.AWS_PROFILE.trim()])) {
+    configSource = 'envVar';
+  }
+
+  try {
+    const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+    const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
+    if (fs.existsSync(configInfoFilePath)) {
+      const { envName } = context.amplify.getEnvInfo();
+      const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
+      if(envConfigInfo && envConfigInfo.configLevel !== "general"){
+        if (envConfigInfo.useProfile && envConfigInfo.profileName &&
+              systemConfigs && systemConfigs[configInfo.profileName]) {
+          configSource = 'project';
+        } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
+          configSource = 'project';
+        }
+      }
+    }
+  } catch (e) {
+    // no need to do anything, configSource stays the same as determined by previous steps.
+  }
+  
+  return configSource;
 }
 
 module.exports = {
