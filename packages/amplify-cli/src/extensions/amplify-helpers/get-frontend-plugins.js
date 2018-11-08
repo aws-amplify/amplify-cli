@@ -4,7 +4,7 @@ function getFrontendPlugins(context) {
     if (plugin.name.includes('frontend')) {
       const strs = plugin.name.split('-');
       const frontendName = strs[strs.length - 1];
-      frontendPlugins[frontendName] = plugin.name;
+      frontendPlugins[frontendName] = plugin.directory;
     }
   });
   return frontendPlugins;
