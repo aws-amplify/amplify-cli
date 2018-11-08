@@ -109,7 +109,7 @@ export class ResourceFactory {
     public makeEnvironmentConditions() {
         return {
             [ResourceConstants.CONDITIONS.HasEnvironmentParameter]:
-                Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE)
+                Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE))
         }
     }
 
