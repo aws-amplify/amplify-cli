@@ -75,7 +75,27 @@
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
-                    "Ref": "roleName"
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        {
+                           "Ref": "roleName"
+                        }, 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Ref": "roleName"
+                                  },
+                                  "-",
+                                  {
+                                    "Ref": "env"
+                                  }
+                                ]
+                            ]
+                        },       
+                    ]
                 },
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",

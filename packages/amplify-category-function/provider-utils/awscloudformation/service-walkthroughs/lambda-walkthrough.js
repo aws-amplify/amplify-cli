@@ -163,8 +163,14 @@ async function askDynamoDBQuestions(context, inputs) {
             return { resourceName };
           });
       }
-      case 'cloudResource': {
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
+      /* eslint-disable */
+
+      /*Commented this section until we figure out
+        multi-environemnt solution for existing tables - NOT CRITICAL
+
+        case 'cloudResource': {
+        const dynamodbTables =
+          await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
             resourceName: dynamodbTable.Name,
@@ -191,7 +197,9 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const dynamoCloudOptionAnswer = await inquirer.prompt([dynamoCloudOptionQuestion]);
         return dynamoCloudOptionAnswer[inputs[7].key];
-      }
+      } */
+
+      /* eslint-enable */
       default: context.print.error('Invalid option selected');
     }
   }
