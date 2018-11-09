@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.33-beta.0...amplify-graphql-docs-generator@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
 <a name="0.1.33-beta.0"></a>
 ## 0.1.33-beta.0 (2018-11-09)
 
