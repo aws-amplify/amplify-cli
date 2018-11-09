@@ -37,14 +37,17 @@ async function ensurePinpointApp(context) {
 }
 
 async function createPinpointApp(context) {
-  const { projectConfig, amplifyMeta } = context.exeInfo;
+  const { projectConfig, amplifyMeta, localEnvInfo} = context.exeInfo;
+  let defaultPinpointProjectName = localEnvInfo.envName === 'NONE' ? 
+    (projectConfig.projectName + context.amplify.makeId(5)) : 
+    (projectConfig.projectName + context.amplify.makeId(5)) + '-' + localEnvInfo.envName; 
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
   const answer = await inquirer.prompt({
     name: 'pinpointProjectName',
     type: 'input',
     message: 'Pinpoint project name',
-    default: `${projectConfig.projectName}${context.amplify.makeId(5)}`,
+    default: defaultPinpointProjectName,
     validate: (name) => {
       let result = false;
       let message = '';
@@ -236,5 +239,6 @@ module.exports = {
   deletePinpointApp,
   getPinpointClient,
   isAnalyticsAdded,
+  scanCategoryMetaForPinpoint,
   console,
 };

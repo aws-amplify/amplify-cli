@@ -111,8 +111,34 @@ async function disable(context) {
   });
 }
 
+
+function pull(context, pinpointApp) {
+
+
+  getEmailChannel
+
+
+  const params = {
+    ApplicationId: pinpointApp.Id
+  };
+  spinner.start('Updating Email Channel.');
+  return new Promise((resolve, reject) => {
+    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+      if (err) {
+        spinner.fail('update channel error');
+        reject(err);
+      } else {
+        spinner.succeed(`The ${channelName} channel has been disabled.`);
+        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
+        resolve(data);
+      }
+    });
+  });
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull
 };

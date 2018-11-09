@@ -79,8 +79,12 @@ function disable(context) {
   });
 }
 
+function pull(context, pinpointApp) {
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull
 };
