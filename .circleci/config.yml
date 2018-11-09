@@ -157,12 +157,6 @@ jobs:
             - amplify-ssh-deps
             - amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          name: "Update SSH configs"
-          command: |
-            mkdir ~/.ssh
-            echo $SSH_HOST_PUBLIC_KEY
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts            
-      - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
