@@ -10,7 +10,7 @@ import {
     or, Expression, SetNode, and, not, parens,
     block
 } from 'graphql-mapping-template'
-import { ResourceConstants } from 'graphql-transformer-common'
+import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 
 import {
     OWNER_AUTH_STRATEGY,
@@ -19,8 +19,6 @@ import {
     GROUPS_AUTH_STRATEGY,
     DEFAULT_GROUPS_FIELD
 } from './constants'
-
-const NONE_VALUE = '___xamznone____'
 
 function replaceIfUsername(identityField: string): string {
     return (identityField === 'username') ? 'cognito:username' : identityField;
