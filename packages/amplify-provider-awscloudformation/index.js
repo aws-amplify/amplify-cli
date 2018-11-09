@@ -10,6 +10,7 @@ const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const consoleCommand = require('./lib/console');
+const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 
 function init(context) {
   return initializer.run(context);
@@ -70,4 +71,6 @@ module.exports = {
   getConfiguredAWSClient,
   showHelpfulLinks,
   deleteProject,
+  loadResourceParameters,
+  saveResourceParameters,
 };

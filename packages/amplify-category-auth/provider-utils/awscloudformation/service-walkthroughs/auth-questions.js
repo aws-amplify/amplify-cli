@@ -8,15 +8,13 @@ async function serviceWalkthrough(
   defaultValuesFilename,
   stringMapsFilename,
   serviceMetadata,
+  coreAnswers = {},
 ) {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
 
-
-  let coreAnswers = {};
-  /* eslint-disable */
 
   // QUESTION LOOP
   for (let i = 0; i < inputs.length; i = i + 1) {

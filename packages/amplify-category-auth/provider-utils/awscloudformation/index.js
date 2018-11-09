@@ -1,7 +1,17 @@
 const fs = require('fs');
+const { serviceWalkthrough } = require('./service-walkthroughs/auth-questions');
 
 let serviceMetadata;
 
+// Todo: move these to supported service.json
+
+const ENV_SPECIFIC_PARAMS = [
+  'facebookAppId',
+  'googleClientId',
+  'googleIos',
+  'googleAndroid',
+  'amazonAppId',
+];
 
 function serviceQuestions(
   context,
@@ -24,24 +34,41 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     {
       dir: pluginDir,
       template: `cloudformation-templates/${cfnFilename}`,
-      target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.yml`,
+      target: `${targetDir}/${category}/${options.resourceName}/${
+        options.resourceName
+      }-cloudformation-template.yml`,
       paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
     },
   ];
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, true, true);
+  // Todo: move to provider as each provider should decide where to store vars, and cfn
+  return context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
 
+function saveResourceParameters(
+  context,
+  providerName,
+  category,
+  resource,
+  params,
+  envSpecificParams = [],
+) {
+  const provider = context.amplify.getPluginInstance(context, providerName);
+  provider.saveResourceParameters(context, category, resource, params, envSpecificParams);
+}
 
 async function addResource(context, category, service) {
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const {
-    cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
+    cfnFilename,
+    defaultValuesFilename,
+    stringMapFilename,
+    serviceWalkthroughFilename,
+    provider,
   } = serviceMetadata;
   const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
-
 
   return serviceQuestions(
     context,
@@ -49,7 +76,6 @@ async function addResource(context, category, service) {
     stringMapFilename,
     serviceWalkthroughFilename,
   )
-
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
@@ -66,15 +92,28 @@ async function addResource(context, category, service) {
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
+      saveResourceParameters(
+        context,
+        provider,
+        category,
+        result.resourceName,
+        props,
+        ENV_SPECIFIC_PARAMS,
+      );
     })
     .then(() => props.resourceName);
 }
 
-function updateResource(context, category, service) {
+function updateResource(context, category, serviceResult) {
+  const { service, resourceName } = serviceResult;
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const {
-    cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename,
+    cfnFilename,
+    defaultValuesFilename,
+    stringMapFilename,
+    serviceWalkthroughFilename,
+    provider,
   } = serviceMetadata;
 
   return serviceQuestions(
@@ -83,7 +122,6 @@ function updateResource(context, category, service) {
     stringMapFilename,
     serviceWalkthroughFilename,
   )
-
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
       const { functionMap, getAllDefaults } = require(defaultValuesSrc);
@@ -95,7 +133,7 @@ function updateResource(context, category, service) {
         result.authSelections = 'identityPoolAndUserPool';
       }
 
-      const defaults = getAllDefaults(context.updatingAuth.resourceName);
+      const defaults = getAllDefaults(resourceName);
 
       const immutables = {};
       // loop through service questions
@@ -116,18 +154,19 @@ function updateResource(context, category, service) {
          * but make sure to pass existing resource name so we don't create a 2nd auth resource
          * and we don't overwrite immutables from the originally entered values */
 
-        props = Object.assign(
-          defaults,
-          immutables,
-          result,
-        );
+        props = Object.assign(defaults, immutables, result);
       } else {
         /* if the user does NOT choose defaults during an edit,
          * we merge actual answers object into props object of previous answers,
          * and in turn merge these into the defaults
          * ensuring that manual entries override previous which then
          * override defaults (except immutables) */
-        props = Object.assign(functionMap[result.authSelections](context.updatingAuth.resourceName), context.updatingAuth, immutables, result); // eslint-disable-line max-len
+        props = Object.assign(
+          functionMap[result.authSelections](context.updatingAuth.resourceName),
+          context.updatingAuth,
+          immutables,
+          result,
+        ); // eslint-disable-line max-len
       }
 
       if (!result.thirdPartyAuth) {
@@ -150,8 +189,39 @@ function updateResource(context, category, service) {
       }
 
       await copyCfnTemplate(context, category, props, cfnFilename);
+      saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
     })
     .then(() => props.resourceName);
 }
 
-module.exports = { addResource, updateResource };
+async function updateConfigOnEnvInit(context, category, service) {
+  const srvcMetaData = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))
+    .Cognito;
+  const { defaultValuesFilename, stringMapFilename } = srvcMetaData;
+
+  const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+  // previously selected answers
+  const previousValues = providerPlugin.loadResourceParameters(context, 'auth', service);
+  // ask only env specific questions
+  const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(category, service);
+  srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
+    ENV_SPECIFIC_PARAMS.includes(input.key) &&
+      !Object.keys(currentEnvSpecificValues).includes(input.key));
+
+  const result = await serviceWalkthrough(
+    context,
+    defaultValuesFilename,
+    stringMapFilename,
+    srvcMetaData,
+    previousValues,
+  );
+  const envParams = {};
+  ENV_SPECIFIC_PARAMS.forEach((paramName) => {
+    if (paramName in result) {
+      envParams[paramName] = result[paramName];
+    }
+  });
+  return envParams;
+}
+
+module.exports = { addResource, updateResource, updateConfigOnEnvInit };
