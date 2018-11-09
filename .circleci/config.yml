@@ -154,7 +154,7 @@ jobs:
       - restore_cache:
           keys: 
             - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
+            - amplify-cli-ssh-deps-{{ .Branch }}
             - amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Authenticate with npm
