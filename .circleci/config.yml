@@ -202,4 +202,3 @@ workflows:
                 - release
                 - master
                 - beta
-                - publish-test
