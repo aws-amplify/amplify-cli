@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.33-publish-test.0"></a>
+## [0.1.33-publish-test.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.12...amplify-frontend-ios@0.1.33-publish-test.0) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-ios
+
 <a name="0.1.32"></a>
 ## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.32-beta.0...amplify-frontend-ios@0.1.32) (2018-11-05)
 
