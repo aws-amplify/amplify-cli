@@ -160,11 +160,16 @@ export class ResourceFactory {
             RoleName: Fn.If(
                 ResourceConstants.CONDITIONS.HasEnvironmentParameter,
                 Fn.Join('-', [
-                    tableId, 'role',
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                    Fn.Ref(ResourceConstants.PARAMETERS.Env)
+                    tableId.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+                    'role', // 4
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
+                    Fn.Ref(ResourceConstants.PARAMETERS.Env) // 10
                 ]),
-                Fn.Join('-', [tableId, 'role', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                Fn.Join('-', [
+                    tableId.slice(0, 31), // max of 64. 64-26-4-3 = 31
+                    'role',
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ])
             ),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
@@ -180,20 +185,7 @@ export class ResourceFactory {
             },
             Policies: [
                 new IAM.Role.Policy({
-                    PolicyName: Fn.If(
-                        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-                        Fn.Join('-', [
-                            tableId,
-                            'DynamoDBAccess',
-                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                            Fn.Ref(ResourceConstants.PARAMETERS.Env)
-                        ]),
-                        Fn.Join('-', [
-                            tableId,
-                            'DynamoDBAccess',
-                            Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                        ])
-                    ),
+                    PolicyName: 'DynamoDBAccess',
                     PolicyDocument: {
                         Version: '2012-10-17',
                         Statement: [
