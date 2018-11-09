@@ -5,7 +5,7 @@ IFS='|'
 AWSCLOUDFORMATIONCONFIG="{\
 \"configLevel\":\"project\",\
 \"useProfile\":true,\
-\"profileName\":\"default\"\
+\"profileName\":\"kaustavpersonal\"\
 }"
 AMPLIFY="{\
 \"envName\":\"dev2\"\
