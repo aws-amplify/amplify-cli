@@ -131,13 +131,10 @@ export class ResourceFactory {
                 S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket),
                 S3Key: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key)
             },
-            FunctionName: Fn.Join(
-                "-",
-                [
-                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                ]
-            ),
+            FunctionName: this.joinWithEnv("-", [
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
+                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            ]),
             Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName),
             Role: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
             Runtime: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime),
@@ -168,6 +165,23 @@ export class ResourceFactory {
             .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID)
     }
 
+    private joinWithEnv(separator: string, listToJoin: any[]) {
+        return Fn.If(
+            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+            Fn.Join(
+                separator,
+                [
+                    ...listToJoin,
+                    Fn.Ref(ResourceConstants.PARAMETERS.Env)
+                ]
+            ),
+            Fn.Join(
+                separator,
+                listToJoin
+            )
+        )
+    }
+
     /**
      * Create a single role that has access to all the resources created by the
      * transform.
@@ -175,13 +189,10 @@ export class ResourceFactory {
      */
     public makeElasticsearchAccessIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Join(
-                "-",
-                [
-                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                ]
-            ),
+            RoleName: this.joinWithEnv("-", [
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
+                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+            ]),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -213,18 +224,7 @@ export class ResourceFactory {
                                 Resource: Fn.Join(
                                     '',
                                     [
-                                        "arn:aws:es:",
-                                        Refs.Region,
-                                        ":",
-                                        Refs.AccountId,
-                                        ":domain/",
-                                        Fn.Join(
-                                            "-",
-                                            [
-                                                "d",
-                                                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                                            ]
-                                        ),
+                                        this.domainArn(),
                                         "/*"
                                     ]
                                 )
@@ -243,13 +243,10 @@ export class ResourceFactory {
      */
     public makeStreamingLambdaIAMRole() {
         return new IAM.Role({
-            RoleName: Fn.Join(
-                "-",
-                [
-                    Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName),
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                ]
-            ),
+            RoleName: this.joinWithEnv("-", [
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName),
+                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            ]),
             AssumeRolePolicyDocument: {
                 Version: "2012-10-17",
                 Statement: [
@@ -281,18 +278,7 @@ export class ResourceFactory {
                                 Resource: Fn.Join(
                                     '',
                                     [
-                                        "arn:aws:es:",
-                                        Refs.Region,
-                                        ":",
-                                        Refs.AccountId,
-                                        ":domain/",
-                                        Fn.Join(
-                                            "-",
-                                            [
-                                                "d",
-                                                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                                            ]
-                                        ),
+                                        this.domainArn(),
                                         "/*"
                                     ]
                                 )
@@ -348,54 +334,37 @@ export class ResourceFactory {
     }
 
     /**
+     * If there is an env, allow ES to create the domain name so we don't go
+     * over 28 characters. If there is no env, fallback to original behavior.
+     */
+    private domainName() {
+        return Fn.If(
+            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+            Refs.NoValue,
+            Fn.Join(
+                '-',
+                [
+                    'd',
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            )
+        )
+    }
+
+    private domainArn() {
+        return Fn.GetAtt(
+            ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID,
+            "DomainArn"
+        )
+    }
+
+    /**
      * Create the elasticsearch domain.
      */
     public makeElasticSearchDomain() {
         return new Elasticsearch.Domain({
-            DomainName: Fn.Join(
-                "-",
-                [
-                    "d",
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                ]
-            ),
+            DomainName: this.domainName(),
             ElasticsearchVersion: '6.2',
-            AccessPolicies: {
-                Version: "2012-10-17",
-                Statement: {
-                    Effect: "Allow",
-                    Action: [
-                        "es:ESHttpDelete",
-                        "es:ESHttpHead",
-                        "es:ESHttpGet",
-                        "es:ESHttpPost",
-                        "es:ESHttpPut"
-                    ],
-                    Principal: {
-                        AWS: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn')
-                    },
-                    Resource: [
-                        Fn.Join(
-                            '',
-                            [
-                                "arn:aws:es:",
-                                Refs.Region,
-                                ":",
-                                Refs.AccountId,
-                                ":domain/",
-                                Fn.Join(
-                                    "-",
-                                    [
-                                        "d",
-                                        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                                    ]
-                                ),
-                                "/*"
-                            ]
-                        )
-                    ]
-                }
-            },
             ElasticsearchClusterConfig: {
                 ZoneAwarenessEnabled: false,
                 InstanceCount: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchInstanceCount),
@@ -407,7 +376,6 @@ export class ResourceFactory {
                 VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchEBSVolumeGB)
             }
         })
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID)
     }
 
     /**
@@ -456,7 +424,10 @@ export class ResourceFactory {
                         })
                     ])
                 ), {
-                    'DDBTableName': Fn.Join('-', [type, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+                    'DDBTableName': this.joinWithEnv('-', [
+                        type,
+                        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                    ])
                 }
             ),
             ResponseMappingTemplate: print(
