@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.33-beta.0"></a>
+## [1.0.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@1.0.12...graphql-elasticsearch-transformer@1.0.33-beta.0) (2018-11-09)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** Fix zip command not found on Windows. ([c93a673](https://github.com/aws-amplify/amplify-cli/commit/c93a673))
+
+
+
+
 <a name="1.0.32"></a>
 ## [1.0.32](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@1.0.32-beta.0...graphql-elasticsearch-transformer@1.0.32) (2018-11-05)
 

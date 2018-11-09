@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.33-beta.0"></a>
+## [1.0.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@1.0.12...graphql-dynamodb-transformer@1.0.33-beta.0) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
 <a name="1.0.32"></a>
 ## [1.0.32](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@1.0.32-beta.0...graphql-dynamodb-transformer@1.0.32) (2018-11-05)
 
