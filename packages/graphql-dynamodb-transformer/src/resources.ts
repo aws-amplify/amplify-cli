@@ -53,7 +53,11 @@ export class ResourceFactory {
      */
     public makeAppSyncAPI() {
         return new AppSync.GraphQLApi({
-            Name: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
+            Name: Fn.If(
+                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                Fn.Join('-', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName), Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
+                Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName)
+            ),
             AuthenticationType: 'API_KEY'
         })
     }
@@ -125,7 +129,15 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }] : [{ AttributeName: hashKey, AttributeType: 'S' }]
         return new DynamoDB.Table({
-            TableName: Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
+            TableName: Fn.If(
+                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                Fn.Join('-', [
+                    typeName,
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                    Fn.Ref(ResourceConstants.PARAMETERS.Env)
+                ]),
+                Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+            ),
             KeySchema: keySchema,
             AttributeDefinitions: attributeDefinitions,
             ProvisionedThroughput: {
@@ -145,7 +157,20 @@ export class ResourceFactory {
      */
     public makeIAMRole(tableId: string) {
         return new IAM.Role({
-            RoleName: Fn.Join('-', [tableId, 'role', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
+            RoleName: Fn.If(
+                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                Fn.Join('-', [
+                    tableId.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+                    'role', // 4
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
+                    Fn.Ref(ResourceConstants.PARAMETERS.Env) // 10
+                ]),
+                Fn.Join('-', [
+                    tableId.slice(0, 31), // max of 64. 64-26-4-3 = 31
+                    'role',
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ])
+            ),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
