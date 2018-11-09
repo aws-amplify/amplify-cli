@@ -196,12 +196,10 @@ workflows:
       - deploy:
           requires:
             - build
-            - test
-            - integration_test
-            - graphql_e2e_tests
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - publish-test
