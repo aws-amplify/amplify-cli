@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
+const notificationsModule = require('amplify-category-notifications'); 
 
 async function initializeEnv(context) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -37,6 +38,7 @@ async function initializeEnv(context) {
   });
 
   await sequential(initializationTasks);
+  await notificationsModule.initEnv(context);
 
   if (context.exeInfo.forcePush === undefined) {
     context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
@@ -48,6 +50,7 @@ async function initializeEnv(context) {
       providerPushTasks.push(() => providerModule.pushResources(context));
     });
     await sequential(providerPushTasks);
+    await notificationsModule.initEnvPush(context);
   }
 }
 
