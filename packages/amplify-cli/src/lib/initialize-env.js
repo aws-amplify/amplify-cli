@@ -27,7 +27,6 @@ async function initializeEnv(context) {
   const initializationTasks = [];
   const providerPushTasks = [];
 
-
   context.exeInfo.projectConfig.providers.forEach((provider) => {
     const providerModule = require(providerPlugins[provider]);
     initializationTasks.push(() => providerModule.initEnv(

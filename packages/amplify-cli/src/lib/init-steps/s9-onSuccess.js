@@ -31,13 +31,15 @@ async function run(context) {
 
   generateLocalRuntimeFiles(context);
   generateNonRuntimeFiles(context);
-  if (context.exeInfo.isNewEnv) {
-    context.exeInfo.projectConfig.providers.forEach((provider) => {
-      const providerModule = require(providerPlugins[provider]);
-      providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
-    });
-  }
+
+  context.exeInfo.projectConfig.providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    providerOnSuccessTasks.push(() => providerModule.onInitSuccessful(context));
+  });
+
+
   await sequential(providerOnSuccessTasks);
+
   await initializeEnv(context);
 
   printWelcomeMessage();

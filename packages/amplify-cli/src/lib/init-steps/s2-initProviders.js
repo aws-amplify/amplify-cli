@@ -6,16 +6,13 @@ const { normalizeProviderName } = require('../input-params-manager');
 async function run(context) {
   const providerPlugins = getProviderPlugins(context);
   const providers = await getProviders(context, providerPlugins);
-
   context.exeInfo.projectConfig.providers = providers;
-
   const initializationTasks = [];
-  if (context.exeInfo.isNewEnv) {
-    providers.forEach((provider) => {
-      const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.init(context));
-    });
-  }
+
+  providers.forEach((provider) => {
+    const providerModule = require(providerPlugins[provider]);
+    initializationTasks.push(() => providerModule.init(context));
+  });
 
   await sequential(initializationTasks);
 
