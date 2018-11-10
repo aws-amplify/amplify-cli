@@ -4,7 +4,7 @@ const inquirer = require('inquirer');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
-const writeAmplifyMeta = require('./writeAmplifyMeta');
+const multiEnvManager = require('./multi-env-manager');
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
@@ -71,7 +71,7 @@ async function createPinpointApp(context) {
     },
     lastPushTimeStamp: new Date(),
   };
-  writeAmplifyMeta(context);
+  multiEnvManager.writeData(context);
 
   context.exeInfo.pinpointApp = pinpointApp;
   context.print.info('');

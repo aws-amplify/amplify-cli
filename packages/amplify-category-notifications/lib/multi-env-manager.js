@@ -3,7 +3,6 @@ const sequential = require('promise-sequential');
 const pinpointHelper = require('./pinpoint-helper'); 
 const constants = require('./constants'); 
 const notificationManager = require('./notifications-manager'); 
-const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 async function initEnv(context){
     await pullCurrentAmplifyMeta(context); 
@@ -151,6 +150,10 @@ async function pushChanges(context){
 
     await sequential(tasks);
 
+    writeData(context);
+}
+
+function writeData(context){
     writeAmplifyMeta(context);
     writeMultienvData(context);
 }
@@ -214,6 +217,19 @@ function writeMultienvData(context){
     }
 }
 
+function writeAmplifyMeta(context){
+  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+  let jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+  const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetaFilePath));
+  currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
+  jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
+  fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
+
+  context.amplify.onCategoryOutputsChange(context);
+}
 
 async function initEnvPush(context){
     await pushChanges(context); 
@@ -222,7 +238,7 @@ async function initEnvPush(context){
 module.exports = {
     initEnv,
     initEnvPush,
-    writeMultienvData
+    writeData
 };
 
   

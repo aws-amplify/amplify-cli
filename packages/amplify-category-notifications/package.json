@@ -11,7 +11,7 @@
     "opn": "^5.3.0",
     "ora": "^3.0.0",
     "uuid": "^3.3.2",
-    "promise-sequential": "^1.1.1",
+    "promise-sequential": "^1.1.1"
   },
   "scripts": {
     "lint": "eslint .",
