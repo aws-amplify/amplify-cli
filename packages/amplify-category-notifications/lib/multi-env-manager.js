@@ -3,6 +3,7 @@ const sequential = require('promise-sequential');
 const pinpointHelper = require('./pinpoint-helper'); 
 const constants = require('./constants'); 
 const notificationManager = require('./notifications-manager'); 
+const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 async function initEnv(context){
     await pullCurrentAmplifyMeta(context); 
@@ -149,6 +150,68 @@ async function pushChanges(context){
     });
 
     await sequential(tasks);
+
+    writeAmplifyMeta(context);
+    writeMultienvData(context);
+}
+
+function writeMultienvData(context){
+    const envFilepath = pathManager.getLocalEnvFilePath();
+    const { envName } = JSON.parse(fs.readFileSync(envFilepath));
+    const availableChannels = notificationManager.getAvailableChannels(); 
+
+    const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName]; 
+
+    let pinpointMeta;
+    let enabledChannels = []; 
+    const services = Object.keys(categoryMeta);
+    for (let i = 0; i < services.length; i++) {
+      const serviceMeta = categoryMeta[services[i]];
+      if (serviceMeta.service === 'Pinpoint' &&
+                                serviceMeta.output &&
+                                serviceMeta.output.Id) {
+        pinpointMeta = {
+            serviceName: services[i],
+            Name: serviceMeta.output.Name,
+            Id: serviceMeta.output.Id,
+            Region: serviceMeta.output.Region,
+        }
+        availableChannels.forEach((channel) => {
+          if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
+            enabledChannels.push(channel);
+          }
+        });
+        break;
+      }
+    }
+    
+    if(pinpointMeta){
+        const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
+        if(fs.existsSync(teamProviderInfoFilepath)){
+            const teamProviderInfo = require(teamProviderInfoFilepath);
+            teamProviderInfo[envName] = teamProviderInfo[envName] || {}; 
+            teamProviderInfo[envName]['categories'] = teamProviderInfo[envName]['categories'] || {};
+            teamProviderInfo[envName]['categories'][constants.CategoryName] = {
+                Pinpoint: pinpointMeta
+            }
+            const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+            fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
+        }
+    
+        const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath(); 
+        if(fs.existsSync(backendConfigFilePath)){
+            const backendConfig =  JSON.parse(fs.readFileSync(backendConfigFilePath));
+            backendConfig[constants.CategoryName] = {
+                Pinpoint: {
+                    pinpointMeta,
+                    enabledChannels
+                }
+
+            }
+            const jsonString = JSON.stringify(backendConfig, null, 4);
+            fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+        }
+    }
 }
 
 
@@ -158,7 +221,8 @@ async function initEnvPush(context){
 
 module.exports = {
     initEnv,
-    initEnvPush
+    initEnvPush,
+    writeMultienvData
 };
 
   
