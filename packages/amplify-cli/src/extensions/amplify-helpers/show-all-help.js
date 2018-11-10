@@ -58,12 +58,12 @@ function showAllHelp(context) {
     },
     {
       name: 'codegen',
-      description: 'Generates GraphQL statements(queries, mutations and subscriptions) and type annotations.'
+      description: 'Generates GraphQL statements(queries, mutations and subscriptions) and type annotations.',
     },
     {
       name: 'env',
-      description: 'Displays and manages environment related information for your Amplify project.'
-    }
+      description: 'Displays and manages environment related information for your Amplify project.',
+    },
 
   ];
 
