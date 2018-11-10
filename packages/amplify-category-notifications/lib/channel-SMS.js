@@ -80,6 +80,21 @@ function disable(context) {
 }
 
 function pull(context, pinpointApp) {
+  const params = {
+    ApplicationId: pinpointApp.Id,
+  };
+  spinner.start(`Pulling ${channelName} Channel.`);
+  return new Promise((resolve, reject) => {
+    context.exeInfo.pinpointClient.getSmsChannel(params, (err, data) => {
+      if (err) {
+        spinner.fail(`get channel ${channelName} error`);
+        reject(err);
+      } else {
+        spinner.succeed(`get ${channelName} channel successful`);
+        resolve(data.SMSChannelResponse);
+      }
+    });
+  });
 }
 
 module.exports = {

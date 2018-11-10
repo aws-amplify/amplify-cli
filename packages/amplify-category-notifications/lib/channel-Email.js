@@ -111,26 +111,19 @@ async function disable(context) {
   });
 }
 
-
 function pull(context, pinpointApp) {
-
-
-  getEmailChannel
-
-
   const params = {
-    ApplicationId: pinpointApp.Id
+    ApplicationId: pinpointApp.Id,
   };
-  spinner.start('Updating Email Channel.');
+  spinner.start(`Pulling ${channelName} Channel.`);
   return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
+    context.exeInfo.pinpointClient.getEmailChannel(params, (err, data) => {
       if (err) {
-        spinner.fail('update channel error');
+        spinner.fail(`get channel ${channelName} error`);
         reject(err);
       } else {
-        spinner.succeed(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.EmailChannelResponse;
-        resolve(data);
+        spinner.succeed(`get ${channelName} channel successful`);
+        resolve(data.EmailChannelResponse);
       }
     });
   });
