@@ -1,6 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  env:
+    Type: String
+  authRoleName:
+    Type: String
+  unauthRoleName:
+    Type: String
+  authRoleArn:
+    Type: String
+  unauthRoleArn:
+    Type: String
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
   <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
   <%=Object.keys(props)[i]%>:
@@ -551,7 +561,7 @@ Resources:
     Properties: 
       IdentityPoolId: !Ref IdentityPool
       Roles:
-          unauthenticated: !Ref unAuthRoleArn
+          unauthenticated: !Ref unauthRoleArn
           authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
   <% } %>
