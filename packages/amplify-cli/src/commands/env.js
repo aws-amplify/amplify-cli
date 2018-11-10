@@ -19,10 +19,6 @@ module.exports = {
         description: 'Displays a list of all the environments in your Amplify project',
       },
       {
-        name: 'list [--details] [--json]',
-        description: 'Displays a list of all the environments in your Amplify project',
-      },
-      {
         name: 'get --name <env-name>',
         description: 'Displays the details of the environment specified in the command ',
       },
