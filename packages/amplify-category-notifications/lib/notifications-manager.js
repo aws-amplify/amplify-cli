@@ -77,11 +77,11 @@ async function configureChannel(context, channelName) {
 async function pullAllChannels(context, pinpointApp) {
   const pullTasks = [];
   context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
-  Object.keys(channelWorkers).forEach(channelName => {
+  Object.keys(channelWorkers).forEach((channelName) => {
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    pullTasks.push(()=>{ channelWorker.pull(context, pinpointApp); }); 
-  })
-  await Promise.all(pullTasks); 
+    pullTasks.push(() => { channelWorker.pull(context, pinpointApp); });
+  });
+  await Promise.all(pullTasks);
 }
 
 module.exports = {

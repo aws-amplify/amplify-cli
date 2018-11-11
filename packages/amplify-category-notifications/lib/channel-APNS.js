@@ -143,5 +143,5 @@ module.exports = {
   configure,
   enable,
   disable,
-  pull
+  pull,
 };

@@ -10,18 +10,18 @@ async function deletePinpointApp(context) {
   await pinpointHelper.deletePinpointApp(context);
 }
 
-async function initEnv(context){
-  multiEnvManager.initEnv(context); 
+async function initEnv(context) {
+  multiEnvManager.initEnv(context);
 }
 
-async function initEnvPush(context){
-  multiEnvManager.initEnvPush(context); 
+async function initEnvPush(context) {
+  multiEnvManager.initEnvPush(context);
 }
 
 module.exports = {
   console,
   deletePinpointApp,
   initEnv,
-  initEnvPush
+  initEnvPush,
 };
 
