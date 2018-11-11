@@ -28,7 +28,7 @@ async function pullCurrentAmplifyMeta(context) {
 
   const { envName } = context.exeInfo.localEnvInfo;
 
-  const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
+  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
   if (fs.existsSync(teamProviderInfoFilepath)) {
     const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
     if (teamProviderInfo[envName] &&
@@ -38,7 +38,7 @@ async function pullCurrentAmplifyMeta(context) {
     }
   }
 
-  const currentMetaFilePath = context.amplify.pathManger.getCurentAmplifyMetaFilePath();
+  const currentMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
   const currentBackendAmplifyMeta = JSON.parse(fs.readFileSync(currentMetaFilePath));
   if (!pinpointApp) {
     const analyticsMeta = currentBackendAmplifyMeta[constants.AnalyticsCategoryName];
@@ -59,10 +59,10 @@ async function pullCurrentAmplifyMeta(context) {
 }
 
 async function constructAmplifyMeta(context) {
-  const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath();
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
   const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
   if (backendConfig[constants.CategoryName]) {
-    const metaFilePath = context.amplify.pathManger.getAmplifyMetaFilePath();
+    const metaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
     const amplifyMeta = JSON.parse(fs.readFileSync(metaFilePath));
     amplifyMeta[constants.CategoryName] = backendConfig[constants.CategoryName];
     const jsonString = JSON.stringify(amplifyMeta, null, 4);
@@ -71,10 +71,10 @@ async function constructAmplifyMeta(context) {
 }
 
 async function pushChanges(context) {
-  const currentMetaFilePath = context.amplify.pathManger.getCurentAmplifyMetaFilePath();
+  const currentMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
   const currentBackendAmplifyMeta = JSON.parse(fs.readFileSync(currentMetaFilePath));
 
-  const metaFilePath = context.amplify.pathManger.getAmplifyMetaFilePath();
+  const metaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(metaFilePath));
 
   const availableChannels = notificationManager.getAvailableChannels();
@@ -190,7 +190,7 @@ function writeMultienvData(context) {
       pinpointMeta = {
         serviceName: services[i],
         service: serviceMeta.service,
-        channels: availableChannels,
+        channels: enabledChannels,
         Name: serviceMeta.output.Name,
         Id: serviceMeta.output.Id,
         Region: serviceMeta.output.Region,
@@ -200,7 +200,7 @@ function writeMultienvData(context) {
   }
 
   if (pinpointMeta) {
-    const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
+    const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
     if (fs.existsSync(teamProviderInfoFilepath)) {
       const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
       teamProviderInfo[envName] = teamProviderInfo[envName] || {};
@@ -216,7 +216,7 @@ function writeMultienvData(context) {
       fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
     }
 
-    const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath();
+    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
     if (fs.existsSync(backendConfigFilePath)) {
       const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
       backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
