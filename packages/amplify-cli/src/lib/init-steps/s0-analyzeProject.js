@@ -103,8 +103,8 @@ function normalizeProjectName(projectName) {
 /* Begin getEditor */
 async function getEditor(context) {
   let editor;
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.editor) {
-    editor = normalizeEditorCode(context.exeInfo.inputParams.amplify.editor);
+  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
+    editor = normalizeEditorCode(context.exeInfo.inputParams.amplify.defaultEditor);
   } else if (!context.exeInfo.inputParams.yes) {
     editor = await editorSelection(editor);
   }
