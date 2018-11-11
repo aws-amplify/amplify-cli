@@ -5,16 +5,27 @@ const constants = require('./constants');
 const notificationManager = require('./notifications-manager'); 
 
 async function initEnv(context){
+    checkExeInfo(context);
     await pullCurrentAmplifyMeta(context); 
     await constructAmplifyMeta(context); 
     await pushChanges(context); //remove this line after add and push are separated.
+    writeData(context);
+    return context; 
+}
+
+function checkExeInfo(context){
+    const projectDetails = context.amplify.getProjectDetails();
+    context.exeInfo = context.exeInfo || {}; 
+    Object.assign(context.exeInfo, projectDetails);
+}
+
+async function initEnvPush(context){
+    await pushChanges(context); 
 }
 
 async function pullCurrentAmplifyMeta(context){
     let pinpointApp; 
-
-    const envFilepath = pathManager.getLocalEnvFilePath();
-    const { envName } = JSON.parse(fs.readFileSync(envFilepath));
+    const { envName } = context.exeInfo.localEnvInfo;
     
     const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
     if(fs.existsSync(teamProviderInfoFilepath)){
@@ -77,7 +88,7 @@ async function pushChanges(context){
         const services = Object.keys(categoryMeta);
         for (let i = 0; i < services.length; i++) {
           const serviceMeta = categoryMeta[services[i]];
-          if (serviceMeta.service === 'Pinpoint' &&
+          if (serviceMeta.service === constants.PinpointName &&
                                     serviceMeta.output &&
                                     serviceMeta.output.Id) {
             availableChannels.forEach((channel) => {
@@ -96,7 +107,7 @@ async function pushChanges(context){
         const services = Object.keys(categoryMeta);
         for (let i = 0; i < services.length; i++) {
           const serviceMeta = categoryMeta[services[i]];
-          if ( serviceMeta.service === 'Pinpoint' && serviceMeta.channels ) {
+          if ( serviceMeta.service === constants.PinpointName && serviceMeta.channels ) {
             availableChannels.forEach((channel) => {
               if (serviceMeta.channels.includes(channel)) {
                 newEnabledChannels.push(channel);
@@ -149,8 +160,6 @@ async function pushChanges(context){
     });
 
     await sequential(tasks);
-
-    writeData(context);
 }
 
 function writeData(context){
@@ -170,20 +179,22 @@ function writeMultienvData(context){
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
+      if (serviceMeta.service === constants.PinpointName &&
                                 serviceMeta.output &&
                                 serviceMeta.output.Id) {
-        pinpointMeta = {
-            serviceName: services[i],
-            Name: serviceMeta.output.Name,
-            Id: serviceMeta.output.Id,
-            Region: serviceMeta.output.Region,
-        }
         availableChannels.forEach((channel) => {
           if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
             enabledChannels.push(channel);
           }
         });
+        pinpointMeta = {
+            serviceName: services[i],
+            service: serviceMeta.service,
+            channels: availableChannels,
+            Name: serviceMeta.output.Name,
+            Id: serviceMeta.output.Id,
+            Region: serviceMeta.output.Region,
+        }
         break;
       }
     }
@@ -194,8 +205,12 @@ function writeMultienvData(context){
             const teamProviderInfo = require(teamProviderInfoFilepath);
             teamProviderInfo[envName] = teamProviderInfo[envName] || {}; 
             teamProviderInfo[envName]['categories'] = teamProviderInfo[envName]['categories'] || {};
-            teamProviderInfo[envName]['categories'][constants.CategoryName] = {
-                Pinpoint: pinpointMeta
+            teamProviderInfo[envName]['categories'][constants.CategoryName] = 
+                teamProviderInfo[envName]['categories'][constants.CategoryName] || {};
+            teamProviderInfo[envName]['categories'][constants.CategoryName][constants.PinpointName] = {
+                Name: pinpointMeta.Name,
+                Id: pinpointMeta.Id,
+                Region: pinpointMeta.Region
             }
             const jsonString = JSON.stringify(teamProviderInfo, null, 4);
             fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
@@ -204,13 +219,11 @@ function writeMultienvData(context){
         const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath(); 
         if(fs.existsSync(backendConfigFilePath)){
             const backendConfig =  JSON.parse(fs.readFileSync(backendConfigFilePath));
-            backendConfig[constants.CategoryName] = {
-                Pinpoint: {
-                    pinpointMeta,
-                    enabledChannels
-                }
-
-            }
+            backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {}; 
+            backendConfig[constants.CategoryName][pinpointMeta.serviceName] = {
+                service: pinpointMeta.service,
+                channels: pinpointMeta.channels
+            };
             const jsonString = JSON.stringify(backendConfig, null, 4);
             fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
         }
@@ -229,10 +242,6 @@ function writeAmplifyMeta(context){
   fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
 
   context.amplify.onCategoryOutputsChange(context);
-}
-
-async function initEnvPush(context){
-    await pushChanges(context); 
 }
 
 module.exports = {

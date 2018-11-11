@@ -112,6 +112,7 @@ function pull(context, pinpointApp) {
         reject(err);
       } else {
         spinner.succeed(`get ${channelName} channel successful`);
+        pinpointApp[channelName] = data.GCMChannelResponse;
         resolve(data.GCMChannelResponse);
       }
     });
