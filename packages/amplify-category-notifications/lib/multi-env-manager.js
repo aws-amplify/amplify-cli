@@ -25,11 +25,12 @@ async function initEnvPush(context){
 
 async function pullCurrentAmplifyMeta(context){
     let pinpointApp; 
+
     const { envName } = context.exeInfo.localEnvInfo;
     
     const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
     if(fs.existsSync(teamProviderInfoFilepath)){
-        const teamProviderInfo = require(teamProviderInfoFilepath);
+        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
         if(teamProviderInfo[envName] && 
             teamProviderInfo[envName]['categories'] && 
             teamProviderInfo[envName]['categories'][constants.CategoryName]){
@@ -50,8 +51,7 @@ async function pullCurrentAmplifyMeta(context){
         currentBackendAmplifyMeta[constants.CategoryName]={};
         currentBackendAmplifyMeta[constants.CategoryName][pinpointApp.Name] = {
             "serivce": constants.PinpointName,
-            "output": pinpointApp,
-            "lastPushTimeStamp": new Date(),
+            "output": pinpointApp
         };
         
         const jsonString = JSON.stringify(currentBackendAmplifyMeta, null, 4);
@@ -100,7 +100,6 @@ async function pushChanges(context){
           }
         }
     }
-
 
     if(amplifyMeta && amplifyMeta[constants.CategoryName]){
         const categoryMeta = amplifyMeta[constants.CategoryName];
@@ -168,12 +167,14 @@ function writeData(context){
 }
 
 function writeMultienvData(context){
-    const envFilepath = pathManager.getLocalEnvFilePath();
-    const { envName } = JSON.parse(fs.readFileSync(envFilepath));
-    const availableChannels = notificationManager.getAvailableChannels(); 
-
     const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName]; 
+    if(!categoryMeta){
+        return; 
+    }
 
+    const { envName } = context.exeInfo.localEnvInfo;
+
+    const availableChannels = notificationManager.getAvailableChannels(); 
     let pinpointMeta;
     let enabledChannels = []; 
     const services = Object.keys(categoryMeta);
@@ -202,7 +203,7 @@ function writeMultienvData(context){
     if(pinpointMeta){
         const teamProviderInfoFilepath = context.amplify.pathManger.getProviderInfoFilePath();
         if(fs.existsSync(teamProviderInfoFilepath)){
-            const teamProviderInfo = require(teamProviderInfoFilepath);
+            const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
             teamProviderInfo[envName] = teamProviderInfo[envName] || {}; 
             teamProviderInfo[envName]['categories'] = teamProviderInfo[envName]['categories'] || {};
             teamProviderInfo[envName]['categories'][constants.CategoryName] = 
@@ -216,7 +217,7 @@ function writeMultienvData(context){
             fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
         }
     
-        const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath(); 
+        const backendConfigFilePath = context.amplify.pathManger.getBackendConfigFilePath();
         if(fs.existsSync(backendConfigFilePath)){
             const backendConfig =  JSON.parse(fs.readFileSync(backendConfigFilePath));
             backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {}; 
