@@ -7,6 +7,18 @@ module.exports = {
 
     const commands = [
       {
+        name: 'sync [--restore]',
+        description: 'Syncs your environment with the current cloud environment. Use the restore flag to overwrite your local backend configs with that of the cloud.',
+      },
+      {
+        name: 'checkout <env-name> [--restore]',
+        description: 'Moves your environment to the environment specified in the command. Use the restore flag to overwirte your local backend configs with the backend configs of the environment specified.',
+      },
+      {
+        name: 'list [--details] [--json]',
+        description: 'Displays a list of all the environments in your Amplify project',
+      },
+      {
         name: 'list [--details] [--json]',
         description: 'Displays a list of all the environments in your Amplify project',
       },
