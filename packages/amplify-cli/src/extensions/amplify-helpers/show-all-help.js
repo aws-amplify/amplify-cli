@@ -56,6 +56,14 @@ function showAllHelp(context) {
       name: '<category>',
       description: 'Displays subcommands of the specified Amplify category.',
     },
+    {
+      name: 'codegen',
+      description: 'Generates GraphQL statements(queries, mutations and subscriptions) and type annotations.',
+    },
+    {
+      name: 'env',
+      description: 'Displays and manages environment related information for your Amplify project.',
+    },
 
   ];
 

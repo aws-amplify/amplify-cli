@@ -36,6 +36,8 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  const backendConfigFilePath = pathManager.getBackendConfigFilePath();
+  const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
     const sourceDir = path.normalize(path.join(
@@ -57,6 +59,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   }
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
+  fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
