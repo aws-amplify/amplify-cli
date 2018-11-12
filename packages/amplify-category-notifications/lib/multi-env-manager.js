@@ -107,6 +107,7 @@ async function pushChanges(context) {
     context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName]){
       pinpointInputParams = 
         context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName];
+      context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
 
   let pinpointAmplifyMeta;
@@ -128,8 +129,8 @@ async function pushChanges(context) {
       addChannel = true; 
     }
     if(pinpointInputParams.hasOwnProperty(channel) && 
-      pinpointInputParams[channel].hasOwnProperty('enabled')){
-        addChannel = pinpointInputParams[channel]['enabled'];
+      pinpointInputParams[channel].hasOwnProperty('Enabled')){
+        addChannel = pinpointInputParams[channel]['Enabled'];
     }
     if(addChannel){
       newEnabledChannels.push(channel);
@@ -155,6 +156,11 @@ async function pushChanges(context) {
   });
 
   const tasks = [];
+  if(channelsToEnable.length>0){
+    tasks.push(() => {
+      pinpointHelper.ensurePinpointApp(context);
+    });
+  }
 
   channelsToEnable.forEach((channel) => {
     tasks.push(() => {

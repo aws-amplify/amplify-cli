@@ -40,44 +40,47 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelOutput = {};
-  if (context.exeInfo.serviceMeta.output[channelName]) {
-    channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  let channelInput; 
+  let answers; 
+  if(context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]){
+    channelInput = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+    answers = {
+      DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod
+    };
+  }else{
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const question = {
+      name: 'DefaultAuthenticationMethod',
+      type: 'list',
+      message: 'Choose authentication method used for APNs',
+      choices: ['Certificate', 'Key'],
+      default: channelOutput.DefaultAuthenticationMethod || 'Certificate',
+    }
+    answers = await inquirer.prompt(question);
   }
 
-  const APNSChannelRequest = { Enabled: true };
-
-  const { DefaultAuthenticationMethod } = channelOutput;
-
-  let keyConfig;
-  let certificateConfig;
-
-  const answers = await inquirer.prompt({
-    name: 'DefaultAuthenticationMethod',
-    type: 'list',
-    message: 'Choose authentication method used for APNs',
-    choices: ['Certificate', 'Key'],
-    default: DefaultAuthenticationMethod || 'Certificate',
-  });
-
-  APNSChannelRequest.DefaultAuthenticationMethod = answers.DefaultAuthenticationMethod;
-
   try {
-    if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
-      keyConfig = await configureKey.run();
+    if (answers.DefaultAuthenticationMethod === 'Key') {
+      keyConfig = await configureKey.run(channelInput);
+      Object.assign(answers, keyConfig);
     } else {
-      certificateConfig = await configureCertificate.run();
+      certificateConfig = await configureCertificate.run(channelInput);
+      Object.assign(answers, certificateConfig);
     }
   } catch (err) {
     context.print.error(err.message);
     process.exit(1);
   }
 
-  Object.assign(APNSChannelRequest, keyConfig, certificateConfig);
-
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest,
+    APNSChannelRequest: {
+      ...answers,
+      Enabled: true,
+    },
   };
 
   spinner.start('Updating APNS Channel.');
@@ -96,6 +99,10 @@ async function enable(context, successMessage) {
       }
     });
   });
+}
+
+function validateInputParams(channelInput){
+  return channelInput; 
 }
 
 function disable(context) {

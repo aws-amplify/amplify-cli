@@ -37,37 +37,42 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelOutput = {};
-  if (context.exeInfo.serviceMeta.output[channelName]) {
-    channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  let answers; 
+  if(context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]){
+    answers = context.exeInfo.pinpointInputParams[channelName];
+  }else{
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const questions = [
+      {
+        name: 'FromAddress',
+        type: 'input',
+        message: "The 'From' Email address used to send emails",
+        default: channelOutput.FromAddress,
+      },
+      {
+        name: 'Identity',
+        type: 'input',
+        message: 'The ARN of an identity verified with SES',
+        default: channelOutput.Identity,
+      },
+      {
+        name: 'RoleArn',
+        type: 'input',
+        message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
+        default: channelOutput.RoleArn,
+      },
+    ];
+    answers = await inquirer.prompt(questions);
   }
-  const questions = [
-    {
-      name: 'FromAddress',
-      type: 'input',
-      message: "The 'From' Email address used to send emails",
-      default: channelOutput.FromAddress,
-    },
-    {
-      name: 'Identity',
-      type: 'input',
-      message: 'The ARN of an identity verified with SES',
-      default: channelOutput.Identity,
-    },
-    {
-      name: 'RoleArn',
-      type: 'input',
-      message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
-      default: channelOutput.RoleArn,
-    },
-  ];
-  const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
-      Enabled: true,
       ...answers,
+      Enabled: true,
     },
   };
 
