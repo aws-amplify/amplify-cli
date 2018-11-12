@@ -9,13 +9,10 @@ function run(context, providerMetadata) {
   }
 
   const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
-  const tempDir = `${backendDir}/.temp`;
+  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
+  const tempDir = `${amplifyDir}/.temp`;
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
 
   return new S3(context)
     .then((s3) => {
@@ -25,8 +22,6 @@ function run(context, providerMetadata) {
       return s3.getFile(s3Params);
     })
     .then((data) => {
-      const backendDir = context.amplify.pathManager.getBackendDirPath();
-      const tempDir = `${backendDir}/.temp`;
       fs.ensureDirSync(tempDir);
       const buff = Buffer.from(data);
 
@@ -41,6 +36,10 @@ function run(context, providerMetadata) {
             }
             fs.removeSync(currentCloudBackendDir);
             fs.copySync(`${tempDir}/#current-cloud-backend`, currentCloudBackendDir);
+            if (context.exeInfo.restoreBackend) {
+              fs.removeSync(backendDir);
+              fs.copySync(`${tempDir}/#current-cloud-backend`, backendDir);
+            }
             fs.removeSync(tempDir);
             resolve();
           });
