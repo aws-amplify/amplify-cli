@@ -39,7 +39,7 @@ async function configure(context) {
 async function enable(context, successMessage) {
   let answers; 
   if(context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]){
-    answers = context.exeInfo.pinpointInputParams[channelName];
+    answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
   }else{
     let channelOutput = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
@@ -92,6 +92,15 @@ async function enable(context, successMessage) {
       }
     });
   });
+}
+
+function validateInputParams(channelInput){
+  if(!channelInput.FromAddress || !channelInput.Identity || !channelInput.RoleArn){
+    throw new Error(
+      `Missing FromAddress, Identity or RoleArn for the Email channel`
+    ); 
+  }
+  return channelInput; 
 }
 
 async function disable(context) {

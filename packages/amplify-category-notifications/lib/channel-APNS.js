@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
+const fs = require('fs-extra');
 
 const channelName = 'APNS';
 const spinner = ora('');
@@ -102,6 +103,43 @@ async function enable(context, successMessage) {
 }
 
 function validateInputParams(channelInput){
+  if(channelInput.DefaultAuthenticationMethod){
+    let authMethod = channelInput.DefaultAuthenticationMethod;
+    if(authMethod === 'Certificate'){
+      if(!channelInput.P12FilePath){
+        throw new Error(
+          `P12FilePath is missing for the APNS channel`
+        ); 
+      }else if(!fs.existsSync(channelInput.P12FilePath)){
+        throw new Error(
+          `P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`
+        ); 
+      }
+    }else if(authMethod === 'Key'){
+      if(!channelInput.BundleId || !channelInput.TeamId || !channelInput.TokenKeyId){
+        throw new Error(
+          `Missing BundleId, TeamId or TokenKeyId for the APNS channel`
+        ); 
+      }else if(!channelInput.P8FilePath){
+        throw new Error(
+          `P8FilePath is missing for the APNS channel`
+        ); 
+      }else if(!fs.existsSync(channelInput.P8FilePath)){
+        throw new Error(
+          `P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`
+        ); 
+      }
+    }else{
+      throw new Error(
+        `DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`
+      ); 
+    }
+  }else{
+    throw new Error(
+      'DefaultAuthenticationMethod is missing for the APNS channel'
+    ); 
+  }
+
   return channelInput; 
 }
 
