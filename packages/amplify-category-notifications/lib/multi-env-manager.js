@@ -100,37 +100,56 @@ async function pushChanges(context) {
     }
   }
 
+  let pinpointInputParams; 
+  if(context.exeInfo && 
+    context.exeInfo.inputParams && 
+    context.exeInfo.inputParams[constants.CategoryName]&&
+    context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName]){
+      pinpointInputParams = 
+        context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName];
+  }
+
+  let pinpointAmplifyMeta;
   if (amplifyMeta && amplifyMeta[constants.CategoryName]) {
     const categoryMeta = amplifyMeta[constants.CategoryName];
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === constants.PinpointName && serviceMeta.channels) {
-        availableChannels.forEach((channel) => {
-          if (serviceMeta.channels.includes(channel)) {
-            newEnabledChannels.push(channel);
-          }
-        });
+      if (serviceMeta.service === constants.PinpointName) {
+        pinpointAmplifyMeta = serviceMeta;
         break;
       }
     }
   }
 
+  availableChannels.forEach((channel) => {
+    let addChannel = false; 
+    if (pinpointAmplifyMeta.channels.includes(channel)) {
+      addChannel = true; 
+    }
+    if(pinpointInputParams.hasOwnProperty(channel) && 
+      pinpointInputParams[channel].hasOwnProperty('enabled')){
+        addChannel = pinpointInputParams[channel]['enabled'];
+    }
+    if(addChannel){
+      newEnabledChannels.push(channel);
+    }
+  });
+
   const channelsToEnable = [];
   const channelsToDisable = [];
-  const channelsToUpdate = [];
+  // const channelsToUpdate = [];
 
   availableChannels.forEach((channel) => {
     const isCurrentlyEnabled = currentEnabledChannels.includes(channel);
     const needToBeEnabled = newEnabledChannels.includes(channel);
 
-    if (isCurrentlyEnabled && needToBeEnabled) {
-      channelsToUpdate.push(channel);
-    }
+    // if (isCurrentlyEnabled && needToBeEnabled) {
+    //   channelsToUpdate.push(channel);
+    // }
     if (isCurrentlyEnabled && !needToBeEnabled) {
       channelsToDisable.push(channel);
-    }
-    if (!isCurrentlyEnabled && needToBeEnabled) {
+    }else if (!isCurrentlyEnabled && needToBeEnabled) {
       channelsToEnable.push(channel);
     }
   });
@@ -143,19 +162,17 @@ async function pushChanges(context) {
     });
   });
 
-
   channelsToDisable.forEach((channel) => {
     tasks.push(() => {
       notificationManager.disableChannel(context, channel);
     });
   });
 
-
-  channelsToUpdate.forEach((channel) => {
-    tasks.push(() => {
-      notificationManager.configureChannel(context, channel);
-    });
-  });
+  // channelsToUpdate.forEach((channel) => {
+  //   tasks.push(() => {
+  //     notificationManager.configureChannel(context, channel);
+  //   });
+  // });
 
   await sequential(tasks);
 }
