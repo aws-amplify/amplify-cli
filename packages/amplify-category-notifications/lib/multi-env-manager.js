@@ -100,14 +100,14 @@ async function pushChanges(context) {
     }
   }
 
-  let pinpointInputParams; 
-  if(context.exeInfo && 
-    context.exeInfo.inputParams && 
-    context.exeInfo.inputParams[constants.CategoryName]&&
-    context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName]){
-      pinpointInputParams = 
+  let pinpointInputParams;
+  if (context.exeInfo &&
+    context.exeInfo.inputParams &&
+    context.exeInfo.inputParams[constants.CategoryName] &&
+    context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName]) {
+    pinpointInputParams =
         context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName];
-      context.exeInfo.pinpointInputParams = pinpointInputParams;
+    context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
 
   let pinpointAmplifyMeta;
@@ -124,15 +124,15 @@ async function pushChanges(context) {
   }
 
   availableChannels.forEach((channel) => {
-    let addChannel = false; 
+    let addChannel = false;
     if (pinpointAmplifyMeta.channels.includes(channel)) {
-      addChannel = true; 
+      addChannel = true;
     }
-    if(pinpointInputParams.hasOwnProperty(channel) && 
-      pinpointInputParams[channel].hasOwnProperty('Enabled')){
-        addChannel = pinpointInputParams[channel]['Enabled'];
+    if (pinpointInputParams[channel] &&
+      Object.prototype.hasOwnProperty.call(pinpointInputParams[channel], 'Enabled')) {
+      addChannel = pinpointInputParams[channel].Enabled;
     }
-    if(addChannel){
+    if (addChannel) {
       newEnabledChannels.push(channel);
     }
   });
@@ -150,13 +150,13 @@ async function pushChanges(context) {
     // }
     if (isCurrentlyEnabled && !needToBeEnabled) {
       channelsToDisable.push(channel);
-    }else if (!isCurrentlyEnabled && needToBeEnabled) {
+    } else if (!isCurrentlyEnabled && needToBeEnabled) {
       channelsToEnable.push(channel);
     }
   });
 
   const tasks = [];
-  if(channelsToEnable.length>0){
+  if (channelsToEnable.length > 0) {
     tasks.push(() => {
       pinpointHelper.ensurePinpointApp(context);
     });

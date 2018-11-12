@@ -41,14 +41,14 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelInput; 
-  let answers; 
-  if(context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]){
+  let channelInput;
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
     channelInput = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
     answers = {
-      DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod
+      DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod,
     };
-  }else{
+  } else {
     let channelOutput = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
@@ -59,16 +59,16 @@ async function enable(context, successMessage) {
       message: 'Choose authentication method used for APNs',
       choices: ['Certificate', 'Key'],
       default: channelOutput.DefaultAuthenticationMethod || 'Certificate',
-    }
+    };
     answers = await inquirer.prompt(question);
   }
 
   try {
     if (answers.DefaultAuthenticationMethod === 'Key') {
-      keyConfig = await configureKey.run(channelInput);
+      const keyConfig = await configureKey.run(channelInput);
       Object.assign(answers, keyConfig);
     } else {
-      certificateConfig = await configureCertificate.run(channelInput);
+      const certificateConfig = await configureCertificate.run(channelInput);
       Object.assign(answers, certificateConfig);
     }
   } catch (err) {
@@ -102,45 +102,31 @@ async function enable(context, successMessage) {
   });
 }
 
-function validateInputParams(channelInput){
-  if(channelInput.DefaultAuthenticationMethod){
-    let authMethod = channelInput.DefaultAuthenticationMethod;
-    if(authMethod === 'Certificate'){
-      if(!channelInput.P12FilePath){
-        throw new Error(
-          `P12FilePath is missing for the APNS channel`
-        ); 
-      }else if(!fs.existsSync(channelInput.P12FilePath)){
-        throw new Error(
-          `P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`
-        ); 
+function validateInputParams(channelInput) {
+  if (channelInput.DefaultAuthenticationMethod) {
+    const authMethod = channelInput.DefaultAuthenticationMethod;
+    if (authMethod === 'Certificate') {
+      if (!channelInput.P12FilePath) {
+        throw new Error('P12FilePath is missing for the APNS channel');
+      } else if (!fs.existsSync(channelInput.P12FilePath)) {
+        throw new Error(`P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`);
       }
-    }else if(authMethod === 'Key'){
-      if(!channelInput.BundleId || !channelInput.TeamId || !channelInput.TokenKeyId){
-        throw new Error(
-          `Missing BundleId, TeamId or TokenKeyId for the APNS channel`
-        ); 
-      }else if(!channelInput.P8FilePath){
-        throw new Error(
-          `P8FilePath is missing for the APNS channel`
-        ); 
-      }else if(!fs.existsSync(channelInput.P8FilePath)){
-        throw new Error(
-          `P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`
-        ); 
+    } else if (authMethod === 'Key') {
+      if (!channelInput.BundleId || !channelInput.TeamId || !channelInput.TokenKeyId) {
+        throw new Error('Missing BundleId, TeamId or TokenKeyId for the APNS channel');
+      } else if (!channelInput.P8FilePath) {
+        throw new Error('P8FilePath is missing for the APNS channel');
+      } else if (!fs.existsSync(channelInput.P8FilePath)) {
+        throw new Error(`P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`);
       }
-    }else{
-      throw new Error(
-        `DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`
-      ); 
+    } else {
+      throw new Error(`DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`);
     }
-  }else{
-    throw new Error(
-      'DefaultAuthenticationMethod is missing for the APNS channel'
-    ); 
+  } else {
+    throw new Error('DefaultAuthenticationMethod is missing for the APNS channel');
   }
 
-  return channelInput; 
+  return channelInput;
 }
 
 function disable(context) {

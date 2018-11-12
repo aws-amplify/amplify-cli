@@ -3,10 +3,10 @@ const p8decoder = require('./p8decoder');
 const validateFilePath = require('./validateFilepath');
 
 async function run(channelInput) {
-  let keyConfig; 
-  if(channelInput){
+  let keyConfig;
+  if (channelInput) {
     keyConfig = channelInput;
-  }else{
+  } else {
     const questions = [
       {
         name: 'BundleId',

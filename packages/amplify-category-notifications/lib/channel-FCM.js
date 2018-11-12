@@ -37,10 +37,10 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let answers; 
-  if(context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]){
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
     answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
-  }else{
+  } else {
     let channelOutput = {};
     if (context.exeInfo.serviceMeta.output[channelName]) {
       channelOutput = context.exeInfo.serviceMeta.output[channelName];
@@ -82,13 +82,11 @@ async function enable(context, successMessage) {
   });
 }
 
-function validateInputParams(channelInput){
-  if(!channelInput.ApiKey){
-    throw new Error(
-      'ApiKey is missing for the FCM channel'
-    ); 
+function validateInputParams(channelInput) {
+  if (!channelInput.ApiKey) {
+    throw new Error('ApiKey is missing for the FCM channel');
   }
-  return channelInput; 
+  return channelInput;
 }
 
 function disable(context) {

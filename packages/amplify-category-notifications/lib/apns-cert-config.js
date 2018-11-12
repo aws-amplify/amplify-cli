@@ -3,10 +3,10 @@ const p12decoder = require('./p12decoder');
 const validateFilePath = require('./validateFilepath');
 
 async function run(channelInput) {
-  let certificateConfig; 
-  if(channelInput){
+  let certificateConfig;
+  if (channelInput) {
     certificateConfig = await p12decoder.run(channelInput);
-  }else{
+  } else {
     const questions = [
       {
         name: 'P12FilePath',
