@@ -29,7 +29,7 @@ async function serviceWalkthrough(
       context,
     );
     const answer = await inquirer.prompt(q);
-    // user has selected leran more. Don't advance the question
+    // user has selected learn more. Don't advance the question
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
@@ -47,7 +47,7 @@ async function serviceWalkthrough(
   /*
     create key/value pairs of third party auth providers,
     where key = name accepted by updateIdentityPool API call and value = id entered by user
-    TODO: evalutate need for abstracted version of this operation
+    TODO: evaluate need for abstracted version of this operation
   */
   if (coreAnswers.thirdPartyAuth) {
     coreAnswers.selectedParties = {};
