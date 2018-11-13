@@ -43,6 +43,8 @@ async function run(context) {
   await initializeEnv(context);
 
   printWelcomeMessage();
+  // Exit the process with a success code
+  process.exit(0);
 }
 
 function generateLocalRuntimeFiles(context) {

@@ -21,10 +21,11 @@ async function run(context) {
 
   context.exeInfo.isNewEnv = isNewEnv(context, envName);
 
-  if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+  if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) ||
+    context.parameters.options.forcePush) {
     context.exeInfo.forcePush = true;
   } else {
-    context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
+    context.exeInfo.forcePush = false;
   }
 
   context.exeInfo.projectConfig = {
@@ -130,7 +131,7 @@ async function getEnvName(context) {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error('Environment name should be between 2 and 10 characters and alphanumeric');
+    context.print.error('Environment name should be between 2 and 10 characters (only alphabets).');
     process.exit(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');

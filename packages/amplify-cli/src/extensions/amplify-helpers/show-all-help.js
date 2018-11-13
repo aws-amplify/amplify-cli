@@ -64,7 +64,6 @@ function showAllHelp(context) {
       name: 'env',
       description: 'Displays and manages environment related information for your Amplify project.',
     },
-
   ];
 
   showHelp(header, commands);

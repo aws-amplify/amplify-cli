@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const parametersFileName = 'api-params.json';
+const cfnParametersFilename = 'parameters.json';
 
 let serviceMetadata;
 
@@ -70,11 +71,24 @@ function addResource(context, category, service, options) {
         copyCfnTemplate(context, category, answers, cfnFilename);
 
         const parameters = { ...answers };
+        const cfnParameters = {
+          authRoleName: {
+            Ref: 'AuthRoleName',
+          },
+          unauthRoleName: {
+            Ref: 'UnauthRoleName',
+          },
+        };
         const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
         fs.ensureDirSync(resourceDirPath);
+
         const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-        const jsonString = JSON.stringify(parameters, null, 4);
+        let jsonString = JSON.stringify(parameters, null, 4);
         fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+        const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+        jsonString = JSON.stringify(cfnParameters, null, 4);
+        fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
       }
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,

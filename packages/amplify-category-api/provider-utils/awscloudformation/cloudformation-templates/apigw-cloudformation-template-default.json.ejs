@@ -4,6 +4,12 @@
     <% let cnt = 0 %>
     <% if (props.dependsOn) { %>
     "Parameters": {
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
+        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -39,7 +45,7 @@
             "Properties": {
               "PolicyName": "PolicyAPIGW<%= props.apiName %>auth",
               "Roles": [
-                "<%= props.privacy.authRoleName %>"
+                {"Ref": "authRoleName"}
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -522,7 +528,7 @@
             "Properties": {
               "PolicyName": "PolicyAPIGW<%= props.apiName %>unauth",
               "Roles": [
-                 "<%= props.privacy.unAuthRoleName %>"
+                 {"Ref": "unauthRoleName"}
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
