@@ -90,13 +90,13 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   let pinpointInputParams;
   if (context.exeInfo &&
     context.exeInfo.inputParams &&
-    context.exeInfo.inputParams[constants.CategoryName] &&
-    context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName]) {
+    context.exeInfo.inputParams['categories']&&
+    context.exeInfo.inputParams['categories'][constants.CategoryName] &&
+    context.exeInfo.inputParams['categories'][constants.CategoryName][constants.PinpointName]) {
     pinpointInputParams =
-        context.exeInfo.inputParams[constants.CategoryName][constants.PinpointName];
+        context.exeInfo.inputParams['categories'][constants.CategoryName][constants.PinpointName];
     context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
-
   const channelsToEnable = [];
   const channelsToDisable = [];
   // const channelsToUpdate = [];
@@ -115,7 +115,7 @@ async function pushChanges(context, pinpointNotificationsMeta) {
       pinpointNotificationsMeta.channels.includes(channel)) {
       needToBeEnabled = true;
     }
-    if (pinpointInputParams[channel] &&
+    if (pinpointInputParams && pinpointInputParams[channel] &&
       Object.prototype.hasOwnProperty.call(pinpointInputParams[channel], 'Enabled')) {
       needToBeEnabled = pinpointInputParams[channel].Enabled;
     }
@@ -139,25 +139,25 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   delete pinpointNotificationsMeta.Name;
 
   const tasks = [];
-  tasks.push(() => {
-    pinpointHelper.ensurePinpointApp(context);
+  tasks.push(async () => {
+    await pinpointHelper.ensurePinpointApp(context);
   });
 
   channelsToEnable.forEach((channel) => {
-    tasks.push(() => {
-      notificationManager.enableChannel(context, channel);
+    tasks.push(async () => {
+      await notificationManager.enableChannel(context, channel);
     });
   });
 
   channelsToDisable.forEach((channel) => {
-    tasks.push(() => {
-      notificationManager.disableChannel(context, channel);
+    tasks.push(async () => {
+      await notificationManager.disableChannel(context, channel);
     });
   });
 
   // channelsToUpdate.forEach((channel) => {
-  //   tasks.push(() => {
-  //     notificationManager.configureChannel(context, channel);
+  //   tasks.push(async () => {
+  //     await notificationManager.configureChannel(context, channel);
   //   });
   // });
 
