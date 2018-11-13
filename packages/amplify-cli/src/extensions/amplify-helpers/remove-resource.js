@@ -5,6 +5,7 @@ const pathManager = require('./path-manager');
 const {
   updateBackendConfigAfterResourceRemove,
 } = require('./update-backend-config');
+const { removeResourceParameters } = require('./stageResourceParams');
 
 function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
@@ -62,7 +63,7 @@ function removeResource(context, category) {
 
             // Remove resource directory from backend/
             context.filesystem.remove(resourceDir);
-
+            removeResourceParameters(category, resourceName);
             updateBackendConfigAfterResourceRemove(category, resourceName);
 
             context.print.success('Successfully removed resource');

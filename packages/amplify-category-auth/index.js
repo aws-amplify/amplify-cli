@@ -3,7 +3,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const uuid = require('uuid');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
-
+const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -18,10 +18,13 @@ async function add(context) {
 
   let resultMetadata;
 
-  return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
+  return amplify
+    .serviceSelectionPrompt(context, category, servicesMetadata)
     .then((result) => {
       resultMetadata = result;
-      const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
+      const providerController = require(`${__dirname}/provider-utils/${
+        result.providerName
+      }/index`);
       if (!providerController) {
         context.print.error('Provider not configured for this category');
         return;
@@ -43,14 +46,15 @@ async function add(context) {
     });
 }
 
-
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
   const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
   const { cfnFilename } = serviceMetadata.Cognito;
-  const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
+  const authExists =
+    amplify.getProjectDetails().amplifyMeta.auth &&
+    Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
   const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
   let currentAuthParams;
@@ -62,10 +66,16 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     currentAuthName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0]; //eslint-disable-line
     currentAuthParams = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${currentAuthName}/parameters.json`));
 
-    if (requirements.authSelections.includes('identityPoolOnly') && currentAuthParams.userPoolName) {
+    if (
+      requirements.authSelections.includes('identityPoolOnly') &&
+      currentAuthParams.userPoolName
+    ) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
-    if (requirements.authSelections.includes('userPoolOnly') && currentAuthParams.identityPoolName) {
+    if (
+      requirements.authSelections.includes('userPoolOnly') &&
+      currentAuthParams.identityPoolName
+    ) {
       requirements.authSelections = 'identityPoolAndUserPool';
     }
 
@@ -86,11 +96,24 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   }
 
   /* eslint-disable */
-  const authPropsValues = authExists ?
-    Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements) :
-    Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, { resourceName: `cognito${sharedId}` }); //eslint-disable-line
+  const authPropsValues = authExists
+    ? Object.assign(
+        defaults.functionMap[requirements.authSelections](currentAuthName),
+        currentAuthParams,
+        immutables,
+        requirements,
+      )
+    : Object.assign(
+        defaults.functionMap[requirements.authSelections](currentAuthName),
+        requirements,
+        { resourceName: `cognito${sharedId}` },
+      ); //eslint-disable-line
   /* eslint-enable */
-  const roles = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
+  const roles = await context.amplify.executeProviderUtils(
+    context,
+    'awscloudformation',
+    'staticRoles',
+  );
   const authProps = {
     ...authPropsValues,
     ...roles,
@@ -101,7 +124,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       {
         dir: pluginDir,
         template: `provider-utils/awscloudformation/cloudformation-templates/${cfnFilename}`,
-        target: `${targetDir}/${category}/${authProps.resourceName}/${authProps.resourceName}-cloudformation-template.yml`,
+        target: `${targetDir}/${category}/${authProps.resourceName}/${
+          authProps.resourceName
+        }-cloudformation-template.yml`,
         paramsFile: `${targetDir}/${category}/${authProps.resourceName}/parameters.json`,
       },
     ];
@@ -126,7 +151,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
 
 async function checkRequirements(requirements, context) {
   if (!requirements || !requirements.authSelections) {
-    const error = 'Your plugin has not properly defined it\'s Cognito requirements.';
+    const error = "Your plugin has not properly defined it's Cognito requirements.";
     context.print.error(error);
     return new Error(error);
   }
@@ -142,7 +167,9 @@ async function checkRequirements(requirements, context) {
   let authParameters;
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
-    authParameters = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${Object.keys(existingAuth)[0]}/parameters.json`));
+    authParameters = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${
+      Object.keys(existingAuth)[0]
+    }/parameters.json`));
   } else {
     return { authEnabled: false };
   }
@@ -161,8 +188,18 @@ async function checkRequirements(requirements, context) {
   return result;
 }
 
+async function initEnv(context) {
+  const { auth = [] } = context.amplify.getProjectMeta();
+  if (Object.keys(auth).length) {
+    const resourceName = Object.keys(auth)[0];
+    const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
+    context.amplify.saveEnvResourceParameters('auth', resourceName, config);
+  }
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
   add,
+  initEnv,
 };
