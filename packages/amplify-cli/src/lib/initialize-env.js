@@ -9,7 +9,6 @@ const notificationsModule = require('amplify-category-notifications');
 
 async function initializeEnv(context) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  spinner.start(`Initializing your environment: ${currentEnv}`);
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
@@ -19,6 +18,24 @@ async function initializeEnv(context) {
     if (!context.exeInfo.restoreBackend) {
       populateAmplifyMeta(context, amplifyMeta);
     }
+
+    const categoryInitializationTasks = [];
+    const initializedCategories = Object.keys(context.amplify.getProjectMeta());
+    const categoryPlugins = context.amplify.getCategoryPlugins(context);
+    const availableCategory = Object.keys(categoryPlugins).filter(key =>
+      initializedCategories.includes(key));
+    availableCategory.forEach((category) => {
+      try {
+        const { initEnv } = require(categoryPlugins[category]);
+        if (initEnv) {
+          categoryInitializationTasks.push(() => initEnv(context));
+        }
+      } catch (e) {
+        context.print.warning(`Could not run initEnv for ${category}`);
+      }
+    });
+
+    await sequential(categoryInitializationTasks);
 
     const providerPlugins = getProviderPlugins(context);
 
@@ -33,13 +50,14 @@ async function initializeEnv(context) {
       ));
     });
 
+
+    spinner.start(`Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
     notificationsModule.initEnv(context);
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
     }
-
     if (context.exeInfo.forcePush) {
       context.exeInfo.projectConfig.providers.forEach((provider) => {
         const providerModule = require(providerPlugins[provider]);

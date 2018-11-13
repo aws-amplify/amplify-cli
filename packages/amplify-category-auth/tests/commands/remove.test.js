@@ -5,7 +5,7 @@ describe('auth remove: ', () => {
   const mockExecuteProviderUtils = jest.fn();
   const mockGetProjectDetails = jest.fn();
   const warningString = messages.dependenciesExists;
-  const mockRemoveResource = jest.fn(() => Promise.resolve({}));
+  const mockRemoveResource = jest.fn().mockReturnValue(Promise.resolve({}));
   const mockProjectPath = '/User/someone/Documents/Project/amplify-test';
   const mockContext = {
     amplify: {
@@ -39,12 +39,12 @@ describe('auth remove: ', () => {
           amplifyMeta,
         });
       });
-      it(`remove method should detect existing ${d} metadata and display warning`, () => {
-        remove.run(mockContext);
+      it(`remove method should detect existing ${d} metadata and display warning`, async () => {
+        await remove.run(mockContext);
         expect(mockContext.print.info).toBeCalledWith(warningString);
       });
-      it(`remove method should still be called even when warning displayed for existing ${d} resource`, () => {
-        remove.run(mockContext);
+      it(`remove method should still be called even when warning displayed for existing ${d} resource`, async () => {
+        await remove.run(mockContext);
         expect(mockContext.amplify.removeResource).toBeCalled();
       });
     });
@@ -52,7 +52,7 @@ describe('auth remove: ', () => {
 
   describe('case: auth and other resources not yet enabled', () => {
     beforeEach(() => {
-      jest.resetAllMocks();
+      jest.clearAllMocks();
       mockGetProjectDetails.mockReturnValue({
         projectConfig: {
           projectPath: mockProjectPath,
@@ -60,12 +60,12 @@ describe('auth remove: ', () => {
         amplifyMeta: {},
       });
     });
-    it('service selection prompt should be called', () => {
-      remove.run(mockContext);
+    it('service selection prompt should be called', async () => {
+      await remove.run(mockContext);
       expect(mockContext.amplify.removeResource).toBeCalled();
     });
-    it('should not display a warning for existing resources', () => {
-      remove.run(mockContext);
+    it('should not display a warning for existing resources', async () => {
+      await remove.run(mockContext);
       expect(mockContext.print.info).not.toBeCalledWith(warningString);
     });
   });
