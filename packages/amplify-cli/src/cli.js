@@ -41,7 +41,7 @@ function getLocalNodeModulesDirPath() {
         baseDirPath = parentDirPath;
       }
     }
-  } while (true);
+  } while (true); // eslint-disable-line
 
   return result;
 }
