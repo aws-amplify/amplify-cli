@@ -1,4 +1,3 @@
-const path = require('path');
 const fs = require('fs');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');

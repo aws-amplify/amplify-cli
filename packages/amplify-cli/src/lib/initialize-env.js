@@ -49,7 +49,7 @@ async function initializeEnv(context) {
       ));
     });
 
-    
+
     spinner.start(`Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
 
@@ -80,7 +80,7 @@ function populateAmplifyMeta(context, amplifyMeta) {
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
 
   const backendResourceInfo = JSON.parse(fs.readFileSync(backendConfigFilePath));
-  
+
   Object.assign(amplifyMeta, backendResourceInfo);
 
   const backendMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);

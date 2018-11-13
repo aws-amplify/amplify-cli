@@ -15,6 +15,8 @@ describe('auth enable: ', () => {
     },
     print: {
       warning: jest.fn(),
+      info: jest.fn(),
+      error: jest.fn(),
     },
   };
 
@@ -35,8 +37,8 @@ describe('auth enable: ', () => {
         },
       });
     });
-    it('enable method should detect existing auth metadata and return after printing warning text', () => {
-      add.run(mockContext);
+    it('enable method should detect existing auth metadata and return after printing warning text', async () => {
+      await add.run(mockContext);
       expect(mockContext.print.warning).toBeCalledWith(messages.authExists);
       expect(mockContext.amplify.serviceSelectionPrompt).not.toBeCalled();
     });
@@ -51,8 +53,8 @@ describe('auth enable: ', () => {
         amplifyMeta: {},
       });
     });
-    it('service selection prompt should be called', () => {
-      add.run(mockContext);
+    it('service selection prompt should be called', async () => {
+      await add.run(mockContext);
       expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();
     });
   });
