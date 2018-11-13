@@ -67,7 +67,6 @@ describe('command - types', () => {
       '',
       MOCK_TARGET,
       '',
-      '',
       { addTypename: true },
     );
   });
