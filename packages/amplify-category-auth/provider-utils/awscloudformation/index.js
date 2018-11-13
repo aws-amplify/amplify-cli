@@ -24,7 +24,7 @@ function serviceQuestions(
   return serviceWalkthrough(context, defaultValuesFilename, stringMapFilename, serviceMetadata);
 }
 
-function copyCfnTemplate(context, category, options, cfnFilename) {
+async function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
@@ -42,7 +42,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 
   // copy over the files
   // Todo: move to provider as each provider should decide where to store vars, and cfn
-  return context.amplify.copyBatch(context, copyJobs, options, true, false);
+  return await context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
 
 function saveResourceParameters(
@@ -226,4 +226,11 @@ async function updateConfigOnEnvInit(context, category, service) {
   return envParams;
 }
 
-module.exports = { addResource, updateResource, updateConfigOnEnvInit };
+module.exports = {
+  addResource,
+  updateResource,
+  updateConfigOnEnvInit,
+  saveResourceParameters,
+  ENV_SPECIFIC_PARAMS,
+  copyCfnTemplate,
+};

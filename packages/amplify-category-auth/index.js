@@ -3,7 +3,12 @@ const fs = require('fs');
 const _ = require('lodash');
 const uuid = require('uuid');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
-const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
+const {
+  updateConfigOnEnvInit,
+  copyCfnTemplate,
+  saveResourceParameters,
+  ENV_SPECIFIC_PARAMS,
+} = require('./provider-utils/awscloudformation');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -48,10 +53,8 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const targetDir = amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
   const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
-  const { cfnFilename } = serviceMetadata.Cognito;
+  const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists =
     amplify.getProjectDetails().amplifyMeta.auth &&
     Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
@@ -109,38 +112,30 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
         { resourceName: `cognito${sharedId}` },
       ); //eslint-disable-line
   /* eslint-enable */
-  const roles = await context.amplify.executeProviderUtils(
-    context,
-    'awscloudformation',
-    'staticRoles',
-  );
+  const { roles } = defaults;
   const authProps = {
     ...authPropsValues,
     ...roles,
   };
 
   try {
-    const copyJobs = [
-      {
-        dir: pluginDir,
-        template: `provider-utils/awscloudformation/cloudformation-templates/${cfnFilename}`,
-        target: `${targetDir}/${category}/${authProps.resourceName}/${
-          authProps.resourceName
-        }-cloudformation-template.yml`,
-        paramsFile: `${targetDir}/${category}/${authProps.resourceName}/parameters.json`,
-      },
-    ];
-
-    // copy over the files
-    await context.amplify.copyBatch(context, copyJobs, authProps, true, true);
-    if (!context.updatingAuth) {
+    await copyCfnTemplate(context, category, authProps, cfnFilename);
+    saveResourceParameters(
+      context,
+      provider,
+      category,
+      authProps.resourceName,
+      authProps,
+      ENV_SPECIFIC_PARAMS,
+    );
+    if (!authExists) {
       const options = {
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
-    const action = context.updatingAuth ? 'updated' : 'added';
+    const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
 
     return requirements.resourceName;
