@@ -90,11 +90,11 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   let pinpointInputParams;
   if (context.exeInfo &&
     context.exeInfo.inputParams &&
-    context.exeInfo.inputParams['categories']&&
-    context.exeInfo.inputParams['categories'][constants.CategoryName] &&
-    context.exeInfo.inputParams['categories'][constants.CategoryName][constants.PinpointName]) {
+    context.exeInfo.inputParams.categories &&
+    context.exeInfo.inputParams.categories[constants.CategoryName] &&
+    context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName]) {
     pinpointInputParams =
-        context.exeInfo.inputParams['categories'][constants.CategoryName][constants.PinpointName];
+        context.exeInfo.inputParams.categories[constants.CategoryName][constants.PinpointName];
     context.exeInfo.pinpointInputParams = pinpointInputParams;
   }
   const channelsToEnable = [];
