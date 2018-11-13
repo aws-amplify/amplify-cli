@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.34-beta.0...@aws-amplify/cli@0.1.34) (2018-11-13)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
 <a name="0.1.34-beta.0"></a>
 ## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.33...@aws-amplify/cli@0.1.34-beta.0) (2018-11-13)
 
