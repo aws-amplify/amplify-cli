@@ -75,8 +75,6 @@ async function createPinpointApp(context) {
   context.print.info('');
   await authHelper.ensureAuth(context);
   context.print.info('');
-  // refresh the metadata becuse the auth might have changed it
-  context.exeInfo.amplifyMeta = context.amplify.getProjectMeta();
 
   return pinpointApp;
 }
