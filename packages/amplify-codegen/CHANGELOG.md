@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-beta.0"></a>
+## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.33...amplify-codegen@0.1.34-beta.0) (2018-11-13)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** update the params passed to types generator ([#442](https://github.com/aws-amplify/amplify-cli/issues/442)) ([9b87c74](https://github.com/aws-amplify/amplify-cli/commit/9b87c74)), closes [in#434](https://github.com/in/issues/434) [#434](https://github.com/aws-amplify/amplify-cli/issues/434)
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.33-beta.0...amplify-codegen@0.1.33) (2018-11-09)
 
