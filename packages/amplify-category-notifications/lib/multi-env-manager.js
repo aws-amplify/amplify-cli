@@ -12,7 +12,7 @@ async function initEnv(context) {
     await pushChanges(context, pinpointNotificationsMeta);
     writeData(context);
   }
-  return context;
+  return pinpointNotificationsMeta;
 }
 
 function checkExeInfo(context) {
@@ -21,8 +21,8 @@ function checkExeInfo(context) {
   Object.assign(context.exeInfo, projectDetails);
 }
 
-async function initEnvPush(context) {
-  await pushChanges(context);
+async function initEnvPush(context, pinpointNotificationsMeta) {//eslint-disable-line
+  // await pushChanges(context, pinpointNotificationsMeta);//eslint-disable-line
 }
 
 async function constructPinpointNotificationsMeta(context) {
