@@ -131,12 +131,14 @@ async function pushChanges(context, pinpointNotificationsMeta) {
     
   });
 
-  const tasks = [];
-
   const {amplifyMeta} = context.exeInfo;
   amplifyMeta[constants.CategoryName]={}; 
   amplifyMeta[constants.CategoryName][pinpointNotificationsMeta.Name] = pinpointNotificationsMeta;
 
+  delete pinpointNotificationsMeta.channels; 
+  delete pinpointNotificationsMeta.Name;
+
+  const tasks = [];
   tasks.push(() => {
     pinpointHelper.ensurePinpointApp(context);
   });
