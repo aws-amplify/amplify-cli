@@ -187,7 +187,7 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaPolicy, !Join ['',[!Ref userpoolClientLambdaPolicy, '-', !Ref env]]]
+      PolicyName: !Ref userpoolClientLambdaPolicy
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -204,7 +204,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLogPolicy, !Join ['',[!Ref userpoolClientLogPolicy, '-', !Ref env]]]
+      PolicyName: !Ref userpoolClientLogPolicy
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -310,7 +310,7 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !If [ShouldNotCreateEnvResources, !Ref mfaLambdaIAMPolicy, !Join ['',[!Ref mfaLambdaIAMPolicy, '-', !Ref env]]]
+      PolicyName: !Ref mfaLambdaIAMPolicy
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
       PolicyDocument:
