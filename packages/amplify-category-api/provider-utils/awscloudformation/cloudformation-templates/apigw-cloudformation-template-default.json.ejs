@@ -4,7 +4,15 @@
     <% let cnt = 0 %>
     <% if (props.dependsOn) { %>
     "Parameters": {
-        
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
+        },
+        "env": {
+            "Type": "String"
+        }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
     <% for(var i=0; i < props.dependsOn.length; i++) { %>
     <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
           "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
@@ -14,8 +22,18 @@
         
           <% } %>
           <% } %>
-        },
     <% } %>
+    },
+     "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
     "Resources": {
         <%if (props.privacy.auth) { %>
         <% cnt = 0 %>
@@ -27,7 +45,7 @@
             "Properties": {
               "PolicyName": "PolicyAPIGW<%= props.apiName %>auth",
               "Roles": [
-                "<%= props.privacy.authRoleName %>"
+                {"Ref": "authRoleName"}
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -57,7 +75,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/*",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/*",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -78,7 +106,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/*",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/*",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -105,7 +143,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/GET",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/GET",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -126,7 +174,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/GET",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/GET",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -147,7 +205,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/HEAD",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/HEAD",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -168,7 +236,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/HEAD",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/HEAD",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -195,7 +273,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/DELETE",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/DELETE",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -216,7 +304,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/DELETE",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/DELETE",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -237,7 +335,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PATCH",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PATCH",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -258,7 +366,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PATCH",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PATCH",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -279,7 +397,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/POST",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/POST",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -300,7 +428,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/POST",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/POST",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -321,7 +459,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PUT",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PUT",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -342,7 +490,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PUT",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PUT",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -370,7 +528,7 @@
             "Properties": {
               "PolicyName": "PolicyAPIGW<%= props.apiName %>unauth",
               "Roles": [
-                 "<%= props.privacy.unAuthRoleName %>"
+                 {"Ref": "unauthRoleName"}
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -400,7 +558,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/*",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/*",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -421,7 +589,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/*",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/*",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -448,7 +626,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/GET",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/GET",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -469,7 +657,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/GET",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/GET",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -490,7 +688,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/HEAD",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/HEAD",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -511,7 +719,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/HEAD",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/HEAD",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -538,7 +756,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/DELETE",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/DELETE",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -559,7 +787,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/DELETE",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/DELETE",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -580,7 +818,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PATCH",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PATCH",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -601,7 +849,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PATCH",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PATCH",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -622,7 +880,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/POST",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/POST",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -643,7 +911,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/POST",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/POST",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -664,7 +942,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PUT",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PUT",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
@@ -685,7 +973,17 @@
                             {
                               "Ref": "<%= props.apiName %>"
                             },
-                            "/Prod/PUT",
+                            "/",
+                            {
+                              "Fn::If": [
+                                "ShouldNotCreateEnvResources",
+                                "Prod", 
+                                {
+                                  "Ref": "env"
+                                } 
+                              ]
+                            },
+                            "/PUT",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
@@ -725,7 +1023,23 @@
                   ]
                 ]
               },
-            "basePath": "/Prod",
+            "basePath": {
+              "Fn::If": [
+                "ShouldNotCreateEnvResources",
+                "/Prod",
+                {
+                  "Fn::Join": [
+                      "",
+                      [
+                          "/",
+                          {
+                              "Ref": "env"
+                          }
+                      ]
+                  ]
+                } 
+              ]
+            },
             "schemes": [
               "https"
             ],
@@ -1024,13 +1338,19 @@
         <% } %>
         <% } %>
         
-        
-        
       "DeploymentAPIGW<%= props.apiName %><%= props.uuid %>": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
           "Description": "The Development stage deployment of your API.",
-          "StageName": "Prod",
+          "StageName": {
+            "Fn::If": [
+              "ShouldNotCreateEnvResources",
+              "Prod", 
+              {
+                "Ref": "env"
+              } 
+            ]
+          },
           "RestApiId": {
             "Ref": "<%= props.apiName %>"
           }
@@ -1040,7 +1360,7 @@
     "Outputs": {
         "RootUrl": {
             "Description": "Root URL of the API gateway",
-            "Value": {"Fn::Join": ["", ["https://", {"Ref": "<%= props.apiName %>"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/Prod"]]}
+            "Value": {"Fn::Join": ["", ["https://", {"Ref": "<%= props.apiName %>"}, ".execute-api.", {"Ref": "AWS::Region"}, ".amazonaws.com/", {"Fn::If": ["ShouldNotCreateEnvResources","Prod", {"Ref": "env"} ]}]]}
         },
         "ApiName": {
           "Description": "API Friendly name",

@@ -33,8 +33,10 @@ export class AppSyncTransformer extends Transformer {
     public before = (ctx: TransformerContext): void => {
         // Some downstream resources depend on this so put a placeholder in and
         // overwrite it in the after
+        const conditions = this.resources.makeEnvironmentConditions()
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
+        ctx.mergeConditions(conditions)
     }
 
     public after = (ctx: TransformerContext): void => {

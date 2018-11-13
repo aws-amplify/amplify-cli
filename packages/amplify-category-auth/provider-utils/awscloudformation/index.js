@@ -52,7 +52,7 @@ async function addResource(context, category, service) {
 
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, generalDefaults } = require(defaultValuesSrc);
+      const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
@@ -63,7 +63,7 @@ async function addResource(context, category, service) {
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
 
-      props = Object.assign(functionMap[result.authSelections](result.resourceName), result);
+      props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
     })

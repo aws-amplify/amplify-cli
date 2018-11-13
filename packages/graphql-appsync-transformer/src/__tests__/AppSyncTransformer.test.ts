@@ -27,6 +27,8 @@ test('Test AppSyncTransformer validation happy case', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
+    expect(out.Parameters.env).toBeTruthy()
+    expect(out.Conditions.HasEnvironmentParameter).toBeTruthy()
 
     expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
 

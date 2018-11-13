@@ -21,6 +21,9 @@ export class ResourceConstants {
         AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
     }
     public static PARAMETERS = {
+        // cli
+        Env: 'env',
+
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
 
@@ -51,6 +54,9 @@ export class ResourceConstants {
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {
+        // Environment
+        HasEnvironmentParameter: 'HasEnvironmentParameter',
+
         // Auth
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
     }

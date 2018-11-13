@@ -93,9 +93,12 @@ function processStackCreationData(context, stackDescriptiondata) {
   }
 }
 
-function onInitSuccessful(context) {
+async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
-  return storeCurrentCloudBackend(context);
+  if (context.exeInfo.isNewEnv) {
+    context = await storeCurrentCloudBackend(context);
+  }
+  return context;
 }
 
 function storeCurrentCloudBackend(context) {

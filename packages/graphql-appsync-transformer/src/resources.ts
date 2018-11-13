@@ -2,7 +2,7 @@ import AppSync from 'cloudform/types/appSync'
 import Template from 'cloudform/types/template'
 
 import { Fn, StringParameter } from 'cloudform'
-import { ResourceConstants } from 'graphql-transformer-common'
+import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import Resource from "cloudform/types/resource";
 
 
@@ -11,6 +11,10 @@ export class ResourceFactory {
     public makeResolverS3RootParams(): Template {
         return {
             Parameters: {
+                [ResourceConstants.PARAMETERS.Env]: new StringParameter({
+                    Description: `The environment name. e.g. Dev, Test, or Production`,
+                    Default: ResourceConstants.NONE
+                }),
                 ResolverBucket: new StringParameter({
                     Description: `The name of the bucket containing the resolver templates`,
                 }),
@@ -100,6 +104,13 @@ export class ResourceFactory {
             }
         }
         return nameCopy.replace(/\./g, '')
+    }
+
+    public makeEnvironmentConditions() {
+        return {
+            [ResourceConstants.CONDITIONS.HasEnvironmentParameter]:
+                Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE))
+        }
     }
 
 }
