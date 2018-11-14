@@ -185,7 +185,6 @@ async function checkRequirements(requirements, context) {
 }
 
 async function initEnv(context) {
-  console.log('init env');
   const { amplify } = context;
   const { resourcesToBeCreated, resourcesToBeDeleted } = await amplify.getResourceStatus();
   const authToBeDeleted = resourcesToBeDeleted.filter(resource => resource.category === 'auth');
