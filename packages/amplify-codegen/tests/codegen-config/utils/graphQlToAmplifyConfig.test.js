@@ -17,14 +17,17 @@ describe('graphQlToAmplifyConfig', () => {
   it('should return items with amplify extensions', () => {
     const projects = {
       [projectName]: {
-        schemaPath: schemaPath1,
-        includes: includes1,
-        excludes: excludes1,
-        extensions: {
-          amplify: {
-            codeGenTarget: codeGenTarget1,
-            graphQLApiId: graphQLApiId1,
+        config: {
+          schemaPath: schemaPath1,
+          includes: includes1,
+          excludes: excludes1,
+          extensions: {
+            amplify: {
+              codeGenTarget: codeGenTarget1,
+              graphQLApiId: graphQLApiId1,
+            },
           },
+
         },
       },
       proj2: {
