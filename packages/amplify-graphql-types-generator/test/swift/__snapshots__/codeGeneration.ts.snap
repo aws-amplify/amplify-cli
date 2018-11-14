@@ -1427,7 +1427,7 @@ exports[`Swift code generation #structDeclarationForSelectionSet() should genera
 `;
 
 exports[`Swift code generation #typeDeclarationForGraphQLType() should escape identifiers in cases of enum declaration for a GraphQLEnumType 1`] = `
-"public enum AlbumPrivacies: RawRepresentable, Equatable, JSONDecodable, JSONEncodable {
+"public enum AlbumPrivacies: RawRepresentable, Equatable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
   case \`public\`
   case \`private\`
@@ -1466,7 +1466,7 @@ exports[`Swift code generation #typeDeclarationForGraphQLType() should generate 
 public struct ReviewInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
-  public init(stars: Int, commentary: Optional<String?> = nil, favoriteColor: Optional<ColorInput?> = nil) {
+  public init(stars: Int, commentary: String? = nil, favoriteColor: ColorInput? = nil) {
     graphQLMap = [\\"stars\\": stars, \\"commentary\\": commentary, \\"favorite_color\\": favoriteColor]
   }
 
@@ -1481,9 +1481,9 @@ public struct ReviewInput: GraphQLMapConvertible {
   }
 
   /// Comment about the movie, optional
-  public var commentary: Optional<String?> {
+  public var commentary: String? {
     get {
-      return graphQLMap[\\"commentary\\"] as! Optional<String?>
+      return graphQLMap[\\"commentary\\"] as! String?
     }
     set {
       graphQLMap.updateValue(newValue, forKey: \\"commentary\\")
@@ -1491,9 +1491,9 @@ public struct ReviewInput: GraphQLMapConvertible {
   }
 
   /// Favorite color, optional
-  public var favoriteColor: Optional<ColorInput?> {
+  public var favoriteColor: ColorInput? {
     get {
-      return graphQLMap[\\"favoriteColor\\"] as! Optional<ColorInput?>
+      return graphQLMap[\\"favoriteColor\\"] as! ColorInput?
     }
     set {
       graphQLMap.updateValue(newValue, forKey: \\"favoriteColor\\")
@@ -1504,7 +1504,7 @@ public struct ReviewInput: GraphQLMapConvertible {
 
 exports[`Swift code generation #typeDeclarationForGraphQLType() should generate an enum declaration for a GraphQLEnumType 1`] = `
 "/// The episodes in the Star Wars trilogy
-public enum Episode: RawRepresentable, Equatable, JSONDecodable, JSONEncodable {
+public enum Episode: RawRepresentable, Equatable, Apollo.JSONDecodable, Apollo.JSONEncodable {
   public typealias RawValue = String
   /// Star Wars Episode IV: A New Hope, released in 1977.
   case newhope
