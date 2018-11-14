@@ -65,7 +65,6 @@ async function initializeEnv(context) {
     }
     // Generate AWS exports/configurtion file
     context.amplify.onCategoryOutputsChange(context);
-
   } catch (e) {
     spinner.fail('There was an error initializing your environment.');
     throw e;
