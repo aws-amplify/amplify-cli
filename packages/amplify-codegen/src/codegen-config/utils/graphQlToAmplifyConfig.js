@@ -5,16 +5,22 @@ function graphQlToAmplifyConfig(gqlConfig) {
     amplifyConfig.push({ ...cfg, __root__: true });
   }
   const projects = gqlConfig.getProjects() || {};
+
   Object.keys(projects).forEach((projectName) => {
     const project = projects[projectName];
-    cfg = getAmplifyConfig(project);
+    cfg = getAmplifyConfig(project.config);
+
     if (cfg) amplifyConfig.push({ ...cfg, __root__: false, projectName });
   });
+
   return amplifyConfig;
 }
 
 function getAmplifyConfig(config = {}) {
   if (config && config.extensions && config.extensions.amplify && config.includes) {
+    if (typeof config.includes === 'string') {
+      config.includes = [config.includes];
+    }
     return {
       schema: config.schemaPath,
       includes: config.includes,
