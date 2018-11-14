@@ -1,5 +1,7 @@
 const fs = require('fs');
+const sequential = require('promise-sequential');
 const { initializeEnv } = require('../../lib/initialize-env');
+const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
 
 module.exports = {
   name: 'checkout',
@@ -22,11 +24,39 @@ module.exports = {
     const jsonString = JSON.stringify(localEnvInfo, null, 4);
     fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
 
-    // Initialize the environment
+
+    // Setup exeinfo
 
     context.amplify.constructExeInfo(context);
     context.exeInfo.forcePush = false;
+    context.exeInfo.isNewEnv = false;
     context.exeInfo.restoreBackend = context.parameters.options.restore;
+
+    // Setup Provider creds/info
+    const initializationTasks = [];
+    const providerPlugins = getProviderPlugins(context);
+    context.exeInfo.projectConfig.providers.forEach((provider) => {
+      const providerModule = require(providerPlugins[provider]);
+      initializationTasks.push(() => providerModule.init(
+        context,
+        allEnvs[envName][provider],
+      ));
+    });
+
+    await sequential(initializationTasks);
+
+    const onInitSuccessfulTasks = [];
+    context.exeInfo.projectConfig.providers.forEach((provider) => {
+      const providerModule = require(providerPlugins[provider]);
+      onInitSuccessfulTasks.push(() => providerModule.onInitSuccessful(
+        context,
+        allEnvs[envName][provider],
+      ));
+    });
+
+    await sequential(onInitSuccessfulTasks);
+
+    // Initialize the environment
 
     await initializeEnv(context);
   },

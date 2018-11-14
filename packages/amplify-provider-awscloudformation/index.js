@@ -20,6 +20,8 @@ function initEnv(context, providerMetadata) {
   return initializeEnv.run(context, providerMetadata);
 }
 
+// TODO: Change fn name to afterInit or onInitSuccess
+
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
