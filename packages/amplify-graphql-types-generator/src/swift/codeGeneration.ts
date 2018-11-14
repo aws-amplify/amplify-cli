@@ -855,12 +855,6 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
 
     const properties = fields.map(this.helpers.propertyFromInputField, this.helpers);
 
-    properties.forEach(property => {
-      if (property.isOptional) {
-        property.typeName = `Optional<${property.typeName}>`;
-      }
-    });
-
     this.structDeclaration(
       { structName, description: description || undefined, adoptedProtocols },
       () => {
