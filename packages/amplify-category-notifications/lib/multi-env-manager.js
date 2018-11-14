@@ -8,7 +8,7 @@ async function initEnv(context) {
   checkExeInfo(context);
   const pinpointNotificationsMeta = await constructPinpointNotificationsMeta(context);
   if (pinpointNotificationsMeta) {
-    // remove this line after add and push are separated.
+    // remove this line after init and init-push are separated.
     await pushChanges(context, pinpointNotificationsMeta);
     writeData(context);
   }
@@ -21,6 +21,7 @@ function checkExeInfo(context) {
   Object.assign(context.exeInfo, projectDetails);
 }
 
+// this function will be called after init and init-push are separated.
 async function initEnvPush(context, pinpointNotificationsMeta) {//eslint-disable-line
   // await pushChanges(context, pinpointNotificationsMeta);//eslint-disable-line
 }
