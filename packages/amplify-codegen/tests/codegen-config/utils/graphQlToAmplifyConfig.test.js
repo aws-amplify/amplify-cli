@@ -14,7 +14,7 @@ describe('graphQlToAmplifyConfig', () => {
   const graphQLApiId1 = 'proj1';
   const codeGenTarget1 = 'flow';
 
-  it('should return items with amplify extensions', () => {
+  fit('should return items with amplify extensions', () => {
     const projects = {
       [projectName]: {
         config: {
