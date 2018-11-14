@@ -14,7 +14,7 @@ describe('apns-key-config', () => {
         BundleId: mockBundleId, 
         TeamId: mockTeamId,
         TokenKeyId: mockTokenKeyId,
-        filePath: mockFielPath
+        P8FilePath: mockFielPath
     }; 
     const mockP8DecoderReturn = 'mockP8DecoderReturn'; 
 
