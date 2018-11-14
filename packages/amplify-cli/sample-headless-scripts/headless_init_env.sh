@@ -8,7 +8,7 @@ AWSCLOUDFORMATIONCONFIG="{\
 \"profileName\":\"default\"\
 }"
 AMPLIFY="{\
-\"envName\":\"dev2\"\
+\"envName\":\"mydevabc\"\
 }"
 PROVIDERS="{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
