@@ -18,20 +18,6 @@ async function initializeEnv(context) {
       populateAmplifyMeta(context, amplifyMeta);
     }
 
-
-    const providerPlugins = getProviderPlugins(context);
-
-    const initializationTasks = [];
-    const providerPushTasks = [];
-
-    context.exeInfo.projectConfig.providers.forEach((provider) => {
-      const providerModule = require(providerPlugins[provider]);
-      initializationTasks.push(() => providerModule.initEnv(
-        context,
-        amplifyMeta.providers[provider],
-      ));
-    });
-
     const categoryInitializationTasks = [];
     const initializedCategories = Object.keys(context.amplify.getProjectMeta());
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
@@ -49,6 +35,20 @@ async function initializeEnv(context) {
     });
 
     await sequential(categoryInitializationTasks);
+
+    const providerPlugins = getProviderPlugins(context);
+
+    const initializationTasks = [];
+    const providerPushTasks = [];
+
+    context.exeInfo.projectConfig.providers.forEach((provider) => {
+      const providerModule = require(providerPlugins[provider]);
+      initializationTasks.push(() => providerModule.initEnv(
+        context,
+        amplifyMeta.providers[provider],
+      ));
+    });
+
 
     spinner.start(`Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
