@@ -11,11 +11,11 @@ async function deletePinpointApp(context) {
 }
 
 async function initEnv(context) {
-  multiEnvManager.initEnv(context);
+  await multiEnvManager.initEnv(context);
 }
 
 async function initEnvPush(context) {
-  multiEnvManager.initEnvPush(context);
+  await multiEnvManager.initEnvPush(context);
 }
 
 module.exports = {

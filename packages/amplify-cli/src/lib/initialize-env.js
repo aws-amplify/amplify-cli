@@ -5,7 +5,6 @@ const ora = require('ora');
 const spinner = ora('');
 
 const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
-const notificationsModule = require('amplify-category-notifications'); 
 
 async function initializeEnv(context) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -35,8 +34,6 @@ async function initializeEnv(context) {
       }
     });
 
-    await sequential(categoryInitializationTasks);
-
     const providerPlugins = getProviderPlugins(context);
 
     const initializationTasks = [];
@@ -53,7 +50,8 @@ async function initializeEnv(context) {
 
     spinner.start(`Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
-    notificationsModule.initEnv(context);
+    spinner.succeed('Initialized your environment successfully.');
+    await sequential(categoryInitializationTasks);
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
@@ -65,11 +63,9 @@ async function initializeEnv(context) {
       });
       await sequential(providerPushTasks);
     }
-
     // Generate AWS exports/configurtion file
     context.amplify.onCategoryOutputsChange(context);
 
-    spinner.succeed('Initialized your environment successfully.');
   } catch (e) {
     spinner.fail('There was an error initializing your environment.');
     throw e;

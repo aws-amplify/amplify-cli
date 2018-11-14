@@ -139,26 +139,15 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   delete pinpointNotificationsMeta.Name;
 
   const tasks = [];
-  tasks.push(async () => {
-    await pinpointHelper.ensurePinpointApp(context);
-  });
-
+  tasks.push(() => pinpointHelper.ensurePinpointApp(context));
   channelsToEnable.forEach((channel) => {
-    tasks.push(async () => {
-      await notificationManager.enableChannel(context, channel);
-    });
+    tasks.push(() => notificationManager.enableChannel(context, channel));
   });
-
   channelsToDisable.forEach((channel) => {
-    tasks.push(async () => {
-      await notificationManager.disableChannel(context, channel);
-    });
+    tasks.push(() => notificationManager.disableChannel(context, channel));
   });
-
   // channelsToUpdate.forEach((channel) => {
-  //   tasks.push(async () => {
-  //     await notificationManager.configureChannel(context, channel);
-  //   });
+  //   tasks.push(() => notificationManager.configureChannel(context, channel));
   // });
 
   await sequential(tasks);

@@ -37,29 +37,33 @@ async function ensurePinpointApp(context) {
 
 async function createPinpointApp(context) {
   const { projectConfig, amplifyMeta, localEnvInfo } = context.exeInfo;
-  const defaultPinpointProjectName = localEnvInfo.envName === 'NONE' ?
+  let pinpointProjectName = localEnvInfo.envName === 'NONE' ?
     (projectConfig.projectName + context.amplify.makeId(5)) :
     `${projectConfig.projectName + context.amplify.makeId(5)}-${localEnvInfo.envName}`;
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
-  const answer = await inquirer.prompt({
-    name: 'pinpointProjectName',
-    type: 'input',
-    message: 'Pinpoint project name',
-    default: defaultPinpointProjectName,
-    validate: (name) => {
-      let result = false;
-      let message = '';
-      if (name && name.length > 0) {
-        result = true;
-      } else {
-        message = 'Project name can not be empty.';
-      }
-      return result || message;
-    },
-  });
 
-  const pinpointApp = await createApp(context, answer.pinpointProjectName);
+  if (!context.exeInfo.inputParams.yes) {
+    const answer = await inquirer.prompt({
+      name: 'projectName',
+      type: 'input',
+      message: 'Pinpoint project name',
+      default: pinpointProjectName,
+      validate: (name) => {
+        let result = false;
+        let message = '';
+        if (name && name.length > 0) {
+          result = true;
+        } else {
+          message = 'Project name can not be empty.';
+        }
+        return result || message;
+      },
+    });
+    pinpointProjectName = answer.projectName;
+  }
+
+  const pinpointApp = await createApp(context, pinpointProjectName);
   amplifyMeta[constants.CategoryName] = {};
   amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
     service: constants.PinpointName,
