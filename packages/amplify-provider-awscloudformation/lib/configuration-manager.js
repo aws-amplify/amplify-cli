@@ -205,6 +205,8 @@ async function configProject(context) {
       projectConfigInfo.profileName = answers.profileName;
       return context;
     }
+  } else {
+    projectConfigInfo.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);
