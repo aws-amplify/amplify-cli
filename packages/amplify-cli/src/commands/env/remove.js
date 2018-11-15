@@ -9,7 +9,7 @@ module.exports = {
     const currentEnv = context.amplify.getEnvInfo().envName;
 
     if (!envName) {
-      context.print.error('You must pass in the name of the environment using the --name flag');
+      context.print.error("You must pass in the name of the environment as a part of the 'amplify remove <env-name>' command");
       process.exit(1);
     }
     let envFound = false;
