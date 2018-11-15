@@ -1,48 +1,22 @@
 const ora = require('ora');
-const { getProjectConfig } = require('./get-project-config');
-const { getCategoryPlugins } = require('./get-category-plugins');
-const { getProviderPlugins } = require('./get-provider-plugins');
 const pathManager = require('./path-manager');
-
-const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
+const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 
 async function deleteProject(context) {
-  return context.prompt.confirm('Are you sure you want to continue?(This would delete all the project from the cloud and wipe out all the local amplify resource files)')
-    .then((answer) => {
-      if (answer) {
-        const { providers } = getProjectConfig();
-        const providerPlugins = getProviderPlugins(context);
-        const providerPromises = [];
-
-        providers.forEach((providerName) => {
-          const pluginModule = require(providerPlugins[providerName]);
-          providerPromises.push(pluginModule.deleteProject(context));
-        });
-
-        spinner.start();
-        return Promise.all(providerPromises);
-      }
-      process.exit(0);
-    })
-    .then(() => {
-      const categoryPlugins = getCategoryPlugins(context);
-      if (categoryPlugins.notifications) {
-        const notificationsModule = require(categoryPlugins.notifications);
-        return notificationsModule.deletePinpointApp(context);
-      }
-    })
-    .then(() => {
-      // Remove resource directory from backend/
-      context.filesystem.remove(pathManager.getAmplifyDirPath());
-      spinner.succeed('Project deleted locally and in the cloud');
-      // Remove amplify dir
-    })
-    .catch((err) => {
-      spinner.fail('An error occurred when deleting the resources');
-      console.log(err.stack);
-      // Handle the errors and print them nicely for the user.
-      context.print.error(`\n${err.message}`);
+  if (await context.prompt.confirm('Are you sure you want to continue?(This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)')) {
+    const removeEnvPromises = [];
+    const allEnvs = context.amplify.getEnvDetails();
+    Object.keys(allEnvs).forEach((env) => {
+      removeEnvPromises.push(removeEnvFromCloud(context, env));
     });
+    const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
+    spinner.start();
+    await Promise.all(removeEnvPromises);
+    spinner.succeed('Project deleted in the cloud');
+    // Remove amplify dir
+    context.filesystem.remove(pathManager.getAmplifyDirPath());
+    context.print.success('Prooject deleted locally.');
+  }
 }
 
 module.exports = {

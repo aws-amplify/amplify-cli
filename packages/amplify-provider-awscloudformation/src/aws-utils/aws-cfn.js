@@ -318,11 +318,12 @@ class CloudFormation {
       });
   }
 
-  deleteResourceStack() {
-    const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
+  deleteResourceStack(envName) {
+    const { teamProviderInfo } = this.context.amplify.getProjectDetails();
+    const stackName = teamProviderInfo[envName][providerName].StackName;
+
     if (!stackName) {
-      throw new Error('Project stack does not exist');
+      throw new Error('Stack not defined for the environment.');
     }
 
     const cfnStackParams = {
