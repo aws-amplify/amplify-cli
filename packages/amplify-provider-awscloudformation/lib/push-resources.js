@@ -12,6 +12,7 @@ const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-cod
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
+const { loadResourceParameters } = require('../src/resourceParams');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -322,10 +323,9 @@ function formNestedStack(context, projectDetails) {
     resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
       const resourceKey = category + resource;
-      const { projectPath } = context.amplify.getEnvInfo();
       let templateURL;
       if (resourceDetails.providerPlugin) {
-        const parameters = getResourceParameters(context, projectPath, category, resource);
+        const parameters = loadResourceParameters(context, category, resource);
         const { dependsOn } = resourceDetails;
 
         if (dependsOn) {
@@ -365,17 +365,6 @@ function formNestedStack(context, projectDetails) {
     });
   });
   return nestedStack;
-}
-
-function getResourceParameters(context, projectPath, category, resource) {
-  let parameters = {};
-  const backendDirPath = context.amplify.pathManager.getBackendDirPath(projectPath);
-  const resourceDirPath = path.join(backendDirPath, category, resource);
-  const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
-  if (fs.existsSync(parametersFilePath)) {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
-  }
-  return parameters;
 }
 
 module.exports = {

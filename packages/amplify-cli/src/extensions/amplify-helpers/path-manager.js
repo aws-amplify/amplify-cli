@@ -130,7 +130,14 @@ function getProviderInfoFilePath(projectPath) {
 
 function getBackendConfigFilePath(projectPath) {
   return path.normalize(path.join(
-    getDotConfigDirPath(projectPath),
+    getBackendDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
+  ));
+}
+
+function getCurrentBackendConfigFilePath(projectPath) {
+  return path.normalize(path.join(
+    getCurrentCloudBackendDirPath(projectPath),
     amplifyCLIConstants.BackendConfigFileName,
   ));
 }
@@ -173,4 +180,5 @@ module.exports = {
   getLocalEnvFilePath,
   getProviderInfoFilePath,
   getBackendConfigFilePath,
+  getCurrentBackendConfigFilePath,
 };

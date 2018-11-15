@@ -49,6 +49,7 @@ async function pushResources(context, category, resourceName) {
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
+      throw err;
     }
   }
 

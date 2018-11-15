@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
-const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
+const multiEnvManager = require('../../lib/multi-env-manager');
 
 module.exports = {
   name: 'configure',
@@ -24,7 +24,7 @@ module.exports = {
 
     await pinpointHelper.ensurePinpointApp(context);
     await notificationManager.configureChannel(context, channelName);
-    writeAmplifyMeta(context);
+    multiEnvManager.writeData(context);
 
     return context;
   },

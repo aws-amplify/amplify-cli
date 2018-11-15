@@ -7,14 +7,43 @@ AWSCLOUDFORMATIONCONFIG="{\
 \"useProfile\":true,\
 \"profileName\":\"default\"\
 }"
+NOTIFICATIONSCONFIG="{\
+\"Pinpoint\":{
+\"Id\":\"pinpointprojectid\",\
+\"Region\":\"us-east-1\",\
+\"SMS\":{
+\"Enabled\":true\
+},\
+\"Email\":{
+\"Enabled\":true,\
+\"FromAddress\":\"xxx@amzon.com\",\
+\"Identity\":\"identityArn\",\
+\"RoleArn\":\"roleArn\"\
+},\
+\"APNS\":{
+\"Enabled\":true,\
+\"DefaultAuthenticationMethod\":\"Certificate\",\
+\"P12FilePath\":\"p12filePath\",\
+\"Password\":\"p12FilePasswordIfAny\"\
+},\
+\"FCM\":{
+\"Enabled\":true,\
+\"ApiKey\":\"fcmapikey\"\
+}\
+}\
+}"
 AMPLIFY="{\
-\"envName\":\"dev2\"\
+\"envName\":\"mydevabc\"\
 }"
 PROVIDERS="{\
 \"awscloudformation\":$AWSCLOUDFORMATIONCONFIG\
+}"
+CATEGORIES="{\
+\"notifications\":$NOTIFICATIONSCONFIG\
 }"
 
 amplify init \
 --amplify $AMPLIFY \
 --providers $PROVIDERS \
+--categories $CATEGORIES \
 --yes

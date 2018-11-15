@@ -10,6 +10,7 @@ const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const consoleCommand = require('./lib/console');
+const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 
 function init(context) {
   return initializer.run(context);
@@ -18,6 +19,8 @@ function init(context) {
 function initEnv(context, providerMetadata) {
   return initializeEnv.run(context, providerMetadata);
 }
+
+// TODO: Change fn name to afterInit or onInitSuccess
 
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
@@ -70,4 +73,6 @@ module.exports = {
   getConfiguredAWSClient,
   showHelpfulLinks,
   deleteProject,
+  loadResourceParameters,
+  saveResourceParameters,
 };

@@ -35,6 +35,7 @@ const { serviceSelectionPrompt } = require('./amplify-helpers/service-select-pro
 const { updateProjectConfig } = require('./amplify-helpers/update-project-config');
 const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2');
 const { onCategoryOutputsChange } = require('./amplify-helpers/on-category-outputs-change');
+const { getPluginInstance } = require('./amplify-helpers/get-plugin-instance');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -52,6 +53,12 @@ const { showHelp } = require('./amplify-helpers/show-help');
 const { executeProviderUtils } = require('./amplify-helpers/execute-provider-utils');
 const { showHelpfulProviderLinks } = require('./amplify-helpers/show-helpful-provider-links');
 
+const {
+  loadEnvResourceParameters,
+  saveEnvResourceParameters,
+  removeResourceParameters,
+} = require('./amplify-helpers/envResourceParams');
+
 module.exports = (context) => {
   const amplify = {
     buildResources,
@@ -67,6 +74,7 @@ module.exports = (context) => {
     getEnvDetails,
     getEnvInfo,
     getProviderPlugins,
+    getPluginInstance,
     getProjectConfig,
     getProjectDetails,
     getProjectMeta,
@@ -98,6 +106,9 @@ module.exports = (context) => {
     updateAmplifyMetaAfterPackage,
     updateBackendConfigAfterResourceAdd,
     updateBackendConfigAfterResourceRemove,
+    loadEnvResourceParameters,
+    saveEnvResourceParameters,
+    removeResourceParameters,
   };
 
   context.amplify = amplify;

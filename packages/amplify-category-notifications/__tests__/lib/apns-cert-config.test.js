@@ -9,8 +9,8 @@ describe('apns-cert-config', () => {
     const mockPassword = 'mock_password'; 
 
     const mockAnswers = {
-        filePath: mockFielPath, 
-        password: mockPassword
+        P12FilePath: mockFielPath, 
+        P12FilePassword: mockPassword
     }; 
     const mockP12DecoderReturn = {}; 
 

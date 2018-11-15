@@ -168,7 +168,7 @@ async function askApiNames(context, defaults) {
     },
   ]);
 
-  answer.apiName = defaults.apiName;
+  answer.apiName = answer.resourceName;
 
   return answer;
 }
@@ -295,7 +295,7 @@ async function askReadWrite(userType, context, privacy = 'r') {
 }
 
 async function askPaths(context, answers, currentPath) {
-  const existingLambdaArns = true;
+  // const existingLambdaArns = true;
   const existingFunctions = functionsExist(context);
 
   const choices = [
@@ -305,12 +305,19 @@ async function askPaths(context, answers, currentPath) {
     },
   ];
 
+  /*
+
+  Removing this option for now in favor of multi-env support
+  - NOT CRITICAL
+
   if (existingLambdaArns) {
     choices.push({
       name: 'Use a Lambda function already deployed on AWS',
       value: 'arn',
     });
   }
+
+  */
 
   if (existingFunctions) {
     choices.push({

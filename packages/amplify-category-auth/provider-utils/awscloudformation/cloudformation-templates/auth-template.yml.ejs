@@ -1,6 +1,17 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  env:
+    Type: String
+  authRoleName:
+    Type: String
+  unauthRoleName:
+    Type: String
+  authRoleArn:
+    Type: String
+  unauthRoleArn:
+    Type: String
+
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
   <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
   <%=Object.keys(props)[i]%>:
@@ -20,6 +31,9 @@ Parameters:
   <% } -%>
   <% } -%>
 
+Conditions:
+  ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+
 Resources:
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
@@ -27,7 +41,7 @@ Resources:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref roleName
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref roleName, !Join ['',[!Ref roleName, '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -57,7 +71,7 @@ Resources:
   # Depends on SNS Role for Arn if MFA is enabled
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Ref userPoolName
+      UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
       Schema: 
         <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
         -
@@ -119,7 +133,7 @@ Resources:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Ref userpoolClientLambdaRole     
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -175,7 +189,7 @@ Resources:
     Properties:
       PolicyName: !Ref userpoolClientLambdaPolicy
       Roles: 
-        - !Ref userpoolClientLambdaRole
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -192,7 +206,7 @@ Resources:
     Properties:
       PolicyName: !Ref userpoolClientLogPolicy
       Roles: 
-        - !Ref userpoolClientLambdaRole
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -222,7 +236,7 @@ Resources:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Ref mfaLambdaRole     
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole     , '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -240,7 +254,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: <%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', '-', !Ref env]]]
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -298,7 +312,7 @@ Resources:
     Properties:
       PolicyName: !Ref mfaLambdaIAMPolicy
       Roles: 
-        - !Ref mfaLambdaRole
+        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -314,7 +328,7 @@ Resources:
     Properties:
       PolicyName: !Ref mfaLambdaLogPolicy
       Roles: 
-        - !Ref mfaLambdaRole
+        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -352,7 +366,7 @@ Resources:
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Ref openIdLambdaRoleName     
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -370,7 +384,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>
+              Resource: !If [ShouldNotCreateEnvResources, <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, !Join ['',[<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, '-', !Ref env]]]
     DependsOn: UserPoolClientInputs
   OpenIdLambda:
   # Lambda which sets OpenId Values
@@ -458,7 +472,7 @@ Resources:
     Properties:
       PolicyName: !Ref openIdLambdaIAMPolicy
       Roles: 
-        - !Ref openIdLambdaRoleName
+        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -485,7 +499,7 @@ Resources:
     Properties:
       PolicyName: !Ref openIdLogPolicy
       Roles: 
-        - !Ref openIdLambdaRoleName
+        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -514,7 +528,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: <%= props.identityPoolName %>
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, '<%= props.identityPoolName %>', !Join ['',['<%= props.identityPoolName %>', '__', !Ref env]]]
       <%if (props.authSelections !== 'identityPoolOnly') { %>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
@@ -551,7 +565,7 @@ Resources:
     Properties: 
       IdentityPoolId: !Ref IdentityPool
       Roles:
-          unauthenticated: !Ref unAuthRoleArn
+          unauthenticated: !Ref unauthRoleArn
           authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
   <% } %>

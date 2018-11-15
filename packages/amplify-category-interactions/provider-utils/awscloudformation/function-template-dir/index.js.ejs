@@ -96,8 +96,13 @@ exports.handler = function(event, context) {
         },
         <% } %>
     ];
+    let botName = "<%- props.botName %>";
+    if(process.env.ENV && process.env.ENV !== "NONE") {
+      botName = botName + '_' + process.env.ENV;
+    }
+
     let botParams = {
-        "name": "<%- props.botName %>",
+        "name": botName,
         "intents": [
         <% for(var i = 0; i < props.intents.length; i++) { %>
             {

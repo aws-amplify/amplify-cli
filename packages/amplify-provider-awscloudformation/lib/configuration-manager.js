@@ -26,7 +26,8 @@ async function init(context) {
   await newUserCheck(context);
   printInfo(context);
   context.exeInfo.awsConfigInfo.action = 'init';
-  return carryOutConfigAction(context);
+
+  return (await carryOutConfigAction(context));
 }
 
 async function configure(context) {
@@ -35,7 +36,7 @@ async function configure(context) {
   await newUserCheck(context);
   printInfo(context);
   await setProjectConfigAction(context);
-  return carryOutConfigAction(context);
+  return (await carryOutConfigAction(context));
 }
 
 function doesAwsConfigExists(context) {
@@ -109,24 +110,25 @@ function normalizeInputParams(context) {
 }
 
 
-function carryOutConfigAction(context) {
+async function carryOutConfigAction(context) {
   let result;
   switch (context.exeInfo.awsConfigInfo.action) {
     case 'init':
-      result = initialize(context);
+      result = await initialize(context);
       break;
     case 'create':
-      result = create(context);
+      result = await create(context);
       break;
     case 'update':
-      result = update(context);
+      result = await update(context);
       break;
     case 'remove':
-      result = remove(context);
+      result = await remove(context);
       break;
     default:
       result = context;
   }
+
   return result;
 }
 
@@ -144,11 +146,14 @@ async function initialize(context) {
   if (!awsConfigInfo.configValidated) {
     throw new Error('Invalid configuration settings');
   }
+
   return context;
 }
 
 function onInitSuccessful(context) {
-  persistLocalEnvConfig(context);
+  if (context.exeInfo.isNewEnv || !doesAwsConfigExists(context)) {
+    persistLocalEnvConfig(context);
+  }
   return context;
 }
 
@@ -534,6 +539,7 @@ function logProjectSpecificConfg(context, awsClient) {
         const credentials = new awsClient.SharedIniFileCredentials({
           profile: envConfigInfo.profileName,
         });
+
         awsClient.config.credentials = credentials;
       } else if (envConfigInfo.awsConfigFilePath &&
         fs.existsSync(envConfigInfo.awsConfigFilePath)) {
@@ -543,6 +549,7 @@ function logProjectSpecificConfg(context, awsClient) {
       }
     }
   }
+
   return awsClient;
 }
 
