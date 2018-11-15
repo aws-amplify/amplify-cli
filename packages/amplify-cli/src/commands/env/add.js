@@ -8,7 +8,6 @@ module.exports = {
     const config = JSON.parse(context.parameters.options.config);
     const awsInfo = JSON.parse(context.parameters.options.awsInfo);
 
-
     if (!envName) {
       context.print.error('You must pass in the name of the environment using the --name flag');
       process.exit(1);
@@ -26,7 +25,6 @@ module.exports = {
         envFound = true;
       }
     });
-
 
     const addNewEnvConfig = () => {
       const envProviderFilepath = context.amplify.pathManager.getProviderInfoFilePath();

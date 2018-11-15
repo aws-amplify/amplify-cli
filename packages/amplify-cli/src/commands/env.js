@@ -27,7 +27,7 @@ module.exports = {
         description: 'Adds an already existing Amplify project stack to your local backend',
       },
       {
-        name: 'remove --name <env-name>',
+        name: 'remove <env-name>',
         description: 'Removes an environment from the Amplify project',
       },
     ];
