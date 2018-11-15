@@ -37,25 +37,30 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelOutput = {};
-  if (context.exeInfo.serviceMeta.output[channelName]) {
-    channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+    answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+  } else {
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const questions = [
+      {
+        name: 'ApiKey',
+        type: 'input',
+        message: 'ApiKey',
+        default: channelOutput.ApiKey,
+      },
+    ];
+    answers = await inquirer.prompt(questions);
   }
-  const questions = [
-    {
-      name: 'ApiKey',
-      type: 'input',
-      message: 'ApiKey',
-      default: channelOutput.ApiKey,
-    },
-  ];
-  const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
-      Enabled: true,
       ...answers,
+      Enabled: true,
     },
   };
 
@@ -75,6 +80,13 @@ async function enable(context, successMessage) {
       }
     });
   });
+}
+
+function validateInputParams(channelInput) {
+  if (!channelInput.ApiKey) {
+    throw new Error('ApiKey is missing for the FCM channel');
+  }
+  return channelInput;
 }
 
 function disable(context) {
@@ -100,8 +112,28 @@ function disable(context) {
   });
 }
 
+function pull(context, pinpointApp) {
+  const params = {
+    ApplicationId: pinpointApp.Id,
+  };
+  spinner.start(`Pulling ${channelName} Channel.`);
+  return new Promise((resolve, reject) => {
+    context.exeInfo.pinpointClient.getGcmChannel(params, (err, data) => {
+      if (err) {
+        spinner.fail(`get channel ${channelName} error`);
+        reject(err);
+      } else {
+        spinner.succeed(`get ${channelName} channel successful`);
+        pinpointApp[channelName] = data.GCMChannelResponse;
+        resolve(data.GCMChannelResponse);
+      }
+    });
+  });
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull,
 };

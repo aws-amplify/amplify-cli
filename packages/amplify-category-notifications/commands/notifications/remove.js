@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
-const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
+const multiEnvManager = require('../../lib/multi-env-manager');
 
 const PinpointApp = 'The Pinpoint application';
 const Cancel = 'Cancel';
@@ -37,7 +37,7 @@ module.exports = {
       if (channelName !== PinpointApp) {
         await pinpointHelper.ensurePinpointApp(context);
         await notificationManager.disableChannel(context, channelName);
-        writeAmplifyMeta(context);
+        multiEnvManager.writeData(context);
       } else if (pinpointHelper.isAnalyticsAdded(context)) {
         context.print.error('Execution aborted.');
         context.print.info('You have an analytics resource in your backend tied to the Amazon Pinpoint resource');
@@ -52,7 +52,7 @@ module.exports = {
         if (answer.deletePinpointApp) {
           await pinpointHelper.deletePinpointApp(context);
           context.print.info('The Pinpoint application has been successfully deleted.');
-          writeAmplifyMeta(context);
+          multiEnvManager.writeData(context);
         }
       }
     }
