@@ -9,6 +9,7 @@ const { constructExeInfo } = require('./amplify-helpers/construct-exeInfo');
 const { removeResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
 const { deleteProject } = require('./amplify-helpers/delete-project');
+const { removeEnvFromCloud } = require('./amplify-helpers/remove-env-from-cloud');
 const { buildResources } = require('./amplify-helpers/build-resources');
 const { getPlugin } = require('./amplify-helpers/get-plugin');
 const { getCategoryPlugins } = require('./amplify-helpers/get-category-plugins');
@@ -90,6 +91,7 @@ module.exports = (context) => {
     pathManager,
     pressEnterToContinue,
     pushResources,
+    removeEnvFromCloud,
     removeResource,
     sharedQuestions,
     showHelp,
