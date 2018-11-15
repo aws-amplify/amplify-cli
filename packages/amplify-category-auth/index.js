@@ -2,6 +2,7 @@ const category = 'auth';
 const fs = require('fs');
 const _ = require('lodash');
 const uuid = require('uuid');
+const sequential = require('promise-sequential');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const {
   updateConfigOnEnvInit,
@@ -184,12 +185,21 @@ async function checkRequirements(requirements, context) {
 }
 
 async function initEnv(context) {
-  const { auth = [] } = context.amplify.getProjectMeta();
-  if (Object.keys(auth).length) {
-    const resourceName = Object.keys(auth)[0];
-    const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
-    context.amplify.saveEnvResourceParameters('auth', resourceName, config);
-  }
+  const { amplify } = context;
+  const { resourcesToBeCreated, resourcesToBeDeleted } = await amplify.getResourceStatus('auth');
+
+  resourcesToBeDeleted.forEach((authResource) => {
+    amplify.removeResourceParameters('auth', authResource.resourceName);
+  });
+
+  const authTasks = resourcesToBeCreated.map((authResource) => {
+    const { resourceName } = authResource;
+    return async () => {
+      const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
+      context.amplify.saveEnvResourceParameters('auth', resourceName, config);
+    };
+  });
+  await sequential(authTasks);
 }
 
 module.exports = {
