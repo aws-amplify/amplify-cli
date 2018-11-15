@@ -50,16 +50,14 @@ function loadEnvResourceParameters(category, resource) {
 
 function removeResourceParameters(category, resource) {
   const allParams = loadAllResourceParameters();
-  const envs = Object.keys(allParams);
-  envs.forEach((env) => {
-    const envObj = allParams[env];
-    if (category in envObj) {
-      if (resource in envObj[category]) {
-        delete envObj[category][resource];
-        if (!Object.keys(envObj[category]).length) delete envObj[category];
-      }
+  const currentEnv = getEnvInfo().envName;
+  const envObj = allParams[currentEnv];
+  if (category in envObj) {
+    if (resource in envObj[category]) {
+      delete envObj[category][resource];
+      if (!Object.keys(envObj[category]).length) delete envObj[category];
     }
-  });
+  }
   saveAllResourceParams(allParams);
 }
 

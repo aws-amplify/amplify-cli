@@ -56,7 +56,8 @@ const { showHelpfulProviderLinks } = require('./amplify-helpers/show-helpful-pro
 const {
   loadEnvResourceParameters,
   saveEnvResourceParameters,
-} = require('./amplify-helpers/stageResourceParams');
+  removeResourceParameters,
+} = require('./amplify-helpers/envResourceParams');
 
 module.exports = (context) => {
   const amplify = {
@@ -107,6 +108,7 @@ module.exports = (context) => {
     updateBackendConfigAfterResourceRemove,
     loadEnvResourceParameters,
     saveEnvResourceParameters,
+    removeResourceParameters,
   };
 
   context.amplify = amplify;
