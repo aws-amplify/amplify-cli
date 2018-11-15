@@ -4,7 +4,6 @@ const inquirer = require('inquirer');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
-const writeAmplifyMeta = require('./writeAmplifyMeta');
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
@@ -37,27 +36,34 @@ async function ensurePinpointApp(context) {
 }
 
 async function createPinpointApp(context) {
-  const { projectConfig, amplifyMeta } = context.exeInfo;
+  const { projectConfig, amplifyMeta, localEnvInfo } = context.exeInfo;
+  let pinpointProjectName = localEnvInfo.envName === 'NONE' ?
+    (projectConfig.projectName + context.amplify.makeId(5)) :
+    `${projectConfig.projectName + context.amplify.makeId(5)}-${localEnvInfo.envName}`;
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
-  const answer = await inquirer.prompt({
-    name: 'pinpointProjectName',
-    type: 'input',
-    message: 'Pinpoint project name',
-    default: `${projectConfig.projectName}${context.amplify.makeId(5)}`,
-    validate: (name) => {
-      let result = false;
-      let message = '';
-      if (name && name.length > 0) {
-        result = true;
-      } else {
-        message = 'Project name can not be empty.';
-      }
-      return result || message;
-    },
-  });
 
-  const pinpointApp = await createApp(context, answer.pinpointProjectName);
+  if (!context.exeInfo.inputParams.yes) {
+    const answer = await inquirer.prompt({
+      name: 'projectName',
+      type: 'input',
+      message: 'Pinpoint project name',
+      default: pinpointProjectName,
+      validate: (name) => {
+        let result = false;
+        let message = '';
+        if (name && name.length > 0) {
+          result = true;
+        } else {
+          message = 'Project name can not be empty.';
+        }
+        return result || message;
+      },
+    });
+    pinpointProjectName = answer.projectName;
+  }
+
+  const pinpointApp = await createApp(context, pinpointProjectName);
   amplifyMeta[constants.CategoryName] = {};
   amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
     service: constants.PinpointName,
@@ -68,14 +74,11 @@ async function createPinpointApp(context) {
     },
     lastPushTimeStamp: new Date(),
   };
-  writeAmplifyMeta(context);
 
   context.exeInfo.pinpointApp = pinpointApp;
   context.print.info('');
   await authHelper.ensureAuth(context);
   context.print.info('');
-  // refresh the metadata becuse the auth might have changed it
-  context.exeInfo.amplifyMeta = context.amplify.getProjectMeta();
 
   return pinpointApp;
 }
@@ -236,5 +239,6 @@ module.exports = {
   deletePinpointApp,
   getPinpointClient,
   isAnalyticsAdded,
+  scanCategoryMetaForPinpoint,
   console,
 };

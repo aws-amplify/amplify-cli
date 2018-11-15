@@ -4,8 +4,8 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 function run(info) {
-  const { filePath, password } = info;
-  const pemFileContent = getPemFileContent(filePath, password);
+  const { P12FilePath, P12FilePassword } = info;
+  const pemFileContent = getPemFileContent(P12FilePath, P12FilePassword);
   const Certificate = getCertificate(pemFileContent);
   let PrivateKey = getPrivateKey(pemFileContent);
   if (!PrivateKey) {
