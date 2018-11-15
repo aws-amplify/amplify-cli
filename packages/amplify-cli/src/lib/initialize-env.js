@@ -47,10 +47,13 @@ async function initializeEnv(context) {
       ));
     });
 
-
     spinner.start(`Initializing your environment: ${currentEnv}`);
     await sequential(initializationTasks);
     spinner.succeed('Initialized provider successfully.');
+
+    const projectDetails = context.amplify.getProjectDetails();
+    context.exeInfo = context.exeInfo || {};
+    Object.assign(context.exeInfo, projectDetails);
     await sequential(categoryInitializationTasks);
 
     if (context.exeInfo.forcePush === undefined) {
@@ -65,7 +68,7 @@ async function initializeEnv(context) {
     }
     // Generate AWS exports/configurtion file
     context.amplify.onCategoryOutputsChange(context);
-    spinner.succeed('Initialized your environment successfully.');
+    context.print.info('Initialized your environment successfully.');
   } catch (e) {
     spinner.fail('There was an error initializing your environment.');
     throw e;

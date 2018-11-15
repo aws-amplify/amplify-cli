@@ -5,7 +5,6 @@ const constants = require('./constants');
 const notificationManager = require('./notifications-manager');
 
 async function initEnv(context) {
-  checkExeInfo(context);
   const pinpointNotificationsMeta = await constructPinpointNotificationsMeta(context);
   if (pinpointNotificationsMeta) {
     // remove this line after init and init-push are separated.
@@ -13,12 +12,6 @@ async function initEnv(context) {
     writeData(context);
   }
   return pinpointNotificationsMeta;
-}
-
-function checkExeInfo(context) {
-  const projectDetails = context.amplify.getProjectDetails();
-  context.exeInfo = context.exeInfo || {};
-  Object.assign(context.exeInfo, projectDetails);
 }
 
 // this function will be called after init and init-push are separated.
