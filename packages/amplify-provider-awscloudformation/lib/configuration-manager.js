@@ -338,6 +338,8 @@ async function promptForProjectConfigConfirmation(context) {
       awsConfigInfo.config.profileName = answers.profileName;
       return context;
     }
+  } else {
+    awsConfigInfo.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);

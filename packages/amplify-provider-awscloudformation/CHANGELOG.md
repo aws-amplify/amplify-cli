@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34-beta.0...amplify-provider-awscloudformation@0.1.34) (2018-11-13)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.1.34-beta.0"></a>
+## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.33...amplify-provider-awscloudformation@0.1.34-beta.0) (2018-11-13)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.33-beta.0...amplify-provider-awscloudformation@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.12...amplify-provider-awscloudformation@0.1.33-beta.0) (2018-11-09)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Fixes lambda function src files changes detection ([b0f216f](https://github.com/aws-amplify/amplify-cli/commit/b0f216f))
+
+
+
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.32-beta.0...amplify-provider-awscloudformation@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.12...amplify-provider-awscloudformation@0.1.32-beta.0) (2018-11-05)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Fixes lambda function src files changes detection ([b0f216f](https://github.com/aws-amplify/amplify-cli/commit/b0f216f))
+
+
+
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.12...amplify-provider-awscloudformation@0.1.31) (2018-11-02)
 

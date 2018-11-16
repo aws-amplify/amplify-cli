@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.34-beta.0...amplify-codegen@0.1.34) (2018-11-13)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
+<a name="0.1.34-beta.0"></a>
+## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.33...amplify-codegen@0.1.34-beta.0) (2018-11-13)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** update the params passed to types generator ([#442](https://github.com/aws-amplify/amplify-cli/issues/442)) ([9b87c74](https://github.com/aws-amplify/amplify-cli/commit/9b87c74)), closes [in#434](https://github.com/in/issues/434) [#434](https://github.com/aws-amplify/amplify-cli/issues/434)
+
+
+
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.33-beta.0...amplify-codegen@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.13...amplify-codegen@0.1.33-beta.0) (2018-11-09)
+
+
+### Features
+
+* **amplify-codegen:** add angular codegen support ([7dd7259](https://github.com/aws-amplify/amplify-cli/commit/7dd7259))
+
+
+
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.32-beta.0...amplify-codegen@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.13...amplify-codegen@0.1.32-beta.0) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.13...amplify-codegen@0.1.31) (2018-11-02)
 

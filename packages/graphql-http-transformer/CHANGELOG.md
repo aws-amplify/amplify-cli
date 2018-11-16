@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@1.0.17-beta.0...graphql-http-transformer@1.0.17) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package graphql-http-transformer
+
+<a name="1.0.17-beta.0"></a>
+## 1.0.17-beta.0 (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package graphql-http-transformer
+
+<a name="1.0.16"></a>
+## [1.0.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@1.0.16-beta.0...graphql-http-transformer@1.0.16) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package graphql-http-transformer
+
+<a name="1.0.16-beta.0"></a>
+## 1.0.16-beta.0 (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package graphql-http-transformer
+
 <a name="1.0.15"></a>
 ## 1.0.15 (2018-11-02)
 
