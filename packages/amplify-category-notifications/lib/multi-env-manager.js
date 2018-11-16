@@ -212,7 +212,7 @@ function writeData(context) {
       }
     }
   }
-  //TODO: move writing to files logic to the cli core when those are ready
+  // TODO: move writing to files logic to the cli core when those are ready
   writeTeamProviderInfo(pinpointMeta, context);
   writeBackendConfig(pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
   writeBackendConfig(pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
