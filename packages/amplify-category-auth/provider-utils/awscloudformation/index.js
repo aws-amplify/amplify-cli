@@ -200,7 +200,7 @@ async function updateConfigOnEnvInit(context, category, service) {
 
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
   // previously selected answers
-  const previousValues = providerPlugin.loadResourceParameters(context, 'auth', service);
+  const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
   const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(category, service);
   srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
@@ -210,12 +210,37 @@ async function updateConfigOnEnvInit(context, category, service) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
+  // headless mode
+  if (isInHeadlessMode(context)) {
+    const envParams = {};
+    if (resourceParams.thirdPartyAuth) {
+      const authParams = getHeadlessParams(context);
+      const projectType = context.amplify.getProjectConfig().frontend;
+      const mergedValues = { ...resourceParams, ...authParams };
+      const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
+      const missingParams = [];
+      requiredParams.forEach((p) => {
+        if (Object.keys(mergedValues).includes(p)) {
+          envParams[p] = mergedValues[p];
+        } else {
+          missingParams.push(p);
+        }
+      });
+
+      if (missingParams.length) {
+        throw Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
+      }
+    }
+    return envParams;
+  }
+
+  // interactive mode
   const result = await serviceWalkthrough(
     context,
     defaultValuesFilename,
     stringMapFilename,
     srvcMetaData,
-    previousValues,
+    resourceParams,
   );
   const envParams = {};
   ENV_SPECIFIC_PARAMS.forEach((paramName) => {
@@ -226,6 +251,38 @@ async function updateConfigOnEnvInit(context, category, service) {
   return envParams;
 }
 
+function isInHeadlessMode(context) {
+  return context.exeInfo.inputParams.yes;
+}
+
+function getHeadlessParams(context) {
+  const { inputParams } = context.exeInfo;
+  const { categories = {} } = inputParams;
+  return categories.auth || {};
+}
+
+function getRequiredParamsForHeadlessInit(projectType, previousValues) {
+  const requiredParams = [];
+
+  if (previousValues.thirdPartyAuth) {
+    if (previousValues.authProviders.includes('accounts.google.com')) {
+      requiredParams.push('googleClientId');
+      if (projectType === 'ios') {
+        requiredParams.push('googleIos');
+      }
+      if (projectType === 'android') {
+        requiredParams.push('googleAndroid');
+      }
+    }
+    if (previousValues.authProviders.includes('graph.facebook.com')) {
+      requiredParams.push('facebookAppId');
+    }
+    if (previousValues.authProviders.includes('www.amazon.com')) {
+      requiredParams.push('amazonAppId');
+    }
+  }
+  return requiredParams;
+}
 module.exports = {
   addResource,
   updateResource,

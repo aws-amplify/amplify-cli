@@ -5,9 +5,8 @@ async function console(context) {
   await pinpointHelper.console(context);
 }
 
-async function deletePinpointApp(context) {
-  context.exeInfo = context.amplify.getProjectDetails();
-  await pinpointHelper.deletePinpointApp(context);
+async function deletePinpointAppForEnv(context, envName) {
+  await multiEnvManager.deletePinpointAppForEnv(context, envName);
 }
 
 async function initEnv(context) {
@@ -20,7 +19,7 @@ async function initEnvPush(context) {
 
 module.exports = {
   console,
-  deletePinpointApp,
+  deletePinpointAppForEnv,
   initEnv,
   initEnvPush,
 };

@@ -80,6 +80,41 @@ async function constructPinpointNotificationsMeta(context) {
   return pinpointNotificationsMeta;
 }
 
+async function deletePinpointAppForEnv(context, envName) {
+  let pinpointApp;
+  const teamProviderInfo = context.amplify.getEnvDetails();
+
+  if (teamProviderInfo &&
+      teamProviderInfo[envName] &&
+      teamProviderInfo[envName].categories &&
+      teamProviderInfo[envName].categories[constants.CategoryName] &&
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]) {
+    pinpointApp =
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
+  }
+
+  if (pinpointApp) {
+    const params = {
+      ApplicationId: pinpointApp.Id,
+    };
+    const pinpointClient = await pinpointHelper.getPinpointClient(context);
+
+    return pinpointClient.deleteApp(params).promise()
+      .then(() => {
+        context.print.success(`Successfully deleted Pinpoint project: ${pinpointApp.Id}`);
+      })
+      .catch((err) => {
+        // awscloudformation might have already removed the pinpoint project
+        if (err.code === 'NotFoundException') {
+          context.print.warning(`${pinpointApp.Id}: not found`);
+        } else {
+          context.print.error(`Failed to delete Pinpoint project: ${pinpointApp.Id}`);
+          throw err;
+        }
+      });
+  }
+}
+
 async function pushChanges(context, pinpointNotificationsMeta) {
   const availableChannels = notificationManager.getAvailableChannels();
   let pinpointInputParams;
@@ -241,6 +276,7 @@ function writeAmplifyMeta(context) {
 module.exports = {
   initEnv,
   initEnvPush,
+  deletePinpointAppForEnv,
   writeData,
 };
 
