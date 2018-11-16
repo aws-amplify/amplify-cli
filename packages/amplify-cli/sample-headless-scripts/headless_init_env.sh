@@ -9,8 +9,6 @@ AWSCLOUDFORMATIONCONFIG="{\
 }"
 NOTIFICATIONSCONFIG="{\
 \"Pinpoint\":{
-\"Id\":\"pinpointprojectid\",\
-\"Region\":\"us-east-1\",\
 \"SMS\":{
 \"Enabled\":true\
 },\
