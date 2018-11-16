@@ -181,7 +181,6 @@ workflows:
             branches:
               only:
                 - master
-                - multienv
           requires:
             - build
       - integration_test:
@@ -191,7 +190,6 @@ workflows:
                 - release
                 - master
                 - beta
-                - multienv
           requires:
             - build
       - deploy:
@@ -206,3 +204,4 @@ workflows:
                 - release
                 - master
                 - beta
+                - multienv

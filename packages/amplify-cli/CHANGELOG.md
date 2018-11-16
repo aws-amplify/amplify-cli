@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-multienv.1"></a>
+## [0.1.35-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.35-multienv.0...@aws-amplify/cli@0.1.35-multienv.1) (2018-11-16)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.1.35-multienv.0"></a>
+## [0.1.35-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.34...@aws-amplify/cli@0.1.35-multienv.0) (2018-11-16)
+
+
+### Bug Fixes
+
+* fix projectPath references in ios and codegen packages & fix for  correct AWS profile pickup in the cloudformation provider ([a73656e](https://github.com/aws-amplify/amplify-cli/commit/a73656e))
+* fix projectPath references in ios and codegen packages & fix for  correct AWS profile pickup in the cloudformation provider ([f44e367](https://github.com/aws-amplify/amplify-cli/commit/f44e367))
+* fixes for correct AWS profile pickup in the clouformation provider ([3c538b3](https://github.com/aws-amplify/amplify-cli/commit/3c538b3))
+* fixes for correct AWS profile pickup in the clouformation provider ([779b431](https://github.com/aws-amplify/amplify-cli/commit/779b431))
+* rename amplify env sync to amplify env pull ([cc5f5d0](https://github.com/aws-amplify/amplify-cli/commit/cc5f5d0))
+* rename amplify env sync to amplify env pull ([825e16a](https://github.com/aws-amplify/amplify-cli/commit/825e16a))
+* revert back profilename to default in headless script ([ff9b2f1](https://github.com/aws-amplify/amplify-cli/commit/ff9b2f1))
+* revert back profilename to default in headless script ([f484707](https://github.com/aws-amplify/amplify-cli/commit/f484707))
+* stringify env json outputs ([#427](https://github.com/aws-amplify/amplify-cli/issues/427)) ([798e949](https://github.com/aws-amplify/amplify-cli/commit/798e949))
+* stringify env json outputs ([#427](https://github.com/aws-amplify/amplify-cli/issues/427)) ([ba25694](https://github.com/aws-amplify/amplify-cli/commit/ba25694))
+* **cli:** downgrade fs-extra version ([6b0d632](https://github.com/aws-amplify/amplify-cli/commit/6b0d632))
+
+
+### Features
+
+* add json option to env display commands and add sample headless scripts ([#410](https://github.com/aws-amplify/amplify-cli/issues/410)) ([741590a](https://github.com/aws-amplify/amplify-cli/commit/741590a))
+* add json option to env display commands and add sample headless scripts ([#410](https://github.com/aws-amplify/amplify-cli/issues/410)) ([e7f1f5f](https://github.com/aws-amplify/amplify-cli/commit/e7f1f5f))
+* added amplify env sync and amplify env checkout command & added help commands for env  ([#430](https://github.com/aws-amplify/amplify-cli/issues/430)) ([5219e08](https://github.com/aws-amplify/amplify-cli/commit/5219e08))
+* added amplify env sync and amplify env checkout command & added help commands for env  ([#430](https://github.com/aws-amplify/amplify-cli/issues/430)) ([de72729](https://github.com/aws-amplify/amplify-cli/commit/de72729))
+* amplify env remove and ampify delete command for multi envs ([#458](https://github.com/aws-amplify/amplify-cli/issues/458)) ([f2495be](https://github.com/aws-amplify/amplify-cli/commit/f2495be))
+* amplify env remove and ampify delete command for multi envs ([#458](https://github.com/aws-amplify/amplify-cli/issues/458)) ([ddca3bc](https://github.com/aws-amplify/amplify-cli/commit/ddca3bc))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([8780400](https://github.com/aws-amplify/amplify-cli/commit/8780400))
+* **amplify-category-auth:** add headless init support for auth ([#465](https://github.com/aws-amplify/amplify-cli/issues/465)) ([18410f2](https://github.com/aws-amplify/amplify-cli/commit/18410f2))
+* help commands for multi-env and also add env&codegen to overall help command list ([1ed4591](https://github.com/aws-amplify/amplify-cli/commit/1ed4591))
+* help commands for multi-env and also add env&codegen to overall help command list ([bba07c3](https://github.com/aws-amplify/amplify-cli/commit/bba07c3))
+* multi-environment support for interactions category ([577a546](https://github.com/aws-amplify/amplify-cli/commit/577a546))
+* multi-environment support for interactions category ([4ca2617](https://github.com/aws-amplify/amplify-cli/commit/4ca2617))
+* multienv support for Notifications ([#440](https://github.com/aws-amplify/amplify-cli/issues/440)) ([a2964d4](https://github.com/aws-amplify/amplify-cli/commit/a2964d4))
+* multienv support for Notifications ([#440](https://github.com/aws-amplify/amplify-cli/issues/440)) ([4dac0de](https://github.com/aws-amplify/amplify-cli/commit/4dac0de))
+* multiple evironment support for analytics and s3 storage ([0400f26](https://github.com/aws-amplify/amplify-cli/commit/0400f26))
+* multiple evironment support for analytics and s3 storage ([d1ca7bc](https://github.com/aws-amplify/amplify-cli/commit/d1ca7bc))
+
+
+
+
 <a name="0.1.34"></a>
 ## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.34-beta.0...@aws-amplify/cli@0.1.34) (2018-11-13)
 

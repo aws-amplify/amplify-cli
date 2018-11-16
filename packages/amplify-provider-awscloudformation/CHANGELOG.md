@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-multienv.0"></a>
+## [0.1.35-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34...amplify-provider-awscloudformation@0.1.35-multienv.0) (2018-11-16)
+
+
+### Bug Fixes
+
+* fix projectPath references in ios and codegen packages & fix for  correct AWS profile pickup in the cloudformation provider ([a73656e](https://github.com/aws-amplify/amplify-cli/commit/a73656e))
+
+
+### Features
+
+* added amplify env sync and amplify env checkout command & added help commands for env  ([#430](https://github.com/aws-amplify/amplify-cli/issues/430)) ([de72729](https://github.com/aws-amplify/amplify-cli/commit/de72729))
+* amplify env remove and ampify delete command for multi envs ([#458](https://github.com/aws-amplify/amplify-cli/issues/458)) ([ddca3bc](https://github.com/aws-amplify/amplify-cli/commit/ddca3bc))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+* multiple evironment support for analytics and s3 storage ([0400f26](https://github.com/aws-amplify/amplify-cli/commit/0400f26))
+
+
+
+
 <a name="0.1.34"></a>
 ## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34-beta.0...amplify-provider-awscloudformation@0.1.34) (2018-11-13)
 

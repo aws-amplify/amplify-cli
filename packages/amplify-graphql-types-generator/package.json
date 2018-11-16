@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "0.1.1",
+  "version": "0.1.2-multienv.0",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "main": "./lib/index.js",
   "bin": "./lib/cli.js",
