@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "0.1.35-multienv.0",
+  "version": "0.1.35-multienv.1",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -26,7 +26,7 @@
     "amplify-category-function": "^0.1.34-multienv.0",
     "amplify-category-hosting": "^0.1.34-multienv.0",
     "amplify-category-interactions": "^0.1.34-multienv.0",
-    "amplify-category-notifications": "^0.1.34-multienv.0",
+    "amplify-category-notifications": "^0.1.34-multienv.1",
     "amplify-category-storage": "^0.1.34-multienv.0",
     "amplify-codegen": "^0.1.35-multienv.0",
     "amplify-frontend-android": "^0.1.34-multienv.0",
