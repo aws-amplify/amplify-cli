@@ -85,10 +85,11 @@ async function deletePinpointAppForEnv(context, envName) {
 
   if (teamProviderInfo &&
       teamProviderInfo[envName] &&
-      teamProviderInfo[envName][constants.CategoryName] &&
-      teamProviderInfo[envName][constants.CategoryName][constants.PinpointName]) {
+      teamProviderInfo[envName].categories &&
+      teamProviderInfo[envName].categories[constants.CategoryName] &&
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]) {
     pinpointApp =
-      teamProviderInfo[envName][constants.CategoryName][constants.PinpointName];
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
   }
 
   if (pinpointApp) {
@@ -225,9 +226,10 @@ function writeMultienvData(context) {
     if (fs.existsSync(teamProviderInfoFilepath)) {
       const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
       teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-      teamProviderInfo[envName][constants.CategoryName] =
-                teamProviderInfo[envName][constants.CategoryName] || {};
-      teamProviderInfo[envName][constants.CategoryName][constants.PinpointName] = {
+      teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
+      teamProviderInfo[envName].categories[constants.CategoryName] =
+                teamProviderInfo[envName].categories[constants.CategoryName] || {};
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = {
         Name: pinpointMeta.Name,
         Id: pinpointMeta.Id,
         Region: pinpointMeta.Region,
