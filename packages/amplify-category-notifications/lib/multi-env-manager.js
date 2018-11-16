@@ -245,20 +245,22 @@ function writeBackendConfig(pinpointMeta, backendConfigFilePath) {
   if (fs.existsSync(backendConfigFilePath)) {
     const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
     backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
+
+    const services = Object.keys(backendConfig[constants.CategoryName]);
+    for (let i = 0; i < services.length; i++) {
+      const serviceMeta = backendConfig[constants.CategoryName][services[i]];
+      if (serviceMeta.service === constants.PinpointName) {
+        delete backendConfig[constants.CategoryName][services[i]];
+      }
+    }
+
     if (pinpointMeta) {
       backendConfig[constants.CategoryName][pinpointMeta.serviceName] = {
         service: pinpointMeta.service,
         channels: pinpointMeta.channels,
       };
-    } else {
-      const services = Object.keys(backendConfig[constants.CategoryName]);
-      for (let i = 0; i < services.length; i++) {
-        const serviceMeta = backendConfig[constants.CategoryName][services[i]];
-        if (serviceMeta.service === constants.PinpointName) {
-          delete backendConfig[constants.CategoryName][services[i]];
-        }
-      }
     }
+
     const jsonString = JSON.stringify(backendConfig, null, 4);
     fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }
