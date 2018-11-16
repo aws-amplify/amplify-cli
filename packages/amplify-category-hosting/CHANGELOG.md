@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.0"></a>
+## [0.1.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.33...amplify-category-hosting@0.1.34-multienv.0) (2018-11-16)
+
+
+### Features
+
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.33-beta.0...amplify-category-hosting@0.1.33) (2018-11-09)
 
