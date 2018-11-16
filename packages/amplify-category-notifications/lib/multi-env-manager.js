@@ -183,15 +183,10 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   await sequential(tasks);
 }
 
-function writeData(context) {
-  writeAmplifyMeta(context);
-  writeMultienvData(context);
-}
-
-function writeMultienvData(context) {
-  let pinpointMeta;
+function writeData(context) { 
   const { envName } = context.exeInfo.localEnvInfo;
   const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
+  let pinpointMeta;
   if (categoryMeta) {
     const availableChannels = notificationManager.getAvailableChannels();
     const enabledChannels = [];
@@ -218,8 +213,15 @@ function writeMultienvData(context) {
       }
     }
   }
+  writeTeamProviderInfo(pinpointMeta, envName, context.amplify.pathManager.getProviderInfoFilePath());
+  writeBackendConfig(pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath()); 
+  writeBackendConfig(pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
+  writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
+  writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
+  context.amplify.onCategoryOutputsChange(context);
+}
 
-  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
+function writeTeamProviderInfo(pinpointMeta, envName, teamProviderInfoFilepath){
   if (fs.existsSync(teamProviderInfoFilepath)) {
     const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
     teamProviderInfo[envName] = teamProviderInfo[envName] || {};
@@ -235,8 +237,9 @@ function writeMultienvData(context) {
     const jsonString = JSON.stringify(teamProviderInfo, null, 4);
     fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
   }
+}
 
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+function writeBackendConfig(pinpointMeta, backendConfigFilePath){
   if (fs.existsSync(backendConfigFilePath)) {
     const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
     backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
@@ -259,18 +262,13 @@ function writeMultienvData(context) {
   }
 }
 
-function writeAmplifyMeta(context) {
-  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  let jsonString = JSON.stringify(context.exeInfo.amplifyMeta, null, '\t');
-  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-
-  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
-  const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetaFilePath));
-  currentAmplifyMeta[constants.CategoryName] = context.exeInfo.amplifyMeta[constants.CategoryName];
-  jsonString = JSON.stringify(currentAmplifyMeta, null, '\t');
-  fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
-
-  context.amplify.onCategoryOutputsChange(context);
+function writeAmplifyMeta(categoryMeta, amplifyMetaFilePath) {
+  if(fs.existsSync(amplifyMetaFilePath)){
+    const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+    amplifyMeta[constants.CategoryName] = categoryMeta;
+    jsonString = JSON.stringify(amplifyMeta, null, '\t');
+    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  }
 }
 
 module.exports = {
