@@ -339,7 +339,7 @@ async function promptForProjectConfigConfirmation(context) {
       return context;
     }
   } else {
-    projectConfigInfo.useProfile = false;
+    awsConfigInfo.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);
