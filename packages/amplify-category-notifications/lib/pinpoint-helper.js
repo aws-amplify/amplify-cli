@@ -42,8 +42,8 @@ async function createPinpointApp(context) {
     `${projectConfig.projectName + context.amplify.makeId(5)}-${localEnvInfo.envName}`;
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
-
-  if (!context.exeInfo.inputParams.yes) {
+  
+  if (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes) {
     const answer = await inquirer.prompt({
       name: 'projectName',
       type: 'input',

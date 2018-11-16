@@ -32,7 +32,8 @@ async function constructPinpointNotificationsMeta(context) {
     if (teamProviderInfo[envName] &&
         teamProviderInfo[envName].categories &&
         teamProviderInfo[envName].categories[constants.CategoryName] &&
-        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName]) {
+        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] &&
+        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName].id) {
       pinpointApp =
         teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
     }
@@ -153,67 +154,73 @@ function writeData(context) {
 }
 
 function writeMultienvData(context) {
-  const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
-  if (!categoryMeta) {
-    return;
-  }
-
-  const { envName } = context.exeInfo.localEnvInfo;
-
-  const availableChannels = notificationManager.getAvailableChannels();
   let pinpointMeta;
-  const enabledChannels = [];
-  const services = Object.keys(categoryMeta);
-  for (let i = 0; i < services.length; i++) {
-    const serviceMeta = categoryMeta[services[i]];
-    if (serviceMeta.service === constants.PinpointName &&
-                                serviceMeta.output &&
-                                serviceMeta.output.Id) {
-      availableChannels.forEach((channel) => {
-        if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
-          enabledChannels.push(channel);
-        }
-      });
-      pinpointMeta = {
-        serviceName: services[i],
-        service: serviceMeta.service,
-        channels: enabledChannels,
-        Name: serviceMeta.output.Name,
-        Id: serviceMeta.output.Id,
-        Region: serviceMeta.output.Region,
-      };
-      break;
+  const { envName } = context.exeInfo.localEnvInfo;
+  const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
+  if(categoryMeta){
+    const availableChannels = notificationManager.getAvailableChannels();
+    const enabledChannels = [];
+    const services = Object.keys(categoryMeta);
+    for (let i = 0; i < services.length; i++) {
+      const serviceMeta = categoryMeta[services[i]];
+      if (serviceMeta.service === constants.PinpointName &&
+                                  serviceMeta.output &&
+                                  serviceMeta.output.Id) {
+        availableChannels.forEach((channel) => {
+          if (serviceMeta.output[channel] && serviceMeta.output[channel].Enabled) {
+            enabledChannels.push(channel);
+          }
+        });
+        pinpointMeta = {
+          serviceName: services[i],
+          service: serviceMeta.service,
+          channels: enabledChannels,
+          Name: serviceMeta.output.Name,
+          Id: serviceMeta.output.Id,
+          Region: serviceMeta.output.Region,
+        };
+        break;
+      }
     }
   }
 
-  if (pinpointMeta) {
-    const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-    if (fs.existsSync(teamProviderInfoFilepath)) {
-      const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
-      teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-      teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
-      teamProviderInfo[envName].categories[constants.CategoryName] =
-                teamProviderInfo[envName].categories[constants.CategoryName] || {};
-      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = {
-        Name: pinpointMeta.Name,
-        Id: pinpointMeta.Id,
-        Region: pinpointMeta.Region,
-      };
-      const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-      fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
-    }
+  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
+  if (fs.existsSync(teamProviderInfoFilepath)) {
+    const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
+    teamProviderInfo[envName] = teamProviderInfo[envName] || {};
+    teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
+    teamProviderInfo[envName].categories[constants.CategoryName] =
+              teamProviderInfo[envName].categories[constants.CategoryName] || {};
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = 
+    pinpointMeta ? {
+      Name: pinpointMeta.Name,
+      Id: pinpointMeta.Id,
+      Region: pinpointMeta.Region,
+    } : undefined; 
+    const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+    fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
+  }
 
-    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-    if (fs.existsSync(backendConfigFilePath)) {
-      const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
-      backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+  if (fs.existsSync(backendConfigFilePath)) {
+    const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+    backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
+    if(pinpointMeta){
       backendConfig[constants.CategoryName][pinpointMeta.serviceName] = {
         service: pinpointMeta.service,
         channels: pinpointMeta.channels,
       };
-      const jsonString = JSON.stringify(backendConfig, null, 4);
-      fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+    }else{
+      const services = Object.keys(backendConfig[constants.CategoryName]);
+      for (let i = 0; i < services.length; i++) {
+        const serviceMeta = backendConfig[constants.CategoryName][services[i]];
+        if (serviceMeta.service === constants.PinpointName){
+          delete backendConfig[constants.CategoryName][services[i]]; 
+        }
+      }
     }
+    const jsonString = JSON.stringify(backendConfig, null, 4);
+    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
   }
 }
 
