@@ -157,7 +157,7 @@ function writeMultienvData(context) {
   let pinpointMeta;
   const { envName } = context.exeInfo.localEnvInfo;
   const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
-  if(categoryMeta){
+  if (categoryMeta) {
     const availableChannels = notificationManager.getAvailableChannels();
     const enabledChannels = [];
     const services = Object.keys(categoryMeta);
@@ -191,12 +191,12 @@ function writeMultienvData(context) {
     teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
     teamProviderInfo[envName].categories[constants.CategoryName] =
               teamProviderInfo[envName].categories[constants.CategoryName] || {};
-    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] = 
+    teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] =
     pinpointMeta ? {
       Name: pinpointMeta.Name,
       Id: pinpointMeta.Id,
       Region: pinpointMeta.Region,
-    } : undefined; 
+    } : undefined;
     const jsonString = JSON.stringify(teamProviderInfo, null, 4);
     fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
   }
@@ -205,17 +205,17 @@ function writeMultienvData(context) {
   if (fs.existsSync(backendConfigFilePath)) {
     const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
     backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
-    if(pinpointMeta){
+    if (pinpointMeta) {
       backendConfig[constants.CategoryName][pinpointMeta.serviceName] = {
         service: pinpointMeta.service,
         channels: pinpointMeta.channels,
       };
-    }else{
+    } else {
       const services = Object.keys(backendConfig[constants.CategoryName]);
       for (let i = 0; i < services.length; i++) {
         const serviceMeta = backendConfig[constants.CategoryName][services[i]];
-        if (serviceMeta.service === constants.PinpointName){
-          delete backendConfig[constants.CategoryName][services[i]]; 
+        if (serviceMeta.service === constants.PinpointName) {
+          delete backendConfig[constants.CategoryName][services[i]];
         }
       }
     }
