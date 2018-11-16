@@ -183,8 +183,7 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   await sequential(tasks);
 }
 
-function writeData(context) { 
-  const { envName } = context.exeInfo.localEnvInfo;
+function writeData(context) {
   const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
   let pinpointMeta;
   if (categoryMeta) {
@@ -213,16 +212,18 @@ function writeData(context) {
       }
     }
   }
-  writeTeamProviderInfo(pinpointMeta, envName, context.amplify.pathManager.getProviderInfoFilePath());
-  writeBackendConfig(pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath()); 
+  writeTeamProviderInfo(pinpointMeta, context);
+  writeBackendConfig(pinpointMeta, context.amplify.pathManager.getBackendConfigFilePath());
   writeBackendConfig(pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
   writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
   context.amplify.onCategoryOutputsChange(context);
 }
 
-function writeTeamProviderInfo(pinpointMeta, envName, teamProviderInfoFilepath){
+function writeTeamProviderInfo(pinpointMeta, context) {
+  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
   if (fs.existsSync(teamProviderInfoFilepath)) {
+    const { envName } = context.exeInfo.localEnvInfo;
     const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
     teamProviderInfo[envName] = teamProviderInfo[envName] || {};
     teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
@@ -239,7 +240,7 @@ function writeTeamProviderInfo(pinpointMeta, envName, teamProviderInfoFilepath){
   }
 }
 
-function writeBackendConfig(pinpointMeta, backendConfigFilePath){
+function writeBackendConfig(pinpointMeta, backendConfigFilePath) {
   if (fs.existsSync(backendConfigFilePath)) {
     const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
     backendConfig[constants.CategoryName] = backendConfig[constants.CategoryName] || {};
@@ -263,10 +264,10 @@ function writeBackendConfig(pinpointMeta, backendConfigFilePath){
 }
 
 function writeAmplifyMeta(categoryMeta, amplifyMetaFilePath) {
-  if(fs.existsSync(amplifyMetaFilePath)){
+  if (fs.existsSync(amplifyMetaFilePath)) {
     const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
     amplifyMeta[constants.CategoryName] = categoryMeta;
-    jsonString = JSON.stringify(amplifyMeta, null, '\t');
+    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
   }
 }
