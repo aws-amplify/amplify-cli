@@ -61,7 +61,7 @@ async function constructPinpointNotificationsMeta(context) {
     await notificationManager.pullAllChannels(context, pinpointApp);
     pinpointNotificationsMeta = {
       Name: pinpointApp.Name,
-      serivce: constants.PinpointName,
+      service: constants.PinpointName,
       output: pinpointApp,
     };
   }
@@ -160,10 +160,6 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   const { amplifyMeta } = context.exeInfo;
   amplifyMeta[constants.CategoryName] = {};
   amplifyMeta[constants.CategoryName][pinpointNotificationsMeta.Name] = pinpointNotificationsMeta;
-
-  console.log(pinpointNotificationsMeta); 
-  console.log(context.exeInfo.amplifyMeta); 
-
   delete pinpointNotificationsMeta.channels;
   delete pinpointNotificationsMeta.Name;
 

@@ -87,11 +87,11 @@ function pull(context, pinpointApp) {
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.getSmsChannel(params, (err, data) => {
       if (err) {
-        spinner.fail(`get channel ${channelName} error`);
-        reject(err);
+        spinner.succeed(`no channel data retrieved for: ${channelName}`);
+        resolve(err);
       } else {
         spinner.succeed(`get ${channelName} channel successful`);
-        pinpointApp[channelName] = data.GCMChannelResponse;
+        pinpointApp[channelName] = data.SMSChannelResponse;
         resolve(data.SMSChannelResponse);
       }
     });
