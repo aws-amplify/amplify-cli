@@ -128,7 +128,7 @@ function pull(context, pinpointApp) {
     ApplicationId: pinpointApp.Id,
   };
   spinner.start(`Pulling ${channelName} Channel.`);
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {//eslint-disable-line
     context.exeInfo.pinpointClient.getEmailChannel(params, (err, data) => {
       if (err) {
         spinner.succeed(`no channel data retrieved for: ${channelName}`);
