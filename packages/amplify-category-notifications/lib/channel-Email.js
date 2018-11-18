@@ -140,6 +140,7 @@ function pull(context, pinpointApp) {
         spinner.succeed(`Channel is not setup for ${channelName} `);
         return err;
       }
+      spinner.stop();
       throw err;
     });
 }
