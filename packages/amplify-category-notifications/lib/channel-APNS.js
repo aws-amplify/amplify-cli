@@ -155,19 +155,21 @@ function pull(context, pinpointApp) {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
-  spinner.start(`Pulling ${channelName} Channel.`);
-  return new Promise((resolve, reject) => {//eslint-disable-line
-    context.exeInfo.pinpointClient.getApnsChannel(params, (err, data) => {
-      if (err) {
-        spinner.succeed(`no channel data retrieved for: ${channelName}`);
-        resolve(err);
-      } else {
-        spinner.succeed(`get ${channelName} channel successful`);
-        pinpointApp[channelName] = data.APNSChannelResponse;
-        resolve(data.APNSChannelResponse);
+
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getApnsChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.APNSChannelResponse;
+      return data.APNSChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
       }
+      throw err;
     });
-  });
 }
 
 module.exports = {
