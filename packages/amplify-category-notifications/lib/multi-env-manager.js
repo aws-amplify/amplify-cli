@@ -24,24 +24,21 @@ async function constructPinpointNotificationsMeta(context) {
   let serviceBackendConfig;
   let pinpointNotificationsMeta;
 
-  const { envName } = context.exeInfo.localEnvInfo;
+  const { teamProviderInfo, localEnvInfo, amplifyMeta } = context.exeInfo;
 
-  const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-  if (fs.existsSync(teamProviderInfoFilepath)) {
-    const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
-    if (teamProviderInfo[envName] &&
-        teamProviderInfo[envName].categories &&
-        teamProviderInfo[envName].categories[constants.CategoryName] &&
-        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] &&
-        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName].id) {
-      pinpointApp =
-        teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
-    }
+  const { envName } = localEnvInfo;
+
+  if (teamProviderInfo &&
+      teamProviderInfo[envName] &&
+      teamProviderInfo[envName].categories &&
+      teamProviderInfo[envName].categories[constants.CategoryName] &&
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName] &&
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName].Id) {
+    pinpointApp =
+      teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
   }
 
   if (!pinpointApp) {
-    const metaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    const amplifyMeta = JSON.parse(fs.readFileSync(metaFilePath));
     const analyticsMeta = amplifyMeta[constants.AnalyticsCategoryName];
     pinpointApp = pinpointHelper.scanCategoryMetaForPinpoint(analyticsMeta);
   }
@@ -64,7 +61,7 @@ async function constructPinpointNotificationsMeta(context) {
     await notificationManager.pullAllChannels(context, pinpointApp);
     pinpointNotificationsMeta = {
       Name: pinpointApp.Name,
-      serivce: constants.PinpointName,
+      service: constants.PinpointName,
       output: pinpointApp,
     };
   }
@@ -150,7 +147,6 @@ async function pushChanges(context, pinpointNotificationsMeta) {
       needToBeEnabled = pinpointInputParams[channel].Enabled;
     }
 
-
     // if (isCurrentlyEnabled && needToBeEnabled) {
     //   channelsToUpdate.push(channel);
     // }
@@ -164,7 +160,6 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   const { amplifyMeta } = context.exeInfo;
   amplifyMeta[constants.CategoryName] = {};
   amplifyMeta[constants.CategoryName][pinpointNotificationsMeta.Name] = pinpointNotificationsMeta;
-
   delete pinpointNotificationsMeta.channels;
   delete pinpointNotificationsMeta.Name;
 

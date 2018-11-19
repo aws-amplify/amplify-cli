@@ -1,4 +1,5 @@
 const path = require('path');
+const sequential = require('promise-sequential');
 const constants = require('./constants');
 const pintpointHelper = require('./pinpoint-helper');
 
@@ -79,9 +80,9 @@ async function pullAllChannels(context, pinpointApp) {
   context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
   Object.keys(channelWorkers).forEach((channelName) => {
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
-    pullTasks.push(() => { channelWorker.pull(context, pinpointApp); });
+    pullTasks.push(() => channelWorker.pull(context, pinpointApp));
   });
-  await Promise.all(pullTasks);
+  await sequential(pullTasks);
 }
 
 module.exports = {
