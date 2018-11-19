@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.4"></a>
+## [0.1.34-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.3...amplify-category-notifications@0.1.34-multienv.4) (2018-11-19)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** fix redundant pinpoint creation ([#474](https://github.com/aws-amplify/amplify-cli/issues/474)) ([5e28dc0](https://github.com/aws-amplify/amplify-cli/commit/5e28dc0))
+
+
+
+
 <a name="0.1.34-multienv.3"></a>
 ## [0.1.34-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.2...amplify-category-notifications@0.1.34-multienv.3) (2018-11-19)
 
