@@ -38,7 +38,7 @@ function removeObjectRecursively(obj, keys) {
   } else {
     const [currentKey] = keys;
     if (currentKey in obj) {
-      delete obj[currentKey]
+      delete obj[currentKey];
     }
   }
 }
