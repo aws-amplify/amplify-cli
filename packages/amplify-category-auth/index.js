@@ -67,8 +67,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const immutables = {};
   // if auth has already been enabled, grab the existing parameters
   if (authExists) {
+    const providerPlugin = context.amplify.getPluginInstance(context, provider);
     currentAuthName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0]; //eslint-disable-line
-    currentAuthParams = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${currentAuthName}/parameters.json`));
+    currentAuthParams = providerPlugin.loadResourceParameters(context, 'auth', currentAuthName);
 
     if (
       requirements.authSelections.includes('identityPoolOnly') &&

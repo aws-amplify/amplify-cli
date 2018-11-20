@@ -1,12 +1,12 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "0.1.35-multienv.0",
+  "version": "0.1.35-multienv.2",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-category-storage": "^0.1.34-multienv.0",
+    "amplify-category-storage": "^0.1.34-multienv.2",
     "amplify-codegen": "^0.1.35-multienv.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",

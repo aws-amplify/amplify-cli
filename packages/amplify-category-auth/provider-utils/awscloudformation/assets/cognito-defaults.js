@@ -99,7 +99,9 @@ const entityKeys = {
 };
 
 const getAllDefaults = (name) => {
-  const projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase()}${sharedId}` : name;
+  const disallowedChars = /[^A-Za-z0-9_]+/g;
+  let projectName = name.projectConfig ? `${name.projectConfig.projectName.toLowerCase().substring(0, 100)}${sharedId}` : name.substring(0, 100);
+  projectName = projectName.replace(disallowedChars, '_');
   const target = generalDefaults(projectName);
   const sources = [
     userPoolDefaults(projectName),
