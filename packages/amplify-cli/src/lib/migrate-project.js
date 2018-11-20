@@ -48,7 +48,7 @@ async function migrateProject(plugins) {
       const amplifyMetafilePath = getAmplifyMetaFilePath();
       const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
       const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath();
-      const currentMmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
 
       plugins.forEach((plugin) => {
         if (plugin.name.includes('category')) {
@@ -57,7 +57,7 @@ async function migrateProject(plugins) {
             categoryMigrationTasks.push(() => migrateResourceFiles(
               pathManager,
               amplifyMeta,
-              currentMmplifyMeta,
+              currentAmplifyMeta,
             ));
           }
         }
