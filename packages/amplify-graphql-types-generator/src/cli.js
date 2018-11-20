@@ -89,10 +89,11 @@ yargs
         default: true,
         type: 'boolean'
       },
-      "add-s3-wrapper": {
+      "complex-object-support": {
         demand: false,
-        describe: "Adds S3 wrapper code to the output",
-        default: false
+        describe: "Adds S3 wrapper code to the output. [Swift only]",
+        default: 'auto',
+        choices: ['yes', 'no', 'auto'],
       }
     },
     argv => {
@@ -118,7 +119,7 @@ yargs
         addS3Wrapper: argv["add-s3-wrapper"]
       };
 
-      generate(inputPaths, argv.schema, argv.output, argv.only, argv.target, argv.tagName, argv.projectName, options);
+      generate(inputPaths, argv.schema, argv.output, argv.only, argv.target, argv.tagName, options);
     },
   )
   .fail(function(message, error) {
