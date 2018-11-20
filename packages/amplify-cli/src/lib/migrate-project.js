@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
-const os = require('os');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
@@ -15,6 +14,8 @@ const {
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
 } = require('../extensions/amplify-helpers/path-manager');
+
+const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
 
 async function migrateProject(plugins) {
   try {
@@ -42,7 +43,6 @@ async function migrateProject(plugins) {
     const categoryMigrationTasks = [];
     const amplifyMetafilePath = getAmplifyMetaFilePath();
     const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
-    const initializedCategories = Object.keys(amplifyMeta);
 
     const categoryPlugins = {};
     plugins.forEach((plugin) => {
@@ -53,17 +53,22 @@ async function migrateProject(plugins) {
       }
     });
 
-    const availableCategory = Object.keys(plugins).filter(key =>
-      initializedCategories.includes(key));
-
-    availableCategory.forEach((category) => {
-      try {
-        const { migrateCategoryFiles } = require(categoryPlugins[category]);
-        if (migrateCategoryFiles) {
-          categoryMigrationTasks.push(() => migrateCategoryFiles());
-        }
-      } catch (e) {
-        print.warning(`Could not run migrateProject function for ${category} category`);
+    Object.keys(amplifyMeta).forEach((category) => {
+      if (category !== 'providers') {
+        Object.keys(amplifyMeta[category]).forEach((resourceName) => {
+          try {
+            const { migrateResourceFiles } = require(categoryPlugins[category]);
+            if (migrateResourceFiles) {
+              categoryMigrationTasks.push(migrateResourceFiles(
+                amplifyMeta[category][resourceName].providerPlugin,
+                amplifyMeta[category][resourceName].service,
+                resourceName,
+              ));
+            }
+          } catch (e) {
+            print.warning(`Could not run migrateProject function for ${category} category`);
+          }
+        });
       }
     });
 
@@ -163,22 +168,11 @@ function generateBackendConfig() {
 
 
 function generateGitIgnoreFile() {
-  const getGitIgnoreAppendString = () => {
-    const toAppend = `${os.EOL + os.EOL
-    }amplify/\\#current-cloud-backend${os.EOL
-    }amplify/.config/local-*${os.EOL
-    }amplify/backend/amplify-meta.json${os.EOL
-    }aws-exports.js${os.EOL
-    }awsconfiguration.json`;
-
-    return toAppend;
-  };
-
   const gitIgnoreFilePath = getGitIgnoreFilePath();
   if (fs.existsSync(gitIgnoreFilePath)) {
-    fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
+    fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreBlob());
   } else {
-    fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreAppendString().trim());
+    fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreBlob().trim());
   }
 }
 

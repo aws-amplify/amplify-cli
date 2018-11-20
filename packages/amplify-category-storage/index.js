@@ -17,7 +17,17 @@ async function console(context) {
   context.print.info(`to be implemented: ${category} console`);
 }
 
+/* TODO: Migration logic for storage out here.
+
+async function migrateResourceFiles(providerName, service, resourceName) {
+
+}
+
+*/
+
+
 module.exports = {
   add,
   console,
+  // migrateResourceFiles,
 };
