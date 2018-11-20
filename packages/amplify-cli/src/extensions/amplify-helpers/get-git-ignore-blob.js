@@ -1,12 +1,14 @@
 const os = require('os');
 
 function getGitIgnoreBlob() {
+  const ignoreList = ['amplify/\\#current-cloud-backend',
+    'amplify/.config/local-*',
+    'amplify/backend/amplify-meta.json',
+    'aws-exports.js',
+    'awsconfiguration.json'];
+
   const toAppend = `${os.EOL + os.EOL
-  }amplify/\\#current-cloud-backend${os.EOL
-  }amplify/.config/local-*${os.EOL
-  }amplify/backend/amplify-meta.json${os.EOL
-  }aws-exports.js${os.EOL
-  }awsconfiguration.json`;
+  }${ignoreList.join(os.EOL)}`;
 
   return toAppend;
 }

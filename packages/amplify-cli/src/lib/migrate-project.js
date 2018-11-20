@@ -16,6 +16,7 @@ const {
 } = require('../extensions/amplify-helpers/path-manager');
 
 const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
+const { PROJECT_CONFIG_VERSION } = require('./constants');
 
 async function migrateProject(plugins) {
   try {
@@ -28,7 +29,7 @@ async function migrateProject(plugins) {
     }
 
     const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-    if (projectConfig.projectPath && await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
+    if (!projectConfig.version && await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
       // This is an older project & migration is needed
       generateNewProjectConfig(projectConfig, projectConfigFilePath);
       generateLocalEnvInfo(projectConfig);
@@ -96,10 +97,11 @@ function generateNewProjectConfig(projectConfig, projectConfigFilePath) {
 
   newProjectConfig.frontend = frontend;
   delete newProjectConfig.frontendHandler;
+  newProjectConfig.version = PROJECT_CONFIG_VERSION;
 
   // Modify provider handler
-  const provider = Object.keys(projectConfig.providers)[0];
-  newProjectConfig.providers = [provider];
+  const providers = Object.keys(projectConfig.providers);
+  newProjectConfig.providers = providers;
 
   const jsonString = JSON.stringify(newProjectConfig, null, 4);
   fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
