@@ -2,6 +2,8 @@ const fs = require('fs');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
 
+const CATEGORIES = 'categories';
+
 function loadAllResourceParameters() {
   const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
   try {
@@ -24,6 +26,23 @@ function getOrCreateSubObject(data, keys) {
   return currentObj;
 }
 
+function removeObjectRecursively(obj, keys) {
+  if (keys.length > 1) {
+    const [currentKey, ...rest] = keys;
+    if (currentKey in obj) {
+      removeObjectRecursively(obj[currentKey], rest);
+      if (!Object.keys(obj[currentKey]).length) {
+        delete obj[currentKey];
+      }
+    }
+  } else {
+    const [currentKey] = keys;
+    if (currentKey in obj) {
+      delete obj[currentKey]
+    }
+  }
+}
+
 function saveAllResourceParams(data) {
   const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
   fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(data, null, 4));
@@ -32,7 +51,7 @@ function saveAllResourceParams(data) {
 function saveEnvResourceParameters(category, resource, parameters) {
   const allParams = loadAllResourceParameters();
   const currentEnv = getEnvInfo().envName;
-  const resources = getOrCreateSubObject(allParams, [currentEnv, category]);
+  const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
   resources[resource] = parameters;
 
   saveAllResourceParams(allParams);
@@ -42,7 +61,7 @@ function loadEnvResourceParameters(category, resource) {
   const allParams = loadAllResourceParameters();
   try {
     const currentEnv = getEnvInfo().envName;
-    return getOrCreateSubObject(allParams, [currentEnv, category, resource]);
+    return getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category, resource]);
   } catch (e) {
     return {};
   }
@@ -51,13 +70,7 @@ function loadEnvResourceParameters(category, resource) {
 function removeResourceParameters(category, resource) {
   const allParams = loadAllResourceParameters();
   const currentEnv = getEnvInfo().envName;
-  const envObj = allParams[currentEnv];
-  if (category in envObj) {
-    if (resource in envObj[category]) {
-      delete envObj[category][resource];
-      if (!Object.keys(envObj[category]).length) delete envObj[category];
-    }
-  }
+  removeObjectRecursively(allParams, [currentEnv, CATEGORIES, category, resource]);
   saveAllResourceParams(allParams);
 }
 
