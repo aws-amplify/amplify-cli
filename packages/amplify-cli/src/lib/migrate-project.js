@@ -1,33 +1,37 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
+const sequential = require('promise-sequential');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
-const { print } = require('gluegun/print');
+
+const pathManager = require('../extensions/amplify-helpers/path-manager');
+
 const {
   getDotConfigDirPath,
   getProjectConfigFilePath,
   getAmplifyMetaFilePath,
+  getCurentAmplifyMetaFilePath,
   getLocalEnvFilePath,
   getProviderInfoFilePath,
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
-} = require('../extensions/amplify-helpers/path-manager');
+} = pathManager;
 
 const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
 const { PROJECT_CONFIG_VERSION } = require('./constants');
 
 async function migrateProject(plugins) {
+  let projectConfigFilePath;
   try {
-    let projectConfigFilePath;
-    try {
-      projectConfigFilePath = getProjectConfigFilePath();
-    } catch (e) {
-      // New project, hence not able to find the amplify dir
-      return;
-    }
+    projectConfigFilePath = getProjectConfigFilePath();
+  } catch (e) {
+    // New project, hence not able to find the amplify dir
+    return;
+  }
 
+  try {
     const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
     if (!projectConfig.version && await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
       // This is an older project & migration is needed
@@ -37,45 +41,32 @@ async function migrateProject(plugins) {
       generateTeamProviderInfo();
       generateBackendConfig();
       generateGitIgnoreFile();
-    }
 
-    // Give each category a chance to migrate their respective files
+      // Give each category a chance to migrate their respective files
 
-    const categoryMigrationTasks = [];
-    const amplifyMetafilePath = getAmplifyMetaFilePath();
-    const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
+      const categoryMigrationTasks = [];
+      const amplifyMetafilePath = getAmplifyMetaFilePath();
+      const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
+      const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath();
+      const currentMmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
 
-    const categoryPlugins = {};
-    plugins.forEach((plugin) => {
-      if (plugin.name.includes('category')) {
-        const strs = plugin.name.split('-');
-        const categoryName = strs[strs.length - 1];
-        categoryPlugins[categoryName] = plugin.directory;
-      }
-    });
-
-    Object.keys(amplifyMeta).forEach((category) => {
-      if (category !== 'providers') {
-        Object.keys(amplifyMeta[category]).forEach((resourceName) => {
-          try {
-            const { migrateResourceFiles } = require(categoryPlugins[category]);
-            if (migrateResourceFiles) {
-              categoryMigrationTasks.push(migrateResourceFiles(
-                amplifyMeta[category][resourceName].providerPlugin,
-                amplifyMeta[category][resourceName].service,
-                resourceName,
-              ));
-            }
-          } catch (e) {
-            print.warning(`Could not run migrateProject function for ${category} category`);
+      plugins.forEach((plugin) => {
+        if (plugin.name.includes('category')) {
+          const { migrateResourceFiles } = require(plugin.directory);
+          if (migrateResourceFiles) {
+            categoryMigrationTasks.push(() => migrateResourceFiles(
+              pathManager,
+              amplifyMeta,
+              currentMmplifyMeta,
+            ));
           }
-        });
-      }
-    });
+        }
+      });
 
-    spinner.start('Migrating your project');
-    await Promise.all(categoryMigrationTasks);
-    spinner.succeed('Migrated your project successfully.');
+      spinner.start('Migrating your project');
+      await sequential(categoryMigrationTasks);
+      spinner.succeed('Migrated your project successfully.');
+    }
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     throw e;
