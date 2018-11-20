@@ -1,11 +1,12 @@
 const aws = require('aws-sdk');
 const path = require('path');
 const fs = require('fs-extra');
+const constants = require('./constants');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
 
 async function run(context, envName) {
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
+  const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
   const awsConfigInfo = {};
   if (fs.existsSync(configInfoFilePath)) {

@@ -1466,7 +1466,7 @@ exports[`Swift code generation #typeDeclarationForGraphQLType() should generate 
 public struct ReviewInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
-  public init(stars: Int, commentary: Optional<String?> = nil, favoriteColor: Optional<ColorInput?> = nil) {
+  public init(stars: Int, commentary: String? = nil, favoriteColor: ColorInput? = nil) {
     graphQLMap = [\\"stars\\": stars, \\"commentary\\": commentary, \\"favorite_color\\": favoriteColor]
   }
 
@@ -1481,9 +1481,9 @@ public struct ReviewInput: GraphQLMapConvertible {
   }
 
   /// Comment about the movie, optional
-  public var commentary: Optional<String?> {
+  public var commentary: String? {
     get {
-      return graphQLMap[\\"commentary\\"] as! Optional<String?>
+      return graphQLMap[\\"commentary\\"] as! String?
     }
     set {
       graphQLMap.updateValue(newValue, forKey: \\"commentary\\")
@@ -1491,9 +1491,9 @@ public struct ReviewInput: GraphQLMapConvertible {
   }
 
   /// Favorite color, optional
-  public var favoriteColor: Optional<ColorInput?> {
+  public var favoriteColor: ColorInput? {
     get {
-      return graphQLMap[\\"favoriteColor\\"] as! Optional<ColorInput?>
+      return graphQLMap[\\"favoriteColor\\"] as! ColorInput?
     }
     set {
       graphQLMap.updateValue(newValue, forKey: \\"favoriteColor\\")

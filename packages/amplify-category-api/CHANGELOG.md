@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.2"></a>
+## [0.1.34-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.34-multienv.1...amplify-category-api@0.1.34-multienv.2) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
+<a name="0.1.34-multienv.1"></a>
+## [0.1.34-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.34-multienv.0...amplify-category-api@0.1.34-multienv.1) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
+<a name="0.1.34-multienv.0"></a>
+## [0.1.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.33...amplify-category-api@0.1.34-multienv.0) (2018-11-16)
+
+
+### Features
+
+* multi-environment support for API Gateway ([#418](https://github.com/aws-amplify/amplify-cli/issues/418)) ([24ddf83](https://github.com/aws-amplify/amplify-cli/commit/24ddf83))
+* multi-environment support for interactions category ([4ca2617](https://github.com/aws-amplify/amplify-cli/commit/4ca2617))
+
+
+
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.33-beta.0...amplify-category-api@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.13...amplify-category-api@0.1.33-beta.0) (2018-11-09)
+
+
+### Features
+
+* add option to open AppSync console using the CLI ([#386](https://github.com/aws-amplify/amplify-cli/issues/386)) ([3874a57](https://github.com/aws-amplify/amplify-cli/commit/3874a57))
+
+
+
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.32-beta.0...amplify-category-api@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.13...amplify-category-api@0.1.32-beta.0) (2018-11-05)
+
+
+### Features
+
+* add option to open AppSync console using the CLI ([#386](https://github.com/aws-amplify/amplify-cli/issues/386)) ([3874a57](https://github.com/aws-amplify/amplify-cli/commit/3874a57))
+
+
+
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.13...amplify-category-api@0.1.31) (2018-11-02)
 

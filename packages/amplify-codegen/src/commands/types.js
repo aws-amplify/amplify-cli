@@ -36,7 +36,7 @@ async function generateTypes(context, forceDownloadSchema) {
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      generate(queries, schema, output, '', target, '', '', {
+      generate(queries, schema, output, '', target, '', {
         addTypename: true,
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${output}`);

@@ -164,8 +164,11 @@ export function propertyFromVar(
 function variableDeclaration(generator: CodeGenerator, properties: Property[]) {
   properties
     .sort((a, b) => {
-      if (b.isNullable && !a.isNullable) {
+      if (!a.isNullable && b.isNullable) {
         return -1;
+      }
+      if (!b.isNullable && a.isNullable) {
+        return 1;
       }
       return 0;
     })
@@ -194,7 +197,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
       () => {
         // non nullable arguments
         vars.filter(v => !v.isNullable).forEach(v => {
-          generator.printOnNewline(`${v.fieldName}`);
+          generator.printOnNewline(`${v.fieldName},`);
         });
       },
       '{',

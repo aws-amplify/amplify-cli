@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.2"></a>
+## [0.1.34-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.34-multienv.1...amplify-category-auth@0.1.34-multienv.2) (2018-11-19)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** get env specific data in externalAuthEnable ([#473](https://github.com/aws-amplify/amplify-cli/issues/473)) ([6aa66cb](https://github.com/aws-amplify/amplify-cli/commit/6aa66cb))
+
+
+
+
+<a name="0.1.34-multienv.1"></a>
+## [0.1.34-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.34-multienv.0...amplify-category-auth@0.1.34-multienv.1) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package amplify-category-auth
+
+<a name="0.1.34-multienv.0"></a>
+## [0.1.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.33...amplify-category-auth@0.1.34-multienv.0) (2018-11-16)
+
+
+### Features
+
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([8780400](https://github.com/aws-amplify/amplify-cli/commit/8780400))
+* **amplify-category-auth:** add headless init support for auth ([#465](https://github.com/aws-amplify/amplify-cli/issues/465)) ([18410f2](https://github.com/aws-amplify/amplify-cli/commit/18410f2))
+
+
+
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.33-beta.0...amplify-category-auth@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-category-auth
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.13...amplify-category-auth@0.1.33-beta.0) (2018-11-09)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** Fix auth add not found on Windows. ([d9202fe](https://github.com/aws-amplify/amplify-cli/commit/d9202fe))
+
+
+
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.32-beta.0...amplify-category-auth@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-category-auth
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.13...amplify-category-auth@0.1.32-beta.0) (2018-11-05)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** Fix auth add not found on Windows. ([d9202fe](https://github.com/aws-amplify/amplify-cli/commit/d9202fe))
+
+
+
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.1.13...amplify-category-auth@0.1.31) (2018-11-02)
 

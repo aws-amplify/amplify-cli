@@ -1,6 +1,7 @@
 <a href="https://aws-amplify.github.io/" target="_blank">
     <img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
 </a>
+
 <p>
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
@@ -23,7 +24,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 * [Commands Summary](#commands-summary)
 * [Tutorials](#tutorials)
 * [Contributing](#contributing)
-* [Start building your app](https://aws-amplify.github.io/media/get_started)
+* [Start building your app](https://aws-amplify.github.io/docs)
 
 > If you're using Windows, the CLI currently supports [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
@@ -74,7 +75,7 @@ The Amplify CLI supports the commands shown in the following table.
 
 - [React & React Native tutorial](https://aws-amplify.github.io/docs/js/react)
 - [GraphQL transform tutorial](https://aws-amplify.github.io/docs/js/graphql)
-- [Native development with Amplify CLI and AWS AppSync](native_guide.md)
+- [Native development with Amplify CLI and AWS AppSync](https://aws-amplify.github.io/docs/cli/codegen)
 
 ## Contributing
 

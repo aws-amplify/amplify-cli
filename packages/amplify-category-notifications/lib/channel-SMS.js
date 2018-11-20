@@ -79,23 +79,25 @@ function disable(context) {
   });
 }
 
-function pull(context, pinpointApp) {
+async function pull(context, pinpointApp) {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
-  spinner.start(`Pulling ${channelName} Channel.`);
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.getSmsChannel(params, (err, data) => {
-      if (err) {
-        spinner.fail(`get channel ${channelName} error`);
-        reject(err);
-      } else {
-        spinner.succeed(`get ${channelName} channel successful`);
-        pinpointApp[channelName] = data.GCMChannelResponse;
-        resolve(data.SMSChannelResponse);
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getSmsChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.SMSChannelResponse;
+      return data.SMSChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
       }
+      spinner.stop();
+      throw err;
     });
-  });
 }
 
 module.exports = {

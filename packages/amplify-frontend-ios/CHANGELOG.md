@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.0"></a>
+## [0.1.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.33...amplify-frontend-ios@0.1.34-multienv.0) (2018-11-16)
+
+
+### Bug Fixes
+
+* fix projectPath references in ios and codegen packages & fix for  correct AWS profile pickup in the cloudformation provider ([a73656e](https://github.com/aws-amplify/amplify-cli/commit/a73656e))
+
+
+### Features
+
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+
+
+
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.33-beta.0...amplify-frontend-ios@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.12...amplify-frontend-ios@0.1.33-beta.0) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.32-beta.0...amplify-frontend-ios@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.12...amplify-frontend-ios@0.1.32-beta.0) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-ios
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@0.1.12...amplify-frontend-ios@0.1.31) (2018-11-02)
 

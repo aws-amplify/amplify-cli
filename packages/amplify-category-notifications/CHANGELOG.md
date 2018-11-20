@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-multienv.4"></a>
+## [0.1.34-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.3...amplify-category-notifications@0.1.34-multienv.4) (2018-11-19)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** fix redundant pinpoint creation ([#474](https://github.com/aws-amplify/amplify-cli/issues/474)) ([5e28dc0](https://github.com/aws-amplify/amplify-cli/commit/5e28dc0))
+
+
+
+
+<a name="0.1.34-multienv.3"></a>
+## [0.1.34-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.2...amplify-category-notifications@0.1.34-multienv.3) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.1.34-multienv.2"></a>
+## [0.1.34-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.1...amplify-category-notifications@0.1.34-multienv.2) (2018-11-19)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.1.34-multienv.1"></a>
+## [0.1.34-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.0...amplify-category-notifications@0.1.34-multienv.1) (2018-11-16)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.1.34-multienv.0"></a>
+## [0.1.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.33...amplify-category-notifications@0.1.34-multienv.0) (2018-11-16)
+
+
+### Features
+
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([acd14a8](https://github.com/aws-amplify/amplify-cli/commit/acd14a8))
+* headless Init and configure ([#371](https://github.com/aws-amplify/amplify-cli/issues/371)) ([8780400](https://github.com/aws-amplify/amplify-cli/commit/8780400))
+* multienv support for Notifications ([#440](https://github.com/aws-amplify/amplify-cli/issues/440)) ([4dac0de](https://github.com/aws-amplify/amplify-cli/commit/4dac0de))
+* multienv support for Notifications ([#440](https://github.com/aws-amplify/amplify-cli/issues/440)) ([a2964d4](https://github.com/aws-amplify/amplify-cli/commit/a2964d4))
+
+
+
+
+<a name="0.1.33"></a>
+## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.33-beta.0...amplify-category-notifications@0.1.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.1.33-beta.0"></a>
+## [0.1.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.13...amplify-category-notifications@0.1.33-beta.0) (2018-11-09)
+
+
+### Bug Fixes
+
+* update pinpoint IAM policy to use mobiletargeting instead of mobileanalytics ([#326](https://github.com/aws-amplify/amplify-cli/issues/326)) ([96fcde6](https://github.com/aws-amplify/amplify-cli/commit/96fcde6))
+
+
+
+
+<a name="0.1.32"></a>
+## [0.1.32](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.32-beta.0...amplify-category-notifications@0.1.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.1.32-beta.0"></a>
+## [0.1.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.13...amplify-category-notifications@0.1.32-beta.0) (2018-11-05)
+
+
+### Bug Fixes
+
+* update pinpoint IAM policy to use mobiletargeting instead of mobileanalytics ([#326](https://github.com/aws-amplify/amplify-cli/issues/326)) ([96fcde6](https://github.com/aws-amplify/amplify-cli/commit/96fcde6))
+
+
+
+
 <a name="0.1.31"></a>
 ## [0.1.31](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.13...amplify-category-notifications@0.1.31) (2018-11-02)
 

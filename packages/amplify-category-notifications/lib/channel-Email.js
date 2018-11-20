@@ -127,19 +127,22 @@ function pull(context, pinpointApp) {
   const params = {
     ApplicationId: pinpointApp.Id,
   };
-  spinner.start(`Pulling ${channelName} Channel.`);
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.getEmailChannel(params, (err, data) => {
-      if (err) {
-        spinner.fail(`get channel ${channelName} error`);
-        reject(err);
-      } else {
-        spinner.succeed(`get ${channelName} channel successful`);
-        pinpointApp[channelName] = data.EmailChannelResponse;
-        resolve(data.EmailChannelResponse);
+
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getEmailChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.EmailChannelResponse;
+      return data.EmailChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
       }
+      spinner.stop();
+      throw err;
     });
-  });
 }
 
 module.exports = {
