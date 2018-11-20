@@ -57,7 +57,7 @@ async function migrateProject(plugins) {
             categoryMigrationTasks.push(() => migrateResourceFiles(
               pathManager,
               amplifyMeta,
-              currentAmplifyMeta
+              currentAmplifyMeta,
             ));
           }
         }
