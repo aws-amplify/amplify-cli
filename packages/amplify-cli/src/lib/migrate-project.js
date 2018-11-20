@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
+const os = require('os');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
@@ -12,6 +13,7 @@ const {
   getLocalEnvFilePath,
   getProviderInfoFilePath,
   getBackendConfigFilePath,
+  getGitIgnoreFilePath,
 } = require('../extensions/amplify-helpers/path-manager');
 
 async function migrateProject(plugins) {
@@ -32,6 +34,7 @@ async function migrateProject(plugins) {
       generateAwsLocalInfo();
       generateTeamProviderInfo();
       generateBackendConfig();
+      generateGitIgnoreFile();
     }
 
     // Give each category a chance to migrate their respective files
@@ -68,7 +71,7 @@ async function migrateProject(plugins) {
     await Promise.all(categoryMigrationTasks);
     spinner.succeed('Migrated your project successfully.');
   } catch (e) {
-    spinner.fail('There was an error migrating your environment.');
+    spinner.fail('There was an error migrating your project.');
     throw e;
   }
 }
@@ -156,6 +159,27 @@ function generateBackendConfig() {
   const jsonString = JSON.stringify(backendConfig, null, 4);
   const backendConfigFilePath = getBackendConfigFilePath();
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+}
+
+
+function generateGitIgnoreFile() {
+  const getGitIgnoreAppendString = () => {
+    const toAppend = `${os.EOL + os.EOL
+    }amplify/\\#current-cloud-backend${os.EOL
+    }amplify/.config/local-*${os.EOL
+    }amplify/backend/amplify-meta.json${os.EOL
+    }aws-exports.js${os.EOL
+    }awsconfiguration.json`;
+
+    return toAppend;
+  };
+
+  const gitIgnoreFilePath = getGitIgnoreFilePath();
+  if (fs.existsSync(gitIgnoreFilePath)) {
+    fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
+  } else {
+    fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreAppendString().trim());
+  }
 }
 
 
