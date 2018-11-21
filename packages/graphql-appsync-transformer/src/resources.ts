@@ -1,12 +1,88 @@
 import AppSync from 'cloudform/types/appSync'
 import Template from 'cloudform/types/template'
-
-import { Fn, StringParameter } from 'cloudform'
+import Output from 'cloudform/types/output'
+import { Fn, StringParameter, Refs } from 'cloudform'
 import { ResourceConstants } from 'graphql-transformer-common'
 import Resource from "cloudform/types/resource";
 
 
 export class ResourceFactory {
+
+    public makeParams() {
+        return {
+            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
+                Description: 'The name of the AppSync API',
+                Default: 'AppSyncSimpleTransform'
+            })
+        }
+    }
+
+    /**
+     * Creates the barebones template for an application.
+     */
+    public initTemplate(): Template {
+        return {
+            Parameters: this.makeParams(),
+            Resources: {
+                [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
+                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
+            },
+            Outputs: {
+                [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
+                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
+                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
+            }
+        }
+    }
+
+    /**
+     * Create the AppSync API.
+     */
+    public makeAppSyncAPI() {
+        return new AppSync.GraphQLApi({
+            Name: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
+            AuthenticationType: 'API_KEY'
+        })
+    }
+
+    public makeAppSyncApiKey() {
+        return new AppSync.ApiKey({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+        })
+    }
+
+    /**
+     * Outputs
+     */
+    public makeAPIIDOutput(): Output {
+        return {
+            Description: "Your GraphQL API ID.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiId"])
+            }
+        }
+    }
+
+    public makeAPIEndpointOutput(): Output {
+        return {
+            Description: "Your GraphQL API endpoint.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'GraphQLUrl'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiEndpoint"])
+            }
+        }
+    }
+
+    public makeApiKeyOutput(): Output {
+        return {
+            Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
+            }
+        }
+    }
 
     public makeResolverS3RootParams(): Template {
         return {

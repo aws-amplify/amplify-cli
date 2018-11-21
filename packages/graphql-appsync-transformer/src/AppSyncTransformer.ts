@@ -35,6 +35,10 @@ export class AppSyncTransformer extends Transformer {
         // overwrite it in the after
         const schemaResource = this.resources.makeAppSyncSchema('placeholder')
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
+        const template = this.resources.initTemplate();
+        ctx.mergeResources(template.Resources)
+        ctx.mergeParameters(template.Parameters)
+        ctx.mergeOutputs(template.Outputs)
     }
 
     public after = (ctx: TransformerContext): void => {

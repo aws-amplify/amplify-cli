@@ -82,9 +82,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     public before = (ctx: TransformerContext): void => {
         const template = this.resources.initTemplate();
-        ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
-        ctx.mergeOutputs(template.Outputs)
     }
 
     /**

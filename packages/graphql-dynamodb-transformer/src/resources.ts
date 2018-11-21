@@ -1,9 +1,8 @@
 import DynamoDB from 'cloudform/types/dynamoDb'
 import AppSync from 'cloudform/types/appSync'
 import IAM from 'cloudform/types/iam'
-import Output from 'cloudform/types/output'
 import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
+import { Fn, NumberParameter } from 'cloudform'
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
     ref, obj, set, nul,
@@ -15,10 +14,6 @@ export class ResourceFactory {
 
     public makeParams() {
         return {
-            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
-                Description: 'The name of the AppSync API',
-                Default: 'AppSyncSimpleTransform'
-            }),
             [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5
@@ -35,74 +30,11 @@ export class ResourceFactory {
      */
     public initTemplate(): Template {
         return {
-            Parameters: this.makeParams(),
-            Resources: {
-                [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
-                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
-            },
-            Outputs: {
-                [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
-            }
+            Parameters: this.makeParams()
         }
     }
 
-    /**
-     * Create the AppSync API.
-     */
-    public makeAppSyncAPI() {
-        return new AppSync.GraphQLApi({
-            Name: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
-            AuthenticationType: 'API_KEY'
-        })
-    }
-
-    public makeAppSyncSchema(schema: string) {
-        return new AppSync.GraphQLSchema({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Definition: schema
-        })
-    }
-
-    public makeAppSyncApiKey() {
-        return new AppSync.ApiKey({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-        })
-    }
-
-    /**
-     * Outputs
-     */
-    public makeAPIIDOutput(): Output {
-        return {
-            Description: "Your GraphQL API ID.",
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiId"])
-            }
-        }
-    }
-
-    public makeAPIEndpointOutput(): Output {
-        return {
-            Description: "Your GraphQL API endpoint.",
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'GraphQLUrl'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiEndpoint"])
-            }
-        }
-    }
-
-    public makeApiKeyOutput(): Output {
-        return {
-            Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
-            }
-        }
-    }
+    
 
     /**
      * Create a DynamoDB table for a specific type.
