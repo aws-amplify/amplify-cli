@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "0.1.34-multienv.2",
+  "version": "0.2.0",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -10,9 +10,9 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "amplify-category-auth": "^0.1.34-multienv.2",
-    "amplify-category-function": "^0.1.34-multienv.2",
-    "amplify-category-storage": "^0.1.34-multienv.2",
+    "amplify-category-auth": "^0.2.0",
+    "amplify-category-function": "^0.2.0",
+    "amplify-category-storage": "^0.2.0",
     "eslint": "^4.9.0",
     "fs-extra": "^7.0.0",
     "inquirer": "^6.0.0",
