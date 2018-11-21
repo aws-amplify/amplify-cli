@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.0"></a>
+## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35-multienv.3...amplify-provider-awscloudformation@0.2.1-multienv.0) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
 <a name="0.1.35-multienv.3"></a>
 ## [0.1.35-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35-multienv.2...amplify-provider-awscloudformation@0.1.35-multienv.3) (2018-11-20)
 
