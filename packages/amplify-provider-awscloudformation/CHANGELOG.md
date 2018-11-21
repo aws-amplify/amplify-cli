@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-beta.2"></a>
+## [0.1.35-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35-beta.0...amplify-provider-awscloudformation@0.1.35-beta.2) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
 <a name="0.1.35-beta.0"></a>
 ## [0.1.35-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34...amplify-provider-awscloudformation@0.1.35-beta.0) (2018-11-20)
 
