@@ -1,6 +1,7 @@
 {
   "name": "amplify-category-interactions",
   "version": "0.1.34-multienv.2",
+  "main": "index.js",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
     "amplify-category-auth": "^0.1.34-multienv.2",

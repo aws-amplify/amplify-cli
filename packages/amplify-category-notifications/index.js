@@ -17,10 +17,15 @@ async function initEnvPush(context) {
   await multiEnvManager.initEnvPush(context);
 }
 
+async function migrate(context) {
+  context.print.info('notifications migrate...');
+}
+
 module.exports = {
   console,
   deletePinpointAppForEnv,
   initEnv,
   initEnvPush,
+  migrate,
 };
 
