@@ -2,13 +2,15 @@ const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
 const sequential = require('promise-sequential');
+const { makeId } = require('../extensions/amplify-helpers/make-id');
+const constants = require('../extensions/amplify-helpers/constants');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
 
-const pathManager = require('../extensions/amplify-helpers/path-manager');
-
 const {
+  searchProjectRootPath,
+  getAmplifyDirPath,
   getDotConfigDirPath,
   getProjectConfigFilePath,
   getAmplifyMetaFilePath,
@@ -17,63 +19,138 @@ const {
   getProviderInfoFilePath,
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
-} = pathManager;
+} = require('../extensions/amplify-helpers/path-manager');
 
 const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
-const { PROJECT_CONFIG_VERSION } = require('./constants');
 
-async function migrateProject(plugins) {
-  let projectConfigFilePath;
+async function migrateProject(context) {
+  let projectPath;
   try {
-    projectConfigFilePath = getProjectConfigFilePath();
+    projectPath = searchProjectRootPath();
   } catch (e) {
     // New project, hence not able to find the amplify dir
     return;
   }
 
-  try {
-    const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-    if (!projectConfig.version && await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
-      // This is an older project & migration is needed
-      generateNewProjectConfig(projectConfig, projectConfigFilePath);
-      generateLocalEnvInfo(projectConfig);
-      generateAwsLocalInfo();
-      generateTeamProviderInfo();
-      generateBackendConfig();
-      generateGitIgnoreFile();
-
-      // Give each category a chance to migrate their respective files
-
-      const categoryMigrationTasks = [];
-      const amplifyMetafilePath = getAmplifyMetaFilePath();
-      const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
-      const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath();
-      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
-
-      plugins.forEach((plugin) => {
-        if (plugin.name.includes('category')) {
-          const { migrateResourceFiles } = require(plugin.directory);
-          if (migrateResourceFiles) {
-            categoryMigrationTasks.push(() => migrateResourceFiles(
-              pathManager,
-              amplifyMeta,
-              currentAmplifyMeta,
-            ));
-          }
-        }
-      });
-
-      spinner.start('Migrating your project');
-      await sequential(categoryMigrationTasks);
-      spinner.succeed('Migrated your project successfully.');
-    }
-  } catch (e) {
-    spinner.fail('There was an error migrating your project.');
-    throw e;
+  const projectConfigFilePath = getProjectConfigFilePath(projectPath);
+  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION &&
+    await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
+    // Currently there are only two project configuration versions, so call this method directly
+    // If more versions are involved, switch to apropriate migration method
+    await migrateFrom0To1(context, projectPath, projectConfig);
   }
 }
 
-function generateNewProjectConfig(projectConfig, projectConfigFilePath) {
+async function migrateFrom0To1(context, projectPath, projectConfig) {
+  let amplifyDirPath;
+  let backupAmplifyDirPath;
+  try {
+    amplifyDirPath = getAmplifyDirPath(projectPath);
+    backupAmplifyDirPath = backup(amplifyDirPath, projectPath);
+    context.migrationInfo = generateMigrationInfo(projectPath, projectConfig);
+
+    // Give each category a chance to migrate their respective files
+    const categoryMigrationTasks = [];
+
+    const categoryPlugins = context.amplify.getCategoryPlugins(context);
+
+    Object.keys(categoryPlugins).forEach((category) => {
+      try {
+        const { migrate } = require(categoryPlugins[category]);
+        if (migrate) {
+          categoryMigrationTasks.push(() => migrate(context));
+        }
+      } catch (e) {
+        // do nothing, it's fine if a category is not setup for migration
+      }
+    });
+
+    spinner.start('Migrating your project');
+    await sequential(categoryMigrationTasks);
+    persistMigrationContext(context);
+    updateGitIgnoreFile(projectPath);
+    spinner.succeed('Migrated your project successfully.');
+  } catch (e) {
+    spinner.fail('There was an error migrating your project.');
+    rollback(amplifyDirPath, backupAmplifyDirPath);
+    console.log('migration operations are rolledback.');
+    throw e;
+  } finally {
+    cleanUp(backupAmplifyDirPath);
+  }
+}
+
+function backup(projectPath, amplifyDirPath) {
+  const backupAmplifyDirName = `${constants.AmplifyCLIDirName}-${makeId(5)}`;
+  const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
+
+  fs.copySync(amplifyDirPath, backupAmplifyDirPath);
+
+  return backupAmplifyDirPath;
+}
+
+function rollback(amplifyDirPath, backupAmplifyDirPath) {
+  if (backupAmplifyDirPath && fs.existsSync(backupAmplifyDirPath)) {
+    fs.removeSync(amplifyDirPath);
+    fs.moveSync(backupAmplifyDirPath, amplifyDirPath);
+  }
+}
+
+function cleanUp(backupAmplifyDirPath) {
+  fs.removeSync(backupAmplifyDirPath);
+}
+
+function generateMigrationInfo(projectPath, projectConfig) {
+  const migrationInfo = {
+    projectPath,
+    initVersion: projectConfig.version,
+    newVersion: constants.PROJECT_CONFIG_VERSION,
+  };
+  migrationInfo.amplifyMeta = getAmplifyMeta(projectPath);
+  migrationInfo.currentAmplifyMeta = getCurrentAmplifyMeta(projectPath);
+  migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
+  migrationInfo.localEnvInfo = generateLocalEnvInfo(migrationInfo.projectConfig);
+  migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
+  migrationInfo.teamProviderInfo = generateTeamProviderInfo(migrationInfo.amplifyMeta);
+  migrationInfo.backendConfig = generateBackendConfig(migrationInfo.amplifyMeta);
+
+  return migrationInfo;
+}
+
+function persistMigrationContext(migrationInfo) {
+  persistAmplifyMeta(migrationInfo.amplifyMeta, migrationInfo.projectPath);
+  persistCurrentAmplifyMeta(migrationInfo.currentAmplifyMeta, migrationInfo.projectPath);
+  persistProjectConfig(migrationInfo.projectConfig, migrationInfo.projectPath);
+  persistLocalEnvInfo(migrationInfo.localEnvInfo, migrationInfo.projectPath);
+  persistLocalAwsInfo(migrationInfo.localAwsInfo, migrationInfo.projectPath);
+  persistTeamProviderInfo(migrationInfo.teamProviderInfo, migrationInfo.projectPath);
+  persistBackendConfig(migrationInfo.backendConfig, migrationInfo.projectPath);
+}
+
+function getAmplifyMeta(projectPath) {
+  const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
+  return JSON.parse(fs.readFileSync(amplifyMetafilePath));
+}
+
+function persistAmplifyMeta(amplifyMeta, projectPath) {
+  const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
+  const jsonString = JSON.stringify(amplifyMeta, null, 4);
+  fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+}
+
+function getCurrentAmplifyMeta(projectPath) {
+  const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
+  return JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+}
+
+function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
+  const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
+  const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
+  fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
+}
+
+function generateNewProjectConfig(projectConfig) {
   const newProjectConfig = {};
 
   Object.assign(newProjectConfig, projectConfig);
@@ -88,58 +165,70 @@ function generateNewProjectConfig(projectConfig, projectConfigFilePath) {
 
   newProjectConfig.frontend = frontend;
   delete newProjectConfig.frontendHandler;
-  newProjectConfig.version = PROJECT_CONFIG_VERSION;
+  newProjectConfig.version = constants.PROJECT_CONFIG_VERSION;
 
   // Modify provider handler
   const providers = Object.keys(projectConfig.providers);
   newProjectConfig.providers = providers;
 
-  const jsonString = JSON.stringify(newProjectConfig, null, 4);
+  return newProjectConfig;
+}
+
+function persistProjectConfig(projectConfig, projectPath) {
+  const projectConfigFilePath = getProjectConfigFilePath(projectPath);
+  const jsonString = JSON.stringify(projectConfig, null, 4);
   fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 }
 
 function generateLocalEnvInfo(projectConfig) {
-  const envInfo = {
+  return {
     projectPath: projectConfig.projectPath,
     defaultEditor: projectConfig.defaultEditor,
     envName: 'NONE',
   };
+}
 
-  const jsonString = JSON.stringify(envInfo, null, 4);
-  const localEnvFilePath = getLocalEnvFilePath();
+function persistLocalEnvInfo(localEnvInfo, projectPath) {
+  const jsonString = JSON.stringify(localEnvInfo, null, 4);
+  const localEnvFilePath = getLocalEnvFilePath(projectPath);
   fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
 }
 
-function generateAwsLocalInfo() {
-  const dotConfigDirPath = getDotConfigDirPath();
+function generateLocalAwsInfo(projectPath) {
+  let newAwsInfo;
+
+  const dotConfigDirPath = getDotConfigDirPath(projectPath);
   const awsInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(awsInfoFilePath)) {
     const awsInfo = JSON.parse(fs.readFileSync(awsInfoFilePath));
     awsInfo.configLevel = 'project'; // Old version didn't support "General" configuation
-    const newAwsInfo = { NONE: awsInfo };
+    newAwsInfo = { NONE: awsInfo };
+    fs.removeSync(awsInfoFilePath);
+  }
 
-    const jsonString = JSON.stringify(newAwsInfo, null, 4);
+  return newAwsInfo;
+}
+
+function persistLocalAwsInfo(localAwsInfo, projectPath) {
+  if (localAwsInfo) {
+    const dotConfigDirPath = getDotConfigDirPath(projectPath);
+    const jsonString = JSON.stringify(localAwsInfo, null, 4);
     const localAwsInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
     fs.writeFileSync(localAwsInfoFilePath, jsonString, 'utf8');
-    fs.removeSync(awsInfoFilePath);
   }
 }
 
-function generateTeamProviderInfo() {
-  const amplifyMetafilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
+function generateTeamProviderInfo(amplifyMeta) {
+  return { NONE: amplifyMeta.providers };
+}
 
-  const teamProviderInfo = { NONE: amplifyMeta.providers };
-
+function persistTeamProviderInfo(teamProviderInfo, projectPath) {
   const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-  const teamProviderFilePath = getProviderInfoFilePath();
+  const teamProviderFilePath = getProviderInfoFilePath(projectPath);
   fs.writeFileSync(teamProviderFilePath, jsonString, 'utf8');
 }
 
-function generateBackendConfig() {
-  const amplifyMetafilePath = getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
-
+function generateBackendConfig(amplifyMeta) {
   const backendConfig = {};
   Object.keys(amplifyMeta).forEach((category) => {
     if (category !== 'providers') {
@@ -152,23 +241,23 @@ function generateBackendConfig() {
       });
     }
   });
+  return backendConfig;
+}
 
-
+function persistBackendConfig(backendConfig, projectPath) {
   const jsonString = JSON.stringify(backendConfig, null, 4);
-  const backendConfigFilePath = getBackendConfigFilePath();
+  const backendConfigFilePath = getBackendConfigFilePath(projectPath);
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 }
 
-
-function generateGitIgnoreFile() {
-  const gitIgnoreFilePath = getGitIgnoreFilePath();
+function updateGitIgnoreFile(projectPath) {
+  const gitIgnoreFilePath = getGitIgnoreFilePath(projectPath);
   if (fs.existsSync(gitIgnoreFilePath)) {
     fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreBlob());
   } else {
     fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreBlob().trim());
   }
 }
-
 
 module.exports = {
   migrateProject,

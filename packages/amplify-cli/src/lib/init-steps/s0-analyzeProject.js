@@ -4,7 +4,7 @@ const inquirer = require('inquirer');
 const { normalizeEditorCode, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
-const { PROJECT_CONFIG_VERSION } = require('../constants');
+const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');

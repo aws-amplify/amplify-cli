@@ -104,9 +104,14 @@ async function console(context) {
   }
 }
 
+async function migrate(context) {
+  context.print.info('hosting migrate...');
+}
+
 module.exports = {
   add,
   configure,
   publish,
   console,
+  migrate,
 };

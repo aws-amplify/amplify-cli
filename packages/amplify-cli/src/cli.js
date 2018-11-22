@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
-const { migrateProject } = require('./lib/migrate-project');
 
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
@@ -16,10 +15,12 @@ async function run(argv) {
     .version() // provides default for version, v, --version, -v
     .create();
 
-  normalizeArgv(cli, argv);
-  await migrateProject(cli.plugins);
+  if (argv[2] !== 'migrate') {
+    await cli.run('migrate');
+  }
 
-  // and run it
+  normalizeArgv(cli, argv);
+
   const context = await cli.run(argv);
 
   // send it back (for testing, mostly)
