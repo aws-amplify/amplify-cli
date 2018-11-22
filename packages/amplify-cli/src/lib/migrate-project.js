@@ -23,6 +23,9 @@ const {
   getAmplifyRcFilePath,
 } = require('../extensions/amplify-helpers/path-manager');
 
+const confirmMigrateMessage =
+'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
+
 async function migrateProject(context) {
   let projectPath;
   try {
@@ -34,11 +37,13 @@ async function migrateProject(context) {
 
   const projectConfigFilePath = getProjectConfigFilePath(projectPath);
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-  if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION &&
-    await prompt.confirm('We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?')) {
+  if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
+    if (context.parameters.options.y || context.parameters.options.yes ||
+      await prompt.confirm(confirmMigrateMessage)) {
     // Currently there are only two project configuration versions, so call this method directly
     // If more versions are involved, switch to apropriate migration method
-    await migrateFrom0To1(context, projectPath, projectConfig);
+      await migrateFrom0To1(context, projectPath, projectConfig);
+    }
   }
 }
 

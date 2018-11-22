@@ -3,6 +3,8 @@ const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
 
+const MIGRATE = 'migrate';
+
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
@@ -15,8 +17,10 @@ async function run(argv) {
     .version() // provides default for version, v, --version, -v
     .create();
 
-  if (argv[2] !== 'migrate') {
-    await cli.run('migrate');
+  if (argv[2] !== MIGRATE) {
+    const yesFlag = argv.includes('-y') || argv.includes('--yes');
+    const migrateCommand = yesFlag ? `${MIGRATE} --yes` : MIGRATE;
+    await cli.run(migrateCommand);
   }
 
   normalizeArgv(cli, argv);
