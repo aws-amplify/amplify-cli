@@ -17,7 +17,6 @@ async function console(context) {
   context.print.info(`to be implemented: ${category} console`);
 }
 
-
 async function migrate(context) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
