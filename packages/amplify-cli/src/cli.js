@@ -18,9 +18,7 @@ async function run(argv) {
     .create();
 
   if (argv[2] !== MIGRATE) {
-    const yesFlag = argv.includes('-y') || argv.includes('--yes');
-    const migrateCommand = yesFlag ? `${MIGRATE} --yes` : MIGRATE;
-    await cli.run(migrateCommand);
+    await cli.run(MIGRATE);
   }
 
   normalizeArgv(cli, argv);
