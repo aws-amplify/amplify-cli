@@ -19,7 +19,7 @@ const {
   getProviderInfoFilePath,
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
-} = require('../extensions/amplify-helpers/path-manager');
+} = pathManager;
 
 const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
 
