@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
-const { getGitIgnoreBlob } = require('../../extensions/amplify-helpers/get-git-ignore-blob');
+const gitManager = require('../../extensions/amplify-helpers/git-manager');
 const { print } = require('gluegun/print');
 const { initializeEnv } = require('../initialize-env');
 
@@ -116,11 +116,8 @@ function generateGitIgnoreFile(context) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     const gitIgnoreFilePath = context.amplify.pathManager.getGitIgnoreFilePath(projectPath);
-    if (fs.existsSync(gitIgnoreFilePath)) {
-      fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreBlob());
-    } else {
-      fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreBlob().trim());
-    }
+
+    gitManager.insertAmplifyIgnore(gitIgnoreFilePath);
   }
 }
 

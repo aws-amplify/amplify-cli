@@ -4,6 +4,7 @@ const ora = require('ora');
 const sequential = require('promise-sequential');
 const { makeId } = require('../extensions/amplify-helpers/make-id');
 const constants = require('../extensions/amplify-helpers/constants');
+const gitManager = require('../extensions/amplify-helpers/git-manager');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
@@ -19,9 +20,8 @@ const {
   getProviderInfoFilePath,
   getBackendConfigFilePath,
   getGitIgnoreFilePath,
-} = pathManager;
-
-const { getGitIgnoreBlob } = require('../extensions/amplify-helpers/get-git-ignore-blob');
+  getAmplifyRcFilePath,
+} = require('../extensions/amplify-helpers/path-manager');
 
 async function migrateProject(context) {
   let projectPath;
@@ -48,7 +48,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
   try {
     amplifyDirPath = getAmplifyDirPath(projectPath);
     backupAmplifyDirPath = backup(amplifyDirPath, projectPath);
-    context.migrationInfo = generateMigrationInfo(projectPath, projectConfig);
+    context.migrationInfo = generateMigrationInfo(projectConfig, projectPath);
 
     // Give each category a chance to migrate their respective files
     const categoryMigrationTasks = [];
@@ -68,20 +68,21 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
 
     spinner.start('Migrating your project');
     await sequential(categoryMigrationTasks);
-    persistMigrationContext(context);
+    persistMigrationContext(context.migrationInfo);
+    removeAmplifyRCFile(projectPath);
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
-    console.log('migration operations are rolledback.');
+    context.print.info('migration operations are rolledback.');
     throw e;
   } finally {
     cleanUp(backupAmplifyDirPath);
   }
 }
 
-function backup(projectPath, amplifyDirPath) {
+function backup(amplifyDirPath, projectPath) {
   const backupAmplifyDirName = `${constants.AmplifyCLIDirName}-${makeId(5)}`;
   const backupAmplifyDirPath = path.join(projectPath, backupAmplifyDirName);
 
@@ -101,7 +102,7 @@ function cleanUp(backupAmplifyDirPath) {
   fs.removeSync(backupAmplifyDirPath);
 }
 
-function generateMigrationInfo(projectPath, projectConfig) {
+function generateMigrationInfo(projectConfig, projectPath) {
   const migrationInfo = {
     projectPath,
     initVersion: projectConfig.version,
@@ -134,9 +135,11 @@ function getAmplifyMeta(projectPath) {
 }
 
 function persistAmplifyMeta(amplifyMeta, projectPath) {
-  const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
-  const jsonString = JSON.stringify(amplifyMeta, null, 4);
-  fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+  if (amplifyMeta) {
+    const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
+    const jsonString = JSON.stringify(amplifyMeta, null, 4);
+    fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+  }
 }
 
 function getCurrentAmplifyMeta(projectPath) {
@@ -145,9 +148,11 @@ function getCurrentAmplifyMeta(projectPath) {
 }
 
 function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
-  const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
-  const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
-  fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
+  if (currentAmplifyMeta) {
+    const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
+    const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
+    fs.writeFileSync(currentAmplifyMetafilePath, jsonString, 'utf8');
+  }
 }
 
 function generateNewProjectConfig(projectConfig) {
@@ -175,9 +180,11 @@ function generateNewProjectConfig(projectConfig) {
 }
 
 function persistProjectConfig(projectConfig, projectPath) {
-  const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-  const jsonString = JSON.stringify(projectConfig, null, 4);
-  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+  if (projectConfig) {
+    const projectConfigFilePath = getProjectConfigFilePath(projectPath);
+    const jsonString = JSON.stringify(projectConfig, null, 4);
+    fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
+  }
 }
 
 function generateLocalEnvInfo(projectConfig) {
@@ -189,9 +196,11 @@ function generateLocalEnvInfo(projectConfig) {
 }
 
 function persistLocalEnvInfo(localEnvInfo, projectPath) {
-  const jsonString = JSON.stringify(localEnvInfo, null, 4);
-  const localEnvFilePath = getLocalEnvFilePath(projectPath);
-  fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+  if (localEnvInfo) {
+    const jsonString = JSON.stringify(localEnvInfo, null, 4);
+    const localEnvFilePath = getLocalEnvFilePath(projectPath);
+    fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
+  }
 }
 
 function generateLocalAwsInfo(projectPath) {
@@ -223,9 +232,11 @@ function generateTeamProviderInfo(amplifyMeta) {
 }
 
 function persistTeamProviderInfo(teamProviderInfo, projectPath) {
-  const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-  const teamProviderFilePath = getProviderInfoFilePath(projectPath);
-  fs.writeFileSync(teamProviderFilePath, jsonString, 'utf8');
+  if (teamProviderInfo) {
+    const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+    const teamProviderFilePath = getProviderInfoFilePath(projectPath);
+    fs.writeFileSync(teamProviderFilePath, jsonString, 'utf8');
+  }
 }
 
 function generateBackendConfig(amplifyMeta) {
@@ -245,18 +256,21 @@ function generateBackendConfig(amplifyMeta) {
 }
 
 function persistBackendConfig(backendConfig, projectPath) {
-  const jsonString = JSON.stringify(backendConfig, null, 4);
-  const backendConfigFilePath = getBackendConfigFilePath(projectPath);
-  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  if (backendConfig) {
+    const jsonString = JSON.stringify(backendConfig, null, 4);
+    const backendConfigFilePath = getBackendConfigFilePath(projectPath);
+    fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+  }
+}
+
+function removeAmplifyRCFile(projectPath) {
+  const amplifyRcFilePath = getAmplifyRcFilePath(projectPath);
+  fs.removeSync(amplifyRcFilePath);
 }
 
 function updateGitIgnoreFile(projectPath) {
   const gitIgnoreFilePath = getGitIgnoreFilePath(projectPath);
-  if (fs.existsSync(gitIgnoreFilePath)) {
-    fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreBlob());
-  } else {
-    fs.writeFileSync(gitIgnoreFilePath, getGitIgnoreBlob().trim());
-  }
+  gitManager.insertAmplifyIgnore(gitIgnoreFilePath);
 }
 
 module.exports = {
