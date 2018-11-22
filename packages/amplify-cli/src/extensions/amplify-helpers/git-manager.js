@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const os = require('os');
 
 const amplifyMark = '#amplify';
+const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
 
 function insertAmplifyIgnore(gitIgnoreFilePath) {
   if (fs.existsSync(gitIgnoreFilePath)) {
@@ -25,7 +26,7 @@ function removeAmplifyIgnore(gitIgnoreFilePath) {
         if (newLine.length === 0) {
           isInRemoval = false;
         }
-      } else if (/^#amplify/.test(newLine)) {
+      } else if (amplifyMarkRegExp.test(newLine)) {
         isInRemoval = true;
       } else {
         newGitIgnoreString += newLine + os.EOL;
@@ -45,8 +46,7 @@ function getGitIgnoreAppendString() {
     'aws-exports.js',
     'awsconfiguration.json'];
 
-  const toAppend = `${os.EOL + os.EOL + amplifyMark
-  }${ignoreList.join(os.EOL)}`;
+  const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
 
   return toAppend;
 }
