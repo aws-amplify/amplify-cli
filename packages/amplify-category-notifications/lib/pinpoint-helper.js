@@ -8,6 +8,15 @@ const authHelper = require('./auth-helper');
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
+function getPinpointApp(context) {
+  const { amplifyMeta } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  return pinpointApp;
+}
+
 async function ensurePinpointApp(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -32,7 +41,8 @@ async function ensurePinpointApp(context) {
     }
   }
   context.exeInfo.pinpointApp = pinpointApp;
-  context.exeInfo.serviceMeta = amplifyMeta[constants.CategoryName][pinpointApp.Name];
+  context.exeInfo.serviceMeta =
+    context.exeInfo.amplifyMeta[constants.CategoryName][pinpointApp.Name];
 }
 
 async function createPinpointApp(context) {
@@ -233,6 +243,7 @@ function isAnalyticsAdded(context) {
 }
 
 module.exports = {
+  getPinpointApp,
   ensurePinpointApp,
   deletePinpointApp,
   getPinpointClient,
