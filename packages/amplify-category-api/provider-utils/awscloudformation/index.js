@@ -151,4 +151,19 @@ async function updateResource(context, category, service) {
     });
 }
 
-module.exports = { addResource, updateResource, console };
+async function migrateResource(context, projectPath, service, resourceName) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
+
+  if (!migrate) {
+    console.log(`No migration required for ${resourceName}`);
+  }
+
+  return await migrate(context, projectPath, resourceName);
+}
+
+module.exports = {
+  addResource, updateResource, console, migrateResource,
+};

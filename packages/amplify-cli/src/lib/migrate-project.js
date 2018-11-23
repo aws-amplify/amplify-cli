@@ -115,7 +115,7 @@ function generateMigrationInfo(projectConfig, projectPath) {
   migrationInfo.amplifyMeta = getAmplifyMeta(projectPath);
   migrationInfo.currentAmplifyMeta = getCurrentAmplifyMeta(projectPath);
   migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
-  migrationInfo.localEnvInfo = generateLocalEnvInfo(migrationInfo.projectConfig);
+  migrationInfo.localEnvInfo = generateLocalEnvInfo(projectConfig);
   migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
   migrationInfo.teamProviderInfo = generateTeamProviderInfo(migrationInfo.amplifyMeta);
   migrationInfo.backendConfig = generateBackendConfig(migrationInfo.amplifyMeta);
