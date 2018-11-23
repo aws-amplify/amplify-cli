@@ -93,8 +93,18 @@ export class DynamoDBModelTransformer extends Transformer {
      * @param ctx The accumulated context for the transform.
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-        // Create the object type.
-        // ctx.addObject(def)
+        // Add a stack mapping so that all model resources are pulled
+        // into their own stack at the end of the transformation.
+        ctx.addStackMapping(
+            `${def.name.value}Model`,
+            [
+                new RegExp(".*" + def.name.value + "Model", 'i'),
+                new RegExp(".*" + def.name.value + "DataSource", 'i'),
+                new RegExp(".*" + def.name.value + "IAMRole", 'i'),
+                new RegExp("^[^S].*" + def.name.value + "Resolver", 'i'),
+                new RegExp("^" + def.name.value + ".+Resolver", 'i'),
+            ]
+        )
 
         let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
             def,
