@@ -157,7 +157,7 @@ async function migrate(context) {
         parameters = JSON.parse(fs.readFileSync(parametersFilePath));
       }
 
-      const migrationInfo = extractInfo(template);
+      const migrationInfo = extractMigrationInfo(template);
 
       template = migrateTemplate(template, migrationInfo);
       parameters = migrateParameters(parameters, migrationInfo);
@@ -171,7 +171,7 @@ async function migrate(context) {
   }
 }
 
-function extractInfo(template) {
+function extractMigrationInfo(template) {
   const migrationInfo = {};
   if (template.Resources.S3Bucket) {
     if ((typeof template.Resources.S3Bucket.Properties.BucketName) === 'string') {

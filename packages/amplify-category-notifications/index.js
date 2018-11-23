@@ -18,7 +18,7 @@ async function initEnvPush(context) {
 }
 
 async function migrate(context) {
-  context.print.info('notifications migrate...');
+  await multiEnvManager.migrate(context);
 }
 
 module.exports = {

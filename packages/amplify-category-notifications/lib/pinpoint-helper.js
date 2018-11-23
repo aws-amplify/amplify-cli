@@ -102,7 +102,7 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
+      if (serviceMeta.service === constants.PinpointName &&
         serviceMeta.output &&
         serviceMeta.output.Id) {
         result = {
@@ -113,11 +113,9 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
         } else if (serviceMeta.output.appName) {
           result.Name = serviceMeta.output.appName;
         }
-
         if (serviceMeta.output.Region) {
           result.Region = serviceMeta.output.Region;
         }
-
         break;
       }
     }
