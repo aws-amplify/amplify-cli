@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
 const globalPrefix = require('./lib/global-prefix');
-const { migrateProject } = require('./lib/migrate-project');
 
 const MIGRATE = 'migrate';
 
@@ -23,7 +22,6 @@ async function run(argv) {
   }
 
   normalizeArgv(cli, argv);
-  await migrateProject(cli.plugins);
 
   const context = await cli.run(argv);
 
