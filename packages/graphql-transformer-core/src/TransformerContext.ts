@@ -68,6 +68,8 @@ export class TransformerContextMetadata {
     }
 }
 
+export interface StackMapping { [stackName: string]: RegExp[] }
+
 /**
  * The transformer context is responsible for accumulating the resources,
  * types, and parameters necessary to support an AppSync transform.
@@ -81,6 +83,8 @@ export default class TransformerContext {
     public inputDocument: DocumentNode
 
     public metadata: TransformerContextMetadata = new TransformerContextMetadata()
+
+    private stackMapping: StackMapping = {}
 
     constructor(inputSDL: string) {
         const doc: DocumentNode = parse(inputSDL)
@@ -418,5 +422,13 @@ export default class TransformerContext {
             throw new Error(`Conflicting enum type '${en.name.value}' found.`)
         }
         this.nodeMap[en.name.value] = en
+    }
+
+    public addStackMapping(stackName: string, listOfRegex: RegExp[]) {
+        this.stackMapping[stackName] = listOfRegex
+    }
+
+    public getStackMapping(): StackMapping {
+        return this.stackMapping
     }
 }
