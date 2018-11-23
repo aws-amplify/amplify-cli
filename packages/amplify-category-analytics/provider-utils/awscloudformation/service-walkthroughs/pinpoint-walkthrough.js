@@ -18,7 +18,6 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   }
 }
 
-
 function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify } = context;
   let { inputs } = serviceMetadata;
@@ -29,7 +28,6 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-
   if (resourceName) {
     inputs = inputs.filter(input => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
@@ -38,7 +36,6 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
   }
-
 
   const pinpointApp = checkIfNotificationsCategoryExists(context);
 
@@ -59,19 +56,28 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     };
 
     if (inputs[i].type && inputs[i].type === 'list') {
-      question = Object.assign({
-        type: 'list',
-        choices: inputs[i].options,
-      }, question);
+      question = Object.assign(
+        {
+          type: 'list',
+          choices: inputs[i].options,
+        },
+        question,
+      );
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
-      question = Object.assign({
-        type: 'checkbox',
-        choices: inputs[i].options,
-      }, question);
+      question = Object.assign(
+        {
+          type: 'checkbox',
+          choices: inputs[i].options,
+        },
+        question,
+      );
     } else {
-      question = Object.assign({
-        type: 'input',
-      }, question);
+      question = Object.assign(
+        {
+          type: 'input',
+        },
+        question,
+      );
     }
     questions.push(question);
   }
@@ -115,15 +121,8 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
 
       const resourceDirPath = path.join(projectBackendDirPath, category, resource);
       delete defaultValues.resourceName;
-      fs.ensureDirSync(resourceDirPath);
-      const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      const jsonString = JSON.stringify(defaultValues, null, 4);
-      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-      const templateFilePath = path.join(resourceDirPath, templateFileName);
-      if (!fs.existsSync(templateFilePath)) {
-        fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
-      }
+      writeParams(resourceDirPath, defaultValues);
+      writeCfnFile(resourceDirPath);
       return resource;
     });
 }
@@ -164,4 +163,28 @@ function resourceAlreadyExists(context) {
   return resourceName;
 }
 
-module.exports = { addWalkthrough };
+function writeCfnFile(resourceDirPath, force = false) {
+  fs.ensureDirSync(resourceDirPath);
+  const templateFilePath = path.join(resourceDirPath, templateFileName);
+  if (!fs.existsSync(templateFilePath) || force) {
+    fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
+  }
+}
+
+function writeParams(resourceDirPath, values) {
+  fs.ensureDirSync(resourceDirPath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const jsonString = JSON.stringify(values, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+function migrate(pathManager, amplifyMeta) {
+  const projectBackendDirPath = pathManager.getBackendDirPath();
+  const { analytics = {} } = amplifyMeta;
+  Object.keys(analytics).forEach((resourceName) => {
+    const resourcePath = path.join(projectBackendDirPath, category, resourceName);
+    writeCfnFile(resourcePath, false, true);
+  });
+}
+
+module.exports = { addWalkthrough, migrate };
