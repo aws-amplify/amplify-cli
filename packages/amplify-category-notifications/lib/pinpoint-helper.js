@@ -9,6 +9,15 @@ const writeAmplifyMeta = require('./writeAmplifyMeta');
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
+function getPinpointApp(context) {
+  const { amplifyMeta } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  return pinpointApp;
+}
+
 async function ensurePinpointApp(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -33,7 +42,8 @@ async function ensurePinpointApp(context) {
     }
   }
   context.exeInfo.pinpointApp = pinpointApp;
-  context.exeInfo.serviceMeta = amplifyMeta[constants.CategoryName][pinpointApp.Name];
+  context.exeInfo.serviceMeta =
+    context.exeInfo.amplifyMeta[constants.CategoryName][pinpointApp.Name];
 }
 
 async function createPinpointApp(context) {
@@ -74,8 +84,6 @@ async function createPinpointApp(context) {
   context.print.info('');
   await authHelper.ensureAuth(context);
   context.print.info('');
-  // refresh the metadata becuse the auth might have changed it
-  context.exeInfo.amplifyMeta = context.amplify.getProjectMeta();
 
   return pinpointApp;
 }
@@ -232,6 +240,7 @@ function isAnalyticsAdded(context) {
 }
 
 module.exports = {
+  getPinpointApp,
   ensurePinpointApp,
   deletePinpointApp,
   getPinpointClient,
