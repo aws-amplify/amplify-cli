@@ -192,7 +192,7 @@ function migrateTemplate(template, migrationInfo) {
   Object.assign(template.Conditions, templateNewVersion.Conditions);
 
   if (migrationInfo.BucketName) {
-    template.Resources.S3Bucket.Properties.BucketName = 
+    template.Resources.S3Bucket.Properties.BucketName =
       templateNewVersion.Resources.S3Bucket.Properties.BucketName;
   }
 
