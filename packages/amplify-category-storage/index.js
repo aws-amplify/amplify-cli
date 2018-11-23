@@ -17,6 +17,7 @@ async function console(context) {
   context.print.info(`to be implemented: ${category} console`);
 }
 
+
 async function migrate(context) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
@@ -36,7 +37,8 @@ async function migrate(context) {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
           }
         } catch (e) {
-          context.print.warning(`Could not run migration for ${category} category`);
+          context.print.warning(`Could not run migration for ${category}: ${resourceName}`);
+          throw e;
         }
       });
     }
