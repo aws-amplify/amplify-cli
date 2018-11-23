@@ -251,6 +251,26 @@ async function updateConfigOnEnvInit(context, category, service) {
   return envParams;
 }
 
+async function migrate(context) {
+  const category = 'auth';
+  const { amplify } = context;
+  const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
+  if (!Object.keys(existingAuth).length > 0) {
+    return;
+  }
+  const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+  const { provider, cfnFilename } = servicesMetadata.Cognito;
+  const providerInstance = amplify.getPluginInstance(context, provider);
+  const resourceName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0];
+  const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
+  // remove these params as they are hardcoded and passed automatically 
+  ['authRoleArn', 'authRoleName', 'env', 'unauthRoleName', 'unauthRoleArn'].forEach((key) => {
+    delete props[key];
+  });
+  await copyCfnTemplate(context, category, props, cfnFilename);
+  saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
+}
+
 function isInHeadlessMode(context) {
   return context.exeInfo.inputParams.yes;
 }
@@ -290,4 +310,5 @@ module.exports = {
   saveResourceParameters,
   ENV_SPECIFIC_PARAMS,
   copyCfnTemplate,
+  migrate,
 };

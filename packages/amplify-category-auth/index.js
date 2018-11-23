@@ -9,6 +9,7 @@ const {
   copyCfnTemplate,
   saveResourceParameters,
   ENV_SPECIFIC_PARAMS,
+  migrate,
 } = require('./provider-utils/awscloudformation');
 
 // this function is being kept for temporary compatability.
@@ -203,9 +204,11 @@ async function initEnv(context) {
   await sequential(authTasks);
 }
 
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
   add,
+  migrate,
   initEnv,
 };
