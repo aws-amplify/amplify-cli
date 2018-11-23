@@ -79,9 +79,9 @@
                             ]
                         },       
                     ]
-                },
+                }
                 <%if (props.GlobalSecondaryIndexes) { %>
-                "GlobalSecondaryIndexes": [
+                ,"GlobalSecondaryIndexes": [
                   <% for(var i=0; i < props.GlobalSecondaryIndexes.length; i++) { %>
                     {
                         "IndexName": "<%= props.GlobalSecondaryIndexes[i].IndexName %>",

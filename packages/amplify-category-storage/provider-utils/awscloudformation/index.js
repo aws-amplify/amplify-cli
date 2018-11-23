@@ -31,5 +31,18 @@ function updateResource(context, category, service) {
   return updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 }
 
+function migrateResource(projectPath, service, resourceName) {
+  const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
 
-module.exports = { addResource, updateResource };
+  if (!migrate) {
+    console.log(`No migration required for ${resourceName}`);
+  }
+
+  return migrate(projectPath, resourceName);
+}
+
+
+module.exports = { addResource, updateResource, migrateResource };
