@@ -144,9 +144,76 @@ function console(context) {
   opn(consoleUrl, { wait: false });
 }
 
+async function migrate(context) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
+  if (fs.existsSync(serviceDirPath)) {
+    const templateFilePath = path.join(serviceDirPath, templateFileName);
+    if (fs.existsSync(templateFilePath)) {
+      let template = JSON.parse(fs.readFileSync(templateFilePath));
+      let parameters;
+      const parametersFilePath = path.join(serviceDirPath, parametersFileName);
+      if (fs.existsSync(parametersFilePath)) {
+        parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      }
+
+      const migrationInfo = extractInfo(template);
+
+      template = migrateTemplate(template, migrationInfo);
+      parameters = migrateParameters(parameters, migrationInfo);
+
+      let jsonString = JSON.stringify(template, null, 4);
+      fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+      jsonString = JSON.stringify(parameters, null, 4);
+      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    }
+  }
+}
+
+function extractInfo(template) {
+  const migrationInfo = {};
+  if (template.Resources.S3Bucket) {
+    if ((typeof template.Resources.S3Bucket.Properties.BucketName) === 'string') {
+      migrationInfo.BucketName = template.Resources.S3Bucket.Properties.BucketName;
+    }
+  }
+  return migrationInfo;
+}
+
+function migrateTemplate(template, migrationInfo) {
+  const templateFilePath = path.join(__dirname, templateFileName);
+  const templateNewVersion = JSON.parse(fs.readFileSync(templateFilePath));
+
+  template.Parameters = template.Parameters || {};
+  Object.assign(template.Parameters, templateNewVersion.Parameters);
+
+  template.Conditions = template.Conditions || {};
+  Object.assign(template.Conditions, templateNewVersion.Conditions);
+
+  if (migrationInfo.BucketName) {
+    template.Resources.S3Bucket.Properties.BucketName = 
+      templateNewVersion.Resources.S3Bucket.Properties.BucketName;
+  }
+
+  return template;
+}
+
+function migrateParameters(parameters, migrationInfo) {
+  parameters = parameters || {};
+  if (migrationInfo.BucketName) {
+    const parametersFilePath = path.join(__dirname, parametersFileName);
+    const parametersNewVersion = JSON.parse(fs.readFileSync(parametersFilePath));
+    parametersNewVersion.bucketName = migrationInfo.BucketName;
+    Object.assign(parameters, parametersNewVersion);
+  }
+  return parameters;
+}
+
 module.exports = {
   enable,
   configure,
   publish,
   console,
+  migrate,
 };
