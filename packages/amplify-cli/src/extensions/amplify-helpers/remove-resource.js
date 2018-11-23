@@ -63,7 +63,7 @@ function removeResource(context, category) {
 
             // Remove resource directory from backend/
             context.filesystem.remove(resourceDir);
-            removeResourceParameters(category, resourceName);
+            removeResourceParameters(context, category, resourceName);
             updateBackendConfigAfterResourceRemove(category, resourceName);
 
             context.print.success('Successfully removed resource');
