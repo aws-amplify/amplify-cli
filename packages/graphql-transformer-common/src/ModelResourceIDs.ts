@@ -2,6 +2,7 @@ import { graphqlName, toUpper } from './util'
 import { DEFAULT_SCALARS } from './definition'
 
 export class ModelResourceIDs {
+
     static ModelTableResourceID(typeName: string): string {
         return `${typeName}Table`
     }
