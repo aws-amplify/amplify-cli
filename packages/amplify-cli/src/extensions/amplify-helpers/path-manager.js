@@ -8,10 +8,10 @@ const amplifyCLIConstants = require('./constants.js');
 function projectPathValidate(projectPath) {
   let isGood = false;
   if (fs.existsSync(projectPath)) {
-    const dotamplifyDirPath = getAmplifyDirPath(projectPath);
+    const amplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
-    isGood = fs.existsSync(dotamplifyDirPath) &&
+    isGood = fs.existsSync(amplifyDirPath) &&
             fs.existsSync(infoSubDirPath);
   }
   return isGood;

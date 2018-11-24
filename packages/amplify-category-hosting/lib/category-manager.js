@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const sequential = require('promise-sequential');
 const constants = require('./constants');
 const supportedServices = require('./supported-services');
 
@@ -60,7 +61,21 @@ function runServiceAction(context, service, action, args) {
   return serviceModule[action](context, args);
 }
 
+async function migrate(context) {
+  const migrationTasks = [];
+  const { migrationInfo } = context;
+  const categoryMeta = migrationInfo.amplifyMeta[constants.CategoryName];
+  if (categoryMeta) {
+    Object.keys(categoryMeta).forEach((service) => {
+      const serviceModule = require(path.join(__dirname, `${service}/index.js`));
+      migrationTasks.push(() => serviceModule.migrate(context));
+    });
+  }
+  await sequential(migrationTasks);
+}
+
 module.exports = {
   getCategoryStatus,
   runServiceAction,
+  migrate,
 };

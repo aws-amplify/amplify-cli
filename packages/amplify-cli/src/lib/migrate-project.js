@@ -27,10 +27,8 @@ const confirmMigrateMessage =
 'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
 
 async function migrateProject(context) {
-  let projectPath;
-  try {
-    projectPath = searchProjectRootPath();
-  } catch (e) {
+  const projectPath = searchProjectRootPath();
+  if (!projectPath) {
     // New project, hence not able to find the amplify dir
     return;
   }
@@ -115,7 +113,7 @@ function generateMigrationInfo(projectConfig, projectPath) {
   migrationInfo.amplifyMeta = getAmplifyMeta(projectPath);
   migrationInfo.currentAmplifyMeta = getCurrentAmplifyMeta(projectPath);
   migrationInfo.projectConfig = generateNewProjectConfig(projectConfig);
-  migrationInfo.localEnvInfo = generateLocalEnvInfo(migrationInfo.projectConfig);
+  migrationInfo.localEnvInfo = generateLocalEnvInfo(projectConfig);
   migrationInfo.localAwsInfo = generateLocalAwsInfo(projectPath);
   migrationInfo.teamProviderInfo = generateTeamProviderInfo(migrationInfo.amplifyMeta);
   migrationInfo.backendConfig = generateBackendConfig(migrationInfo.amplifyMeta);

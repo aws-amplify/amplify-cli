@@ -105,7 +105,7 @@ async function console(context) {
 }
 
 async function migrate(context) {
-  context.print.info('hosting migrate...');
+  await categoryManager.migrate(context);
 }
 
 module.exports = {
