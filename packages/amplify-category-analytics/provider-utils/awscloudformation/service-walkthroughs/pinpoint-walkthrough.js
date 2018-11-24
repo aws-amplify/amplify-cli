@@ -178,13 +178,83 @@ function writeParams(resourceDirPath, values) {
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-function migrate(pathManager, amplifyMeta) {
-  const projectBackendDirPath = pathManager.getBackendDirPath();
+function migrate(context) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const { amplifyMeta } = context.migrationInfo;
   const { analytics = {} } = amplifyMeta;
   Object.keys(analytics).forEach((resourceName) => {
     const resourcePath = path.join(projectBackendDirPath, category, resourceName);
-    writeCfnFile(resourcePath, false, true);
+    const cfn = JSON.parse(fs.readFileSync(path.join(resourcePath, 'pinpoint-cloudformation-template.json')));
+    migrateCFN(cfn);
+    const parameters = JSON.parse(fs.readFileSync(path.join(resourcePath, 'parameters.json')));
   });
+}
+
+function migrateCFN(cfn) {
+  const { Parameters, Conditions, Resources } = cfn;
+
+  // update Parameters
+  delete Parameters.IAMPrefix;
+  Parameters.authRoleArn = {
+    type: 'String',
+  };
+
+  Parameters.env = {
+    type: 'String',
+  };
+
+  // Update conditions
+  Conditions.ShouldNotCreateEnvResources = {
+    'Fn::Equals': [{
+      Ref: 'env',
+    },
+    'NONE',
+    ],
+  };
+
+  const oldRoleName = Resources.LambdaExecutionRole.Properties.RoleName;
+  const newRoleName = {
+    'Fn::If': [
+      'ShouldNotCreateEnvResources',
+      oldRoleName,
+      {
+        'Fn::Join': [
+          '',
+          [
+            oldRoleName,
+            '-',
+            {
+              Ref: 'env',
+            }
+          ],
+        ],
+      },
+    ],
+  };
+  Resources.LambdaExecutionRole.Properties.RoleName = newRoleName;
+
+  const oldAppName = Resources.PinpointFunctionOutputs.Properties.appName;
+  const newAppName = {
+    'Fn::If': [
+      'ShouldNotCreateEnvResources',
+      oldAppName,
+      {
+        'Fn::Join': [
+          '',
+          [
+            oldAppName,
+            '-',
+            {
+              Ref: 'env',
+            },
+          ],
+        ],
+      },
+    ],
+  };
+  Resources.PinpointFunctionOutputs.Properties.appName = newAppName;
+
+  
 }
 
 module.exports = { addWalkthrough, migrate };
