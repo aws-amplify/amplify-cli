@@ -82,49 +82,58 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     questions.push(question);
   }
 
-  return inquirer.prompt(questions)
-    .then(async (answers) => {
-      answers[inputs[0].key] = answers[inputs[1].key];
-      Object.assign(defaultValues, answers);
-      const resource = defaultValues.resourceName;
+  return inquirer.prompt(questions).then(async (answers) => {
+    answers[inputs[0].key] = answers[inputs[1].key];
+    Object.assign(defaultValues, answers);
+    const resource = defaultValues.resourceName;
 
-      // Check for authorization rules and settings
+    // Check for authorization rules and settings
 
-      const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
-      const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
-      // getting requirement satisfaction map
-      const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-      // checking to see if any requirements are unsatisfied
-      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+    const apiRequirements = {
+      authSelections: 'identityPoolOnly',
+      allowUnauthenticatedIdentities: true,
+    };
+    // getting requirement satisfaction map
+    const satisfiedRequirements = await checkRequirements(
+      apiRequirements,
+      context,
+      'api',
+      answers.resourceName,
+    );
+    // checking to see if any requirements are unsatisfied
+    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-      if (foundUnmetRequirements) {
-        context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
-        if (await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)')) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        } else {
-          try {
-            context.print.warning('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
-            apiRequirements.allowUnauthenticatedIdentities = false;
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
+    if (foundUnmetRequirements) {
+      context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
+      if (
+        await context.prompt.confirm('Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)')
+      ) {
+        try {
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+        } catch (e) {
+          context.print.error(e);
+          throw e;
+        }
+      } else {
+        try {
+          context.print.warning('Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.');
+          apiRequirements.allowUnauthenticatedIdentities = false;
+          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
+        } catch (e) {
+          context.print.error(e);
+          throw e;
         }
       }
+    }
 
-      const resourceDirPath = path.join(projectBackendDirPath, category, resource);
-      delete defaultValues.resourceName;
-      writeParams(resourceDirPath, defaultValues);
-      writeCfnFile(resourceDirPath);
-      return resource;
-    });
+    const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+    delete defaultValues.resourceName;
+    writeParams(resourceDirPath, defaultValues);
+    writeCfnFile(resourceDirPath);
+    return resource;
+  });
 }
 
 function checkIfNotificationsCategoryExists(context) {
@@ -185,8 +194,16 @@ function migrate(context) {
   Object.keys(analytics).forEach((resourceName) => {
     const resourcePath = path.join(projectBackendDirPath, category, resourceName);
     const cfn = JSON.parse(fs.readFileSync(path.join(resourcePath, 'pinpoint-cloudformation-template.json')));
-    migrateCFN(cfn);
+    const updatedCfn = migrateCFN(cfn);
+
+    fs.ensureDirSync(resourcePath);
+    const templateFilePath = path.join(resourcePath, templateFileName);
+    fs.writeFileSync(templateFilePath, JSON.stringify(updatedCfn, null, 4), 'utf8');
+
     const parameters = JSON.parse(fs.readFileSync(path.join(resourcePath, 'parameters.json')));
+    const updatedParams = migrateParams(context, parameters);
+    const parametersFilePath = path.join(resourcePath, parametersFileName);
+    fs.writeFileSync(parametersFilePath, JSON.stringify(updatedParams, null, 4), 'utf8');
   });
 }
 
@@ -196,19 +213,22 @@ function migrateCFN(cfn) {
   // update Parameters
   delete Parameters.IAMPrefix;
   Parameters.authRoleArn = {
-    type: 'String',
+    Type: 'String',
   };
 
   Parameters.env = {
-    type: 'String',
+    Type: 'String',
   };
+
+  delete Parameters.IAMPrefix;
 
   // Update conditions
   Conditions.ShouldNotCreateEnvResources = {
-    'Fn::Equals': [{
-      Ref: 'env',
-    },
-    'NONE',
+    'Fn::Equals': [
+      {
+        Ref: 'env',
+      },
+      'NONE',
     ],
   };
 
@@ -225,7 +245,7 @@ function migrateCFN(cfn) {
             '-',
             {
               Ref: 'env',
-            }
+            },
           ],
         ],
       },
@@ -253,8 +273,46 @@ function migrateCFN(cfn) {
     ],
   };
   Resources.PinpointFunctionOutputs.Properties.appName = newAppName;
+  // replace all IAMPrefix refs
+  replaceRef(Resources, 'IAMPrefix', {
+    'Fn::Select': ['4', { 'Fn::Split': [':', { Ref: 'authRoleArn' }] }],
+  });
 
-  
+  return cfn;
+}
+
+function migrateParams(context, params) {
+  const { defaultValuesFilename } = require(`${__dirname}/../../supported-services.json`)[serviceName];
+  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+
+  delete params.IAMPrefix;
+  const defaultValues = getAllDefaults(context.migrationInfo);
+  delete defaultValues.resourceName;
+  return { ...defaultValues, ...params };
+}
+
+function replaceRef(node, refName, refReplacement) {
+  if (Array.isArray(node)) {
+    return node.forEach(item => replaceRef(item, refName, refReplacement));
+  }
+  if (typeof node === 'object') {
+    if (isRefNode(node, refName)) {
+      delete node.Ref;
+      Object.assign(node, refReplacement);
+      return;
+    }
+    Object.values(node).forEach((n) => {
+      replaceRef(n, refName, refReplacement);
+    });
+  }
+}
+
+function isRefNode(node, refName) {
+  if (typeof node === 'object' && 'Ref' in node && node.Ref === refName) {
+    return true;
+  }
+  return false;
 }
 
 module.exports = { addWalkthrough, migrate };
