@@ -4,9 +4,23 @@ const { getEnvInfo } = require('./get-env-info');
 
 const CATEGORIES = 'categories';
 
-function loadAllResourceParameters() {
-  const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
+function isMigrationContext(context) {
+  return 'migrationInfo' in context;
+}
+
+function getCurrentEnvName(context) {
+  if (isMigrationContext(context)) {
+    return context.migrationInfo.localEnvInfo.envName;
+  }
+  return getEnvInfo().envName;
+}
+
+function loadAllResourceParameters(context) {
   try {
+    if (isMigrationContext(context)) {
+      return context.migrationInfo.teamProviderInfo;
+    }
+    const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
     if (fs.existsSync(teamProviderInfoFilePath)) {
       return JSON.parse(fs.readFileSync(teamProviderInfoFilePath));
     }
@@ -43,35 +57,37 @@ function removeObjectRecursively(obj, keys) {
   }
 }
 
-function saveAllResourceParams(data) {
+function saveAllResourceParams(context, data) {
+  if (isMigrationContext(context)) return; // no need to serialize team provider
+
   const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
   fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(data, null, 4));
 }
 
-function saveEnvResourceParameters(category, resource, parameters) {
-  const allParams = loadAllResourceParameters();
-  const currentEnv = getEnvInfo().envName;
+function saveEnvResourceParameters(context, category, resource, parameters) {
+  const allParams = loadAllResourceParameters(context);
+  const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
   resources[resource] = parameters;
 
-  saveAllResourceParams(allParams);
+  saveAllResourceParams(context, allParams);
 }
 
-function loadEnvResourceParameters(category, resource) {
-  const allParams = loadAllResourceParameters();
+function loadEnvResourceParameters(context, category, resource) {
+  const allParams = loadAllResourceParameters(context);
   try {
-    const currentEnv = getEnvInfo().envName;
+    const currentEnv = getCurrentEnvName(context);
     return getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category, resource]);
   } catch (e) {
     return {};
   }
 }
 
-function removeResourceParameters(category, resource) {
-  const allParams = loadAllResourceParameters();
-  const currentEnv = getEnvInfo().envName;
+function removeResourceParameters(context, category, resource) {
+  const allParams = loadAllResourceParameters(context);
+  const currentEnv = getCurrentEnvName(context);
   removeObjectRecursively(allParams, [currentEnv, CATEGORIES, category, resource]);
-  saveAllResourceParams(allParams);
+  saveAllResourceParams(context, allParams);
 }
 
 module.exports = {
