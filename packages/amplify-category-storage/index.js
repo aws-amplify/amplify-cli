@@ -28,6 +28,7 @@ async function migrate(context) {
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
           if (providerController) {
             migrateResourcePromises.push(providerController.migrateResource(
+              context,
               projectPath,
               amplifyMeta[category][resourceName].service,
               resourceName,

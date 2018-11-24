@@ -158,7 +158,8 @@ async function migrateResource(context, projectPath, service, resourceName) {
   const { migrate } = require(serviceWalkthroughSrc);
 
   if (!migrate) {
-    console.log(`No migration required for ${resourceName}`);
+    context.print.info(`No migration required for ${resourceName}`);
+    return;
   }
 
   return await migrate(context, projectPath, resourceName);
