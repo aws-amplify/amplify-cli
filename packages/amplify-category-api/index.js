@@ -26,7 +26,8 @@ async function migrate(context) {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
           }
         } catch (e) {
-          context.print.warning(`Could not run migration for ${category} category`);
+          context.print.warning(`Could not run migration for ${category}: ${resourceName}`);
+          throw e;
         }
       });
     }
