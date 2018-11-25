@@ -199,4 +199,19 @@ async function invoke(context, category, service, resourceName) {
   });
 }
 
-module.exports = { addResource, invoke };
+function migrateResource(context, projectPath, service, resourceName) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
+
+  if (!migrate) {
+    context.print.info(`No migration required for ${resourceName}`);
+    return;
+  }
+
+  return migrate(projectPath, resourceName);
+}
+
+
+module.exports = { addResource, invoke, migrateResource };
