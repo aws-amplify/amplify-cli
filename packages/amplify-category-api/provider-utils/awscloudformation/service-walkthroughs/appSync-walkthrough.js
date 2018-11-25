@@ -349,5 +349,11 @@ function checkIfAuthExists(context) {
   return authResourceName;
 }
 
+async function migrate(context) {
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true });
+}
 
-module.exports = { serviceWalkthrough, updateWalkthrough, openConsole };
+
+module.exports = {
+  serviceWalkthrough, updateWalkthrough, openConsole, migrate,
+};
