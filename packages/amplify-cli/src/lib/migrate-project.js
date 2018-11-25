@@ -251,6 +251,10 @@ function generateBackendConfig(amplifyMeta) {
         backendConfig[category][resourceName].service = amplifyMeta[category][resourceName].service;
         backendConfig[category][resourceName].providerPlugin =
         amplifyMeta[category][resourceName].providerPlugin;
+        backendConfig[category][resourceName].dependsOn =
+        amplifyMeta[category][resourceName].dependsOn;
+        backendConfig[category][resourceName].build =
+        amplifyMeta[category][resourceName].build;
       });
     }
   });
