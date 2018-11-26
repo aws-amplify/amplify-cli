@@ -398,7 +398,20 @@ function copyCfnTemplate(context, categoryName, resourceName, options) {
 function migrate(projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
-  const oldCfn = JSON.parse(fs.readFileSync(cfnFilePath, 'utf8'));
+
+  // Removes dangling commas from a JSON
+  const removeDanglingCommas = (value) => {
+    const regex = /,(?!\s*?[{["'\w])/g;
+    return value.replace(regex, '');
+  };
+
+  /* Current Dynamo CFN's have a trailing comma (accepted by CFN),
+  but fails on JSON.parse(), hence removing it */
+
+  let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
+  oldcfnString = removeDanglingCommas(oldcfnString);
+  const oldCfn = JSON.parse(oldcfnString);
+
   const newCfn = {};
   Object.assign(newCfn, oldCfn);
 
