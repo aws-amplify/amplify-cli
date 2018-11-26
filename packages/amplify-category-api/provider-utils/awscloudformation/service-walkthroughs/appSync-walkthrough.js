@@ -350,7 +350,7 @@ function checkIfAuthExists(context) {
 }
 
 async function migrate(context) {
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true });
 }
 
 
