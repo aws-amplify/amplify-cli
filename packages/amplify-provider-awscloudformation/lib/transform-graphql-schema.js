@@ -34,14 +34,19 @@ async function transformGraphQLSchema(context, options) {
 
   let { resourceDir, parameters } = options;
   // const { noConfig } = options;
+  const { forceCompile } = options;
 
   // Compilation during the push step
   if (!resourceDir) {
     const {
       resourcesToBeCreated,
       resourcesToBeUpdated,
+      allResources,
     } = await context.amplify.getResourceStatus(category);
     let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+    if (forceCompile) {
+      resources = resources.concat(allResources);
+    }
     resources = resources.filter(resource => resource.service === 'AppSync');
     // There can only be one appsync resource
     if (resources.length > 0) {
