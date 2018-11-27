@@ -1,4 +1,5 @@
 const cliConstants = require('../extensions/amplify-helpers/constants');
+
 module.exports = {
   name: cliConstants.CliName,
   alias: ['h', '-h'],

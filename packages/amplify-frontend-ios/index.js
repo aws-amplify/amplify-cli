@@ -1,6 +1,7 @@
 const constants = require('./lib/constants');
 
 function scanProject(projectPath) {
+  return require('./lib/project-scanner').run(projectPath);
 }
 
 function init(context) {
