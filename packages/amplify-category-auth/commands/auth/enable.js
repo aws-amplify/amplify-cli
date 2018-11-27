@@ -1,6 +1,3 @@
-const fs = require('fs');
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
-
 const subcommand = 'enable';
 const category = 'auth';
 let options;
@@ -9,6 +6,8 @@ module.exports = {
   name: subcommand,
   alias: ['add'],
   run: async (context) => {
+    const fs = require('fs');
+    const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
     const { amplify } = context;
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 

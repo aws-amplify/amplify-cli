@@ -1,6 +1,5 @@
 const subcommand = 'remove';
 const category = 'auth';
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
 
 module.exports = {
@@ -16,6 +15,7 @@ module.exports = {
       });
 
     if (dependentResources) {
+      const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
       context.print.info(messages.dependenciesExists);
     }
 

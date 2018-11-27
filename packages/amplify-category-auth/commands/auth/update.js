@@ -1,7 +1,3 @@
-const fs = require('fs');
-const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
-
-
 const subcommand = 'update';
 const category = 'auth';
 let options;
@@ -13,6 +9,8 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
+
+    const fs = require('fs');
 
     if (!Object.keys(existingAuth).length > 0) {
       return context.print.warning('Auth has not yet been added to this project.');
@@ -27,6 +25,7 @@ module.exports = {
       });
 
     if (dependentResources) {
+      const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
       context.print.info(messages.dependenciesExists);
     }
 
