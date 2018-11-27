@@ -1,8 +1,8 @@
-const inquirer = require('inquirer');
-
 module.exports = {
   name: 'console',
   run: async (context) => {
+    const inquirer = require('inquirer');
+
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
     const providerPlugins = context.amplify.getProviderPlugins(context);
 
