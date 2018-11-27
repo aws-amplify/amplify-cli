@@ -15,7 +15,7 @@ async function deleteProject(context) {
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
     context.filesystem.remove(pathManager.getAmplifyDirPath());
-    context.print.success('Prooject deleted locally.');
+    context.print.success('Project deleted locally.');
   }
 }
 
