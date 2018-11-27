@@ -1,6 +1,5 @@
-const inquirer = require('inquirer');
-
 async function editorSelection(defaultEditor) {
+  const inquirer = require('inquirer');
   const editors = [
     {
       name: 'Sublime Text',

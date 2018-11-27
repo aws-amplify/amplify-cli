@@ -1,8 +1,8 @@
-const { print } = require('gluegun/print');
-const CFonts = require('cfonts');
-const cliConstants = require('./constants');
-
 function showHelp(header, commands) {
+  const { print } = require('gluegun/print');
+  const CFonts = require('cfonts');
+  const cliConstants = require('./constants');
+
   CFonts.say(cliConstants.BrandName, {
     font: 'block', // define the font face
     align: 'left', // define text alignment

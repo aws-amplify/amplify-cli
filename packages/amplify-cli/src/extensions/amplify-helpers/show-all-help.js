@@ -1,8 +1,8 @@
-const { print } = require('gluegun/print');
-const { showHelp } = require('./show-help');
-const { listCategories } = require('./list-categories');
-
 function showAllHelp(context) {
+  const { print } = require('gluegun/print');
+  const { showHelp } = require('./show-help');
+  const { listCategories } = require('./list-categories');
+
   print.info('');
 
   const header = 'amplify <command> <subcommand>';

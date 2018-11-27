@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 /**
  * Runs a series of jobs through the templating system.
  *
@@ -9,6 +7,8 @@ const fs = require('fs');
  * @param {any}   opts           - Additional options
  */
 async function copyBatch(context, jobs, props, force, writeParams) {
+  const fs = require('fs');
+
   // grab some features
   const {
     template,

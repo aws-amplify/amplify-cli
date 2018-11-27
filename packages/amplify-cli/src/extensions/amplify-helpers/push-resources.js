@@ -1,8 +1,8 @@
-const { getProjectConfig } = require('./get-project-config');
-const { showResourceTable } = require('./resource-status');
-const { onCategoryOutputsChange } = require('./on-category-outputs-change');
-
 async function pushResources(context, category, resourceName) {
+  const { getProjectConfig } = require('./get-project-config');
+  const { showResourceTable } = require('./resource-status');
+  const { onCategoryOutputsChange } = require('./on-category-outputs-change');
+
   await showResourceTable(category, resourceName);
 
   return context.amplify.confirmPrompt.run('Are you sure you want to continue?')

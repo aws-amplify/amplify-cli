@@ -1,6 +1,3 @@
-const inquirer = require('inquirer');
-const { getProjectConfig } = require('./get-project-config');
-
 function filterServicesByEnabledProviders(providerPlugins, supportedServices) {
   const filteredServices = [];
 
@@ -52,11 +49,12 @@ function serviceQuestionWalkthrough(context, supportedServices, category) {
     choices: options,
   }];
 
-  return inquirer.prompt(question)
+  return require('inquirer').prompt(question)
     .then(answer => answer.service);
 }
 
 function serviceSelectionPrompt(context, category, supportedServices) {
+  const { getProjectConfig } = require('./get-project-config');
   const { providers } = getProjectConfig();
   supportedServices = filterServicesByEnabledProviders(providers, supportedServices);
   return serviceQuestionWalkthrough(context, supportedServices, category);

@@ -1,11 +1,11 @@
-const ora = require('ora');
-const { getProjectConfig } = require('./get-project-config');
-const { getCategoryPlugins } = require('./get-category-plugins');
-const pathManager = require('./path-manager');
-
-const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
-
 async function deleteProject(context) {
+  const ora = require('ora');
+  const { getProjectConfig } = require('./get-project-config');
+  const { getCategoryPlugins } = require('./get-category-plugins');
+  const pathManager = require('./path-manager');
+
+  const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
+
   return context.amplify.confirmPrompt.run('Are you sure you want to continue?(This would delete all the project from the cloud and wipe out all the local amplify resource files)')
     .then((answer) => {
       if (answer) {

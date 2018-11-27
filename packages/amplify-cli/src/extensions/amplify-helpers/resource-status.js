@@ -1,11 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const { print } = require('gluegun/print');
-const { hashElement } = require('folder-hash');
-const pathManager = require('./path-manager');
-const _ = require('lodash');
-
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
+  const fs = require('fs');
+  const path = require('path');
+  const pathManager = require('./path-manager');
+
   // Pushing the resource for the first time hence no lastPushTimeStamp
   if (!lastPushTimeStamp) {
     return false;
@@ -40,6 +37,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
 
 
 function getHashForResourceDir(dirPath) {
+  const { hashElement } = require('folder-hash');
   const options = {
     folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
   };
@@ -68,7 +66,7 @@ function getAllResources(amplifyMeta, category, resourceName) {
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
     resources = resources.filter(resource => resource.category === category &&
-        resource.resourceName === resourceName);
+      resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
@@ -80,15 +78,16 @@ function getAllResources(amplifyMeta, category, resourceName) {
 }
 
 function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName) {
+  const _ = require('lodash');
   let resources = [];
 
   Object.keys((amplifyMeta)).forEach((categoryName) => {
     const categoryItem = amplifyMeta[categoryName];
     Object.keys((categoryItem)).forEach((resource) => {
       if ((!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
-          !currentamplifyMeta[categoryName] ||
-          !currentamplifyMeta[categoryName][resource]) &&
-          categoryName !== 'providers') {
+        !currentamplifyMeta[categoryName] ||
+        !currentamplifyMeta[categoryName][resource]) &&
+        categoryName !== 'providers') {
         amplifyMeta[categoryName][resource].resourceName = resource;
         amplifyMeta[categoryName][resource].category = categoryName;
         resources.push(amplifyMeta[categoryName][resource]);
@@ -99,7 +98,7 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
     resources = resources.filter(resource => resource.category === category &&
-        resource.resourceName === resourceName);
+      resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
@@ -144,7 +143,7 @@ function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, reso
   if (category !== undefined && resourceName !== undefined) {
     // Deletes only specified resource in the cloud
     resources = resources.filter(resource => resource.category === category &&
-        resource.resourceName === resourceName);
+      resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
@@ -164,7 +163,7 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
     await asyncForEach(Object.keys((categoryItem)), async (resource) => {
       if (currentamplifyMeta[categoryName]) {
         if (currentamplifyMeta[categoryName][resource] !== undefined &&
-            amplifyMeta[categoryName][resource] !== undefined) {
+          amplifyMeta[categoryName][resource] !== undefined) {
           const backendModified = await isBackendDirModifiedSinceLastPush(
             resource,
             categoryName,
@@ -183,7 +182,7 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
 
   if (category !== undefined && resourceName !== undefined) {
     resources = resources.filter(resource => resource.category === category &&
-        resource.resourceName === resourceName);
+      resource.resourceName === resourceName);
   }
 
   if (category !== undefined && !resourceName) {
@@ -201,6 +200,8 @@ async function asyncForEach(array, callback) {
 
 
 async function getResourceStatus(category, resourceName, providerName) {
+  const fs = require('fs');
+  const pathManager = require('./path-manager');
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -251,6 +252,9 @@ async function getResourceStatus(category, resourceName, providerName) {
 }
 
 async function showResourceTable(category, resourceName) {
+  const { print } = require('gluegun/print');
+  const _ = require('lodash');
+
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,

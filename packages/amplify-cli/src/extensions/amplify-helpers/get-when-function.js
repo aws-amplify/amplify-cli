@@ -26,7 +26,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
 
   /*eslint-disable*/
   if (!cond.preventEdit) {
-    if (cond.operator === '=' && (answers[cond.key] != undefined && answers[cond.key] !== cond.value|| !answers[cond.key] )) {
+    if (cond.operator === '=' && (answers[cond.key] != undefined && answers[cond.key] !== cond.value || !answers[cond.key])) {
       response = false;
     } else if (cond.operator === '!=' && (!answers[cond.key] || answers[cond.key] === cond.value)) {
       response = false;
@@ -41,7 +41,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
       response = false;
     } else if (cond.preventEdit === 'exists' && !!previousValues[cond.key]) {
       response = false;
-    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value ) {
+    } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value) {
       response = false;
     }
   }

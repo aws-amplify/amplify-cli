@@ -1,8 +1,7 @@
-const fs = require('fs');
-const pathManager = require('./path-manager');
-const { getResourceOutputs } = require('./get-resource-outputs');
-
 function onCategoryOutputsChange(context) {
+  const fs = require('fs');
+  const pathManager = require('./path-manager');
+  const { getResourceOutputs } = require('./get-resource-outputs');
   const projectConfigFilePath = pathManager.getProjectConfigFilePath();
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
   if (projectConfig.frontendHandler) {

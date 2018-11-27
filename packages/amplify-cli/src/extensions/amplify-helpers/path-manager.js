@@ -1,23 +1,21 @@
-const path = require('path');
-const fs = require('fs');
-const homedir = require('os').homedir();
-const amplifyCLIConstants = require('./constants.js');
-
 /* Helpers */
 
 function projectPathValidate(projectPath) {
+  const fs = require('fs');
   let isGood = false;
   if (fs.existsSync(projectPath)) {
     const dotamplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
     isGood = fs.existsSync(dotamplifyDirPath) &&
-            fs.existsSync(infoSubDirPath);
+      fs.existsSync(infoSubDirPath);
   }
   return isGood;
 }
 
 function searchProjectRootPath() {
+  const path = require('path');
+
   let result;
   let currentPath = process.cwd();
 
@@ -40,11 +38,16 @@ function searchProjectRootPath() {
 }
 
 function getHomeDotAmplifyDirPath() {
+  const path = require('path');
+  const homedir = require('os').homedir();
+  const amplifyCLIConstants = require('./constants.js');
   return path.join(homedir, amplifyCLIConstants.DotAmplifyDirName);
 }
 
 // ///////////////////level 0
 function getAmplifyDirPath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   if (!projectPath) {
     projectPath = searchProjectRootPath();
   }
@@ -59,6 +62,8 @@ function getAmplifyDirPath(projectPath) {
 
 // ///////////////////level 1
 function getDotConfigDirPath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getAmplifyDirPath(projectPath),
     amplifyCLIConstants.DotConfigamplifyCLISubDirName,
@@ -66,6 +71,8 @@ function getDotConfigDirPath(projectPath) {
 }
 
 function getBackendDirPath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getAmplifyDirPath(projectPath),
     amplifyCLIConstants.BackendamplifyCLISubDirName,
@@ -73,6 +80,8 @@ function getBackendDirPath(projectPath) {
 }
 
 function getCurrentCloudBackendDirPath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getAmplifyDirPath(projectPath),
     amplifyCLIConstants.CurrentCloudBackendamplifyCLISubDirName,
@@ -80,6 +89,7 @@ function getCurrentCloudBackendDirPath(projectPath) {
 }
 
 function getAmplifyRcFilePath(projectPath) {
+  const path = require('path');
   if (!projectPath) {
     projectPath = searchProjectRootPath();
   }
@@ -95,6 +105,8 @@ function getAmplifyRcFilePath(projectPath) {
 // ///////////////////level 2
 
 function getProjectConfigFilePath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getDotConfigDirPath(projectPath),
     amplifyCLIConstants.ProjectConfigFileName,
@@ -102,6 +114,8 @@ function getProjectConfigFilePath(projectPath) {
 }
 
 function getPluginConfigFilePath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getDotConfigDirPath(projectPath),
     amplifyCLIConstants.PluginConfigFileName,
@@ -109,6 +123,8 @@ function getPluginConfigFilePath(projectPath) {
 }
 
 function getAmplifyMetaFilePath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getBackendDirPath(projectPath),
     amplifyCLIConstants.amplifyMetaFileName,
@@ -116,6 +132,8 @@ function getAmplifyMetaFilePath(projectPath) {
 }
 
 function getCurentAmplifyMetaFilePath(projectPath) {
+  const path = require('path');
+  const amplifyCLIConstants = require('./constants.js');
   return path.normalize(path.join(
     getCurrentCloudBackendDirPath(projectPath),
     amplifyCLIConstants.amplifyMetaFileName,

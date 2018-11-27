@@ -1,7 +1,6 @@
-const fs = require('fs-extra');
-const pathManager = require('./path-manager');
-
 function updateProjectConfig(projectPath, label, data) {
+  const fs = require('fs-extra');
+  const pathManager = require('./path-manager');
   let projectConfig;
   const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
   if (fs.existsSync(projectConfigFilePath)) {

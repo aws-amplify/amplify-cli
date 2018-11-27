@@ -1,7 +1,7 @@
-const { getProjectConfig } = require('./get-project-config');
-const { getResourceStatus } = require('./resource-status');
-
 async function showHelpfulProviderLinks(context) {
+  const { getProjectConfig } = require('./get-project-config');
+  const { getResourceStatus } = require('./resource-status');
+
   const { providers } = getProjectConfig();
   const providerPromises = [];
 

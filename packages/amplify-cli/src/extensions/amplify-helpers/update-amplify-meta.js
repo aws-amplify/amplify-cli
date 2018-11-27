@@ -1,10 +1,6 @@
-const fs = require('fs-extra');
-const { filesystem } = require('gluegun/filesystem');
-const path = require('path');
-const { hashElement } = require('folder-hash');
-const pathManager = require('./path-manager');
-
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
+  const fs = require('fs-extra');
+
   const amplifyMeta = JSON.parse(fs.readFileSync(filePath));
 
   if (!amplifyMeta[category]) {
@@ -31,6 +27,10 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 }
 
 function moveBackendResourcesToCurrentCloudBackend(resources) {
+  const fs = require('fs-extra');
+  const path = require('path');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
 
@@ -57,6 +57,9 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 }
 
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
+  const fs = require('fs-extra');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   if (!amplifyMeta[category]) {
@@ -71,6 +74,9 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
 }
 
 function updateProvideramplifyMeta(providerName, options) {
+  const fs = require('fs-extra');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
 
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
@@ -91,6 +97,8 @@ function updateProvideramplifyMeta(providerName, options) {
 
 
 function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute, value) {
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   // let amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
   const currentTimestamp = new Date();
@@ -106,6 +114,10 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
 }
 
 async function updateamplifyMetaAfterPush(resources) {
+  const fs = require('fs-extra');
+  const path = require('path');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -134,6 +146,7 @@ async function updateamplifyMetaAfterPush(resources) {
 }
 
 function getHashForResourceDir(dirPath) {
+  const { hashElement } = require('folder-hash');
   const options = {
     folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
   };
@@ -143,6 +156,9 @@ function getHashForResourceDir(dirPath) {
 }
 
 function updateamplifyMetaAfterBuild(resource) {
+  const fs = require('fs-extra');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   const currentTimestamp = new Date();
@@ -155,6 +171,8 @@ function updateamplifyMetaAfterBuild(resource) {
 }
 
 function updateAmplifyMetaAfterPackage(resource, zipFilename) {
+  const fs = require('fs-extra');
+  const pathManager = require('./path-manager');
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   const currentTimestamp = new Date();
@@ -169,6 +187,10 @@ function updateAmplifyMetaAfterPackage(resource, zipFilename) {
 
 
 function updateamplifyMetaAfterResourceDelete(category, resourceName) {
+  const fs = require('fs-extra');
+  const { filesystem } = require('gluegun/filesystem');
+  const path = require('path');
+  const pathManager = require('./path-manager');
   const amplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 

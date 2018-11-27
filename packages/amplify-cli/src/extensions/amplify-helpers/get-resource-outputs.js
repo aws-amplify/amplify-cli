@@ -1,7 +1,7 @@
-const fs = require('fs');
-const pathManager = require('./path-manager');
-
 function getResourceOutputs() {
+  const fs = require('fs');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -36,7 +36,7 @@ function getResourceOutputs() {
         }
         /*eslint-disable*/
         outputsByProvider[providerPlugin].serviceResourceMapping[resourceMeta.service].push(resourceMeta);
-         /* eslint-enable */
+        /* eslint-enable */
         if (!outputsByCategory[category]) {
           outputsByCategory[category] = {};
         }

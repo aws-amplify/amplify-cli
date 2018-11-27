@@ -1,9 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const inquirer = require('inquirer');
-const pathManager = require('./path-manager');
-
 function removeResource(context, category) {
+  const fs = require('fs');
+  const path = require('path');
+  const inquirer = require('inquirer');
+  const pathManager = require('./path-manager');
+
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
@@ -38,7 +38,7 @@ function removeResource(context, category) {
               if (resourceItem.dependsOn) {
                 resourceItem.dependsOn.forEach((dependsOnItem) => {
                   if (dependsOnItem.category === category &&
-                      dependsOnItem.resourceName === resourceName) {
+                    dependsOnItem.resourceName === resourceName) {
                     context.print.error('Resource cannot be removed because it has a dependency on another resource');
                     context.print.error(`Dependency: ${resourceItem.service}:${resourceItem.resourceName}`);
                     throw new Error('Resource cannot be removed because it has a dependency on another resource');

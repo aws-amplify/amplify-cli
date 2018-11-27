@@ -1,7 +1,6 @@
-const fs = require('fs');
-const pathManager = require('./path-manager');
-
 function getProjectDetails() {
+  const fs = require('fs');
+  const pathManager = require('./path-manager');
   const projectConfigFilePath = pathManager.getProjectConfigFilePath();
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
 

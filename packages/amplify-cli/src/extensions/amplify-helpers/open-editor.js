@@ -1,9 +1,9 @@
-const inquirer = require('inquirer');
-const openInEditor = require('open-in-editor');
-const { editorSelection } = require('./editor-selection');
-const { getProjectDetails } = require('./get-project-details');
-
 async function openEditor(context, filePath) {
+  const inquirer = require('inquirer');
+  const openInEditor = require('open-in-editor');
+  const { editorSelection } = require('./editor-selection');
+  const { getProjectDetails } = require('./get-project-details');
+
   const continueQuestion = {
     type: 'input',
     name: 'pressKey',
