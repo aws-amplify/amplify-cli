@@ -1,8 +1,5 @@
-const fs = require('fs');
-
 const subcommand = 'add';
 const category = 'storage';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
 let options;
 
@@ -11,6 +8,8 @@ module.exports = {
   run: async (context) => {
     const { amplify } = context;
 
+    const fs = require('fs');
+    const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {
