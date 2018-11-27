@@ -286,7 +286,14 @@ function migrateParams(context, params) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
+  // no longer used
   delete params.IAMPrefix;
+
+  // uses default value, which are refs to parent stack
+  delete params.authRoleName;
+  delete params.unauthRoleName;
+  delete params.authRoleArn;
+
   const defaultValues = getAllDefaults(context.migrationInfo);
   delete defaultValues.resourceName;
   return { ...defaultValues, ...params };
