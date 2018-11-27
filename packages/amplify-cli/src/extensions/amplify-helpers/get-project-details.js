@@ -13,7 +13,7 @@ function getProjectDetails() {
 
   let localEnvInfo = {};
   const envFilepath = pathManager.getLocalEnvFilePath();
-  if(fs.existsSync(envFilepath)) {
+  if (fs.existsSync(envFilepath)) {
     localEnvInfo = JSON.parse(fs.readFileSync(envFilepath));
   }
 
