@@ -7,10 +7,10 @@ module.exports = {
   alias: ['update'],
   run: async (context) => {
     const { amplify } = context;
-    const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
-    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     const fs = require('fs');
+    const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+    const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (!Object.keys(existingAuth).length > 0) {
       return context.print.warning('Auth has not yet been added to this project.');
