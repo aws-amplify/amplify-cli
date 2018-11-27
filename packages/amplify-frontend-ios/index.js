@@ -1,29 +1,25 @@
-const initializer = require('./lib/initializer');
-const projectScanner = require('./lib/project-scanner');
-const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
-const { createAWSConfig } = require('./lib/frontend-config-creator');
 
 function scanProject(projectPath) {
-  return projectScanner.run(projectPath);
 }
 
 function init(context) {
-  return initializer.run(context);
+  return require('./lib/initializer').run(context);
 }
 
 function onInitSuccessful(context) {
-  return initializer.onInitSuccessful(context);
+  return require('./lib/initializer').onInitSuccessful(context);
 }
 
 function createFrontendConfigs(context, amplifyResources) {
   const { outputsForFrontend } = amplifyResources;
   // createAmplifyConfig(context, outputsByCategory);
+  const { createAWSConfig } = require('./lib/frontend-config-creator');
   return createAWSConfig(context, outputsForFrontend);
 }
 
 function configure(context) {
-  return configManager.configure(context);
+  return require('./lib/configuration-manager').configure(context);
 }
 
 function publish(context) {
