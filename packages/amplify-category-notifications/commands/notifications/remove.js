@@ -1,8 +1,3 @@
-const inquirer = require('inquirer');
-const pinpointHelper = require('../../lib/pinpoint-helper');
-const notificationManager = require('../../lib/notifications-manager');
-const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
-
 const PinpointApp = 'The Pinpoint application';
 const Cancel = 'Cancel';
 
@@ -10,8 +5,14 @@ module.exports = {
   name: 'remove',
   alias: ['disable', 'delete'],
   run: async (context) => {
+    const inquirer = require('inquirer');
+    const pinpointHelper = require('../../lib/pinpoint-helper');
+    const notificationManager = require('../../lib/notifications-manager');
+    const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
+
     context.exeInfo = context.amplify.getProjectDetails();
     const pinpointApp = pinpointHelper.getPinpointApp(context);
+
     if (pinpointApp) {
       const availableChannels = notificationManager.getAvailableChannels(context);
       const enabledChannels = notificationManager.getEnabledChannels(context);

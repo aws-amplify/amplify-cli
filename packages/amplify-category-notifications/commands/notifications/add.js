@@ -1,13 +1,14 @@
-const inquirer = require('inquirer');
-const pinpointHelper = require('../../lib/pinpoint-helper');
-const notificationManager = require('../../lib/notifications-manager');
-const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
-
 module.exports = {
   name: 'add',
   alias: 'enable',
   run: async (context) => {
     context.exeInfo = context.amplify.getProjectDetails();
+
+    const inquirer = require('inquirer');
+    const pinpointHelper = require('../../lib/pinpoint-helper');
+    const notificationManager = require('../../lib/notifications-manager');
+    const writeAmplifyMeta = require('../../lib/writeAmplifyMeta');
+
     const availableChannels = notificationManager.getAvailableChannels(context);
     const disabledChannels = notificationManager.getDisabledChannels(context);
 
