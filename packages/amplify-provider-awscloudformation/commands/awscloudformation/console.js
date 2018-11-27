@@ -1,6 +1,7 @@
-const consoleCommand = require('../../lib/console');
-
 module.exports = {
   name: 'console',
-  run: async context => consoleCommand.run(context),
+  run: async context => {
+    const consoleCommand = require('../../lib/console');
+    return consoleCommand.run(context)
+  },
 };

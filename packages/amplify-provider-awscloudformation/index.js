@@ -1,39 +1,32 @@
-const initializer = require('./lib/initializer');
-const resourcePusher = require('./lib/push-resources');
-const projectRemover = require('./lib/delete-project');
-const resourceBuilder = require('./lib/build-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
-const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
-const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
 const pinpoint = require('./src/aws-utils/aws-pinpoint');
-const consoleCommand = require('./lib/console');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
 function init(context) {
-  return initializer.run(context);
+  return require('./lib/initializer').run(context);
 }
 
 function onInitSuccessful(context) {
-  return initializer.onInitSuccessful(context);
+  return require('./lib/initializer').onInitSuccessful(context);
 }
 
 function pushResources(context, category, resourceName) {
-  return resourcePusher.run(context, category, resourceName);
+  return require('./lib/push-resources').run(context, category, resourceName);
 }
 
 function deleteProject(context) {
-  return projectRemover.run(context);
+  return require('./lib/delete-project').run(context);
 }
 
 function configure(context) {
-  return configManager.configure(context);
+  return require('./lib/configuration-manager').configure(context);
 }
 
 function buildResources(context, category, resourceName) {
-  return resourceBuilder.run(context, category, resourceName);
+  return require('./lib/build-resources').run(context, category, resourceName);
 }
 
 function getConfiguredAWSClient(context, category, action) {
@@ -51,11 +44,12 @@ function getConfiguredPinpointClient(context) {
   return pinpoint.getConfiguredPinpointClient(context);
 }
 
-function getPinpointRegionMapping(context) {
-  return pinpoint.getPinpointRegionMapping(context);
+function getConfiguredAWSClient(context) {
+  return require('./src/aws-utils/aws').configureWithCreds(context);
 }
 
 function showHelpfulLinks(context, resources) {
+  const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
   return displayHelpfulURLs(context, resources);
 }
 
@@ -64,7 +58,7 @@ function configureNewUser(context) {
 }
 
 function console(context) {
-  return consoleCommand.run(context);
+  return require('./lib/console').run(context);
 }
 
 module.exports = {
