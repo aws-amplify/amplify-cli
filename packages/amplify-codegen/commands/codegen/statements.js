@@ -1,10 +1,10 @@
-const codeGen = require('../../src');
-
 const featureName = 'statements';
 
 module.exports = {
   name: featureName,
   run: async (context) => {
+    const codeGen = require('../../src');
+
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generateStatements(context, forceDownloadSchema);

@@ -1,10 +1,10 @@
-const codeGen = require('../../src');
-
 const featureName = 'types';
 
 module.exports = {
   name: featureName,
   run: async (context) => {
+    const codeGen = require('../../src');
+
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generateTypes(context, forceDownloadSchema);

@@ -1,11 +1,10 @@
-const constants = require('../../src/constants');
-const codeGen = require('../../src');
-
 const featureName = 'codegen';
 
 module.exports = {
   name: featureName,
   run: async (context) => {
+    const constants = require('../../src/constants');
+    const codeGen = require('../../src');
     if (context.parameters.options.help) {
       const header = `amplify ${featureName} [subcommand] \nDescriptions:
       Generates GraphQL statements(queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
@@ -35,7 +34,7 @@ module.exports = {
       context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
       process.exit(1);
     }
-    
+
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
       await codeGen.generate(context, forceDownloadSchema);
