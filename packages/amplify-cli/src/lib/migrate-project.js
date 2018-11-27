@@ -25,6 +25,8 @@ const {
 
 const confirmMigrateMessage =
 'We detected the project was initialized using an older version of the CLI. Do you want to migrate the project, so that it is compatible with the latest version of the CLI?';
+const secondConfirmMessage =
+'The CLI would be modifying your Amplify backend configuration files as a part of the migration process, hence we highly recommend backing up your existing local project before moving ahead. Are you sure you want to continue?';
 
 async function migrateProject(context) {
   const projectPath = searchProjectRootPath();
@@ -37,9 +39,11 @@ async function migrateProject(context) {
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
     if (await prompt.confirm(confirmMigrateMessage)) {
-    // Currently there are only two project configuration versions, so call this method directly
-    // If more versions are involved, switch to apropriate migration method
-      await migrateFrom0To1(context, projectPath, projectConfig);
+      if (await prompt.confirm(secondConfirmMessage)) {
+        // Currently there are only two project configuration versions, so call this method directly
+        // If more versions are involved, switch to apropriate migration method
+        await migrateFrom0To1(context, projectPath, projectConfig);
+      }
     }
   }
 }

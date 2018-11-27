@@ -11,8 +11,11 @@ function getProjectDetails() {
     amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
   }
 
+  let localEnvInfo = {};
   const envFilepath = pathManager.getLocalEnvFilePath();
-  const localEnvInfo = JSON.parse(fs.readFileSync(envFilepath));
+  if (fs.existsSync(envFilepath)) {
+    localEnvInfo = JSON.parse(fs.readFileSync(envFilepath));
+  }
 
   let teamProviderInfo = {};
   const teamProviderFilePath = pathManager.getProviderInfoFilePath();
