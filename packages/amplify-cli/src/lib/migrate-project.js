@@ -39,9 +39,9 @@ async function migrateProject(context) {
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
     if (await prompt.confirm(confirmMigrateMessage)) {
-    // Currently there are only two project configuration versions, so call this method directly
-    // If more versions are involved, switch to apropriate migration method
       if (await prompt.confirm(secondConfirmMessage)) {
+        // Currently there are only two project configuration versions, so call this method directly
+        // If more versions are involved, switch to apropriate migration method
         await migrateFrom0To1(context, projectPath, projectConfig);
       }
     }
