@@ -1,5 +1,3 @@
-const path = require('path');
-
 const subcommand = 'remove';
 const category = 'api';
 const gqlConfigFilename = '.graphqlconfig.yml';
@@ -9,6 +7,7 @@ module.exports = {
   run: async (context) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
+    const path = require('path');
 
     return amplify.removeResource(context, category, resourceName)
       .then((resourceValues) => {
