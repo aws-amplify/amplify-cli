@@ -1,6 +1,5 @@
 const subcommand = 'add';
 const category = 'interactions';
-const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
 
 let options;
 
@@ -9,6 +8,7 @@ module.exports = {
   run: async (context) => {
     const { amplify } = context;
 
+    const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {

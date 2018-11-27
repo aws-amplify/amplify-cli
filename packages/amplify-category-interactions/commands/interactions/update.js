@@ -1,7 +1,5 @@
 const subcommand = 'update';
 const category = 'interactions';
-const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
-
 
 module.exports = {
   name: subcommand,
@@ -9,6 +7,7 @@ module.exports = {
   run: async (context) => {
     const { amplify } = context;
 
+    const servicesMetadata = require(`${__dirname}/../../provider-utils/supported-services.json`);
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
