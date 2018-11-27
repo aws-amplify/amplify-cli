@@ -29,20 +29,38 @@
             ]
         }
     },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
     "Resources": {
         "LambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Handler": "index.handler",
-                "FunctionName": {
-                    "Fn::Join": [
-                        "-",
-                        [
-                            "<%= props.functionName %>",
-                            {
-                                "Ref": "env"
-                            }
-                        ]
+                    "FunctionName": {
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        "<%= props.functionName %>", 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "<%= props.functionName %>",
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        }
                     ]
                 },
                 "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
@@ -56,14 +74,22 @@
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
-                    "Fn::Join": [
-                        "-",
-                        [
-                            "<%= props.roleName %>",
-                            {
-                                "Ref": "env"
-                            }
-                        ]
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        "<%= props.roleName %>", 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "<%= props.roleName %>",
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        }
                     ]
                 },
                 "AssumeRolePolicyDocument": {
@@ -172,9 +198,24 @@
                                       },
                                       { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                       ":bot:",
-                                      "<%= props.botName %>_",
                                       {
-                                        "Ref": "env"
+                                        "Fn::If": [
+                                            "ShouldNotCreateEnvResources",
+                                            "<%= props.botName %>", 
+                                            {
+
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "<%= props.botName %>",
+                                                        "_",
+                                                        {
+                                                            "Ref": "env"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
                                       },
                                       ":*"
                                     ]
@@ -214,9 +255,24 @@
                                       },
                                       { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                       ":bot:",
-                                      "<%= props.botName %>_",
                                       {
-                                        "Ref": "env"
+                                        "Fn::If": [
+                                            "ShouldNotCreateEnvResources",
+                                            "<%= props.botName %>", 
+                                            {
+
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "<%= props.botName %>",
+                                                        "_",
+                                                        {
+                                                            "Ref": "env"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
                                       },
                                       ":*"
                                     ]
@@ -237,14 +293,22 @@
         },
         "BotName":  {
             "Value": {
-                "Fn::Join": [
-                    "",
-                    [
-                      "<%= props.botName %>_",
-                      {
-                        "Ref": "env"
-                      }
-                    ]
+                "Fn::If": [
+                    "ShouldNotCreateEnvResources",
+                    "<%= props.botName %>", 
+                    {
+
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<%= props.botName %>",
+                                "_",
+                                {
+                                    "Ref": "env"
+                                }
+                            ]
+                        ]
+                    }
                 ]
             }
         },

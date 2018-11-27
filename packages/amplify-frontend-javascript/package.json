@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-javascript",
-  "version": "0.1.34-multienv.0",
+  "version": "0.2.1-multienv.0",
   "description": "amplify-cli front-end plugin for JavaScript projects",
   "main": "index.js",
   "author": "Amazon Web Services",
