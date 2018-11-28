@@ -2,6 +2,7 @@ const generateTypes = require('./commands/types');
 const generateStatements = require('./commands/statements');
 const generate = require('./commands/generateStatementsAndType');
 const add = require('./commands/add');
+const remove = require('./commands/remove');
 const configure = require('./commands/configure');
 
 const prePushAddGraphQLCodegenHook = require('./callbacks/prePushAddCallback');
@@ -14,6 +15,7 @@ module.exports = {
   generateTypes,
   generateStatements,
   add,
+  remove,
   prePushAddGraphQLCodegenHook,
   prePushUpdateGraphQLCodegenHook,
   postPushGraphQLCodegenHook,
