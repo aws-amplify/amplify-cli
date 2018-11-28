@@ -78,6 +78,7 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     removeAmplifyRCFile(projectPath);
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
+    context.print.warning('If you have added functions or interactions category to your project, please check the \'Auto-migration\' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md');
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
