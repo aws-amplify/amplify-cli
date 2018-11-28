@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const category = 'api';
 const serviceName = 'API Gateway';
 const parametersFileName = 'api-params.json';
+const cfnParametersFilename = 'parameters.json';
 const uuid = require('uuid');
 
 async function serviceWalkthrough(context, defaultValuesFilename) {
@@ -566,6 +567,46 @@ async function askLambdaArn(context, currentPath) {
   };
 }
 
+async function migrate(context, projectPath, resourceName) {
+  const { amplify } = context;
+
+  const targetDir = amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = pathLib.join(targetDir, category, resourceName);
+  const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
+  let parameters;
+  try {
+    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+  } catch (e) {
+    context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
+    throw e;
+  }
+  const pluginDir = `${__dirname}/../`;
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: 'cloudformation-templates/apigw-cloudformation-template-default.json.ejs',
+      target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, parameters, true, false);
+
+  // Create parameters.json file
+  const cfnParameters = {
+    authRoleName: {
+      Ref: 'AuthRoleName',
+    },
+    unauthRoleName: {
+      Ref: 'UnauthRoleName',
+    },
+  };
+
+  const cfnParametersFilePath = pathLib.join(resourceDirPath, cfnParametersFilename);
+  const jsonString = JSON.stringify(cfnParameters, null, 4);
+  fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+}
+
 // function checkIfAuthExists(context) {
 //   const { amplify } = context;
 //   const { amplifyMeta } = amplify.getProjectDetails();
@@ -585,4 +626,4 @@ async function askLambdaArn(context, currentPath) {
 // }
 
 
-module.exports = { serviceWalkthrough, updateWalkthrough };
+module.exports = { serviceWalkthrough, updateWalkthrough, migrate };

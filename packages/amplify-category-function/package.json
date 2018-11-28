@@ -1,6 +1,7 @@
 {
   "name": "amplify-category-function",
   "version": "0.2.1-multienv.0",
+  "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
     "amplify-category-storage": "^0.2.1-multienv.0",

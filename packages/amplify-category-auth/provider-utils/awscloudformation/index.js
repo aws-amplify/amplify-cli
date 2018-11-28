@@ -202,7 +202,11 @@ async function updateConfigOnEnvInit(context, category, service) {
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
-  const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(category, service);
+  const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(
+    context,
+    category,
+    service,
+  );
   srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
     ENV_SPECIFIC_PARAMS.includes(input.key) &&
       !Object.keys(currentEnvSpecificValues).includes(input.key));
@@ -251,6 +255,37 @@ async function updateConfigOnEnvInit(context, category, service) {
   return envParams;
 }
 
+async function migrate(context) {
+  const category = 'auth';
+  const { amplify } = context;
+  const existingAuth = context.migrationInfo.amplifyMeta.auth || {};
+  if (!Object.keys(existingAuth).length > 0) {
+    return;
+  }
+  const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+  const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
+  const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
+
+  const { roles } = require(defaultValuesSrc);
+
+  const providerInstance = amplify.getPluginInstance(context, provider);
+  const resourceName = Object.keys(existingAuth)[0];
+  const props = providerInstance.loadResourceParameters(context, 'auth', resourceName);
+  // Roles have changed to ref. Removing old hardcoded role ref
+  Object.keys(roles).forEach((key) => {
+    delete props[key];
+  });
+  await copyCfnTemplate(context, category, props, cfnFilename);
+  saveResourceParameters(
+    context,
+    provider,
+    category,
+    resourceName,
+    { ...roles, ...props },
+    ENV_SPECIFIC_PARAMS,
+  );
+}
+
 function isInHeadlessMode(context) {
   return context.exeInfo.inputParams.yes;
 }
@@ -290,4 +325,5 @@ module.exports = {
   saveResourceParameters,
   ENV_SPECIFIC_PARAMS,
   copyCfnTemplate,
+  migrate,
 };

@@ -17,5 +17,5 @@ module.exports = {
   LocalEnvFileName: 'local-env-info.json',
   ProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
-
+  PROJECT_CONFIG_VERSION: '1.0',
 };
