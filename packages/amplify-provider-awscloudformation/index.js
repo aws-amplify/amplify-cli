@@ -9,6 +9,7 @@ const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
+const pinpoint = require('./src/aws-utils/aws-pinpoint');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
 
@@ -46,6 +47,10 @@ function getConfiguredAWSClient(context) {
   return aws.configureWithCreds(context);
 }
 
+function getConfiguredPinpointClient(context) {
+  pinpoint.getConfiguredPinpointClient(context);
+}
+
 function showHelpfulLinks(context, resources) {
   return displayHelpfulURLs(context, resources);
 }
@@ -71,6 +76,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getConfiguredPinpointClient,
   showHelpfulLinks,
   deleteEnv,
   loadResourceParameters,
