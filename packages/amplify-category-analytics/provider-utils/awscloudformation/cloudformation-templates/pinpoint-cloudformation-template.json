@@ -9,6 +9,10 @@
             "Type": "String",
             "Default": "NONE"
         },
+        "region": {
+            "Type": "String",
+            "Default": "us-east-1"
+        },
         "roleName": {
             "Type": "String"
         },

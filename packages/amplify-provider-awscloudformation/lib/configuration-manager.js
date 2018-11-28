@@ -484,7 +484,7 @@ function removeProjectConfig(context) {
   }
 }
 
-function loadConfiguration(context, awsClient, attatchRegion) {
+async function loadConfiguration(context, awsClient, attatchRegion) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
   const awsConfigInfo = getCurrentConfig(context);
   if (awsConfigInfo.configLevel !== 'general') {
@@ -502,6 +502,7 @@ function loadConfiguration(context, awsClient, attatchRegion) {
   if (attatchRegion) {
     awsClient.region = getRegion(awsConfigInfo);
   }
+  return awsClient;
 }
 
 function getRegion(awsConfigInfo) {

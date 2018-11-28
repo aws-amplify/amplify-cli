@@ -32,7 +32,7 @@ async function ensurePinpointApp(context) {
         output: {
           Name: pinpointApp.Name,
           Id: pinpointApp.Id,
-          Region: 'us-east-1',
+          Region: pinpointApp.Region,
         },
       };
     } else {
@@ -80,7 +80,7 @@ async function createPinpointApp(context) {
     output: {
       Name: pinpointApp.Name,
       Id: pinpointApp.Id,
-      Region: 'us-east-1',
+      Region: pinpointApp.Region,
     },
     lastPushTimeStamp: new Date(),
   };
@@ -215,9 +215,9 @@ function console(context) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
   }
   if (pinpointApp) {
-    const { Id } = pinpointApp;
+    const { Id, Region } = pinpointApp;
     const consoleUrl =
-          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/manage/channels`;
+          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/manage/channels`;
     opn(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is anabled in the cloud.');

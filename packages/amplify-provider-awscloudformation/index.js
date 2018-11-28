@@ -48,7 +48,7 @@ function getConfiguredAWSClient(context) {
 }
 
 function getConfiguredPinpointClient(context) {
-  pinpoint.getConfiguredPinpointClient(context);
+  return pinpoint.getConfiguredPinpointClient(context);
 }
 
 function showHelpfulLinks(context, resources) {
