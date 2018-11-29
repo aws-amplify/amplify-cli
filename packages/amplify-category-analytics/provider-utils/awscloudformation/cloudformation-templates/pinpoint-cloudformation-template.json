@@ -242,7 +242,13 @@
                         "Arn"
                     ]
                 },
-                "region": { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "pinpointRegion"]},
+                "region": { 
+                    "Fn::FindInMap" : [ 
+                        "RegionMap", 
+                        { "Ref" : "AWS::Region" }, 
+                        "pinpointRegion"
+                    ]
+                },
                 "appName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
