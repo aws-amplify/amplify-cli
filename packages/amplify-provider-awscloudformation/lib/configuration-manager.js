@@ -589,7 +589,7 @@ function getConfigLevel(context) {
       const { envName } = context.amplify.getEnvInfo();
       const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
       if (envConfigInfo) {
-        // configLevel is 'generala' only when it's explicitly set so
+        // configLevel is 'general' only when it's explicitly set so
         if (envConfigInfo.configLevel === 'general') {
           configLevel = 'general';
         } else if (envConfigInfo.useProfile && envConfigInfo.profileName &&
