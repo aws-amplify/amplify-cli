@@ -9,10 +9,6 @@
             "Type": "String",
             "Default": "NONE"
         },
-        "region": {
-            "Type": "String",
-            "Default": "us-east-1"
-        },
         "roleName": {
             "Type": "String"
         },
@@ -39,6 +35,28 @@
         },
         "env": {
             "Type":  "String"
+        }
+    },
+    "Mappings":{
+        "RegionMap": {
+            "us-east-1": {"pinpointRegion": "us-east-1"},
+            "us-east-2": {"pinpointRegion": "us-east-1"},
+            "sa-east-1": {"pinpointRegion": "us-east-1"},
+            "ca-central-1": {"pinpointRegion": "us-east-1"},
+            "us-west-1": {"pinpointRegion": "us-west-2"},
+            "us-west-2": {"pinpointRegion": "us-west-2"},
+            "cn-north-1": {"pinpointRegion": "us-west-2"},
+            "cn-northwest-1": {"pinpointRegion": "us-west-2"},
+            "ap-south-1": {"pinpointRegion": "us-west-2"},
+            "ap-northeast-3": {"pinpointRegion": "us-west-2"},
+            "ap-northeast-2": {"pinpointRegion": "us-west-2"},
+            "ap-southeast-1": {"pinpointRegion": "us-west-2"},
+            "ap-southeast-2": {"pinpointRegion": "us-west-2"},
+            "ap-northeast-1": {"pinpointRegion": "us-west-2"},
+            "eu-central-1": {"pinpointRegion": "eu-west-1"},
+            "eu-west-1": {"pinpointRegion": "eu-west-1"},
+            "eu-west-2": {"pinpointRegion": "eu-west-1"},
+            "eu-west-3": {"pinpointRegion": "eu-west-1"}
         }
     },
     "Metadata": {
@@ -98,7 +116,7 @@
                                   }
                                 ]
                             ]
-                        },       
+                        }       
                     ]
                 },
                 "AssumeRolePolicyDocument": {
@@ -169,7 +187,6 @@
                             [
                                 "const response = require('cfn-response');",
                                 "const aws = require('aws-sdk');",
-                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: 'us-east-1' });",
                                 "exports.handler = function(event, context) {",
                                 "    if (event.RequestType == 'Delete') {",
                                 "        response.send(event, context, response.SUCCESS);",
@@ -187,6 +204,7 @@
                                 "               Name: appName",
                                 "           }",
                                 "       };",
+                                "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
                                 "       return pinpoint.createApp(params).promise()",
                                 "           .then((res) => {",
                                 "               responseData = res.ApplicationResponse;",
@@ -224,6 +242,7 @@
                         "Arn"
                     ]
                 },
+                "region": { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "pinpointRegion"]},
                 "appName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
@@ -244,7 +263,7 @@
                                   }
                                 ]
                             ]
-                        },       
+                        }       
                     ]
                 }
             }
@@ -370,7 +389,6 @@
                                 }
                             ]
                         }
-                
                     ]
                   }
                 ]
@@ -380,7 +398,13 @@
     },
     "Outputs": {
         "Region": {
-            "Value": "us-east-1"
+            "Value":{ 
+                "Fn::FindInMap" : [ 
+                    "RegionMap", 
+                    { "Ref" : "AWS::Region" }, 
+                    "pinpointRegion"
+                ]
+            }
         },
         "Id": {
             "Value": {
