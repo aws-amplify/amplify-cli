@@ -164,6 +164,7 @@ async function createApp(context, pinpointAppName) {
         reject(err);
       } else {
         spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -183,6 +184,7 @@ async function getApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -202,6 +204,7 @@ async function deleteApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
