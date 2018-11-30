@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "0.2.1-multienv.0",
+  "version": "0.2.1-multienv.1",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
