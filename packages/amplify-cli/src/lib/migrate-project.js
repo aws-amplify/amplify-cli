@@ -37,6 +37,11 @@ async function migrateProject(context) {
 
   const projectConfigFilePath = getProjectConfigFilePath(projectPath);
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  // First level check
+  // New projects also don't have projectPaths
+  if (!projectConfig.projectPath) {
+    return;
+  }
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
     if (await prompt.confirm(confirmMigrateMessage)) {
       if (await prompt.confirm(secondConfirmMessage)) {
