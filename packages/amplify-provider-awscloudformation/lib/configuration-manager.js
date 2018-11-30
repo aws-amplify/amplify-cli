@@ -506,6 +506,8 @@ async function loadConfiguration(context, awsClient, attatchRegion) {
 }
 
 function getRegion(awsConfigInfo) {
+  // For details of how aws region is set, check the following link
+  // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
   if (awsConfigInfo.configLevel === 'general') {
     if (process.env.AWS_REGION) {
       return process.env.AWS_REGION;

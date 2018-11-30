@@ -51,6 +51,10 @@ function getConfiguredPinpointClient(context) {
   return pinpoint.getConfiguredPinpointClient(context);
 }
 
+function getPinpointRegionMapping(context) {
+  return pinpoint.getPinpointRegionMapping(context);
+}
+
 function showHelpfulLinks(context, resources) {
   return displayHelpfulURLs(context, resources);
 }
@@ -76,6 +80,7 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getPinpointRegionMapping,
   getConfiguredPinpointClient,
   showHelpfulLinks,
   deleteEnv,

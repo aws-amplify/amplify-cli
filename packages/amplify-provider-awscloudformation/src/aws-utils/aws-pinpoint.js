@@ -36,6 +36,11 @@ function mapServiceRegion(region) {
   return defaultPinpointRegion;
 }
 
+function getPinpointRegionMapping() {
+  return serviceRegionMap;
+}
+
 module.exports = {
+  getPinpointRegionMapping,
   getConfiguredPinpointClient,
 };

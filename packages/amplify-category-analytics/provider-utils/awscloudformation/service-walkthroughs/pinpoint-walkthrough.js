@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 
+const providerName = 'awscloudformation';
 const category = 'analytics';
 const parametersFileName = 'parameters.json';
 const serviceName = 'Pinpoint';
@@ -131,7 +132,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     const resourceDirPath = path.join(projectBackendDirPath, category, resource);
     delete defaultValues.resourceName;
     writeParams(resourceDirPath, defaultValues);
-    writeCfnFile(resourceDirPath);
+    writeCfnFile(context, resourceDirPath);
     return resource;
   });
 }
@@ -172,12 +173,32 @@ function resourceAlreadyExists(context) {
   return resourceName;
 }
 
-function writeCfnFile(resourceDirPath, force = false) {
+function writeCfnFile(context, resourceDirPath, force = false) {
   fs.ensureDirSync(resourceDirPath);
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
-    fs.copySync(`${__dirname}/../cloudformation-templates/${templateFileName}`, templateFilePath);
+    const templateSourceFilePath = `${__dirname}/../cloudformation-templates/${templateFileName}`;
+    const templateSource = JSON.parse(fs.readFileSync(templateSourceFilePath));
+    templateSource.Mappings = getTemplateMappings(context);
+    const jsonString = JSON.stringify(templateSource, null, 4);
+    fs.writeFileSync(templateFilePath, jsonString, 'utf8');
   }
+}
+
+function getTemplateMappings(context) {
+  const Mappings = {
+    RegionMapping: {
+    },
+  };
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
+  const regionMapping = provider.getPinpointRegionMapping(context);
+  Object.keys(regionMapping).forEach((region) => {
+    Mappings.RegionMapping[region] = {
+      pinpointRegion: regionMapping[region],
+    };
+  });
+  return Mappings;
 }
 
 function writeParams(resourceDirPath, values) {
