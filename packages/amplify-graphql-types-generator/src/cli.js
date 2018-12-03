@@ -116,7 +116,7 @@ yargs
         namespace: argv.namespace,
         mergeInFieldsFromFragmentSpreads: argv["merge-in-fields-from-fragment-spreads"],
         useFlowExactObjects: argv['use-flow-exact-objects'],
-        addS3Wrapper: argv["add-s3-wrapper"]
+        complexObjectSupport: argv["complex-object-support"],
       };
 
       generate(inputPaths, argv.schema, argv.output, argv.only, argv.target, argv.tagName, options);
