@@ -44,7 +44,6 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     ));
 }
 
-
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify, print } = context;
   const { inputs } = serviceMetadata;
@@ -54,7 +53,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
 
   const attributeTypes = {
     string: { code: 'S', indexable: true },
@@ -69,7 +67,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     'binary set': { code: 'BS', indexable: false },
   };
   let usedAttributeDefinitions = new Set();
-
 
   if (resourceName) {
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
@@ -152,7 +149,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         AttributeType: defaultValues.sortKeyType,
       },
     );
-    continueAttributeQuestion = await context.prompt.confirm('Would you like to add another column?');
+    continueAttributeQuestion = await confirm('Would you like to add another column?');
   }
   const indexableAttributeList = [];
 
@@ -161,7 +158,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     if (attributeAnswers.findIndex(attribute => attribute.AttributeName
       === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await context.prompt.confirm('This attribute was already added. Do you want to add another attribute?');
+      continueAttributeQuestion = await confirm('This attribute was already added. Do you want to add another attribute?');
       continue;
     }
 
@@ -173,10 +170,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
-    continueAttributeQuestion = await context.prompt.confirm('Would you like to add another column?');
+    continueAttributeQuestion = await confirm('Would you like to add another column?');
   }
   answers.AttributeDefinitions = attributeAnswers;
-
 
   print.info('');
   print.info('Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.');
@@ -236,7 +232,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       });
       usedAttributeDefinitions.add(sortKeyName);
     }
-  } else if (await context.prompt.confirm('Do you want to add a sort key to your table?')) {
+  } else if (await confirm('Do you want to add a sort key to your table?')) {
     // Ask for sort key
     if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
@@ -273,7 +269,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   // Ask for GSI's
 
-  if (await context.prompt.confirm('Do you want to add global secondary indexes to your table?')) {
+  if (await confirm('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
     const gsiList = [];
     // Generates a clone of the attribute list
@@ -320,7 +316,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
         if (availableAttributes.length > 0) {
-          if (await context.prompt.confirm('Do you want to add a sort key to your global secondary index?')) {
+          if (await confirm('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
               type: inputs[8].type,
               name: inputs[8].key,
@@ -336,7 +332,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           }
         }
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await context.prompt.confirm('Do you want to add more global secondary indexes to your table?');
+        continuewithGSIQuestions = await confirm('Do you want to add more global secondary indexes to your table?');
       } else {
         context.print.error('You do not have any other attributes remaining to configure');
         break;
@@ -351,7 +347,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
-
 
   Object.assign(defaultValues, answers);
   const resource = defaultValues.resourceName;
@@ -376,7 +371,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   await copyCfnTemplate(context, category, resource, defaultValues);
   return resource;
 }
-
 
 function copyCfnTemplate(context, categoryName, resourceName, options) {
   const { amplify } = context;
@@ -466,5 +460,13 @@ function migrate(projectPath, resourceName) {
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
+async function confirm(message) {
+  const ans = await inquirer.prompt({
+    name: 'yesno',
+    message,
+    type: 'confirm',
+  });
+  return ans.yesno;
+}
 
 module.exports = { addWalkthrough, updateWalkthrough, migrate };
