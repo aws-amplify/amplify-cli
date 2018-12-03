@@ -40,7 +40,13 @@ $ npm install -g @aws-amplify/cli
 $ amplify configure
 ```
 
- - Warning: Please don't use `yarn` for installing the CLI. It has known issues. Use `npm` instead as advised above.
+### Beta
+For [multiple environment and team workflow support](https://aws-amplify.github.io/docs/cli/multienv?sdk=js), install and configure the Amplify CLI as follows:
+
+```bash
+$ npm install -g @aws-amplify/cli@multienv
+$ amplify configure
+```
 
 ## Commands Summary
 

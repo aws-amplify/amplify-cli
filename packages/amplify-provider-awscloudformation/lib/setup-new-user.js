@@ -42,7 +42,7 @@ function run(context) {
           default: `amplify-${context.amplify.makeId()}`,
         }]);
     }).then((answers) => {
-      const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', answers.userName).replace('{region}', answers.region);
+      const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', answers.userName).replace('{region}', awsConfig.region);
       context.print.info('Complete the user creation using the AWS console');
       context.print.info(chalk.green(deepLinkURL));
       opn(deepLinkURL, { wait: false });

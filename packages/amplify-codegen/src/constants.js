@@ -2,6 +2,7 @@ const chalk = require('chalk');
 
 module.exports = {
   PROMPT_MSG_API_LIST: 'Choose the AppSync API that you want to use in this project',
+  PROMPT_MSG_API_REMOVE: 'Choose the AppSync API that you want to remove from codegen',
   PROMPT_MSG_FILE_NAME: 'Enter the file name for the generated code',
   PROMPT_MSG_CODEGEN_TARGET: 'Choose the code generation language target',
   PROMPT_MSG_API_KEY: 'Choose the API Key to use',
