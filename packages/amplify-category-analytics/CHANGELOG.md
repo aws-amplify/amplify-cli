@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.2.1-multienv.0...amplify-category-analytics@0.2.1-multienv.1) (2018-11-28)
+
+
+### Bug Fixes
+
+* **amplify-category-analytics:** migration to use role names to ref ([#516](https://github.com/aws-amplify/amplify-cli/issues/516)) ([8493bdf](https://github.com/aws-amplify/amplify-cli/commit/8493bdf))
+
+
+### Features
+
+* **amplify-category-analytics:** migrate script for multienv ([#500](https://github.com/aws-amplify/amplify-cli/issues/500)) ([78e053e](https://github.com/aws-amplify/amplify-cli/commit/78e053e))
+
+
+
+
 <a name="0.2.1-multienv.0"></a>
 ## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.1.34-multienv.2...amplify-category-analytics@0.2.1-multienv.0) (2018-11-21)
 

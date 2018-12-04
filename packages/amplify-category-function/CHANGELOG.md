@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.2.1-multienv.1...amplify-category-function@0.2.1-multienv.2) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package amplify-category-function
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.2.1-multienv.0...amplify-category-function@0.2.1-multienv.1) (2018-11-28)
+
+
+### Features
+
+* migration of categories - s3,dynamo,appsync,apigw,function ([f63bc32](https://github.com/aws-amplify/amplify-cli/commit/f63bc32))
+* migration of categories - s3,dynamo,lambda,appsync ([#495](https://github.com/aws-amplify/amplify-cli/issues/495)) ([1ef1d21](https://github.com/aws-amplify/amplify-cli/commit/1ef1d21))
+
+
+
+
 <a name="0.2.1-multienv.0"></a>
 ## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.1.34-multienv.2...amplify-category-function@0.2.1-multienv.0) (2018-11-21)
 

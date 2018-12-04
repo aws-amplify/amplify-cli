@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.2.1-multienv.1...amplify-category-storage@0.2.1-multienv.2) (2018-12-04)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** confirm before adding column ([#537](https://github.com/aws-amplify/amplify-cli/issues/537)) ([#538](https://github.com/aws-amplify/amplify-cli/issues/538)) ([6e63729](https://github.com/aws-amplify/amplify-cli/commit/6e63729))
+
+
+
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.2.1-multienv.0...amplify-category-storage@0.2.1-multienv.1) (2018-11-28)
+
+
+### Bug Fixes
+
+* handle dirty JSON for dynamo CFN during migration ([#509](https://github.com/aws-amplify/amplify-cli/issues/509)) ([78e07fc](https://github.com/aws-amplify/amplify-cli/commit/78e07fc))
+
+
+### Features
+
+* core metadata migration of projects using the old version of the CLI ([#482](https://github.com/aws-amplify/amplify-cli/issues/482)) ([340b7e4](https://github.com/aws-amplify/amplify-cli/commit/340b7e4))
+* migration of categories - s3,dynamo,appsync,apigw,function ([f63bc32](https://github.com/aws-amplify/amplify-cli/commit/f63bc32))
+* migration of categories - s3,dynamo,lambda,appsync ([#495](https://github.com/aws-amplify/amplify-cli/issues/495)) ([1ef1d21](https://github.com/aws-amplify/amplify-cli/commit/1ef1d21))
+
+
+
+
 <a name="0.2.1-multienv.0"></a>
 ## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.1.34-multienv.2...amplify-category-storage@0.2.1-multienv.0) (2018-11-21)
 

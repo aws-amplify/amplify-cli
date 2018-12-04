@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-notifications",
-  "version": "0.2.1-multienv.0",
+  "version": "0.2.1-multienv.1",
   "description": "amplify-cli notifications plugin",
   "main": "index.js",
   "dependencies": {
-    "amplify-category-auth": "^0.2.1-multienv.0",
+    "amplify-category-auth": "^0.2.1-multienv.1",
     "eslint": "^4.19.1",
     "fs-extra": "^7.0.0",
     "inquirer": "^6.0.0",
