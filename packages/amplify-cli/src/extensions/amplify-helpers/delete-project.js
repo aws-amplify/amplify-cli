@@ -6,7 +6,7 @@ const pathManager = require('./path-manager');
 const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
 
 async function deleteProject(context) {
-  return context.prompt.confirm('Are you sure you want to continue?(This would delete all the project from the cloud and wipe out all the local amplify resource files)')
+  return context.amplify.confirmPrompt.run('Are you sure you want to continue?(This would delete all the project from the cloud and wipe out all the local amplify resource files)')
     .then((answer) => {
       if (answer) {
         const { providers } = getProjectConfig();

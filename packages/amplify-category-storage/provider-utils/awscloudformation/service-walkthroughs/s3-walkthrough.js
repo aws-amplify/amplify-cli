@@ -9,7 +9,7 @@ const templateFileName = 's3-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   while (!checkIfAuthExists(context)) {
-    if (await context.prompt.confirm('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+    if (await context.amplify.confirmPrompt.run('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);

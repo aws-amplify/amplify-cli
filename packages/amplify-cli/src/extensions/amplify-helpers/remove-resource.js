@@ -30,7 +30,7 @@ function removeResource(context, category) {
         category,
         resourceName,
       ));
-      return context.prompt.confirm('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
+      return context.amplify.confirmPrompt.run('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
         .then(async (confirm) => {
           if (confirm) {
             const { allResources } = await context.amplify.getResourceStatus();

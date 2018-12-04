@@ -116,7 +116,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // The user doesn't have an annotated schema file
 
-  if (!await context.prompt.confirm('Do you want a guided schema creation?')) {
+  if (!await amplify.confirmPrompt.run('Do you want a guided schema creation?')) {
     // Copy the most basic schema onto the users resource dir and transform that
 
     const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;

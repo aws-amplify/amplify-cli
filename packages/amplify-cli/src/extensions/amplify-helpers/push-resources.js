@@ -5,7 +5,7 @@ const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 async function pushResources(context, category, resourceName) {
   await showResourceTable(category, resourceName);
 
-  return context.prompt.confirm('Are you sure you want to continue?')
+  return context.amplify.confirmPrompt.run('Are you sure you want to continue?')
     .then((answer) => {
       if (answer) {
         const { providers } = getProjectConfig();
