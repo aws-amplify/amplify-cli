@@ -4,6 +4,7 @@
 // bring in each of the constituents
 
 const constants = require('./amplify-helpers/constants');
+const confirmPrompt = require('./amplify-helpers/confirm-prompt');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { constructExeInfo } = require('./amplify-helpers/construct-exeInfo');
 const { removeResource } = require('./amplify-helpers/remove-resource');
@@ -63,6 +64,7 @@ const {
 module.exports = (context) => {
   const amplify = {
     buildResources,
+    confirmPrompt,
     constants,
     constructExeInfo,
     copyBatch,

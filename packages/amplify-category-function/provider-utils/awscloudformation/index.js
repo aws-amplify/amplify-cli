@@ -125,7 +125,7 @@ async function addResource(context, category, service, options) {
 
 async function openEditor(context, category, options) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.prompt.confirm('Do you want to edit the local lambda function now?')) {
+  if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
     switch (options.functionTemplate) {
       case 'helloWorld':
         await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);

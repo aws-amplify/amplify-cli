@@ -21,7 +21,7 @@ const schemaFileName = 'schema.graphql';
 
 function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API. 
+    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API.
 Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
   }
 }
@@ -134,7 +134,7 @@ async function transformGraphQLSchema(context, options) {
     resources which would be created for you as a
      part of the AppSync service.`);
 
-    if (await context.prompt.confirm('Do you want to use your own
+    if (await context.amplify.confirmPrompt.run('Do you want to use your own
       tables instead?')) {
       let continueConfiguringDyanmoTables = true;
 
