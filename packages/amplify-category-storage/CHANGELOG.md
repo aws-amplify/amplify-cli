@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.2.1-multienv.1...amplify-category-storage@0.2.1-multienv.2) (2018-12-04)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** confirm before adding column ([#537](https://github.com/aws-amplify/amplify-cli/issues/537)) ([#538](https://github.com/aws-amplify/amplify-cli/issues/538)) ([6e63729](https://github.com/aws-amplify/amplify-cli/commit/6e63729))
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.2.1-multienv.0...amplify-category-storage@0.2.1-multienv.1) (2018-11-28)
 
