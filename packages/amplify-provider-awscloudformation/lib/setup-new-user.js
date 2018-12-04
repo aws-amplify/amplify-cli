@@ -89,7 +89,7 @@ function run(context) {
           },
         ]);
 
-        profileName = answer.pn;
+        profileName = answer.pn.trim();
 
         systemConfigManager.setProfile(awsConfig, profileName);
         context.newUserInfo = {
