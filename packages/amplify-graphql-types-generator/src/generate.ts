@@ -14,6 +14,7 @@ import { generateSource as generateFlowSource } from './flow';
 import { generateSource as generateFlowModernSource } from './flow-modern';
 import { generateSource as generateScalaSource } from './scala';
 import { generateSource as generateAngularSource } from './angular';
+import { hasS3Fields } from './utilities/complextypes';
 
 type TargetType = 'json' | 'swift' | 'ts' | 'typescript' | 'flow' | 'scala' | 'flow-modern' | 'angular';
 
@@ -35,7 +36,14 @@ export default function generate(
   if (target === 'swift') {
     options.addTypename = true;
     const context = compileToIR(schema, document, options);
-
+    // Complex object suppport
+    if (options.complexObjectSupport === 'auto') {
+      options.addS3Wrapper = context.typesUsed.some(typesUsed => hasS3Fields(typesUsed));
+    } else if (options.complexObjectSupport === 'yes') {
+      options.addS3Wrapper = true;
+    } else {
+      options.addS3Wrapper = false;
+    }
     const outputIndividualFiles = fs.existsSync(outputPath) && fs.statSync(outputPath).isDirectory();
 
     const generator = generateSwiftSource(context, outputIndividualFiles, only);
