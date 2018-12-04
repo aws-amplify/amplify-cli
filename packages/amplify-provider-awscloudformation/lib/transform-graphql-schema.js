@@ -129,7 +129,7 @@ async function transformGraphQLSchema(context, options) {
     resources which would be created for you as a
      part of the AppSync service.`);
 
-    if (await context.prompt.confirm('Do you want to use your own
+    if (await context.amplify.confirmPrompt('Do you want to use your own
       tables instead?')) {
       let continueConfiguringDyanmoTables = true;
 
