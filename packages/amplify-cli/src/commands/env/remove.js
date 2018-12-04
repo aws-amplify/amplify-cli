@@ -32,7 +32,7 @@ module.exports = {
         process.exit(1);
       }
 
-      if (await context.prompt.confirm('Do you also want to remove all the resources of the environment from the cloud?')) {
+      if (await context.amplify.confirmPrompt('Do you also want to remove all the resources of the environment from the cloud?')) {
         const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
         spinner.start();
         await context.amplify.removeEnvFromCloud(context, envName);

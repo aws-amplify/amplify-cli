@@ -39,7 +39,7 @@ async function pushResources(context, category, resourceName) {
 
   let continueToPush = context.exeInfo.inputParams.yes;
   if (!continueToPush) {
-    continueToPush = await context.prompt.confirm('Are you sure you want to continue?');
+    continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
 
   if (continueToPush) {

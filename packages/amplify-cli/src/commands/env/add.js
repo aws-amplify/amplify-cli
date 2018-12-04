@@ -50,7 +50,7 @@ module.exports = {
     if (envFound) {
       if (context.parameters.options.yes) {
         addNewEnvConfig();
-      } else if (await context.prompt.confirm('We found an environment with the same name. Do you want to overwrite existing enviornment config?')) {
+      } else if (await context.amplify.confirmPrompt('We found an environment with the same name. Do you want to overwrite existing enviornment config?')) {
         addNewEnvConfig();
       }
     } else {

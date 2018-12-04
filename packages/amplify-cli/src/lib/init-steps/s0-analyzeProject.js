@@ -157,7 +157,7 @@ async function getEnvName(context) {
     const allEnvs = context.amplify.getAllEnvs();
 
     if (allEnvs.length > 0) {
-      if (await context.prompt.confirm('Do you want to use an existing environment?')) {
+      if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
         const envQuestion = {
           type: 'list',
           name: 'envName',

@@ -149,7 +149,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         AttributeType: defaultValues.sortKeyType,
       },
     );
-    continueAttributeQuestion = await confirm('Would you like to add another column?');
+    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
   const indexableAttributeList = [];
 
@@ -158,7 +158,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
     if (attributeAnswers.findIndex(attribute => attribute.AttributeName
       === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await confirm('This attribute was already added. Do you want to add another attribute?');
+      continueAttributeQuestion = await amplify.confirmPrompt('This attribute was already added. Do you want to add another attribute?');
       continue;
     }
 
@@ -170,7 +170,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
-    continueAttributeQuestion = await confirm('Would you like to add another column?');
+    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
   answers.AttributeDefinitions = attributeAnswers;
 
@@ -232,7 +232,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       });
       usedAttributeDefinitions.add(sortKeyName);
     }
-  } else if (await confirm('Do you want to add a sort key to your table?')) {
+  } else if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
     // Ask for sort key
     if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
@@ -269,7 +269,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   // Ask for GSI's
 
-  if (await confirm('Do you want to add global secondary indexes to your table?')) {
+  if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
     const gsiList = [];
     // Generates a clone of the attribute list
@@ -316,7 +316,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
         if (availableAttributes.length > 0) {
-          if (await confirm('Do you want to add a sort key to your global secondary index?')) {
+          if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
               type: inputs[8].type,
               name: inputs[8].key,
@@ -332,7 +332,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           }
         }
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await confirm('Do you want to add more global secondary indexes to your table?');
+        continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
       } else {
         context.print.error('You do not have any other attributes remaining to configure');
         break;
@@ -458,15 +458,6 @@ function migrate(projectPath, resourceName) {
 
   const jsonString = JSON.stringify(newCfn, null, '\t');
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
-}
-
-async function confirm(message) {
-  const ans = await inquirer.prompt({
-    name: 'yesno',
-    message,
-    type: 'confirm',
-  });
-  return ans.yesno;
 }
 
 module.exports = { addWalkthrough, updateWalkthrough, migrate };
