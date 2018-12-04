@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36-beta.0"></a>
+## [0.1.36-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35...amplify-provider-awscloudformation@0.1.36-beta.0) (2018-12-04)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** no region ([#502](https://github.com/aws-amplify/amplify-cli/issues/502)) ([f0fee3d](https://github.com/aws-amplify/amplify-cli/commit/f0fee3d))
+* **amplify-provider-awscloudformation:** support nested resource dir ([#517](https://github.com/aws-amplify/amplify-cli/issues/517)) ([d5401ba](https://github.com/aws-amplify/amplify-cli/commit/d5401ba))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34...amplify-provider-awscloudformation@0.1.35) (2018-11-21)
 

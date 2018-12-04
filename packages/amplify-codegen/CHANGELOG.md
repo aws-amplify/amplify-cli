@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36-beta.0"></a>
+## [0.1.36-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.35...amplify-codegen@0.1.36-beta.0) (2018-12-04)
+
+
+### Features
+
+* **amplify-codegen:** add remove support ([#510](https://github.com/aws-amplify/amplify-cli/issues/510)) ([204da6e](https://github.com/aws-amplify/amplify-cli/commit/204da6e))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.34...amplify-codegen@0.1.35) (2018-11-21)
 

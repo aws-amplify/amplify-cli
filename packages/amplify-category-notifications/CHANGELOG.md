@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-beta.0"></a>
+## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.33...amplify-category-notifications@0.1.34-beta.0) (2018-12-04)
+
+
+### Features
+
+* detect if Pinpoint project exists before prompt for remove command ([e5939f6](https://github.com/aws-amplify/amplify-cli/commit/e5939f6))
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.33-beta.0...amplify-category-notifications@0.1.33) (2018-11-09)
 
