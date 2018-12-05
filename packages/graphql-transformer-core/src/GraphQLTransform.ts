@@ -11,6 +11,7 @@ import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
 import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors'
 import { validateModelSchema } from './validation'
+import { TransformFormatter } from './TransformFormatter';
 
 function isFunction(obj: any) {
     return obj && (typeof obj === 'function')
@@ -157,11 +158,13 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
  * is emitted.
  */
 export interface GraphQLTransformOptions {
-    transformers: Transformer[]
+    transformers: Transformer[],
+    outputPath?: string,
 }
 export default class GraphQLTransform {
 
     private transformers: Transformer[]
+    private outputPath?: string
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
     // that specifies we have run already run a directive at a given location.
@@ -173,6 +176,7 @@ export default class GraphQLTransform {
             throw new Error('Must provide at least one transformer.')
         }
         this.transformers = options.transformers;
+        this.outputPath = options.outputPath;
     }
 
     /**
@@ -252,8 +256,12 @@ export default class GraphQLTransform {
             }
             reverseThroughTransformers -= 1
         }
-        // Write the schema.
-        return context.template
+        // Format the context into many stacks.
+        const formatter = new TransformFormatter({
+            stackRules: context.getStackMapping(),
+            outputPath: this.outputPath
+        })
+        return formatter.format(context)
     }
 
     private transformObject(

@@ -68,6 +68,7 @@ beforeAll(async () => {
         ]
     })
     const out = transformer.transform(validSchema);
+    console.log(out);
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const createStackResponse = await cf.createStack(out, STACK_NAME)
