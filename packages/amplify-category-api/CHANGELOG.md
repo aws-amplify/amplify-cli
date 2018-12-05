@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34-beta.1"></a>
+## [0.1.34-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.34-beta.0...amplify-category-api@0.1.34-beta.1) (2018-12-05)
+
+
+### Bug Fixes
+
+* **cli:** remove calls to gluegun's prompt.confirm ([#545](https://github.com/aws-amplify/amplify-cli/issues/545)) ([25ed126](https://github.com/aws-amplify/amplify-cli/commit/25ed126))
+
+
+
+
 <a name="0.1.34-beta.0"></a>
 ## [0.1.34-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.33...amplify-category-api@0.1.34-beta.0) (2018-12-04)
 

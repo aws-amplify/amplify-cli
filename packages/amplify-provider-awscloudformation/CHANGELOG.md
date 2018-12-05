@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36-beta.1"></a>
+## [0.1.36-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.36-beta.0...amplify-provider-awscloudformation@0.1.36-beta.1) (2018-12-05)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** trim profile name ([#547](https://github.com/aws-amplify/amplify-cli/issues/547)) ([2b57826](https://github.com/aws-amplify/amplify-cli/commit/2b57826)), closes [#542](https://github.com/aws-amplify/amplify-cli/issues/542)
+* **cli:** remove calls to gluegun's prompt.confirm ([#545](https://github.com/aws-amplify/amplify-cli/issues/545)) ([25ed126](https://github.com/aws-amplify/amplify-cli/commit/25ed126))
+
+
+
+
 <a name="0.1.36-beta.0"></a>
 ## [0.1.36-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35...amplify-provider-awscloudformation@0.1.36-beta.0) (2018-12-04)
 
