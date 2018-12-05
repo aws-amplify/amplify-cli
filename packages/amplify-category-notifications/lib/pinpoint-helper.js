@@ -32,7 +32,7 @@ async function ensurePinpointApp(context) {
         output: {
           Name: pinpointApp.Name,
           Id: pinpointApp.Id,
-          Region: 'us-east-1',
+          Region: pinpointApp.Region,
         },
       };
     } else {
@@ -80,7 +80,7 @@ async function createPinpointApp(context) {
     output: {
       Name: pinpointApp.Name,
       Id: pinpointApp.Id,
-      Region: 'us-east-1',
+      Region: pinpointApp.Region,
     },
     lastPushTimeStamp: new Date(),
   };
@@ -164,6 +164,7 @@ async function createApp(context, pinpointAppName) {
         reject(err);
       } else {
         spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -183,6 +184,7 @@ async function getApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -202,6 +204,7 @@ async function deleteApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -215,9 +218,9 @@ function console(context) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
   }
   if (pinpointApp) {
-    const { Id } = pinpointApp;
+    const { Id, Region } = pinpointApp;
     const consoleUrl =
-          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/manage/channels`;
+          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/manage/channels`;
     opn(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is anabled in the cloud.');
@@ -227,9 +230,7 @@ function console(context) {
 async function getPinpointClient(context) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context);
-  aws.config.update({ region: 'us-east-1' });
-  return new aws.Pinpoint();
+  return provider.getConfiguredPinpointClient(context);
 }
 
 function isAnalyticsAdded(context) {
@@ -241,6 +242,7 @@ function isAnalyticsAdded(context) {
   }
   return result;
 }
+
 
 module.exports = {
   getPinpointApp,

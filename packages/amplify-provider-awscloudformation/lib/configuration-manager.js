@@ -484,22 +484,50 @@ function removeProjectConfig(context) {
   }
 }
 
-async function loadConfiguration(context, awsClient) {
+async function loadConfiguration(context, awsClient, attatchRegion) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  const configSource = scanConfig(context);
-  if (configSource === 'none') {
-    context.print.error('Can not resolve aws access settings.');
-    throw new Error('Can not resolve aws access settings.');
-  } else if (configSource === 'project') {
-    return logProjectSpecificConfg(context, awsClient);
-  } else {
-    return awsClient;
+  const awsConfigInfo = getCurrentConfig(context);
+  if (awsConfigInfo.configLevel !== 'general') {
+    const { config } = awsConfigInfo;
+    if (config.useProfile) {
+      process.env.AWS_PROFILE = config.profileName;
+      const credentials = new awsClient.SharedIniFileCredentials({
+        profile: config.profileName,
+      });
+      awsClient.config.credentials = credentials;
+    } else {
+      awsClient.config.loadFromPath(config.awsConfigFilePath);
+    }
   }
+  if (attatchRegion) {
+    awsClient.region = getRegion(awsConfigInfo);
+  }
+  return awsClient;
+}
+
+function getRegion(awsConfigInfo) {
+  // For details of how aws region is set, check the following link
+  // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
+  if (awsConfigInfo.configLevel === 'general') {
+    if (process.env.AWS_REGION) {
+      return process.env.AWS_REGION;
+    }
+    if (process.env.AMAZON_REGION) {
+      return process.env.AMAZON_REGION;
+    }
+    const profileName = process.env.AWS_PROFILE || 'default';
+    return systemConfigManager.getProfile(profileName).region;
+  }
+  const { config } = awsConfigInfo;
+  if (config.useProfile) {
+    return systemConfigManager.getProfile(config.profileName).region;
+  }
+  return config.region;
 }
 
 async function newUserCheck(context) {
   const configSource = scanConfig(context);
-  if (configSource === 'none') {
+  if (!configSource) {
     let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.Label]) {
       const inputParams = context.exeInfo.inputParams[constants.Label];
@@ -528,70 +556,57 @@ async function newUserCheck(context) {
   }
 }
 
-function logProjectSpecificConfg(context, awsClient) {
-  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
-  if (fs.existsSync(configInfoFilePath)) {
-    const { envName } = context.amplify.getEnvInfo();
-    const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-    if (envConfigInfo && envConfigInfo.configLevel !== 'general') {
-      if (envConfigInfo.useProfile && envConfigInfo.profileName) {
-        process.env.AWS_PROFILE = envConfigInfo.profileName;
+function scanConfig(context) {
+  let configSource = getConfigLevel(context);
 
-        const credentials = new awsClient.SharedIniFileCredentials({
-          profile: envConfigInfo.profileName,
-        });
-
-        awsClient.config.credentials = credentials;
-      } else if (envConfigInfo.awsConfigFilePath &&
-        fs.existsSync(envConfigInfo.awsConfigFilePath)) {
-        awsClient.config.loadFromPath(envConfigInfo.awsConfigFilePath);
-      } else {
-        throw new Error('awscloudformation can not load project level configuration.');
-      }
+  if (!configSource) {
+    const systemConfigs = systemConfigManager.getFullConfig();
+    if (systemConfigs && Object.keys(systemConfigs).length > 0) {
+      configSource = 'profile-available';
+    }
+    if (systemConfigs && systemConfigs.default) {
+      configSource = 'system';
+    }
+    if (process.env.AWS_ACCESS_KEY_ID &&
+        process.env.AWS_SECRET_ACCESS_KEY &&
+        (process.env.AWS_REGION || process.env.AMAZON_REGION)) {
+      configSource = 'envVar';
+    }
+    if ((process.env.AWS_PROFILE && systemConfigs &&
+          systemConfigs[process.env.AWS_PROFILE.trim()])) {
+      configSource = 'envVar-profile';
     }
   }
 
-  return awsClient;
+  return configSource;
 }
 
-
-function scanConfig(context) {
-  let configSource = 'none';
-  const systemConfigs = systemConfigManager.getFullConfig();
-  if (systemConfigs && Object.keys(systemConfigs).length > 0) {
-    configSource = 'profile-available';
-  }
-  if (systemConfigs && systemConfigs.default) {
-    configSource = 'system';
-  }
-  if ((process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) ||
-        (process.env.AWS_PROFILE && systemConfigs &&
-            systemConfigs[process.env.AWS_PROFILE.trim()])) {
-    configSource = 'envVar';
-  }
-
+function getConfigLevel(context) {
+  let configLevel;
   try {
+    const systemConfigs = systemConfigManager.getFullConfig();
     const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
     const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
     if (fs.existsSync(configInfoFilePath)) {
       const { envName } = context.amplify.getEnvInfo();
       const envConfigInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
-      if (envConfigInfo && envConfigInfo.configLevel !== 'general') {
-        if (envConfigInfo.useProfile && envConfigInfo.profileName &&
-              systemConfigs && systemConfigs[envConfigInfo.profileName]) {
-          configSource = 'project';
+      if (envConfigInfo) {
+        // configLevel is 'general' only when it's explicitly set so
+        if (envConfigInfo.configLevel === 'general') {
+          configLevel = 'general';
+        } else if (envConfigInfo.useProfile && envConfigInfo.profileName &&
+                systemConfigs && systemConfigs[envConfigInfo.profileName]) {
+          configLevel = 'project';
         } else if (envConfigInfo.awsConfigFilePath &&
           fs.existsSync(envConfigInfo.awsConfigFilePath)) {
-          configSource = 'project';
+          configLevel = 'project';
         }
       }
     }
   } catch (e) {
-    // no need to do anything, configSource stays the same as determined by previous steps.
+    // no need to do anything
   }
-
-  return configSource;
+  return configLevel;
 }
 
 module.exports = {

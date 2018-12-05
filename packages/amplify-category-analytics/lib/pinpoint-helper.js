@@ -8,9 +8,9 @@ function console(context) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.NotificationsCategoryName]);
   }
   if (pinpointApp) {
-    const { Id } = pinpointApp;
+    const { Id, Region } = pinpointApp;
     const consoleUrl =
-          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/analytics/overview`;
+          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     opn(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither analytics nor notifications is anabled in the cloud.');
