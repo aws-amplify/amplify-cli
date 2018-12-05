@@ -1,5 +1,6 @@
 import { TransformFormatter } from '../TransformFormatter'
 import { Template, Fn, AppSync, DynamoDB } from 'cloudform';
+import { TransformerContext } from '..';
 
 const template: Template = {
     Parameters: {
@@ -64,7 +65,9 @@ test('Test getTemplateReferences', () => {
             "PostModel": [/.*PostResolver/, /^PostTable*/]
         },
     });
-    const templates = formatter.format(template)
+    const context = new TransformerContext('')
+    context.template = template;
+    const templates = formatter.format(context)
     expect(Object.keys(templates.PostModel.Resources)).toHaveLength(4)
     expect(Object.keys(templates.main.Resources)).toHaveLength(1)
 });
