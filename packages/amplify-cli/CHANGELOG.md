@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36"></a>
+## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.35...@aws-amplify/cli@0.1.36) (2018-12-05)
+
+
+### Bug Fixes
+
+* **cli:** remove calls to gluegun's prompt.confirm ([#545](https://github.com/aws-amplify/amplify-cli/issues/545)) ([09f9d44](https://github.com/aws-amplify/amplify-cli/commit/09f9d44))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.34...@aws-amplify/cli@0.1.35) (2018-11-21)
 

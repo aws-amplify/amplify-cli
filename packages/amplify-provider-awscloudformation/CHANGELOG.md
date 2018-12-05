@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36"></a>
+## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35...amplify-provider-awscloudformation@0.1.36) (2018-12-05)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** no region ([#502](https://github.com/aws-amplify/amplify-cli/issues/502)) ([f0fee3d](https://github.com/aws-amplify/amplify-cli/commit/f0fee3d))
+* **amplify-provider-awscloudformation:** support nested resource dir ([#517](https://github.com/aws-amplify/amplify-cli/issues/517)) ([d5401ba](https://github.com/aws-amplify/amplify-cli/commit/d5401ba))
+* **amplify-provider-awscloudformation:** trim profile name ([#547](https://github.com/aws-amplify/amplify-cli/issues/547)) ([82ba66e](https://github.com/aws-amplify/amplify-cli/commit/82ba66e)), closes [#542](https://github.com/aws-amplify/amplify-cli/issues/542)
+* **cli:** remove calls to gluegun's prompt.confirm ([#545](https://github.com/aws-amplify/amplify-cli/issues/545)) ([09f9d44](https://github.com/aws-amplify/amplify-cli/commit/09f9d44))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.34...amplify-provider-awscloudformation@0.1.35) (2018-11-21)
 

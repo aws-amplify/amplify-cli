@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.33...amplify-category-hosting@0.1.34) (2018-12-05)
+
+
+### Features
+
+* hosting bucket name validation ([#539](https://github.com/aws-amplify/amplify-cli/issues/539)) ([2bfe3b5](https://github.com/aws-amplify/amplify-cli/commit/2bfe3b5))
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.33-beta.0...amplify-category-hosting@0.1.33) (2018-11-09)
 
