@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const { normalizeEditorCode, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
+const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
@@ -30,6 +31,7 @@ async function run(context) {
 
   context.exeInfo.projectConfig = {
     projectName,
+    version: PROJECT_CONFIG_VERSION,
   };
 
   context.exeInfo.localEnvInfo = {
@@ -120,7 +122,7 @@ async function getEnvName(context) {
   const isEnvNameValid = (inputEnvName) => {
     let valid = true;
 
-    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-zA-Z0-9]/g.test(inputEnvName)) {
+    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-zA-Z]/g.test(inputEnvName)) {
       valid = false;
     }
     return valid;
@@ -143,7 +145,7 @@ async function getEnvName(context) {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
-      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters and alphanumeric')) : resolvePromise(true))),
+      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters (only alphabets).')) : resolvePromise(true))),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));
@@ -155,7 +157,7 @@ async function getEnvName(context) {
     const allEnvs = context.amplify.getAllEnvs();
 
     if (allEnvs.length > 0) {
-      if (await context.prompt.confirm('Do you want to use an existing environment?')) {
+      if (await context.amplify.confirmPrompt.run('Do you want to use an existing environment?')) {
         const envQuestion = {
           type: 'list',
           name: 'envName',

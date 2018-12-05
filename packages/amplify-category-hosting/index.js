@@ -104,9 +104,14 @@ async function console(context) {
   }
 }
 
+async function migrate(context) {
+  await categoryManager.migrate(context);
+}
+
 module.exports = {
   add,
   configure,
   publish,
   console,
+  migrate,
 };

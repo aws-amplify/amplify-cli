@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.5...amplify-provider-awscloudformation@0.2.1-multienv.6) (2018-12-05)
+
+
+### Bug Fixes
+
+* **cli:** remove calls to gluegun's prompt.confirm ([#546](https://github.com/aws-amplify/amplify-cli/issues/546)) ([0080ddb](https://github.com/aws-amplify/amplify-cli/commit/0080ddb))
+
+
+
+
+<a name="0.2.1-multienv.5"></a>
+## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.4...amplify-provider-awscloudformation@0.2.1-multienv.5) (2018-12-04)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** trim profile name ([904f639](https://github.com/aws-amplify/amplify-cli/commit/904f639)), closes [#542](https://github.com/aws-amplify/amplify-cli/issues/542)
+
+
+
+
+<a name="0.2.1-multienv.4"></a>
+## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.3...amplify-provider-awscloudformation@0.2.1-multienv.4) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.2.1-multienv.3"></a>
+## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.2...amplify-provider-awscloudformation@0.2.1-multienv.3) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.1...amplify-provider-awscloudformation@0.2.1-multienv.2) (2018-11-30)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.0...amplify-provider-awscloudformation@0.2.1-multienv.1) (2018-11-28)
+
+
+### Features
+
+* Multienv auth migrate ([#498](https://github.com/aws-amplify/amplify-cli/issues/498)) ([ef3e3b3](https://github.com/aws-amplify/amplify-cli/commit/ef3e3b3))
+
+
+
+
+<a name="0.2.1-multienv.0"></a>
+## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35-multienv.3...amplify-provider-awscloudformation@0.2.1-multienv.0) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
 <a name="0.1.35-multienv.3"></a>
 ## [0.1.35-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35-multienv.2...amplify-provider-awscloudformation@0.1.35-multienv.3) (2018-11-20)
 

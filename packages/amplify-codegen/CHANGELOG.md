@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.1...amplify-codegen@0.2.1-multienv.2) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.0...amplify-codegen@0.2.1-multienv.1) (2018-11-30)
+
+
+### Features
+
+* **amplify-codegen:** add remove support ([#510](https://github.com/aws-amplify/amplify-cli/issues/510)) ([#521](https://github.com/aws-amplify/amplify-cli/issues/521)) ([21e6b7e](https://github.com/aws-amplify/amplify-cli/commit/21e6b7e))
+
+
+
+
+<a name="0.2.1-multienv.0"></a>
+## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.35-multienv.0...amplify-codegen@0.2.1-multienv.0) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
 <a name="0.1.35-multienv.0"></a>
 ## [0.1.35-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.34...amplify-codegen@0.1.35-multienv.0) (2018-11-16)
 

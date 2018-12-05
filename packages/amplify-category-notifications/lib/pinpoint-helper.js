@@ -8,6 +8,15 @@ const authHelper = require('./auth-helper');
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
+function getPinpointApp(context) {
+  const { amplifyMeta } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  return pinpointApp;
+}
+
 async function ensurePinpointApp(context) {
   const { amplifyMeta } = context.exeInfo;
   let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
@@ -23,7 +32,7 @@ async function ensurePinpointApp(context) {
         output: {
           Name: pinpointApp.Name,
           Id: pinpointApp.Id,
-          Region: 'us-east-1',
+          Region: pinpointApp.Region,
         },
       };
     } else {
@@ -32,7 +41,8 @@ async function ensurePinpointApp(context) {
     }
   }
   context.exeInfo.pinpointApp = pinpointApp;
-  context.exeInfo.serviceMeta = amplifyMeta[constants.CategoryName][pinpointApp.Name];
+  context.exeInfo.serviceMeta =
+    context.exeInfo.amplifyMeta[constants.CategoryName][pinpointApp.Name];
 }
 
 async function createPinpointApp(context) {
@@ -70,7 +80,7 @@ async function createPinpointApp(context) {
     output: {
       Name: pinpointApp.Name,
       Id: pinpointApp.Id,
-      Region: 'us-east-1',
+      Region: pinpointApp.Region,
     },
     lastPushTimeStamp: new Date(),
   };
@@ -102,7 +112,7 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
       const serviceMeta = categoryMeta[services[i]];
-      if (serviceMeta.service === 'Pinpoint' &&
+      if (serviceMeta.service === constants.PinpointName &&
         serviceMeta.output &&
         serviceMeta.output.Id) {
         result = {
@@ -113,11 +123,9 @@ function scanCategoryMetaForPinpoint(categoryMeta) {
         } else if (serviceMeta.output.appName) {
           result.Name = serviceMeta.output.appName;
         }
-
         if (serviceMeta.output.Region) {
           result.Region = serviceMeta.output.Region;
         }
-
         break;
       }
     }
@@ -156,6 +164,7 @@ async function createApp(context, pinpointAppName) {
         reject(err);
       } else {
         spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -175,6 +184,7 @@ async function getApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -194,6 +204,7 @@ async function deleteApp(context, pinpointAppId) {
         reject(err);
       } else {
         spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+        data.ApplicationResponse.Region = pinpointClient.config.region;
         resolve(data.ApplicationResponse);
       }
     });
@@ -207,9 +218,9 @@ function console(context) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
   }
   if (pinpointApp) {
-    const { Id } = pinpointApp;
+    const { Id, Region } = pinpointApp;
     const consoleUrl =
-          `https://console.aws.amazon.com/pinpoint/home/?region=us-east-1#/apps/${Id}/manage/channels`;
+          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/manage/channels`;
     opn(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is anabled in the cloud.');
@@ -219,9 +230,7 @@ function console(context) {
 async function getPinpointClient(context) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context);
-  aws.config.update({ region: 'us-east-1' });
-  return new aws.Pinpoint();
+  return provider.getConfiguredPinpointClient(context);
 }
 
 function isAnalyticsAdded(context) {
@@ -234,7 +243,9 @@ function isAnalyticsAdded(context) {
   return result;
 }
 
+
 module.exports = {
+  getPinpointApp,
   ensurePinpointApp,
   deletePinpointApp,
   getPinpointClient,

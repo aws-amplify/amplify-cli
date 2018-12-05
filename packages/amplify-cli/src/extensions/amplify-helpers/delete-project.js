@@ -3,7 +3,7 @@ const pathManager = require('./path-manager');
 const { removeEnvFromCloud } = require('./remove-env-from-cloud');
 
 async function deleteProject(context) {
-  if (await context.prompt.confirm('Are you sure you want to continue?(This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)')) {
+  if (await context.amplify.confirmPrompt.run('Are you sure you want to continue?(This would delete all the environments of the project from the cloud and wipe out all the local amplify resource files)')) {
     const removeEnvPromises = [];
     const allEnvs = context.amplify.getEnvDetails();
     Object.keys(allEnvs).forEach((env) => {
@@ -15,7 +15,7 @@ async function deleteProject(context) {
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
     context.filesystem.remove(pathManager.getAmplifyDirPath());
-    context.print.success('Prooject deleted locally.');
+    context.print.success('Project deleted locally.');
   }
 }
 

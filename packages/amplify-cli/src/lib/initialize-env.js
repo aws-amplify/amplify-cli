@@ -57,7 +57,7 @@ async function initializeEnv(context) {
     await sequential(categoryInitializationTasks);
 
     if (context.exeInfo.forcePush === undefined) {
-      context.exeInfo.forcePush = await context.prompt.confirm('Do you want to push your resources to the cloud for your environment?');
+      context.exeInfo.forcePush = await context.amplify.confirmPrompt.run('Do you want to push your resources to the cloud for your environment?');
     }
     if (context.exeInfo.forcePush) {
       context.exeInfo.projectConfig.providers.forEach((provider) => {

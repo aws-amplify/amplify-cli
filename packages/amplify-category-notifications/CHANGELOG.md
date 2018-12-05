@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.1...amplify-category-notifications@0.2.1-multienv.2) (2018-12-05)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.0...amplify-category-notifications@0.2.1-multienv.1) (2018-11-28)
+
+
+### Features
+
+* migration of hosting and notifications ([#497](https://github.com/aws-amplify/amplify-cli/issues/497)) ([f6a60b6](https://github.com/aws-amplify/amplify-cli/commit/f6a60b6))
+
+
+
+
+<a name="0.2.1-multienv.0"></a>
+## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.4...amplify-category-notifications@0.2.1-multienv.0) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
 <a name="0.1.34-multienv.4"></a>
 ## [0.1.34-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34-multienv.3...amplify-category-notifications@0.1.34-multienv.4) (2018-11-19)
 

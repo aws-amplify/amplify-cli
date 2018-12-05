@@ -4,7 +4,7 @@ const { getProviderPlugins } = require('./get-provider-plugins');
 const spinner = ora('Building resources. This may take a few minutes...');
 
 function buildResources(context, category, resourceName) {
-  return context.prompt.confirm('Are you sure you want to continue building the resources?')
+  return context.amplify.confirmPrompt.run('Are you sure you want to continue building the resources?')
     .then((answer) => {
       if (answer) {
         const providerPlugins = getProviderPlugins(context);

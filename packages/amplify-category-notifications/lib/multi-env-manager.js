@@ -270,10 +270,87 @@ function writeAmplifyMeta(categoryMeta, amplifyMetaFilePath) {
   }
 }
 
+async function migrate(context) {
+  const migrationInfo = extractMigrationInfo(context);
+  fillBackendConfig(context, migrationInfo);
+  fillTeamProviderInfo(context, migrationInfo);
+}
+
+function extractMigrationInfo(context) {
+  let migrationInfo;
+  const { amplifyMeta, localEnvInfo } = context.migrationInfo;
+  if (amplifyMeta[constants.CategoryName]) {
+    const categoryMeta = amplifyMeta[constants.CategoryName];
+    const services = Object.keys(categoryMeta);
+    for (let i = 0; i < services.length; i++) {
+      const service = services[i];
+      const serviceMeta = amplifyMeta[constants.CategoryName][service];
+      if (serviceMeta.service === constants.PinpointName) {
+        migrationInfo = {};
+        migrationInfo.envName = localEnvInfo.envName;
+        migrationInfo.serviceName = service;
+        migrationInfo.service = serviceMeta.service;
+        migrationInfo.output = serviceMeta.output;
+        break;
+      }
+    }
+  }
+
+  if (migrationInfo &&
+    migrationInfo.output &&
+    migrationInfo.output.Id) {
+    migrationInfo.Id = migrationInfo.output.Id;
+    migrationInfo.Name = migrationInfo.output.Name;
+    migrationInfo.Region = migrationInfo.output.Region;
+    migrationInfo.channels = [];
+    const availableChannels = notificationManager.getAvailableChannels();
+    availableChannels.forEach((channel) => {
+      if (migrationInfo.output[channel] && migrationInfo.output[channel].Enabled) {
+        migrationInfo.channels.push(channel);
+      }
+    });
+  }
+
+  return migrationInfo;
+}
+
+function fillBackendConfig(context, migrationInfo) {
+  if (migrationInfo) {
+    const backendConfig = {};
+    backendConfig[migrationInfo.serviceName] = {
+      service: migrationInfo.service,
+      channels: migrationInfo.channels,
+    };
+    Object.assign(context.migrationInfo.backendConfig[constants.CategoryName], backendConfig);
+  }
+}
+
+function fillTeamProviderInfo(context, migrationInfo) {
+  if (migrationInfo && migrationInfo.Id) {
+    const categoryTeamInfo = {};
+    categoryTeamInfo[constants.CategoryName] = {};
+    categoryTeamInfo[constants.CategoryName][constants.PinpointName] = {
+      Name: migrationInfo.Name,
+      Id: migrationInfo.Id,
+      Region: migrationInfo.Region,
+    };
+
+    const { teamProviderInfo } = context.migrationInfo;
+    teamProviderInfo[migrationInfo.envName] =
+      teamProviderInfo[migrationInfo.envName] || {};
+
+    teamProviderInfo[migrationInfo.envName].categories =
+      teamProviderInfo[migrationInfo.envName].categories || {};
+
+    Object.assign(teamProviderInfo[migrationInfo.envName].categories, categoryTeamInfo);
+  }
+}
+
 module.exports = {
   initEnv,
   initEnvPush,
   deletePinpointAppForEnv,
   writeData,
+  migrate,
 };
 

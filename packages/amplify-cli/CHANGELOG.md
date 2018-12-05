@@ -3,6 +3,109 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.8"></a>
+## [0.2.1-multienv.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.7...@aws-amplify/cli@0.2.1-multienv.8) (2018-12-05)
+
+
+### Bug Fixes
+
+* **cli:** remove calls to gluegun's prompt.confirm ([#546](https://github.com/aws-amplify/amplify-cli/issues/546)) ([0080ddb](https://github.com/aws-amplify/amplify-cli/commit/0080ddb))
+
+
+
+
+<a name="0.2.1-multienv.7"></a>
+## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.6...@aws-amplify/cli@0.2.1-multienv.7) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.5...@aws-amplify/cli@0.2.1-multienv.6) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.5"></a>
+## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.4...@aws-amplify/cli@0.2.1-multienv.5) (2018-12-04)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.4"></a>
+## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.3...@aws-amplify/cli@0.2.1-multienv.4) (2018-11-30)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.3"></a>
+## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.2...@aws-amplify/cli@0.2.1-multienv.3) (2018-11-30)
+
+
+### Bug Fixes
+
+* make projects compatible with new version of CLI initialized between 11/25/2018 to 11/28/2018 ([9a30988](https://github.com/aws-amplify/amplify-cli/commit/9a30988))
+
+
+
+
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.1...@aws-amplify/cli@0.2.1-multienv.2) (2018-11-28)
+
+
+### Bug Fixes
+
+* allow only alphabets for env names ([0ef64e8](https://github.com/aws-amplify/amplify-cli/commit/0ef64e8))
+
+
+### Features
+
+* Add second level of messaging when migrating projects from old version to newer version ([aea7c4c](https://github.com/aws-amplify/amplify-cli/commit/aea7c4c))
+* Add second level of messaging when migrating projects from old version to newer version ([#514](https://github.com/aws-amplify/amplify-cli/issues/514)) ([b373ebe](https://github.com/aws-amplify/amplify-cli/commit/b373ebe))
+* core metadata migration of projects using the old version of the CLI ([#482](https://github.com/aws-amplify/amplify-cli/issues/482)) ([340b7e4](https://github.com/aws-amplify/amplify-cli/commit/340b7e4))
+* migration of API GW and Interactions ([a91ba9a](https://github.com/aws-amplify/amplify-cli/commit/a91ba9a))
+* migration of hosting and notifications ([#497](https://github.com/aws-amplify/amplify-cli/issues/497)) ([f6a60b6](https://github.com/aws-amplify/amplify-cli/commit/f6a60b6))
+* migration of projects using the old version of the CLI ([f16c5a9](https://github.com/aws-amplify/amplify-cli/commit/f16c5a9))
+* Multienv auth migrate ([#498](https://github.com/aws-amplify/amplify-cli/issues/498)) ([ef3e3b3](https://github.com/aws-amplify/amplify-cli/commit/ef3e3b3))
+
+
+
+
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.0...@aws-amplify/cli@0.2.1-multienv.1) (2018-11-22)
+
+
+### Bug Fixes
+
+* add additional checks for the presence of team-provider-info ([#492](https://github.com/aws-amplify/amplify-cli/issues/492)) ([0b98101](https://github.com/aws-amplify/amplify-cli/commit/0b98101))
+
+
+
+
+<a name="0.2.1-multienv.0"></a>
+## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.35-multienv.6...@aws-amplify/cli@0.2.1-multienv.0) (2018-11-21)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.1.35-multienv.6"></a>
+## [0.1.35-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.35-multienv.5...@aws-amplify/cli@0.1.35-multienv.6) (2018-11-20)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
 <a name="0.1.35-multienv.5"></a>
 ## [0.1.35-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.35-multienv.4...@aws-amplify/cli@0.1.35-multienv.5) (2018-11-20)
 
