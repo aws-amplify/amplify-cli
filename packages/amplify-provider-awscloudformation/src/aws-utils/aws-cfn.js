@@ -5,7 +5,7 @@ const path = require('path');
 const _ = require('lodash');
 const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
-const formUserAgentParam = require('./user-agent');
+const { formUserAgentParam } = require('./user-agent');
 
 class CloudFormation {
   constructor(context, awsClientWithCreds, userAgentAction) {
