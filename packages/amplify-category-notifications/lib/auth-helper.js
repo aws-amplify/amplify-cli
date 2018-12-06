@@ -47,7 +47,7 @@ async function attachPolicyToRole(context, policy, roleName) {
     RoleName: roleName,
     PolicyArn: policy.Arn,
   };
-  const iamClient = await getIamClient(context);
+  const iamClient = await getIamClient(context, 'update');
   return new Promise((resolve, reject) => {
     iamClient.attachRolePolicy(params, (err, data) => {
       if (err) {
@@ -78,10 +78,10 @@ async function checkAuth(context) {
   }
 }
 
-async function getIamClient(context) {
+async function getIamClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context);
+  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   return new aws.IAM();
 }
 

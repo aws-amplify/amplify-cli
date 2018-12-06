@@ -155,7 +155,7 @@ async function createApp(context, pinpointAppName) {
       Name: pinpointAppName,
     },
   };
-  const pinpointClient = await getPinpointClient(context);
+  const pinpointClient = await getPinpointClient(context, 'create');
   spinner.start('Creating Pinpoint app.');
   return new Promise((resolve, reject) => {
     pinpointClient.createApp(params, (err, data) => {
@@ -176,7 +176,7 @@ async function getApp(context, pinpointAppId) {
     ApplicationId: pinpointAppId,
   };
   spinner.start('Retrieving Pinpoint app information.');
-  const pinpointClient = await getPinpointClient(context);
+  const pinpointClient = await getPinpointClient(context, 'get');
   return new Promise((resolve, reject) => {
     pinpointClient.getApp(params, (err, data) => {
       if (err) {
@@ -195,7 +195,7 @@ async function deleteApp(context, pinpointAppId) {
   const params = {
     ApplicationId: pinpointAppId,
   };
-  const pinpointClient = await getPinpointClient(context);
+  const pinpointClient = await getPinpointClient(context, 'delete');
   spinner.start('Deleting Pinpoint app.');
   return new Promise((resolve, reject) => {
     pinpointClient.deleteApp(params, (err, data) => {
@@ -227,10 +227,10 @@ function console(context) {
   }
 }
 
-async function getPinpointClient(context) {
+async function getPinpointClient(context, action) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context);
+  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action);
 }
 
 function isAnalyticsAdded(context) {

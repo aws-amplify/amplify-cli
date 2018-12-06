@@ -12,6 +12,7 @@ const aws = require('./src/aws-utils/aws');
 const pinpoint = require('./src/aws-utils/aws-pinpoint');
 const consoleCommand = require('./lib/console');
 const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
+const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
 function init(context) {
   return initializer.run(context);
@@ -43,8 +44,15 @@ function buildResources(context, category, resourceName) {
   return resourceBuilder.run(context, category, resourceName);
 }
 
-function getConfiguredAWSClient(context) {
-  return aws.configureWithCreds(context);
+function getConfiguredAWSClient(context, category, action) {
+  aws.configureWithCreds(context);
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action[0]}`;
+  aws.config.update({
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  });
+  return aws;
 }
 
 function getConfiguredPinpointClient(context) {

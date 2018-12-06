@@ -1,5 +1,6 @@
 const aws = require('aws-sdk');
 const configurationManager = require('../../lib/configuration-manager');
+const { formUserAgentParam } = require('./user-agent');
 
 const defaultPinpointRegion = 'us-east-1';
 const serviceRegionMap = {
@@ -23,9 +24,15 @@ const serviceRegionMap = {
   'eu-west-3': 'eu-west-1',
 };
 
-async function getConfiguredPinpointClient(context) {
+async function getConfiguredPinpointClient(context, category, action) {
   await configurationManager.loadConfiguration(context, aws, true);
-  aws.config.update({ region: mapServiceRegion(aws.region) });
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action[0]}`;
+  aws.config.update({
+    region: mapServiceRegion(aws.region),
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  });
   return new aws.Pinpoint();
 }
 
