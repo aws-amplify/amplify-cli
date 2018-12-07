@@ -44,11 +44,12 @@ export class SchemaResourceUtil {
                 Fn.Join('/', [
                     Fn.Ref('ResolverBucket'),
                     Fn.Ref('ResolverRootKey'),
+                    Fn.Ref('DeploymentTimestamp'),
                     Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
                         'request',
-                        Fn.Ref('DeploymentTimestamp')
+                        'vtl',
                     ])
                 ]),
             ]),
@@ -57,11 +58,12 @@ export class SchemaResourceUtil {
                 Fn.Join('/', [
                     Fn.Ref('ResolverBucket'),
                     Fn.Ref('ResolverRootKey'),
+                    Fn.Ref('DeploymentTimestamp'),
                     Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
                         'response',
-                        Fn.Ref('DeploymentTimestamp')
+                        'vtl'
                     ])
                 ]),
             ])

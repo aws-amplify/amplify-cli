@@ -6,6 +6,7 @@ import {
     EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
     InputValueDefinitionNode, EnumValueDefinitionNode, validate
 } from 'graphql'
+import { DeploymentResources } from './DeploymentResources'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
@@ -187,7 +188,7 @@ export default class GraphQLTransform {
      * @param schema The model schema.
      * @param references Any cloudformation references.
      */
-    public transform(schema: string, template: Template = blankTemplate()): Template {
+    public transform(schema: string, template: Template = blankTemplate()): DeploymentResources {
         this.seenTransformations = {}
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
