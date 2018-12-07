@@ -1,8 +1,8 @@
-import Template from 'cloudform/types/template'
-import Resource from 'cloudform/types/resource'
-import Parameter from 'cloudform/types/parameter'
-import { Condition } from 'cloudform/types/dataTypes'
-import Output from 'cloudform/types/output'
+import Template from 'cloudform-types/types/template'
+import Resource from 'cloudform-types/types/resource'
+import Parameter from 'cloudform-types/types/parameter'
+import { Condition } from 'cloudform-types/types/dataTypes'
+import Output from 'cloudform-types/types/output'
 import {
     TypeSystemDefinitionNode,
     ObjectTypeDefinitionNode,

@@ -69,5 +69,5 @@ test('Test getTemplateReferences', () => {
     context.template = template;
     const deploymentResources = formatter.format(context)
     expect(Object.keys(deploymentResources.stacks.PostModel.Resources)).toHaveLength(4)
-    expect(Object.keys(deploymentResources.rootStack.Resources)).toHaveLength(2)
+    expect(Object.keys(deploymentResources.rootStack.Resources)).toHaveLength(3)
 });
