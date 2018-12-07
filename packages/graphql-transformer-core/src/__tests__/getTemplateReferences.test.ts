@@ -59,22 +59,22 @@ const template: Template = {
 
 
 test('Test getTemplateReferences', () => {
-    const referenceMap = getTemplateReferences(template);
+    const referenceMap = getTemplateReferences(template) //JSON.parse(JSON.stringify(template, null, 4)));
     expect(referenceMap).toBeTruthy();
-    expect(referenceMap.env).toEqual(['Conditions.IsProd.Fn::Equals.0'])
+    expect(referenceMap.env).toEqual([['Conditions', 'IsProd', 'Fn::Equals', '0']])
     expect(referenceMap.API.sort()).toEqual([
-        'Resources.PostTableDataSource.Properties.ApiId',
-        'Resources.CreatePostResolver.Properties.ApiId',
-        'Resources.UpdatePostResolver.Properties.ApiId'
+        ['Resources', 'PostTableDataSource', 'Properties', 'ApiId'],
+        ['Resources', 'CreatePostResolver', 'Properties', 'ApiId'],
+        ['Resources', 'UpdatePostResolver', 'Properties', 'ApiId']
     ].sort())
     expect(referenceMap.PostTableDataSource.sort()).toEqual([
-        'Resources.CreatePostResolver.Properties.DataSourceName',
-        'Resources.UpdatePostResolver.Properties.DataSourceName.Fn::Join.1.1.Fn::Join.1.0',
+        ['Resources', 'CreatePostResolver', 'Properties', 'DataSourceName'],
+        ['Resources', 'UpdatePostResolver', 'Properties', 'DataSourceName', 'Fn::Join', '1', '1', 'Fn::Join', '1', '0'],
     ].sort())
     expect(referenceMap.PostTable.sort()).toEqual([
-        'Resources.UpdatePostResolver.Properties.DataSourceName.Fn::Join.1.0',
-        'Resources.UpdatePostResolver.Properties.FieldName.Fn::Split.1',
-        'Resources.UpdatePostResolver.Properties.TypeName.Fn::Sub.1.t',
-        'Resources.UpdatePostResolver.Properties.RequestMappingTemplate.Fn::Select.1.0'
+        ['Resources', 'UpdatePostResolver', 'Properties', 'DataSourceName', 'Fn::Join', '1', '0'],
+        ['Resources', 'UpdatePostResolver', 'Properties', 'FieldName', 'Fn::Split', '1'],
+        ['Resources', 'UpdatePostResolver', 'Properties', 'TypeName', 'Fn::Sub', '1', 't'],
+        ['Resources', 'UpdatePostResolver', 'Properties', 'RequestMappingTemplate', 'Fn::Select', '1', '0']
     ].sort())
 });

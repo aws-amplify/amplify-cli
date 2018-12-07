@@ -11,13 +11,11 @@ import {
 import { ObjectTypeDefinitionNode, print } from "graphql";
 import { stripDirectives } from "./stripDirectives";
 import { SchemaResourceUtil } from "./util/schemaResourceUtil";
+import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
 import fs = require('fs');
 import { normalize } from 'path';
 
-interface StackMap {
-    [key: string]: Template;
-}
 interface StackExprMap {
     [key: string]: RegExp[];
 }
@@ -34,13 +32,21 @@ export class TransformFormatter {
         this.opts = opts;
     }
 
-    public format(ctx: TransformerContext): any {
-        if (!this.opts.outputPath) {
-            this.printWithoutFilePath(ctx);
-        } else {
-            this.printWithFilePath(ctx);
-        }
-        return this.splitContextIntoTemplates(ctx.template);
+    /**
+     * Formats the ctx into a set of deployment resources.
+     * @param ctx the transformer context.
+     * Returns all the deployment resources for the transformation.
+     */
+    public format(ctx: TransformerContext): DeploymentResources {
+        const resolversFunctionsAndSchema = this.collectResolversFunctionsAndSchema(ctx);
+        const stacks = this.splitContextIntoTemplates(ctx.template);
+        const rootStack = stacks.root;
+        delete(stacks.root);
+        return {
+            rootStack,
+            stacks,
+            ...resolversFunctionsAndSchema
+        };
     }
 
     /**
@@ -132,7 +138,7 @@ export class TransformFormatter {
         }
         for (const resourceKey of resourceKeys) {
             if (!resourceStackMap[resourceKey]) {
-                resourceStackMap[resourceKey] = 'main'
+                resourceStackMap[resourceKey] = 'root'
             }
         }
         return resourceStackMap;
@@ -217,6 +223,77 @@ export class TransformFormatter {
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
     }
 
+
+    /**
+     * Builds the schema and creates the schema record to pull from S3.
+     * Returns the schema SDL text as a string.
+     */
+    private buildAndSetSchema(ctx: TransformerContext): string {
+        const SDL = this.buildSchema(ctx)
+
+        const schemaParam = this.schemaResourceUtil.makeSchemaParam()
+        ctx.mergeParameters(schemaParam.Parameters)
+
+        const schemaResource = this.schemaResourceUtil.makeAppSyncSchema()
+        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
+        return SDL
+    }
+
+    private collectResolversFunctionsAndSchema(ctx: TransformerContext): ResolversFunctionsAndSchema {
+        const resolverParams = this.schemaResourceUtil.makeResolverS3RootParams()
+        ctx.mergeParameters(resolverParams.Parameters);
+        const templateResources: { [key: string]: Resource } = ctx.template.Resources
+        let resolverMap = {}
+        let functionsMap = {}
+        for (const resourceName of Object.keys(templateResources)) {
+            const resource: Resource = templateResources[resourceName]
+            if (resource.Type === 'AWS::AppSync::Resolver') {
+                const resourceResolverMap = this.replaceResolverRecord(resourceName, ctx)
+                resolverMap = { ...resolverMap, ...resourceResolverMap }
+            } else if (resource.Type === 'AWS::Lambda::Function') {
+                // TODO: We only use the one function for now. Generalize this.
+                functionsMap = {
+                    ...functionsMap,
+                    [resourceName]: ctx.metadata.get('ElasticSearchPathToStreamingLambda')
+                }
+            }
+        }
+        const schema = this.buildAndSetSchema(ctx);
+        return {
+            resolvers: resolverMap,
+            functions: functionsMap,
+            schema
+        }
+    }
+
+    private replaceResolverRecord(resourceName: string, ctx: TransformerContext): ResolverMap {
+        const resolverResource = ctx.template.Resources[resourceName]
+
+        const requestMappingTemplate = resolverResource.Properties.RequestMappingTemplate
+        const responseMappingTemplate = resolverResource.Properties.ResponseMappingTemplate
+        // If the templates are not strings. aka they use CF intrinsic functions don't rewrite.
+        if (
+            typeof requestMappingTemplate === 'string' &&
+            typeof responseMappingTemplate === 'string'
+        ) {
+            const reqType = resolverResource.Properties.TypeName
+            const reqFieldName = resolverResource.Properties.FieldName
+            const reqFileName = `${reqType}.${reqFieldName}.request.vtl`
+
+            const respType = resolverResource.Properties.TypeName
+            const respFieldName = resolverResource.Properties.FieldName
+            const respFileName = `${respType}.${respFieldName}.response.vtl`
+
+            const updatedResolverResource = this.schemaResourceUtil.updateResolverResource(resolverResource)
+            ctx.setResource(resourceName, updatedResolverResource)
+            return {
+                [reqFileName]: requestMappingTemplate,
+                [respFileName]: responseMappingTemplate
+            }
+        }
+        return {}
+    }
+
     private printWithFilePath(ctx: TransformerContext): void {
         const outputPath = normalize(this.opts.outputPath);
         if (!fs.existsSync(outputPath)) {
@@ -264,12 +341,12 @@ export class TransformFormatter {
         ) {
             const reqType = resolverResource.Properties.TypeName
             const reqFieldName = resolverResource.Properties.FieldName
-            const reqFileName = `${reqType}.${reqFieldName}.request`
+            const reqFileName = `${reqType}.${reqFieldName}.request.vtl`
             fs.writeFileSync(`${resolverFilePath}/${reqFileName}`, requestMappingTemplate)
 
             const respType = resolverResource.Properties.TypeName
             const respFieldName = resolverResource.Properties.FieldName
-            const respFileName = `${respType}.${respFieldName}.response`
+            const respFileName = `${respType}.${respFieldName}.response.vtl`
             fs.writeFileSync(`${resolverFilePath}/${respFileName}`, responseMappingTemplate)
 
             const updatedResolverResource = this.schemaResourceUtil.updateResolverResource(resolverResource)
