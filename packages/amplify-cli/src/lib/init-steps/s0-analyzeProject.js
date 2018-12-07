@@ -94,7 +94,7 @@ function normalizeProjectName(projectName) {
   if (!isProjectNameValid(projectName)) {
     projectName = projectName.replace(/[^a-zA-Z0-9]/g, '');
     if (projectName.length < 3) {
-      projectName += +makeId(5);
+      projectName += makeId(5);
     } else if (projectName.length > 20) {
       projectName = projectName.substring(0, 20);
     }
