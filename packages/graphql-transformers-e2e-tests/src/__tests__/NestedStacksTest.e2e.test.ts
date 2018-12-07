@@ -33,13 +33,14 @@ test('Test custom root types with additional fields.', () => {
         ]
     })
     const out = transformer.transform(validSchema);
-    console.log(out);
-    const mainStack = out.main
-    const postStack = out.PostModel
+    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    const mainStack = out.rootStack;
+    const postStack = out.stacks.PostModel;
     expect(mainStack).toBeDefined()
+    expect(postStack).toBeDefined()
     const schema = mainStack.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
     expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query');
