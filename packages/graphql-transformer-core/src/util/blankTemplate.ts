@@ -1,4 +1,4 @@
-import Template from 'cloudform/types/template'
+import Template from 'cloudform-types/types/template'
 
 export default function blankTemplate(description?: string): Template {
     return {

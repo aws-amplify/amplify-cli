@@ -1,8 +1,9 @@
 import TransformerContext from "./TransformerContext";
-import Template from "cloudform/types/template";
+import Template from "cloudform-types/types/template";
+import { CloudFormation } from 'cloudform-types';
 import { getTemplateReferences, ReferenceMap } from './util/getTemplateReferences';
-import Resource from "cloudform/types/resource";
-import blankTemplate from './util/blankTemplate';
+import Resource from "cloudform-types/types/resource";
+import blankNestedTemplate from './util/blankNestedTemplate';
 import { Fn, Refs } from "cloudform";
 import {
     makeOperationType,
@@ -15,6 +16,8 @@ import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from '.
 import { ResourceConstants } from "graphql-transformer-common";
 import fs = require('fs');
 import { normalize } from 'path';
+
+const ROOT_STACK_NAME = 'root';
 
 interface StackExprMap {
     [key: string]: RegExp[];
@@ -40,13 +43,47 @@ export class TransformFormatter {
     public format(ctx: TransformerContext): DeploymentResources {
         const resolversFunctionsAndSchema = this.collectResolversFunctionsAndSchema(ctx);
         const stacks = this.splitContextIntoTemplates(ctx.template);
-        const rootStack = stacks.root;
+        let rootStack = stacks.root;
         delete(stacks.root);
+        rootStack = this.updateRootWithNestedStacks(rootStack, stacks);
         return {
             rootStack,
             stacks,
             ...resolversFunctionsAndSchema
         };
+    }
+
+    /**
+     * Forwards all root parameters to each nested stack and adds the GraphQL API
+     * reference as a parameter.
+     * @param root The root stack
+     * @param stacks The list of stacks keyed by filename.
+     */
+    private updateRootWithNestedStacks(root: Template, stacks: { [key: string]: Template }) {
+        const stackFileNames = Object.keys(stacks);
+        const allParamNames = Object.keys(root.Parameters);
+        // Forward all parent parameters
+        const allParamValues = allParamNames.reduce((acc: any, name: string) => ({
+            ...acc,
+            [name]: Fn.Ref(name)
+        }), {})
+        // Also forward the API id of the top level API.
+        allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.Ref(ResourceConstants.RESOURCES.GraphQLAPILogicalID)
+        for (const stackName of stackFileNames) {
+            const nestedStackName = `${stackName}Stack`
+            root.Resources[nestedStackName] = new CloudFormation.Stack({
+                Parameters: allParamValues,
+                TemplateURL: Fn.Join(
+                    '/',
+                    [
+                        Fn.Ref("S3DeploymentAssetsURL"),
+                        'stacks',
+                        stackName + ".json"
+                    ]
+                )
+            })
+        }
+        return root;
     }
 
     /**
@@ -69,6 +106,21 @@ export class TransformFormatter {
         return templateMap;
     }
 
+    private getParentResourceFromLocation(location: string[]) {
+        // There should never be a resource location with fewer than 2 elements.
+        if (!location || location.length < 2) {
+            return null;
+        }
+        return location[1]
+    }
+
+    /**
+     * Walks through the referenceMap and replaces all occurances of Fn.Ref and
+     * Fn.GetAtt with the relevant ImportValue statement.
+     * @param template The template to update.
+     * @param referenceMap The reference map.
+     * @param resourceToStackMap The mapping from resourceId to stack name.
+     */
     private replaceReferencesWithImports(
         template: Template,
         referenceMap: ReferenceMap,
@@ -76,17 +128,31 @@ export class TransformFormatter {
     ) {
         const resourceIds = Object.keys(resourceToStackMap);
         for (const id of resourceIds) {
+            const referencedResourceStack = resourceToStackMap[id];
             if (referenceMap[id] && referenceMap[id].length > 0) {
                 const referenceLocations = referenceMap[id];
                 for (const referenceLocation of referenceLocations) {
                     const referenceNode = getIn(template, referenceLocation);
-                    if (referenceNode.Ref) {
-                        // Replace the node with a reference import.
+                    // A reference location looks like ['Resources', 'PostTable', 'Properties']
+                    const sourceResourceId = this.getParentResourceFromLocation(referenceLocation)
+                    const sourceResourceStack = resourceToStackMap[sourceResourceId]
+                    if (
+                        sourceResourceStack &&
+                        referenceNode &&
+                        referenceNode.Ref &&
+                        sourceResourceStack !== referencedResourceStack
+                    ) {
+                        // Replace the Ref with an import only if they resources are in different stacks.
                         const resourceId = referenceNode.Ref;
                         const importNode = this.makeImportValueForRef(resourceToStackMap[resourceId], resourceId);
                         setIn(template, referenceLocation, importNode);
-                    } else if (referenceNode["Fn::GetAtt"]) {
-                        // Replace the node with a GetAtt import.
+                    } else if (
+                        sourceResourceStack &&
+                        referenceNode &&
+                        referenceNode["Fn::GetAtt"] &&
+                        sourceResourceStack !== referencedResourceStack
+                    ) {
+                        // Replace the GetAtt with an import only if they resources are in different stacks.
                         const [resId, attr] = referenceNode["Fn::GetAtt"];
                         const importNode = this.makeImportValueForGetAtt(resourceToStackMap[resId], resId, attr);
                         setIn(template, referenceLocation, importNode);
@@ -109,10 +175,12 @@ export class TransformFormatter {
         for (const resourceId of resourceIds) {
             const stackName = resourceToStackMap[resourceId]
             if (!templateMap[stackName]) {
-                templateMap[stackName] = blankTemplate()
+                templateMap[stackName] = blankNestedTemplate(template.Parameters)
             }
             templateMap[stackName].Resources[resourceId] = template.Resources[resourceId]
         }
+        // The root stack exposes all parameters at the top level.
+        templateMap[ROOT_STACK_NAME].Parameters = template.Parameters;
         return templateMap;
     }
 
@@ -138,7 +206,7 @@ export class TransformFormatter {
         }
         for (const resourceKey of resourceKeys) {
             if (!resourceStackMap[resourceKey]) {
-                resourceStackMap[resourceKey] = 'root'
+                resourceStackMap[resourceKey] = ROOT_STACK_NAME
             }
         }
         return resourceStackMap;
@@ -230,10 +298,6 @@ export class TransformFormatter {
      */
     private buildAndSetSchema(ctx: TransformerContext): string {
         const SDL = this.buildSchema(ctx)
-
-        const schemaParam = this.schemaResourceUtil.makeSchemaParam()
-        ctx.mergeParameters(schemaParam.Parameters)
-
         const schemaResource = this.schemaResourceUtil.makeAppSyncSchema()
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
         return SDL
@@ -292,92 +356,6 @@ export class TransformFormatter {
             }
         }
         return {}
-    }
-
-    private printWithFilePath(ctx: TransformerContext): void {
-        const outputPath = normalize(this.opts.outputPath);
-        if (!fs.existsSync(outputPath)) {
-            fs.mkdirSync(outputPath);
-        }
-
-        const resolverFilePath = normalize(outputPath + '/resolvers')
-        if (fs.existsSync(resolverFilePath)) {
-            const files = fs.readdirSync(resolverFilePath)
-            files.forEach(file => fs.unlinkSync(resolverFilePath + '/' + file))
-            fs.rmdirSync(resolverFilePath)
-        }
-
-        const templateResources: { [key: string]: Resource } = ctx.template.Resources
-
-        const resolverParams = this.schemaResourceUtil.makeResolverS3RootParams()
-        ctx.mergeParameters(resolverParams.Parameters);
-
-        for (const resourceName of Object.keys(templateResources)) {
-            const resource: Resource = templateResources[resourceName]
-            if (resource.Type === 'AWS::AppSync::Resolver') {
-                this.writeResolverToFile(outputPath, resourceName, ctx)
-            } else if (resource.Type === 'AWS::Lambda::Function') {
-                this.writeLamdbaFunctionToFile(outputPath, resourceName, ctx)
-            } else if (resource.Type === 'AWS::AppSync::GraphQLSchema') {
-                this.writeSchemaToFile(outputPath, resourceName, ctx)
-            }
-        }
-    }
-
-    private writeResolverToFile(outputPath: string, resourceName: string, ctx: TransformerContext): void {
-        const resolverFilePath = normalize(outputPath + '/resolvers')
-        if (!fs.existsSync(resolverFilePath)) {
-            fs.mkdirSync(resolverFilePath);
-        }
-
-        const resolverResource = ctx.template.Resources[resourceName]
-
-        const requestMappingTemplate = resolverResource.Properties.RequestMappingTemplate
-        const responseMappingTemplate = resolverResource.Properties.ResponseMappingTemplate
-        // If the templates are not strings. aka they use CF intrinsic functions don't rewrite.
-        if (
-            typeof requestMappingTemplate === 'string' &&
-            typeof responseMappingTemplate === 'string'
-        ) {
-            const reqType = resolverResource.Properties.TypeName
-            const reqFieldName = resolverResource.Properties.FieldName
-            const reqFileName = `${reqType}.${reqFieldName}.request.vtl`
-            fs.writeFileSync(`${resolverFilePath}/${reqFileName}`, requestMappingTemplate)
-
-            const respType = resolverResource.Properties.TypeName
-            const respFieldName = resolverResource.Properties.FieldName
-            const respFileName = `${respType}.${respFieldName}.response.vtl`
-            fs.writeFileSync(`${resolverFilePath}/${respFileName}`, responseMappingTemplate)
-
-            const updatedResolverResource = this.schemaResourceUtil.updateResolverResource(resolverResource)
-            ctx.setResource(resourceName, updatedResolverResource)
-        }
-    }
-
-    private writeSchemaToFile(outputPath: string, resourceName: string, ctx: TransformerContext): void {
-
-        const SDL = this.buildSchema(ctx)
-        const schemaPath = normalize(outputPath + '/schema.graphql')
-        fs.writeFileSync(schemaPath, SDL)
-
-        const schemaParam = this.schemaResourceUtil.makeSchemaParam()
-        ctx.mergeParameters(schemaParam.Parameters)
-
-        const schemaResource = this.schemaResourceUtil.makeAppSyncSchema()
-        ctx.setResource(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, schemaResource)
-    }
-
-    private writeLamdbaFunctionToFile(outputPath: string, resourceName: string, ctx: TransformerContext): void {
-
-        const functionPath = normalize(outputPath + '/functions')
-        if (!fs.existsSync(functionPath)) {
-            fs.mkdirSync(functionPath);
-        }
-        const sourcePath = normalize(ctx.metadata.get('ElasticSearchPathToStreamingLambda'))
-        const destPath = normalize(`${outputPath}/functions/python_streaming_function.zip`)
-
-        const lambdaCode = fs.readFileSync(sourcePath)
-        fs.writeFileSync(destPath, lambdaCode)
     }
 }
 

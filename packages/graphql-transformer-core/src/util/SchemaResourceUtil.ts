@@ -1,33 +1,20 @@
-import AppSync from 'cloudform/types/appSync'
-import Template from 'cloudform/types/template'
+import AppSync from 'cloudform-types/types/appSync'
+import Template from 'cloudform-types/types/template'
 import { Fn, StringParameter } from 'cloudform'
 import { ResourceConstants } from 'graphql-transformer-common'
-import Resource from "cloudform/types/resource";
+import Resource from "cloudform-types/types/resource";
 
+const RESOLVERS_DIRECTORY_NAME = "resolvers"
+const STACKS_DIRECTORY_NAME = "stacks"
 
 export class SchemaResourceUtil {
 
     public makeResolverS3RootParams(): Template {
         return {
             Parameters: {
-                ResolverBucket: new StringParameter({
-                    Description: `The name of the bucket containing the resolver templates`,
-                }),
-                ResolverRootKey: new StringParameter({
-                    Description: `The s3 key of the folder containing the resolver templates in format {Type}.{Field}.[response|request].{Timestamp}`,
-                }),
-                DeploymentTimestamp: new StringParameter({
-                    Description: `The timestamp used to identify thie most recent version of the resolver templates in s3.`,
-                })
-            }
-        }
-    }
-
-    public makeResolverParam(name: string): Template {
-        return {
-            Parameters: {
-                [this.removeDotsAndCamelcase(name)]: new StringParameter({
-                    Description: `The S3 location for the Resolver: ${name}`,
+                S3DeploymentAssetsURL: new StringParameter({
+                    Description: 'The URL to the Amazon S3 bucket containing your deployment assets. For example, s3://bucket/path/to/deployment.' +
+                        ' The directory at this path should contain your schema.graphql as well as the "stacks" and "resolvers" directories.'
                 })
             }
         }
@@ -42,9 +29,8 @@ export class SchemaResourceUtil {
             RequestMappingTemplateS3Location: Fn.Join('', [
                 's3://',
                 Fn.Join('/', [
-                    Fn.Ref('ResolverBucket'),
-                    Fn.Ref('ResolverRootKey'),
-                    Fn.Ref('DeploymentTimestamp'),
+                    Fn.Ref('S3DeploymentAssetsURL'),
+                    RESOLVERS_DIRECTORY_NAME,
                     Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
@@ -54,11 +40,9 @@ export class SchemaResourceUtil {
                 ]),
             ]),
             ResponseMappingTemplateS3Location: Fn.Join('', [
-                's3://',
                 Fn.Join('/', [
-                    Fn.Ref('ResolverBucket'),
-                    Fn.Ref('ResolverRootKey'),
-                    Fn.Ref('DeploymentTimestamp'),
+                    Fn.Ref('S3DeploymentAssetsURL'),
+                    RESOLVERS_DIRECTORY_NAME,
                     Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
@@ -70,16 +54,6 @@ export class SchemaResourceUtil {
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
-    public makeSchemaParam(): Template {
-        return {
-            Parameters: {
-                [this.removeDotsAndCamelcase('schema.graphql')]: new StringParameter({
-                    Description: `The S3 location for the Schema: schema.graphql`,
-                })
-            }
-        }
-    }
-
     public makeAppSyncSchema(schema?: string) {
         if (schema) {
             return new AppSync.GraphQLSchema({
@@ -89,18 +63,10 @@ export class SchemaResourceUtil {
         }
         return new AppSync.GraphQLSchema({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DefinitionS3Location: Fn.Ref(this.removeDotsAndCamelcase('schema.graphql'))
+            DefinitionS3Location: Fn.Join('/', [
+                Fn.Ref('S3DeploymentAssetsURL'),
+                'schema.graphql'
+            ])
         })
     }
-
-    public removeDotsAndCamelcase(name: string) {
-        var nameCopy = name
-        for (var i = 0; i < name.length; i++) {
-            if (name[i] === '.') {
-                nameCopy = nameCopy.substr(0, i + 1) + nameCopy.charAt(i + 1).toUpperCase() + nameCopy.slice(i + 2)
-            }
-        }
-        return nameCopy.replace(/\./g, '')
-    }
-
 }
