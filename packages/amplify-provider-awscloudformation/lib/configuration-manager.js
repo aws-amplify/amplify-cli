@@ -443,6 +443,7 @@ function getCurrentConfig(context) {
         } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
           const awsSecrets = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
           awsConfigInfo.config.useProfile = false;
+          awsConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
           awsConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
           awsConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
           awsConfigInfo.config.region = awsSecrets.region;
