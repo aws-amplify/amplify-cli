@@ -65,9 +65,9 @@ test('Test getTemplateReferences', () => {
             "PostModel": [/.*PostResolver/, /^PostTable*/]
         },
     });
-    const context = new TransformerContext('')
+    const context = new TransformerContext('type Post @model { id: ID! title: String }')
     context.template = template;
-    const templates = formatter.format(context)
-    expect(Object.keys(templates.PostModel.Resources)).toHaveLength(4)
-    expect(Object.keys(templates.main.Resources)).toHaveLength(1)
+    const deploymentResources = formatter.format(context)
+    expect(Object.keys(deploymentResources.stacks.PostModel.Resources)).toHaveLength(4)
+    expect(Object.keys(deploymentResources.rootStack.Resources)).toHaveLength(2)
 });
