@@ -50,7 +50,10 @@ export class ResourceConstants {
         AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
         AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
         AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
-        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity'
+        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity',
+
+        // Nested stacks
+        GraphQLAPIID: 'GraphQLAPIID',
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {
