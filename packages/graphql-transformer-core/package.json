@@ -23,10 +23,10 @@
     "jest": "^23.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^2.8.3",
+    "cloudform": "^3.5.0"
   },
   "dependencies": {
-    "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
     "graphql-transformer-common": "^1.0.33"
   },
