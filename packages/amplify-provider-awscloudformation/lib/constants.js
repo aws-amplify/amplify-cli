@@ -1,6 +1,7 @@
 module.exports = {
   ProviderName: 'awscloudformation',
   Label: 'awscloudformation',
+  AWSInfoFileName: 'aws-info.json',
   DefaultAWSAccessKeyId: '<YOUR_ACCESS_KEY_ID>',
   DefaultAWSSecretAccessKey: '<YOUR_SECRET_ACCESS_KEY>',
   DefaultAWSRegion: 'us-east-1',

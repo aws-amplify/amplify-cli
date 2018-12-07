@@ -52,7 +52,7 @@ function getDisabledChannels(context) {
 
 async function enableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.enable(context);
   }
@@ -60,7 +60,7 @@ async function enableChannel(context, channelName) {
 
 async function disableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.disable(context);
   }
@@ -68,7 +68,7 @@ async function disableChannel(context, channelName) {
 
 async function configureChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.configure(context);
   }

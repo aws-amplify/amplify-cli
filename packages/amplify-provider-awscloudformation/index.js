@@ -8,7 +8,9 @@ const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
+const pinpoint = require('./src/aws-utils/aws-pinpoint');
 const consoleCommand = require('./lib/console');
+const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
 function init(context) {
   return initializer.run(context);
@@ -34,8 +36,23 @@ function buildResources(context, category, resourceName) {
   return resourceBuilder.run(context, category, resourceName);
 }
 
-function getConfiguredAWSClient(context) {
-  return aws.configureWithCreds(context);
+function getConfiguredAWSClient(context, category, action) {
+  aws.configureWithCreds(context);
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action[0]}`;
+  aws.config.update({
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  });
+  return aws;
+}
+
+function getConfiguredPinpointClient(context) {
+  return pinpoint.getConfiguredPinpointClient(context);
+}
+
+function getPinpointRegionMapping(context) {
+  return pinpoint.getPinpointRegionMapping(context);
 }
 
 function showHelpfulLinks(context, resources) {
@@ -62,6 +79,8 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getPinpointRegionMapping,
+  getConfiguredPinpointClient,
   showHelpfulLinks,
   deleteProject,
 };
