@@ -14,10 +14,11 @@ export function getTemplateReferences(template: Template): ReferenceMap {
     return walk(template, [])
 }
 function walk(node: any, path: string[]): ReferenceMap {
-    if (typeof node === 'object') {
+    const jsonNode = node && typeof node.toJSON === 'function' ? node.toJSON() : node;
+    if (typeof jsonNode === 'object') {
         // tslint:disable-next-line
-        const refValue = node["Ref"];
-        const getAtt = node["Fn::GetAtt"];
+        const refValue = jsonNode["Ref"];
+        const getAtt = jsonNode["Fn::GetAtt"];
         if (refValue) {
             return {
                 [refValue]: [path],
@@ -28,15 +29,15 @@ function walk(node: any, path: string[]): ReferenceMap {
             }
         }
         let refsFromAllKeys = {}
-        for (const key of Object.keys(node)) {
-            const refsForKey = walk(node[key], path.concat(key))
+        for (const key of Object.keys(jsonNode)) {
+            const refsForKey = walk(jsonNode[key], path.concat(key))
             refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey)
         }
         return refsFromAllKeys
-    } else if (Array.isArray(node)) {
+    } else if (Array.isArray(jsonNode)) {
         let refsFromAllKeys = {}
-        for (let i = 0; i < node.length; i++) {
-            const n = node[i]
+        for (let i = 0; i < jsonNode.length; i++) {
+            const n = jsonNode[i]
             const refsForKey = walk(n, path.concat(`${i}`))
             refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey)
         }
