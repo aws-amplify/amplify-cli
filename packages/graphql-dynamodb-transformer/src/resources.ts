@@ -1,9 +1,5 @@
-import DynamoDB from 'cloudform/types/dynamoDb'
-import AppSync from 'cloudform/types/appSync'
-import IAM from 'cloudform/types/iam'
-import Output from 'cloudform/types/output'
-import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs } from 'cloudform-types'
+import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
     ref, obj, set, nul,
@@ -146,7 +142,11 @@ export class ResourceFactory {
             },
             StreamSpecification: {
                 StreamViewType: 'NEW_AND_OLD_IMAGES'
-            }
+            },
+            // BillingMode: 'PAY_PER_REQUEST', Enable after updating cloudform.
+            SSESpecification: {
+                SSEEnabled: true
+            },
         })
     }
 
