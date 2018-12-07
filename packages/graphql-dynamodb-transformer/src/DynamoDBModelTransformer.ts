@@ -101,6 +101,7 @@ export class DynamoDBModelTransformer extends Transformer {
                 new RegExp(".*" + def.name.value + "Model", 'i'),
                 new RegExp(".*" + def.name.value + "DataSource", 'i'),
                 new RegExp(".*" + def.name.value + "IAMRole", 'i'),
+                new RegExp("^" + def.name.value + "Table", 'i'),
                 // All resolvers except the search resolver.
                 new RegExp("^[^S].*" + def.name.value + "Resolver", 'i'),
                 new RegExp("^" + def.name.value + ".+Resolver", 'i'),
