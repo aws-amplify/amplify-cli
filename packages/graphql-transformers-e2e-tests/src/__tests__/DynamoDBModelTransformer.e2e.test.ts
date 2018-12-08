@@ -9,16 +9,29 @@ import AppSyncTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import { deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
 
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
 const dateAppender = moment().format('YYYYMMDDHHmmss')
 const STACK_NAME = `DynamoDBModelTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`
 
 let GRAPHQL_CLIENT = undefined;
+
+const TMP_ROOT = '/tmp/model_transform_tests/'
+
+const ROOT_KEY = ''
+
+let GRAPHQL_ENDPOINT = undefined;
 
 function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -62,29 +75,44 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     console.log(out);
     try {
+        await awsS3Client.createBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Failed to create S3 bucket: ${e}`)
+    }
+    try {
         console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
-        // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
-        console.log('Successfully created stack ' + STACK_NAME)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            BUILD_TIMESTAMP
+        )
         expect(finishedStack).toBeDefined()
-        console.log(finishedStack)
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-        const endpoint = getApiEndpoint(finishedStack.Outputs)
-        const apiKey = getApiKey(finishedStack.Outputs)
-        expect(apiKey).toBeTruthy()
-        expect(endpoint).toBeTruthy()
-        GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
+        GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
+        console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+
+        // const createStackResponse = await cf.createStack(out, STACK_NAME)
+        // expect(createStackResponse).toBeDefined()
+        // const finishedStack = await cf.waitForStack(STACK_NAME)
+        // // Arbitrary wait to make sure everything is ready.
+        // await cf.wait(10, () => Promise.resolve())
+        // console.log('Successfully created stack ' + STACK_NAME)
+        // expect(finishedStack).toBeDefined()
+        // console.log(finishedStack)
+        // const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+        // const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
+        // const endpoint = getApiEndpoint(finishedStack.Outputs)
+        // const apiKey = getApiKey(finishedStack.Outputs)
+        // expect(apiKey).toBeTruthy()
+        // expect(endpoint).toBeTruthy()
+        // GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
     } catch (e) {
         console.log(e)
         expect(true).toEqual(false)
@@ -105,6 +133,13 @@ afterAll(async () => {
         } else {
             console.log(e)
         }
+    }
+    try {
+        await awsS3Client.deleteBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Failed to create S3 bucket: ${e}`)
     }
 })
 
