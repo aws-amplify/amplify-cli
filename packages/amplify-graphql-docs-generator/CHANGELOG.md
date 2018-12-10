@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.1"></a>
+## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.0...amplify-graphql-docs-generator@0.2.1-multienv.1) (2018-12-10)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** fix overfetching of lists ([#571](https://github.com/aws-amplify/amplify-cli/issues/571)) ([82017d9](https://github.com/aws-amplify/amplify-cli/commit/82017d9))
+
+
+
+
 <a name="0.2.1-multienv.0"></a>
 ## [0.2.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.33...amplify-graphql-docs-generator@0.2.1-multienv.0) (2018-11-21)
 
