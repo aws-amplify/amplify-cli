@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "0.2.1-multienv.7",
+  "version": "0.2.1-multienv.8",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "author": "Amazon Web Services",
