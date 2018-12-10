@@ -23,6 +23,8 @@ export class ResourceConstants {
     public static PARAMETERS = {
         // cli
         Env: 'env',
+        S3DeploymentBucket: 'S3DeploymentBucket',
+        S3DeploymentRootKey: 'S3DeploymentRootKey',
 
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
@@ -50,10 +52,7 @@ export class ResourceConstants {
         AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
         AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
         AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
-        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity',
-
-        // Nested stacks
-        GraphQLAPIID: 'GraphQLAPIID',
+        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity'
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {

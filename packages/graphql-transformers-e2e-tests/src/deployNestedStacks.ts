@@ -32,17 +32,17 @@ async function cleanupBucket(
     }
 }
 
-async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string, buildTimestamp: string) {
+async function uploadDirectory(client: S3Client, directory: string, bucket: string, key: string) {
     let s3LocationMap = {}
     const files = fs.readdirSync(directory)
     for (const file of files) {
         const contentPath = path.join(directory, file)
         const s3Location = path.join(key, file)
         if (fs.lstatSync(contentPath).isDirectory()) {
-            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location, buildTimestamp)
+            const recMap = await uploadDirectory(client, contentPath, bucket, s3Location)
             s3LocationMap = { ...recMap, ...s3LocationMap }
         } else {
-            const fileKey = s3Location + '.' + buildTimestamp
+            const fileKey = s3Location
             await client.wait(.25, () => Promise.resolve())
             await client.uploadFile(bucket, contentPath, fileKey)
             const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
@@ -66,7 +66,7 @@ function writeDeploymentToDisk(deployment: DeploymentResources, directory: strin
         fs.mkdirSync(resolverRootPath);
     }
     for (const resolverFileName of resolverFileNames) {
-        const fullResolverPath = path.normalize(directory + `/resolvers/` + resolverFileName);
+        const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
         fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
     }
 
@@ -77,7 +77,7 @@ function writeDeploymentToDisk(deployment: DeploymentResources, directory: strin
         fs.mkdirSync(stackRootPath);
     }
     for (const stackFileName of stackNames) {
-        const fullStackPath = path.normalize(stackRootPath + stackFileName + '.json');
+        const fullStackPath = path.normalize(stackRootPath + '/' + stackFileName + '.json');
         fs.writeFileSync(fullStackPath, JSON.stringify(deployment.stacks[stackFileName], null, 4));
     }
 
@@ -124,9 +124,10 @@ export async function deploy(
         console.error(`Error writing files to disk: ${e}`)
         throw(e);
     }
+    const s3RootKey = `${rootKey}/${buildTimeStamp}`
     try {
         console.log('Uploading deployment to S3...')
-        const uploadedKeys: any = await uploadDirectory(s3Client, buildPath, bucketName, rootKey, buildTimeStamp)
+        await uploadDirectory(s3Client, buildPath, bucketName, s3RootKey)
         console.log('Finished uploading deployment to S3.')
     } catch (e) {
         console.log(`Error uploading deployment to s3: ${e}`)
@@ -134,12 +135,13 @@ export async function deploy(
     }
     try {
         console.log(`Deploying root stack...`);
-        const createStackResponse = await cf.createStack(
+        await cf.createStack(
             deploymentResources.rootStack,
             stackName,
             {
                 ...params,
-                S3DeploymentAssetsURL: `s3://${bucketName}/${rootKey}/${buildTimeStamp}`
+                S3DeploymentBucket: bucketName,
+                S3DeploymentRootKey: s3RootKey
             }
         )
         const finishedStack = await cf.waitForStack(stackName)

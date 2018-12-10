@@ -29,7 +29,7 @@ let GRAPHQL_CLIENT = undefined;
 
 const TMP_ROOT = '/tmp/model_transform_tests/'
 
-const ROOT_KEY = ''
+const ROOT_KEY = 'deployments'
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -37,6 +37,37 @@ function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
         const output = outputs.find((o: Output) => o.OutputKey === key)
         return output ? output.OutputValue : null
+    }
+}
+
+const emptyBucket = async (bucket: string) => {
+    let listObjects = await awsS3Client.listObjectsV2({
+        Bucket: bucket
+    }).promise()
+    do {
+        try {
+            await awsS3Client.deleteObjects({
+                Bucket: bucket,
+                Delete: {
+                    Objects: listObjects.Contents.map(content => ({
+                        Key: content.Key
+                    }))
+                }
+            })
+        } catch (e) {
+            console.error(`Error deleting objects: ${e}`)
+        }
+        listObjects = await awsS3Client.listObjectsV2({
+            Bucket: bucket,
+            ContinuationToken: listObjects.NextContinuationToken
+        }).promise()
+    } while (listObjects.NextContinuationToken);
+    try {
+        await awsS3Client.deleteBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Error deleting bucket: ${e}`)
     }
 }
 
@@ -98,21 +129,12 @@ beforeAll(async () => {
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
         console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-        // const createStackResponse = await cf.createStack(out, STACK_NAME)
-        // expect(createStackResponse).toBeDefined()
-        // const finishedStack = await cf.waitForStack(STACK_NAME)
-        // // Arbitrary wait to make sure everything is ready.
-        // await cf.wait(10, () => Promise.resolve())
-        // console.log('Successfully created stack ' + STACK_NAME)
-        // expect(finishedStack).toBeDefined()
-        // console.log(finishedStack)
-        // const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-        // const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-        // const endpoint = getApiEndpoint(finishedStack.Outputs)
-        // const apiKey = getApiKey(finishedStack.Outputs)
-        // expect(apiKey).toBeTruthy()
-        // expect(endpoint).toBeTruthy()
-        // GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
+        const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
+        const endpoint = getApiEndpoint(finishedStack.Outputs)
+        const apiKey = getApiKey(finishedStack.Outputs)
+        expect(apiKey).toBeTruthy()
+        expect(endpoint).toBeTruthy()
+        GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
     } catch (e) {
         console.log(e)
         expect(true).toEqual(false)
@@ -135,9 +157,7 @@ afterAll(async () => {
         }
     }
     try {
-        await awsS3Client.deleteBucket({
-            Bucket: BUCKET_NAME,
-        }).promise()
+        await emptyBucket(BUCKET_NAME);
     } catch (e) {
         console.error(`Failed to create S3 bucket: ${e}`)
     }
