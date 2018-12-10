@@ -13,6 +13,7 @@ import { deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
+import emptyBucket from '../emptyBucket';
 
 jest.setTimeout(2000000);
 
@@ -20,9 +21,8 @@ const cf = new CloudFormationClient('us-west-2')
 const customS3Client = new S3Client('us-west-2')
 const awsS3Client = new S3({ region: 'us-west-2' })
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `DynamoDBModelTransformerTest-${dateAppender}`
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `DynamoDBModelTransformerTest-${BUILD_TIMESTAMP}`
 const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`
 
 let GRAPHQL_CLIENT = undefined;
@@ -37,37 +37,6 @@ function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
         const output = outputs.find((o: Output) => o.OutputKey === key)
         return output ? output.OutputValue : null
-    }
-}
-
-const emptyBucket = async (bucket: string) => {
-    let listObjects = await awsS3Client.listObjectsV2({
-        Bucket: bucket
-    }).promise()
-    do {
-        try {
-            await awsS3Client.deleteObjects({
-                Bucket: bucket,
-                Delete: {
-                    Objects: listObjects.Contents.map(content => ({
-                        Key: content.Key
-                    }))
-                }
-            })
-        } catch (e) {
-            console.error(`Error deleting objects: ${e}`)
-        }
-        listObjects = await awsS3Client.listObjectsV2({
-            Bucket: bucket,
-            ContinuationToken: listObjects.NextContinuationToken
-        }).promise()
-    } while (listObjects.NextContinuationToken);
-    try {
-        await awsS3Client.deleteBucket({
-            Bucket: BUCKET_NAME,
-        }).promise()
-    } catch (e) {
-        console.error(`Error deleting bucket: ${e}`)
     }
 }
 
