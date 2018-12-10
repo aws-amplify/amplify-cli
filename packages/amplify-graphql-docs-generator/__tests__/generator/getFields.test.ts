@@ -72,7 +72,7 @@ describe('getField', () => {
     })
   })
 
-  it('should not return anything for complex type when the depth is <=1', () => {
+  it('should not return anything for complex type when the depth is < 1', () => {
     const queries = schema.getQueryType().getFields()
     expect(getFields(queries.nested, schema, 0)).toBeUndefined()
   })
