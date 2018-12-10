@@ -12,11 +12,24 @@ export class SchemaResourceUtil {
     public makeResolverS3RootParams(): Template {
         return {
             Parameters: {
-                S3DeploymentAssetsURL: new StringParameter({
-                    Description: 'The URL to the Amazon S3 bucket containing your deployment assets. For example, s3://bucket/path/to/deployment.' +
-                        ' The directory at this path should contain your schema.graphql as well as the "stacks" and "resolvers" directories.'
+                [ResourceConstants.PARAMETERS.Env]: new StringParameter({
+                    Description: `The environment name. e.g. Dev, Test, or Production`,
+                    Default: ResourceConstants.NONE
+                }),
+                [ResourceConstants.PARAMETERS.S3DeploymentBucket]: new StringParameter({
+                    Description: 'The S3 bucket containing all deployment assets for the project.'
+                }),
+                [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: new StringParameter({
+                    Description: 'An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory.'
                 })
             }
+        }
+    }
+
+    public makeEnvironmentConditions() {
+        return {
+            [ResourceConstants.CONDITIONS.HasEnvironmentParameter]:
+                Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.NONE))
         }
     }
 
@@ -26,32 +39,31 @@ export class SchemaResourceUtil {
             DataSourceName: resource.Properties.DataSourceName,
             FieldName: resource.Properties.FieldName,
             TypeName: resource.Properties.TypeName,
-            RequestMappingTemplateS3Location: Fn.Join('', [
-                's3://',
-                Fn.Join('/', [
-                    Fn.Ref('S3DeploymentAssetsURL'),
-                    RESOLVERS_DIRECTORY_NAME,
-                    Fn.Join('.', [
-                        resource.Properties.TypeName,
-                        resource.Properties.FieldName,
-                        'request',
-                        'vtl',
-                    ])
-                ]),
+            RequestMappingTemplateS3Location: Fn.Join('/', [
+                's3:/',
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                RESOLVERS_DIRECTORY_NAME,
+                Fn.Join('.', [
+                    resource.Properties.TypeName,
+                    resource.Properties.FieldName,
+                    'request',
+                    'vtl',
+                ])
             ]),
-            ResponseMappingTemplateS3Location: Fn.Join('', [
-                Fn.Join('/', [
-                    Fn.Ref('S3DeploymentAssetsURL'),
-                    RESOLVERS_DIRECTORY_NAME,
-                    Fn.Join('.', [
-                        resource.Properties.TypeName,
-                        resource.Properties.FieldName,
-                        'response',
-                        'vtl'
-                    ])
-                ]),
+            ResponseMappingTemplateS3Location: Fn.Join('/', [
+                "s3:/",
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                RESOLVERS_DIRECTORY_NAME,
+                Fn.Join('.', [
+                    resource.Properties.TypeName,
+                    resource.Properties.FieldName,
+                    'response',
+                    'vtl'
+                ])
             ])
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     public makeAppSyncSchema(schema?: string) {
@@ -64,7 +76,9 @@ export class SchemaResourceUtil {
         return new AppSync.GraphQLSchema({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DefinitionS3Location: Fn.Join('/', [
-                Fn.Ref('S3DeploymentAssetsURL'),
+                "s3:/",
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
                 'schema.graphql'
             ])
         })

@@ -14,8 +14,6 @@ import { stripDirectives } from "./stripDirectives";
 import { SchemaResourceUtil } from "./util/schemaResourceUtil";
 import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
-import fs = require('fs');
-import { normalize } from 'path';
 
 const ROOT_STACK_NAME = 'root';
 
@@ -68,15 +66,16 @@ export class TransformFormatter {
             [name]: Fn.Ref(name)
         }), {})
         // Also forward the API id of the top level API.
-        allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.Ref(ResourceConstants.RESOURCES.GraphQLAPILogicalID)
+        allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
         for (const stackName of stackFileNames) {
-            const nestedStackName = `${stackName}Stack`
-            root.Resources[nestedStackName] = new CloudFormation.Stack({
+            root.Resources[stackName] = new CloudFormation.Stack({
                 Parameters: allParamValues,
                 TemplateURL: Fn.Join(
                     '/',
                     [
-                        Fn.Ref("S3DeploymentAssetsURL"),
+                        "https://s3.amazonaws.com",
+                        Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                        Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
                         'stacks',
                         stackName + ".json"
                     ]
@@ -101,8 +100,9 @@ export class TransformFormatter {
         const templateJson: any = JSON.parse(JSON.stringify(template));
         const referenceMap = getTemplateReferences(templateJson);
         const resourceToStackMap = this.mapResourcesToStack(templateJson);
-        this.replaceReferencesWithImports(templateJson, referenceMap, resourceToStackMap);
-        const templateMap = this.collectTemplates(templateJson, resourceToStackMap)
+        // this.replaceReferencesWithImports(templateJson, referenceMap, resourceToStackMap);
+        this.replaceGraphQLAPIGetAttsWithRef(templateJson, referenceMap, resourceToStackMap);
+        const templateMap = this.collectTemplates(templateJson, resourceToStackMap);
         return templateMap;
     }
 
@@ -163,6 +163,46 @@ export class TransformFormatter {
     }
 
     /**
+     * Replaces any GetAtt(GraphQLAPI, ApiId) with Fn.Ref(GraphQLAPI) which
+     * will be passed in as a parameter from the parent.
+     * @param template
+     * @param referenceMap
+     * @param resourceToStackMap
+     */
+    private replaceGraphQLAPIGetAttsWithRef(
+        template: Template,
+        referenceMap: ReferenceMap,
+        resourceToStackMap: { [k: string]: string }
+    ) {
+        const resourceIds = Object.keys(resourceToStackMap);
+        for (const id of resourceIds) {
+            const referencedResourceStack = resourceToStackMap[id];
+            if (referenceMap[id] && referenceMap[id].length > 0) {
+                const referenceLocations = referenceMap[id];
+                for (const referenceLocation of referenceLocations) {
+                    const referenceNode = getIn(template, referenceLocation);
+                    // A reference location looks like ['Resources', 'PostTable', 'Properties']
+                    const sourceResourceId = this.getParentResourceFromLocation(referenceLocation)
+                    const sourceResourceStack = resourceToStackMap[sourceResourceId]
+                    if (
+                        sourceResourceStack &&
+                        referenceNode &&
+                        referenceNode["Fn::GetAtt"] &&
+                        sourceResourceStack !== referencedResourceStack
+                    ) {
+                        // Replace the GetAtt with an import only if they resources are in different stacks.
+                        const [resId, attr] = referenceNode["Fn::GetAtt"];
+                        if (resId === ResourceConstants.RESOURCES.GraphQLAPILogicalID && attr === 'ApiId') {
+                            // TODO: Generalize this. For now GetAtt on API.ApiId is enough.
+                            setIn(template, referenceLocation, Fn.Ref(resId));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Uses the stackRules to split resources out into the different stacks.
      * By the time that this is called, all Ref & GetAtt nodes will have already
      * been replaced with ImportValue nodes. After splitting these out, exports
@@ -178,9 +218,19 @@ export class TransformFormatter {
                 templateMap[stackName] = blankNestedTemplate(template.Parameters)
             }
             templateMap[stackName].Resources[resourceId] = template.Resources[resourceId]
+            templateMap[stackName].Conditions = {
+                ...templateMap[stackName].Conditions,
+                ...this.schemaResourceUtil.makeEnvironmentConditions()
+            }
         }
         // The root stack exposes all parameters at the top level.
         templateMap[ROOT_STACK_NAME].Parameters = template.Parameters;
+        templateMap[ROOT_STACK_NAME].Outputs = template.Outputs;
+        templateMap[ROOT_STACK_NAME].Conditions = template.Conditions;
+        templateMap[ROOT_STACK_NAME].Conditions = {
+            ...templateMap[ROOT_STACK_NAME].Conditions,
+            ...this.schemaResourceUtil.makeEnvironmentConditions()
+        }
         return templateMap;
     }
 
