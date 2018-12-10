@@ -5,7 +5,6 @@ import {
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
 import { VersionedModelTransformer } from '../VersionedModelTransformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 
 const getInputType = (schemaDoc: DocumentNode) => (name: string): InputObjectTypeDefinitionNode =>
@@ -26,14 +25,13 @@ test('Test VersionedModelTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     // tslint:disable-next-line
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    const schemaDoc = parse(out.schema)
 
     expect(out).toBeDefined()
     expect(getField(getType(schemaDoc)('Post'), 'version')).toBeDefined()
@@ -57,7 +55,6 @@ test('Test VersionedModelTransformer validation fails when provided version fiel
     try {
         const transformer = new GraphQLTransform({
             transformers: [
-                new AppSyncTransformer(),
                 new DynamoDBModelTransformer(),
                 new VersionedModelTransformer()
             ]
@@ -80,13 +77,12 @@ test('Test VersionedModelTransformer version field replaced by non-null if provi
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
-    const sdl = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition
+    const sdl = out.schema
     const schemaDoc = parse(sdl)
     const versionField = getField(getType(schemaDoc)('Post'), 'version')
     expect(versionField).toBeDefined()
