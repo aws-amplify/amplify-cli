@@ -263,7 +263,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     public makeUpdateResolver(type: string, nameOverride?: string, mutationTypeName: string = 'Mutation') {
@@ -314,7 +314,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -338,7 +338,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -397,7 +397,7 @@ export class ResourceFactory {
                     raw('$util.toJson($result)')
                 ])
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
 
@@ -436,7 +436,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 raw('$util.toJson($ctx.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -489,6 +489,6 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 }
