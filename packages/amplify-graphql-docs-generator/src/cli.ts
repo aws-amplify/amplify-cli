@@ -44,7 +44,7 @@ export function run(argv: Array<String>): void {
         },
         maxDepth: {
           demand: true,
-          default: 3,
+          default: 2,
           normalize: true,
           type: 'number'
         }
