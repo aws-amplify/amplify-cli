@@ -28,6 +28,7 @@ export class ResourceConstants {
 
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
+        AppSyncApiId: 'AppSyncApiId',
 
         // DynamoDB
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',

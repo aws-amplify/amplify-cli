@@ -102,7 +102,7 @@ afterAll(async () => {
     try {
         await emptyBucket(BUCKET_NAME);
     } catch (e) {
-        console.error(`Failed to create S3 bucket: ${e}`)
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 

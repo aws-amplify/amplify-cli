@@ -12,8 +12,10 @@ import {
 import { ObjectTypeDefinitionNode, print } from "graphql";
 import { stripDirectives } from "./stripDirectives";
 import { SchemaResourceUtil } from "./util/schemaResourceUtil";
-import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
+import makeExportName from './util/makeExportName';
+import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap, StackResources } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
+import Output from "cloudform-types/types/output";
 
 const ROOT_STACK_NAME = 'root';
 
@@ -28,6 +30,7 @@ export class TransformFormatter {
 
     private opts: TransformFormatterOptions;
     private schemaResourceUtil = new SchemaResourceUtil()
+    private resourceToStackMap = {}
 
     constructor(opts: TransformFormatterOptions) {
         this.opts = opts;
@@ -41,6 +44,7 @@ export class TransformFormatter {
     public format(ctx: TransformerContext): DeploymentResources {
         const resolversFunctionsAndSchema = this.collectResolversFunctionsAndSchema(ctx);
         const stacks = this.splitContextIntoTemplates(ctx.template);
+        this.replaceReferences(stacks);
         let rootStack = stacks.root;
         delete(stacks.root);
         rootStack = this.updateRootWithNestedStacks(rootStack, stacks);
@@ -49,6 +53,65 @@ export class TransformFormatter {
             stacks,
             ...resolversFunctionsAndSchema
         };
+    }
+
+    /**
+     * Looks at each stack, finds all its references and GetAtt expressions,
+     * and replaces those references with an Import and Export value expressions
+     * in the corresponding stack.
+     * @param template
+     * @param rootTemplate
+     */
+    private replaceReferences(stacks: {[name: string]: Template}) {
+        for (const thisStackName of Object.keys(stacks)) {
+            const template = stacks[thisStackName]
+            const resourceToReferenceMap = getTemplateReferences(template);
+            for (const resourceId of Object.keys(resourceToReferenceMap)) {
+                const references = resourceToReferenceMap[resourceId];
+                const referencedStackName = this.resourceToStackMap[resourceId]
+                for (const refList of references) {
+                    const refNode = getIn(template, refList)
+                    // Only update a Ref if it references a Resource in a different stack.
+                    // Other Refs are params, conditions, or built in pseudo params which remain the same.
+                    const refNeedsReplacing =
+                        refNode
+                        && refNode.Ref
+                        && referencedStackName
+                        && referencedStackName !== thisStackName;
+                    // Do not update a GetAtt if resources are in the same stack.
+                    // Do update a GetAtt if it ref's a resource in a different stack.
+                    const getAttNeedsReplacing =
+                        refNode
+                        && refNode['Fn::GetAtt']
+                        && referencedStackName
+                        && referencedStackName !== thisStackName;
+                    const attributeIsApiId = resourceId === ResourceConstants.RESOURCES.GraphQLAPILogicalID
+                    if (refNeedsReplacing) {
+                        setIn(template, refList, this.makeImportValueForRef(resourceId));
+                        const outputForInput = this.makeOutputForRef(resourceId);
+                        const referencedStack = stacks[referencedStackName];
+                        const exportLogicalId = `Ref${resourceId}`
+                        if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
+                            referencedStack.Outputs[exportLogicalId] = outputForInput;
+                        }
+                    } else if (getAttNeedsReplacing && attributeIsApiId) {
+                        // A special case. We pass the API id to children via a
+                        // parameters trying to export it causes ref issues with CloudFormation outputs.
+                        const [resId, attr] = refNode["Fn::GetAtt"];
+                        setIn(template, refList, Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId));
+                    } else if (getAttNeedsReplacing) {
+                        const [resId, attr] = refNode["Fn::GetAtt"];
+                        setIn(template, refList, this.makeImportValueForGetAtt(resourceId, attr));
+                        const outputForInput = this.makeOutputForGetAtt(resourceId, attr);
+                        const referencedStack = stacks[referencedStackName];
+                        const exportLogicalId = `GetAtt${resourceId}${attr}`
+                        if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
+                            referencedStack.Outputs[exportLogicalId] = outputForInput;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -65,8 +128,12 @@ export class TransformFormatter {
             ...acc,
             [name]: Fn.Ref(name)
         }), {})
+        allParamValues[ResourceConstants.PARAMETERS.AppSyncApiId] = Fn.GetAtt(
+            ResourceConstants.RESOURCES.GraphQLAPILogicalID,
+            "ApiId"
+        )
         // Also forward the API id of the top level API.
-        allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+        // allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
         for (const stackName of stackFileNames) {
             root.Resources[stackName] = new CloudFormation.Stack({
                 Parameters: allParamValues,
@@ -80,7 +147,7 @@ export class TransformFormatter {
                         stackName + ".json"
                     ]
                 )
-            })
+            }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
         }
         return root;
     }
@@ -98,10 +165,10 @@ export class TransformFormatter {
         // Pre-compute a reference map that tells us the location
         // of every Fn.Ref and Fn.GetAtt in the template.
         const templateJson: any = JSON.parse(JSON.stringify(template));
-        const referenceMap = getTemplateReferences(templateJson);
+        // const referenceMap = getTemplateReferences(templateJson);
         const resourceToStackMap = this.mapResourcesToStack(templateJson);
         // this.replaceReferencesWithImports(templateJson, referenceMap, resourceToStackMap);
-        this.replaceGraphQLAPIGetAttsWithRef(templateJson, referenceMap, resourceToStackMap);
+        // this.replaceGraphQLAPIGetAttsWithRef(templateJson, referenceMap, resourceToStackMap);
         const templateMap = this.collectTemplates(templateJson, resourceToStackMap);
         return templateMap;
     }
@@ -144,7 +211,7 @@ export class TransformFormatter {
                     ) {
                         // Replace the Ref with an import only if they resources are in different stacks.
                         const resourceId = referenceNode.Ref;
-                        const importNode = this.makeImportValueForRef(resourceToStackMap[resourceId], resourceId);
+                        const importNode = this.makeImportValueForRef(resourceId);
                         setIn(template, referenceLocation, importNode);
                     } else if (
                         sourceResourceStack &&
@@ -154,7 +221,7 @@ export class TransformFormatter {
                     ) {
                         // Replace the GetAtt with an import only if they resources are in different stacks.
                         const [resId, attr] = referenceNode["Fn::GetAtt"];
-                        const importNode = this.makeImportValueForGetAtt(resourceToStackMap[resId], resId, attr);
+                        const importNode = this.makeImportValueForGetAtt(resId, attr);
                         setIn(template, referenceLocation, importNode);
                     }
                 }
@@ -259,35 +326,78 @@ export class TransformFormatter {
                 resourceStackMap[resourceKey] = ROOT_STACK_NAME
             }
         }
+        this.resourceToStackMap = resourceStackMap;
         return resourceStackMap;
     }
 
-    private makeOutputForResourceRef(resourceId: string, resource: Resource) {
-        return {
-            Description: `Auto-generated output for ref to resource ${resourceId}.`,
-            Value: Fn.Ref(resourceId),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, 'Ref', resourceId])
-            }
-        }
+    private makeImportValueForRef(resourceId: string): any {
+        return Fn.ImportValue(
+            Fn.Join(
+                '.',
+                [
+                    Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+                    'Ref',
+                    resourceId
+                ]
+            )
+        )
     }
 
-    private makeOutputForResourceGetAtt(resourceId: string, resource: Resource, attribute: string) {
+    private makeImportValueForGetAtt(resourceId: string, attribute: string): any {
+        return Fn.ImportValue(
+            Fn.Join(
+                '.',
+                [
+                    Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+                    'GetAtt',
+                    resourceId,
+                    attribute
+                ]
+            )
+        )
+    }
+
+    /**
+     * Make an output record that exports the GetAtt.
+     * @param resourceId The resource being got
+     * @param attribute The attribute on the resource
+     */
+    private makeOutputForGetAtt(resourceId: string, attribute: string): Output {
         return {
-            Description: `Auto-generated output for GetAtt to resource ${resourceId}.${attribute}.`,
             Value: Fn.GetAtt(resourceId, attribute),
             Export: {
-                Name: Fn.Join(':', [Refs.StackName, 'GetAtt', resourceId, attribute])
+                Name: Fn.Join(
+                    '.',
+                    [
+                        Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+                        'GetAtt',
+                        resourceId,
+                        attribute
+                    ]
+                )
             }
         }
     }
 
-    private makeImportValueForRef(stack: string, resourceId: string): any {
-        return Fn.ImportValue(`${stack}:Ref:${resourceId}`)
-    }
-
-    private makeImportValueForGetAtt(stack: string, resourceId: string, attribute: string): any {
-        return Fn.ImportValue(`${stack}:GetAtt:${resourceId}:${attribute}`)
+    /**
+     * Make an output record that exports the GetAtt.
+     * @param resourceId The resource being got
+     * @param attribute The attribute on the resource
+     */
+    private makeOutputForRef(resourceId: string): Output {
+        return {
+            Value: Fn.Ref(resourceId),
+            Export: {
+                Name: Fn.Join(
+                    '.',
+                    [
+                        Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+                        'Ref',
+                        resourceId
+                    ]
+                )
+            }
+        }
     }
 
     /**
