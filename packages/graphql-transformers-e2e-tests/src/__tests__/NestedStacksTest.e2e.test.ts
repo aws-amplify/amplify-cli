@@ -32,13 +32,14 @@ test('Test custom root types with additional fields.', () => {
             new DynamoDBModelTransformer()
         ]
     })
+    // GetAttGraphQLAPIId
     const out = transformer.transform(validSchema);
     fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     const mainStack = out.rootStack;
-    const postStack = out.stacks.PostModel;
+    const postStack = out.stacks.PostModelStack;
     expect(mainStack).toBeDefined()
     expect(postStack).toBeDefined()
-    const schema = mainStack.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+    const schema = out.schema
     expect(schema).toBeDefined()
     const definition = out.schema
     expect(definition).toBeDefined()
