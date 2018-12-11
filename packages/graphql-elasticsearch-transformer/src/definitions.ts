@@ -7,7 +7,7 @@ import {
     makeListType, getBaseType, SearchableResourceIDs
 } from 'graphql-transformer-common'
 
-const STRING_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
+const STRING_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp', 'gt', 'gte', 'lt', 'lte']
 const ID_CONDITIONS = ['ne', 'eq', 'match', 'matchPhrase', 'matchPhrasePrefix', 'multiMatch', 'exists', 'wildcard', 'regexp']
 const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range']
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range']
