@@ -137,6 +137,14 @@ export class SearchableModelTransformer extends Transformer {
                 makeNamedType('String')
             )]
         )
+        connectionTypeExtension = extensionWithFields(
+            connectionTypeExtension,
+            [makeField(
+                'total',
+                [],
+                makeNamedType('Int')
+            )]
+        )
         ctx.addObjectExtension(connectionTypeExtension)
     }
 
