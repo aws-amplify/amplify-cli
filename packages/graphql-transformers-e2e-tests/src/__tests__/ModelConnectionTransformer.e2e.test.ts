@@ -15,6 +15,7 @@ import emptyBucket from '../emptyBucket';
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
+import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
@@ -66,6 +67,7 @@ beforeAll(async () => {
         ]
     })
     const out = transformer.transform(validSchema);
+    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     try {
         await awsS3Client.createBucket({
             Bucket: BUCKET_NAME,
@@ -99,26 +101,26 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    // try {
-    //     console.log('Deleting stack ' + STACK_NAME)
-    //     await cf.deleteStack(STACK_NAME)
-    //     await cf.waitForStack(STACK_NAME)
-    //     console.log('Successfully deleted stack ' + STACK_NAME)
-    // } catch (e) {
-    //     if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-    //         // The stack was deleted. This is good.
-    //         expect(true).toEqual(true)
-    //         console.log('Successfully deleted stack ' + STACK_NAME)
-    //     } else {
-    //         console.error(e)
-    //         expect(true).toEqual(false)
-    //     }
-    // }
-    // try {
-    //     await emptyBucket(BUCKET_NAME);
-    // } catch (e) {
-    //     console.error(`Failed to empty S3 bucket: ${e}`)
-    // }
+    try {
+        console.log('Deleting stack ' + STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
+        console.log('Successfully deleted stack ' + STACK_NAME)
+    } catch (e) {
+        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+            // The stack was deleted. This is good.
+            expect(true).toEqual(true)
+            console.log('Successfully deleted stack ' + STACK_NAME)
+        } else {
+            console.error(e)
+            expect(true).toEqual(false)
+        }
+    }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
+    }
 })
 
 /**

@@ -1,6 +1,6 @@
 import Template from 'cloudform-types/types/template'
 import { ResourceConstants } from 'graphql-transformer-common';
-import { StringParameter } from 'cloudform';
+import { StringParameter } from 'cloudform-types';
 import Parameter from 'cloudform-types/types/parameter';
 
 /**

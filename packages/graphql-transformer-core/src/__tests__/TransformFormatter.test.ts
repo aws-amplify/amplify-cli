@@ -1,5 +1,5 @@
 import { TransformFormatter } from '../TransformFormatter'
-import { Template, Fn, AppSync, DynamoDB } from 'cloudform';
+import { Template, Fn, AppSync, DynamoDB } from 'cloudform-types';
 import { TransformerContext } from '..';
 
 const template: Template = {

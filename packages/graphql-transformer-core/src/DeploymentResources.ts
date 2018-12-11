@@ -1,4 +1,4 @@
-import { Template } from 'cloudform';
+import { Template } from 'cloudform-types';
 
 export interface ResolverMap {
     [path: string]: string
