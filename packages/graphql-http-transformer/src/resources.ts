@@ -1,7 +1,7 @@
 import Table, { GlobalSecondaryIndex, KeySchema, Projection, ProvisionedThroughput, AttributeDefinition } from 'cloudform/types/dynamoDb/table'
 import Resolver from 'cloudform/types/appSync/resolver'
 import Template from 'cloudform/types/template'
-import { Fn, Refs, AppSync } from 'cloudform'
+import { Fn, Refs, AppSync } from 'cloudform-types'
 import {
     HttpMappingTemplate, str, print, printBlock, qref,
     ref, obj, set, nul,

@@ -424,8 +424,16 @@ export default class TransformerContext {
         this.nodeMap[en.name.value] = en
     }
 
-    public addStackMapping(stackName: string, listOfRegex: RegExp[]) {
+    public putStackMapping(stackName: string, listOfRegex: RegExp[]) {
         this.stackMapping[stackName] = listOfRegex
+    }
+
+    public addToStackMapping(stackName: string, regex: RegExp) {
+        if (!this.stackMapping[stackName]) {
+            this.stackMapping[stackName] = [regex];
+        } else {
+            this.stackMapping[stackName].push(regex);
+        }
     }
 
     public getStackMapping(): StackMapping {

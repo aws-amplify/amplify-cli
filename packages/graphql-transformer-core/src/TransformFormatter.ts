@@ -4,7 +4,7 @@ import { CloudFormation } from 'cloudform-types';
 import { getTemplateReferences, ReferenceMap } from './util/getTemplateReferences';
 import Resource from "cloudform-types/types/resource";
 import blankNestedTemplate from './util/blankNestedTemplate';
-import { Fn, Refs } from "cloudform";
+import { Fn, Refs } from "cloudform-types";
 import {
     makeOperationType,
     makeSchema
@@ -44,10 +44,10 @@ export class TransformFormatter {
     public format(ctx: TransformerContext): DeploymentResources {
         const resolversFunctionsAndSchema = this.collectResolversFunctionsAndSchema(ctx);
         const stacks = this.splitContextIntoTemplates(ctx.template);
-        this.replaceReferences(stacks);
+        const stackDependsOnMap = this.replaceReferencesAndReturnDependencies(stacks);
         let rootStack = stacks.root;
         delete(stacks.root);
-        rootStack = this.updateRootWithNestedStacks(rootStack, stacks);
+        rootStack = this.updateRootWithNestedStacks(rootStack, stacks, stackDependsOnMap);
         return {
             rootStack,
             stacks,
@@ -62,7 +62,9 @@ export class TransformFormatter {
      * @param template
      * @param rootTemplate
      */
-    private replaceReferences(stacks: {[name: string]: Template}) {
+    private replaceReferencesAndReturnDependencies(stacks: {[name: string]: Template}) {
+        // For each stack create a list of stacks that it depends on.
+        const stackDependsOnMap: { [k: string]: string[] } = Object.keys(stacks).reduce((acc, k) => ({ ...acc, [k]: []}), {})
         for (const thisStackName of Object.keys(stacks)) {
             const template = stacks[thisStackName]
             const resourceToReferenceMap = getTemplateReferences(template);
@@ -94,6 +96,9 @@ export class TransformFormatter {
                         if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
                             referencedStack.Outputs[exportLogicalId] = outputForInput;
                         }
+                        if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+                            stackDependsOnMap[thisStackName].push(referencedStackName)
+                        }
                     } else if (getAttNeedsReplacing && attributeIsApiId) {
                         // A special case. We pass the API id to children via a
                         // parameters trying to export it causes ref issues with CloudFormation outputs.
@@ -108,10 +113,14 @@ export class TransformFormatter {
                         if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
                             referencedStack.Outputs[exportLogicalId] = outputForInput;
                         }
+                        if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
+                            stackDependsOnMap[thisStackName].push(referencedStackName)
+                        }
                     }
                 }
             }
         }
+        return stackDependsOnMap
     }
 
     /**
@@ -120,7 +129,7 @@ export class TransformFormatter {
      * @param root The root stack
      * @param stacks The list of stacks keyed by filename.
      */
-    private updateRootWithNestedStacks(root: Template, stacks: { [key: string]: Template }) {
+    private updateRootWithNestedStacks(root: Template, stacks: { [key: string]: Template }, dependsOnMap: { [stack: string]: string[] }) {
         const stackFileNames = Object.keys(stacks);
         const allParamNames = Object.keys(root.Parameters);
         // Forward all parent parameters
@@ -135,7 +144,8 @@ export class TransformFormatter {
         // Also forward the API id of the top level API.
         // allParamValues[ResourceConstants.RESOURCES.GraphQLAPILogicalID] = Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
         for (const stackName of stackFileNames) {
-            root.Resources[stackName] = new CloudFormation.Stack({
+            const dependsOnStacks = dependsOnMap[stackName] || []
+            let stackResource = new CloudFormation.Stack({
                 Parameters: allParamValues,
                 TemplateURL: Fn.Join(
                     '/',
@@ -147,7 +157,11 @@ export class TransformFormatter {
                         stackName + ".json"
                     ]
                 )
-            }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+            }).dependsOn([
+                ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
+                ...dependsOnStacks
+            ])
+            root.Resources[stackName] = stackResource
         }
         return root;
     }
@@ -333,7 +347,7 @@ export class TransformFormatter {
     private makeImportValueForRef(resourceId: string): any {
         return Fn.ImportValue(
             Fn.Join(
-                '.',
+                ':',
                 [
                     Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
                     'Ref',
@@ -346,7 +360,7 @@ export class TransformFormatter {
     private makeImportValueForGetAtt(resourceId: string, attribute: string): any {
         return Fn.ImportValue(
             Fn.Join(
-                '.',
+                ':',
                 [
                     Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
                     'GetAtt',
@@ -367,7 +381,7 @@ export class TransformFormatter {
             Value: Fn.GetAtt(resourceId, attribute),
             Export: {
                 Name: Fn.Join(
-                    '.',
+                    ':',
                     [
                         Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
                         'GetAtt',
@@ -389,7 +403,7 @@ export class TransformFormatter {
             Value: Fn.Ref(resourceId),
             Export: {
                 Name: Fn.Join(
-                    '.',
+                    ':',
                     [
                         Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
                         'Ref',
