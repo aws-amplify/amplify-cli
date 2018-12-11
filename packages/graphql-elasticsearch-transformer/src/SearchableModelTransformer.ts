@@ -64,7 +64,10 @@ export class SearchableModelTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-
+        ctx.addToStackMapping(
+            'SearchStack',
+            new RegExp("^" + def.name.value + "Resolver$", 'i')
+        )
         const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
         let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;
