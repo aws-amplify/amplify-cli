@@ -4,8 +4,6 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import { AppSyncTransformer } from 'graphql-appsync-transformer'
-import { ResourceConstants } from 'graphql-transformer-common';
 
 import fs = require('fs');
 import path = require('path');
@@ -30,7 +28,6 @@ test('Test custom root types with additional fields.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
@@ -64,7 +61,6 @@ test('Test custom root query with no mutations/subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
@@ -102,7 +98,6 @@ test('Test custom root query & mutation with no subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
@@ -148,7 +143,6 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
@@ -191,7 +185,6 @@ test('Test custom roots without any directives. This should still be valid.', ()
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
