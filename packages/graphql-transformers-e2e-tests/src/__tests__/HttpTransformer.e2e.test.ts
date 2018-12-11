@@ -7,13 +7,23 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
 import * as moment from 'moment';
+import emptyBucket from '../emptyBucket';
+import { deploy } from '../deployNestedStacks'
+import { S3Client } from '../S3Client';
+import * as S3 from 'aws-sdk/clients/s3'
+import * as fs from 'fs'
 
 jest.setTimeout(200000);
 
 const cf = new CloudFormationClient('us-west-2')
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `HttpTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `HttpTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-http-transformer-test-bucket-${BUILD_TIMESTAMP}`
+const LOCAL_FS_BUILD_DIR = '/tmp/http_transformer_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
 
 let GRAPHQL_CLIENT = undefined;
 
@@ -70,19 +80,24 @@ beforeAll(async () => {
         body: String
     }
     `
+    try {
+        await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
+    } catch (e) {
+        console.error(`Failed to create bucket: ${e}`)
+    }
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new HttpTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
+    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     try {
-        console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            BUILD_TIMESTAMP
+        )
         // Arbitrary wait to make sure everything is ready.
         await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
@@ -115,6 +130,11 @@ afterAll(async () => {
             console.error(e)
             expect(true).toEqual(false)
         }
+    }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 
