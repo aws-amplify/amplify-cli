@@ -1,7 +1,7 @@
 import AppSync from 'cloudform/types/appSync'
 import Template from 'cloudform/types/template'
 
-import { Fn, StringParameter } from 'cloudform'
+import { Fn, StringParameter } from 'cloudform-types'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import Resource from "cloudform/types/resource";
 

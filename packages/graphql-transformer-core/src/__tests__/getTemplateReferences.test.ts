@@ -1,5 +1,5 @@
 import { getTemplateReferences } from '../util/getTemplateReferences'
-import { Template, Fn, AppSync, DynamoDB } from 'cloudform';
+import { Template, Fn, AppSync, DynamoDB } from 'cloudform-types';
 
 const template: Template = {
     Parameters: {

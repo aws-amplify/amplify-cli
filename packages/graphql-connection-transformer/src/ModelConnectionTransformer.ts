@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
-import Table from 'cloudform/types/dynamoDb/table'
+import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
     Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
@@ -20,6 +20,7 @@ import {
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
+import Resource from 'cloudform-types/types/resource';
 
 function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
@@ -76,6 +77,10 @@ export class ModelConnectionTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
+        ctx.addToStackMapping(
+            'ConnectionStack',
+            new RegExp("^" + parent.name.value + field.name.value + "Resolver$", 'i')
+        )
         const parentTypeName = parent.name.value;
         const fieldName = field.name.value;
         const parentModelDirective = parent.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
