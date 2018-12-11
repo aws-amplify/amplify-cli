@@ -36,9 +36,7 @@ test('Test custom root types with additional fields.', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query');
@@ -72,9 +70,7 @@ test('Test custom root query with no mutations/subscriptions.', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query');
@@ -112,9 +108,7 @@ test('Test custom root query & mutation with no subscriptions.', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');
@@ -160,9 +154,7 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');
@@ -205,9 +197,7 @@ test('Test custom roots without any directives. This should still be valid.', ()
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');

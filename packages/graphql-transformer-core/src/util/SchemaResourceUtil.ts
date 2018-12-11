@@ -3,6 +3,7 @@ import Template from 'cloudform-types/types/template'
 import { Fn, StringParameter } from 'cloudform'
 import { ResourceConstants } from 'graphql-transformer-common'
 import Resource from "cloudform-types/types/resource";
+import Parameter from 'cloudform-types/types/parameter';
 
 const RESOLVERS_DIRECTORY_NAME = "resolvers"
 const STACKS_DIRECTORY_NAME = "stacks"
