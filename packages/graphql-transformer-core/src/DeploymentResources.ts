@@ -13,10 +13,11 @@ export interface ResolversFunctionsAndSchema {
     // The full GraphQL schema.
     schema: string
 }
+
 /**
- * The full set of resources needed for the deployment.
+ * Stack resources
  */
-export interface DeploymentResources extends ResolversFunctionsAndSchema {
+export interface StackResources {
     // The root stack template.
     rootStack: Template,
     // All the nested stack templates.
@@ -24,3 +25,7 @@ export interface DeploymentResources extends ResolversFunctionsAndSchema {
         [name: string]: Template
     }
 }
+/**
+ * The full set of resources needed for the deployment.
+ */
+export interface DeploymentResources extends ResolversFunctionsAndSchema, StackResources {}
