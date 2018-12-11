@@ -1,6 +1,6 @@
 import { parse } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
-import { ResourceConstants, ResolverResourceIDs } from 'graphql-transformer-common'
+import { ResolverResourceIDs } from 'graphql-transformer-common'
 import { HttpTransformer } from '../HttpTransformer'
 import AppSyncTransformer from 'graphql-appsync-transformer'
 
@@ -24,12 +24,12 @@ test('Test HttpTransformer with four basic requests', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
     // expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'content2')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'more')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'evenMore')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'stillMore')]).toBeTruthy()
 });
 
 test('Test HttpTransformer with URL params happy case', () => {
@@ -77,12 +77,12 @@ test('Test HttpTransformer with URL params happy case', () => {
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
     // expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complex')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexAgain')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPost')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPut')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'deleter')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complex')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexAgain')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPost')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'complexPut')]).toBeTruthy()
+    expect(out.stacks.HttpStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'deleter')]).toBeTruthy()
 });
 
 test('Test that HttpTransformer throws an error when missing protocol in URL argument', () => {
