@@ -492,7 +492,7 @@ export class TransformFormatter {
                 // TODO: We only use the one function for now. Generalize this.
                 functionsMap = {
                     ...functionsMap,
-                    [resourceName]: ctx.metadata.get('ElasticSearchPathToStreamingLambda')
+                    [`${resourceName}.zip`]: ctx.metadata.get('ElasticsearchPathToStreamingLambda')
                 }
             }
         }

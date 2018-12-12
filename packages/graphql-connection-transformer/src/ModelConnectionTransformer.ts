@@ -67,7 +67,7 @@ export class ModelConnectionTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
-        ctx.addToStackMapping(SEARCHABLE_STACK_NAME, new RegExp(`^ElasticSearch.*`))
+        ctx.addToStackMapping(SEARCHABLE_STACK_NAME, new RegExp(`^Elasticsearch.*`))
     }
 
     /**

@@ -44,7 +44,14 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
         } else {
             const fileKey = s3Location
             await client.wait(.25, () => Promise.resolve())
-            await client.uploadFile(bucket, contentPath, fileKey)
+            const fileContents = await fs.readFileSync(contentPath)
+            console.log(`Uploading function to ${bucket}/${fileKey}`)
+            const uploaded = await client.client.putObject({
+                Bucket: bucket,
+                Key: fileKey,
+                Body: fileContents
+            }).promise()
+            console.log(uploaded)
             const formattedName = file.split('.').map((s, i) => i > 0 ? `${s[0].toUpperCase()}${s.slice(1, s.length)}` : s).join('')
             s3LocationMap[formattedName] = 's3://' + path.join(bucket, fileKey)
         }
@@ -89,7 +96,8 @@ function writeDeploymentToDisk(deployment: DeploymentResources, directory: strin
     }
     for (const functionName of functionNames) {
         const fullFunctionPath = path.normalize(functionRootPath + '/' + functionName);
-        fs.writeFileSync(fullFunctionPath, deployment.functions[functionName]);
+        const zipContents = fs.readFileSync(deployment.functions[functionName])
+        fs.writeFileSync(fullFunctionPath, zipContents);
     }
     const rootStack = deployment.rootStack;
     const rootStackPath = path.normalize(directory + `/rootStack.json`);
