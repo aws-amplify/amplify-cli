@@ -15,7 +15,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
     "graphql-appsync-transformer": "^2.0.1-multienv.0",
     "graphql-mapping-template": "^2.0.2-multienv.0",
@@ -26,7 +25,8 @@
     "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
     "bestzip": "^2.0.0",
-    "graphql-dynamodb-transformer": "^2.0.1-multienv.0",
+    "graphql-dynamodb-transformer": "^2.0.0-multienv.2",
+    "cloudform": "^3.5.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",

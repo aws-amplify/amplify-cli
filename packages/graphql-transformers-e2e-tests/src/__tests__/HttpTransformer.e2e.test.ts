@@ -1,7 +1,6 @@
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import HttpTransformer from '../../../graphql-http-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -13,7 +12,7 @@ import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
 import * as fs from 'fs'
 
-jest.setTimeout(200000);
+jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
 const customS3Client = new S3Client('us-west-2')
@@ -92,15 +91,16 @@ beforeAll(async () => {
         ]
     })
     const out = transformer.transform(validSchema);
-    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     try {
         const finishedStack = await deploy(
             customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
         // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
+        await cf.wait(5, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
+        console.log(finishedStack)
         expect(finishedStack).toBeDefined()
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
