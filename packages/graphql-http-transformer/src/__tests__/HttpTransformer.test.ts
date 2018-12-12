@@ -2,7 +2,6 @@ import { parse } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResolverResourceIDs } from 'graphql-transformer-common'
 import { HttpTransformer } from '../HttpTransformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 
 test('Test HttpTransformer with four basic requests', () => {
     const validSchema = `
@@ -17,7 +16,6 @@ test('Test HttpTransformer with four basic requests', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new HttpTransformer()
         ]
     })
@@ -70,7 +68,6 @@ test('Test HttpTransformer with URL params happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new HttpTransformer()
         ]
     })
@@ -95,7 +92,6 @@ test('Test that HttpTransformer throws an error when missing protocol in URL arg
     try {
         const transformer = new GraphQLTransform({
             transformers: [
-                new AppSyncTransformer(),
                 new HttpTransformer()
             ]
         })

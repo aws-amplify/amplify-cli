@@ -5,7 +5,6 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -80,7 +79,7 @@ beforeAll(async () => {
         ]
     })
     const out = transformer.transform(validSchema);
-    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     try {
         await awsS3Client.createBucket({
             Bucket: BUCKET_NAME,

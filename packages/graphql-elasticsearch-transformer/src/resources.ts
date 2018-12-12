@@ -1,6 +1,6 @@
-import AppSync from 'cloudform/types/appSync'
-import IAM from 'cloudform/types/iam'
-import Template from 'cloudform/types/template'
+import AppSync from 'cloudform-types/types/appSync'
+import IAM from 'cloudform-types/types/iam'
+import Template from 'cloudform-types/types/template'
 import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types'
 import {
     ElasticSearchMappingTemplate,
