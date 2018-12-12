@@ -4,7 +4,7 @@ import {
     set, qref
 } from './ast';
 
-export class ElasticSearchMappingTemplate {
+export class ElasticsearchMappingTemplate {
 
     /**
      * Create a mapping template for ES.

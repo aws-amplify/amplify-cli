@@ -8,12 +8,12 @@ export class ResourceConstants {
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
 
-        // ElasticSearch
-        ElasticSearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
-        ElasticSearchDomainLogicalID: 'ElasticSearchDomain',
-        ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
-        ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
-        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource',
+        // Elasticsearch
+        ElasticsearchAccessIAMRoleLogicalID: 'ElasticsearchAccessIAMRole',
+        ElasticsearchDomainLogicalID: 'ElasticsearchDomain',
+        ElasticsearchStreamingLambdaIAMRoleLogicalID: 'ElasticsearchStreamingLambdaIAMRole',
+        ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticsearchStreamingLambdaFunction',
+        ElasticsearchDataSourceLogicalID: 'ElasticsearchDataSource',
 
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
@@ -34,19 +34,17 @@ export class ResourceConstants {
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
 
-        // ElasticSearch
-        ElasticSearchDomainName: 'ElasticSearchDomainName',
-        ElasticSearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
-        ElasticSearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
-        ElasticSearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
-        ElasticSearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
-        ElasticSearchInstanceCount: 'ElasticSearchInstanceCount',
-        ElasticSearchInstanceType: 'ElasticSearchInstanceType',
-        ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
-        ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
-        ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
-        ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
-        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
+        // Elasticsearch
+        ElasticsearchDomainName: 'ElasticsearchDomainName',
+        ElasticsearchAccessIAMRoleName: 'ElasticsearchAccessIAMRoleName',
+        ElasticsearchDebugStreamingLambda: 'ElasticsearchDebugStreamingLambda',
+        ElasticsearchStreamingIAMRoleName: 'ElasticsearchStreamingIAMRoleName',
+        ElasticsearchStreamingFunctionName: 'ElasticsearchStreamingFunctionName',
+        ElasticsearchInstanceCount: 'ElasticsearchInstanceCount',
+        ElasticsearchInstanceType: 'ElasticsearchInstanceType',
+        ElasticsearchEBSVolumeGB: 'ElasticsearchEBSVolumeGB',
+        ElasticsearchStreamingLambdaHandlerName: 'ElasticsearchStreamingLambdaHandlerName',
+        ElasticsearchStreamingLambdaRuntime: 'ElasticsearchStreamingLambdaRuntime',
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
@@ -71,8 +69,8 @@ export class ResourceConstants {
         GraphQLAPIIdOutput: 'GraphQLAPIIdOutput',
 
         // Elasticsearch
-        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
-        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn',
+        ElasticsearchStreamingLambdaIAMRoleArn: 'ElasticsearchStreamingLambdaIAMRoleArn',
+        ElasticsearchAccessIAMRoleArn: 'ElasticsearchAccessIAMRoleArn',
 
         // Auth
         AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
