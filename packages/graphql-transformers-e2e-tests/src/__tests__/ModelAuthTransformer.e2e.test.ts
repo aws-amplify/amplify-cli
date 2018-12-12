@@ -21,7 +21,6 @@ import {
 } from 'amazon-cognito-identity-js';
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
 import { deploy } from '../deployNestedStacks'

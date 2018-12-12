@@ -34,7 +34,7 @@ test('Test custom root types with additional fields.', () => {
     })
     // GetAttGraphQLAPIId
     const out = transformer.transform(validSchema);
-    fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     const mainStack = out.rootStack;
     const postStack = out.stacks.PostModelStack;
     expect(mainStack).toBeDefined()

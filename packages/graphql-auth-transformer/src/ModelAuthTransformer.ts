@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
-import GraphQLAPI from 'cloudform/types/appSync/graphQlApi'
+import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation } from './AuthRule'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'
