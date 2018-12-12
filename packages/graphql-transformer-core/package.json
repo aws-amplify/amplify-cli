@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "graphql": "^0.13.2",
-    "graphql-transformer-common": "^1.0.34-multienv.0"
+    "graphql-transformer-common": "^2.0.0-multienv.1"
   },
   "jest": {
     "transform": {

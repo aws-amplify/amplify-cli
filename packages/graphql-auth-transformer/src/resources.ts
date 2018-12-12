@@ -1,7 +1,7 @@
-import Template from 'cloudform/types/template'
-import Cognito from 'cloudform/types/cognito'
-import Output from 'cloudform/types/output'
-import GraphQLAPI, { UserPoolConfig } from 'cloudform/types/appSync/graphQlApi'
+import Template from 'cloudform-types/types/template'
+import Cognito from 'cloudform-types/types/cognito'
+import Output from 'cloudform-types/types/output'
+import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
 import { Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
 import { AuthRule } from './AuthRule'
 import {

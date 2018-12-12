@@ -22,6 +22,8 @@ import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-commo
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
 import Resource from 'cloudform-types/types/resource';
 
+const SEARCHABLE_STACK_NAME = 'SearchableStack'
+
 function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
 }
@@ -65,6 +67,7 @@ export class ModelConnectionTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
+        ctx.addToStackMapping(SEARCHABLE_STACK_NAME, new RegExp(`^ElasticSearch.*`))
     }
 
     /**
@@ -77,12 +80,12 @@ export class ModelConnectionTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-        ctx.addToStackMapping(
-            'ConnectionStack',
-            new RegExp("^" + parent.name.value + field.name.value + "Resolver$", 'i')
-        )
         const parentTypeName = parent.name.value;
         const fieldName = field.name.value;
+        ctx.addToStackMapping(
+            SEARCHABLE_STACK_NAME,
+            new RegExp(`^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`, 'i')
+        )
         const parentModelDirective = parent.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
         if (!parentModelDirective) {
             throw new InvalidDirectiveError(`@connection must be on an @model object type field.`)
