@@ -150,7 +150,7 @@ function getPinpointConfig(pinpointResources) {
 
   return {
     aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: 'us-east-1',
+    aws_mobile_analytics_app_region: pinpointResource.output.Region,
   };
 }
 

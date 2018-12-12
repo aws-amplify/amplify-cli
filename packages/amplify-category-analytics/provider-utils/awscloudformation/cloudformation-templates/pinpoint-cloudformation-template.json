@@ -134,7 +134,7 @@
                             [
                                 "const response = require('cfn-response');",
                                 "const aws = require('aws-sdk');",
-                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: 'us-east-1' });",
+                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
                                 "exports.handler = function(event, context) {",
                                 "    if (event.RequestType == 'Delete') {",
                                 "        response.send(event, context, response.SUCCESS);",
@@ -187,6 +187,13 @@
                     "Fn::GetAtt": [
                         "PinpointFunction",
                         "Arn"
+                    ]
+                }, 
+                "region": { 
+                    "Fn::FindInMap" : [ 
+                        "RegionMapping", 
+                        { "Ref" : "AWS::Region" }, 
+                        "pinpointRegion"
                     ]
                 },
                 "appName": {
@@ -333,7 +340,13 @@
     },
     "Outputs": {
         "Region": {
-            "Value": "us-east-1"
+            "Value":{ 
+                "Fn::FindInMap" : [ 
+                    "RegionMapping", 
+                    { "Ref" : "AWS::Region" }, 
+                    "pinpointRegion"
+                ]
+            }
         },
         "Id": {
             "Value": {

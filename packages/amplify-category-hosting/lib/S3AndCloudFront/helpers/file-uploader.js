@@ -9,7 +9,7 @@ const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
 
 async function run(context, distributionDirPath) {
-  const s3Client = await getS3Client(context);
+  const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
 
   const fileList =
@@ -25,10 +25,10 @@ async function run(context, distributionDirPath) {
   return sequential(uploadFileTasks);
 }
 
-async function getS3Client(context) {
+async function getS3Client(context, action) {
   const { projectConfig } = context.exeInfo;
   const provider = require(projectConfig.providers[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context);
+  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   return new aws.S3();
 }
 

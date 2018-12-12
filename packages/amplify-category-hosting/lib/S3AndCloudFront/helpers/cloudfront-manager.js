@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const constants = require('../../constants');
 
 const providerName = 'awscloudformation';
 
@@ -18,7 +19,7 @@ async function invalidate(context) {
     const { CloudFrontDistributionID } = context.exeInfo.serviceMeta.output;
     const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
 
-    const cloudFront = await getCloudFrontClient(context);
+    const cloudFront = await getCloudFrontClient(context, 'update');
     const invalidateParams = {
       DistributionId: CloudFrontDistributionID,
       InvalidationBatch: {
@@ -47,10 +48,10 @@ async function invalidate(context) {
   return result;
 }
 
-async function getCloudFrontClient(context) {
+async function getCloudFrontClient(context, action) {
   const { projectConfig } = context.exeInfo;
   const provider = require(projectConfig.providers[providerName]);
-  const aws = await provider.getConfiguredAWSClient(context);
+  const aws = await provider.getConfiguredAWSClient(context, constants.CategoryName, action);
   return new aws.CloudFront();
 }
 
