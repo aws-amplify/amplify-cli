@@ -228,7 +228,7 @@ async function promptForProjectConfig(context) {
       return context;
     }
   } else {
-    projectConfigInfo.useProfile = false;
+    projectConfigInfo.config.useProfile = false;
   }
 
   answers = await inquirer.prompt(configurationSettings);

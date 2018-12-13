@@ -54,20 +54,20 @@ function run(context) {
 }
 
 function getConfiguredAwsCfnClient(context) {
-  const { projectConfigInfo } = context;
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  if (projectConfigInfo.action === 'init') {
-    if (projectConfigInfo.useProfile && projectConfigInfo.profileName) {
-      process.env.AWS_PROFILE = projectConfigInfo.profileName;
+  if (context.projectConfigInfo.action === 'init') {
+    const { config } = context.projectConfigInfo;
+    if (config.useProfile && config.profileName) {
+      process.env.AWS_PROFILE = config.profileName;
       const credentials = new aws.SharedIniFileCredentials({
-        profile: projectConfigInfo.profileName,
+        profile: config.profileName,
       });
       aws.config.credentials = credentials;
     } else {
       aws.config.update({
-        accessKeyId: projectConfigInfo.accessKeyId,
-        secretAccessKey: projectConfigInfo.secretAccessKey,
-        region: projectConfigInfo.region,
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+        region: config.region,
       });
     }
   }
