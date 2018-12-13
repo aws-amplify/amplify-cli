@@ -188,7 +188,7 @@ workflows:
             branches:
               only:
                 - release
-                - master-fix
+                - master
                 - beta
           requires:
             - build
