@@ -1,12 +1,13 @@
 import Template from 'cloudform-types/types/template'
 
-export default function blankTemplate(description?: string): Template {
+export default function blankTemplate(def: Template = {}): Template {
     return {
         AWSTemplateFormatVersion: '2010-09-09',
-        Description: description,
+        Description: 'description',
         Metadata: {},
         Parameters: {},
         Resources: {},
-        Outputs: {}
+        Outputs: {},
+        ...def
     }
 }
