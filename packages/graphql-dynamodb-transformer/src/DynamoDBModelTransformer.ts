@@ -11,8 +11,7 @@ import {
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
-    makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
-    extensionWithFields, ResourceConstants, makeListType
+    makeNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 
