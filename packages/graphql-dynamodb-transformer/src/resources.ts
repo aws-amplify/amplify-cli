@@ -136,14 +136,10 @@ export class ResourceFactory {
             ),
             KeySchema: keySchema,
             AttributeDefinitions: attributeDefinitions,
-            ProvisionedThroughput: {
-                ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-                WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
-            },
             StreamSpecification: {
                 StreamViewType: 'NEW_AND_OLD_IMAGES'
             },
-            // BillingMode: 'PAY_PER_REQUEST', Enable after updating cloudform.
+            BillingMode: 'PAY_PER_REQUEST',
             SSESpecification: {
                 SSEEnabled: true
             },
