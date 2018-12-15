@@ -94,6 +94,7 @@ beforeAll(async () => {
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
+        console.log(JSON.stringify(finishedStack, null, 4))
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
         console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);

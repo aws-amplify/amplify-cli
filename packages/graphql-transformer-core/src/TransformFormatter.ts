@@ -1,42 +1,26 @@
 import TransformerContext from "./TransformerContext";
-import Template from "cloudform-types/types/template";
-import { CloudFormation, StringParameter } from 'cloudform-types';
-import { getTemplateReferences, ReferenceMap } from './util/getTemplateReferences';
+import { StringParameter } from 'cloudform-types';
 import Resource from "cloudform-types/types/resource";
-import blankTemplate from './util/blankTemplate';
-import { Fn, Refs } from "cloudform-types";
+import { Fn } from "cloudform-types";
 import {
     makeOperationType,
     makeSchema
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from "graphql";
-import getIn from './util/getIn';
-import setIn from './util/setIn';
 import { stripDirectives } from "./stripDirectives";
 import { SchemaResourceUtil } from "./util/schemaResourceUtil";
-import splitStack from './util/splitStack'
-import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap, StackResources } from './DeploymentResources';
+import splitStack, { StackRules } from './util/splitStack'
+import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
-import Output from "cloudform-types/types/output";
 
-const ROOT_STACK_NAME = 'root';
-
-interface NestedStackInfo {
-    stackDependencyMap: { [k: string]: string[] }
-    stackParameterMap: { [k: string]: {[p: string]: any }  }
-}
-interface StackExprMap {
-    [key: string]: RegExp[];
-}
 interface TransformFormatterOptions {
-    stackRules: StackExprMap,
+    stackRules: StackRules,
     outputPath?: string
 }
 export class TransformFormatter {
 
     private opts: TransformFormatterOptions;
     private schemaResourceUtil = new SchemaResourceUtil()
-    private resourceToStackMap = {}
 
     constructor(opts: TransformFormatterOptions) {
         this.opts = opts;
