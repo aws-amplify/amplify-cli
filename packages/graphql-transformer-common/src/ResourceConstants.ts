@@ -30,10 +30,6 @@ export class ResourceConstants {
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
 
-        // DynamoDB
-        DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
-        DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
-
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticsearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticsearchAccessIAMRoleName',

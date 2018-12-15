@@ -4,6 +4,7 @@ import Transformer from './Transformer'
 import GraphQLTransform from './GraphQLTransform'
 import { collectDirectiveNames } from './collectDirectives'
 import { stripDirectives } from './stripDirectives'
+import { buildProject as buildAPIProject, uploadDeployment as uploadAPIProject } from './util/amplifyUtils'
 
 export * from './errors'
 
@@ -13,5 +14,7 @@ export {
     TransformerContext,
     Transformer,
     collectDirectiveNames,
-    stripDirectives
+    stripDirectives,
+    buildAPIProject,
+    uploadAPIProject
 }
