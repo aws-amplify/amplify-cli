@@ -57,11 +57,7 @@ export class ResourceFactory {
                 KeySchema: keySchema,
                 Projection: new Projection({
                     ProjectionType: 'ALL'
-                }),
-                ProvisionedThroughput: new ProvisionedThroughput({
-                    ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-                    WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
-                }),
+                })
             }))
         }
 

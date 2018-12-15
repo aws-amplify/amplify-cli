@@ -16,6 +16,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
+const optionalBuildDirectoryName = 'build';
 
 async function run(context, category, resourceName) {
   const {
@@ -264,17 +265,37 @@ function getAllUniqueCategories(resources) {
   return [...categories];
 }
 
+function getCfnFiles(context, category, resourceName) {
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+  const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName)
+  /**
+   * The API category w/ GraphQL builds into a build/ directory.
+   * This looks for a build directory and uses it if one exists.
+   * Otherwise falls back to the default behavior.
+   */
+  if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
+    const files = fs.readdirSync(resourceBuildDir);
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    return {
+      resourceDir: resourceBuildDir,
+      cfnFiles
+    }
+  }
+  const files = fs.readdirSync(resourceDir);
+  const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+  return {
+    resourceDir,
+    cfnFiles
+  }
+}
+
 function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
   const promises = [];
 
   for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
     const { category, resourceName } = resourcesToBeUpdated[i];
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
-    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const files = fs.readdirSync(resourceDir);
-    // Fetch all the CloudFormation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
-
+    const { resourceDir, cfnFiles } = getCfnFiles(context, category, resourceName)
     for (let j = 0; j < cfnFiles.length; j += 1) {
       promises.push(uploadTemplateToS3(
         context,
