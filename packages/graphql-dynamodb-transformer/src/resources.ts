@@ -14,14 +14,6 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
                 Description: 'The name of the AppSync API',
                 Default: 'AppSyncSimpleTransform'
-            }),
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
-                Description: 'The number of read IOPS the table should support.',
-                Default: 5
-            }),
-            [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
-                Description: 'The number of write IOPS the table should support.',
-                Default: 5
             })
         }
     }

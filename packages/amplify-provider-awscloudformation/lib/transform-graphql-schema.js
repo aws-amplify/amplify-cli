@@ -8,7 +8,6 @@ const GraphQLTransform = TransformPackage.default;
 const { collectDirectiveNames } = TransformPackage;
 const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
 const ModelAuthTransformer = require('graphql-auth-transformer').default;
-const AppSyncTransformer = require('graphql-appsync-transformer').default;
 const ModelConnectionTransformer = require('graphql-connection-transformer').default;
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
@@ -88,7 +87,6 @@ async function transformGraphQLSchema(context, options) {
   );
 
   const transformerList = [
-    new AppSyncTransformer(buildDir),
     new DynamoDBModelTransformer(),
     new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
@@ -106,16 +104,31 @@ async function transformGraphQLSchema(context, options) {
     transformers: transformerList,
   });
 
-  let cfdoc;
-  try {
-    cfdoc = transformer.transform(schemaText);
-  } catch (e) {
-    throw e;
-  }
+  await TransformPackage.buildAPIProject({
+    projectDirectory: resourceDir,
+    transform: transformer,
+    rootStackFileName: 'cloudformation-template.json'
+  })
+
+  /**
+   * { 
+   *    rootStack: template, 
+   *    stacks: { [k: string]: Template }, 
+   *    functions: { [k: string]: string}, // path to zip file on disk.
+   *    schema: string,
+   *    resolvers: { [k: string]: string } // VTL text.
+   * }
+   */
+  // let transformResources;
+  // try {
+  //   transformResources = transformer.transform(schemaText);
+  // } catch (e) {
+  //   throw e;
+  // }
 
   context.print.success(`\nGraphQL schema compiled successfully. Edit your schema at ${schemaFilePath}`);
 
-  fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(cfdoc, null, 4), 'utf8');
+  // fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(transformResources.rootStack, null, 4), 'utf8');
 
   // Comment this piece for now until transformer lib supports custom DDB ARns
   /* Look for data sources in the cfdoc
@@ -167,6 +180,16 @@ async function transformGraphQLSchema(context, options) {
   const jsonString = JSON.stringify(parameters, null, 4);
 
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+async function loadUserResources(resourceDirectory) {
+  // Load resolvers
+  const resolverMap = {}
+  const resolverPath = `${resourceDirectory}/resolvers`
+  const files = await fs.readdir(resolverPath)
+  for (const fiel of files) {
+    
+  }
 }
 
 // Comment this piece for now until transform lib supports custom DDB ARns
