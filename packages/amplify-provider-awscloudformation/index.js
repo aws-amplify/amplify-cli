@@ -1,7 +1,6 @@
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const setupNewUser = require('./lib/setup-new-user');
-const aws = require('./src/aws-utils/aws');
 const pinpoint = require('./src/aws-utils/aws-pinpoint');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
@@ -30,6 +29,7 @@ function buildResources(context, category, resourceName) {
 }
 
 function getConfiguredAWSClient(context, category, action) {
+  const aws = require('./src/aws-utils/aws');
   aws.configureWithCreds(context);
   category = category || 'missing';
   action = action || 'missing';
@@ -42,10 +42,6 @@ function getConfiguredAWSClient(context, category, action) {
 
 function getConfiguredPinpointClient(context) {
   return pinpoint.getConfiguredPinpointClient(context);
-}
-
-function getConfiguredAWSClient(context) {
-  return require('./src/aws-utils/aws').configureWithCreds(context);
 }
 
 function showHelpfulLinks(context, resources) {
