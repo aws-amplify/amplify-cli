@@ -1,7 +1,7 @@
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
 const setupNewUser = require('./lib/setup-new-user');
-const pinpoint = require('./src/aws-utils/aws-pinpoint');
+const { getConfiguredPinpointClient, getPinpointRegionMapping } = require('./src/aws-utils/aws-pinpoint');
 const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
 function init(context) {
@@ -38,10 +38,6 @@ function getConfiguredAWSClient(context, category, action) {
     customUserAgent: formUserAgentParam(context, userAgentAction),
   });
   return aws;
-}
-
-function getConfiguredPinpointClient(context) {
-  return pinpoint.getConfiguredPinpointClient(context);
 }
 
 function showHelpfulLinks(context, resources) {
