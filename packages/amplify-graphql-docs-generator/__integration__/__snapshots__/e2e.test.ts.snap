@@ -23,33 +23,6 @@ query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -75,18 +48,6 @@ query Hero($episode: Episode) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -95,6 +56,11 @@ query Hero($episode: Episode) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -144,10 +110,20 @@ query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -161,18 +137,6 @@ query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -181,6 +145,11 @@ query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -209,10 +178,20 @@ query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -226,18 +205,6 @@ query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -246,6 +213,11 @@ query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -280,33 +252,6 @@ query Character($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -332,18 +277,6 @@ query Character($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -352,6 +285,11 @@ query Character($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -381,59 +319,10 @@ query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -441,33 +330,6 @@ query Droid($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -493,18 +355,6 @@ query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -513,6 +363,11 @@ query Droid($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -532,59 +387,10 @@ query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -592,33 +398,6 @@ query Human($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -644,18 +423,6 @@ query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -664,6 +431,11 @@ query Human($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -725,33 +497,6 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -777,18 +522,6 @@ export const hero = \`query Hero($episode: Episode) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -797,6 +530,11 @@ export const hero = \`query Hero($episode: Episode) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -848,10 +586,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -865,18 +613,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -885,6 +621,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -913,10 +654,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -930,18 +681,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -950,6 +689,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -985,33 +729,6 @@ export const character = \`query Character($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1037,18 +754,6 @@ export const character = \`query Character($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1057,6 +762,11 @@ export const character = \`query Character($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1087,59 +797,10 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -1147,33 +808,6 @@ export const droid = \`query Droid($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1199,18 +833,6 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1219,6 +841,11 @@ export const droid = \`query Droid($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1239,59 +866,10 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -1299,33 +877,6 @@ export const human = \`query Human($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1351,18 +902,6 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1371,6 +910,11 @@ export const human = \`query Human($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1436,33 +980,6 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1488,18 +1005,6 @@ export const hero = \`query Hero($episode: Episode) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1508,6 +1013,11 @@ export const hero = \`query Hero($episode: Episode) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1559,10 +1069,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -1576,18 +1096,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -1596,6 +1104,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -1624,10 +1137,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -1641,18 +1164,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -1661,6 +1172,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -1696,33 +1212,6 @@ export const character = \`query Character($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1748,18 +1237,6 @@ export const character = \`query Character($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1768,6 +1245,11 @@ export const character = \`query Character($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1798,59 +1280,10 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -1858,33 +1291,6 @@ export const droid = \`query Droid($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -1910,18 +1316,6 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -1930,6 +1324,11 @@ export const droid = \`query Droid($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -1950,59 +1349,10 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -2010,33 +1360,6 @@ export const human = \`query Human($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -2062,18 +1385,6 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -2082,6 +1393,11 @@ export const human = \`query Human($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -2147,33 +1463,6 @@ export const hero = \`query Hero($episode: Episode) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -2199,18 +1488,6 @@ export const hero = \`query Hero($episode: Episode) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -2219,6 +1496,11 @@ export const hero = \`query Hero($episode: Episode) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -2270,10 +1552,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -2287,18 +1579,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -2307,6 +1587,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -2335,10 +1620,20 @@ export const search = \`query Search($text: String) {
             primaryFunction
           }
         }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
         ... on Human {
           homePlanet
           height
           mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
         }
         ... on Droid {
           primaryFunction
@@ -2352,18 +1647,6 @@ export const search = \`query Search($text: String) {
         friends {
           id
           name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
           ... on Human {
             homePlanet
             height
@@ -2372,6 +1655,11 @@ export const search = \`query Search($text: String) {
           ... on Droid {
             primaryFunction
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
         }
       }
       appearsIn
@@ -2407,33 +1695,6 @@ export const character = \`query Character($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -2459,18 +1720,6 @@ export const character = \`query Character($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -2479,6 +1728,11 @@ export const character = \`query Character($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -2509,59 +1763,10 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -2569,33 +1774,6 @@ export const droid = \`query Droid($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -2621,18 +1799,6 @@ export const droid = \`query Droid($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -2641,6 +1807,11 @@ export const droid = \`query Droid($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn
@@ -2661,59 +1832,10 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
-        friendsConnection {
-          totalCount
-          edges {
-            cursor
-          }
-          friends {
-            id
-            name
-            friends {
-              id
-              name
-              ... on Human {
-                homePlanet
-                height
-                mass
-              }
-              ... on Droid {
-                primaryFunction
-              }
-            }
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-        }
-        appearsIn
         ... on Human {
           homePlanet
           height
           mass
-          starships {
-            id
-            name
-            length
-            coordinates
-          }
         }
         ... on Droid {
           primaryFunction
@@ -2721,33 +1843,6 @@ export const human = \`query Human($id: ID!) {
       }
       friendsConnection {
         totalCount
-        edges {
-          cursor
-        }
-        friends {
-          id
-          name
-          friends {
-            id
-            name
-            ... on Human {
-              homePlanet
-              height
-              mass
-            }
-            ... on Droid {
-              primaryFunction
-            }
-          }
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
       }
       appearsIn
       ... on Human {
@@ -2773,18 +1868,6 @@ export const human = \`query Human($id: ID!) {
       friends {
         id
         name
-        friends {
-          id
-          name
-          ... on Human {
-            homePlanet
-            height
-            mass
-          }
-          ... on Droid {
-            primaryFunction
-          }
-        }
         ... on Human {
           homePlanet
           height
@@ -2793,6 +1876,11 @@ export const human = \`query Human($id: ID!) {
         ... on Droid {
           primaryFunction
         }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
       }
     }
     appearsIn

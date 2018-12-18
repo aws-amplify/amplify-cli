@@ -14,7 +14,7 @@ import getType from './utils/getType'
 export default function getFields(
   field: GraphQLField<any, any>,
   schema: GraphQLSchema,
-  depth: number = 3
+  depth: number = 2
 ): GQLTemplateField {
   const fieldType: GQLConcreteType = getType(field.type)
   const subFields =
@@ -26,16 +26,14 @@ export default function getFields(
     fieldType instanceof GraphQLInterfaceType || fieldType instanceof GraphQLUnionType
       ? schema.getPossibleTypes(fieldType)
       : []
-  if (depth <= 1 && !(fieldType instanceof GraphQLScalarType)) {
+  if (depth < 1 && !(fieldType instanceof GraphQLScalarType)) {
     return
   }
 
   const fields: Array<GQLTemplateField> = Object.keys(subFields)
     .map((fieldName) => {
       const subField = subFields[fieldName];
-      // Don't decrease the depth if its a list of items and its not self of the same type
-      const newDepth = (subField.type instanceof GraphQLList  && subField !== field ) ? depth : depth - 1;
-      return getFields(subField, schema, newDepth)
+      return getFields(subField, schema, depth - 1);
     })
     .filter((field) => field)
   const fragments: Array<GQLTemplateFragment> = Object.keys(subFragments)
