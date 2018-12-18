@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.33...amplify-graphql-docs-generator@0.1.34) (2018-12-18)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** fix overfetching of lists ([#571](https://github.com/aws-amplify/amplify-cli/issues/571)) ([#573](https://github.com/aws-amplify/amplify-cli/issues/573)) ([bf0cb3b](https://github.com/aws-amplify/amplify-cli/commit/bf0cb3b))
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.33-beta.0...amplify-graphql-docs-generator@0.1.33) (2018-11-09)
 

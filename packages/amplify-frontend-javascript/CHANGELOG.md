@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.34"></a>
+## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.33...amplify-frontend-javascript@0.1.34) (2018-12-18)
+
+
+### Features
+
+* **amplify-category-notifications:** merge notifications changes ([#577](https://github.com/aws-amplify/amplify-cli/issues/577)) ([b9d2f4d](https://github.com/aws-amplify/amplify-cli/commit/b9d2f4d))
+
+
+
+
 <a name="0.1.33"></a>
 ## [0.1.33](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.33-beta.0...amplify-frontend-javascript@0.1.33) (2018-11-09)
 
