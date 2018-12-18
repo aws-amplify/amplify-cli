@@ -156,6 +156,7 @@ export class ResourceFactory {
             }
         })
 <<<<<<< HEAD
+<<<<<<< HEAD
             .dependsOn([
                 ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID,
                 ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
@@ -164,6 +165,12 @@ export class ResourceFactory {
             .dependsOn(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID)
             .dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID)
 >>>>>>> Updating searchable tests for nested stacks
+=======
+            .dependsOn([
+                ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID,
+                ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID
+            ])
+>>>>>>> Removing print statement. Updating for fix #561
     }
 
     public makeDynamoDBStreamEventSourceMapping(typeName: string) {
@@ -175,6 +182,7 @@ export class ResourceFactory {
             StartingPosition: 'LATEST'
         })
 <<<<<<< HEAD
+<<<<<<< HEAD
             .dependsOn([
                 ModelResourceIDs.ModelTableResourceID(typeName),
                 ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID
@@ -183,6 +191,12 @@ export class ResourceFactory {
             .dependsOn(ModelResourceIDs.ModelTableResourceID(typeName))
             .dependsOn(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID)
 >>>>>>> Updating searchable tests for nested stacks
+=======
+            .dependsOn([
+                ModelResourceIDs.ModelTableResourceID(typeName),
+                ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID
+            ])
+>>>>>>> Removing print statement. Updating for fix #561
     }
 
     private joinWithEnv(separator: string, listToJoin: any[]) {
