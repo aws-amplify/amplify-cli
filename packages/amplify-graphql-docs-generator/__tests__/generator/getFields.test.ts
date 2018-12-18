@@ -44,7 +44,7 @@ describe('getField', () => {
 
   it('it should recursively resolve fields up to max depth', () => {
     const queries = schema.getQueryType().getFields()
-    expect(getFields(queries.nested, schema, 3)).toEqual({
+    expect(getFields(queries.nested, schema, 2)).toEqual({
       name: 'nested',
       fields: [
         {
@@ -72,9 +72,9 @@ describe('getField', () => {
     })
   })
 
-  it('should not return anything for complex type when the depth is <= 1', () => {
+  it('should not return anything for complex type when the depth is < 1', () => {
     const queries = schema.getQueryType().getFields()
-    expect(getFields(queries.nested, schema, 1)).toBeUndefined()
+    expect(getFields(queries.nested, schema, 0)).toBeUndefined()
   })
   describe('When type is an Interface', () => {
     beforeEach(() => {
