@@ -18,7 +18,6 @@ function getProjectBucket(context) {
 async function uploadAppSyncFiles(context, resources) {
   resources = resources.filter(resource => resource.service === 'AppSync');
   const buildTimeStamp = new Date().getTime().toString();
-  console.log(`Uploading appsync files`)
   // There can only be one appsync resource
   if (resources.length > 0) {
     const resource = resources[0];
