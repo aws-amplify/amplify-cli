@@ -143,7 +143,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     answers = {
       resourceName,
       intents,
-      outputVoice: "Matthew",
+      outputVoice: 'Matthew',
       botName,
       coppa,
     };
