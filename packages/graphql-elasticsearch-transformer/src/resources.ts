@@ -152,8 +152,10 @@ export class ResourceFactory {
                 }
             }
         })
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID)
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID)
+            .dependsOn([
+                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID,
+                ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
+            ])
     }
 
     public makeDynamoDBStreamEventSourceMapping(typeName: string) {
@@ -164,8 +166,10 @@ export class ResourceFactory {
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
         })
-            .dependsOn(ModelResourceIDs.ModelTableResourceID(typeName))
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID)
+            .dependsOn([
+                ModelResourceIDs.ModelTableResourceID(typeName),
+                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID
+            ])
     }
 
     /**
@@ -481,7 +485,9 @@ export class ResourceFactory {
                 ])
             )
         })
-            .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID)
+            .dependsOn([
+                ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
+                ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID
+            ])
     }
 }
