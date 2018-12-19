@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-beta.0"></a>
+## [0.1.35-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.34...amplify-category-notifications@0.1.35-beta.0) (2018-12-19)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** integration test ([#583](https://github.com/aws-amplify/amplify-cli/issues/583)) ([e09ffec](https://github.com/aws-amplify/amplify-cli/commit/e09ffec))
+
+
+### Features
+
+* **amplify-category-notifications:** merge notifications changes ([#577](https://github.com/aws-amplify/amplify-cli/issues/577)) ([b9d2f4d](https://github.com/aws-amplify/amplify-cli/commit/b9d2f4d))
+
+
+
+
 <a name="0.1.34"></a>
 ## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.1.33...amplify-category-notifications@0.1.34) (2018-12-05)
 

@@ -1,6 +1,6 @@
 {
   "name": "graphql-versioned-transformer",
-  "version": "1.0.33",
+  "version": "1.0.34-beta.0",
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "main": "lib/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
     "graphql-appsync-transformer": "^1.0.33",
-    "graphql-dynamodb-transformer": "^1.0.33",
+    "graphql-dynamodb-transformer": "^1.0.34-beta.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
