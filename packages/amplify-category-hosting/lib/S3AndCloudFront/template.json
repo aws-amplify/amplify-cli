@@ -106,7 +106,7 @@
             ],
             "Properties" : {
                 "DistributionConfig" : {
-                    "Origins" : [ 
+                    "Origins" : [
                         {
                             "DomainName" :  {"Fn::GetAtt": ["S3Bucket", "DomainName"]},
                             "Id" : "hostingS3Bucket",
@@ -127,35 +127,35 @@
                     ],
                     "Enabled" : "true",
                     "DefaultCacheBehavior" : {
-                        "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+                        "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],
                         "TargetOriginId" : "hostingS3Bucket",
                         "ForwardedValues" : {
                             "QueryString" : "false"
                         },
-                        "ViewerProtocolPolicy" : "redirect-to-https", 
+                        "ViewerProtocolPolicy" : "redirect-to-https",
                         "DefaultTTL" : 86400,
                         "MaxTTL" : 31536000,
                         "MinTTL" : 60,
                         "Compress" : true
-                    }, 
+                    },
                     "DefaultRootObject" : "index.html",
                     "CustomErrorResponses" : [
                         {
                             "ErrorCachingMinTTL" : 300,
                             "ErrorCode" : 400,
-                            "ResponseCode" : 200,
+                            "ResponseCode" : 400,
                             "ResponsePagePath" : "/"
-                        }, 
+                        },
                         {
                             "ErrorCachingMinTTL" : 300,
                             "ErrorCode" : 403,
-                            "ResponseCode" : 200,
+                            "ResponseCode" : 403,
                             "ResponsePagePath" : "/"
-                        }, 
+                        },
                         {
                             "ErrorCachingMinTTL" : 300,
                             "ErrorCode" : 404,
-                            "ResponseCode" : 200,
+                            "ResponseCode" : 404,
                             "ResponsePagePath" : "/"
                         }
                     ]
@@ -170,7 +170,7 @@
             }
         },
         "HostingBucketName": {
-            "Description": "Hosting bucket name", 
+            "Description": "Hosting bucket name",
             "Value":  {"Ref": "S3Bucket"}
         },
         "WebsiteURL": {
@@ -190,7 +190,7 @@
                 ]
             },
             "Description": "Name of S3 bucket to hold website content"
-        }, 
+        },
         "CloudFrontDistributionID": {
             "Value": { "Ref": "CloudFrontDistribution"}
         },
