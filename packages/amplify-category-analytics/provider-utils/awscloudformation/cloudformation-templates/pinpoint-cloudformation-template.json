@@ -134,7 +134,6 @@
                             [
                                 "const response = require('cfn-response');",
                                 "const aws = require('aws-sdk');",
-                                "const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
                                 "exports.handler = function(event, context) {",
                                 "    if (event.RequestType == 'Delete') {",
                                 "        response.send(event, context, response.SUCCESS);",
@@ -152,6 +151,7 @@
                                 "               Name: appName",
                                 "           }",
                                 "       };",
+                                "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
                                 "       return pinpoint.createApp(params).promise()",
                                 "           .then((res) => {",
                                 "               responseData = res.ApplicationResponse;",
