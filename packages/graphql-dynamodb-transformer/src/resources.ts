@@ -227,7 +227,7 @@ export class ResourceFactory {
                 AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(tableId, 'Arn'))),
                 TableName: Fn.Ref(tableId)
             }
-        }).dependsOn(tableId).dependsOn(iamRoleLogicalID)
+        }).dependsOn([tableId, iamRoleLogicalID])
     }
 
     /**

@@ -396,7 +396,7 @@
 						{
 							"name": "RoomType",
 							"type": "RoomTypeValues",
-							"prompt": "What type of car would you like to rent? Our most popular options are economy, midsize, and luxury",
+							"prompt": "What type of room would you like: queen, king or deluxe?",
 							"required": true,
 							"customType": true
 						}
