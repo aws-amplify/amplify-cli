@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-interactions",
-  "version": "0.1.35-beta.0",
+  "version": "0.1.35",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
     "amplify-category-auth": "^0.1.33",
