@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-beta.0"></a>
+## [0.1.35-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.1.34...amplify-category-interactions@0.1.35-beta.0) (2018-12-20)
+
+
+### Features
+
+* **amplify-category-interactions:** Add default voide for samples, fix book hotel question ([#600](https://github.com/aws-amplify/amplify-cli/issues/600)) ([03c1112](https://github.com/aws-amplify/amplify-cli/commit/03c1112))
+
+
+
+
 <a name="0.1.34"></a>
 ## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.1.33...amplify-category-interactions@0.1.34) (2018-12-05)
 
