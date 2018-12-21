@@ -61,7 +61,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     amplify.getProjectDetails().amplifyMeta.auth &&
     Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
-  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase().replace(/-/g, '_');
   let currentAuthParams;
   const [sharedId] = uuid().split('-');
 
