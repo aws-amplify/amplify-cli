@@ -8,6 +8,7 @@ const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/con
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
+  context.print.warning('You\'re initializing your project with a beta version of the CLI which supports multiple environments of your project');
 
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
