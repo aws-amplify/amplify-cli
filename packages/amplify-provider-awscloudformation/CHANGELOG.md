@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.38"></a>
+## [0.1.38](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.38-beta.0...amplify-provider-awscloudformation@0.1.38) (2018-12-20)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.1.38-beta.0"></a>
+## [0.1.38-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.36...amplify-provider-awscloudformation@0.1.38-beta.0) (2018-12-20)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** integration test ([#583](https://github.com/aws-amplify/amplify-cli/issues/583)) ([e09ffec](https://github.com/aws-amplify/amplify-cli/commit/e09ffec))
+
+
+### Features
+
+* **amplify-category-notifications:** merge notifications changes ([#577](https://github.com/aws-amplify/amplify-cli/issues/577)) ([b9d2f4d](https://github.com/aws-amplify/amplify-cli/commit/b9d2f4d))
+
+
+
+
 <a name="0.1.36"></a>
 ## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.35...amplify-provider-awscloudformation@0.1.36) (2018-12-05)
 
