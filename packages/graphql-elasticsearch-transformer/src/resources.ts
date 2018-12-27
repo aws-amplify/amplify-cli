@@ -34,7 +34,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName]: new StringParameter({
                 Description: 'The name of the streaming lambda function.',
-                Default: 'DynamoDBToElasticSearchFunction'
+                Default: 'DdbToEsFn'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
