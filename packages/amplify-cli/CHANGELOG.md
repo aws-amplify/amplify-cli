@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.16"></a>
+## [0.2.1-multienv.16](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.15...@aws-amplify/cli@0.2.1-multienv.16) (2018-12-27)
+
+
+### Features
+
+* adding warning message when using beta-multienv cli ([e0c73fd](https://github.com/aws-amplify/amplify-cli/commit/e0c73fd))
+
+
+
+
 <a name="0.2.1-multienv.15"></a>
 ## [0.2.1-multienv.15](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.14...@aws-amplify/cli@0.2.1-multienv.15) (2018-12-21)
 

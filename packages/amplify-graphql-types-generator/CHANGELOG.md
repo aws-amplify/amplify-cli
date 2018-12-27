@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.2.1-multienv.1...amplify-graphql-types-generator@0.2.1-multienv.2) (2018-12-27)
+
+
+### Bug Fixes
+
+* lock version number of [@types](https://github.com/types)/yargs ([3c00dde](https://github.com/aws-amplify/amplify-cli/commit/3c00dde))
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.2.1-multienv.0...amplify-graphql-types-generator@0.2.1-multienv.1) (2018-12-04)
 
