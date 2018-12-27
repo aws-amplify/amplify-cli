@@ -1,6 +1,6 @@
 {
   "name": "amplify-provider-awscloudformation",
-  "version": "0.2.1-multienv.12",
+  "version": "0.2.1-multienv.13",
   "description": "AWS CloudFormation Provider",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -20,7 +20,7 @@
     "graphql-auth-transformer": "^1.0.34-multienv.1",
     "graphql-connection-transformer": "^1.0.34-multienv.1",
     "graphql-dynamodb-transformer": "^1.0.34-multienv.1",
-    "graphql-elasticsearch-transformer": "^1.0.34-multienv.1",
+    "graphql-elasticsearch-transformer": "^1.0.34-multienv.2",
     "graphql-transformer-common": "^1.0.34-multienv.0",
     "graphql-transformer-core": "^1.0.33",
     "graphql-versioned-transformer": "^1.0.34-multienv.1",
