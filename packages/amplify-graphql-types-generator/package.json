@@ -35,7 +35,7 @@
     "@types/jest": "^20.0.6",
     "@types/mkdirp": "^0.5.0",
     "@types/node-fetch": "^1.6.7",
-    "@types/yargs": "^12.0.1",
+    "@types/yargs": "12.0.1",
     "jest": "^23.1.0",
     "jest-matcher-utils": "^23.6.0",
     "ts-jest": "^22.4.6",
