@@ -34,7 +34,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName]: new StringParameter({
                 Description: 'The name of the streaming lambda function.',
-                Default: 'DynamoDBToElasticSearchFunction'
+                Default: 'DdbToEsFn'
             }),
             [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
@@ -149,8 +149,10 @@ export class ResourceFactory {
                 }
             }
         })
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID)
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID)
+            .dependsOn([
+                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID,
+                ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
+            ])
     }
 
     public makeDynamoDBStreamEventSourceMapping(typeName: string) {
@@ -161,8 +163,10 @@ export class ResourceFactory {
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
         })
-            .dependsOn(ModelResourceIDs.ModelTableResourceID(typeName))
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID)
+            .dependsOn([
+                ModelResourceIDs.ModelTableResourceID(typeName),
+                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID
+            ])
     }
 
     private joinWithEnv(separator: string, listToJoin: any[]) {
@@ -452,7 +456,9 @@ export class ResourceFactory {
                 ])
             )
         })
-            .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
-            .dependsOn(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID)
+            .dependsOn([
+                ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
+                ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID
+            ])
     }
 }

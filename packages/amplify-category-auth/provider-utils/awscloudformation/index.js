@@ -1,4 +1,6 @@
 const fs = require('fs');
+const inquirer = require('inquirer');
+const opn = require('opn');
 
 let serviceMetadata;
 
@@ -318,6 +320,76 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
   }
   return requiredParams;
 }
+
+
+async function console(context, amplifyMeta) {
+  const cognitoOutput = getCognitoOutput(amplifyMeta);
+  if (cognitoOutput) {
+    const { Region } = amplifyMeta.providers.awscloudformation;
+    if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
+      const answer = await inquirer.prompt({
+        name: 'selection',
+        type: 'list',
+        message: 'Which console',
+        choices: ['User Pool', 'Identity Pool', 'Both'],
+        default: 'Both',
+      });
+
+      switch (answer.selection) {
+        case 'User Pool':
+          await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
+          break;
+        case 'Identity Pool':
+          await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
+          break;
+        default:
+          await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
+          await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
+          break;
+      }
+    } else if (cognitoOutput.UserPoolId) {
+      await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
+    } else {
+      await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
+    }
+    context.print.info('');
+  } else {
+    context.print.error('Amazon Cognito resources have NOT been created for your project.');
+  }
+}
+
+function getCognitoOutput(amplifyMeta) {
+  let cognitoOutput;
+  const categoryMeta = amplifyMeta.auth;
+  const services = Object.keys(categoryMeta);
+  for (let i = 0; i < services.length; i += 1) {
+    const serviceMeta = categoryMeta[services[i]];
+    if (serviceMeta.service === 'Cognito' &&
+      serviceMeta.output &&
+      (serviceMeta.output.UserPoolId || serviceMeta.output.IdentityPoolId)) {
+      cognitoOutput = serviceMeta.output;
+      break;
+    }
+  }
+  return cognitoOutput;
+}
+
+async function openUserPoolConsole(context, region, userPoolId) {
+  const userPoolConsoleUrl =
+    `https://console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}`;
+  await opn(userPoolConsoleUrl, { wait: false });
+  context.print.info('User Pool console:');
+  context.print.success(userPoolConsoleUrl);
+}
+
+async function openIdentityPoolConsole(context, region, identityPoolId) {
+  const identityPoolConsoleUrl =
+    `https://console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
+  await opn(identityPoolConsoleUrl, { wait: false });
+  context.print.info('Identity Pool console:');
+  context.print.success(identityPoolConsoleUrl);
+}
+
 module.exports = {
   addResource,
   updateResource,
@@ -326,4 +398,5 @@ module.exports = {
   ENV_SPECIFIC_PARAMS,
   copyCfnTemplate,
   migrate,
+  console,
 };

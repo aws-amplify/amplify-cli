@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.4"></a>
+## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.3...amplify-category-notifications@0.2.1-multienv.4) (2018-12-21)
+
+
+
+
+**Note:** Version bump only for package amplify-category-notifications
+
 <a name="0.2.1-multienv.3"></a>
 ## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.1...amplify-category-notifications@0.2.1-multienv.3) (2018-12-07)
 

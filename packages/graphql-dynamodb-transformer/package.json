@@ -1,6 +1,6 @@
 {
   "name": "graphql-dynamodb-transformer",
-  "version": "1.0.34-multienv.0",
+  "version": "1.0.34-multienv.1",
   "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
   "main": "lib/index.js",
   "scripts": {

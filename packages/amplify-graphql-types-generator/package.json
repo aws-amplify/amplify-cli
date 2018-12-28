@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "0.2.1-multienv.1",
+  "version": "0.2.1-multienv.2",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "main": "./lib/index.js",
   "bin": "./lib/cli.js",
@@ -35,7 +35,7 @@
     "@types/jest": "^20.0.6",
     "@types/mkdirp": "^0.5.0",
     "@types/node-fetch": "^1.6.7",
-    "@types/yargs": "^12.0.1",
+    "@types/yargs": "12.0.1",
     "jest": "^23.1.0",
     "jest-matcher-utils": "^23.6.0",
     "ts-jest": "^22.4.6",
