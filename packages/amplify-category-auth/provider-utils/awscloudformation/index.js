@@ -188,7 +188,7 @@ async function console(context, amplifyMeta) {
     }
     context.print.info('');
   } else {
-    context.print.error('Cognito resources have NOT been created for your project.');
+    context.print.error('Amazon Cognito resources have NOT been created for your project.');
   }
 }
 
