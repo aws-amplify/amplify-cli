@@ -30,7 +30,7 @@ async function getConfiguredPinpointClient(context, category, action) {
   action = action || 'missing';
   const userAgentAction = `${category}:${action[0]}`;
   aws.config.update({
-    region: mapServiceRegion(aws.region),
+    region: mapServiceRegion(aws.config.region),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   });
   return new aws.Pinpoint();
