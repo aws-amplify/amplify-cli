@@ -90,7 +90,7 @@ async function getRoleCredentials(profileConfig) {
   const roleData = await sts.assumeRole({
     RoleArn: profileConfig.role_arn,
     RoleSessionName: 'amplify',
-    ExternalId: profileConfig.external_id
+    ExternalId: profileConfig.external_id,
   }).promise();
   // accessKeyId: data.Credentials.AccessKeyId,
   // secretAccessKey: data.Credentials.SecretAccessKey,

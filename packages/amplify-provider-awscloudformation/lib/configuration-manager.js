@@ -168,9 +168,9 @@ async function promptForProjectConfig(context) {
   const { projectConfigInfo } = context;
 
   let availableProfiles = [];
-  const systemConfig = systemConfigManager.getNamedProfiles();
-  if (systemConfig) {
-    availableProfiles = Object.keys(systemConfig);
+  const namedProfiles = systemConfigManager.getNamedProfiles();
+  if (namedProfiles) {
+    availableProfiles = Object.keys(namedProfiles);
   }
 
   const useProfileConfirmation = {
