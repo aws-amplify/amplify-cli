@@ -52,7 +52,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const { cfnFilename } = serviceMetadata.Cognito;
   const authExists = amplify.getProjectDetails().amplifyMeta.auth && Object.keys(amplify.getProjectDetails().amplifyMeta.auth).length > 0; //eslint-disable-line
   let currentAuthName;
-  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
   let currentAuthParams;
   const [sharedId] = uuid().split('-');
 
@@ -161,8 +161,33 @@ async function checkRequirements(requirements, context) {
   return result;
 }
 
+async function console(context) {
+  const { amplify } = context;
+  const supportedServices = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
+  const amplifyMeta = amplify.getProjectMeta();
+
+  if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
+    return context.print.error('Auth has NOT been added to this project.');
+  }
+
+  return amplify.serviceSelectionPrompt(context, category, supportedServices)
+    .then((result) => {
+      const providerController = require(`${__dirname}/provider-utils/${result.providerName}/index`);
+      if (!providerController) {
+        context.print.error('Provider not configured for this category');
+        return;
+      }
+      return providerController.console(context, amplifyMeta);
+    })
+    .catch((err) => {
+      context.print.info(err.stack);
+      context.print.error('There was an error trying to open the auth web console.');
+    });
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
   add,
+  console,
 };
