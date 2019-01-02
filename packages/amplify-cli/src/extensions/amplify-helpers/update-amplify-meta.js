@@ -13,7 +13,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   } else if (!amplifyMeta[category][resourceName]) {
     amplifyMeta[category][resourceName] = {};
   }
-  
+
   if (typeof value === 'object' && !Array.isArray(value)) {
     if (!amplifyMeta[category][resourceName][attribute]) {
       amplifyMeta[category][resourceName][attribute] = {};
@@ -22,7 +22,7 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   } else {
     amplifyMeta[category][resourceName][attribute] = value;
   }
-  
+
   if (timeStamp) {
     amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp;
   }
