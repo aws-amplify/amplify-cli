@@ -356,7 +356,7 @@ function removeProjectConfig(context) {
   fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
 }
 
-async function loadConfiguration(context, awsClient, attatchRegion) {
+async function loadConfiguration(context, awsClient) {
   const projectConfigInfo = getCurrentConfig(context);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
@@ -367,29 +367,26 @@ async function loadConfiguration(context, awsClient, attatchRegion) {
       awsconfig = JSON.parse(fs.readFileSync(config.awsConfigFilePath, 'utf8'));
     }
     awsClient.config.update(awsconfig);
-  } else if (attatchRegion) {
-    awsClient.config.update({ region: getRegion() });
   }
 
   return awsClient;
 }
 
-function getRegion() {
+function resolveRegion() {
   // For details of how aws region is set, check the following link
   // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
-
+  let region;
   if (process.env.AWS_REGION) {
-    return process.env.AWS_REGION;
+    region = process.env.AWS_REGION;
   }
   if (process.env.AMAZON_REGION) {
-    return process.env.AMAZON_REGION;
+    region = process.env.AMAZON_REGION;
   }
-  const profileName = process.env.AWS_PROFILE || 'default';
-  const profileRegion = systemConfigManager.getProfileRegion(profileName);
-  if (profileRegion) {
-    return profileRegion;
+  if (process.env.AWS_SDK_LOAD_CONFIG) {
+    const profileName = process.env.AWS_PROFILE || 'default';
+    region = systemConfigManager.getProfileRegion(profileName);
   }
-  throw new Error('AWS region can not be resolved.');
+  return region;
 }
 
 async function newUserCheck(context) {
@@ -464,4 +461,5 @@ module.exports = {
   onInitSuccessful,
   configure,
   loadConfiguration,
+  resolveRegion,
 };
