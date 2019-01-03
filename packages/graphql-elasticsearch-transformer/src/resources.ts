@@ -29,11 +29,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
                 Description: 'The name of the streaming lambda function.',
-<<<<<<< HEAD
                 Default: 'DdbToEsFn'
-=======
-                Default: 'DynamoDBToElasticsearchFunction'
->>>>>>> Updating searchable tests for nested stacks
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
@@ -154,23 +150,10 @@ export class ResourceFactory {
                     DEBUG: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchDebugStreamingLambda)
                 }
             }
-        })
-<<<<<<< HEAD
-<<<<<<< HEAD
-            .dependsOn([
-                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID,
-                ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
-            ])
-=======
-            .dependsOn(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID)
-            .dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID)
->>>>>>> Updating searchable tests for nested stacks
-=======
-            .dependsOn([
-                ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID,
-                ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID
-            ])
->>>>>>> Removing print statement. Updating for fix #561
+        }).dependsOn([
+            ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID,
+            ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID
+        ])
     }
 
     public makeDynamoDBStreamEventSourceMapping(typeName: string) {
@@ -180,23 +163,10 @@ export class ResourceFactory {
             EventSourceArn: Fn.GetAtt(ModelResourceIDs.ModelTableResourceID(typeName), 'StreamArn'),
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
-        })
-<<<<<<< HEAD
-<<<<<<< HEAD
-            .dependsOn([
-                ModelResourceIDs.ModelTableResourceID(typeName),
-                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID
-            ])
-=======
-            .dependsOn(ModelResourceIDs.ModelTableResourceID(typeName))
-            .dependsOn(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID)
->>>>>>> Updating searchable tests for nested stacks
-=======
-            .dependsOn([
-                ModelResourceIDs.ModelTableResourceID(typeName),
-                ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID
-            ])
->>>>>>> Removing print statement. Updating for fix #561
+        }).dependsOn([
+            ModelResourceIDs.ModelTableResourceID(typeName),
+            ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID
+        ])
     }
 
     private joinWithEnv(separator: string, listToJoin: any[]) {
@@ -486,8 +456,8 @@ export class ResourceFactory {
                 ])
             )
         }).dependsOn([
-                ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
-                ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID
-            ])
+            ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
+            ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID
+        ])
     }
 }
