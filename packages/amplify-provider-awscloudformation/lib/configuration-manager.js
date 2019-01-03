@@ -389,7 +389,7 @@ function getRegion() {
   if (profileRegion) {
     return profileRegion;
   }
-  return 'us-east-1';
+  throw new Error('AWS region can not be resolved.');
 }
 
 async function newUserCheck(context) {
