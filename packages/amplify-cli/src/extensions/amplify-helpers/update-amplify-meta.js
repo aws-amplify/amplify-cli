@@ -186,7 +186,7 @@ function updateamplifyMetaAfterResourceDelete(category, resourceName) {
     resourceName,
   ));
 
-  if (amplifyMeta[category][resourceName] !== undefined) {
+  if (amplifyMeta[category] && amplifyMeta[category][resourceName] !== undefined) {
     delete amplifyMeta[category][resourceName];
   }
 

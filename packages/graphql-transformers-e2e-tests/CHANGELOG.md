@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.0-multienv.2"></a>
+# [2.0.0-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@1.0.34-multienv.2...graphql-transformers-e2e-tests@2.0.0-multienv.2) (2018-12-31)
+
+
+### Bug Fixes
+
+* update grahql transformer package versions for multienv ([8b4b2bd](https://github.com/aws-amplify/amplify-cli/commit/8b4b2bd))
+
+
+
+
 <a name="1.0.34-multienv.2"></a>
 ## [1.0.34-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@1.0.34-multienv.1...graphql-transformers-e2e-tests@1.0.34-multienv.2) (2018-12-27)
 

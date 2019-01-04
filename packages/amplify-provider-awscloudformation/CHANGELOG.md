@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.15"></a>
+## [0.2.1-multienv.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.14...amplify-provider-awscloudformation@0.2.1-multienv.15) (2018-12-31)
+
+
+### Bug Fixes
+
+* update grahql transformer package versions for multienv ([8b4b2bd](https://github.com/aws-amplify/amplify-cli/commit/8b4b2bd))
+
+
+
+
+<a name="0.2.1-multienv.14"></a>
+## [0.2.1-multienv.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.13...amplify-provider-awscloudformation@0.2.1-multienv.14) (2018-12-28)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
 <a name="0.2.1-multienv.13"></a>
 ## [0.2.1-multienv.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.12...amplify-provider-awscloudformation@0.2.1-multienv.13) (2018-12-27)
 
