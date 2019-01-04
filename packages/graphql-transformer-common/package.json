@@ -19,8 +19,7 @@
   "dependencies": {
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^2.0.1-multienv.0",
-    "graphql-transformer-core": "^2.0.1-multienv.0"
+    "graphql-mapping-template": "^2.0.1-multienv.0"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",
