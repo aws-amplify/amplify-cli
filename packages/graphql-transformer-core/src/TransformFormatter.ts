@@ -8,7 +8,7 @@ import {
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, print } from "graphql";
 import { stripDirectives } from "./stripDirectives";
-import { SchemaResourceUtil } from "./util/schemaResourceUtil";
+import { SchemaResourceUtil } from "./util/SchemaResourceUtil";
 import splitStack, { StackRules } from './util/splitStack'
 import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
