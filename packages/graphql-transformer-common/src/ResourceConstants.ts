@@ -23,6 +23,7 @@ export class ResourceConstants {
     public static PARAMETERS = {
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
+        APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
@@ -51,6 +52,11 @@ export class ResourceConstants {
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {
+        // General
+        APIKeyExpirationEpochIsZero: 'APIKeyExpirationEpochIsZero',
+        APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
+        APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
+
         // Auth
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
     }
