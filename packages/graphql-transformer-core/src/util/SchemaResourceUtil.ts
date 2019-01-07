@@ -40,30 +40,32 @@ export class SchemaResourceUtil {
             DataSourceName: resource.Properties.DataSourceName,
             FieldName: resource.Properties.FieldName,
             TypeName: resource.Properties.TypeName,
-            RequestMappingTemplateS3Location: Fn.Join('/', [
-                's3:/',
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
-                RESOLVERS_DIRECTORY_NAME,
-                Fn.Join('.', [
-                    resource.Properties.TypeName,
-                    resource.Properties.FieldName,
-                    'request',
-                    'vtl',
-                ])
-            ]),
-            ResponseMappingTemplateS3Location: Fn.Join('/', [
-                "s3:/",
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
-                RESOLVERS_DIRECTORY_NAME,
-                Fn.Join('.', [
-                    resource.Properties.TypeName,
-                    resource.Properties.FieldName,
-                    'response',
-                    'vtl'
-                ])
-            ])
+            RequestMappingTemplateS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    ResolverFileName: Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'request',
+                        'vtl',
+                    ])
+                }
+            ),
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    ResolverFileName: Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'response',
+                        'vtl'
+                    ])
+                }
+            )
         })
     }
 
@@ -76,12 +78,13 @@ export class SchemaResourceUtil {
         }
         return new AppSync.GraphQLSchema({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DefinitionS3Location: Fn.Join('/', [
-                "s3:/",
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
-                Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
-                'schema.graphql'
-            ])
+            DefinitionS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/schema.graphql",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey)
+                }
+            )
         })
     }
 }
