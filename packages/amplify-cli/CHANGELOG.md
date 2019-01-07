@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.39-beta.0"></a>
+## [0.1.39-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.38...@aws-amplify/cli@0.1.39-beta.0) (2019-01-07)
+
+
+### Bug Fixes
+
+* **cli:** allow update value to be other types ([53f8acb](https://github.com/aws-amplify/amplify-cli/commit/53f8acb))
+* **update-amplify-meta:** allow update value to be other types ([d845bca](https://github.com/aws-amplify/amplify-cli/commit/d845bca))
+
+
+
+
 <a name="0.1.38"></a>
 ## [0.1.38](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.1.38-beta.0...@aws-amplify/cli@0.1.38) (2018-12-20)
 

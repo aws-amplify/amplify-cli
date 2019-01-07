@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.35-beta.0"></a>
+## [0.1.35-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.1.34...amplify-category-storage@0.1.35-beta.0) (2019-01-07)
+
+
+### Features
+
+* **amplify-category-storage:** add s3 multipart upload to cfn ([2aba66b](https://github.com/aws-amplify/amplify-cli/commit/2aba66b))
+
+
+
+
 <a name="0.1.34"></a>
 ## [0.1.34](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@0.1.33...amplify-category-storage@0.1.34) (2018-12-05)
 

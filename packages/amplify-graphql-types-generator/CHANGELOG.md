@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.4-beta.0"></a>
+## [0.1.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.1.3...amplify-graphql-types-generator@0.1.4-beta.0) (2019-01-07)
+
+
+
+
+**Note:** Version bump only for package amplify-graphql-types-generator
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.1.2...amplify-graphql-types-generator@0.1.3) (2018-12-05)
 
