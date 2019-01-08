@@ -1,6 +1,6 @@
 {
   "name": "graphql-connection-transformer",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "description": "An AppSync model transform for connecting objects.",
   "main": "lib/index.js",
   "scripts": {
