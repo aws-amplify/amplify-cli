@@ -1,8 +1,8 @@
-const aws = require('aws-sdk');
 const path = require('path');
 const fs = require('fs-extra');
 const constants = require('./constants');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
+const systemConfigManager = require('./system-config-manager');
 
 async function run(context, envName) {
   const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
@@ -17,27 +17,26 @@ async function run(context, envName) {
     throw new Error('AWS credentials missing for the specified environment');
   }
 
-  const awscfn = getConfiguredAwsCfnClient(awsConfigInfo);
+  const awscfn = await getConfiguredAwsCfnClient(awsConfigInfo);
 
   return new Cloudformation(context, awscfn)
     .then(cfnItem => cfnItem.deleteResourceStack(envName));
 }
 
-function getConfiguredAwsCfnClient(awsConfigInfo) {
+async function getConfiguredAwsCfnClient(awsConfigInfo) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  if (awsConfigInfo.config.useProfile && awsConfigInfo.config.profileName) {
-    process.env.AWS_PROFILE = awsConfigInfo.config.profileName;
-    const credentials = new aws.SharedIniFileCredentials({
-      profile: awsConfigInfo.config.profileName,
-    });
-    aws.config.credentials = credentials;
+  const aws = require('aws-sdk');
+  let awsconfig;
+  if (awsConfigInfo.config.useProfile) {
+    awsconfig = await systemConfigManager.getProfiledAwsConfig(awsConfigInfo.config.profileName);
   } else {
-    aws.config.update({
+    awsconfig = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
       secretAccessKey: awsConfigInfo.config.secretAccessKey,
       region: awsConfigInfo.config.region,
-    });
+    };
   }
+  aws.config.update(awsconfig);
   return aws;
 }
 
