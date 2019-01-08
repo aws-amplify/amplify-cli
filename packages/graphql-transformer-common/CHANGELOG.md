@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.35"></a>
+## [1.0.35](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.33...graphql-transformer-common@1.0.35) (2019-01-08)
+
+
+### Bug Fixes
+
+* **amplify-cli:** manually patch version ([#674](https://github.com/aws-amplify/amplify-cli/issues/674)) ([0d6f039](https://github.com/aws-amplify/amplify-cli/commit/0d6f039))
+
+
+
+
 <a name="1.0.33"></a>
 ## [1.0.33](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.33-beta.0...graphql-transformer-common@1.0.33) (2018-11-09)
 

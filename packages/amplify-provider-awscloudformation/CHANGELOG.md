@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.40"></a>
+## [0.1.40](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.38...amplify-provider-awscloudformation@0.1.40) (2019-01-08)
+
+
+### Bug Fixes
+
+* **amplify-cli:** manually patch version ([#674](https://github.com/aws-amplify/amplify-cli/issues/674)) ([0d6f039](https://github.com/aws-amplify/amplify-cli/commit/0d6f039))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** assume role ([e0988ea](https://github.com/aws-amplify/amplify-cli/commit/e0988ea))
+
+
+
+
 <a name="0.1.38"></a>
 ## [0.1.38](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.38-beta.0...amplify-provider-awscloudformation@0.1.38) (2018-12-20)
 

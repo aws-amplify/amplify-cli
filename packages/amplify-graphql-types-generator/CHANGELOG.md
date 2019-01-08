@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.1.3...amplify-graphql-types-generator@0.1.5) (2019-01-08)
+
+
+### Bug Fixes
+
+* **amplify-cli:** manually patch version ([#674](https://github.com/aws-amplify/amplify-cli/issues/674)) ([0d6f039](https://github.com/aws-amplify/amplify-cli/commit/0d6f039))
+
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.1.2...amplify-graphql-types-generator@0.1.3) (2018-12-05)
 
