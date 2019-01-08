@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.3"></a>
+## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.2.1-multienv.2...amplify-category-auth@0.2.1-multienv.3) (2018-12-28)
+
+
+### Features
+
+* **amplify-category-auth:** console ([#636](https://github.com/aws-amplify/amplify-cli/issues/636)) ([dea38aa](https://github.com/aws-amplify/amplify-cli/commit/dea38aa))
+
+
+
+
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.2.1-multienv.1...amplify-category-auth@0.2.1-multienv.2) (2018-12-21)
+
+
+
+
+**Note:** Version bump only for package amplify-category-auth
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.2.1-multienv.0...amplify-category-auth@0.2.1-multienv.1) (2018-11-28)
 
