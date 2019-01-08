@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.16"></a>
+## [0.2.1-multienv.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.15...amplify-provider-awscloudformation@0.2.1-multienv.16) (2019-01-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix region missing error ([#676](https://github.com/aws-amplify/amplify-cli/issues/676)) ([107ceac](https://github.com/aws-amplify/amplify-cli/commit/107ceac)), closes [#559](https://github.com/aws-amplify/amplify-cli/issues/559) [#559](https://github.com/aws-amplify/amplify-cli/issues/559)
+
+
+
+
 <a name="0.2.1-multienv.15"></a>
 ## [0.2.1-multienv.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.14...amplify-provider-awscloudformation@0.2.1-multienv.15) (2018-12-31)
 
