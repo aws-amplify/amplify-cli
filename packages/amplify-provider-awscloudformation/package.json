@@ -16,7 +16,7 @@
     "eslint": "^4.19.1",
     "extract-zip": "^1.6.7",
     "fs-extra": "^4.0.2",
-    "graphql-appsync-transformer": "^0.1.34",
+    "graphql-appsync-transformer": "^1.0.34",
     "graphql-auth-transformer": "^1.0.35",
     "graphql-connection-transformer": "^1.0.35",
     "graphql-dynamodb-transformer": "^1.0.35",

@@ -28,7 +28,7 @@
     "@types/jest": "^23.1.1",
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
-    "graphql-appsync-transformer": "^0.1.34",
+    "graphql-appsync-transformer": "^1.0.34",
     "graphql-dynamodb-transformer": "^1.0.35",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
