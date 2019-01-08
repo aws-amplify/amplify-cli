@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "0.1.34",
+  "version": "0.1.35-beta.0",
   "description": "amplify-cli authentication plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -18,8 +18,8 @@
     "inquirer": "^6.0.0",
     "jest": "^23.5.0",
     "lodash": "^4.17.10",
-    "uuid": "^2.0.3",
-    "opn": "^5.3.0"
+    "opn": "^5.3.0",
+    "uuid": "^2.0.3"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
