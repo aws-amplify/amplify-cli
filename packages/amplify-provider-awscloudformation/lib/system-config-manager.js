@@ -126,8 +126,8 @@ function getProfileCredentials(profileName) {
   return normalizeKeys(profileCredentials);
 }
 
-function normalizeKeys(config){
-  if(config){
+function normalizeKeys(config) {
+  if (config) {
     config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
     delete config.aws_access_key_id;
