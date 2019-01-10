@@ -56,12 +56,8 @@ async function getConfiguredAwsCfnClient(context) {
   if (context.projectConfigInfo.action === 'init') {
     const { config } = context.projectConfigInfo;
     if (config.useProfile) {
-      const awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
-      aws.config.update({
-        accessKeyId: awsconfig.aws_access_key_id,
-        secretAccessKey: awsconfig.aws_secret_access_key,
-        region: awsconfig.region,
-      });
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      aws.config.update(awsConfig);
     } else {
       aws.config.update({
         accessKeyId: config.accessKeyId,

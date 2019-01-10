@@ -60,8 +60,7 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     if (!isRoleSourceProfile && profileConfig.role_arn && profileConfig.source_profile) {
-      const roleCredentials =
-        await getRoleCredentials(profileConfig);
+      const roleCredentials = await getRoleCredentials(profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
       awsConfig = {
@@ -70,15 +69,19 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
       };
     } else {
       const profileCredentials = getProfileCredentials(profileName);
+      const normalizeCredentials = {
+        accessKeyId: profileCredentials.aws_access_key_id,
+        secretAccessKey: profileCredentials.aws_secret_access_key,
+        region: profileCredentials.region,
+      };
       awsConfig = {
         ...profileConfig,
-        ...profileCredentials,
+        ...normalizeCredentials,
       };
     }
   } else {
     throw new Error(`Profile configuration is missing for: ${profileName}`);
   }
-
   return awsConfig;
 }
 
@@ -95,7 +98,11 @@ async function getRoleCredentials(profileConfig) {
   // accessKeyId: data.Credentials.AccessKeyId,
   // secretAccessKey: data.Credentials.SecretAccessKey,
   // sessionToken: data.Credentials.SessionToken
-  return roleData.Credentials;
+  return {
+    accessKeyId: roleData.Credentials.AccessKeyId,
+    secretAccessKey: roleData.Credentials.SecretAccessKey,
+    sessionToken: roleData.Credentials.SessionToken,
+  };
 }
 
 function getProfileConfig(profileName) {
