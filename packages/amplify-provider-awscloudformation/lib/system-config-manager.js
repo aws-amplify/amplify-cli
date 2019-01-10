@@ -111,7 +111,7 @@ function getProfileConfig(profileName) {
       }
     });
   }
-  return profileConfig;
+  return normalizeKeys(profileConfig);
 }
 
 function getProfileCredentials(profileName) {
@@ -126,10 +126,17 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return {
-    accessKeyId: profileCredentials.aws_access_key_id,
-    secretAccessKey: profileCredentials.aws_secret_access_key,
-  };
+  return normalizeKeys(profileCredentials);
+}
+
+function normalizeKeys(config){
+  if(config){
+    config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
+    config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    delete config.aws_access_key_id;
+    delete config.aws_secret_access_key;
+  }
+  return config;
 }
 
 function getProfileRegion(profileName) {
