@@ -69,13 +69,9 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
       };
     } else {
       const profileCredentials = getProfileCredentials(profileName);
-      const normalizeCredentials = {
-        accessKeyId: profileCredentials.aws_access_key_id,
-        secretAccessKey: profileCredentials.aws_secret_access_key,
-      };
       awsConfig = {
         ...profileConfig,
-        ...normalizeCredentials,
+        ...profileCredentials,
       };
     }
   } else {
@@ -112,7 +108,7 @@ function getProfileConfig(profileName) {
       }
     });
   }
-  return profileConfig;
+  return normalizeKeys(profileConfig);
 }
 
 function getProfileCredentials(profileName) {
@@ -127,7 +123,17 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return profileCredentials;
+  return normalizeKeys(profileCredentials);
+}
+
+function normalizeKeys(config){
+  if(config){
+    config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
+    config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    delete config.aws_access_key_id;
+    delete config.aws_secret_access_key;
+  }
+  return config;
 }
 
 function getProfileRegion(profileName) {
