@@ -52,6 +52,7 @@ async function run(context) {
 }
 
 async function getConfiguredAwsCfnClient(context) {
+  process.env.AWS_SDK_LOAD_CONFIG = true;
   const aws = require('aws-sdk');
   if (context.projectConfigInfo.action === 'init') {
     const { config } = context.projectConfigInfo;
