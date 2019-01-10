@@ -92,10 +92,12 @@ async function getRoleCredentials(profileConfig) {
     RoleSessionName: 'amplify',
     ExternalId: profileConfig.external_id,
   }).promise();
-  // accessKeyId: data.Credentials.AccessKeyId,
-  // secretAccessKey: data.Credentials.SecretAccessKey,
-  // sessionToken: data.Credentials.SessionToken
-  return roleData.Credentials;
+
+  return {
+          accessKeyId: roleData.Credentials.AccessKeyId,
+          secretAccessKey: roleData.Credentials.SecretAccessKey,
+          sessionToken: roleData.Credentials.SessionToken
+  };
 }
 
 function getProfileConfig(profileName) {
@@ -124,7 +126,10 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return profileCredentials;
+  return {
+    accessKeyId: profileCredentials.aws_access_key_id,
+    secretAccessKey: profileCredentials.aws_secret_access_key,
+  };
 }
 
 function getProfileRegion(profileName) {
