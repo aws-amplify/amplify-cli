@@ -94,9 +94,9 @@ async function getRoleCredentials(profileConfig) {
   }).promise();
 
   return {
-          accessKeyId: roleData.Credentials.AccessKeyId,
-          secretAccessKey: roleData.Credentials.SecretAccessKey,
-          sessionToken: roleData.Credentials.SessionToken
+    accessKeyId: roleData.Credentials.AccessKeyId,
+    secretAccessKey: roleData.Credentials.SecretAccessKey,
+    sessionToken: roleData.Credentials.SessionToken,
   };
 }
 
@@ -129,8 +129,8 @@ function getProfileCredentials(profileName) {
   return normalizeKeys(profileCredentials);
 }
 
-function normalizeKeys(config){
-  if(config){
+function normalizeKeys(config) {
+  if (config) {
     config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
     delete config.aws_access_key_id;
