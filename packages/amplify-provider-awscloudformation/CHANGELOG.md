@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.41-beta.0"></a>
+## [0.1.41-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.40...amplify-provider-awscloudformation@0.1.41-beta.0) (2019-01-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix profile loading ([#687](https://github.com/aws-amplify/amplify-cli/issues/687)) ([3688c49](https://github.com/aws-amplify/amplify-cli/commit/3688c49))
+
+
+
+
 <a name="0.1.40"></a>
 ## [0.1.40](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.38...amplify-provider-awscloudformation@0.1.40) (2019-01-08)
 
