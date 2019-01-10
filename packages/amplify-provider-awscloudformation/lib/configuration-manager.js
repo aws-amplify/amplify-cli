@@ -360,15 +360,17 @@ async function loadConfiguration(context, awsClient) {
   const projectConfigInfo = getCurrentConfig(context);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
-    let awsconfig;
     if (config.useProfile) {
-      awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      awsClient.config.update({
+        accessKeyId: awsconfig.aws_access_key_id,
+        secretAccessKey: awsconfig.aws_secret_access_key,
+        region: awsconfig.region,
+      });
     } else {
-      awsconfig = JSON.parse(fs.readFileSync(config.awsConfigFilePath, 'utf8'));
+      awsClient.config.loadFromPath(config.awsConfigFilePath);
     }
-    awsClient.config.update(awsconfig);
   }
-
   return awsClient;
 }
 

@@ -52,21 +52,23 @@ async function run(context) {
 }
 
 async function getConfiguredAwsCfnClient(context) {
-  process.env.AWS_SDK_LOAD_CONFIG = true;
   const aws = require('aws-sdk');
   if (context.projectConfigInfo.action === 'init') {
     const { config } = context.projectConfigInfo;
-    let awsconfig;
     if (config.useProfile) {
-      awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      aws.config.update({
+        accessKeyId: awsconfig.aws_access_key_id,
+        secretAccessKey: awsconfig.aws_secret_access_key,
+        region: awsconfig.region,
+      });
     } else {
-      awsconfig = {
+      aws.config.update({
         accessKeyId: config.accessKeyId,
         secretAccessKey: config.secretAccessKey,
         region: config.region,
-      };
+      });
     }
-    aws.config.update(awsconfig);
   }
   return aws;
 }
