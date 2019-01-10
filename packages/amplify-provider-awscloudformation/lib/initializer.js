@@ -56,17 +56,16 @@ async function getConfiguredAwsCfnClient(context) {
   const aws = require('aws-sdk');
   if (context.projectConfigInfo.action === 'init') {
     const { config } = context.projectConfigInfo;
-    let awsconfig;
     if (config.useProfile) {
-      awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      aws.config.update(awsConfig);
     } else {
-      awsconfig = {
+      aws.config.update({
         accessKeyId: config.accessKeyId,
         secretAccessKey: config.secretAccessKey,
         region: config.region,
-      };
+      });
     }
-    aws.config.update(awsconfig);
   }
   return aws;
 }

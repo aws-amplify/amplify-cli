@@ -60,8 +60,7 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     if (!isRoleSourceProfile && profileConfig.role_arn && profileConfig.source_profile) {
-      const roleCredentials =
-        await getRoleCredentials(profileConfig);
+      const roleCredentials = await getRoleCredentials(profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
       awsConfig = {
@@ -78,7 +77,6 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
   } else {
     throw new Error(`Profile configuration is missing for: ${profileName}`);
   }
-
   return awsConfig;
 }
 
@@ -92,10 +90,11 @@ async function getRoleCredentials(profileConfig) {
     RoleSessionName: 'amplify',
     ExternalId: profileConfig.external_id,
   }).promise();
-  // accessKeyId: data.Credentials.AccessKeyId,
-  // secretAccessKey: data.Credentials.SecretAccessKey,
-  // sessionToken: data.Credentials.SessionToken
-  return roleData.Credentials;
+  return {
+    accessKeyId: roleData.Credentials.AccessKeyId,
+    secretAccessKey: roleData.Credentials.SecretAccessKey,
+    sessionToken: roleData.Credentials.SessionToken,
+  };
 }
 
 function getProfileConfig(profileName) {
@@ -109,7 +108,7 @@ function getProfileConfig(profileName) {
       }
     });
   }
-  return profileConfig;
+  return normalizeKeys(profileConfig);
 }
 
 function getProfileCredentials(profileName) {
@@ -124,7 +123,17 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return profileCredentials;
+  return normalizeKeys(profileCredentials);
+}
+
+function normalizeKeys(config) {
+  if (config) {
+    config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
+    config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    delete config.aws_access_key_id;
+    delete config.aws_secret_access_key;
+  }
+  return config;
 }
 
 function getProfileRegion(profileName) {
