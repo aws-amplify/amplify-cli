@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.18"></a>
+## [0.2.1-multienv.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.17...amplify-provider-awscloudformation@0.2.1-multienv.18) (2019-01-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix profile loading ([#688](https://github.com/aws-amplify/amplify-cli/issues/688)) ([e96694b](https://github.com/aws-amplify/amplify-cli/commit/e96694b))
+
+
+
+
 <a name="0.2.1-multienv.17"></a>
 ## [0.2.1-multienv.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.16...amplify-provider-awscloudformation@0.2.1-multienv.17) (2019-01-08)
 
