@@ -72,7 +72,6 @@ async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
       const normalizeCredentials = {
         accessKeyId: profileCredentials.aws_access_key_id,
         secretAccessKey: profileCredentials.aws_secret_access_key,
-        region: profileCredentials.region,
       };
       awsConfig = {
         ...profileConfig,
@@ -95,9 +94,6 @@ async function getRoleCredentials(profileConfig) {
     RoleSessionName: 'amplify',
     ExternalId: profileConfig.external_id,
   }).promise();
-  // accessKeyId: data.Credentials.AccessKeyId,
-  // secretAccessKey: data.Credentials.SecretAccessKey,
-  // sessionToken: data.Credentials.SessionToken
   return {
     accessKeyId: roleData.Credentials.AccessKeyId,
     secretAccessKey: roleData.Credentials.SecretAccessKey,
