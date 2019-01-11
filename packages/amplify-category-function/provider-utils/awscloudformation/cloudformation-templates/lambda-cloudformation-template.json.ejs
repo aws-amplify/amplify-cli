@@ -26,13 +26,13 @@
             ]
         }
     },
-    "Metadata": {
-        "aws:asset:path": "./src",
-        "aws:asset:property": "Code"
-    },
     "Resources": {
         "LambdaFunction": {
           "Type": "AWS::Lambda::Function",
+          "Metadata": {
+            "aws:asset:path": "./src",
+            "aws:asset:property": "Code"
+          },
           "Properties": {
             "Handler": "index.handler",
             "FunctionName": {
