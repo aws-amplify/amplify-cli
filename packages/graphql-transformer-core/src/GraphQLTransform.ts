@@ -4,7 +4,7 @@ import {
     Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode,
     InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode,
     EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
-    InputValueDefinitionNode, EnumValueDefinitionNode, validate
+    InputValueDefinitionNode, EnumValueDefinitionNode, validate, TypeExtensionNode
 } from 'graphql'
 import { DeploymentResources } from './DeploymentResources'
 import TransformerContext from './TransformerContext'
@@ -152,6 +152,8 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
     return isValidLocation;
 }
 
+type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
+
 /**
  * A generic transformation library that takes as input a graphql schema
  * written in SDL and a set of transformers that operate on it. At the
@@ -216,7 +218,7 @@ export default class GraphQLTransform {
             // directives are not used where they are not allowed.
 
             // Apply each transformer and accumulate the context.
-            for (const def of context.inputDocument.definitions as TypeDefinitionNode[]) {
+            for (const def of context.inputDocument.definitions as TypeDefinitionOrExtension[]) {
                 switch (def.kind) {
                     case 'ObjectTypeDefinition':
                         this.transformObject(transformer, def, validDirectiveNameMap, context)
