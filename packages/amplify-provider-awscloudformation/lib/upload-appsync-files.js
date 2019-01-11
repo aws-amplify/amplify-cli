@@ -49,48 +49,48 @@ function uploadAppSyncFiles(context, resources) {
       ));
     }
 
-      const resolverBucket = getProjectBucket(context);
+    const resolverBucket = getProjectBucket(context);
 
-      if (fs.existsSync(resolverDir)) {
-          const resolverFiles = fs.readdirSync(resolverDir);
+    if (fs.existsSync(resolverDir)) {
+      const resolverFiles = fs.readdirSync(resolverDir);
 
-          resolverFiles.forEach((file) => {
-              const resolverFilePath = path.join(resolverDir, file);
+      resolverFiles.forEach((file) => {
+        const resolverFilePath = path.join(resolverDir, file);
 
-              uploadFilePromises.push(uploadAppSyncResolver(
-                  context, file,
-                  resolverFilePath, buildTimeStamp,
-              ));
-          });
-      }
+        uploadFilePromises.push(uploadAppSyncResolver(
+          context, file,
+          resolverFilePath, buildTimeStamp,
+        ));
+      });
+    }
 
-      return Promise.all(uploadFilePromises)
-          .then(() => {
-              const parametersFilePath = path.join(backEndDir, category, resourceName, 'parameters.json');
-              let currentParameters;
+    return Promise.all(uploadFilePromises)
+      .then(() => {
+        const parametersFilePath = path.join(backEndDir, category, resourceName, 'parameters.json');
+        let currentParameters;
 
-              if (fs.existsSync(parametersFilePath)) {
-                  try {
-                      currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
-                      // Clear the parameters cache
-                      currentParameters = {
-                          AppSyncApiName: currentParameters.AppSyncApiName,
-                          AuthCognitoUserPoolId: currentParameters.AuthCognitoUserPoolId,
-                      };
-                  } catch (e) {
-                      currentParameters = {};
-                  }
-              }
+        if (fs.existsSync(parametersFilePath)) {
+          try {
+            currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
+            // Clear the parameters cache
+            currentParameters = {
+              AppSyncApiName: currentParameters.AppSyncApiName,
+              AuthCognitoUserPoolId: currentParameters.AuthCognitoUserPoolId,
+            };
+          } catch (e) {
+            currentParameters = {};
+          }
+        }
 
-              Object.assign(currentParameters, s3LocationMap);
-              Object.assign(currentParameters, {
-                  ResolverBucket: resolverBucket,
-                  ResolverRootKey: ROOT_APPSYNC_S3_KEY,
-                  DeploymentTimestamp: buildTimeStamp,
-              });
-              const jsonString = JSON.stringify(currentParameters, null, 4);
-              fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-          });
+        Object.assign(currentParameters, s3LocationMap);
+        Object.assign(currentParameters, {
+          ResolverBucket: resolverBucket,
+          ResolverRootKey: ROOT_APPSYNC_S3_KEY,
+          DeploymentTimestamp: buildTimeStamp,
+        });
+        const jsonString = JSON.stringify(currentParameters, null, 4);
+        fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+      });
   }
 }
 
