@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const Ora = require('ora');
 const mime = require('mime-types');
 const sequential = require('promise-sequential');
 const fileScanner = require('./file-scanner');
@@ -9,20 +10,27 @@ const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
 
 async function run(context, distributionDirPath) {
-  const s3Client = await getS3Client(context, 'update');
-  const hostingBucketName = getHostingBucketName(context);
-
+  const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
   const fileList =
-    fileScanner.scan(context, distributionDirPath);
+    fileScanner.scan(context, distributionDirPath, WebsiteConfiguration.IndexDocument);
 
   const uploadFileTasks = [];
-
+  const s3Client = await getS3Client(context, 'update');
+  const hostingBucketName = getHostingBucketName(context);
   fileList.forEach((filePath) => {
     uploadFileTasks.push(() =>
       uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
   });
 
-  return sequential(uploadFileTasks);
+  const spinner = new Ora('Uploading files...');
+  try {
+    spinner.start();
+    await sequential(uploadFileTasks);
+    spinner.succeed('Uploading files successful.');
+  } catch (e) {
+    spinner.fail('Error has occured during file upload.');
+    throw e;
+  }
 }
 
 async function getS3Client(context, action) {
