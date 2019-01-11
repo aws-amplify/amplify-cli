@@ -489,13 +489,12 @@ async function loadConfiguration(context, awsClient) {
   const projectConfigInfo = getCurrentConfig(context);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
-    let awsconfig;
     if (config.useProfile) {
-      awsconfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      awsClient.config.update(awsConfig);
     } else {
-      awsconfig = JSON.parse(fs.readFileSync(config.awsConfigFilePath, 'utf8'));
+      awsClient.config.loadFromPath(config.awsConfigFilePath);
     }
-    awsClient.config.update(awsconfig);
   }
 
   return awsClient;
