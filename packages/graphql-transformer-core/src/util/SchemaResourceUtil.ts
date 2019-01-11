@@ -48,7 +48,7 @@ export class SchemaResourceUtil {
                     ResolverFileName: Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
-                        'request',
+                        'req',
                         'vtl',
                     ])
                 }
@@ -61,7 +61,7 @@ export class SchemaResourceUtil {
                     ResolverFileName: Fn.Join('.', [
                         resource.Properties.TypeName,
                         resource.Properties.FieldName,
-                        'response',
+                        'res',
                         'vtl'
                     ])
                 }

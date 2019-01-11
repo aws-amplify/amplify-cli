@@ -17,6 +17,7 @@ const category = 'api';
 const parametersFileName = 'parameters.json';
 const templateFileName = 'cloudformation-template.json';
 const schemaFileName = 'schema.graphql';
+const schemaDirName = 'schema';
 
 function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
@@ -74,10 +75,11 @@ async function transformGraphQLSchema(context, options) {
 
   const buildDir = `${resourceDir}/build`;
   const schemaFilePath = `${resourceDir}/${schemaFileName}`;
+  const schemaDirPath = `${resourceDir}/${schemaDirName}`;
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
-  const schemaText = fs.readFileSync(schemaFilePath, 'utf8');
+  const schemaText = await TransformPackage.readProjectSchema(resourceDir);
 
   // Check for common errors
   const usedDirectives = collectDirectiveNames(schemaText);
@@ -126,7 +128,8 @@ async function transformGraphQLSchema(context, options) {
   //   throw e;
   // }
 
-  context.print.success(`\nGraphQL schema compiled successfully. Edit your schema at ${schemaFilePath}`);
+  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} \nor \
+place .graphql files in ${schemaDirPath}`);
 
   // fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(transformResources.rootStack, null, 4), 'utf8');
 
