@@ -9,28 +9,28 @@ function scan(context, distributionDirPath, indexDoc) {
     fileList = recursiveScan(distributionDirPath, [], ignored, distributionDirPath);
     if (fileList.length === 0) {
       const message = 'The distribution folder is empty';
-      context.print.info(''); 
+      context.print.info('');
       context.print.error(message);
-      context.print.info('Distribution folder is currently set as:'); 
+      context.print.info('Distribution folder is currently set as:');
       context.print.info(`  ${distributionDirPath}`);
-      context.print.info(''); 
+      context.print.info('');
       throw new Error(message);
     } else if (!fs.existsSync(path.join(distributionDirPath, indexDoc))) {
-      context.print.info(''); 
+      context.print.info('');
       context.print.warning('Index doc is missing in the distribution folder');
-      context.print.info('Distribution folder is currently set as:'); 
+      context.print.info('Distribution folder is currently set as:');
       context.print.info(`  ${distributionDirPath}`);
-      context.print.info('Index document is currently set as:'); 
+      context.print.info('Index document is currently set as:');
       context.print.info(`  ${indexDoc}`);
-      context.print.info(''); 
+      context.print.info('');
     }
   } else {
     const message = 'Can not find the distribution folder.';
-    context.print.info(''); 
+    context.print.info('');
     context.print.error(message);
-    context.print.info('Distribution folder is currently set as:'); 
+    context.print.info('Distribution folder is currently set as:');
     context.print.info(`  ${distributionDirPath}`);
-    context.print.info(''); 
+    context.print.info('');
     throw new Error(message);
   }
   return fileList;
