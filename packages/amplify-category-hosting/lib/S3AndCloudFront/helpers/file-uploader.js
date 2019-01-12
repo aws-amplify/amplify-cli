@@ -26,7 +26,7 @@ async function run(context, distributionDirPath) {
   try {
     spinner.start();
     await sequential(uploadFileTasks);
-    spinner.succeed('Uploading files successful.');
+    spinner.succeed('Uploaded files successfully.');
   } catch (e) {
     spinner.fail('Error has occured during file upload.');
     throw e;
