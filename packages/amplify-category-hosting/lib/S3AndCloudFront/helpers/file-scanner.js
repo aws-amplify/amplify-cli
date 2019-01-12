@@ -25,7 +25,7 @@ function scan(context, distributionDirPath, indexDoc) {
       context.print.info('');
     }
   } else {
-    const message = 'Can not find the distribution folder.';
+    const message = 'Cannot find the distribution folder.';
     context.print.info('');
     context.print.error(message);
     context.print.info('Distribution folder is currently set as:');
