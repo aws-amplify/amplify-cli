@@ -268,7 +268,7 @@ function getAllUniqueCategories(resources) {
 function getCfnFiles(context, category, resourceName) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-  const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName)
+  const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
   /**
    * The API category w/ GraphQL builds into a build/ directory.
    * This looks for a build directory and uses it if one exists.
@@ -279,15 +279,15 @@ function getCfnFiles(context, category, resourceName) {
     const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
     return {
       resourceDir: resourceBuildDir,
-      cfnFiles
-    }
+      cfnFiles,
+    };
   }
   const files = fs.readdirSync(resourceDir);
   const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
   return {
     resourceDir,
-    cfnFiles
-  }
+    cfnFiles,
+  };
 }
 
 function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
@@ -295,7 +295,7 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
 
   for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
     const { category, resourceName } = resourcesToBeUpdated[i];
-    const { resourceDir, cfnFiles } = getCfnFiles(context, category, resourceName)
+    const { resourceDir, cfnFiles } = getCfnFiles(context, category, resourceName);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       promises.push(uploadTemplateToS3(
         context,

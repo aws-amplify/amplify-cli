@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const pythonStreamingFunctionFileName = 'python_streaming_function.zip';
-const schemaFileName = 'schema.graphql';
 const TransformPackage = require('graphql-transformer-core');
 const S3 = require('../src/aws-utils/aws-s3');
 
@@ -24,13 +22,10 @@ async function uploadAppSyncFiles(context, resources) {
     const { category, resourceName } = resource;
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceBuildDir = path.normalize(path.join(backEndDir, category, resourceName, 'build'));
-    const resolverDir = path.normalize(path.join(resourceBuildDir, 'resolvers'));
-    const functionsDir = path.normalize(path.join(resourceBuildDir, 'functions'));
-    const schemaFilePath = path.normalize(path.join(resourceBuildDir, schemaFileName));
-    const projectBucket = getProjectBucket(context)
-    const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildTimeStamp}`
+    const projectBucket = getProjectBucket(context);
+    const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildTimeStamp}`;
 
-    const s3Client = await new S3(context)
+    const s3Client = await new S3(context);
 
     if (!fs.existsSync(resourceBuildDir)) {
       return;
@@ -38,14 +33,14 @@ async function uploadAppSyncFiles(context, resources) {
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
       upload: async (blob) => {
-        const { Key, Body } = blob
-        const fullKey = `${deploymentRootKey}/${Key}`
+        const { Key, Body } = blob;
+        const fullKey = `${deploymentRootKey}/${Key}`;
         return await s3Client.uploadFile({
           Key: fullKey,
-          Body
-        })
-      }
-    })
+          Body,
+        });
+      },
+    });
 
     const parametersFilePath = path.join(backEndDir, category, resourceName, 'parameters.json');
     let currentParameters;
@@ -60,7 +55,7 @@ async function uploadAppSyncFiles(context, resources) {
 
     Object.assign(currentParameters, {
       S3DeploymentBucket: projectBucket,
-      S3DeploymentRootKey: deploymentRootKey
+      S3DeploymentRootKey: deploymentRootKey,
     });
     const jsonString = JSON.stringify(currentParameters, null, 4);
     fs.writeFileSync(parametersFilePath, jsonString, 'utf8');

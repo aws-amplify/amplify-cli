@@ -15,7 +15,6 @@ const providerName = require('./constants').ProviderName;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
-const templateFileName = 'cloudformation-template.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
@@ -109,29 +108,11 @@ async function transformGraphQLSchema(context, options) {
   await TransformPackage.buildAPIProject({
     projectDirectory: resourceDir,
     transform: transformer,
-    rootStackFileName: 'cloudformation-template.json'
-  })
-
-  /**
-   * { 
-   *    rootStack: template, 
-   *    stacks: { [k: string]: Template }, 
-   *    functions: { [k: string]: string}, // path to zip file on disk.
-   *    schema: string,
-   *    resolvers: { [k: string]: string } // VTL text.
-   * }
-   */
-  // let transformResources;
-  // try {
-  //   transformResources = transformer.transform(schemaText);
-  // } catch (e) {
-  //   throw e;
-  // }
+    rootStackFileName: 'cloudformation-template.json',
+  });
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} \nor \
 place .graphql files in ${schemaDirPath}`);
-
-  // fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(transformResources.rootStack, null, 4), 'utf8');
 
   // Comment this piece for now until transformer lib supports custom DDB ARns
   /* Look for data sources in the cfdoc
@@ -183,16 +164,6 @@ place .graphql files in ${schemaDirPath}`);
   const jsonString = JSON.stringify(parameters, null, 4);
 
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-}
-
-async function loadUserResources(resourceDirectory) {
-  // Load resolvers
-  const resolverMap = {}
-  const resolverPath = `${resourceDirectory}/resolvers`
-  const files = await fs.readdir(resolverPath)
-  for (const fiel of files) {
-    
-  }
 }
 
 // Comment this piece for now until transform lib supports custom DDB ARns
