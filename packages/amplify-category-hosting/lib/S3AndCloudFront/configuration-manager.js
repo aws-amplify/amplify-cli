@@ -29,7 +29,7 @@ async function checkBucketName(context) {
 
 async function configureHostingComponents(context, lastConfiguredSection) {
   const options = Object.keys(configurables);
-  const done = "exit";
+  const done = 'exit';
   options.push(done);
 
   let defaultSection = options[0];

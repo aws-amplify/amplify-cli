@@ -119,7 +119,7 @@ async function configureCustomErrorResponse(DistributionConfig) {
   if (!DistributionConfig.CustomErrorResponses) {
     DistributionConfig.CustomErrorResponses = [];
   }
-  const done = "exit";
+  const done = 'exit';
   const configActions = ['list', 'add', 'edit', 'remove', 'remove all', done];
   const answer = await inquirer.prompt({
     name: 'action',
