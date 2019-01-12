@@ -98,8 +98,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ensure the project directory exists and create the stacks & resolvers directories.
   fs.ensureDirSync(resourceDir);
-  fs.mkdirSync(`${resourceDir}/${resolversDirName}`)
-  fs.mkdirSync(`${resourceDir}/${stacksDirName}`)
+  fs.mkdirSync(`${resourceDir}/${resolversDirName}`);
+  fs.mkdirSync(`${resourceDir}/${stacksDirName}`);
 
 
   if (schemaFileAnswer[inputs[2].key]) {

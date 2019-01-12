@@ -1,0 +1,1774 @@
+{
+    "rootStack": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "An auto-generated nested stack.",
+        "Metadata": {},
+        "Parameters": {
+            "AppSyncApiName": {
+                "Type": "String",
+                "Description": "The name of the AppSync API",
+                "Default": "AppSyncSimpleTransform"
+            },
+            "ElasticsearchAccessIAMRoleName": {
+                "Type": "String",
+                "Description": "The name of the IAM role assumed by AppSync for Elasticsearch.",
+                "Default": "AppSyncElasticsearchAccess"
+            },
+            "ElasticsearchStreamingLambdaHandlerName": {
+                "Type": "String",
+                "Description": "The name of the lambda handler.",
+                "Default": "python_streaming_function.lambda_handler"
+            },
+            "ElasticsearchStreamingLambdaRuntime": {
+                "Type": "String",
+                "Description": "The lambda runtime                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)",
+                "Default": "python3.6"
+            },
+            "ElasticsearchStreamingFunctionName": {
+                "Type": "String",
+                "Description": "The name of the streaming lambda function.",
+                "Default": "DdbToEsFn"
+            },
+            "ElasticsearchStreamingIAMRoleName": {
+                "Type": "String",
+                "Description": "The name of the streaming lambda function IAM role.",
+                "Default": "SearchableLambdaIAMRole"
+            },
+            "ElasticsearchDebugStreamingLambda": {
+                "Type": "Number",
+                "Description": "Enable debug logs for the Dynamo -> ES streaming lambda.",
+                "Default": 1,
+                "AllowedValues": [
+                    0,
+                    1
+                ]
+            },
+            "ElasticsearchInstanceCount": {
+                "Type": "Number",
+                "Description": "The number of instances to launch into the Elasticsearch domain.",
+                "Default": 1
+            },
+            "ElasticsearchDomainName": {
+                "Type": "String",
+                "Description": "The name of the Elasticsearch domain.",
+                "Default": "appsync-elasticsearch-domain",
+                "AllowedPattern": "^[a-z][a-z0-9-]*$",
+                "MinLength": 1,
+                "MaxLength": 28
+            },
+            "ElasticsearchInstanceType": {
+                "Type": "String",
+                "Description": "The type of instance to launch into the Elasticsearch domain.",
+                "Default": "t2.small.elasticsearch",
+                "AllowedValues": [
+                    "t2.small.elasticsearch",
+                    "t2.medium.elasticsearch",
+                    "c4.large.elasticsearch",
+                    "c4.xlarge.elasticsearch",
+                    "c4.2xlarge.elasticsearch",
+                    "c4.4xlarge.elasticsearch",
+                    "c4.8xlarge.elasticsearch",
+                    "m3.medium.elasticsearch",
+                    "m3.large.elasticsearch",
+                    "m3.xlarge.elasticsearch",
+                    "m3.2xlarge.elasticsearch",
+                    "m4.large.elasticsearch",
+                    "m4.xlarge.elasticsearch",
+                    "m4.2xlarge.elasticsearch",
+                    "m4.4xlarge.elasticsearch",
+                    "m4.10xlarge.elasticsearch",
+                    "r3.large.elasticsearch",
+                    "r3.xlarge.elasticsearch",
+                    "r3.2xlarge.elasticsearch",
+                    "r3.4xlarge.elasticsearch",
+                    "r3.8xlarge.elasticsearch",
+                    "r4.large.elasticsearch",
+                    "r4.xlarge.elasticsearch",
+                    "r4.2xlarge.elasticsearch",
+                    "r4.4xlarge.elasticsearch",
+                    "r4.8xlarge.elasticsearch",
+                    "r4.16xlarge.elasticsearch",
+                    "i2.xlarge.elasticsearch",
+                    "i2.2xlarge.elasticsearch",
+                    "i3.large.elasticsearch",
+                    "i3.xlarge.elasticsearch",
+                    "i3.2xlarge.elasticsearch",
+                    "i3.4xlarge.elasticsearch",
+                    "i3.8xlarge.elasticsearch",
+                    "i3.16xlarge.elasticsearch"
+                ]
+            },
+            "ElasticsearchEBSVolumeGB": {
+                "Type": "Number",
+                "Description": "The size in GB of the EBS volumes that contain our data.",
+                "Default": 20
+            },
+            "env": {
+                "Type": "String",
+                "Description": "The environment name. e.g. Dev, Test, or Production",
+                "Default": "NONE"
+            },
+            "S3DeploymentBucket": {
+                "Type": "String",
+                "Description": "The S3 bucket containing all deployment assets for the project."
+            },
+            "S3DeploymentRootKey": {
+                "Type": "String",
+                "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory."
+            }
+        },
+        "Resources": {
+            "GraphQLAPI": {
+                "Type": "AWS::AppSync::GraphQLApi",
+                "Properties": {
+                    "Name": {
+                        "Fn::If": [
+                            "HasEnvironmentParameter",
+                            {
+                                "Fn::Join": [
+                                    "-",
+                                    [
+                                        {
+                                            "Ref": "AppSyncApiName"
+                                        },
+                                        {
+                                            "Ref": "env"
+                                        }
+                                    ]
+                                ]
+                            },
+                            {
+                                "Ref": "AppSyncApiName"
+                            }
+                        ]
+                    },
+                    "AuthenticationType": "API_KEY"
+                }
+            },
+            "GraphQLAPIKey": {
+                "Type": "AWS::AppSync::ApiKey",
+                "Properties": {
+                    "ApiId": {
+                        "Fn::GetAtt": [
+                            "GraphQLAPI",
+                            "ApiId"
+                        ]
+                    }
+                }
+            },
+            "GraphQLSchema": {
+                "Type": "AWS::AppSync::GraphQLSchema",
+                "Properties": {
+                    "ApiId": {
+                        "Fn::GetAtt": [
+                            "GraphQLAPI",
+                            "ApiId"
+                        ]
+                    },
+                    "DefinitionS3Location": {
+                        "Fn::Sub": [
+                            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/schema.graphql",
+                            {
+                                "S3DeploymentBucket": {
+                                    "Ref": "S3DeploymentBucket"
+                                },
+                                "S3DeploymentRootKey": {
+                                    "Ref": "S3DeploymentRootKey"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "PostModelStack": {
+                "Type": "AWS::CloudFormation::Stack",
+                "Properties": {
+                    "Parameters": {
+                        "AppSyncApiId": {
+                            "Fn::GetAtt": [
+                                "GraphQLAPI",
+                                "ApiId"
+                            ]
+                        },
+                        "AppSyncApiName": {
+                            "Ref": "AppSyncApiName"
+                        },
+                        "ElasticsearchAccessIAMRoleName": {
+                            "Ref": "ElasticsearchAccessIAMRoleName"
+                        },
+                        "ElasticsearchStreamingLambdaHandlerName": {
+                            "Ref": "ElasticsearchStreamingLambdaHandlerName"
+                        },
+                        "ElasticsearchStreamingLambdaRuntime": {
+                            "Ref": "ElasticsearchStreamingLambdaRuntime"
+                        },
+                        "ElasticsearchStreamingFunctionName": {
+                            "Ref": "ElasticsearchStreamingFunctionName"
+                        },
+                        "ElasticsearchStreamingIAMRoleName": {
+                            "Ref": "ElasticsearchStreamingIAMRoleName"
+                        },
+                        "ElasticsearchDebugStreamingLambda": {
+                            "Ref": "ElasticsearchDebugStreamingLambda"
+                        },
+                        "ElasticsearchInstanceCount": {
+                            "Ref": "ElasticsearchInstanceCount"
+                        },
+                        "ElasticsearchDomainName": {
+                            "Ref": "ElasticsearchDomainName"
+                        },
+                        "ElasticsearchInstanceType": {
+                            "Ref": "ElasticsearchInstanceType"
+                        },
+                        "ElasticsearchEBSVolumeGB": {
+                            "Ref": "ElasticsearchEBSVolumeGB"
+                        },
+                        "env": {
+                            "Ref": "env"
+                        },
+                        "S3DeploymentBucket": {
+                            "Ref": "S3DeploymentBucket"
+                        },
+                        "S3DeploymentRootKey": {
+                            "Ref": "S3DeploymentRootKey"
+                        },
+                        "GetAttGraphQLAPIApiId": {
+                            "Fn::GetAtt": [
+                                "GraphQLAPI",
+                                "ApiId"
+                            ]
+                        }
+                    },
+                    "TemplateURL": {
+                        "Fn::Join": [
+                            "/",
+                            [
+                                "https://s3.amazonaws.com",
+                                {
+                                    "Ref": "S3DeploymentBucket"
+                                },
+                                {
+                                    "Ref": "S3DeploymentRootKey"
+                                },
+                                "stacks",
+                                "PostModelStack.json"
+                            ]
+                        ]
+                    }
+                },
+                "DependsOn": [
+                    "GraphQLSchema"
+                ]
+            },
+            "SearchableStack": {
+                "Type": "AWS::CloudFormation::Stack",
+                "Properties": {
+                    "Parameters": {
+                        "AppSyncApiId": {
+                            "Fn::GetAtt": [
+                                "GraphQLAPI",
+                                "ApiId"
+                            ]
+                        },
+                        "AppSyncApiName": {
+                            "Ref": "AppSyncApiName"
+                        },
+                        "ElasticsearchAccessIAMRoleName": {
+                            "Ref": "ElasticsearchAccessIAMRoleName"
+                        },
+                        "ElasticsearchStreamingLambdaHandlerName": {
+                            "Ref": "ElasticsearchStreamingLambdaHandlerName"
+                        },
+                        "ElasticsearchStreamingLambdaRuntime": {
+                            "Ref": "ElasticsearchStreamingLambdaRuntime"
+                        },
+                        "ElasticsearchStreamingFunctionName": {
+                            "Ref": "ElasticsearchStreamingFunctionName"
+                        },
+                        "ElasticsearchStreamingIAMRoleName": {
+                            "Ref": "ElasticsearchStreamingIAMRoleName"
+                        },
+                        "ElasticsearchDebugStreamingLambda": {
+                            "Ref": "ElasticsearchDebugStreamingLambda"
+                        },
+                        "ElasticsearchInstanceCount": {
+                            "Ref": "ElasticsearchInstanceCount"
+                        },
+                        "ElasticsearchDomainName": {
+                            "Ref": "ElasticsearchDomainName"
+                        },
+                        "ElasticsearchInstanceType": {
+                            "Ref": "ElasticsearchInstanceType"
+                        },
+                        "ElasticsearchEBSVolumeGB": {
+                            "Ref": "ElasticsearchEBSVolumeGB"
+                        },
+                        "env": {
+                            "Ref": "env"
+                        },
+                        "S3DeploymentBucket": {
+                            "Ref": "S3DeploymentBucket"
+                        },
+                        "S3DeploymentRootKey": {
+                            "Ref": "S3DeploymentRootKey"
+                        },
+                        "GetAttGraphQLAPIApiId": {
+                            "Fn::GetAtt": [
+                                "GraphQLAPI",
+                                "ApiId"
+                            ]
+                        }
+                    },
+                    "TemplateURL": {
+                        "Fn::Join": [
+                            "/",
+                            [
+                                "https://s3.amazonaws.com",
+                                {
+                                    "Ref": "S3DeploymentBucket"
+                                },
+                                {
+                                    "Ref": "S3DeploymentRootKey"
+                                },
+                                "stacks",
+                                "SearchableStack.json"
+                            ]
+                        ]
+                    }
+                },
+                "DependsOn": [
+                    "GraphQLSchema",
+                    "PostModelStack"
+                ]
+            }
+        },
+        "Outputs": {
+            "GraphQLAPIIdOutput": {
+                "Description": "Your GraphQL API ID.",
+                "Value": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Join": [
+                            ":",
+                            [
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                "GraphQLApiId"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "GraphQLAPIEndpointOutput": {
+                "Description": "Your GraphQL API endpoint.",
+                "Value": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "GraphQLUrl"
+                    ]
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Join": [
+                            ":",
+                            [
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                "GraphQLApiEndpoint"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "GraphQLAPIKeyOutput": {
+                "Description": "Your GraphQL API key. Provide via 'x-api-key' header.",
+                "Value": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPIKey",
+                        "ApiKey"
+                    ]
+                },
+                "Export": {
+                    "Name": {
+                        "Fn::Join": [
+                            ":",
+                            [
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                "GraphQLApiKey"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "Conditions": {
+            "HasEnvironmentParameter": {
+                "Fn::Not": [
+                    {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "env"
+                            },
+                            "NONE"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "stacks": {
+        "PostModelStack": {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "An auto-generated nested stack.",
+            "Metadata": {},
+            "Parameters": {
+                "AppSyncApiName": {
+                    "Type": "String",
+                    "Description": "The name of the AppSync API",
+                    "Default": "AppSyncSimpleTransform"
+                },
+                "ElasticsearchAccessIAMRoleName": {
+                    "Type": "String",
+                    "Description": "The name of the IAM role assumed by AppSync for Elasticsearch.",
+                    "Default": "AppSyncElasticsearchAccess"
+                },
+                "ElasticsearchStreamingLambdaHandlerName": {
+                    "Type": "String",
+                    "Description": "The name of the lambda handler.",
+                    "Default": "python_streaming_function.lambda_handler"
+                },
+                "ElasticsearchStreamingLambdaRuntime": {
+                    "Type": "String",
+                    "Description": "The lambda runtime                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)",
+                    "Default": "python3.6"
+                },
+                "ElasticsearchStreamingFunctionName": {
+                    "Type": "String",
+                    "Description": "The name of the streaming lambda function.",
+                    "Default": "DdbToEsFn"
+                },
+                "ElasticsearchStreamingIAMRoleName": {
+                    "Type": "String",
+                    "Description": "The name of the streaming lambda function IAM role.",
+                    "Default": "SearchableLambdaIAMRole"
+                },
+                "ElasticsearchDebugStreamingLambda": {
+                    "Type": "Number",
+                    "Description": "Enable debug logs for the Dynamo -> ES streaming lambda.",
+                    "Default": 1,
+                    "AllowedValues": [
+                        0,
+                        1
+                    ]
+                },
+                "ElasticsearchInstanceCount": {
+                    "Type": "Number",
+                    "Description": "The number of instances to launch into the Elasticsearch domain.",
+                    "Default": 1
+                },
+                "ElasticsearchDomainName": {
+                    "Type": "String",
+                    "Description": "The name of the Elasticsearch domain.",
+                    "Default": "appsync-elasticsearch-domain",
+                    "AllowedPattern": "^[a-z][a-z0-9-]*$",
+                    "MinLength": 1,
+                    "MaxLength": 28
+                },
+                "ElasticsearchInstanceType": {
+                    "Type": "String",
+                    "Description": "The type of instance to launch into the Elasticsearch domain.",
+                    "Default": "t2.small.elasticsearch",
+                    "AllowedValues": [
+                        "t2.small.elasticsearch",
+                        "t2.medium.elasticsearch",
+                        "c4.large.elasticsearch",
+                        "c4.xlarge.elasticsearch",
+                        "c4.2xlarge.elasticsearch",
+                        "c4.4xlarge.elasticsearch",
+                        "c4.8xlarge.elasticsearch",
+                        "m3.medium.elasticsearch",
+                        "m3.large.elasticsearch",
+                        "m3.xlarge.elasticsearch",
+                        "m3.2xlarge.elasticsearch",
+                        "m4.large.elasticsearch",
+                        "m4.xlarge.elasticsearch",
+                        "m4.2xlarge.elasticsearch",
+                        "m4.4xlarge.elasticsearch",
+                        "m4.10xlarge.elasticsearch",
+                        "r3.large.elasticsearch",
+                        "r3.xlarge.elasticsearch",
+                        "r3.2xlarge.elasticsearch",
+                        "r3.4xlarge.elasticsearch",
+                        "r3.8xlarge.elasticsearch",
+                        "r4.large.elasticsearch",
+                        "r4.xlarge.elasticsearch",
+                        "r4.2xlarge.elasticsearch",
+                        "r4.4xlarge.elasticsearch",
+                        "r4.8xlarge.elasticsearch",
+                        "r4.16xlarge.elasticsearch",
+                        "i2.xlarge.elasticsearch",
+                        "i2.2xlarge.elasticsearch",
+                        "i3.large.elasticsearch",
+                        "i3.xlarge.elasticsearch",
+                        "i3.2xlarge.elasticsearch",
+                        "i3.4xlarge.elasticsearch",
+                        "i3.8xlarge.elasticsearch",
+                        "i3.16xlarge.elasticsearch"
+                    ]
+                },
+                "ElasticsearchEBSVolumeGB": {
+                    "Type": "Number",
+                    "Description": "The size in GB of the EBS volumes that contain our data.",
+                    "Default": 20
+                },
+                "env": {
+                    "Type": "String",
+                    "Description": "The environment name. e.g. Dev, Test, or Production",
+                    "Default": "NONE"
+                },
+                "S3DeploymentBucket": {
+                    "Type": "String",
+                    "Description": "The S3 bucket containing all deployment assets for the project."
+                },
+                "S3DeploymentRootKey": {
+                    "Type": "String",
+                    "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory."
+                },
+                "AppSyncApiId": {
+                    "Type": "String",
+                    "Description": "The id of the AppSync API associated with this project."
+                },
+                "GetAttGraphQLAPIApiId": {
+                    "Type": "String",
+                    "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks."
+                }
+            },
+            "Resources": {
+                "PostTable": {
+                    "Type": "AWS::DynamoDB::Table",
+                    "Properties": {
+                        "TableName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            "Post",
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            },
+                                            {
+                                                "Ref": "env"
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            "Post",
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "KeySchema": [
+                            {
+                                "AttributeName": "id",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "AttributeDefinitions": [
+                            {
+                                "AttributeName": "id",
+                                "AttributeType": "S"
+                            }
+                        ],
+                        "StreamSpecification": {
+                            "StreamViewType": "NEW_AND_OLD_IMAGES"
+                        },
+                        "BillingMode": "PAY_PER_REQUEST",
+                        "SSESpecification": {
+                            "SSEEnabled": true
+                        }
+                    }
+                },
+                "PostIAMRole": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                        "RoleName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            "PostTable",
+                                            "role",
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            },
+                                            {
+                                                "Ref": "env"
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            "PostTable",
+                                            "role",
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "AssumeRolePolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "Service": "appsync.amazonaws.com"
+                                    },
+                                    "Action": "sts:AssumeRole"
+                                }
+                            ]
+                        },
+                        "Policies": [
+                            {
+                                "PolicyName": "DynamoDBAccess",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Effect": "Allow",
+                                            "Action": [
+                                                "dynamodb:BatchGetItem",
+                                                "dynamodb:BatchWriteItem",
+                                                "dynamodb:PutItem",
+                                                "dynamodb:DeleteItem",
+                                                "dynamodb:GetItem",
+                                                "dynamodb:Scan",
+                                                "dynamodb:Query",
+                                                "dynamodb:UpdateItem"
+                                            ],
+                                            "Resource": [
+                                                {
+                                                    "Fn::GetAtt": [
+                                                        "PostTable",
+                                                        "Arn"
+                                                    ]
+                                                },
+                                                {
+                                                    "Fn::Join": [
+                                                        "/",
+                                                        [
+                                                            {
+                                                                "Fn::GetAtt": [
+                                                                    "PostTable",
+                                                                    "Arn"
+                                                                ]
+                                                            },
+                                                            "*"
+                                                        ]
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "PostDataSource": {
+                    "Type": "AWS::AppSync::DataSource",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "Name": "PostTable",
+                        "Type": "AMAZON_DYNAMODB",
+                        "ServiceRoleArn": {
+                            "Fn::GetAtt": [
+                                "PostIAMRole",
+                                "Arn"
+                            ]
+                        },
+                        "DynamoDBConfig": {
+                            "AwsRegion": {
+                                "Fn::Select": [
+                                    3,
+                                    {
+                                        "Fn::Split": [
+                                            ":",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "PostTable",
+                                                    "Arn"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "TableName": {
+                                "Ref": "PostTable"
+                            }
+                        }
+                    },
+                    "DependsOn": [
+                        "PostTable",
+                        "PostIAMRole"
+                    ]
+                },
+                "GetPostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "PostDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "getPost",
+                        "TypeName": "Query",
+                        "RequestMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Query",
+                                                "getPost",
+                                                "req",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Query",
+                                                "getPost",
+                                                "res",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "ListPostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "PostDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "listPosts",
+                        "TypeName": "Query",
+                        "RequestMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Query",
+                                                "listPosts",
+                                                "req",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Query",
+                                                "listPosts",
+                                                "res",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "CreatePostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "PostDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "createPost",
+                        "TypeName": "Mutation",
+                        "RequestMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "createPost",
+                                                "req",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "createPost",
+                                                "res",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "UpdatePostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "PostDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "updatePost",
+                        "TypeName": "Mutation",
+                        "RequestMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "updatePost",
+                                                "req",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "updatePost",
+                                                "res",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "DeletePostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "PostDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "deletePost",
+                        "TypeName": "Mutation",
+                        "RequestMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "deletePost",
+                                                "req",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplateS3Location": {
+                            "Fn::Sub": [
+                                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                                {
+                                    "S3DeploymentBucket": {
+                                        "Ref": "S3DeploymentBucket"
+                                    },
+                                    "S3DeploymentRootKey": {
+                                        "Ref": "S3DeploymentRootKey"
+                                    },
+                                    "ResolverFileName": {
+                                        "Fn::Join": [
+                                            ".",
+                                            [
+                                                "Mutation",
+                                                "deletePost",
+                                                "res",
+                                                "vtl"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "Outputs": {
+                "GetAttPostTableStreamArn": {
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "PostTable",
+                            "StreamArn"
+                        ]
+                    },
+                    "Export": {
+                        "Name": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    {
+                                        "Ref": "AppSyncApiId"
+                                    },
+                                    "GetAtt",
+                                    "PostTable",
+                                    "StreamArn"
+                                ]
+                            ]
+                        }
+                    }
+                }
+            },
+            "Conditions": {
+                "HasEnvironmentParameter": {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "env"
+                                },
+                                "NONE"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "SearchableStack": {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "An auto-generated nested stack.",
+            "Metadata": {},
+            "Parameters": {
+                "AppSyncApiName": {
+                    "Type": "String",
+                    "Description": "The name of the AppSync API",
+                    "Default": "AppSyncSimpleTransform"
+                },
+                "ElasticsearchAccessIAMRoleName": {
+                    "Type": "String",
+                    "Description": "The name of the IAM role assumed by AppSync for Elasticsearch.",
+                    "Default": "AppSyncElasticsearchAccess"
+                },
+                "ElasticsearchStreamingLambdaHandlerName": {
+                    "Type": "String",
+                    "Description": "The name of the lambda handler.",
+                    "Default": "python_streaming_function.lambda_handler"
+                },
+                "ElasticsearchStreamingLambdaRuntime": {
+                    "Type": "String",
+                    "Description": "The lambda runtime                 (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)",
+                    "Default": "python3.6"
+                },
+                "ElasticsearchStreamingFunctionName": {
+                    "Type": "String",
+                    "Description": "The name of the streaming lambda function.",
+                    "Default": "DdbToEsFn"
+                },
+                "ElasticsearchStreamingIAMRoleName": {
+                    "Type": "String",
+                    "Description": "The name of the streaming lambda function IAM role.",
+                    "Default": "SearchableLambdaIAMRole"
+                },
+                "ElasticsearchDebugStreamingLambda": {
+                    "Type": "Number",
+                    "Description": "Enable debug logs for the Dynamo -> ES streaming lambda.",
+                    "Default": 1,
+                    "AllowedValues": [
+                        0,
+                        1
+                    ]
+                },
+                "ElasticsearchInstanceCount": {
+                    "Type": "Number",
+                    "Description": "The number of instances to launch into the Elasticsearch domain.",
+                    "Default": 1
+                },
+                "ElasticsearchDomainName": {
+                    "Type": "String",
+                    "Description": "The name of the Elasticsearch domain.",
+                    "Default": "appsync-elasticsearch-domain",
+                    "AllowedPattern": "^[a-z][a-z0-9-]*$",
+                    "MinLength": 1,
+                    "MaxLength": 28
+                },
+                "ElasticsearchInstanceType": {
+                    "Type": "String",
+                    "Description": "The type of instance to launch into the Elasticsearch domain.",
+                    "Default": "t2.small.elasticsearch",
+                    "AllowedValues": [
+                        "t2.small.elasticsearch",
+                        "t2.medium.elasticsearch",
+                        "c4.large.elasticsearch",
+                        "c4.xlarge.elasticsearch",
+                        "c4.2xlarge.elasticsearch",
+                        "c4.4xlarge.elasticsearch",
+                        "c4.8xlarge.elasticsearch",
+                        "m3.medium.elasticsearch",
+                        "m3.large.elasticsearch",
+                        "m3.xlarge.elasticsearch",
+                        "m3.2xlarge.elasticsearch",
+                        "m4.large.elasticsearch",
+                        "m4.xlarge.elasticsearch",
+                        "m4.2xlarge.elasticsearch",
+                        "m4.4xlarge.elasticsearch",
+                        "m4.10xlarge.elasticsearch",
+                        "r3.large.elasticsearch",
+                        "r3.xlarge.elasticsearch",
+                        "r3.2xlarge.elasticsearch",
+                        "r3.4xlarge.elasticsearch",
+                        "r3.8xlarge.elasticsearch",
+                        "r4.large.elasticsearch",
+                        "r4.xlarge.elasticsearch",
+                        "r4.2xlarge.elasticsearch",
+                        "r4.4xlarge.elasticsearch",
+                        "r4.8xlarge.elasticsearch",
+                        "r4.16xlarge.elasticsearch",
+                        "i2.xlarge.elasticsearch",
+                        "i2.2xlarge.elasticsearch",
+                        "i3.large.elasticsearch",
+                        "i3.xlarge.elasticsearch",
+                        "i3.2xlarge.elasticsearch",
+                        "i3.4xlarge.elasticsearch",
+                        "i3.8xlarge.elasticsearch",
+                        "i3.16xlarge.elasticsearch"
+                    ]
+                },
+                "ElasticsearchEBSVolumeGB": {
+                    "Type": "Number",
+                    "Description": "The size in GB of the EBS volumes that contain our data.",
+                    "Default": 20
+                },
+                "env": {
+                    "Type": "String",
+                    "Description": "The environment name. e.g. Dev, Test, or Production",
+                    "Default": "NONE"
+                },
+                "S3DeploymentBucket": {
+                    "Type": "String",
+                    "Description": "The S3 bucket containing all deployment assets for the project."
+                },
+                "S3DeploymentRootKey": {
+                    "Type": "String",
+                    "Description": "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory."
+                },
+                "AppSyncApiId": {
+                    "Type": "String",
+                    "Description": "The id of the AppSync API associated with this project."
+                },
+                "GetAttGraphQLAPIApiId": {
+                    "Type": "String",
+                    "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks."
+                }
+            },
+            "Resources": {
+                "ElasticsearchAccessIAMRole": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                        "RoleName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchAccessIAMRoleName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            },
+                                            {
+                                                "Ref": "env"
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchAccessIAMRoleName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "AssumeRolePolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "Service": "appsync.amazonaws.com"
+                                    },
+                                    "Action": "sts:AssumeRole"
+                                }
+                            ]
+                        },
+                        "Policies": [
+                            {
+                                "PolicyName": "ElasticsearchAccess",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Action": [
+                                                "es:ESHttpPost",
+                                                "es:ESHttpDelete",
+                                                "es:ESHttpHead",
+                                                "es:ESHttpGet",
+                                                "es:ESHttpPost",
+                                                "es:ESHttpPut"
+                                            ],
+                                            "Effect": "Allow",
+                                            "Resource": {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        {
+                                                            "Fn::GetAtt": [
+                                                                "ElasticsearchDomain",
+                                                                "DomainArn"
+                                                            ]
+                                                        },
+                                                        "/*"
+                                                    ]
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "ElasticsearchDataSource": {
+                    "Type": "AWS::AppSync::DataSource",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "Name": "ElasticsearchDomain",
+                        "Type": "AMAZON_ELASTICSEARCH",
+                        "ServiceRoleArn": {
+                            "Fn::GetAtt": [
+                                "ElasticsearchAccessIAMRole",
+                                "Arn"
+                            ]
+                        },
+                        "ElasticsearchConfig": {
+                            "AwsRegion": {
+                                "Fn::Select": [
+                                    3,
+                                    {
+                                        "Fn::Split": [
+                                            ":",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "ElasticsearchDomain",
+                                                    "DomainArn"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "Endpoint": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "https://",
+                                        {
+                                            "Fn::GetAtt": [
+                                                "ElasticsearchDomain",
+                                                "DomainEndpoint"
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    },
+                    "DependsOn": "ElasticsearchDomain"
+                },
+                "ElasticsearchDomain": {
+                    "Type": "AWS::Elasticsearch::Domain",
+                    "Properties": {
+                        "DomainName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Ref": "AWS::NoValue"
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            "d",
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "ElasticsearchVersion": "6.2",
+                        "ElasticsearchClusterConfig": {
+                            "ZoneAwarenessEnabled": false,
+                            "InstanceCount": {
+                                "Ref": "ElasticsearchInstanceCount"
+                            },
+                            "InstanceType": {
+                                "Ref": "ElasticsearchInstanceType"
+                            }
+                        },
+                        "EBSOptions": {
+                            "EBSEnabled": true,
+                            "VolumeType": "gp2",
+                            "VolumeSize": {
+                                "Ref": "ElasticsearchEBSVolumeGB"
+                            }
+                        }
+                    }
+                },
+                "ElasticsearchStreamingLambdaIAMRole": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                        "RoleName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchStreamingIAMRoleName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            },
+                                            {
+                                                "Ref": "env"
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchStreamingIAMRoleName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "AssumeRolePolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                    },
+                                    "Action": "sts:AssumeRole"
+                                }
+                            ]
+                        },
+                        "Policies": [
+                            {
+                                "PolicyName": "ElasticsearchAccess",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Action": [
+                                                "es:ESHttpPost",
+                                                "es:ESHttpDelete",
+                                                "es:ESHttpHead",
+                                                "es:ESHttpGet",
+                                                "es:ESHttpPost",
+                                                "es:ESHttpPut"
+                                            ],
+                                            "Effect": "Allow",
+                                            "Resource": {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        {
+                                                            "Fn::GetAtt": [
+                                                                "ElasticsearchDomain",
+                                                                "DomainArn"
+                                                            ]
+                                                        },
+                                                        "/*"
+                                                    ]
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "PolicyName": "DynamoDBStreamAccess",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Action": [
+                                                "dynamodb:DescribeStream",
+                                                "dynamodb:GetRecords",
+                                                "dynamodb:GetShardIterator",
+                                                "dynamodb:ListStreams"
+                                            ],
+                                            "Effect": "Allow",
+                                            "Resource": [
+                                                "*"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "PolicyName": "CloudWatchLogsAccess",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Effect": "Allow",
+                                            "Action": [
+                                                "logs:CreateLogGroup",
+                                                "logs:CreateLogStream",
+                                                "logs:PutLogEvents"
+                                            ],
+                                            "Resource": "arn:aws:logs:*:*:*"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "ElasticsearchStreamingLambdaFunction": {
+                    "Type": "AWS::Lambda::Function",
+                    "Properties": {
+                        "Code": {
+                            "S3Bucket": {
+                                "Ref": "S3DeploymentBucket"
+                            },
+                            "S3Key": {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "S3DeploymentRootKey"
+                                        },
+                                        "functions",
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "ElasticsearchStreamingLambdaFunction",
+                                                    "zip"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        },
+                        "FunctionName": {
+                            "Fn::If": [
+                                "HasEnvironmentParameter",
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchStreamingFunctionName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            },
+                                            {
+                                                "Ref": "env"
+                                            }
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "-",
+                                        [
+                                            {
+                                                "Ref": "ElasticsearchStreamingFunctionName"
+                                            },
+                                            {
+                                                "Ref": "GetAttGraphQLAPIApiId"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        "Handler": {
+                            "Ref": "ElasticsearchStreamingLambdaHandlerName"
+                        },
+                        "Role": {
+                            "Fn::GetAtt": [
+                                "ElasticsearchStreamingLambdaIAMRole",
+                                "Arn"
+                            ]
+                        },
+                        "Runtime": {
+                            "Ref": "ElasticsearchStreamingLambdaRuntime"
+                        },
+                        "Environment": {
+                            "Variables": {
+                                "ES_ENDPOINT": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "ElasticsearchDomain",
+                                                    "DomainEndpoint"
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                "ES_REGION": {
+                                    "Fn::Select": [
+                                        3,
+                                        {
+                                            "Fn::Split": [
+                                                ":",
+                                                {
+                                                    "Fn::GetAtt": [
+                                                        "ElasticsearchDomain",
+                                                        "DomainArn"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "DEBUG": {
+                                    "Ref": "ElasticsearchDebugStreamingLambda"
+                                }
+                            }
+                        }
+                    },
+                    "DependsOn": [
+                        "ElasticsearchStreamingLambdaIAMRole",
+                        "ElasticsearchDomain"
+                    ]
+                },
+                "SearchablePostLambdaMapping": {
+                    "Type": "AWS::Lambda::EventSourceMapping",
+                    "Properties": {
+                        "BatchSize": 1,
+                        "Enabled": true,
+                        "EventSourceArn": {
+                            "Fn::ImportValue": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        {
+                                            "Ref": "AppSyncApiId"
+                                        },
+                                        "GetAtt",
+                                        "PostTable",
+                                        "StreamArn"
+                                    ]
+                                ]
+                            }
+                        },
+                        "FunctionName": {
+                            "Fn::GetAtt": [
+                                "ElasticsearchStreamingLambdaFunction",
+                                "Arn"
+                            ]
+                        },
+                        "StartingPosition": "LATEST"
+                    },
+                    "DependsOn": [
+                        "PostTable",
+                        "ElasticsearchStreamingLambdaFunction"
+                    ]
+                },
+                "SearchPostResolver": {
+                    "Type": "AWS::AppSync::Resolver",
+                    "Properties": {
+                        "ApiId": {
+                            "Ref": "GetAttGraphQLAPIApiId"
+                        },
+                        "DataSourceName": {
+                            "Fn::GetAtt": [
+                                "ElasticsearchDataSource",
+                                "Name"
+                            ]
+                        },
+                        "FieldName": "searchPosts",
+                        "TypeName": "Query",
+                        "RequestMappingTemplate": {
+                            "Fn::Sub": [
+                                "#set( $indexPath = \"/${DDBTableName}/doc/_search\" )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GET\",\n  \"path\": \"$indexPath.toLowerCase()\",\n  \"params\": {\n      \"body\": {\n          \"from\":       #if( $context.args.nextToken )\n$context.args.nextToken\n      #else\n0\n      #end,\n          \"size\":       #if( $context.args.limit )\n$context.args.limit\n      #else\n10\n      #end,\n          \"sort\":       #if( $context.args.sort )\n        [#if( !$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction) )\n{\n      \"$context.args.sort.field\": {\n          \"order\": \"$context.args.sort.direction\"\n    }\n  }\n#end, \"_doc\"]\n      #else\n        []\n      #end,\n          \"query\":       #if( $context.args.filter )\n$util.transform.toElasticsearchQueryDSL($ctx.args.filter)\n      #else\n{\n                  \"match_all\": {}\n        }\n      #end\n    }\n  }\n}",
+                                {
+                                    "DDBTableName": {
+                                        "Fn::If": [
+                                            "HasEnvironmentParameter",
+                                            {
+                                                "Fn::Join": [
+                                                    "-",
+                                                    [
+                                                        "Post",
+                                                        {
+                                                            "Ref": "GetAttGraphQLAPIApiId"
+                                                        },
+                                                        {
+                                                            "Ref": "env"
+                                                        }
+                                                    ]
+                                                ]
+                                            },
+                                            {
+                                                "Fn::Join": [
+                                                    "-",
+                                                    [
+                                                        "Post",
+                                                        {
+                                                            "Ref": "GetAttGraphQLAPIApiId"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "ResponseMappingTemplate": "#set( $items = [] )\n#foreach( $entry in $context.result.hits.hits )\n  #if( !$foreach.hasNext )\n    #set( $nextToken = \"$entry.sort.get(0)\" )\n  #end\n  $util.qr($items.add($entry.get(\"_source\")))\n#end\n$util.toJson({\n  \"items\": $items,\n  \"total\": $ctx.result.hits.total,\n  \"nextToken\": $nextToken\n})"
+                    },
+                    "DependsOn": [
+                        "GraphQLSchema",
+                        "ElasticsearchDataSource"
+                    ]
+                }
+            },
+            "Outputs": {},
+            "Conditions": {
+                "HasEnvironmentParameter": {
+                    "Fn::Not": [
+                        {
+                            "Fn::Equals": [
+                                {
+                                    "Ref": "env"
+                                },
+                                "NONE"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "resolvers": {
+        "Query.getPost.req.vtl": "{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"GetItem\",\n  \"key\": {\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)\n  }\n}",
+        "Query.getPost.res.vtl": "$util.toJson($context.result)",
+        "Query.listPosts.req.vtl": "#set( $limit = $util.defaultIfNull($context.args.limit, 10) )\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"Scan\",\n  \"filter\":   #if( $context.args.filter )\n$util.transform.toDynamoDBFilterExpression($ctx.args.filter)\n  #else\nnull\n  #end,\n  \"limit\": $limit,\n  \"nextToken\":   #if( $context.args.nextToken )\n\"$context.args.nextToken\"\n  #else\nnull\n  #end\n}",
+        "Query.listPosts.res.vtl": "$util.toJson($ctx.result)",
+        "Mutation.createPost.req.vtl": "## [Start] Prepare DynamoDB PutItem Request. **\n$util.qr($context.args.input.put(\"createdAt\", $util.time.nowISO8601()))\n$util.qr($context.args.input.put(\"updatedAt\", $util.time.nowISO8601()))\n$util.qr($context.args.input.put(\"__typename\", \"Post\"))\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"PutItem\",\n  \"key\": {\n      \"id\":     $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))\n  },\n  \"attributeValues\": $util.dynamodb.toMapValuesJson($context.args.input),\n  \"condition\": {\n      \"expression\": \"attribute_not_exists(#id)\",\n      \"expressionNames\": {\n          \"#id\": \"id\"\n    }\n  }\n}\n## [End] Prepare DynamoDB PutItem Request. **",
+        "Mutation.createPost.res.vtl": "$util.toJson($context.result)",
+        "Mutation.updatePost.req.vtl": "#if( $authCondition && $authCondition.expression != \"\" )\n  #set( $condition = $authCondition )\n  $util.qr($condition.put(\"expression\", \"$condition.expression AND attribute_exists(#id)\"))\n  $util.qr($condition.expressionNames.put(\"#id\", \"id\"))\n#else\n  #set( $condition = {\n  \"expression\": \"attribute_exists(#id)\",\n  \"expressionNames\": {\n      \"#id\": \"id\"\n  },\n  \"expressionValues\": {}\n} )\n#end\n## Automatically set the updatedAt timestamp. **\n$util.qr($context.args.input.put(\"updatedAt\", $util.time.nowISO8601()))\n$util.qr($context.args.input.put(\"__typename\", \"Post\"))\n## Update condition if type is @versioned **\n#if( $versionedCondition )\n  $util.qr($condition.put(\"expression\", \"($condition.expression) AND $versionedCondition.expression\"))\n  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))\n  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))\n#end\n#set( $expNames = {} )\n#set( $expValues = {} )\n#set( $expSet = {} )\n#set( $expAdd = {} )\n#set( $expRemove = [] )\n#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, [\"id\"]).entrySet() )\n  #if( $util.isNull($entry.value) )\n    #set( $discard = $expRemove.add(\"#$entry.key\") )\n    $util.qr($expNames.put(\"#$entry.key\", \"$entry.key\"))\n  #else\n    $util.qr($expSet.put(\"#$entry.key\", \":$entry.key\"))\n    $util.qr($expNames.put(\"#$entry.key\", \"$entry.key\"))\n    $util.qr($expValues.put(\":$entry.key\", $util.dynamodb.toDynamoDB($entry.value)))\n  #end\n#end\n#set( $expression = \"\" )\n#if( !$expSet.isEmpty() )\n  #set( $expression = \"SET\" )\n  #foreach( $entry in $expSet.entrySet() )\n    #set( $expression = \"$expression $entry.key = $entry.value\" )\n    #if( $foreach.hasNext() )\n      #set( $expression = \"$expression,\" )\n    #end\n  #end\n#end\n#if( !$expAdd.isEmpty() )\n  #set( $expression = \"$expression ADD\" )\n  #foreach( $entry in $expAdd.entrySet() )\n    #set( $expression = \"$expression $entry.key $entry.value\" )\n    #if( $foreach.hasNext() )\n      #set( $expression = \"$expression,\" )\n    #end\n  #end\n#end\n#if( !$expRemove.isEmpty() )\n  #set( $expression = \"$expression REMOVE\" )\n  #foreach( $entry in $expRemove )\n    #set( $expression = \"$expression $entry\" )\n    #if( $foreach.hasNext() )\n      #set( $expression = \"$expression,\" )\n    #end\n  #end\n#end\n#set( $update = {} )\n$util.qr($update.put(\"expression\", \"$expression\"))\n#if( !$expNames.isEmpty() )\n  $util.qr($update.put(\"expressionNames\", $expNames))\n#end\n#if( !$expValues.isEmpty() )\n  $util.qr($update.put(\"expressionValues\", $expValues))\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"UpdateItem\",\n  \"key\": {\n      \"id\": {\n          \"S\": \"$context.args.input.id\"\n    }\n  },\n  \"update\": $util.toJson($update),\n  \"condition\": $util.toJson($condition)\n}",
+        "Mutation.updatePost.res.vtl": "$util.toJson($context.result)",
+        "Mutation.deletePost.req.vtl": "#if( $authCondition )\n  #set( $condition = $authCondition )\n  $util.qr($condition.put(\"expression\", \"$condition.expression AND attribute_exists(#id)\"))\n  $util.qr($condition.expressionNames.put(\"#id\", \"id\"))\n#else\n  #set( $condition = {\n  \"expression\": \"attribute_exists(#id)\",\n  \"expressionNames\": {\n      \"#id\": \"id\"\n  }\n} )\n#end\n#if( $versionedCondition )\n  $util.qr($condition.put(\"expression\", \"($condition.expression) AND $versionedCondition.expression\"))\n  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))\n  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )\n  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))\n  #set( $condition.expressionValues = $expressionValues )\n#end\n{\n  \"version\": \"2017-02-28\",\n  \"operation\": \"DeleteItem\",\n  \"key\": {\n      \"id\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)\n  },\n  \"condition\": $util.toJson($condition)\n}",
+        "Mutation.deletePost.res.vtl": "$util.toJson($context.result)"
+    },
+    "functions": {
+        "ElasticsearchStreamingLambdaFunction.zip": "/Users/parismic/Projects/amplify-cli/packages/graphql-elasticsearch-transformer/lib/streaming-lambda.zip"
+    },
+    "schema": "type Post {\n  id: ID!\n  author: String!\n  title: String\n  content: String\n  url: String\n  ups: Int\n  downs: Int\n  version: Int\n  relatedPosts: [Post]\n  postedAt: String\n  comments: [String!]\n  ratings: [Int!]\n  percentageUp: Float\n  isPublished: Boolean\n}\n\nenum ModelSortDirection {\n  ASC\n  DESC\n}\n\ntype ModelPostConnection {\n  items: [Post]\n  nextToken: String\n}\n\ninput ModelStringFilterInput {\n  ne: String\n  eq: String\n  le: String\n  lt: String\n  ge: String\n  gt: String\n  contains: String\n  notContains: String\n  between: [String]\n  beginsWith: String\n}\n\ninput ModelIDFilterInput {\n  ne: ID\n  eq: ID\n  le: ID\n  lt: ID\n  ge: ID\n  gt: ID\n  contains: ID\n  notContains: ID\n  between: [ID]\n  beginsWith: ID\n}\n\ninput ModelIntFilterInput {\n  ne: Int\n  eq: Int\n  le: Int\n  lt: Int\n  ge: Int\n  gt: Int\n  contains: Int\n  notContains: Int\n  between: [Int]\n}\n\ninput ModelFloatFilterInput {\n  ne: Float\n  eq: Float\n  le: Float\n  lt: Float\n  ge: Float\n  gt: Float\n  contains: Float\n  notContains: Float\n  between: [Float]\n}\n\ninput ModelBooleanFilterInput {\n  ne: Boolean\n  eq: Boolean\n}\n\ninput ModelPostFilterInput {\n  id: ModelIDFilterInput\n  author: ModelStringFilterInput\n  title: ModelStringFilterInput\n  content: ModelStringFilterInput\n  url: ModelStringFilterInput\n  ups: ModelIntFilterInput\n  downs: ModelIntFilterInput\n  version: ModelIntFilterInput\n  postedAt: ModelStringFilterInput\n  comments: ModelStringFilterInput\n  ratings: ModelIntFilterInput\n  percentageUp: ModelFloatFilterInput\n  isPublished: ModelBooleanFilterInput\n  and: [ModelPostFilterInput]\n  or: [ModelPostFilterInput]\n  not: ModelPostFilterInput\n}\n\ntype Query {\n  getPost(id: ID!): Post\n  listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection\n  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: Int): SearchablePostConnection\n}\n\ninput CreatePostInput {\n  id: ID\n  author: String!\n  title: String\n  content: String\n  url: String\n  ups: Int\n  downs: Int\n  version: Int\n  postedAt: String\n  comments: [String!]\n  ratings: [Int!]\n  percentageUp: Float\n  isPublished: Boolean\n}\n\ninput UpdatePostInput {\n  id: ID!\n  author: String\n  title: String\n  content: String\n  url: String\n  ups: Int\n  downs: Int\n  version: Int\n  postedAt: String\n  comments: [String!]\n  ratings: [Int!]\n  percentageUp: Float\n  isPublished: Boolean\n}\n\ninput DeletePostInput {\n  id: ID\n}\n\ntype Mutation {\n  createPost(input: CreatePostInput!): Post\n  updatePost(input: UpdatePostInput!): Post\n  deletePost(input: DeletePostInput!): Post\n}\n\ntype Subscription {\n  onCreatePost: Post @aws_subscribe(mutations: [\"createPost\"])\n  onUpdatePost: Post @aws_subscribe(mutations: [\"updatePost\"])\n  onDeletePost: Post @aws_subscribe(mutations: [\"deletePost\"])\n}\n\ninput SearchableStringFilterInput {\n  ne: String\n  eq: String\n  match: String\n  matchPhrase: String\n  matchPhrasePrefix: String\n  multiMatch: String\n  exists: Boolean\n  wildcard: String\n  regexp: String\n}\n\ninput SearchableIDFilterInput {\n  ne: ID\n  eq: ID\n  match: ID\n  matchPhrase: ID\n  matchPhrasePrefix: ID\n  multiMatch: ID\n  exists: Boolean\n  wildcard: ID\n  regexp: ID\n}\n\ninput SearchableIntFilterInput {\n  ne: Int\n  gt: Int\n  lt: Int\n  gte: Int\n  lte: Int\n  eq: Int\n  range: [Int]\n}\n\ninput SearchableFloatFilterInput {\n  ne: Float\n  gt: Float\n  lt: Float\n  gte: Float\n  lte: Float\n  eq: Float\n  range: [Float]\n}\n\ninput SearchableBooleanFilterInput {\n  eq: Boolean\n  ne: Boolean\n}\n\ninput SearchablePostFilterInput {\n  id: SearchableIDFilterInput\n  author: SearchableStringFilterInput\n  title: SearchableStringFilterInput\n  content: SearchableStringFilterInput\n  url: SearchableStringFilterInput\n  ups: SearchableIntFilterInput\n  downs: SearchableIntFilterInput\n  version: SearchableIntFilterInput\n  postedAt: SearchableStringFilterInput\n  comments: SearchableStringFilterInput\n  ratings: SearchableIntFilterInput\n  percentageUp: SearchableFloatFilterInput\n  isPublished: SearchableBooleanFilterInput\n  and: [SearchablePostFilterInput]\n  or: [SearchablePostFilterInput]\n  not: SearchablePostFilterInput\n}\n\nenum SearchableSortDirection {\n  asc\n  desc\n}\n\nenum SearchablePostSortableFields {\n  id\n  author\n  title\n  content\n  url\n  ups\n  downs\n  version\n  postedAt\n  comments\n  ratings\n  percentageUp\n  isPublished\n}\n\ninput SearchablePostSortInput {\n  field: SearchablePostSortableFields\n  direction: SearchableSortDirection\n}\n\ntype SearchablePostConnection {\n  items: [Post]\n  nextToken: String\n}\n"
+}
