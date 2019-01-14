@@ -164,7 +164,6 @@ export class ResourceFactory {
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
         }).dependsOn([
-            ModelResourceIDs.ModelTableResourceID(typeName),
             ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID
         ])
     }
@@ -456,7 +455,6 @@ export class ResourceFactory {
                 ])
             )
         }).dependsOn([
-            ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
             ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID
         ])
     }
