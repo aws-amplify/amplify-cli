@@ -111,8 +111,8 @@ async function transformGraphQLSchema(context, options) {
     rootStackFileName: 'cloudformation-template.json',
   });
 
-  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} \nor \
-place .graphql files in ${schemaDirPath}`);
+  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
+place .graphql files in a directory at ${schemaDirPath}`);
 
   // Comment this piece for now until transformer lib supports custom DDB ARns
   /* Look for data sources in the cfdoc
