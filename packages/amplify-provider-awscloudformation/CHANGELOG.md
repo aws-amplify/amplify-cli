@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.19"></a>
+## [0.2.1-multienv.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.18...amplify-provider-awscloudformation@0.2.1-multienv.19) (2019-01-14)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add pinpoint eu-central-1 region ([da6d3fb](https://github.com/aws-amplify/amplify-cli/commit/da6d3fb))
+
+
+
+
 <a name="0.2.1-multienv.18"></a>
 ## [0.2.1-multienv.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.17...amplify-provider-awscloudformation@0.2.1-multienv.18) (2019-01-10)
 
