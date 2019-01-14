@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.42-beta.0"></a>
+## [0.1.42-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.41...amplify-provider-awscloudformation@0.1.42-beta.0) (2019-01-14)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add pinpoint eu-central-1 region ([#695](https://github.com/aws-amplify/amplify-cli/issues/695)) ([9ce1d08](https://github.com/aws-amplify/amplify-cli/commit/9ce1d08))
+
+
+
+
 <a name="0.1.41"></a>
 ## [0.1.41](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.41-beta.0...amplify-provider-awscloudformation@0.1.41) (2019-01-10)
 
