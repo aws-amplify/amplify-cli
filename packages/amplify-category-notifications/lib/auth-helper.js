@@ -98,7 +98,7 @@ function getPolicyDoc(context) {
         Action: [
           'mobiletargeting:PutEvents',
           'mobiletargeting:UpdateEndpoint',
-          "mobiletargeting:GetUserEndpoints",
+          'mobiletargeting:GetUserEndpoints',
         ],
         Resource: [
           `arn:aws:mobiletargeting:*:${accountNumber}:apps/${pinpointAppId}*`,
