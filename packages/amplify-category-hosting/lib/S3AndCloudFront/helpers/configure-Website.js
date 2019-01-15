@@ -8,20 +8,37 @@ async function configure(context) {
       type: 'input',
       message: 'index doc for the website',
       default: WebsiteConfiguration.IndexDocument,
+      validate: docKeyValidation,
     },
     {
       name: 'ErrorDocument',
       type: 'input',
       message: 'error doc for the website',
       default: WebsiteConfiguration.ErrorDocument,
+      validate: docKeyValidation,
     },
   ];
 
   const answers = await inquirer.prompt(questions);
-  WebsiteConfiguration.IndexDocument = answers.IndexDocument;
-  WebsiteConfiguration.ErrorDocument = answers.ErrorDocument;
+  WebsiteConfiguration.IndexDocument = answers.IndexDocument.trim();
+  WebsiteConfiguration.ErrorDocument = answers.ErrorDocument.trim();
 
   return context;
+}
+
+function docKeyValidation(str) {
+  str = str.trim();
+
+  let isValid = str.length > 0;
+  if (!isValid) {
+    return 'Must not be empty, or only contains space characters.';
+  }
+
+  isValid = !/\//.test(str);
+  if (!isValid) {
+    return 'The slash charactor is not allowed.';
+  }
+  return true;
 }
 
 module.exports = {

@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const Ora = require('ora');
 const path = require('path');
 const opn = require('opn');
 const chalk = require('chalk');
@@ -99,13 +98,12 @@ async function configure(context) {
 }
 
 function publish(context, args) {
-  const spinner = new Ora('Uploading files');
-  spinner.start();
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
+  const templateFilePath = path.join(serviceDirPath, templateFileName);
+  context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
   return fileUPloader.run(context, args.distributionDirPath)
-    .then(() => {
-      spinner.succeed('Uploading files successful.');
-      return cloudFrontManager.invalidateCloudFront(context);
-    })
+    .then(() => cloudFrontManager.invalidateCloudFront(context))
     .then(() => {
       const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
       if (CloudFrontSecureURL !== undefined) {
@@ -119,7 +117,6 @@ function publish(context, args) {
       }
     })
     .catch((e) => {
-      spinner.fail('Error has occured during publish.');
       throw e;
     });
 }
