@@ -31,7 +31,7 @@ function docKeyValidation(str) {
 
   let isValid = str.length > 0;
   if (!isValid) {
-    return 'Must not be empty, or only contains space charactors.';
+    return 'Must not be empty, or only contains space characters.';
   }
 
   isValid = !/\//.test(str);

@@ -57,7 +57,7 @@ async function getConfiguredAwsCfnClient(context) {
   if (context.projectConfigInfo.action === 'init') {
     const { config } = context.projectConfigInfo;
     if (config.useProfile) {
-      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
       aws.config.update(awsConfig);
     } else {
       aws.config.update({
