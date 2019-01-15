@@ -1,4 +1,3 @@
-const aws = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
 const archiver = require('archiver');
@@ -8,11 +7,12 @@ const Cloudformation = require('../src/aws-utils/aws-cfn');
 const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
+const systemConfigManager = require('./system-config-manager');
 
 async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || (context.exeInfo.isNewEnv)) {
-    const awscfn = getConfiguredAwsCfnClient(context);
+    const awscfn = await getConfiguredAwsCfnClient(context);
     const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
     const timeStamp = `-${moment().format('YYYYMMDDHHmmss')}`;
     const stackName = normalizeStackName(context.exeInfo.projectConfig.projectName + timeStamp);
@@ -55,22 +55,21 @@ async function run(context) {
   }
 }
 
-function getConfiguredAwsCfnClient(context) {
+async function getConfiguredAwsCfnClient(context) {
   const { awsConfigInfo } = context.exeInfo;
   process.env.AWS_SDK_LOAD_CONFIG = true;
-  if (awsConfigInfo.config.useProfile && awsConfigInfo.config.profileName) {
-    process.env.AWS_PROFILE = awsConfigInfo.config.profileName;
-    const credentials = new aws.SharedIniFileCredentials({
-      profile: awsConfigInfo.config.profileName,
-    });
-    aws.config.credentials = credentials;
+  const aws = require('aws-sdk');
+  let awsconfig;
+  if (awsConfigInfo.config.useProfile) {
+    awsconfig = await systemConfigManager.getProfiledAwsConfig(awsConfigInfo.config.profileName);
   } else {
-    aws.config.update({
+    awsconfig = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
       secretAccessKey: awsConfigInfo.config.secretAccessKey,
       region: awsConfigInfo.config.region,
-    });
+    };
   }
+  aws.config.update(awsconfig);
   return aws;
 }
 

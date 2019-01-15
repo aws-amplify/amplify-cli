@@ -119,7 +119,7 @@ module.exports = {
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, { region: options.region })
+    return new AppSync(context, awsOptions)
       .then((result) => {
         const appSyncModel = result;
         return appSyncModel.appSync

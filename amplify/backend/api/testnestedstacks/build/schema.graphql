@@ -1,0 +1,34 @@
+input CreateDogInput {
+  id: Int!
+  name: String
+}
+
+type Dog {
+  id: Int!
+  name: String
+}
+
+type DogConnection {
+  items: [Dog]
+  nextToken: String
+}
+
+type Mutation {
+  deleteDog(id: Int!): Dog
+  createDog(createDogInput: CreateDogInput!): Dog
+  updateDog(updateDogInput: UpdateDogInput!): Dog
+}
+
+type Query {
+  getDog(id: Int!): Dog
+  listDogs: [Dog]
+}
+
+type Subscription {
+  onCreateDog: Dog @aws_subscribe(mutations: ["createDog"])
+}
+
+input UpdateDogInput {
+  id: Int!
+  name: String
+}

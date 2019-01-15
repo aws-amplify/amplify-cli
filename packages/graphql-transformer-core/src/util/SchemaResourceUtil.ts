@@ -40,6 +40,7 @@ export class SchemaResourceUtil {
             DataSourceName: resource.Properties.DataSourceName,
             FieldName: resource.Properties.FieldName,
             TypeName: resource.Properties.TypeName,
+<<<<<<< HEAD
             RequestMappingTemplateS3Location: Fn.Join('/', [
                 's3:/',
                 Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -64,6 +65,34 @@ export class SchemaResourceUtil {
                     'vtl'
                 ])
             ])
+=======
+            RequestMappingTemplateS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    ResolverFileName: Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'req',
+                        'vtl',
+                    ])
+                }
+            ),
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    ResolverFileName: Fn.Join('.', [
+                        resource.Properties.TypeName,
+                        resource.Properties.FieldName,
+                        'res',
+                        'vtl'
+                    ])
+                }
+            )
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
         })
     }
 
@@ -76,6 +105,7 @@ export class SchemaResourceUtil {
         }
         return new AppSync.GraphQLSchema({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+<<<<<<< HEAD
             DefinitionS3Location: Fn.Join('/', [
                 "s3:/",
                 Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -85,3 +115,15 @@ export class SchemaResourceUtil {
         })
     }
 }
+=======
+            DefinitionS3Location: Fn.Sub(
+                "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/schema.graphql",
+                {
+                    S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey)
+                }
+            )
+        })
+    }
+}
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d

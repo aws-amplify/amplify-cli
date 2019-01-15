@@ -1,3 +1,4 @@
+const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
 const ini = require('ini');
@@ -54,76 +55,119 @@ function setProfile(awsConfig, profileName) {
   fs.writeFileSync(configFilePath, ini.stringify(config));
 }
 
-function getProfile(profileName) {
+async function getProfiledAwsConfig(profileName, isRoleSourceProfile) {
   let awsConfig;
-  if (fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)) {
-    let accessKeyId;
-    let secretAccessKey;
-    let region;
+  const profileConfig = getProfileConfig(profileName);
+  if (profileConfig) {
+    if (!isRoleSourceProfile && profileConfig.role_arn && profileConfig.source_profile) {
+      const roleCredentials =
+        await getRoleCredentials(profileConfig);
+      delete profileConfig.role_arn;
+      delete profileConfig.source_profile;
+      awsConfig = {
+        ...profileConfig,
+        ...roleCredentials,
+      };
+    } else {
+      const profileCredentials = getProfileCredentials(profileName);
+      awsConfig = {
+        ...profileConfig,
+        ...profileCredentials,
+      };
+    }
+  } else {
+    throw new Error(`Profile configuration is missing for: ${profileName}`);
+  }
 
-    const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+  return awsConfig;
+}
+
+async function getRoleCredentials(profileConfig) {
+  const sourceProfileAwsConfig =
+    await getProfiledAwsConfig(profileConfig.source_profile, true);
+  aws.config.update(sourceProfileAwsConfig);
+  const sts = new aws.STS();
+  const roleData = await sts.assumeRole({
+    RoleArn: profileConfig.role_arn,
+    RoleSessionName: 'amplify',
+    ExternalId: profileConfig.external_id,
+  }).promise();
+
+  return {
+    accessKeyId: roleData.Credentials.AccessKeyId,
+    secretAccessKey: roleData.Credentials.SecretAccessKey,
+    sessionToken: roleData.Credentials.SessionToken,
+  };
+}
+
+function getProfileConfig(profileName) {
+  let profileConfig;
+  if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
+    Object.keys(config).forEach((key) => {
+      const keyName = key.replace('profile', '').trim();
+      if (profileName === keyName) {
+        profileConfig = config[key];
+      }
+    });
+  }
+  return normalizeKeys(profileConfig);
+}
+
+function getProfileCredentials(profileName) {
+  let profileCredentials;
+  if (fs.existsSync(credentialsFilePath)) {
+    const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
 
     Object.keys(credentials).forEach((key) => {
       const keyName = key.trim();
       if (profileName === keyName) {
-        accessKeyId = credentials[key].aws_access_key_id;
-        secretAccessKey = credentials[key].aws_secret_access_key;
+        profileCredentials = credentials[key];
       }
     });
-
-    Object.keys(config).forEach((key) => {
-      const keyName = key.replace('profile', '').trim();
-      if (profileName === keyName) {
-        ({ region } = config[key]);
-      }
-    });
-
-    if (accessKeyId && secretAccessKey && region) {
-      awsConfig = {
-        accessKeyId,
-        secretAccessKey,
-        region,
-      };
-    }
   }
-  return awsConfig;
+  return normalizeKeys(profileCredentials);
 }
 
-function getFullConfig() {
-  let awsConfigs;
-  if (fs.existsSync(credentialsFilePath) && fs.existsSync(configFilePath)) {
-    const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
+function normalizeKeys(config) {
+  if (config) {
+    config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
+    config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    delete config.aws_access_key_id;
+    delete config.aws_secret_access_key;
+  }
+  return config;
+}
+
+function getProfileRegion(profileName) {
+  let profileRegion;
+
+  const profileConfig = getProfileConfig(profileName);
+  if (profileConfig) {
+    profileRegion = profileConfig.region;
+  }
+
+  return profileRegion;
+}
+
+function getNamedProfiles() {
+  let namedProfiles;
+  if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
-
-    awsConfigs = {};
-
-    Object.keys(credentials).forEach((key) => {
-      const profileName = key.trim();
-      awsConfigs[profileName] = {
-        accessKeyId: credentials[key].aws_access_key_id,
-        secretAccessKey: credentials[key].aws_secret_access_key,
-      };
-    });
-
+    namedProfiles = {};
     Object.keys(config).forEach((key) => {
       const profileName = key.replace('profile', '').trim();
-      if (awsConfigs[profileName]) {
-        awsConfigs[profileName].region = config[key].region;
-      }
-    });
-
-    Object.keys(awsConfigs).forEach((key) => {
-      if (!awsConfigs[key].region) {
-        delete awsConfigs[key];
+      if (!namedProfiles[profileName]) {
+        namedProfiles[profileName] = config[key];
       }
     });
   }
-  return awsConfigs;
+  return namedProfiles;
 }
 
 module.exports = {
   setProfile,
-  getProfile,
-  getFullConfig,
+  getProfiledAwsConfig,
+  getProfileRegion,
+  getNamedProfiles,
 };

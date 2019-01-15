@@ -1,0 +1,14 @@
+{
+    "beta": {
+        "awscloudformation": {
+            "AuthRoleName": "testnestedstacks-20190104155047-authRole",
+            "UnauthRoleArn": "arn:aws:iam::973253135933:role/testnestedstacks-20190104155047-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::973253135933:role/testnestedstacks-20190104155047-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "testnestedstacks-20190104155047-deployment",
+            "UnauthRoleName": "testnestedstacks-20190104155047-unauthRole",
+            "StackName": "testnestedstacks-20190104155047",
+            "StackId": "arn:aws:cloudformation:us-east-1:973253135933:stack/testnestedstacks-20190104155047/8f12da30-107b-11e9-8564-0a182a3cd028"
+        }
+    }
+}

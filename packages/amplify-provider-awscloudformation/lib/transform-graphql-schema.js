@@ -15,8 +15,8 @@ const providerName = require('./constants').ProviderName;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
-const templateFileName = 'cloudformation-template.json';
 const schemaFileName = 'schema.graphql';
+const schemaDirName = 'schema';
 
 function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
@@ -74,10 +74,11 @@ async function transformGraphQLSchema(context, options) {
 
   const buildDir = `${resourceDir}/build`;
   const schemaFilePath = `${resourceDir}/${schemaFileName}`;
+  const schemaDirPath = `${resourceDir}/${schemaDirName}`;
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
-  const schemaText = fs.readFileSync(schemaFilePath, 'utf8');
+  const schemaText = await TransformPackage.readProjectSchema(resourceDir);
 
   // Check for common errors
   const usedDirectives = collectDirectiveNames(schemaText);
@@ -107,6 +108,7 @@ async function transformGraphQLSchema(context, options) {
   await TransformPackage.buildAPIProject({
     projectDirectory: resourceDir,
     transform: transformer,
+<<<<<<< HEAD
     rootStackFileName: 'cloudformation-template.json'
   })
 
@@ -129,6 +131,13 @@ async function transformGraphQLSchema(context, options) {
   context.print.success(`\nGraphQL schema compiled successfully. Edit your schema at ${schemaFilePath}`);
 
   // fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(transformResources.rootStack, null, 4), 'utf8');
+=======
+    rootStackFileName: 'cloudformation-template.json',
+  });
+
+  context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
+place .graphql files in a directory at ${schemaDirPath}`);
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 
   // Comment this piece for now until transformer lib supports custom DDB ARns
   /* Look for data sources in the cfdoc

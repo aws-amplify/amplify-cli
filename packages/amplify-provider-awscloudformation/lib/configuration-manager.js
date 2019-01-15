@@ -279,9 +279,9 @@ async function promptForProjectConfigConfirmation(context) {
   const { awsConfigInfo } = context.exeInfo;
 
   let availableProfiles = [];
-  const systemConfig = systemConfigManager.getFullConfig();
-  if (systemConfig) {
-    availableProfiles = Object.keys(systemConfig);
+  const namedProfiles = systemConfigManager.getNamedProfiles();
+  if (namedProfiles) {
+    availableProfiles = Object.keys(namedProfiles);
   }
 
   const useProfileConfirmation = {
@@ -424,7 +424,7 @@ function persistLocalEnvConfig(context) {
 }
 
 function getCurrentConfig(context) {
-  const awsConfigInfo = {
+  const projectConfigInfo = {
     configLevel: 'general',
     config: {},
   };
@@ -438,25 +438,25 @@ function getCurrentConfig(context) {
 
       if (configInfo && configInfo.configLevel !== 'general') {
         if (configInfo.useProfile && configInfo.profileName) {
-          awsConfigInfo.config.useProfile = configInfo.useProfile;
-          awsConfigInfo.config.profileName = configInfo.profileName;
+          projectConfigInfo.config.useProfile = configInfo.useProfile;
+          projectConfigInfo.config.profileName = configInfo.profileName;
         } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
           const awsSecrets = JSON.parse(fs.readFileSync(configInfo.awsConfigFilePath, 'utf8'));
-          awsConfigInfo.config.useProfile = false;
-          awsConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
-          awsConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
-          awsConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
-          awsConfigInfo.config.region = awsSecrets.region;
+          projectConfigInfo.config.useProfile = false;
+          projectConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
+          projectConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
+          projectConfigInfo.config.secretAccessKey = awsSecrets.secretAccessKey;
+          projectConfigInfo.config.region = awsSecrets.region;
         } else {
           throw new Error(`Corrupt file contents in ${configInfoFilePath}`);
         }
-        awsConfigInfo.configLevel = 'project';
+        projectConfigInfo.configLevel = 'project';
       }
     } catch (e) {
       throw e;
     }
   }
-  return awsConfigInfo;
+  return projectConfigInfo;
 }
 
 function updateProjectConfig(context) {
@@ -485,45 +485,36 @@ function removeProjectConfig(context) {
   }
 }
 
-async function loadConfiguration(context, awsClient, attatchRegion) {
-  process.env.AWS_SDK_LOAD_CONFIG = true;
-  const awsConfigInfo = getCurrentConfig(context);
-  if (awsConfigInfo.configLevel !== 'general') {
-    const { config } = awsConfigInfo;
+async function loadConfiguration(context, awsClient) {
+  const projectConfigInfo = getCurrentConfig(context);
+  if (projectConfigInfo.configLevel === 'project') {
+    const { config } = projectConfigInfo;
     if (config.useProfile) {
-      process.env.AWS_PROFILE = config.profileName;
-      const credentials = new awsClient.SharedIniFileCredentials({
-        profile: config.profileName,
-      });
-      awsClient.config.credentials = credentials;
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      awsClient.config.update(awsConfig);
     } else {
       awsClient.config.loadFromPath(config.awsConfigFilePath);
     }
   }
-  if (attatchRegion) {
-    awsClient.region = getRegion(awsConfigInfo);
-  }
+
   return awsClient;
 }
 
-function getRegion(awsConfigInfo) {
+function resolveRegion() {
   // For details of how aws region is set, check the following link
   // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
-  if (awsConfigInfo.configLevel === 'general') {
-    if (process.env.AWS_REGION) {
-      return process.env.AWS_REGION;
-    }
-    if (process.env.AMAZON_REGION) {
-      return process.env.AMAZON_REGION;
-    }
+  let region;
+  if (process.env.AWS_REGION) {
+    region = process.env.AWS_REGION;
+  }
+  if (process.env.AMAZON_REGION) {
+    region = process.env.AMAZON_REGION;
+  }
+  if (process.env.AWS_SDK_LOAD_CONFIG) {
     const profileName = process.env.AWS_PROFILE || 'default';
-    return systemConfigManager.getProfile(profileName).region;
+    region = systemConfigManager.getProfileRegion(profileName);
   }
-  const { config } = awsConfigInfo;
-  if (config.useProfile) {
-    return systemConfigManager.getProfile(config.profileName).region;
-  }
-  return config.region;
+  return region;
 }
 
 async function newUserCheck(context) {
@@ -559,13 +550,12 @@ async function newUserCheck(context) {
 
 function scanConfig(context) {
   let configSource = getConfigLevel(context);
-
   if (!configSource) {
-    const systemConfigs = systemConfigManager.getFullConfig();
-    if (systemConfigs && Object.keys(systemConfigs).length > 0) {
+    const namedProfiles = systemConfigManager.getNamedProfiles();
+    if (namedProfiles && Object.keys(namedProfiles).length > 0) {
       configSource = 'profile-available';
     }
-    if (systemConfigs && systemConfigs.default) {
+    if (namedProfiles && namedProfiles.default) {
       configSource = 'system';
     }
     if (process.env.AWS_ACCESS_KEY_ID &&
@@ -573,8 +563,8 @@ function scanConfig(context) {
         (process.env.AWS_REGION || process.env.AMAZON_REGION)) {
       configSource = 'envVar';
     }
-    if ((process.env.AWS_PROFILE && systemConfigs &&
-          systemConfigs[process.env.AWS_PROFILE.trim()])) {
+    if ((process.env.AWS_PROFILE && namedProfiles &&
+          namedProfiles[process.env.AWS_PROFILE.trim()])) {
       configSource = 'envVar-profile';
     }
   }
@@ -585,7 +575,7 @@ function scanConfig(context) {
 function getConfigLevel(context) {
   let configLevel;
   try {
-    const systemConfigs = systemConfigManager.getFullConfig();
+    const namedProfiles = systemConfigManager.getNamedProfiles();
     const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
     const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
     if (fs.existsSync(configInfoFilePath)) {
@@ -596,7 +586,7 @@ function getConfigLevel(context) {
         if (envConfigInfo.configLevel === 'general') {
           configLevel = 'general';
         } else if (envConfigInfo.useProfile && envConfigInfo.profileName &&
-                systemConfigs && systemConfigs[envConfigInfo.profileName]) {
+                namedProfiles && namedProfiles[envConfigInfo.profileName]) {
           configLevel = 'project';
         } else if (envConfigInfo.awsConfigFilePath &&
           fs.existsSync(envConfigInfo.awsConfigFilePath)) {
@@ -615,4 +605,5 @@ module.exports = {
   onInitSuccessful,
   configure,
   loadConfiguration,
+  resolveRegion,
 };

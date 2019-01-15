@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.23"></a>
+## [0.2.1-multienv.23](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.22...@aws-amplify/cli@0.2.1-multienv.23) (2019-01-10)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.22"></a>
+## [0.2.1-multienv.22](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.21...@aws-amplify/cli@0.2.1-multienv.22) (2019-01-08)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.21"></a>
+## [0.2.1-multienv.21](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.20...@aws-amplify/cli@0.2.1-multienv.21) (2019-01-08)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+<a name="0.2.1-multienv.20"></a>
+## [0.2.1-multienv.20](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.19...@aws-amplify/cli@0.2.1-multienv.20) (2019-01-03)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
 <a name="0.2.1-multienv.19"></a>
 ## [0.2.1-multienv.19](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.18...@aws-amplify/cli@0.2.1-multienv.19) (2018-12-31)
 

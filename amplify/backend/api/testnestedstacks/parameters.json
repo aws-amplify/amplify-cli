@@ -1,0 +1,5 @@
+{
+    "AppSyncApiName": "testnestedstacks",
+    "S3DeploymentBucket": "testnestedstacks-20190104155047-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/1546650597693"
+}

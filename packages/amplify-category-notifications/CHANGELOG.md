@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.5...amplify-category-notifications@0.2.1-multienv.6) (2019-01-08)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** assume role ([#669](https://github.com/aws-amplify/amplify-cli/issues/669)) ([c3204bc](https://github.com/aws-amplify/amplify-cli/commit/c3204bc))
+
+
+
+
 <a name="0.2.1-multienv.5"></a>
 ## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@0.2.1-multienv.4...amplify-category-notifications@0.2.1-multienv.5) (2018-12-28)
 

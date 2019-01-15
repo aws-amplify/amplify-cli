@@ -33,6 +33,10 @@ module.exports = {
         name: 'gql-compile',
         description: 'Compiles your GraphQL schema and generates a corresponding cloudformation template',
       },
+      {
+        name: 'add-datasource',
+        description: 'Provisions the AppSync Resources and its dependencies for the provided RDS data source',
+      },
     ];
 
     context.amplify.showHelp(header, commands);

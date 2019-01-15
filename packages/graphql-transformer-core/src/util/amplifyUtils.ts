@@ -80,11 +80,31 @@ function mergeUserConfigWithTransformOutput(
     }
 }
 
+<<<<<<< HEAD
+=======
+export async function readSchema(projectDirectory: string) {
+    const schemaFilePath = path.join(projectDirectory, 'schema.graphql')
+    const schemaDirectoryPath = path.join(projectDirectory, 'schema')
+    const schemaFileExists = await exists(schemaFilePath);
+    const schemaDirectoryExists = await exists(schemaDirectoryPath);
+    let schema;
+    if (schemaFileExists) {
+        schema = (await readFile(schemaFilePath)).toString()
+    } else if (schemaDirectoryExists) {
+        schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
+    } else {
+        throw new Error(`Could not find a schema at ${schemaFilePath}`)
+    }
+    return schema;
+}
+
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 /**
  * Given an absolute path to an amplify project directory, load the
  * user defined configuration.
  */
 export async function readProjectConfiguration(projectDirectory: string) {
+<<<<<<< HEAD
     const resolverDirectory = path.join(projectDirectory, 'resolvers')
     const resolverDirExists = await exists(resolverDirectory)
     // Schema
@@ -95,6 +115,13 @@ export async function readProjectConfiguration(projectDirectory: string) {
     }
     const schema = (await readFile(schemaFilePath)).toString()
     // Load the resolvers.
+=======
+    // Schema
+    const schema = await readSchema(projectDirectory);
+    // Load the resolvers.
+    const resolverDirectory = path.join(projectDirectory, 'resolvers')
+    const resolverDirExists = await exists(resolverDirectory);
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
     const resolvers = {}
     if (resolverDirExists) {
         const resolverFiles = await readDir(resolverDirectory)
@@ -122,8 +149,18 @@ export async function readProjectConfiguration(projectDirectory: string) {
         const stackFiles = await readDir(stacksDirectory)
         for (const stackFile of stackFiles) {
             const stackFilePath = path.join(stacksDirectory, stackFile)
+<<<<<<< HEAD
             const stackBuffer = await readFile(stackFilePath)
             stacks[stackFile] = JSON.parse(stackBuffer.toString())
+=======
+            const nameParts = stackFile.split('.');
+            const extension = nameParts[nameParts.length - 1];
+            if (extension !== "json" && extension !== "yaml" && extension !== "yml") {
+                throw new Error(`Invalid extension .${extension} for stack ${stackFile}`);
+            }
+            const stackBuffer = await readFile(stackFilePath);
+            stacks[stackFile] = stackBuffer.toString();
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
         }
     }
     return {
@@ -239,9 +276,25 @@ async function writeDeploymentToDisk(deployment: DeploymentResources, directory:
         fs.mkdirSync(stackRootPath);
     }
     for (const stackFileName of stackNames) {
+<<<<<<< HEAD
         const nameWithJson = stackFileName.endsWith('.json') ? stackFileName : stackFileName + '.json'
         const fullStackPath = path.normalize(stackRootPath + '/' + nameWithJson);
         fs.writeFileSync(fullStackPath, JSON.stringify(deployment.stacks[stackFileName], null, 4));
+=======
+        const fileNameParts = stackFileName.split('.');
+        if (fileNameParts.length === 1) {
+            fileNameParts.push('json')
+        }
+        const fullFileName = fileNameParts.join('.');
+        const extension = fileNameParts[fileNameParts.length - 1];
+        if (extension !== "json" && extension !== "yaml" && extension !== "yml") {
+            throw new Error(`Invalid extension .${extension} for stack ${fullFileName}`);
+        }
+        const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
+        let stackString: any = deployment.stacks[stackFileName];
+        stackString = typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+        fs.writeFileSync(fullStackPath, stackString);
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
     }
 
     // Write any functions to disk
@@ -260,6 +313,26 @@ async function writeDeploymentToDisk(deployment: DeploymentResources, directory:
     fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
 }
 
+<<<<<<< HEAD
+=======
+async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[]> {
+    const files = await readDir(schemaDirectoryPath);
+    let schemaDocuments = [];
+    for (const fileName of files) {
+        const fullPath = `${schemaDirectoryPath}/${fileName}`;
+        const stats = await lstat(fullPath);
+        if (stats.isDirectory()) {
+            const childDocs = await readSchemaDocuments(fullPath);
+            schemaDocuments = schemaDocuments.concat(childDocs);
+        } else if (stats.isFile()) {
+            const schemaDoc = await readFile(fullPath);
+            schemaDocuments.push(schemaDoc);
+        }
+    }
+    return schemaDocuments;
+}
+
+>>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 const readDir = async (dir: string) => await promisify<string, string[]>(fs.readdir, dir)
 const readFile = async (p: string) => await promisify(fs.readFile, p)
 const lstat = async (dir: string) => await promisify(fs.lstat, dir)
