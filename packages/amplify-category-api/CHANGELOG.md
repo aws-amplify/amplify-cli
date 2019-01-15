@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.37-beta.0"></a>
+## [0.1.37-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.36...amplify-category-api@0.1.37-beta.0) (2019-01-15)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
 <a name="0.1.36"></a>
 ## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.1.34...amplify-category-api@0.1.36) (2019-01-08)
 

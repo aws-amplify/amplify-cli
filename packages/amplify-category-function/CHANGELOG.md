@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.37-beta.0"></a>
+## [0.1.37-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.1.36...amplify-category-function@0.1.37-beta.0) (2019-01-15)
+
+
+### Features
+
+* add metadata in lambda CFN for it to be compatible and worked with using SAM CLI ([d113c51](https://github.com/aws-amplify/amplify-cli/commit/d113c51))
+
+
+
+
 <a name="0.1.36"></a>
 ## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.1.34...amplify-category-function@0.1.36) (2019-01-08)
 

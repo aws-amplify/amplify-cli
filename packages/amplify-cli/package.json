@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "0.1.42-beta.0",
+  "version": "0.1.42-beta.1",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -21,11 +21,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "^0.1.39-beta.0",
-    "amplify-category-api": "^0.1.36",
+    "amplify-category-api": "^0.1.37-beta.0",
     "amplify-category-auth": "^0.1.35",
-    "amplify-category-function": "^0.1.36",
+    "amplify-category-function": "^0.1.37-beta.0",
     "amplify-category-hosting": "^0.1.39-beta.0",
-    "amplify-category-interactions": "^0.1.37",
+    "amplify-category-interactions": "^0.1.38-beta.0",
     "amplify-category-notifications": "^0.1.39-beta.0",
     "amplify-category-storage": "^0.1.36",
     "amplify-codegen": "^0.1.40",
