@@ -267,7 +267,8 @@
                     "Effect": "Allow",
                     "Action": [
                         "mobiletargeting:PutEvents",
-                        "mobiletargeting:UpdateEndpoint"
+                        "mobiletargeting:UpdateEndpoint",
+                        "mobiletargeting:GetUserEndpoints"
                     ],
                     "Resource": [
                         {
@@ -331,7 +332,8 @@
                     "Effect": "Allow",
                     "Action": [
                         "mobiletargeting:PutEvents",
-                        "mobiletargeting:UpdateEndpoint"
+                        "mobiletargeting:UpdateEndpoint",
+                        "mobiletargeting:GetUserEndpoints"
                     ],
                     "Resource": [
                         {
