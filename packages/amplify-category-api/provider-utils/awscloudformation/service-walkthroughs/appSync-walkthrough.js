@@ -10,6 +10,7 @@ const schemaFileName = 'schema.graphql';
 const providerName = 'awscloudformation';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
+const defaultStackName = 'CustomResources.yml';
 
 function openConsole(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
@@ -101,6 +102,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   fs.mkdirSync(`${resourceDir}/${resolversDirName}`);
   fs.mkdirSync(`${resourceDir}/${stacksDirName}`);
 
+  // Write the default custom resources stack out to disk.
+  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.yml`);
+  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
