@@ -7,7 +7,7 @@ function formUserAgentParam(context, userAgentAction) {
   const projectConfig = context.exeInfo ?
     context.exeInfo.projectConfig : amplify.getProjectConfig();
 
-  let framework = projectConfig.frontend;
+  let framework = Object.keys(projectConfig.frontendHandler)[0];
 
   if (framework === 'javascript') {
     ({ framework } = projectConfig.javascript);
