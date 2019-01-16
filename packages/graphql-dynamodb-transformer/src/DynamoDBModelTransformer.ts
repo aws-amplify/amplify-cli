@@ -95,7 +95,7 @@ export class DynamoDBModelTransformer extends Transformer {
         // Add a stack mapping so that all model resources are pulled
         // into their own stack at the end of the transformation.
         ctx.putStackMapping(
-            `${def.name.value}ModelStack`,
+            `${def.name.value}`,
             [
                 new RegExp(".*" + def.name.value + "Model", 'i'),
                 new RegExp(".*" + def.name.value + "DataSource", 'i'),
