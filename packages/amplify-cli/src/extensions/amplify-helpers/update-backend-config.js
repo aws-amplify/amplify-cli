@@ -15,6 +15,25 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   }
 }
 
+function updateBackendConfigDependsOn(category, resourceName, value) {
+  const backendConfigFilePath = pathManager.getBackendConfigFilePath();
+  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+
+  if (!backendConfig[category]) {
+    backendConfig[category] = {};
+    backendConfig[category][resourceName] = {};
+  } else if (!backendConfig[category][resourceName]) {
+    backendConfig[category][resourceName] = {};
+  }
+  if (!backendConfig[category][resourceName].dependsOn) {
+    backendConfig[category][resourceName].dependsOn = [];
+  }
+  backendConfig[category][resourceName].dependsOn = value;
+
+  const jsonString = JSON.stringify(backendConfig, null, 4);
+
+  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
+}
 
 function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
@@ -32,4 +51,5 @@ function updateBackendConfigAfterResourceRemove(category, resourceName) {
 module.exports = {
   updateBackendConfigAfterResourceAdd,
   updateBackendConfigAfterResourceRemove,
+  updateBackendConfigDependsOn,
 };
