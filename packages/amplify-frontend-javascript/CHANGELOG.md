@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.2.1-multienv.0...amplify-frontend-javascript@0.2.1-multienv.2) (2019-01-16)
+
+
+### Features
+
+* **amplify-frontend-javascript:** adding Ember config for amplify-cli ([b4748b9](https://github.com/aws-amplify/amplify-cli/commit/b4748b9))
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.2.1-multienv.0...amplify-frontend-javascript@0.2.1-multienv.1) (2018-12-05)
 
