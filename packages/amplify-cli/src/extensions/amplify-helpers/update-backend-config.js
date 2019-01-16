@@ -25,9 +25,6 @@ function updateBackendConfigDependsOn(category, resourceName, value) {
   } else if (!backendConfig[category][resourceName]) {
     backendConfig[category][resourceName] = {};
   }
-  if (!backendConfig[category][resourceName].dependsOn) {
-    backendConfig[category][resourceName].dependsOn = [];
-  }
   backendConfig[category][resourceName].dependsOn = value;
 
   const jsonString = JSON.stringify(backendConfig, null, 4);
