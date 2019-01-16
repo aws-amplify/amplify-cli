@@ -37,6 +37,13 @@ const vueConfig = {
   StartCommand: `${npm} run-script serve`,
 };
 
+const emberConfig = {
+  SourceDir: '/',
+  DistributionDir: 'dist',
+  BuildCommand: `${npm} run-script build -- -e production`,
+  StartCommand: `${npm} run-script start`,
+};
+
 const defaultConfig = {
   SourceDir: 'src',
   DistributionDir: 'dist',
@@ -45,10 +52,11 @@ const defaultConfig = {
 };
 
 module.exports = {
+  angular: angularConfig,
+  ember: emberConfig,
+  ionic: ionicConfig,
   react: reactConfig,
   'react-native': reactNativeConfig,
-  angular: angularConfig,
-  ionic: ionicConfig,
   vue: vueConfig,
   none: defaultConfig,
 };
