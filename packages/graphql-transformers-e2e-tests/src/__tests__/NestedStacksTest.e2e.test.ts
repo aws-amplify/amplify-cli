@@ -36,7 +36,7 @@ test('Test custom root types with additional fields.', () => {
     const out = transformer.transform(validSchema);
     // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
     const mainStack = out.rootStack;
-    const postStack = out.stacks.PostModelStack;
+    const postStack = out.stacks.Post;
     expect(mainStack).toBeDefined()
     expect(postStack).toBeDefined()
     const schema = out.schema
