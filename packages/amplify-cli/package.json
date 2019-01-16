@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "0.2.1-multienv.27",
+  "version": "0.2.1-multienv.28",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -31,7 +31,7 @@
     "amplify-codegen": "^0.2.1-multienv.5",
     "amplify-frontend-android": "^0.2.1-multienv.1",
     "amplify-frontend-ios": "^0.2.1-multienv.1",
-    "amplify-frontend-javascript": "^0.2.1-multienv.1",
+    "amplify-frontend-javascript": "^0.2.1-multienv.2",
     "amplify-provider-awscloudformation": "^0.2.1-multienv.21",
     "babel-core": "^6.26.3",
     "cfonts": "^2.1.2",
