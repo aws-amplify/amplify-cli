@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "0.2.1-multienv.5",
+  "version": "0.2.1-multienv.6",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {

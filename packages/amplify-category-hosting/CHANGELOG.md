@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.4"></a>
+## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.2.1-multienv.3...amplify-category-hosting@0.2.1-multienv.4) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-category-hosting
+
 <a name="0.2.1-multienv.3"></a>
 ## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.2.1-multienv.2...amplify-category-hosting@0.2.1-multienv.3) (2018-12-07)
 
