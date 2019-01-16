@@ -39,7 +39,17 @@ function mergeUserConfigWithTransformOutput(
 
     // Get all the transform stacks. Custom stacks will depend on all of them
     // so they can always access data sources created by the transform.
-    const allResourceIds = Object.keys(rootStack.Resources);
+    const resourceTypesToDependOn = {
+        "AWS::CloudFormation::Stack": true,
+        "AWS::AppSync::GraphQLApi": true,
+        "AWS::AppSync::GraphQLSchema": true,
+    };
+    const allResourceIds = Object.keys(rootStack.Resources).filter(
+        (k: string) => {
+            const resource = rootStack.Resources[k];
+            return resourceTypesToDependOn[resource.Type];
+        }
+    );
     const parametersKeys = Object.keys(rootStack.Parameters);
     const customStackParams = parametersKeys.reduce((acc: any, k: string) => ({
         ...acc,
