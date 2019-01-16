@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.29"></a>
+## [0.2.1-multienv.29](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.27...@aws-amplify/cli@0.2.1-multienv.29) (2019-01-16)
+
+
+### Bug Fixes
+
+* update dependsOn block when updating api ([ef8cb27](https://github.com/aws-amplify/amplify-cli/commit/ef8cb27))
+
+
+
+
 <a name="0.2.1-multienv.28"></a>
 ## [0.2.1-multienv.28](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.27...@aws-amplify/cli@0.2.1-multienv.28) (2019-01-16)
 

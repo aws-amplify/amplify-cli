@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "0.2.1-multienv.28",
+  "version": "0.2.1-multienv.29",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
