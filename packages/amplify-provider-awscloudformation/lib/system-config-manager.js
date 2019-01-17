@@ -133,8 +133,10 @@ function normalizeKeys(config) {
   if (config) {
     config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    config.sessionToken = config.sessionToken || config.aws_session_token;
     delete config.aws_access_key_id;
     delete config.aws_secret_access_key;
+    delete config.aws_session_token;
   }
   return config;
 }
