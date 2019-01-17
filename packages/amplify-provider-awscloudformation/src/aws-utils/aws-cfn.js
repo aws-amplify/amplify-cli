@@ -7,25 +7,35 @@ const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 const { formUserAgentParam } = require('./user-agent');
 
+const CFN_MAX_CONCURRENT_REQUEST = 15;
+const CFN_POLL_TIME = 7000; // 7sec
+
+const CFN_SUCCESS_STATUS = [
+  'UPDATE_COMPLETE',
+  'CREATE_COMPLETE',
+  'DELETE_COMPLETE',
+  'DELETE_SKIPPED',
+];
+
 class CloudFormation {
   constructor(context, awsClientWithCreds, userAgentAction) {
-    const initializeAwsClient = awsClientWithCreds ?
-      Promise.resolve(awsClientWithCreds) : aws.configureWithCreds(context);
+    const initializeAwsClient = awsClientWithCreds
+      ? Promise.resolve(awsClientWithCreds)
+      : aws.configureWithCreds(context);
 
     let userAgentParam;
     if (userAgentAction) {
       userAgentParam = formUserAgentParam(context, userAgentAction);
     }
 
-    return initializeAwsClient
-      .then((awsItem) => {
-        if (userAgentAction) {
-          awsItem.config.update({ customUserAgent: userAgentParam });
-        }
-        this.cfn = new awsItem.CloudFormation();
-        this.context = context;
-        return this;
-      });
+    return initializeAwsClient.then((awsItem) => {
+      if (userAgentAction) {
+        awsItem.config.update({ customUserAgent: userAgentParam });
+      }
+      this.cfn = new awsItem.CloudFormation();
+      this.context = context;
+      return this;
+    });
   }
 
   createResourceStack(cfnParentStackParams) {
@@ -46,7 +56,8 @@ class CloudFormation {
           reject(createErr);
         }
         cfnModel.waitFor(
-          cfnCompleteStatus, cfnStackCheckParams,
+          cfnCompleteStatus,
+          cfnStackCheckParams,
           (completeErr, waitForStackdata) => {
             if (self.pollForEvents) {
               clearInterval(self.pollForEvents);
@@ -70,6 +81,8 @@ class CloudFormation {
     const params = {
       StackName: stackName,
     };
+    let nestedStackQueue = [];
+
     this.pollForEvents = setInterval(() => {
       cfnModel.describeStackEvents(params, (err, data) => {
         if (err) {
@@ -78,106 +91,98 @@ class CloudFormation {
           running in the background */
         } else {
           let stackEvents = data.StackEvents;
-          stackEvents = stackEvents.filter(event => self.eventStartTime
-            < new Date(event.Timestamp));
+          stackEvents = stackEvents
+            .filter(event => self.eventStartTime < new Date(event.Timestamp));
 
-          if (allShownEvents.length === 0) { // Showing events for the first time to the user
+          if (allShownEvents.length === 0) {
+            // Showing events for the first time to the user
             if (stackEvents.length > 0) {
               showEvents(stackEvents);
               allShownEvents = stackEvents;
             }
-
-            // To store all the uniq nestedStacks that are a part of the new found events
-            const nestedStacks = [];
-            const nestedStackEventPromises = [];
-            let newEvents = stackEvents;
-
-            for (let i = 0; i < newEvents.length; i += 1) {
-              if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
-                // Logic to fetch events from nested stack within the parent stacks
-                if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
-                  /*eslint-disable*/
-                  nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
-                  /* eslint-enable */
-                  nestedStacks.push(newEvents[i].PhysicalResourceId);
-                }
-              }
-            }
-
-            return Promise.all(nestedStackEventPromises)
-              .then((nestedstackEvents) => {
-                newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
-                  combinedEventList.concat(nestedstackEventList), newEvents);
-                // Just get the new events to display to the user
-
-                newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
-                newEvents = _.uniqBy(newEvents, 'EventId');
-                showEvents(newEvents);
-                allShownEvents = allShownEvents.concat(newEvents);
-              });
           }
 
           let newEvents = stackEvents;
+          const nestedStackEventPromises = [];
 
-          if (newEvents.length > 0) {
-            // To store all the uniq nestedStacks that are a part of the new found events
-            const nestedStacks = [];
-            const nestedStackEventPromises = [];
+          const uniqueEvents = getUniqueStacksEvents(newEvents);
+          const nestedStacks = filterNestedStacks(uniqueEvents);
 
-            for (let i = 0; i < newEvents.length; i += 1) {
-              if (!nestedStacks.includes(newEvents[i].PhysicalResourceId)) {
-                // Logic to fetch events from nested stack within the parent stacks
-                if (newEvents[i].PhysicalResourceId.includes('arn:aws:cloudformation')) {
-                  /*eslint-disable*/
-                    nestedStackEventPromises.push(self.getNestedStackEvents(newEvents[i].PhysicalResourceId));
-                    /* eslint-enable */
-                  nestedStacks.push(newEvents[i].PhysicalResourceId);
-                }
-              }
-            }
+          if (!nestedStackQueue.length) {
+            // empty queue
+            nestedStackQueue = nestedStacks;
+          } else {
+            // maintain the order of the queue and remove missing stack
+            nestedStackQueue = _.intersection(nestedStackQueue, nestedStacks);
 
-            return Promise.all(nestedStackEventPromises)
-              .then((nestedstackEvents) => {
-                newEvents = nestedstackEvents.reduce((combinedEventList, nestedstackEventList) =>
-                  combinedEventList.concat(nestedstackEventList), newEvents);
-                // Just get the new events to display to the user
-
-                newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
-                newEvents = _.uniqBy(newEvents, 'EventId');
-                showEvents(newEvents);
-                allShownEvents = allShownEvents.concat(newEvents);
-              });
+            // add newly created stack to the end of the queue
+            const newStacks = _.difference(nestedStacks, nestedStackQueue);
+            nestedStackQueue = [...nestedStackQueue, ...newStacks];
           }
+
+          for (let i = 0; i < Math.min(CFN_MAX_CONCURRENT_REQUEST, nestedStackQueue.length); i++) {
+            nestedStackEventPromises.push(self.getNestedStackEvents(nestedStackQueue[0]));
+            if (nestedStackQueue.length > 1) {
+              nestedStackQueue.shift();
+            }
+          }
+
+          return Promise.all(nestedStackEventPromises).then((nestedstackEvents) => {
+            newEvents = nestedstackEvents.reduce(
+              (combinedEventList, nestedstackEventList) =>
+                combinedEventList.concat(nestedstackEventList),
+              newEvents,
+            );
+            // Just get the new events to display to the user
+
+            newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
+            newEvents = _.uniqBy(newEvents, 'EventId');
+            showEvents(newEvents);
+            allShownEvents = allShownEvents.concat(newEvents);
+          });
         }
       });
-    }, 10000); // Poll for any events every 10 seconds
+    }, CFN_POLL_TIME);
   }
 
   getNestedStackEvents(stackName) {
     const self = this;
-    return this.cfn.describeStackEvents({ StackName: stackName }).promise()
+    return this.cfn
+      .describeStackEvents({ StackName: stackName })
+      .promise()
       .then((data) => {
         let nestedstackEvents = data.StackEvents;
-        nestedstackEvents = nestedstackEvents.filter(event =>
-          self.eventStartTime < new Date(event.Timestamp));
+        nestedstackEvents = nestedstackEvents
+          .filter(event => self.eventStartTime < new Date(event.Timestamp));
 
         return nestedstackEvents;
-      });
+      })
+      .catch(() =>
+        // ignore. We dont fail if we can't get the nested stack status
+        ({}));
   }
 
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.amplify.getProjectDetails();
-    const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
-    const deploymentBucketName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
-    const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
-    const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
+    const stackName = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].StackName
+      : '';
+    const deploymentBucketName = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+      : '';
+    const authRoleName = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName
+      : '';
+    const unauthRoleName = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName
+      : '';
 
     if (!stackName) {
-      throw (new Error('Project stack has not been created yet. Use amplify init to initialize the project.'));
+      throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');
     }
     if (!deploymentBucketName) {
-      throw (new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.'));
+      throw new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.');
     }
 
     return new S3(this.context)
@@ -241,7 +246,8 @@ class CloudFormation {
                   console.error('Error updating cloudformation stack');
                   reject(completeErr);
                 } else {
-                  return self.updateamplifyMetaFileWithStackOutputs(stackName)
+                  return self
+                    .updateamplifyMetaFileWithStackOutputs(stackName)
                     .then(() => resolve());
                 }
               });
@@ -259,44 +265,60 @@ class CloudFormation {
     const { amplifyMeta } = projectDetails;
 
     const cfnModel = this.cfn;
-    return cfnModel.describeStackResources(cfnParentStackParams).promise()
+    return cfnModel
+      .describeStackResources(cfnParentStackParams)
+      .promise()
       .then((result) => {
         let resources = result.StackResources;
-        resources = resources.filter(resource => (resource.LogicalResourceId !== 'DeploymentBucket' && resource.LogicalResourceId !== 'AuthRole' && resource.LogicalResourceId !== 'UnauthRole'));
-
+        resources = resources.filter(resource =>
+          !['DeploymentBucket', 'AuthRole', 'UnauthRole'].includes(resource.LogicalResourceId));
 
         const promises = [];
 
         for (let i = 0; i < resources.length; i += 1) {
-          if (resources[i].LogicalResourceId === 'DeploymentBucket' ||
-          resources[i].LogicalResourceId === 'AuthRole'
-          || resources[i].LogicalResourceId === 'UnauthRole') {
-            continue;
-          }
-
           const cfnNestedStackParams = {
             StackName: resources[i].PhysicalResourceId,
           };
-
-          promises.push(cfnModel.describeStacks(cfnNestedStackParams).promise());
+          promises.push(this.describeStack(cfnNestedStackParams));
         }
 
-        return Promise.all(promises)
-          .then((stackResult) => {
-            Object.keys((amplifyMeta)).forEach((category) => {
-              Object.keys((amplifyMeta[category])).forEach((resource) => {
-                const logicalResourceId = category + resource;
-                const index = resources.findIndex(resourceItem =>
-                  resourceItem.LogicalResourceId ===
-                    logicalResourceId);
-
-                if (index !== -1) {
-                  this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formatOutputs(stackResult[index].Stacks[0].Outputs));
-                }
-              });
+        return Promise.all(promises).then((stackResult) => {
+          Object.keys(amplifyMeta).forEach((category) => {
+            Object.keys(amplifyMeta[category]).forEach((resource) => {
+              const logicalResourceId = category + resource;
+              const index = resources
+                .findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+              if (index !== -1) {
+                this.context.amplify.updateamplifyMetaAfterResourceUpdate(
+                  category,
+                  resource,
+                  'output',
+                  formatOutputs(stackResult[index].Stacks[0].Outputs),
+                );
+              }
             });
           });
+        });
       });
+  }
+
+  describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
+    const cfnModel = this.cfn;
+    return new Promise((resolve, reject) => {
+      cfnModel
+        .describeStacks(cfnNestedStackParams)
+        .promise()
+        .then(result => resolve(result))
+        .catch((e) => {
+          if (e.code === 'Throttling' && e.retryable) {
+            setTimeout(() => {
+              resolve(this.describeStack(cfnNestedStackParams, maxTry - 1, timeout));
+            }, timeout);
+          } else {
+            reject(e);
+          }
+        });
+    });
   }
 
   deleteResourceStack(envName) {
@@ -353,7 +375,49 @@ function showEvents(events) {
 
   if (events.length > 0) {
     console.log('\n');
-    console.log(columnify(events, { columns: ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'], showHeaders: false }));
+    console.log(columnify(events, {
+      columns: [
+        'ResourceStatus',
+        'LogicalResourceId',
+        'ResourceType',
+        'Timestamp',
+        'ResourceStatusReason',
+      ],
+      showHeaders: false,
+    }));
   }
 }
+
+// Unique events with last updated status
+function getUniqueStacksEvents(events) {
+  // sort in reverse chronological order
+  const sortedEvents = [...events].sort((a, b) => b.TimeStamp - a.TimeStamp);
+  return _.uniqBy(sortedEvents, 'PhysicalResourceId');
+}
+
+function filterNestedStacks(
+  uniqueEvents,
+  excludeWithStatus = CFN_SUCCESS_STATUS,
+  includeWithStatus = [],
+) {
+  const nestedStacks = [];
+  for (let i = 0; i < uniqueEvents.length; i += 1) {
+    const {
+      PhysicalResourceId: physicalResourceId,
+      ResourceType: resourceType,
+      ResourceStatus: status,
+    } = uniqueEvents[i];
+    if (physicalResourceId && !nestedStacks.includes(physicalResourceId)) {
+      if (resourceType === 'AWS::CloudFormation::Stack') {
+        if (includeWithStatus.includes(status)) {
+          nestedStacks.push(physicalResourceId);
+        } else if (excludeWithStatus.length && !excludeWithStatus.includes(status)) {
+          nestedStacks.push(physicalResourceId);
+        }
+      }
+    }
+  }
+  return nestedStacks;
+}
+
 module.exports = CloudFormation;
