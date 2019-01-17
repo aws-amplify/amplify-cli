@@ -49,17 +49,20 @@ function uploadAppSyncFiles(context, resources) {
       ));
     }
 
-    const resolverFiles = fs.readdirSync(resolverDir);
     const resolverBucket = getProjectBucket(context);
 
-    resolverFiles.forEach((file) => {
-      const resolverFilePath = path.join(resolverDir, file);
+    if (fs.existsSync(resolverDir)) {
+      const resolverFiles = fs.readdirSync(resolverDir);
 
-      uploadFilePromises.push(uploadAppSyncResolver(
-        context, file,
-        resolverFilePath, buildTimeStamp,
-      ));
-    });
+      resolverFiles.forEach((file) => {
+        const resolverFilePath = path.join(resolverDir, file);
+
+        uploadFilePromises.push(uploadAppSyncResolver(
+          context, file,
+          resolverFilePath, buildTimeStamp,
+        ));
+      });
+    }
 
     return Promise.all(uploadFilePromises)
       .then(() => {

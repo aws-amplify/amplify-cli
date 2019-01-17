@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.3"></a>
+## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.2.1-multienv.2...amplify-graphql-types-generator@0.2.1-multienv.3) (2019-01-16)
+
+
+### Bug Fixes
+
+* update graphql types generator snapshot ([40d9fe6](https://github.com/aws-amplify/amplify-cli/commit/40d9fe6))
+
+
+
+
 <a name="0.2.1-multienv.2"></a>
 ## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@0.2.1-multienv.1...amplify-graphql-types-generator@0.2.1-multienv.2) (2018-12-27)
 

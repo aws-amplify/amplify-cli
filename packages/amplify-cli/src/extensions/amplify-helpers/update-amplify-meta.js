@@ -5,6 +5,7 @@ const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 const {
   updateBackendConfigAfterResourceAdd,
+  updateBackendConfigDependsOn,
 } = require('./update-backend-config');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
@@ -111,6 +112,9 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
+  if (attribute === 'dependsOn') {
+    updateBackendConfigDependsOn(category, resourceName, value);
+  }
 }
 
 async function updateamplifyMetaAfterPush(resources) {

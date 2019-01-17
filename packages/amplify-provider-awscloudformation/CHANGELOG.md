@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.21"></a>
+## [0.2.1-multienv.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.20...amplify-provider-awscloudformation@0.2.1-multienv.21) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.2.1-multienv.20"></a>
+## [0.2.1-multienv.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.19...amplify-provider-awscloudformation@0.2.1-multienv.20) (2019-01-14)
+
+
+
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+<a name="0.2.1-multienv.19"></a>
+## [0.2.1-multienv.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.18...amplify-provider-awscloudformation@0.2.1-multienv.19) (2019-01-14)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add pinpoint eu-central-1 region ([da6d3fb](https://github.com/aws-amplify/amplify-cli/commit/da6d3fb))
+
+
+
+
+<a name="0.2.1-multienv.18"></a>
+## [0.2.1-multienv.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.17...amplify-provider-awscloudformation@0.2.1-multienv.18) (2019-01-10)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix profile loading ([#688](https://github.com/aws-amplify/amplify-cli/issues/688)) ([e96694b](https://github.com/aws-amplify/amplify-cli/commit/e96694b))
+
+
+
+
 <a name="0.2.1-multienv.17"></a>
 ## [0.2.1-multienv.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.16...amplify-provider-awscloudformation@0.2.1-multienv.17) (2019-01-08)
 

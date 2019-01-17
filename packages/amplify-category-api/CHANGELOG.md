@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.2.1-multienv.5...amplify-category-api@0.2.1-multienv.6) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-category-api
+
 <a name="0.2.1-multienv.5"></a>
 ## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@0.2.1-multienv.4...amplify-category-api@0.2.1-multienv.5) (2018-12-28)
 
