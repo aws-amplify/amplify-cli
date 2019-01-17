@@ -11,6 +11,7 @@ async function run(argv) {
     .brand('amplify')
     .src(__dirname)
     .plugins(localNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
+    .plugins(path.join(localNodeModulesDirPath, '../..'), { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .version() // provides default for version, v, --version, -v
     .create();
