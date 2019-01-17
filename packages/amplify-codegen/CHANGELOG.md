@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.41-beta.0"></a>
+## [0.1.41-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.40...amplify-codegen@0.1.41-beta.0) (2019-01-17)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
 <a name="0.1.40"></a>
 ## [0.1.40](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.38...amplify-codegen@0.1.40) (2019-01-08)
 

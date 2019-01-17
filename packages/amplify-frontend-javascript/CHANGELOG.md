@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36-beta.0"></a>
+## [0.1.36-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.35...amplify-frontend-javascript@0.1.36-beta.0) (2019-01-17)
+
+
+### Features
+
+* **amplify-frontend-javascript:** adding Ember config for amplify-cli ([ebdb1a8](https://github.com/aws-amplify/amplify-cli/commit/ebdb1a8))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.35-beta.0...amplify-frontend-javascript@0.1.35) (2018-12-20)
 

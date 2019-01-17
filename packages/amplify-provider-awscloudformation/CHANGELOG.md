@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.43-beta.0"></a>
+## [0.1.43-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.42...amplify-provider-awscloudformation@0.1.43-beta.0) (2019-01-17)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix master branch useragent ([#716](https://github.com/aws-amplify/amplify-cli/issues/716)) ([90c7475](https://github.com/aws-amplify/amplify-cli/commit/90c7475))
+
+
+
+
 <a name="0.1.42"></a>
 ## [0.1.42](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.42-beta.0...amplify-provider-awscloudformation@0.1.42) (2019-01-15)
 
