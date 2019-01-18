@@ -61,7 +61,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   let awsConfig;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
-    if (!isRoleSourceProfile && profileConfig.role_arn && profileConfig.source_profile) {
+    if (!isRoleSourceProfile && profileConfig.role_arn) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
@@ -259,8 +259,10 @@ function normalizeKeys(config) {
   if (config) {
     config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
+    config.sessionToken = config.sessionToken || config.aws_session_token;
     delete config.aws_access_key_id;
     delete config.aws_secret_access_key;
+    delete config.aws_session_token;
   }
   return config;
 }
