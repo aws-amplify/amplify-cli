@@ -117,7 +117,11 @@ class CloudFormation {
             nestedStackQueue = [...nestedStackQueue, ...newStacks];
           }
 
-          for (let i = 0; i < Math.min(CFN_MAX_CONCURRENT_REQUEST, nestedStackQueue.length); i++) {
+          for (
+            let i = 0;
+            i < Math.min(CFN_MAX_CONCURRENT_REQUEST, nestedStackQueue.length);
+            i += 1
+          ) {
             nestedStackEventPromises.push(self.getNestedStackEvents(nestedStackQueue[0]));
             if (nestedStackQueue.length > 1) {
               nestedStackQueue.shift();
