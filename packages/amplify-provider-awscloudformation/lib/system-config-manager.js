@@ -61,7 +61,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   let awsConfig;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
-    if (!isRoleSourceProfile && profileConfig.role_arn && profileConfig.source_profile) {
+    if (!isRoleSourceProfile && profileConfig.role_arn) {
       const roleCredentials =
         await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
