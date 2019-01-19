@@ -161,9 +161,13 @@ class CloudFormation {
 
         return nestedstackEvents;
       })
-      .catch(() =>
-        // ignore. We dont fail if we can't get the nested stack status
-        ({}));
+      .catch((e) => {
+        if (e && e.code === 'Throttling') {
+          return {};
+        }
+
+        Promise.reject(e);
+      });
   }
 
   updateResourceStack(dir, cfnFile) {
