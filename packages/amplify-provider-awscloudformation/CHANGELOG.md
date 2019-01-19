@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.43-beta.1"></a>
+## [0.1.43-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.43-beta.0...amplify-provider-awscloudformation@0.1.43-beta.1) (2019-01-19)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** batch cfn status polling ([fe1f707](https://github.com/aws-amplify/amplify-cli/commit/fe1f707))
+
+
+
+
 <a name="0.1.43-beta.0"></a>
 ## [0.1.43-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.1.42...amplify-provider-awscloudformation@0.1.43-beta.0) (2019-01-17)
 
