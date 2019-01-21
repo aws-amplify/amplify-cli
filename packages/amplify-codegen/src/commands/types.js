@@ -26,6 +26,10 @@ async function generateTypes(context, forceDownloadSchema) {
       const schema = path.resolve(cfg.schema);
       const output = cfg.amplifyExtension.generatedFileName;
       const target = cfg.amplifyExtension.codeGenTarget;
+
+      if (!output || output === '') {
+        return;
+      }
       if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,

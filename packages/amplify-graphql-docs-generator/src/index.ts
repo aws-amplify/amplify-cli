@@ -111,7 +111,7 @@ function registerHelpers() {
 
 function format(str: string, language: string = 'graphql'): string {
   const parserMap = {
-    javascript: 'babylon',
+    javascript: 'babel',
     graphql: 'graphql',
     typescript: 'typescript',
     flow: 'flow',
