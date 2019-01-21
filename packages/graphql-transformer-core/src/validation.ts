@@ -104,7 +104,7 @@ export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
         nodeMap,
         {},
         typeRef => {
-            throw new Error(`Type!! "${typeRef.name.value}" not found in document.`);
+            throw new Error(`Type "${typeRef.name.value}" not found in document.`);
         },
     )
 }
