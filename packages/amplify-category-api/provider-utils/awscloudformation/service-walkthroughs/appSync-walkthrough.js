@@ -103,7 +103,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   fs.mkdirSync(`${resourceDir}/${stacksDirName}`);
 
   // Write the default custom resources stack out to disk.
-  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.yml`);
+  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
   fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
