@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36-beta.0"></a>
+## [0.1.36-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.35...amplify-graphql-docs-generator@0.1.36-beta.0) (2019-01-21)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** change prettier parser to babel ([1d0aa22](https://github.com/aws-amplify/amplify-cli/commit/1d0aa22))
+
+
+
+
 <a name="0.1.35"></a>
 ## [0.1.35](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.1.35-beta.0...amplify-graphql-docs-generator@0.1.35) (2018-12-20)
 

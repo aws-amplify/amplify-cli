@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.41-beta.1"></a>
+## [0.1.41-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.41-beta.0...amplify-codegen@0.1.41-beta.1) (2019-01-21)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** hide types gen message for JS ([3fc23d0](https://github.com/aws-amplify/amplify-cli/commit/3fc23d0))
+
+
+
+
 <a name="0.1.41-beta.0"></a>
 ## [0.1.41-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.1.40...amplify-codegen@0.1.41-beta.0) (2019-01-17)
 
