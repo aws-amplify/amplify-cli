@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.1...amplify-graphql-docs-generator@0.2.1-multienv.2) (2019-01-22)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** change prettier parser to babel ([609f498](https://github.com/aws-amplify/amplify-cli/commit/609f498))
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.0...amplify-graphql-docs-generator@0.2.1-multienv.1) (2018-12-10)
 

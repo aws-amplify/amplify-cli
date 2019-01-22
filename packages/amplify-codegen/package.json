@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "0.2.1-multienv.5",
+  "version": "0.2.1-multienv.6",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-graphql-docs-generator": "^0.2.1-multienv.1",
+    "amplify-graphql-docs-generator": "^0.2.1-multienv.2",
     "amplify-graphql-types-generator": "^0.2.1-multienv.3",
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.1",
