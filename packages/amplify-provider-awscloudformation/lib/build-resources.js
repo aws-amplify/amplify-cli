@@ -73,11 +73,15 @@ function isPackageOutdated(resourceDir, lastPackageTimeStamp) {
   }
   return false;
 }
+
 function getSourceFiles(dir, ignoredDir) {
-  if (!fs.statSync(dir).isDirectory()) return dir;
-  return fs.readdirSync(dir)
-    .map(f => (f === ignoredDir ? null : getSourceFiles(path.join(dir, f))))
-    .filter(f => f != null);
+  if (!fs.statSync(dir).isDirectory()) return [dir];
+  return fs.readdirSync(dir).reduce((acc, f) => {
+    if (f === ignoredDir) {
+      return acc;
+    }
+    return acc.concat(getSourceFiles(path.join(dir, f)));
+  }, []);
 }
 
 module.exports = {
