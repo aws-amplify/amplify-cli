@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.23"></a>
+## [0.2.1-multienv.23](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.22...amplify-provider-awscloudformation@0.2.1-multienv.23) (2019-01-22)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** batch cfn status polling ([#723](https://github.com/aws-amplify/amplify-cli/issues/723)) ([732fda1](https://github.com/aws-amplify/amplify-cli/commit/732fda1))
+
+
+
+
 <a name="0.2.1-multienv.22"></a>
 ## [0.2.1-multienv.22](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@0.2.1-multienv.21...amplify-provider-awscloudformation@0.2.1-multienv.22) (2019-01-19)
 
