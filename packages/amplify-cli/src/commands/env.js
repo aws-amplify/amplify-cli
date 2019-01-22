@@ -7,8 +7,8 @@ module.exports = {
 
     const commands = [
       {
-        name: 'sync [--restore]',
-        description: 'Syncs your environment with the current cloud environment. Use the restore flag to overwrite your local backend configs with that of the cloud.',
+        name: 'pull [--restore]',
+        description: 'Pulls your environment with the current cloud environment. Use the restore flag to overwrite your local backend configs with that of the cloud.',
       },
       {
         name: 'checkout <env-name> [--restore]',
