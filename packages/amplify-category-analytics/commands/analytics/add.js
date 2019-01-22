@@ -18,7 +18,7 @@ module.exports = {
           providerPlugin: result.providerName,
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
-        if (!providerController) {
+        if (!providerController || !providerController.addResource) {
           context.print.error('Provider not configured for this category');
           return;
         }
