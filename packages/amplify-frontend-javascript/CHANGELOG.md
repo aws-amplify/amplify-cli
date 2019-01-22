@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.36"></a>
+## [0.1.36](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.36-beta.1...amplify-frontend-javascript@0.1.36) (2019-01-22)
+
+
+
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
 <a name="0.1.36-beta.1"></a>
 ## [0.1.36-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@0.1.36-beta.0...amplify-frontend-javascript@0.1.36-beta.1) (2019-01-19)
 
