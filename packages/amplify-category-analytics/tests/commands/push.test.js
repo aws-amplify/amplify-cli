@@ -10,11 +10,11 @@ describe('analytics push: ', () => {
       pushResources: mockPushResources,
     },
     parameters: {
-        first: 'analyticsresource'
+      first: 'analyticsresource',
     },
     print: {
-      info: jest.fn().mockImplementation((info) => console.log(info)),
-      error: jest.fn().mockImplementation((info) => console.log(info))
+      info: jest.fn().mockImplementation(info => console.log(info)),
+      error: jest.fn().mockImplementation(info => console.log(info)),
     },
   };
 
@@ -31,6 +31,5 @@ describe('analytics push: ', () => {
     await push.run(mockContext);
     expect(mockContext.print.error).toBeCalledWith('An error occurred when pushing the analytics resource');
   });
-
 });
 

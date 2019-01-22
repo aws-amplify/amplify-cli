@@ -5,14 +5,14 @@ describe('analytics remove: ', () => {
   const mockRemoveResourceWithError = jest.fn(() => Promise.reject('Error'));
   const mockContext = {
     amplify: {
-      removeResource: mockRemoveResource
+      removeResource: mockRemoveResource,
     },
     parameters: {
-        first: 'analyticsresource'
+      first: 'analyticsresource',
     },
     print: {
-      info: jest.fn().mockImplementation((info) => console.log(info)),
-      error: jest.fn().mockImplementation((info) => console.log(info))
+      info: jest.fn().mockImplementation(info => console.log(info)),
+      error: jest.fn().mockImplementation(info => console.log(info)),
     },
   };
 
@@ -29,5 +29,4 @@ describe('analytics remove: ', () => {
     await remove.run(mockContext);
     expect(mockContext.print.error).toBeCalledWith('An error occurred when removing the analytics resource');
   });
-
 });

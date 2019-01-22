@@ -5,14 +5,14 @@ describe('analytics help: ', () => {
   const mockRemoveResourceWithError = jest.fn(() => Promise.reject('Error'));
   const mockContext = {
     amplify: {
-      showHelp: jest.fn()
+      showHelp: jest.fn(),
     },
     parameters: {
-        first: 'analytics'
+      first: 'analytics',
     },
     print: {
-      info: jest.fn().mockImplementation((info) => console.log(info)),
-      error: jest.fn().mockImplementation((info) => console.log(info))
+      info: jest.fn().mockImplementation(info => console.log(info)),
+      error: jest.fn().mockImplementation(info => console.log(info)),
     },
   };
 
@@ -21,5 +21,4 @@ describe('analytics help: ', () => {
     await analyticsHelp.run(mockContext);
     expect(mockContext.amplify.showHelp).toBeCalled();
   });
-
 });

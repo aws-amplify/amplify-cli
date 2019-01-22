@@ -1,4 +1,4 @@
 node_modules
-__tests__
+tests
 __mockes__
 coverage

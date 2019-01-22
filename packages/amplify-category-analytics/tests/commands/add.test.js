@@ -3,7 +3,7 @@ const add = require('../../commands/analytics/add');
 describe('analytics add: ', () => {
   const mockExecuteProviderUtils = jest.fn();
   const mockGetProjectDetails = jest.fn();
-  const mockSelectionPrompt = jest.fn(() => Promise.resolve({service: 'Pinpoint' , providerName: 'awscloudformation'}));
+  const mockSelectionPrompt = jest.fn(() => Promise.resolve({ service: 'Pinpoint', providerName: 'awscloudformation' }));
   const mockSelectionPromptWithError = jest.fn(() => Promise.reject('Error'));
 
   const mockContext = {
@@ -11,30 +11,26 @@ describe('analytics add: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
-      updateamplifyMetaAfterResourceAdd: jest.fn()
+      updateamplifyMetaAfterResourceAdd: jest.fn(),
     },
     print: {
-      warning: jest.fn().mockImplementation((info) => console.log(info)),
-      info: jest.fn().mockImplementation((info) => console.log(info)),
-      error: jest.fn().mockImplementation((info) => console.log(info)),
-      success: jest.fn().mockImplementation((info) => console.log(info))
+      warning: jest.fn().mockImplementation(info => console.log(info)),
+      info: jest.fn().mockImplementation(info => console.log(info)),
+      error: jest.fn().mockImplementation(info => console.log(info)),
+      success: jest.fn().mockImplementation(info => console.log(info)),
     },
   };
 
 
   it('unsuccessful analytics add with Cloudformation provider', async () => {
-    jest.mock('../../provider-utils/awscloudformation/index', () => {
-      return undefined;
-    });
+    jest.mock('../../provider-utils/awscloudformation/index', () => undefined);
     await add.run(mockContext);
     expect(mockContext.print.error).toBeCalledWith('Provider not configured for this category');
   });
 
 
   it('successful analytics add with Cloudformation provider', async () => {
-    jest.mock('../../provider-utils/awscloudformation/index', () => {
-      return { addResource: () => Promise.resolve('analyticsresource') };
-    });
+    jest.mock('../../provider-utils/awscloudformation/index', () => ({ addResource: () => Promise.resolve('analyticsresource') }));
     await add.run(mockContext);
     expect(add.run).toBeDefined();
     expect(mockContext.amplify.serviceSelectionPrompt).toBeCalled();
@@ -47,6 +43,5 @@ describe('analytics add: ', () => {
     await add.run(mockContext);
     expect(mockContext.print.error).toBeCalledWith('There was an error adding the analytics resource');
   });
-
 });
 
