@@ -2,7 +2,7 @@ const constants = require('../constants');
 
 function normalizeInputParams(context) {
   let inputParams;
-  if (context.exeInfo.inputParams) {
+  if (context.exeInfo && context.exeInfo.inputParams) {
     if (context.exeInfo.inputParams[constants.Label]) {
       inputParams = context.exeInfo.inputParams[constants.Label];
     } else {
