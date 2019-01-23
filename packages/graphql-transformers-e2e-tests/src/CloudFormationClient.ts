@@ -45,6 +45,13 @@ export class CloudFormationClient {
             })
         }
 
+        // add env info to template
+        template.Parameters.env = {
+            "Type": "String",
+            "Description": "env name",
+            "Default": "NONE"
+        };
+
         return await promisify<CloudFormation.Types.CreateStackInput, CloudFormation.Types.CreateStackOutput>(
             this.client.createStack,
             {
