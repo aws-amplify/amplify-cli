@@ -2,7 +2,7 @@ import {
     ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode,
     InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode,
     EnumTypeDefinitionNode, ObjectTypeExtensionNode,
-    TypeDefinitionNode
+    TypeDefinitionNode,
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
@@ -248,10 +248,21 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode): InputObjec
     }
 }
 
-export function makeModelXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeModelXFilterInputObject(
+    obj: ObjectTypeDefinitionNode,
+    ctx: TransformerContext
+): InputObjectTypeDefinitionNode {
     const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value)
     const fields: InputValueDefinitionNode[] = obj.fields
-        .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
+        .filter((field: FieldDefinitionNode) => {
+            const fieldType = ctx.getType(getBaseType(field.type))
+            if (
+                isScalar(field.type) ||
+                (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
+            ) {
+                return true;
+            }
+        })
         .map(
             (field: FieldDefinitionNode) => ({
                 kind: Kind.INPUT_VALUE_DEFINITION,
@@ -313,6 +324,53 @@ export function makeModelXFilterInputObject(obj: ObjectTypeDefinitionNode): Inpu
         fields,
         directives: []
     }
+}
+
+export function makeEnumFilterInputObject(
+    obj: ObjectTypeDefinitionNode,
+    ctx: TransformerContext
+) : InputObjectTypeDefinitionNode[] {
+    const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value)
+     return obj.fields
+        .filter((field: FieldDefinitionNode) => {
+            const fieldType = ctx.getType(getBaseType(field.type))
+            return (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
+        })
+        .map((enumField: FieldDefinitionNode) => {
+            const typeName = getBaseType(enumField.type);
+            const name = ModelResourceIDs.ModelFilterInputTypeName(typeName);
+            const fields = [];
+
+            fields.push({
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: 'eq'
+                },
+                type: makeNamedType(typeName),
+                directives: []
+            });
+
+            fields.push({
+                kind: Kind.INPUT_VALUE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: 'ne'
+                },
+                type: makeNamedType(typeName),
+                directives: []
+            });
+
+            return ({
+                kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+                name: {
+                    kind: 'Name',
+                    value: name
+                },
+                fields,
+                directives: [],
+            } as InputObjectTypeDefinitionNode)
+        })
 }
 
 export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
