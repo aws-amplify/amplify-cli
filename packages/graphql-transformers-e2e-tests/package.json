@@ -17,6 +17,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "amazon-cognito-identity-js": "^3.0.7",
     "axios": "^0.18.0",
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",

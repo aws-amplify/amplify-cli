@@ -370,7 +370,7 @@ export class ModelConnectionTransformer extends Transformer {
         }
 
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(field)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }
