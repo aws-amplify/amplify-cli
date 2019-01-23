@@ -7,7 +7,7 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObject
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -129,7 +129,7 @@ export class DynamoDBModelTransformer extends Transformer {
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID)
         )
 
-        this.createQueries(def, directive, ctx)
+        this.createQueries(def, directive, ctx, nonModelArray)
         this.createMutations(def, directive, ctx, nonModelArray)
         this.createSubscriptions(def, directive, ctx)
     }
@@ -219,7 +219,12 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addMutationFields(mutationFields)
     }
 
-    private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createQueries = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+        nonModelArray: ObjectTypeDefinitionNode[]
+    ) => {
         const typeName = def.name.value
         const queryFields = []
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
@@ -277,7 +282,7 @@ export class DynamoDBModelTransformer extends Transformer {
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
-            this.generateFilterInputs(ctx, def)
+            this.generateFilterInputs(ctx, def, nonModelArray)
 
             queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
         }
@@ -396,7 +401,11 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addObjectExtension(makeModelConnectionType(def.name.value))
     }
 
-    private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    private generateFilterInputs(
+        ctx: TransformerContext,
+        def: ObjectTypeDefinitionNode,
+        nonModelArray: ObjectTypeDefinitionNode[]
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -404,8 +413,16 @@ export class DynamoDBModelTransformer extends Transformer {
             }
         }
 
+        // Create the Enum filters
+        const enumFilters = makeEnumFilterInputObject(def, nonModelArray, ctx);
+        for (const filter of enumFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
+        }
+
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(def)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(def, nonModelArray, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }
