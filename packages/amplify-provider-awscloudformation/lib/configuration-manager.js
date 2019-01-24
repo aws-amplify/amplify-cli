@@ -51,7 +51,6 @@ async function carryOutConfigAction(context) {
     default:
       result = context;
   }
-
   return result;
 }
 
@@ -361,13 +360,23 @@ async function loadConfiguration(context, awsClient) {
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
     if (config.useProfile) {
-      const awsConfig = await systemConfigManager.getProfiledAwsConfig(config.profileName);
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
       awsClient.config.update(awsConfig);
     } else {
       awsClient.config.loadFromPath(config.awsConfigFilePath);
     }
   }
   return awsClient;
+}
+
+async function resetCache(context) {
+  const projectConfigInfo = getCurrentConfig(context);
+  if (projectConfigInfo.configLevel === 'project') {
+    const { config } = projectConfigInfo;
+    if (config.useProfile) {
+      await systemConfigManager.resetCache(context, config.profileName);
+    }
+  }
 }
 
 function resolveRegion() {
@@ -459,5 +468,6 @@ module.exports = {
   onInitSuccessful,
   configure,
   loadConfiguration,
+  resetCache,
   resolveRegion,
 };
