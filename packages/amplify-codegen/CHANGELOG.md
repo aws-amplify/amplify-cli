@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.7"></a>
+## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.6...amplify-codegen@0.2.1-multienv.7) (2019-01-24)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
 <a name="0.2.1-multienv.6"></a>
 ## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.5...amplify-codegen@0.2.1-multienv.6) (2019-01-22)
 
