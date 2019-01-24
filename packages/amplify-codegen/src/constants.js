@@ -56,4 +56,5 @@ module.exports = {
   INFO_MESSAGE_DOWNLOAD_ERROR: 'Downloading schema failed',
   INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
+  INFO_MESSAGE_ADD_ERROR: 'amplify codegen add takes only apiId as parameter. \n$ amplify codegen add [--apiId <API_ID>]',
 };

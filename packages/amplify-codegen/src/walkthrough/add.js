@@ -19,10 +19,9 @@ const {
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
 async function addWalkThrough(context, skip = []) {
-  normalizeInputParams(context);
   let inputParams;
   let yesFlag = false;
-  if (context.exeInfo.inputParams) {
+  if (context.exeInfo && context.exeInfo.inputParams) {
     normalizeInputParams(context);
     inputParams = context.exeInfo.inputParams[constants.Label];
     yesFlag = context.exeInfo.inputParams.yes;
