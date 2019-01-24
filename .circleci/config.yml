@@ -190,6 +190,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - multienv
           requires:
             - build
       - deploy:
