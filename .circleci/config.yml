@@ -181,6 +181,7 @@ workflows:
             branches:
               only:
                 - master
+                - multienv
           requires:
             - build
       - integration_test:
