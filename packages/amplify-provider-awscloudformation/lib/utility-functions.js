@@ -22,9 +22,9 @@ module.exports = {
       ...options,
       handleMigration: resources.length ?
         (() => updateStackForAPIMigration(context, category, resources[0])) :
-        undefined
-    }
-    return transformGraphQLSchema(context, optionsWithUpdateHandler)
+        undefined,
+    };
+    return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,

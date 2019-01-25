@@ -381,6 +381,9 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
 interface MigrationOptions {
     projectDirectory: string
 }
+interface MigrationInfo {
+    old: AmplifyApiV1Project
+}
 export async function migrateAPIProject(opts: MigrationOptions) {
     const projectDirectory = opts.projectDirectory;
     const projectConfig = await readV1ProjectConfiguration(projectDirectory);
@@ -388,6 +391,26 @@ export async function migrateAPIProject(opts: MigrationOptions) {
     await updateToIntermediateProject(projectDirectory, projectConfig, transformConfig);
     // const result = await updateProject()
     // TODO: Update stack without resolvers/iam roles/etc.
+    return {
+        old: projectConfig
+    }
+}
+export function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
+    // Revert the v1 style CF doc.
+    const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
+    fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
+
+    // Remove the CF doc in build.
+    const cloudFormationTemplateOutputPath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
+    fs.unlinkSync(cloudFormationTemplateOutputPath);
+
+    // Revert the parameter files.
+    const parametersInputPath = path.join(directory, PARAMETERS_FILE_NAME);
+    fs.writeFileSync(parametersInputPath, JSON.stringify(oldProject.parameters, null, 4));
+
+    // Revert the config file.
+    const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
+    fs.unlinkSync(configFilePath);
 }
 
 interface AmplifyApiV1Project {

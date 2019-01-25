@@ -13,13 +13,11 @@ const ModelConnectionTransformer = require('graphql-connection-transformer').def
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const providerName = require('./constants').ProviderName;
-const Cloudformation = require('../src/aws-utils/aws-cfn');
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
-const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
 function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
@@ -35,37 +33,41 @@ function apiProjectIsFromOldVersion(pathToProject) {
 /**
  * API migration happens in a few steps. First we calculate which resources need
  * to remain in the root stack (DDB tables, ES Domains, etc) and write them to
- * .transform.conf.json. We then call CF's update stack on the root stack such 
+ * .transform.conf.json. We then call CF's update stack on the root stack such
  * that only the resources that need to be in the root stack remain there
  * (this deletes resolvers from the schema). We then compile the project with
  * the new implementation and call update stack again.
- * @param {*} context 
- * @param {*} resourceDir 
+ * @param {*} context
+ * @param {*} resourceDir
  */
 async function migrateProject(context, options) {
-  const cfn = await new Cloudformation(context, undefined, 'api:u ');
-  const backEndDir = context.amplify.pathManager.getBackendDirPath();
-  const resourceDir = options.resourceDir;
+  const { resourceDir } = options;
   const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
+  let oldProjectConfig;
   try {
-    context.print.info("Migrating API.");
-    await TransformPackage.migrateAPIProject({
-      projectDirectory: resourceDir
+    context.print.info('Migrating API. This may take a few minutes.');
+    const { old } = await TransformPackage.migrateAPIProject({
+      projectDirectory: resourceDir,
     });
-    const result = await updateAndWaitForStack()
-    context.print.info("Finished stage 1.");
+    oldProjectConfig = old;
+    await updateAndWaitForStack();
   } catch (e) {
-    context.print.error(`Error migrating API to intermediate stage.`)
+    context.print.error('Error migrating API to intermediate stage.');
     throw e;
   }
   try {
-    const transformed = await transformGraphQLSchema(context, options);
-    const result = await updateAndWaitForStack()
-    context.print.info("Finished migrating API.");
+    throw new Error('Fake');
+    await transformGraphQLSchema(context, options);
+    const result = await updateAndWaitForStack();
+    context.print.info('Finished migrating API.');
     return result;
   } catch (e) {
-    context.print.error(`Error migrating to final stage.`)
+    context.print.error('Error migrating to final stage.');
     // TODO: Rollback final stage.
+    context.print.error('Reverting API migration.');
+    TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
+    await updateAndWaitForStack();
+    context.print.error('API successfully reverted.');
   }
 }
 
@@ -121,7 +123,7 @@ async function transformGraphQLSchema(context, options) {
   const migrateOptions = {
     ...options,
     resourceDir,
-    migrate: false
+    migrate: false,
   };
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);
@@ -134,9 +136,8 @@ async function transformGraphQLSchema(context, options) {
     });
     if (!IsOldApiProject) {
       return;
-    } else {
-      return await migrateProject(context, migrateOptions);
     }
+    return await migrateProject(context, migrateOptions);
   }
 
   const buildDir = `${resourceDir}/build`;
