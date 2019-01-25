@@ -29,6 +29,7 @@ export class ResourceConstants {
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
+        APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticsearchDomainName',
@@ -55,7 +56,9 @@ export class ResourceConstants {
         HasEnvironmentParameter: 'HasEnvironmentParameter',
 
         // Auth
-        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
+        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
+        APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
+        APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
     }
     public static OUTPUTS = {
 

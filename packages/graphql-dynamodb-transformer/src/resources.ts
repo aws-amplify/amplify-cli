@@ -14,6 +14,12 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
                 Description: 'The name of the AppSync API',
                 Default: 'AppSyncSimpleTransform'
+            }),
+            [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
+                Description: 'The epoch time in seconds when the API Key should expire.' +
+                    ' Setting this to 0 will default to 1 week from the deployment date.' +
+                    ' Setting this to -1 will not create an API Key.',
+                Default: 0
             })
         }
     }
@@ -32,6 +38,15 @@ export class ResourceFactory {
                 [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
+            },
+            Conditions: {
+                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne]:
+                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive]:
+                    Fn.And([
+                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
+                    ])
             }
         }
     }
@@ -58,9 +73,16 @@ export class ResourceFactory {
     }
 
     public makeAppSyncApiKey() {
+        const oneWeekFromNowInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * 7 /* d */
+        const nowEpochTime = Math.floor(Date.now() / 1000)
         return new AppSync.ApiKey({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-        })
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Expires: Fn.If(
+                ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive,
+                Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch),
+                nowEpochTime + oneWeekFromNowInSeconds
+            ),
+        }).condition(ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne)
     }
 
     /**
@@ -86,13 +108,14 @@ export class ResourceFactory {
         }
     }
 
-    public makeApiKeyOutput(): Output {
+    public makeApiKeyOutput(): any {
         return {
             Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
             Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
-            }
+            },
+            Condition: ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne
         }
     }
 
