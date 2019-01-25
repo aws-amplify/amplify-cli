@@ -17,18 +17,19 @@ async function run(context, envName) {
     throw new Error('AWS credentials missing for the specified environment');
   }
 
-  const awscfn = await getConfiguredAwsCfnClient(awsConfigInfo);
+  const awscfn = await getConfiguredAwsCfnClient(context, awsConfigInfo);
 
   return new Cloudformation(context, awscfn)
     .then(cfnItem => cfnItem.deleteResourceStack(envName));
 }
 
-async function getConfiguredAwsCfnClient(awsConfigInfo) {
+async function getConfiguredAwsCfnClient(context, awsConfigInfo) {
   process.env.AWS_SDK_LOAD_CONFIG = true;
   const aws = require('aws-sdk');
   let awsconfig;
   if (awsConfigInfo.config.useProfile) {
-    awsconfig = await systemConfigManager.getProfiledAwsConfig(awsConfigInfo.config.profileName);
+    awsconfig = await systemConfigManager
+      .getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
   } else {
     awsconfig = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
