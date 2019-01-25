@@ -32,7 +32,10 @@ async function run(context, category, resourceName) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => transformGraphQLSchema(context, { noConfig: true }))
+    .then(() => transformGraphQLSchema(context, { 
+      noConfig: true,
+      handleMigration: () => updateStackForAPIMigration(context, category, resourceName)
+    }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
@@ -86,6 +89,40 @@ async function run(context, category, resourceName) {
     })
     .catch((err) => {
       spinner.fail('An error occurred when pushing the resources to the cloud');
+      throw err;
+    });
+}
+
+async function updateStackForAPIMigration(context, category, resourceName) {
+  const {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    resourcesToBeDeleted,
+    allResources,
+  } = await context.amplify.getResourceStatus(category, resourceName, providerName);
+
+  const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  let projectDetails = context.amplify.getProjectDetails();
+
+  validateCfnTemplates(context, resources);
+
+  return packageResources(context, resources)
+    .then(() => uploadAppSyncFiles(context, resources, { APIKeyExpirationEpoch: -1 }))
+    .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
+    .then(() => {
+      spinner.start();
+      projectDetails = context.amplify.getProjectDetails();
+      if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+        return updateCloudFormationNestedStack(
+          context,
+          formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated,
+        );
+      }
+    }).then(res => {
+      spinner.stop();
+      return res;
+    }).catch((err) => {
+      spinner.fail('An error occurred when pushing the resources to the cloud during the intermediate migration.');
       throw err;
     });
 }
@@ -390,4 +427,5 @@ function formNestedStack(context, projectDetails) {
 
 module.exports = {
   run,
+  updateStackForAPIMigration
 };

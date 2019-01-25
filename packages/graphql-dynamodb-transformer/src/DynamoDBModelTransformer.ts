@@ -133,11 +133,11 @@ export class DynamoDBModelTransformer extends Transformer {
         )
         ctx.setResource(
             iamRoleLogicalID,
-            this.resources.makeIAMRole(tableLogicalID)
+            this.resources.makeIAMRole(typeName)
         )
         ctx.setResource(
             ModelResourceIDs.ModelTableDataSourceID(typeName),
-            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID)
+            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
 
         this.createQueries(def, directive, ctx)

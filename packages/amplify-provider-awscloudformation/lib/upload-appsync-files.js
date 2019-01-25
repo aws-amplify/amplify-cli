@@ -13,7 +13,7 @@ function getProjectBucket(context) {
   return projectBucket;
 }
 
-async function uploadAppSyncFiles(context, resources) {
+async function uploadAppSyncFiles(context, resources, defaultParams = {}) {
   resources = resources.filter(resource => resource.service === 'AppSync');
   const buildTimeStamp = new Date().getTime().toString();
   // There can only be one appsync resource
@@ -49,7 +49,7 @@ async function uploadAppSyncFiles(context, resources) {
       try {
         currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
       } catch (e) {
-        currentParameters = {};
+        currentParameters = defaultParams;
       }
     }
 
@@ -57,8 +57,10 @@ async function uploadAppSyncFiles(context, resources) {
       S3DeploymentBucket: projectBucket,
       S3DeploymentRootKey: deploymentRootKey,
     });
+    Object.assign(currentParameters, defaultParams);
     const jsonString = JSON.stringify(currentParameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    const parametersOutputFilePath = path.join(backEndDir, category, resourceName, 'build', 'parameters.json');
+    fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
   }
 }
 
