@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.1.40-beta.0"></a>
+## [0.1.40-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.39...amplify-category-hosting@0.1.40-beta.0) (2019-01-25)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add mfa support ([#718](https://github.com/aws-amplify/amplify-cli/issues/718)) ([2dce4c5](https://github.com/aws-amplify/amplify-cli/commit/2dce4c5))
+
+
+
+
 <a name="0.1.39"></a>
 ## [0.1.39](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.1.39-beta.0...amplify-category-hosting@0.1.39) (2019-01-15)
 
