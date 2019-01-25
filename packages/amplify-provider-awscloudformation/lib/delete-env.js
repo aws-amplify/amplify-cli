@@ -28,7 +28,8 @@ async function getConfiguredAwsCfnClient(context, awsConfigInfo) {
   const aws = require('aws-sdk');
   let awsconfig;
   if (awsConfigInfo.config.useProfile) {
-    awsconfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+    awsconfig = await systemConfigManager
+      .getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
   } else {
     awsconfig = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
