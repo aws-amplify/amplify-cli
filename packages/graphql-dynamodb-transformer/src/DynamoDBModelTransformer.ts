@@ -84,6 +84,7 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
+        ctx.mergeConditions(template.Conditions)
     }
 
     /**

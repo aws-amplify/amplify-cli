@@ -33,8 +33,6 @@ export async function buildProject(opts: ProjectOptions) {
  * @param idsToHoist The logical ids to hoist into the root of the template.
  */
 function adjustBuildForMigration(resources: DeploymentResources, idsToHoist: string[]): DeploymentResources {
-    console.log(`Hoisting Ids`)
-    console.log(idsToHoist)
     if (idsToHoist.length === 0) {
         return resources;
     }
@@ -45,8 +43,6 @@ function adjustBuildForMigration(resources: DeploymentResources, idsToHoist: str
             if (idMap[resourceKey]) {
                 const resource = template.Resources[resourceKey];
                 const replaced = formatTableForMigration(resource);
-                console.log('Replacing')
-                console.log(JSON.stringify(replaced, null, 4));
                 resources.rootStack.Resources[resourceKey] = replaced;
                 delete template.Resources[resourceKey];
             }
@@ -408,7 +404,6 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
     // Get the template
     const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
-    console.log(`Reading CF template from ${cloudFormationTemplatePath}`);
     const cloudFormationTemplateExists = await exists(cloudFormationTemplatePath);
     if (!cloudFormationTemplateExists) {
         throw new Error(`Could not find cloudformation template at ${cloudFormationTemplatePath}`);
@@ -595,7 +590,6 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
 
     // Write the new cloudformation file to the build.
     const cloudFormationTemplateOutputPath = path.join(projectDirectory, 'build', CLOUDFORMATION_FILE_NAME);
-    console.log(`Writing CF template from ${cloudFormationTemplateOutputPath}`);
     fs.writeFileSync(cloudFormationTemplateOutputPath, JSON.stringify(templateCopy, null, 4));
 
     // We write the filtered values at the top level and the deployment
@@ -603,8 +597,6 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
     // top level parameters.json to hold the promise that we do not change
     // anything outside of build/
     const parametersInputPath = path.join(projectDirectory, PARAMETERS_FILE_NAME);
-    console.log(`Writing these params to ${parametersInputPath}`);
-    console.log(filteredParameterValues)
     fs.writeFileSync(parametersInputPath, JSON.stringify(filteredParameterValues, null, 4));
 
     // If the resolvers & stacks directories do not exist, create them.
