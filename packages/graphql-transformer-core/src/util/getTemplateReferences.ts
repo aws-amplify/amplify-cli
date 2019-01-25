@@ -17,7 +17,15 @@ export function getTemplateReferences(template: Template): ReferenceMap {
 }
 function walk(node: any, path: string[]): ReferenceMap {
     const jsonNode = node && typeof node.toJSON === 'function' ? node.toJSON() : node;
-    if (typeof jsonNode === 'object') {
+    if (Array.isArray(jsonNode)) {
+        let refsFromAllKeys = {}
+        for (let i = 0; i < jsonNode.length; i++) {
+            const n = jsonNode[i]
+            const refsForKey = walk(n, path.concat(`${i}`))
+            refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey)
+        }
+        return refsFromAllKeys
+    } else if (typeof jsonNode === 'object') {
         // tslint:disable-next-line
         const refValue = jsonNode["Ref"];
         const getAtt = jsonNode["Fn::GetAtt"];
@@ -33,14 +41,6 @@ function walk(node: any, path: string[]): ReferenceMap {
         let refsFromAllKeys = {}
         for (const key of Object.keys(jsonNode)) {
             const refsForKey = walk(jsonNode[key], path.concat(key))
-            refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey)
-        }
-        return refsFromAllKeys
-    } else if (Array.isArray(jsonNode)) {
-        let refsFromAllKeys = {}
-        for (let i = 0; i < jsonNode.length; i++) {
-            const n = jsonNode[i]
-            const refsForKey = walk(n, path.concat(`${i}`))
             refsFromAllKeys = mergeReferenceMaps(refsFromAllKeys, refsForKey)
         }
         return refsFromAllKeys

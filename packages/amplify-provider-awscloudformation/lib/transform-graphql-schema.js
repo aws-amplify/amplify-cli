@@ -1,6 +1,7 @@
 // const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
+const inquirer = require('inquirer');
 
 const TransformPackage = require('graphql-transformer-core');
 
@@ -12,16 +13,59 @@ const ModelConnectionTransformer = require('graphql-connection-transformer').def
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const providerName = require('./constants').ProviderName;
+const Cloudformation = require('../src/aws-utils/aws-cfn');
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
+const nestedStackFileName = 'nested-cloudformation-stack.yml';
 
 function checkForCommonIssues(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
     throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API.
 Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
+  }
+}
+
+function apiProjectIsFromOldVersion(pathToProject) {
+  return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/.transform.conf.json`);
+}
+
+/**
+ * API migration happens in a few steps. First we calculate which resources need
+ * to remain in the root stack (DDB tables, ES Domains, etc) and write them to
+ * .transform.conf.json. We then call CF's update stack on the root stack such 
+ * that only the resources that need to be in the root stack remain there
+ * (this deletes resolvers from the schema). We then compile the project with
+ * the new implementation and call update stack again.
+ * @param {*} context 
+ * @param {*} resourceDir 
+ */
+async function migrateProject(context, options) {
+  const cfn = await new Cloudformation(context, undefined, 'api:u ');
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = options.resourceDir;
+  const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
+  try {
+    context.print.info("Migrating API.");
+    await TransformPackage.migrateAPIProject({
+      projectDirectory: resourceDir
+    });
+    const result = await updateAndWaitForStack()
+    context.print.info("Finished stage 1.");
+  } catch (e) {
+    context.print.error(`Error migrating API to intermediate stage.`)
+    throw e;
+  }
+  try {
+    const transformed = await transformGraphQLSchema(context, options);
+    const result = await updateAndWaitForStack()
+    context.print.info("Finished migrating API.");
+    return result;
+  } catch (e) {
+    context.print.error(`Error migrating to final stage.`)
+    // TODO: Rollback final stage.
   }
 }
 
@@ -69,6 +113,29 @@ async function transformGraphQLSchema(context, options) {
       parameters = JSON.parse(fs.readFileSync(parametersFilePath));
     } catch (e) {
       parameters = {};
+    }
+  }
+
+  const isCLIMigration = options.migrate;
+  const isOldApiVersion = apiProjectIsFromOldVersion(resourceDir);
+  const migrateOptions = {
+    ...options,
+    resourceDir,
+    migrate: false
+  };
+  if (isCLIMigration && isOldApiVersion) {
+    return await migrateProject(context, migrateOptions);
+  } else if (isOldApiVersion) {
+    const { IsOldApiProject } = await inquirer.prompt({
+      name: 'IsOldApiProject',
+      type: 'confirm',
+      message: 'We detected an API that was initialized using an older version of the CLI. Do you want to migrate the API so that it is compatible with the latest version of the CLI?',
+      default: false,
+    });
+    if (!IsOldApiProject) {
+      return;
+    } else {
+      return await migrateProject(context, migrateOptions);
     }
   }
 

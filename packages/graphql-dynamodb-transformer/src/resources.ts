@@ -1,4 +1,4 @@
-import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs } from 'cloudform-types'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction } from 'cloudform-types'
 import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
@@ -117,15 +117,7 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }] : [{ AttributeName: hashKey, AttributeType: 'S' }]
         return new DynamoDB.Table({
-            TableName: Fn.If(
-                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
-                Fn.Join('-', [
-                    typeName,
-                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-                    Fn.Ref(ResourceConstants.PARAMETERS.Env)
-                ]),
-                Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
-            ),
+            TableName: this.dynamoDBTableName(typeName),
             KeySchema: keySchema,
             AttributeDefinitions: attributeDefinitions,
             StreamSpecification: {
@@ -138,23 +130,35 @@ export class ResourceFactory {
         })
     }
 
+    private dynamoDBTableName(typeName: string): IntrinsicFunction {
+        return Fn.If(
+            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+            Fn.Join('-', [
+                typeName,
+                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                Fn.Ref(ResourceConstants.PARAMETERS.Env)
+            ]),
+            Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+        )
+    }
+
     /**
      * Create a single role that has access to all the resources created by the
      * transform.
      * @param name  The name of the IAM role to create.
      */
-    public makeIAMRole(tableId: string) {
+    public makeIAMRole(typeName: string) {
         return new IAM.Role({
             RoleName: Fn.If(
                 ResourceConstants.CONDITIONS.HasEnvironmentParameter,
                 Fn.Join('-', [
-                    tableId.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+                    typeName.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
                     'role', // 4
                     Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
                     Fn.Ref(ResourceConstants.PARAMETERS.Env) // 10
                 ]),
                 Fn.Join('-', [
-                    tableId.slice(0, 31), // max of 64. 64-26-4-3 = 31
+                    typeName.slice(0, 31), // max of 64. 64-26-4-3 = 31
                     'role',
                     Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
                 ])
@@ -190,8 +194,18 @@ export class ResourceFactory {
                                     'dynamodb:UpdateItem'
                                 ],
                                 Resource: [
-                                    Fn.GetAtt(tableId, 'Arn'),
-                                    Fn.Join('/', [Fn.GetAtt(tableId, 'Arn'), '*'])
+                                    Fn.Sub(
+                                        'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}',
+                                        {
+                                            tablename: this.dynamoDBTableName(typeName)
+                                        }
+                                    ),
+                                    Fn.Sub(
+                                        'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*',
+                                        {
+                                            tablename: this.dynamoDBTableName(typeName)
+                                        }
+                                    )
                                 ]
                             }
                         ]
@@ -205,17 +219,17 @@ export class ResourceFactory {
      * Given the name of a data source and optional logical id return a CF
      * spec for a data source pointing to the dynamodb table.
      */
-    public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string) {
+    public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string, typeName: string) {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Name: tableId,
             Type: 'AMAZON_DYNAMODB',
             ServiceRoleArn: Fn.GetAtt(iamRoleLogicalID, 'Arn'),
             DynamoDBConfig: {
-                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(tableId, 'Arn'))),
-                TableName: Fn.Ref(tableId)
+                AwsRegion: Refs.Region,
+                TableName: this.dynamoDBTableName(typeName)
             }
-        }).dependsOn([tableId, iamRoleLogicalID])
+        }).dependsOn([iamRoleLogicalID])
     }
 
     /**
