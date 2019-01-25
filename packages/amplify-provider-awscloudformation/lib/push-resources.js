@@ -32,9 +32,9 @@ async function run(context, category, resourceName) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => transformGraphQLSchema(context, { 
+    .then(() => transformGraphQLSchema(context, {
       noConfig: true,
-      handleMigration: () => updateStackForAPIMigration(context, category, resourceName)
+      handleMigration: () => updateStackForAPIMigration(context, category, resourceName),
     }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
@@ -118,10 +118,12 @@ async function updateStackForAPIMigration(context, category, resourceName) {
           formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated,
         );
       }
-    }).then(res => {
+    })
+    .then((res) => {
       spinner.stop();
       return res;
-    }).catch((err) => {
+    })
+    .catch((err) => {
       spinner.fail('An error occurred when pushing the resources to the cloud during the intermediate migration.');
       throw err;
     });
@@ -427,5 +429,5 @@ function formNestedStack(context, projectDetails) {
 
 module.exports = {
   run,
-  updateStackForAPIMigration
+  updateStackForAPIMigration,
 };
