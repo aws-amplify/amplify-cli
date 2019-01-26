@@ -1,0 +1,44 @@
+{
+  "name": "amplify-e2e-tests",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "e2e": "jest --maxWorkers=3"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^23.1.1",
+    "@types/node": "^10.3.4",
+    "aws-amplify": "^1.1.4",
+    "aws-sdk": "^2.259.1",
+    "jest": "^23.1.0",
+    "node-fetch": "^2.2.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "nexpect": "^0.5.0",
+    "@types/nexpect": "^0.4.30",
+    "rimraf": "^2.6.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(tests/.*.test.*)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
