@@ -19,7 +19,7 @@ const defaultSettings = {
 export default function initProject(
   cwd: string,
   settings: Object,
-  verbose: Boolean = isCI() ? false : true
+  verbose: Boolean = true //isCI() ? false : true
 ) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
