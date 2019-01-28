@@ -4,14 +4,25 @@ import { homedir } from 'os';
 import { join } from 'path';
 
 import configure from './configure';
+import { isCI } from './utils'
 
 const AWS_CREDENTIAL_PATH = join(homedir(), '.aws', 'credentials');
 
 async function setUpAmplify() {
-  if (!existsSync(AWS_CREDENTIAL_PATH)) {
-    const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = config().parsed;
+  if (existsSync(AWS_CREDENTIAL_PATH)) { // AWS isn't configured
+    let AWS_ACCESS_KEY_ID;
+    let AWS_SECRET_ACCESS_KEY;
+    if (!isCI()) {
+      // Local testing. Use .env file to get the AWS credentials
+      const result = config();
+      AWS_ACCESS_KEY_ID = result.parsed.AWS_ACCESS_KEY_ID;
+      AWS_SECRET_ACCESS_KEY = result.parsed.AWS_SECRET_ACCESS_KEY;
+    } else {
+      AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+      AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    }
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
-      throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env');
+      throw new Error('Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env or as Environment variable in CircleCI');
     }
     await configure({
       accessKeyId: AWS_ACCESS_KEY_ID,
@@ -24,5 +35,10 @@ async function setUpAmplify() {
 }
 
 process.nextTick(async () => {
-  await setUpAmplify();
+  try {
+    await setUpAmplify();
+  } catch (e) {
+    console.log(e);
+    process.exit(1);
+  }
 });
