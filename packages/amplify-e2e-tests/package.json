@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "e2e": "npm run setup && jest --maxWorkers=3",
+    "e2e": "jest --maxWorkers=3",
     "setup": "tsc && node ./lib/configure_tests.js",
     "clean": "rm -rf ./lib"
   },
