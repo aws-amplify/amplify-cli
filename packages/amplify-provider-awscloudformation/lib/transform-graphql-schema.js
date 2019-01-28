@@ -56,7 +56,6 @@ async function migrateProject(context, options) {
     throw e;
   }
   try {
-    throw new Error('Fake');
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack();
     context.print.info('Finished migrating API.');

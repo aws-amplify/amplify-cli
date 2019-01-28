@@ -568,7 +568,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
     }
 
     const filteredParameterValues = {};
-    const filteredTemplateParamters = {
+    const filteredTemplateParameters = {
         env: {
             Type: "String",
             Description: "The environment name. e.g. Dev, Test, or Production",
@@ -592,7 +592,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
                 break;
             default: {
                 const param = project.template.Parameters[key];
-                filteredTemplateParamters[key] = param;
+                filteredTemplateParameters[key] = param;
                 if (project.parameters[key]) {
                     filteredParameterValues[key] = project.parameters[key];
                 }
@@ -604,7 +604,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
     const templateCopy = {
         ...project.template,
         Resources: filteredResources,
-        Parameters: filteredTemplateParamters
+        Parameters: filteredTemplateParameters
     }
 
     // Remove the old cloudformation file.
