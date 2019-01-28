@@ -37,6 +37,7 @@ async function setUpAmplify() {
 process.nextTick(async () => {
   try {
     await setUpAmplify();
+    process.exit(0);
   } catch (e) {
     console.log(e);
     process.exit(1);
