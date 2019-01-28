@@ -3,7 +3,7 @@ import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 
 export function getCLIPath() {
-  return join(__dirname, '..', '..' '..', 'amplify-cli', 'bin', 'amplify');
+  return join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
 }
 
 export function createNewProjectDir(root?: string): string {

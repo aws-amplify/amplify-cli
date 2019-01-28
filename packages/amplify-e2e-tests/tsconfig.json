@@ -4,6 +4,7 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": true,
+        "rootDir": "./src",
         "outDir": "lib",
         "lib": [
             "es2015",
@@ -14,6 +15,7 @@
     },
     "exclude": [
         "node_modules",
-        "lib"
+        "lib",
+        "__tests__"
     ]
 }

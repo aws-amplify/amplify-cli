@@ -4,7 +4,7 @@ import * as nexpect from 'nexpect';
 import { getCLIPath, isCI } from '../utils';
 import getProjectMeta from './projectMeta';
 export default function deleteProject(
-  cwd: String,
+  cwd: string,
   deleteDeploymentBucket: Boolean = true,
   verbose: Boolean = isCI() ? false : true
 ) {

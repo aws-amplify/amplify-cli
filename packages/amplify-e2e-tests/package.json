@@ -5,7 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "e2e": "jest --maxWorkers=3"
+    "e2e1": "npm run setup && jest --maxWorkers=3",
+    "setup": "tsc && node ./lib/configure_tests.js",
+    "clean": "rm -rf ./lib"
   },
   "author": "",
   "license": "ISC",
@@ -21,16 +23,18 @@
     "typescript": "^2.8.3",
     "nexpect": "^0.5.0",
     "@types/nexpect": "^0.4.30",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "dotenv": "6.2.0"
   },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(tests/.*.test.*)$",
+    "testRegex": "(__tests__/.*.test.*)$",
     "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "src"
     ],
     "moduleFileExtensions": [
       "ts",

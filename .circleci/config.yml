@@ -50,6 +50,18 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: npm run e2e
           no_output_timeout: 45m
+
+  integration_test_jest:
+      <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Run GraphQL end-to-end tests
+          command: cd packages/amplify-e2e-tests && npm run e2e
+          no_output_timeout: 45m
   integration_test:
       working_directory: ~/repo
       docker:
@@ -194,6 +206,14 @@ workflows:
                 - multienv
           requires:
             - build
+      - integration_test_jest:
+          filters:
+            branches:
+              only:
+                - integtest-jest
+          requires:
+            - build
+        
       - deploy:
           requires:
             - build
