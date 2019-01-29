@@ -1,52 +1,29 @@
-import { IRelationalDBReader } from "./IRelationalDBReader";
-import {createConnection, Connection, MysqlError, FieldInfo} from 'mysql'
 import { TableContext } from "./RelationalDBSchemaTransformer";
 import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFromMySQLType,
     getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from './RelationalDBSchemaTransformerUtils'
+import { AuroraDataAPIClient } from "./AuroraDataAPIClient";
 
 /**
- * A class to manage interactions with a MySQL relational databse
- * over a jdbc connection.
+ * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
+ * using the Aurora Data API 
  */
-export class MySQLRelationalDBReader implements IRelationalDBReader {
+export class MySQLRelationalDBReader {
 
-    connection: Connection
-    dbUser: string
-    dbPassword: string
-    dbHost: string
+    AuroraClient: AuroraDataAPIClient
 
-    constructor(dbUser: string, dbPassword: string, dbHost: string) {
-        this.dbUser = dbUser
-        this.dbPassword = dbPassword
-        this.dbHost = dbHost
-    }
-
-    /**
-     * Closes up the connection when all interactions are done.
-     */
-    end = async(): Promise<void> => {
-        this.connection.end()
-    }
-
-    /**
-     * Sets the connection to use the provided database name during future interactions.
-     *
-     * @param databaseName the name of the database to use.
-     */
-    begin = async (databaseName: string): Promise<void> => {
-        this.connection = createConnection({user: this.dbUser, password: this.dbPassword, host: this.dbHost})
-        await this.executeSQL(`USE ${databaseName}`)
+    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
+        this.AuroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn,
+             dbClusterOrInstanceArn, database)
     }
 
     /**
      * Gets a list of all the table names in the provided database.
      *
-     * @param databaseName the name of the database to get tables from.
      * @returns a list of tablenames inside the database.
      */
-    listTables = async (databaseName: string): Promise<string[]> => {
-        const results = await this.executeSQL(`SHOW TABLES`)
-        return results.map(result => result[`Tables_in_${databaseName}`])
+    listTables = async (): Promise<string[]> => {
+        const results = await this.AuroraClient.listTables()
+        return results
     }
 
     /**
@@ -57,11 +34,8 @@ export class MySQLRelationalDBReader implements IRelationalDBReader {
      * @returns a list of table names that are applicable as having constraints.
      */
     getTableForeignKeyReferences = async (tableName: string) : Promise<string[]> => {
-        const results = await this.executeSQL
-            (`SELECT TABLE_NAME FROM information_schema.key_column_usage
-            WHERE referenced_table_name is not null
-            AND REFERENCED_TABLE_NAME = '${tableName}';`)
-        return results.map(result => result[`TABLE_NAME`])
+        const results = await this.AuroraClient.getTableForeignKeyReferences(tableName)
+        return results
     }
 
     /**
@@ -77,7 +51,7 @@ export class MySQLRelationalDBReader implements IRelationalDBReader {
      * @returns a promise of a table context structure.
      */
     describeTable = async (tableName: string): Promise<TableContext> => {
-        const columnDescriptions = await this.executeSQL(`DESCRIBE ${tableName}`)
+        const columnDescriptions = await this.AuroraClient.describeTable(tableName)
         // Fields in the general type (e.g. Post). Both the identifying field and any others the db dictates will be required.
         const fields = new Array()
         // Fields in the update input type (e.g. UpdatePostInput). Only the identifying field will be required, any others will be optional.
@@ -141,23 +115,5 @@ export class MySQLRelationalDBReader implements IRelationalDBReader {
 
         return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${tableName}Input`),
                 getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
-    }
-
-
-    /**
-     * Executes the provided SQL statement.
-     *
-     * @returns a promise with the execution response.
-     */
-    private executeSQL = async (sqlString: string): Promise<any> => {
-        return await new Promise<FieldInfo[]>((resolve, reject) => {
-            this.connection.query(sqlString, (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => {
-                if (err) {
-                    console.log(`Failed to execute ${sqlString}`)
-                    reject(err)
-                }
-                resolve(results)
-            })
-        })
     }
 }

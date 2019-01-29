@@ -19,6 +19,10 @@ export class ResourceConstants {
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
         AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
+
+        // Relational Database
+        RelationalDatabaseDataSource: 'RelationalDatabaseDataSource',
+        RelationalDatabaseAccessRole: 'RelationalDatabaseAccessRole',
     }
     public static PARAMETERS = {
         // cli

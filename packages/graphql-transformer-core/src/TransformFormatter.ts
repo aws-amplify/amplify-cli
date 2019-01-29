@@ -153,19 +153,11 @@ export class TransformFormatter {
         ) {
             const reqType = resolverResource.Properties.TypeName
             const reqFieldName = resolverResource.Properties.FieldName
-<<<<<<< HEAD
-            const reqFileName = `${reqType}.${reqFieldName}.request.vtl`
-
-            const respType = resolverResource.Properties.TypeName
-            const respFieldName = resolverResource.Properties.FieldName
-            const respFileName = `${respType}.${respFieldName}.response.vtl`
-=======
             const reqFileName = `${reqType}.${reqFieldName}.req.vtl`
 
             const respType = resolverResource.Properties.TypeName
             const respFieldName = resolverResource.Properties.FieldName
             const respFileName = `${respType}.${respFieldName}.res.vtl`
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 
             const updatedResolverResource = this.schemaResourceUtil.updateResolverResource(resolverResource)
             ctx.setResource(resourceName, updatedResolverResource)

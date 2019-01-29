@@ -2,7 +2,6 @@ import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode,
     InputObjectTypeDefinitionNode, DocumentNode} from 'graphql'
 import { getNamedType, getOperationFieldDefinition, getNonNullType, getInputValueDefinition,
     getTypeDefinition, getFieldDefinition, getDirectiveNode, getOperationTypeDefinition } from './RelationalDBSchemaTransformerUtils'
-import { IRelationalDBReader } from './IRelationalDBReader'
 import { MySQLRelationalDBReader } from './MySQLRelationalDBReader'
 import {RelationalDBParsingException} from './RelationalDBParsingException'
 
@@ -42,7 +41,7 @@ export class TableContext {
  */
 export default class TemplateContext {
     schemaDoc: DocumentNode
-    typePrimaryKeyMap: {}
+    typePrimaryKeyMap: Map<string, string>
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
     secretStoreArn: string
@@ -51,7 +50,7 @@ export default class TemplateContext {
     databaseSchema: string
     region: string
 
-    constructor(schemaDoc: DocumentNode, typePrimaryKeyMap: {},
+    constructor(schemaDoc: DocumentNode, typePrimaryKeyMap: Map<string, string>,
         stringFieldMap: Map<string, string[]>, intFieldMap: Map<string, string[]>) {
         this.schemaDoc = schemaDoc
         this.typePrimaryKeyMap  = typePrimaryKeyMap
@@ -61,32 +60,24 @@ export default class TemplateContext {
 }
 
 export class RelationalDBSchemaTransformer {
-    mySQLReader: IRelationalDBReader
+    mySQLReader: MySQLRelationalDBReader
 
-    public processMySQLSchemaOverJDBCWithCredentials = async (dbUser: string, dbPassword: string, dbHost: string, 
-        databaseName: string): Promise<TemplateContext> => {
-        this.mySQLReader = new MySQLRelationalDBReader(dbUser, dbPassword, dbHost)
-
-        // Set the working db to be what the user provides
-        try {
-            await this.mySQLReader.begin(databaseName)
-        } catch (err) {
-            throw new RelationalDBParsingException(`Failed to set database to ${databaseName}`, err.stack)
-        }
+    public introspectMySQLSchema = async (dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string): Promise<TemplateContext> => {
+        this.mySQLReader = new MySQLRelationalDBReader(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database)
 
         // Get all of the tables within the provided db
         let tableNames = null
         try {
-            tableNames = await this.mySQLReader.listTables(databaseName)
+            tableNames = await this.mySQLReader.listTables()
         } catch (err) {
-            throw new RelationalDBParsingException(`Failed to list tables in ${databaseName}`, err.stack)
+            throw new RelationalDBParsingException(`Failed to list tables in ${database}`, err.stack)
         }
 
-        const typeContexts = new Array()
-        const types = new Array()
-        const pkeyMap = {}
-        const stringFieldMap = new Map<string, string[]>()
-        const intFieldMap = new Map<string, string[]>()
+        let typeContexts = new Array()
+        let types = new Array()
+        let pkeyMap = new Map<string, string>()
+        let stringFieldMap = new Map<string, string[]>()
+        let intFieldMap = new Map<string, string[]>()
 
         for (const tableName of tableNames) {
             let type: TableContext = null
@@ -98,7 +89,8 @@ export class RelationalDBSchemaTransformer {
 
             typeContexts.push(type)
             // Generate the 'connection' type for each table type definition
-            types.push(this.getConnectionType(tableName))
+            // TODO: Determine if Connection is needed as Data API doesn't provide pagination
+            //types.push(this.getConnectionType(tableName))
             // Generate the create operation input for each table type definition
             types.push(type.createTypeDefinition)
             // Generate the default shape for the table's structure
@@ -109,9 +101,8 @@ export class RelationalDBSchemaTransformer {
             // Update the field map with the new field lists for the current table
             stringFieldMap.set(tableName, type.stringFieldList)
             intFieldMap.set(tableName, type.intFieldList)
+            pkeyMap.set(tableName, type.tableKeyField)
         }
-
-        this.mySQLReader.end()
 
         // Generate the mutations and queries based on the table structures
         types.push(this.getMutations(typeContexts))
@@ -122,15 +113,14 @@ export class RelationalDBSchemaTransformer {
         let context =  new TemplateContext({kind: Kind.DOCUMENT, definitions: types}, pkeyMap, stringFieldMap, intFieldMap)
 
         /**
-         * TODO: Figure out the best approach to storing the cli inputs i.e. rds-cluster-identifier, secret-store-arn, etc.
-         * For now, will store as part of the TemplateContext
+         * Information needed for creating the AppSync - RDS Data Source
+         * Store as part of the TemplateContext
          */
-        context.secretStoreArn =
-            'arn:aws:secretsmanager:us-east-1:973253135933:secret:rds-db-credentials/cluster-VG3LSXHGQMQZONK2AZV52IRKLE/ashwin-aJcCFy'
-        context.rdsClusterIdentifier = 'arn:aws:rds:us-east-1:973253135933:cluster:pets'
+        context.secretStoreArn = awsSecretStoreArn
+        context.rdsClusterIdentifier = dbClusterOrInstanceArn
         context.databaseSchema = 'mysql'
-        context.databaseName = 'pets'
-        context.region = 'us-east-1'
+        context.databaseName =  database
+        context.region = dbRegion
 
          return context
     }
@@ -223,8 +213,8 @@ export class RelationalDBSchemaTransformer {
             )
             fields.push(
                 getOperationFieldDefinition(`list${type.name.value}s`,
-                [getInputValueDefinition(getNamedType('String'), 'nextToken')],
-                getNamedType(`${type.name.value}Connection`), null)
+                [],
+                getNamedType(`[${type.name.value}]`), null)
             )
         }
         return getTypeDefinition(fields, 'Query')

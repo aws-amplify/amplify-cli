@@ -16,7 +16,7 @@ import RelationalDBMappingTemplate from './RelationalDBMappingTemplate'
  */
 export default class RelationalDBResolverGenerator {
     document: DocumentNode
-    typePrimaryKeyMap = {};
+    typePrimaryKeyMap: Map<string, string>;
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
 
@@ -33,15 +33,15 @@ export default class RelationalDBResolverGenerator {
      * merged with an existing Template's map of Resources.
      */
     public createRelationalResolvers() {
-        let resources: { [key: string]: any } = {}
-        Object.keys(this.typePrimaryKeyMap).forEach(element => {
+        let resources = {}
+        this.typePrimaryKeyMap.forEach((value: string, key: string) => {
             resources = {
                 ...resources,
-                ...{[element + 'CreateResolver']: this.makeCreateRelationalResolver(element)},
-                ...{[element + 'GetResolver']: this.makeGetRelationalResolver(element)},
-                ...{[element + 'UpdateResolver']: this.makeUpdateRelationalResolver(element)},
-                ...{[element + 'DeleteResolver']: this.makeDeleteRelationalResolver(element)},
-                ...{[element + 'ListResolver']: this.makeListRelationalResolver(element)},
+                ...{[key + 'CreateResolver']: this.makeCreateRelationalResolver(key)},
+                ...{[key + 'GetResolver']: this.makeGetRelationalResolver(key)},
+                ...{[key + 'UpdateResolver']: this.makeUpdateRelationalResolver(key)},
+                ...{[key + 'DeleteResolver']: this.makeDeleteRelationalResolver(key)},
+                ...{[key + 'ListResolver']: this.makeListRelationalResolver(key)},
             }
             // TODO: Add Guesstimate Query Resolvers
         })
@@ -62,11 +62,13 @@ export default class RelationalDBResolverGenerator {
      */
     private makeCreateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
         const fieldName = graphqlName('create' + toUpper(type))
-        let sql = `INSERT INTO ${type} $colStr VALUES $valStr`
+        let createSql = `INSERT INTO ${type} $colStr VALUES $valStr`
+        let selectSql =
+            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RDSDataSource', 'Name'),
+            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -75,23 +77,23 @@ export default class RelationalDBResolverGenerator {
                     set(ref('vals'), list([])),
                     forEach(
                         ref('entry'),
-                        ref(`$ctx.args.create${toUpper(type)}Input.keySet()`),
+                        ref(`ctx.args.create${toUpper(type)}Input.keySet()`),
                         [
-                            set(ref('discard'), ref(`$cols.add($entry)`)),
-                            set(ref('discard'), ref(`vals.add($entry, "$ctx.args.create${toUpper(type)}Input[$entry]")`))
+                            set(ref('discard'), ref(`cols.add($entry)`)),
+                            set(ref('discard'), ref(`vals.add("'$ctx.args.create${toUpper(type)}Input[$entry]'")`))
                         ]
                     ),
-                    set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")"')),
-                    set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")"')),
+                    set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
+                    set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
                     RelationalDBMappingTemplate.rdsQuery({
-                        statements: list([str(sql)])
+                        statements: list([str(createSql), str(selectSql)])
                     })
                 ])
             ),
             ResponseMappingTemplate: print(
-                ref('$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
+                ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
             )
-        })
+        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
         return resolver
     }
 
@@ -104,11 +106,11 @@ export default class RelationalDBResolverGenerator {
      */
     private makeGetRelationalResolver(type: string, queryTypeName: string = 'Query') {
         const fieldName = graphqlName('get' + toUpper(type))
-        const sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap[type]}=$ctx.args.${this.typePrimaryKeyMap[type]}`
-
+        let sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RDSDataSource', 'Name'),
+            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             FieldName: fieldName,
             TypeName: queryTypeName,
             RequestMappingTemplate: print(
@@ -119,10 +121,9 @@ export default class RelationalDBResolverGenerator {
                 ])
             ),
             ResponseMappingTemplate: print(
-                ref('$utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
+                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
             )
-        })
-
+        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
         return resolver
     }
 
@@ -136,13 +137,13 @@ export default class RelationalDBResolverGenerator {
     private makeUpdateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
         const fieldName = graphqlName('update' + toUpper(type))
         const updateSql =
-            `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap[type]}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap[type]}`
+            `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
         const selectSql =
-            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap[type]}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap[type]}`
+            `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
         return new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RDSDataSource', 'Name'),
+            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -150,9 +151,9 @@ export default class RelationalDBResolverGenerator {
                     set(ref('updateList'), obj({})),
                     forEach(
                         ref('entry'),
-                        ref(`$ctx.args.update${toUpper(type)}Input.keySet()`),
+                        ref(`ctx.args.update${toUpper(type)}Input.keySet()`),
                         [
-                            set(ref('discard'), ref(`updateList.put($entry, "$ctx.args.update${toUpper(type)}Input[$entry]")`))
+                            set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${toUpper(type)}Input[$entry]'")`))
                         ]
                     ),
                     set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
@@ -162,9 +163,9 @@ export default class RelationalDBResolverGenerator {
                 ])
             ),
             ResponseMappingTemplate: print(
-                ref('$utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])')
+                ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
             )
-        })
+        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
     }
 
     /**
@@ -176,12 +177,12 @@ export default class RelationalDBResolverGenerator {
      */
     private makeDeleteRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
         const fieldName = graphqlName('delete' + toUpper(type))
-        const selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap[type]}=$ctx.args.${this.typePrimaryKeyMap[type]}`
-        const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap[type]}=$ctx.args.${this.typePrimaryKeyMap[type]}`
+        const selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
 
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RDSDataSource', 'Name'),
+            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -192,9 +193,9 @@ export default class RelationalDBResolverGenerator {
                 ])
             ),
             ResponseMappingTemplate: print(
-                ref('$utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
+                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
             )
-        })
+        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
 
         return resolver
     }
@@ -212,7 +213,7 @@ export default class RelationalDBResolverGenerator {
 
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RDSDataSource', 'Name'),
+            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             TypeName: queryTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -221,9 +222,9 @@ export default class RelationalDBResolverGenerator {
                 })
             ),
             ResponseMappingTemplate: print(
-                ref('$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
+                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
             )
-        })
+        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
 
         return resolver
     }
