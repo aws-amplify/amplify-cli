@@ -12,6 +12,14 @@ function getGlobalNodeModuleDirPath() {
   return path.join(getNpmPrefix(), 'lib', 'node_modules');
 }
 
+function getGlobalWindowsNodeModuleDirPath() {
+  const yarnPrefix = getYarnPrefix();
+  if (__dirname.includes(yarnPrefix)) {
+    return path.join(yarnPrefix, 'node_modules');
+  }
+  return path.join(getNpmPrefix(), 'node_modules');
+}
+
 function getYarnPrefix() {
   const home = os.homedir();
 
@@ -107,4 +115,4 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = { getGlobalNodeModuleDirPath };
+module.exports = { getGlobalNodeModuleDirPath, getGlobalWindowsNodeModuleDirPath };

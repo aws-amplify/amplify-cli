@@ -6,12 +6,14 @@ const globalPrefix = require('./lib/global-prefix');
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
+  const globalWindowsNodeModulesDirPath = globalPrefix.getGlobalWindowsNodeModuleDirPath();
 
   const cli = build()
     .brand('amplify')
     .src(__dirname)
     .plugins(localNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
+    .plugins(globalWindowsNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .version() // provides default for version, v, --version, -v
     .create();
 
