@@ -99,8 +99,14 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ensure the project directory exists and create the stacks & resolvers directories.
   fs.ensureDirSync(resourceDir);
-  fs.mkdirSync(`${resourceDir}/${resolversDirName}`);
-  fs.mkdirSync(`${resourceDir}/${stacksDirName}`);
+  const resolverDirectoryPath = path.join(resourceDir, resolversDirName);
+  if (!fs.existsSync(resolverDirectoryPath)) {
+    fs.mkdirSync(resolverDirectoryPath);
+  }
+  const stacksDirectoryPath = path.join(resourceDir, stacksDirName);
+  if (!fs.existsSync(stacksDirectoryPath)) {
+    fs.mkdirSync(stacksDirectoryPath);
+  }
 
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
