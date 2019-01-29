@@ -10,7 +10,7 @@ const schemaFileName = 'schema.graphql';
 const providerName = 'awscloudformation';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
-const defaultStackName = 'CustomResources.yml';
+const defaultStackName = 'CustomResources.json';
 
 function openConsole(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
