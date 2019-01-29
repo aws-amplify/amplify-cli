@@ -96,7 +96,7 @@ export function initProjectWithAccessKey(
       .wait('secretAccessKey')
       .sendline(s.secretAccessKey)
       .wait('region')
-      .sendline('/r')
+      .sendline('us-east-1')
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
