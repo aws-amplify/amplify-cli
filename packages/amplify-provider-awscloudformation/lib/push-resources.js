@@ -34,7 +34,8 @@ async function run(context, category, resourceName) {
   return packageResources(context, resources)
     .then(() => transformGraphQLSchema(context, {
       noConfig: true,
-      handleMigration: (isReverting) => updateStackForAPIMigration(context, category, resourceName, isReverting),
+      handleMigration: isReverting =>
+        updateStackForAPIMigration(context, category, resourceName, isReverting),
     }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
@@ -107,7 +108,9 @@ async function updateStackForAPIMigration(context, category, resourceName, isRev
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => uploadAppSyncFiles(context, resources, { useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 } }))
+    .then(() => uploadAppSyncFiles(context, resources, {
+      useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
+    }))
     .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
     .then(() => {
       spinner.start();

@@ -8,7 +8,6 @@ const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;
 const { hashElement } = require('folder-hash');
 
-const CF_TEMPLATE_FILE_NAME = 'cloudformation-template.json';
 const PARAM_FILE_NAME = 'parameters.json';
 
 function getProjectBucket(context) {
@@ -18,25 +17,15 @@ function getProjectBucket(context) {
 }
 
 /**
- * 
- * @param {*} template 
- * @param {*} params 
- */
-function getParameters(template, params) {
-  const cloudFormationTemplate = path.join(backEndDir, category, resourceName, 'build', CF_TEMPLATE_FILE_NAME);
-  const parametersOutputFilePath = path.join(backEndDir, category, resourceName, 'build', PARAM_FILE_NAME);
-}
-
-/**
- * Updates build/parameters.json with new timestamps and then uploads the contents of the build/ directory to S3.
- * @param {*} context 
- * @param {*} resources 
- * @param {*} defaultParams 
+ * Updates build/parameters.json with new timestamps and then uploads the
+ * contents of the build/ directory to S3.
+ * @param {*} context
+ * @param {*} resources
+ * @param {*} defaultParams
  */
 async function uploadAppSyncFiles(context, resources, options = {}) {
   resources = resources.filter(resource => resource.service === 'AppSync');
-  const defaultParams = options.defaultParams;
-  const useDeprecatedParameters = options.useDeprecatedParameters || false;
+  const { defaultParams, useDeprecatedParameters } = options;
   // new Date().getTime().toString();
   // There can only be one appsync resource
   if (resources.length > 0) {
@@ -50,7 +39,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
 
     // Read parameters.json, add timestamps, and write to build/parameters.json
     const parametersFilePath = path.join(backEndDir, category, resourceName, PARAM_FILE_NAME);
-    let currentParameters = defaultParams;
+    const currentParameters = defaultParams;
     if (fs.existsSync(parametersFilePath)) {
       try {
         const personalParams = JSON.parse(fs.readFileSync(parametersFilePath));
@@ -91,7 +80,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
 // Hash a directory into a unique value.
 async function hashDirectory(directory) {
   const options = {
-      folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
   };
 
   return hashElement(directory, options).then(result => result.hash);
