@@ -19,7 +19,7 @@ const defaultSettings = {
 export default function initProject(
   cwd: string,
   settings: Object,
-  verbose: Boolean = true //isCI() ? false : true
+  verbose: Boolean = isCI() ? false : true
 ) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
@@ -48,6 +48,55 @@ export default function initProject(
       .sendline('y')
       .wait('Please choose the profile you want to use')
       .sendline(s.profileName)
+      .wait(
+        'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
+      )
+      .run(function(err) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function initProjectWithAccessKey(
+  cwd: string,
+  settings: { accessKeyId: string; secretAccessKey: string },
+  verbose: Boolean = isCI() ? false : true
+) {
+  const s = { ...defaultSettings, ...settings };
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
+      .wait('Enter a name for the project')
+      .sendline(s.name)
+      .wait('Enter a name for the environment')
+      .sendline(s.envName)
+      .wait('Choose your default editor:')
+      .sendline(s.editor)
+      .wait("Choose the type of app that you're building")
+      .sendline(s.appType)
+      .wait('What javascript framework are you using')
+      .sendline(s.framework)
+      .wait('Source Directory Path:')
+      .sendline(s.srcDir)
+      .wait('Distribution Directory Path:')
+      .sendline(s.distDir)
+      .wait('Build Command:')
+      .sendline(s.buildCmd)
+      .wait('Start Command:')
+      .sendline('\r')
+      .wait('Using default provider  awscloudformation')
+      .wait('Do you want to use an AWS profile?')
+      .sendline('n')
+      .wait('accessKeyId')
+      .sendline(s.accessKeyId)
+      .wait('secretAccessKey')
+      .sendline(s.secretAccessKey)
+      .wait('region')
+      .sendline('/r')
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )

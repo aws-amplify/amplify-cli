@@ -212,7 +212,11 @@ workflows:
           filters:
             branches:
               only:
-                - integtest-jest
+                - master
+                - multienv
+                - beta
+                - release
+                - integtest-jest # TODO: remove this
           requires:
             - build
         

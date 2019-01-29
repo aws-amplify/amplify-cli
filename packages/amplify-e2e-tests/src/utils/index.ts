@@ -1,6 +1,11 @@
 import { join } from 'path';
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
+import { Amplify } from 'aws-sdk';
+import { config } from 'dotenv';
+
+// run dotenv config to update env variable
+config();
 
 export function getCLIPath() {
   return join(__dirname, '..', '..', '..', 'amplify-cli', 'bin', 'amplify');
@@ -24,4 +29,8 @@ export function deleteProjectDir(root: string) {
 
 export function isCI(): Boolean {
   return process.env.CI ? true : false;
+}
+
+export function getEnvVars(): { } {
+  return { ...process.env };
 }
