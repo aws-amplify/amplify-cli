@@ -387,28 +387,26 @@ interface MigrationInfo {
 export async function migrateAPIProject(opts: MigrationOptions) {
     const projectDirectory = opts.projectDirectory;
     const projectConfig = await readV1ProjectConfiguration(projectDirectory);
+    const copyOfProject = JSON.parse(JSON.stringify(projectConfig));
     const transformConfig = makeTransformConfigFromOldProject(projectConfig);
     await updateToIntermediateProject(projectDirectory, projectConfig, transformConfig);
     // const result = await updateProject()
     // TODO: Update stack without resolvers/iam roles/etc.
     return {
-        old: projectConfig
+        old: copyOfProject
     }
 }
 export function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
     // Revert the v1 style CF doc.
     const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
     fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
+    const oldCloudFormationBuildTemplatePath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
+    fs.writeFileSync(oldCloudFormationBuildTemplatePath, JSON.stringify(oldProject.template, null, 4));
 
-    // Remove the CF doc in build.
-    const cloudFormationTemplateOutputPath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
-    fs.unlinkSync(cloudFormationTemplateOutputPath);
-
-    // Revert the parameter files.
     const parametersInputPath = path.join(directory, PARAMETERS_FILE_NAME);
     fs.writeFileSync(parametersInputPath, JSON.stringify(oldProject.parameters, null, 4));
 
-    // Revert the config file.
+    // Revert the config file by deleting it.
     const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
     fs.unlinkSync(configFilePath);
 }

@@ -1,4 +1,3 @@
-// const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
@@ -45,14 +44,13 @@ async function migrateProject(context, options) {
   const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
   let oldProjectConfig;
   try {
-    context.print.info('Migrating API. This may take a few minutes.');
+    context.print.info('Migrating your API. This may take a few minutes.');
     const { old } = await TransformPackage.migrateAPIProject({
       projectDirectory: resourceDir,
     });
     oldProjectConfig = old;
     await updateAndWaitForStack();
   } catch (e) {
-    context.print.error('Error migrating API to intermediate stage.');
     throw e;
   }
   try {
@@ -61,12 +59,11 @@ async function migrateProject(context, options) {
     context.print.info('Finished migrating API.');
     return result;
   } catch (e) {
-    context.print.error('Error migrating to final stage.');
-    // TODO: Rollback final stage.
     context.print.error('Reverting API migration.');
     TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
-    await updateAndWaitForStack();
+    await updateAndWaitForStack(true);
     context.print.error('API successfully reverted.');
+    throw e;
   }
 }
 
