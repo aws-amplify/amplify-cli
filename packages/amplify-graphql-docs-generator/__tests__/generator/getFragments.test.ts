@@ -51,6 +51,8 @@ describe('getFragments', () => {
     expect(getFragment(impl, schema, currentDepth, [])).toEqual({
       fields: [{ name: 'name' }, { name: 'length' }, { name: 'width' }],
       on: 'Rectangle',
+      external: false,
+      name: "RectangleFragment"
     })
     expect(getFields).toHaveBeenCalledTimes(3)
   })
@@ -76,6 +78,8 @@ describe('getFragments', () => {
     expect(getFragment(impl, schema, currentDepth, fieldsToFilter)).toEqual({
       fields: [{ name: 'name' }, { name: 'width' }],
       on: 'Rectangle',
+      name: "RectangleFragment",
+      external: false,
     })
   })
 
