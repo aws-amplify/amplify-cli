@@ -39,10 +39,11 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
 
     // Read parameters.json, add timestamps, and write to build/parameters.json
     const parametersFilePath = path.join(backEndDir, category, resourceName, PARAM_FILE_NAME);
-    const currentParameters = defaultParams;
+    const currentParameters = defaultParams || {};
     if (fs.existsSync(parametersFilePath)) {
       try {
-        const personalParams = JSON.parse(fs.readFileSync(parametersFilePath));
+        const paramFile = fs.readFileSync(parametersFilePath).toString();
+        const personalParams = JSON.parse(paramFile);
         Object.assign(currentParameters, personalParams);
       } catch (e) {
         context.print.error(`Could not parse parameters file at "${parametersFilePath}"`);
