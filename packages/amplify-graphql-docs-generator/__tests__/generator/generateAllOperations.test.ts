@@ -5,7 +5,7 @@ import {
 } from '../../src/generator/generateAllOperations'
 
 import generateOperation from '../../src/generator/generateOperation'
-import { GQLDocsGenOptions } from '../../src/generator/types';
+import { GQLDocsGenOptions } from '../../src/generator/types'
 
 jest.mock('../../src/generator/generateOperation')
 const mockOperationResult = {
@@ -26,7 +26,7 @@ const operations = {
 const maxDepth = 10
 
 const mockSchema = 'MOCK_SCHEMA'
-const generateOptions:GQLDocsGenOptions = {  useExternalFragmentForS3Object: true};
+const generateOptions: GQLDocsGenOptions = { useExternalFragmentForS3Object: true }
 describe('generateAllOperations', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -40,7 +40,12 @@ describe('generateAllOperations', () => {
         ...mockOperationResult,
       },
     ])
-    expect(generateOperation).toHaveBeenCalledWith(mockFields.f1, mockSchema, maxDepth, generateOptions)
+    expect(generateOperation).toHaveBeenCalledWith(
+      mockFields.f1,
+      mockSchema,
+      maxDepth,
+      generateOptions
+    )
     expect(getFields).toHaveBeenCalled()
     expect(generateOperation).toHaveBeenCalledTimes(1)
     expect(getFields).toHaveBeenCalledTimes(1)
@@ -54,7 +59,12 @@ describe('generateAllOperations', () => {
         ...mockOperationResult,
       },
     ])
-    expect(generateOperation).toHaveBeenCalledWith(mockFields.f1, mockSchema, maxDepth, generateOptions)
+    expect(generateOperation).toHaveBeenCalledWith(
+      mockFields.f1,
+      mockSchema,
+      maxDepth,
+      generateOptions
+    )
     expect(getFields).toHaveBeenCalled()
     expect(generateOperation).toHaveBeenCalledTimes(1)
     expect(getFields).toHaveBeenCalledTimes(1)
@@ -70,6 +80,11 @@ describe('generateAllOperations', () => {
     ])
     expect(generateOperation).toHaveBeenCalledTimes(1)
     expect(getFields).toHaveBeenCalledTimes(1)
-    expect(generateOperation).toHaveBeenCalledWith(mockFields.f1, mockSchema, maxDepth, generateOptions)
+    expect(generateOperation).toHaveBeenCalledWith(
+      mockFields.f1,
+      mockSchema,
+      maxDepth,
+      generateOptions
+    )
   })
 })
