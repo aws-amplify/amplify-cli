@@ -18,10 +18,10 @@ describe('amplify delete', () => {
   it('should delete resources', async () => {
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
-    const { AuthRoleName, UnauthRoleName, Region } = meta;
+    const { AuthRoleName, UnauthRoleName } = meta;
 
     await deleteProject(projRoot, true);
-    expect(UnauthRoleName).not.toBeIAMRoleWithArn();
-    expect(AuthRoleName).not.toBeIAMRoleWithArn();
+    await expect(AuthRoleName).not.toBeIAMRoleWithArn();
+    await expect(UnauthRoleName).not.toBeIAMRoleWithArn();
   });
 });

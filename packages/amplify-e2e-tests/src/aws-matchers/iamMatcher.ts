@@ -1,10 +1,6 @@
-import { IAM } from 'aws-sdk';
+import { IAM, AWSError } from 'aws-sdk';
 expect.extend({
   async toBeIAMRoleWithArn(roleName: string, arn?: string) {
-    const options = {
-      comment: 'IAM Role check',
-      isNot: this.isNot
-    };
     const iam = new IAM();
     let pass: boolean;
     let message: string;
@@ -25,9 +21,10 @@ expect.extend({
       message = `Role ${roleName} does not exist`;
     }
 
-    return {
+    const result = {
       message: () => message,
-      pass: options.isNot ? !pass : pass
+      pass
     };
+    return result;
   }
 });

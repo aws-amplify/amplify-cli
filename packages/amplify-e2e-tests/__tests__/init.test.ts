@@ -28,9 +28,9 @@ describe('amplify init', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
-    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    expect(DeploymentBucketName).toBeAS3Bucket();
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket();
 
     // init new env
     await initNewEnvWithProfile(projRoot, { envName: 'foo' });
@@ -50,9 +50,9 @@ describe('amplify init', () => {
     expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
     expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
-    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
-    expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+    await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
   });
 
   it('should init project without profile', async () => {
@@ -71,11 +71,10 @@ describe('amplify init', () => {
     expect(meta.Region).toBeDefined();
     const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
 
-    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
-    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
-    expect(DeploymentBucketName).toBeAS3Bucket();
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket();
 
-    // init new env
     // init new env
     await initNewEnvWithAccessKey(projRoot, {
       envName: 'foo',
@@ -98,8 +97,8 @@ describe('amplify init', () => {
     expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
     expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
-    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
-    expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+    await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
   });
 });
