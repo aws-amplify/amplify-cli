@@ -65,21 +65,31 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     const categoryMigrationTasks = [];
 
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
+    let apiMigrateFunction;
 
     Object.keys(categoryPlugins).forEach((category) => {
       try {
+
         const { migrate } = require(categoryPlugins[category]);
         if (migrate) {
-          categoryMigrationTasks.push(() => migrate(context));
+          if(category !== 'api') {
+            categoryMigrationTasks.push(() => migrate(context));
+          } else {
+            apiMigrateFunction = migrate;
+          }
         }
       } catch (e) {
         // do nothing, it's fine if a category is not setup for migration
       }
     });
 
+    if(apiMigrateFunction) {
+      categoryMigrationTasks.push(() => apiMigrateFunction(context));
+    }
+
     spinner.start('Migrating your project');
-    await sequential(categoryMigrationTasks);
     persistMigrationContext(context.migrationInfo);
+    await sequential(categoryMigrationTasks);
     removeAmplifyRCFile(projectPath);
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
