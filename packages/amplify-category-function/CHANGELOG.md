@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.7"></a>
+## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.2.1-multienv.5...amplify-category-function@0.2.1-multienv.7) (2019-01-30)
+
+
+### Features
+
+* add metadata in lambda CFN for it to be compatible and worked with using SAM CLI ([8661012](https://github.com/aws-amplify/amplify-cli/commit/8661012))
+
+
+
+
 <a name="0.2.1-multienv.6"></a>
 ## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@0.2.1-multienv.5...amplify-category-function@0.2.1-multienv.6) (2019-01-16)
 
