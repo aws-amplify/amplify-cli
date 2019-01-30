@@ -31,6 +31,11 @@ export class ResourceConstants {
         AppSyncApiId: 'AppSyncApiId',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
+        // DynamoDB
+        DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
+        DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+        UsePayPerRequestBilling:   'UsePayPerRequestBilling',
+
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticsearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticsearchAccessIAMRoleName',
@@ -59,6 +64,9 @@ export class ResourceConstants {
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
         APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
         APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
+
+        // DynamoDB
+        ShouldUsePayPerRequestBilling:   'ShouldUsePayPerRequestBilling',
     }
     public static OUTPUTS = {
 

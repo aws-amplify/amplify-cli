@@ -71,6 +71,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
+    UsePayPerRequestBilling: 'true',
   };
 
   // Ask auth/security question
