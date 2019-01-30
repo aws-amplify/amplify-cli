@@ -5,6 +5,7 @@
         "module": "commonjs",
         "sourceMap": true,
         "rootDir": "./src",
+        "types": ["jest"],
         "outDir": "lib",
         "lib": [
             "es2015",

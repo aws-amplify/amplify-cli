@@ -1,6 +1,6 @@
-import * as AWS from 'aws-sdk';
+require('../src/aws-matchers/'); // custom matcher for assertion
 
-import { getProjectMeta, initProject, deleteProject } from '../src/init';
+import { getProjectMeta, initProjectWithProfile, deleteProject } from '../src/init';
 import { createNewProjectDir, deleteProjectDir } from '../src/utils';
 
 describe('amplify delete', () => {
@@ -8,7 +8,7 @@ describe('amplify delete', () => {
   beforeAll(async () => {
     jest.setTimeout(1000 * 60 * 20); // 20 minutes
     projRoot = createNewProjectDir();
-    await initProject(projRoot, {});
+    await initProjectWithProfile(projRoot, {});
   });
 
   afterAll(() => {
@@ -21,12 +21,7 @@ describe('amplify delete', () => {
     const { AuthRoleName, UnauthRoleName, Region } = meta;
 
     await deleteProject(projRoot, true);
-    const iam = new AWS.IAM({ region: Region });
-    await expect(iam.getRole({ RoleName: UnauthRoleName }).promise()).rejects.toThrowError(
-      'cannot be found'
-    );
-    await expect(iam.getRole({ RoleName: AuthRoleName }).promise()).rejects.toThrowError(
-      'cannot be found'
-    );
+    expect(UnauthRoleName).not.toBeIAMRoleWithArn();
+    expect(AuthRoleName).not.toBeIAMRoleWithArn();
   });
 });

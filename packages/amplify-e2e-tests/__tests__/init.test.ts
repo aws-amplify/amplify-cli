@@ -1,6 +1,12 @@
-import * as AWS from 'aws-sdk';
-
-import { getProjectMeta, initProject, deleteProject, initProjectWithAccessKey } from '../src/init';
+require('../src/aws-matchers/'); // custom matcher for assertion
+import {
+  getProjectMeta,
+  initProjectWithProfile,
+  deleteProject,
+  initProjectWithAccessKey,
+  initNewEnvWithAccessKey,
+  initNewEnvWithProfile
+} from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getEnvVars } from '../src/utils';
 import { access } from 'fs';
 
@@ -16,30 +22,37 @@ describe('amplify init', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('should init the project', async () => {
-    await initProject(projRoot, {});
+  it('should init the project and create new env', async () => {
+    await initProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket();
+
+    // init new env
+    await initNewEnvWithProfile(projRoot, { envName: 'foo' });
+    const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+
     const {
-      AuthRoleName,
-      UnauthRoleName,
-      Region,
-      UnauthRoleArn,
-      AuthRoleArn,
-      DeploymentBucketName
-    } = meta;
-    const iam = new AWS.IAM({ region: Region });
+      AuthRoleName: newEnvAuthRoleName,
+      UnauthRoleName: newEnvUnAuthRoleName,
+      UnauthRoleArn: newEnvUnauthRoleArn,
+      AuthRoleArn: newEnvAuthRoleArn,
+      DeploymentBucketName: newEnvDeploymentBucketName
+    } = newEnvMeta;
 
-    const { Role: unAuthRole } = await iam.getRole({ RoleName: UnauthRoleName }).promise();
-    expect(unAuthRole.Arn).toEqual(UnauthRoleArn);
+    expect(newEnvAuthRoleName).not.toEqual(AuthRoleName);
+    expect(UnauthRoleName).not.toEqual(newEnvUnAuthRoleName);
+    expect(UnauthRoleArn).not.toEqual(newEnvUnauthRoleArn);
+    expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
+    expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    const { Role: authRole } = await iam.getRole({ RoleName: AuthRoleName }).promise();
-    expect(authRole.Arn).toEqual(AuthRoleArn);
-
-    expect(async () => {
-      const s3 = new AWS.S3();
-      await s3.headBucket({ Bucket: DeploymentBucketName }).promise();
-    }).not.toThrow();
+    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    expect(newEnvDeploymentBucketName).toBeAS3Bucket();
   });
 
   it('should init project without profile', async () => {
@@ -56,26 +69,37 @@ describe('amplify init', () => {
 
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    expect(DeploymentBucketName).toBeAS3Bucket();
+
+    // init new env
+    // init new env
+    await initNewEnvWithAccessKey(projRoot, {
+      envName: 'foo',
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY
+    });
+    const newEnvMeta = getProjectMeta(projRoot).providers.awscloudformation;
+
     const {
-      AuthRoleName,
-      UnauthRoleName,
-      Region,
-      UnauthRoleArn,
-      AuthRoleArn,
-      DeploymentBucketName
-    } = meta;
+      AuthRoleName: newEnvAuthRoleName,
+      UnauthRoleName: newEnvUnAuthRoleName,
+      UnauthRoleArn: newEnvUnauthRoleArn,
+      AuthRoleArn: newEnvAuthRoleArn,
+      DeploymentBucketName: newEnvDeploymentBucketName
+    } = newEnvMeta;
 
-    const iam = new AWS.IAM({ region: Region });
+    expect(newEnvAuthRoleName).not.toEqual(AuthRoleName);
+    expect(UnauthRoleName).not.toEqual(newEnvUnAuthRoleName);
+    expect(UnauthRoleArn).not.toEqual(newEnvUnauthRoleArn);
+    expect(AuthRoleArn).not.toEqual(newEnvAuthRoleArn);
+    expect(DeploymentBucketName).not.toEqual(newEnvDeploymentBucketName);
 
-    const { Role: unAuthRole } = await iam.getRole({ RoleName: UnauthRoleName }).promise();
-    expect(unAuthRole.Arn).toEqual(UnauthRoleArn);
-
-    const { Role: authRole } = await iam.getRole({ RoleName: AuthRoleName }).promise();
-    expect(authRole.Arn).toEqual(AuthRoleArn);
-
-    expect(async () => {
-      const s3 = new AWS.S3();
-      await s3.headBucket({ Bucket: DeploymentBucketName }).promise();
-    }).not.toThrow();
+    expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
+    expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
+    expect(newEnvDeploymentBucketName).toBeAS3Bucket();
   });
 });

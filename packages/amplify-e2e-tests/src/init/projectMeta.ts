@@ -1,5 +1,6 @@
 import { join } from 'path';
+import { readFileSync } from 'fs';
 export default function getProjectMeta(projectRoot) {
   const metaFilePath = join(projectRoot, 'amplify', '#current-cloud-backend', 'amplify-meta.json');
-  return require(metaFilePath)
+  return JSON.parse(readFileSync(metaFilePath, 'utf8'));
 }
