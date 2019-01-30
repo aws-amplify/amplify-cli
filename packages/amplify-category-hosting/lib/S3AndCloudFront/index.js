@@ -79,7 +79,6 @@ function removeCDN(context) {
 }
 
 function makeBucketPrivate(context) {
-  delete context.exeInfo.template.Resources.BucketPolicy;
   delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
 }
 
