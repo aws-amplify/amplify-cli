@@ -211,6 +211,7 @@
                                       {
                                         "Ref": "AWS::Region"
                                       },
+                                      ":",
                                       { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                       ":bot:",
                                       {
