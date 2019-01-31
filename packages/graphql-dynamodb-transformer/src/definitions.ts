@@ -337,7 +337,7 @@ export function makeModelXFilterInputObject(
     }
 }
 
-export function makeEnumFilterInputObject(
+export function makeEnumFilterInputObjects(
     obj: ObjectTypeDefinitionNode,
     ctx: TransformerContext
 ) : InputObjectTypeDefinitionNode[] {
