@@ -12,7 +12,8 @@ import {
     makeDirective,
     makeArgument,
     makeValueNode,
-    withNamedNodeNamed
+    withNamedNodeNamed,
+    isListType
 } from 'graphql-transformer-common'
 import { TransformerContext } from 'graphql-transformer-core';
 
@@ -264,14 +265,24 @@ export function makeModelXFilterInputObject(
             }
         })
         .map(
-            (field: FieldDefinitionNode) => ({
-                kind: Kind.INPUT_VALUE_DEFINITION,
-                name: field.name,
-                type: makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(getBaseType(field.type))),
-                // TODO: Service does not support new style descriptions so wait.
-                // description: field.description,
-                directives: []
-            })
+            (field: FieldDefinitionNode) => {
+                const baseType = getBaseType(field.type)
+                const fieldType = ctx.getType(baseType)
+                const isList = isListType(field.type)
+                const isEnumType = fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION;
+                const filterTypeName = (isEnumType && isList)
+                    ? ModelResourceIDs.ModelFilterListInputTypeName(baseType)
+                    : ModelResourceIDs.ModelFilterInputTypeName(baseType)
+
+                return {
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: field.name,
+                    type: makeNamedType(filterTypeName),
+                    // TODO: Service does not support new style descriptions so wait.
+                    // description: field.description,
+                    directives: []
+                }
+            }
         )
 
     fields.push(
@@ -330,7 +341,6 @@ export function makeEnumFilterInputObject(
     obj: ObjectTypeDefinitionNode,
     ctx: TransformerContext
 ) : InputObjectTypeDefinitionNode[] {
-    const name = ModelResourceIDs.ModelFilterInputTypeName(obj.name.value)
      return obj.fields
         .filter((field: FieldDefinitionNode) => {
             const fieldType = ctx.getType(getBaseType(field.type))
@@ -338,7 +348,10 @@ export function makeEnumFilterInputObject(
         })
         .map((enumField: FieldDefinitionNode) => {
             const typeName = getBaseType(enumField.type);
-            const name = ModelResourceIDs.ModelFilterInputTypeName(typeName);
+            const isList = isListType(enumField.type)
+            const name = isList
+                ? ModelResourceIDs.ModelFilterListInputTypeName(typeName)
+                : ModelResourceIDs.ModelFilterInputTypeName(typeName);
             const fields = [];
 
             fields.push({
@@ -347,7 +360,7 @@ export function makeEnumFilterInputObject(
                     kind: 'Name',
                     value: 'eq'
                 },
-                type: makeNamedType(typeName),
+                type: isList ? makeListType(makeNamedType(typeName)) : makeNamedType(typeName),
                 directives: []
             });
 
@@ -357,9 +370,31 @@ export function makeEnumFilterInputObject(
                     kind: 'Name',
                     value: 'ne'
                 },
-                type: makeNamedType(typeName),
+                type: isList ? makeListType(makeNamedType(typeName)) : makeNamedType(typeName),
                 directives: []
             });
+
+            if (isList) {
+                fields.push({
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: {
+                        kind: 'Name',
+                        value: 'contains'
+                    },
+                    type: makeNamedType(typeName),
+                    directives: []
+                });
+
+                fields.push({
+                    kind: Kind.INPUT_VALUE_DEFINITION,
+                    name: {
+                        kind: 'Name',
+                        value: 'notContains'
+                    },
+                    type: makeNamedType(typeName),
+                    directives: []
+                });
+            }
 
             return ({
                 kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
