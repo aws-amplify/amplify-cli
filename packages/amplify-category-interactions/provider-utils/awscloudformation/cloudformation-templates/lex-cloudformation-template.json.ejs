@@ -142,6 +142,21 @@
                         }
                     },
                     {
+                        "PolicyName": "IAMPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "iam:*"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "PolicyName": "<%= props.lambdaPolicyName %>",
                         "PolicyDocument": {
                             "Version": "2012-10-17",
@@ -196,6 +211,7 @@
                                       {
                                         "Ref": "AWS::Region"
                                       },
+                                      ":",
                                       { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
                                       ":bot:",
                                       {
