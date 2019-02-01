@@ -170,7 +170,8 @@ function checkAndCreateLexServiceRole() {
 }
 
 function createNewLexServiceRole() {
-    
+
+    // Lex service automatically creates the needed polcies and trust relationships
     const params = {
       AWSServiceName: 'lex.amazonaws.com',
       Description: 'Allows Amazon Lex to create and manage voice enabled bots on your behalf'
