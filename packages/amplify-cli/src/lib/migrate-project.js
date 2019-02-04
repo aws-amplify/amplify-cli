@@ -115,9 +115,6 @@ function backup(amplifyDirPath, projectPath) {
 
   fs.copySync(amplifyDirPath, backupAmplifyDirPath);
 
-
-  console.log('backup done!');
-
   return backupAmplifyDirPath;
 }
 
