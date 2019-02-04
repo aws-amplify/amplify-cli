@@ -9,6 +9,7 @@ const providerName = require('./constants').ProviderName;
 const { hashElement } = require('folder-hash');
 
 const PARAM_FILE_NAME = 'parameters.json';
+const CF_FILE_NAME = 'cloudformation-template.json';
 
 function getProjectBucket(context) {
   const projectDetails = context.amplify.getProjectDetails();
@@ -55,6 +56,24 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
         S3DeploymentRootKey: deploymentRootKey,
       });
     }
+
+    // As a safety mechanism when dealing with migrations and diff versions,
+    // make sure only expected parameters are passed.
+    const cfFilePath = path.join(backEndDir, category, resourceName, 'build', CF_FILE_NAME);
+    try {
+      const cfFileContents = fs.readFileSync(cfFilePath).toString();
+      const cfTemplateJson = JSON.parse(cfFileContents);
+      const paramKeys = Object.keys(currentParameters);
+      for (let keyIndex = 0; keyIndex < paramKeys.length; keyIndex++) {
+        const paramKey = paramKeys[keyIndex];
+        if (!cfTemplateJson.Parameters[paramKey]) {
+          delete currentParameters[paramKey];
+        }
+      }
+    } catch (e) {
+      throw new Error(`Could not read cloudformation template at path: ${cfFilePath}`);
+    }
+
     const jsonString = JSON.stringify(currentParameters, null, 4);
     const parametersOutputFilePath = path.join(backEndDir, category, resourceName, 'build', PARAM_FILE_NAME);
     fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
