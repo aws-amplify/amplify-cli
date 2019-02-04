@@ -102,23 +102,26 @@ async function updateStackForAPIMigration(context, category, resourceName, isRev
     allResources,
   } = await context.amplify.getResourceStatus(category, resourceName, providerName);
 
-  const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
   validateCfnTemplates(context, resources);
+
+  resources = allResources.filter(resource => resource.service === 'AppSync');
 
   return packageResources(context, resources)
     .then(() => uploadAppSyncFiles(context, resources, {
       useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
     }))
-    .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
+    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
       spinner.start();
       projectDetails = context.amplify.getProjectDetails();
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
         return updateCloudFormationNestedStack(
           context,
-          formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated,
+          formNestedStack(context, projectDetails, category, resourceName),
+          resourcesToBeCreated, resourcesToBeUpdated,
         );
       }
     })
@@ -373,7 +376,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     });
 }
 
-function formNestedStack(context, projectDetails) {
+function formNestedStack(context, projectDetails, categoryName, resourceName) {
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
   const { amplifyMeta } = projectDetails;
@@ -382,7 +385,6 @@ function formNestedStack(context, projectDetails) {
   categories = categories.filter(category => category !== 'provider');
   categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
-
     resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
       const resourceKey = category + resource;
@@ -414,7 +416,13 @@ function formNestedStack(context, projectDetails) {
 
         const currentEnv = context.amplify.getEnvInfo().envName;
 
-        Object.assign(parameters, { env: currentEnv });
+        if (resourceName) {
+          if (resource === resourceName) {
+            Object.assign(parameters, { env: currentEnv });
+          }
+        } else {
+          Object.assign(parameters, { env: currentEnv });
+        }
 
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         nestedStack.Resources[resourceKey] = {
