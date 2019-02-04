@@ -17,11 +17,19 @@ Pull requests should generally be opened against **master**.
 
 Only include ***src*** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
 
-Make sure you have attached a commit message before submitting the PR with the format: ```fix/feat(package_name): message```
-For example:
-  * A change is made in one of the file from amplify-category-auth
-  * When you want to commit the change: git commit -m 'fix(amplify-category-auth): the_message'
-  * Replace fix with feat when this is a feature change
+Before submmitting PR make sure to run `npm install` on the root of monorepo to ensure that commit lint and husky are installed.
+
+Make sure you follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) commit message structure. You can automatically generate conventional commit message by running `npm run commit` in the root of the amplify mono repo. This will run through series of question shown below
+```
+? Select the type of change that you're committing: <type of commit (if its a feature, bug fix etc.,>
+? What is the scope of this change (e.g. component or file name)? <package name if change is only in one package>
+? Write a short, imperative tense description of the change: <short description with length less than 72 char>
+? Provide a longer description of the change: (press enter to skip) <long description>
+? Are there any breaking changes? Y/N
+? Does this change affect any open issues? Y/N
+? Add issue references (e.g. "fix #123", "re #123".): <issue number if exists>
+
+```
 
 ## Tests
 
