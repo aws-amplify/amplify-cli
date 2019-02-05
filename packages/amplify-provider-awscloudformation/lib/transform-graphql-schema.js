@@ -26,13 +26,13 @@ Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authoriz
 }
 
 function apiProjectIsFromOldVersion(pathToProject) {
-  return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/.transform.conf.json`);
+  return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/transform.conf.json`);
 }
 
 /**
  * API migration happens in a few steps. First we calculate which resources need
  * to remain in the root stack (DDB tables, ES Domains, etc) and write them to
- * .transform.conf.json. We then call CF's update stack on the root stack such
+ * transform.conf.json. We then call CF's update stack on the root stack such
  * that only the resources that need to be in the root stack remain there
  * (this deletes resolvers from the schema). We then compile the project with
  * the new implementation and call update stack again.
@@ -128,10 +128,10 @@ async function transformGraphQLSchema(context, options) {
       name: 'IsOldApiProject',
       type: 'confirm',
       message: 'We detected an API that was initialized using an older version of the CLI. Do you want to migrate the API so that it is compatible with the latest version of the CLI?',
-      default: false,
+      default: true,
     });
     if (!IsOldApiProject) {
-      return;
+      throw new Error(`Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.`)
     }
     return await migrateProject(context, migrateOptions);
   }

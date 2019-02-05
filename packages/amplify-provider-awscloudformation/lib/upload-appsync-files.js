@@ -71,7 +71,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
         }
       }
     } catch (e) {
-      throw new Error(`Could not read cloudformation template at path: ${cfFilePath}`);
+      context.print.warning(`Could not read cloudformation template at path: ${cfFilePath}`);
     }
 
     const jsonString = JSON.stringify(currentParameters, null, 4);
