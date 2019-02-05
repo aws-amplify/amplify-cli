@@ -7,7 +7,7 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush } = require('../utils');
 
-async function generateStatementsAndTypes(context, forceDownloadSchema) {
+async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
   if (!projects.length) {
@@ -24,7 +24,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema) {
     );
     await Promise.all(downloadPromises);
   }
-  await generateStatements(context, false);
+  await generateStatements(context, false, maxDepth);
   await generateTypes(context, false);
   const pendingPush = await isAppSyncApiPendingPush(context);
   if (pendingPush) {
