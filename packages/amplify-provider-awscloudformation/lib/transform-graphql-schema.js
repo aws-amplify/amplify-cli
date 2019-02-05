@@ -40,7 +40,7 @@ function apiProjectIsFromOldVersion(pathToProject) {
  * @param {*} resourceDir
  */
 async function migrateProject(context, options) {
-  const { resourceDir } = options;
+  const { resourceDir, isCLIMigration } = options;
   const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
   let oldProjectConfig;
   try {
@@ -49,19 +49,19 @@ async function migrateProject(context, options) {
       projectDirectory: resourceDir,
     });
     oldProjectConfig = old;
-    await updateAndWaitForStack();
+    await updateAndWaitForStack({ isCLIMigration });
   } catch (e) {
     throw e;
   }
   try {
     await transformGraphQLSchema(context, options);
-    const result = await updateAndWaitForStack();
+    const result = await updateAndWaitForStack({ isCLIMigration });
     context.print.info('Finished migrating API.');
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
     TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
-    await updateAndWaitForStack(true);
+    await updateAndWaitForStack({ isReverting: true, isCLIMigration });
     context.print.error('API successfully reverted.');
     throw e;
   }
@@ -120,6 +120,7 @@ async function transformGraphQLSchema(context, options) {
     ...options,
     resourceDir,
     migrate: false,
+    isCLIMigration
   };
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);
