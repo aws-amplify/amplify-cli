@@ -34,8 +34,8 @@ async function run(context, category, resourceName) {
   return packageResources(context, resources)
     .then(() => transformGraphQLSchema(context, {
       noConfig: true,
-      handleMigration: isReverting =>
-        updateStackForAPIMigration(context, category, resourceName, isReverting),
+      handleMigration: opts =>
+        updateStackForAPIMigration(context, category, resourceName, opts),
     }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
@@ -94,7 +94,7 @@ async function run(context, category, resourceName) {
     });
 }
 
-async function updateStackForAPIMigration(context, category, resourceName, isReverting) {
+async function updateStackForAPIMigration(context, category, resourceName, options) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -102,6 +102,7 @@ async function updateStackForAPIMigration(context, category, resourceName, isRev
     allResources,
   } = await context.amplify.getResourceStatus(category, resourceName, providerName);
 
+  const { isReverting, isCLIMigration } = options;
   let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
 
@@ -115,22 +116,34 @@ async function updateStackForAPIMigration(context, category, resourceName, isRev
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
-      spinner.start();
+      if (!isCLIMigration) {
+        spinner.start();
+      }
       projectDetails = context.amplify.getProjectDetails();
       if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+        // isCLIMigration implies a top level CLI migration is underway.
+        // We do not inject an env in such situations so we pass a resourceName.
+        // When it is an API level migration, we do pass an env so omit the resourceName.
+        const nestedStack = isCLIMigration ?
+          formNestedStack(context, projectDetails, category, resourceName) :
+          formNestedStack(context, projectDetails, category);
         return updateCloudFormationNestedStack(
           context,
-          formNestedStack(context, projectDetails, category, resourceName),
+          nestedStack,
           resourcesToBeCreated, resourcesToBeUpdated,
         );
       }
     })
     .then((res) => {
-      spinner.stop();
+      if (!isCLIMigration) {
+        spinner.stop();
+      }
       return res;
     })
     .catch((err) => {
-      spinner.fail('An error occurred when pushing the resources to the cloud during the intermediate migration.');
+      if (!isCLIMigration) {
+        spinner.fail('An error occured when migrating the API project.');
+      }
       throw err;
     });
 }

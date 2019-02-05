@@ -21,7 +21,7 @@ module.exports = {
     const optionsWithUpdateHandler = {
       ...options,
       handleMigration: resources.length ?
-        (isReverting => updateStackForAPIMigration(context, category, resources[0], isReverting)) :
+        (opts => updateStackForAPIMigration(context, category, resources[0], opts)) :
         undefined,
     };
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
