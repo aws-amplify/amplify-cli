@@ -23,7 +23,7 @@
     "graphql-transformer-core": "^2.0.1-multienv.0"
   },
   "devDependencies": {
-    "@types/jest": "^23.1.1",
+    "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
     "bestzip": "^2.0.0",
     "graphql-dynamodb-transformer": "^2.0.0-multienv.2",
