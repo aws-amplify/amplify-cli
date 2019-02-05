@@ -53,7 +53,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
       resources[i].resourceName,
     ));
 
-    // If the directory structure does not exist, it is created
+    if (fs.pathExistsSync(targetDir)) {
+      filesystem.remove(targetDir);
+    }
+
     fs.ensureDirSync(targetDir);
 
     fs.copySync(sourceDir, targetDir);
