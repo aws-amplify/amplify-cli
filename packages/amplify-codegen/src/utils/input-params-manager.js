@@ -14,6 +14,8 @@ function normalizeInputParams(context) {
         }
       }
     }
+  } else {
+    context.exeInfo = { inputParams: {} };
   }
   if (inputParams) {
     const normalizedInputParams = {};

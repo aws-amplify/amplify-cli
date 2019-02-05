@@ -1,0 +1,47 @@
+# this is an auto generated file. This will be overwritten
+query GetCompleteEvent($eventId: ID!) {
+  getCompleteEvent(eventId: $eventId) {
+    _id
+    createdOn
+    en {
+      name
+      info
+      banner
+      nextVenue {
+        address
+        date
+      }
+      previousVenues {
+        address
+        date
+      }
+      previousSpeakers
+      nextSpeaker
+      gallery
+      attendees
+      alertMessage
+      eventJoinLink
+      status
+    }
+    hi {
+      name
+      info
+      banner
+      nextVenue {
+        address
+        date
+      }
+      previousVenues {
+        address
+        date
+      }
+      previousSpeakers
+      nextSpeaker
+      gallery
+      attendees
+      alertMessage
+      eventJoinLink
+      status
+    }
+  }
+}

@@ -1,0 +1,192 @@
+# this is an auto generated file. This will be overwritten
+query SinglePost($id: ID!) {
+  singlePost(id: $id) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+query GetPost($id: ID!) {
+  getPost(id: $id) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+query ListPosts($first: Int, $after: String) {
+  listPosts(first: $first, after: $after) {
+    items {
+      id
+      author
+      title
+      content
+      url
+      ups
+      downs
+      version
+    }
+    nextToken
+  }
+}
+mutation CreatePost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation CreatePostWithFile($input: CreatePostWithFileInput!) {
+  createPostWithFile(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation UpdatePost($input: UpdatePostInput!) {
+  updatePost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation DeletePost($input: DeletePostInput!) {
+  deletePost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+subscription OnCreatePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onCreatePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+subscription OnUpdatePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onUpdatePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+subscription OnDeletePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onDeletePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+fragment S3Object on S3Object {
+  bucket
+  key
+  region
+}

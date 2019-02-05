@@ -16,8 +16,10 @@ export type GQLConcreteType =
   | GraphQLInputObjectType
 
 export type GQLTemplateFragment = {
-  on: string
-  fields: Array<GQLTemplateField>
+  on: string,
+  fields: Array<GQLTemplateField>,
+  external: boolean,
+  name: string,
 }
 
 export enum GQLOperationTypeEnum {
@@ -65,4 +67,9 @@ export type GQLAllOperations = {
   queries: Array<GQLTemplateOp>
   mutations: Array<GQLTemplateOp>
   subscriptions: Array<GQLTemplateOp>
+  fragments: Array<GQLTemplateFragment>
+}
+
+export type GQLDocsGenOptions = {
+  useExternalFragmentForS3Object: boolean
 }
