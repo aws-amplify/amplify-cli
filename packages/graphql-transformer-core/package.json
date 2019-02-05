@@ -18,7 +18,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/graphql": "^0.13.1",
-    "@types/jest": "^23.1.0",
+    "@types/jest": "23.1.0",
     "jest": "^23.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
