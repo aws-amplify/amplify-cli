@@ -7,7 +7,8 @@ module.exports = {
   run: async (context) => {
     try {
       const forceDownloadSchema = !context.parameters.options.nodownload;
-      await codeGen.generateStatements(context, forceDownloadSchema);
+      const { maxDepth } = context.parameters.options;
+      await codeGen.generateStatements(context, forceDownloadSchema, maxDepth);
     } catch (ex) {
       context.print.info(ex.message);
       process.exit(1);

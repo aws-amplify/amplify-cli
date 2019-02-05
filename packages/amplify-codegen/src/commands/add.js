@@ -89,6 +89,9 @@ async function add(context, apiId = null) {
     endpoint: apiDetails.endpoint,
   };
 
+  if (answer.maxDepth) {
+    newProject.amplifyExtension.maxDepth = answer.maxDepth;
+  }
   config.addProject(newProject);
   if (answer.shouldGenerateDocs) {
     await generateStatements(context, false);
