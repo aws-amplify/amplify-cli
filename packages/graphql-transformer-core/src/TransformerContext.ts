@@ -71,7 +71,8 @@ export class TransformerContextMetadata {
     }
 }
 
-export interface StackMapping { [stackName: string]: RegExp[] }
+// export interface StackMapping { [k: RegExp]: string }
+export type StackMapping = Map<RegExp, string>;
 
 /**
  * The transformer context is responsible for accumulating the resources,
@@ -87,7 +88,7 @@ export default class TransformerContext {
 
     public metadata: TransformerContextMetadata = new TransformerContextMetadata()
 
-    private stackMapping: StackMapping = {}
+    private stackMapping: StackMapping = new Map();
 
     constructor(inputSDL: string) {
         const doc: DocumentNode = parse(inputSDL)
@@ -621,15 +622,18 @@ export default class TransformerContext {
     }
 
     public putStackMapping(stackName: string, listOfRegex: RegExp[]) {
-        this.stackMapping[stackName] = listOfRegex
+        for (const reg of listOfRegex) {
+            this.stackMapping.set(reg, stackName);
+        }
     }
 
     public addToStackMapping(stackName: string, regex: RegExp) {
-        if (!this.stackMapping[stackName]) {
-            this.stackMapping[stackName] = [regex];
-        } else {
-            this.stackMapping[stackName].push(regex);
-        }
+        this.stackMapping.set(regex, stackName);
+        // if (!this.stackMapping[stackName]) {
+        //     this.stackMapping[stackName] = [regex];
+        // } else {
+        //     this.stackMapping[stackName].push(regex);
+        // }
     }
 
     public getStackMapping(): StackMapping {

@@ -2,7 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { CloudFormation, Fn, Template } from "cloudform-types";
 import GraphQLTransform from '..';
+import Transformer from '../Transformer';
 import DeploymentResources from '../DeploymentResources';
+import { StackMappingOption } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
@@ -11,18 +13,36 @@ const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
     projectDirectory: string
-    transform: GraphQLTransform
+    transformers: Transformer[]
     rootStackFileName?: string
 }
 
 export async function buildProject(opts: ProjectOptions) {
     const userProjectConfig = await readProjectConfiguration(opts.projectDirectory)
-    let transformOutput = opts.transform.transform(userProjectConfig.schema.toString())
+    const stackMapping = getStackMappingsFromMigrationConfig(userProjectConfig.config.Migration);
+    const transform = new GraphQLTransform({
+        transformers: opts.transformers,
+        stackMapping
+    });
+    let transformOutput = transform.transform(userProjectConfig.schema.toString());
     if (userProjectConfig.config && userProjectConfig.config.Migration) {
         transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
     }
     const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
     writeDeploymentToDisk(merged, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+}
+
+/**
+ * Returns a map where the keys are the names of the resources and the values are root.
+ * This will be passed to the transform constructor to cause resources from a migration
+ * to remain in the top level stack.
+ */
+function getStackMappingsFromMigrationConfig(migrationConfig?: TransformMigrationConfig): StackMappingOption {
+    if (migrationConfig && migrationConfig.V1) {
+        const resourceIdsToHoist = migrationConfig.V1.Resources || [];
+        return resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: 'root'}), {});
+    }
+    return {};
 }
 
 /**
@@ -35,31 +55,17 @@ export async function buildProject(opts: ProjectOptions) {
 function adjustBuildForMigration(resources: DeploymentResources, migrationConfig?: TransformMigrationConfig): DeploymentResources {
     if (migrationConfig && migrationConfig.V1) {
         const resourceIdsToHoist = migrationConfig.V1.Resources || [];
-        const outputIdsToHoist = migrationConfig.V1.Outputs || [];
         if (resourceIdsToHoist.length === 0) {
             return resources;
         }
         const resourceIdMap = resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
-        const outputIdMap = outputIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
         for (const stackKey of Object.keys(resources.stacks)) {
             const template = resources.stacks[stackKey];
             for (const resourceKey of Object.keys(template.Resources)) {
                 if (resourceIdMap[resourceKey]) {
-                    // We pull resources up to the root stack so that they are not
-                    // removed under the new project structure (ie we don't delete DynamoDB tables)
-                    console.log(`Hoisting resource: ${resourceKey}`);
+                    // Handle any special detials for migrated details.
                     const resource = template.Resources[resourceKey];
-                    const replaced = formatTableForMigration(resource);
-                    resources.rootStack.Resources[resourceKey] = replaced;
-                    delete template.Resources[resourceKey];
-                }
-            }
-            for (const outputKey of Object.keys(template.Outputs)) {
-                if (outputIdMap[outputKey]) {
-                    console.log(`Hoisting output: ${outputKey}`);
-                    const output = template.Outputs[outputKey];
-                    resources.rootStack.Outputs[outputKey] = output;
-                    delete template.Outputs[outputKey];
+                    template.Resources[resourceKey] = formatMigratedResource(resource);
                 }
             }
         }
@@ -501,7 +507,6 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 interface TransformMigrationConfig {
     V1?: {
         Resources: string[];
-        Outputs: string[];
     }
 }
 interface TransformConfig {
@@ -509,7 +514,6 @@ interface TransformConfig {
 }
 export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project): TransformConfig {
     const migrationResourceIds = [];
-    const migrationOutputIds = [];
     for (const key of Object.keys(project.template.Resources)) {
         const resource = project.template.Resources[key];
         switch (resource.Type) {
@@ -517,7 +521,7 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
                 migrationResourceIds.push(key);
                 // When searchable is used we need to keep the output stream arn
                 // output at the top level as well. TODO: Only do this when searchable is enabled.
-                migrationOutputIds.push(`GetAtt${key}StreamArn`);
+                // migrationOutputIds.push(`GetAtt${key}StreamArn`);
                 break;
             }
             case 'AWS::Elasticsearch::Domain': {
@@ -554,24 +558,24 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
     return {
         Migration: {
             V1: {
-                Resources: migrationResourceIds,
-                Outputs: migrationOutputIds
+                Resources: migrationResourceIds
             }
         }
     }
 }
 
-function formatTableForMigration(obj: any) {
-    const withReplacedReferences = replaceReferencesForMigration(obj);
-    const withoutEncryption = removeSSE(withReplacedReferences);
+function formatMigratedResource(obj: any) {
+    // const withReplacedReferences = replaceReferencesForMigration(obj);
+    const withoutEncryption = removeSSE(obj);
     return withoutEncryption;
 }
 
 function removeSSE(resource: any) {
-    if (resource && resource.SSESpecification) {
-        delete resource.SSESpecification;
+    const jsonNode = resource && typeof resource.toJSON === 'function' ? resource.toJSON() : resource;
+    if (jsonNode && jsonNode.SSESpecification) {
+        delete jsonNode.SSESpecification;
     }
-    return resource;
+    return jsonNode;
 }
 
 /**
@@ -582,7 +586,7 @@ function replaceReferencesForMigration(obj: any) {
     const jsonNode = obj && typeof obj.toJSON === 'function' ? obj.toJSON() : obj;
     if (Array.isArray(jsonNode)) {
         for (let i = 0; i < jsonNode.length; i++) {
-            const replaced = formatTableForMigration(jsonNode[i]);
+            const replaced = formatMigratedResource(jsonNode[i]);
             jsonNode[i] = replaced;
         }
         return jsonNode;
@@ -597,7 +601,7 @@ function replaceReferencesForMigration(obj: any) {
             };
         }
         for (const key of Object.keys(jsonNode)) {
-            const replaced = formatTableForMigration(jsonNode[key]);
+            const replaced = formatMigratedResource(jsonNode[key]);
             jsonNode[key] = replaced
         }
         return jsonNode;
@@ -623,7 +627,7 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
             case 'AWS::AppSync::ApiKey':
             case 'AWS::Cognito::UserPool':
             case 'AWS::Cognito::UserPoolClient':
-                filteredResources[key] = formatTableForMigration(resource);
+                filteredResources[key] = formatMigratedResource(resource);
                 break;
             case 'AWS::IAM::Role': {
                 if (key === 'ElasticSearchAccessIAMRole') {
