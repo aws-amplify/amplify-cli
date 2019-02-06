@@ -51,8 +51,15 @@ async function migrateProject(context, options) {
     oldProjectConfig = old;
     await updateAndWaitForStack({ isCLIMigration });
   } catch (e) {
+    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     throw e;
   }
+  await inquirer.prompt({
+    name: 'IsOldApiProject',
+    type: 'confirm',
+    message: 'Continue?',
+    default: true,
+  });
   try {
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack({ isCLIMigration });
@@ -60,7 +67,13 @@ async function migrateProject(context, options) {
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
-    TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
+    await inquirer.prompt({
+      name: 'IsOldApiProject',
+      type: 'confirm',
+      message: 'Revert?',
+      default: true,
+    });
+    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     await updateAndWaitForStack({ isReverting: true, isCLIMigration });
     context.print.error('API successfully reverted.');
     throw e;

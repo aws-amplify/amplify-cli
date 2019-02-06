@@ -33,7 +33,6 @@
     "@types/node": "^10.3.4",
     "aws-amplify": "^1.1.4",
     "aws-sdk": "^2.259.1",
-    "graphql-appsync-transformer": "^2.0.1-multienv.0",
     "graphql-auth-transformer": "^2.0.1-multienv.0",
     "graphql-connection-transformer": "^2.0.1-multienv.0",
     "graphql-dynamodb-transformer": "^2.0.1-multienv.0",

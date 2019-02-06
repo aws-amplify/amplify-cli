@@ -71,7 +71,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB]: new NumberParameter({
                 Description: 'The size in GB of the EBS volumes that contain our data.',
-                Default: 20
+                Default: 10
             })
         }
     }

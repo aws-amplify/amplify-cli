@@ -332,11 +332,9 @@ import AppSyncDynamoDBTransformer from 'graphql-dynamodb-transformer'
 import AppSyncElasticsearchTransformer from 'graphql-elasticsearch-transformer'
 import AppSyncConnectionTransformer from 'graphql-connection-transformer'
 import AppSyncAuthTransformer from 'graphql-auth-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 
 const transformer = new GraphQLTransform({
     transformers: [
-        new AppSyncTransformer(),
         new AppSyncDynamoDBTransformer(),
         new AppSyncElasticsearchTransformer(),
         new AppSyncAuthTransformer(),
