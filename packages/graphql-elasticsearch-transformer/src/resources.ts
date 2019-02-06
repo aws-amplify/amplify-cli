@@ -341,12 +341,16 @@ export class ResourceFactory {
      * over 28 characters. If there is no env, fallback to original behavior.
      */
     private domainName() {
-        return Fn.Join(
-            '-',
-            [
-                'd',
-                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-            ]
+        return Fn.If(
+            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+            Refs.NoValue,
+            Fn.Join(
+                '-',
+                [
+                    'd',
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ]
+            )
         )
     }
 
