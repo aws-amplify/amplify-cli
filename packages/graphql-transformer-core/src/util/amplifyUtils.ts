@@ -18,8 +18,8 @@ export interface ProjectOptions {
 export async function buildProject(opts: ProjectOptions) {
     const userProjectConfig = await readProjectConfiguration(opts.projectDirectory)
     let transformOutput = opts.transform.transform(userProjectConfig.schema.toString())
-    if (userProjectConfig.config && userProjectConfig.config.HoistIDs) {
-        transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.HoistIDs);
+    if (userProjectConfig.config && userProjectConfig.config.Migration) {
+        transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
     }
     const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
     writeDeploymentToDisk(merged, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
@@ -32,19 +32,35 @@ export async function buildProject(opts: ProjectOptions) {
  * @param resources The resources to change.
  * @param idsToHoist The logical ids to hoist into the root of the template.
  */
-function adjustBuildForMigration(resources: DeploymentResources, idsToHoist: string[]): DeploymentResources {
-    if (idsToHoist.length === 0) {
-        return resources;
-    }
-    const idMap = idsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
-    for (const stackKey of Object.keys(resources.stacks)) {
-        const template = resources.stacks[stackKey];
-        for (const resourceKey of Object.keys(template.Resources)) {
-            if (idMap[resourceKey]) {
-                const resource = template.Resources[resourceKey];
-                const replaced = formatTableForMigration(resource);
-                resources.rootStack.Resources[resourceKey] = replaced;
-                delete template.Resources[resourceKey];
+function adjustBuildForMigration(resources: DeploymentResources, migrationConfig?: TransformMigrationConfig): DeploymentResources {
+    if (migrationConfig && migrationConfig.V1) {
+        const resourceIdsToHoist = migrationConfig.V1.Resources || [];
+        const outputIdsToHoist = migrationConfig.V1.Outputs || [];
+        if (resourceIdsToHoist.length === 0) {
+            return resources;
+        }
+        const resourceIdMap = resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
+        const outputIdMap = outputIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
+        for (const stackKey of Object.keys(resources.stacks)) {
+            const template = resources.stacks[stackKey];
+            for (const resourceKey of Object.keys(template.Resources)) {
+                if (resourceIdMap[resourceKey]) {
+                    // We pull resources up to the root stack so that they are not
+                    // removed under the new project structure (ie we don't delete DynamoDB tables)
+                    console.log(`Hoisting resource: ${resourceKey}`);
+                    const resource = template.Resources[resourceKey];
+                    const replaced = formatTableForMigration(resource);
+                    resources.rootStack.Resources[resourceKey] = replaced;
+                    delete template.Resources[resourceKey];
+                }
+            }
+            for (const outputKey of Object.keys(template.Outputs)) {
+                if (outputIdMap[outputKey]) {
+                    console.log(`Hoisting output: ${outputKey}`);
+                    const output = template.Outputs[outputKey];
+                    resources.rootStack.Outputs[outputKey] = output;
+                    delete template.Outputs[outputKey];
+                }
             }
         }
     }
@@ -378,6 +394,27 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
     return schemaDocuments;
 }
 
+async function deleteDirectory(directory: string): Promise<void> {
+    const pathExists = await exists(directory);
+    if (!pathExists) {
+        return;
+    }
+    const dirStats = await lstat(directory);
+    if (!dirStats.isDirectory()) {
+        return;
+    }
+    const files = await readDir(directory);
+    for (const fileName of files) {
+        const fullPath = path.join(directory, fileName);
+        const stats = await lstat(fullPath);
+        if (stats.isDirectory()) {
+            await deleteDirectory(fullPath);
+        } else if (stats.isFile()) {
+            await unlink(fullPath);
+        }
+    }
+}
+
 interface MigrationOptions {
     projectDirectory: string
 }
@@ -396,7 +433,7 @@ export async function migrateAPIProject(opts: MigrationOptions) {
         old: copyOfProject
     }
 }
-export function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
+export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
     // Revert the v1 style CF doc.
     const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
     fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
@@ -408,7 +445,15 @@ export function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Pr
 
     // Revert the config file by deleting it.
     const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
-    fs.unlinkSync(configFilePath);
+    if (fs.existsSync(configFilePath)) {
+        fs.unlinkSync(configFilePath);
+    }
+
+    // Try to delete the stacks & resolver directories.
+    const stacksDir = path.join(directory, 'stacks');
+    const resolversDir = path.join(directory, 'resolvers');
+    await deleteDirectory(stacksDir);
+    await deleteDirectory(resolversDir);
 }
 
 interface AmplifyApiV1Project {
@@ -450,23 +495,41 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
 /**
  * TransformConfig records a set of logical ids that should be preserved
- * in the top level template to prevent deleting resources that holds data and 
+ * in the top level template to prevent deleting resources that holds data and
  * that were created before the new nested stack config.
  */
+interface TransformMigrationConfig {
+    V1?: {
+        Resources: string[];
+        Outputs: string[];
+    }
+}
 interface TransformConfig {
-    HoistIDs?: string[];
+    Migration?: TransformMigrationConfig;
 }
 export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project): TransformConfig {
-    const idsToHoist = [];
+    const migrationResourceIds = [];
+    const migrationOutputIds = [];
     for (const key of Object.keys(project.template.Resources)) {
         const resource = project.template.Resources[key];
         switch (resource.Type) {
             case 'AWS::DynamoDB::Table': {
-                idsToHoist.push(key);
+                migrationResourceIds.push(key);
+                // When searchable is used we need to keep the output stream arn
+                // output at the top level as well. TODO: Only do this when searchable is enabled.
+                migrationOutputIds.push(`GetAtt${key}StreamArn`);
                 break;
             }
             case 'AWS::Elasticsearch::Domain': {
-                idsToHoist.push(key);
+                migrationResourceIds.push(key);
+                break;
+            }
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for deploying the migration to projects with @searchable.
+                    // This keeps an IAM role needed by the old ES policy document around.
+                    migrationResourceIds.push(key);
+                }
                 break;
             }
             default: {
@@ -474,8 +537,27 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
             }
         }
     }
+    // for (const key of Object.keys(project.template.Outputs)) {
+    //     // Pull any outputs that reference a hoisted id.
+    //     const output = project.template.Outputs[key];
+    //     const outputValue = output.Value;
+    //     let refdId;
+    //     if (outputValue["Fn::GetAtt"]) {
+    //         refdId = outputValue["Fn::GetAtt"][0];
+    //     } else if (outputValue["Fn::Ref"]) {
+    //         refdId = outputValue["Fn::Ref"];
+    //     }
+    //     if (refdId && migrationResourceIds.find(id => id === refdId)) {
+    //         migrationOutputIds.push(key);
+    //     }
+    // }
     return {
-        HoistIDs: idsToHoist
+        Migration: {
+            V1: {
+                Resources: migrationResourceIds,
+                Outputs: migrationOutputIds
+            }
+        }
     }
 }
 
@@ -543,6 +625,13 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
             case 'AWS::Cognito::UserPoolClient':
                 filteredResources[key] = formatTableForMigration(resource);
                 break;
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for the ES migration case.
+                    filteredResources[key] = resource;
+                }
+                break;
+            }
             case 'AWS::AppSync::GraphQLSchema':
                 const alteredResource = { ...resource };
                 alteredResource.Properties.DefinitionS3Location = {
@@ -632,23 +721,6 @@ function initStacksAndResolversDirectories(directory: string) {
     const stackRootPath = path.normalize(directory + `/stacks`)
     if (!fs.existsSync(stackRootPath)) {
         fs.mkdirSync(stackRootPath);
-    }
-}
-
-/**
- * Writes the migrationInfo to the transform.conf.json file in the api category.
- */
-async function readTransformConfig(migrationInfo: TransformConfig, projectDirectory: string): Promise<TransformConfig> {
-    // Write the schema to disk
-    const migrationInfoFilePath = path.join(projectDirectory, TRANSFORM_CONFIG_FILE_NAME);
-    const migrationFileExists = await exists(migrationInfoFilePath)
-    if (migrationFileExists) {
-        const migrationFileStr = await readFile(migrationInfoFilePath);
-        const migrationFile = JSON.parse(migrationFileStr.toString());
-        return migrationFile;
-    }
-    return {
-        HoistIDs: []
     }
 }
 

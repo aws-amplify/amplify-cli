@@ -100,8 +100,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
 // Hash a directory into a unique value.
 async function hashDirectory(directory) {
   const options = {
-    folders: { exclude: [] },
-    encoding: 'hex',
+    encoding: 'hex'
   };
 
   return hashElement(directory, options).then(result => (result.hash));
