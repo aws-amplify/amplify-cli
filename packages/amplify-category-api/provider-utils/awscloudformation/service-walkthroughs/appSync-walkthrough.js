@@ -272,8 +272,15 @@ async function updateWalkthrough(context) {
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   amplifyMeta[category][resourceName].output.securityType = authType;
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+
+  backendConfig[category][resourceName].output.securityType = authType;
+  jsonString = JSON.stringify(backendConfig, null, '\t');
+  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
 }

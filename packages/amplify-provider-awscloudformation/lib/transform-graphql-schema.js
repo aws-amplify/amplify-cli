@@ -120,7 +120,7 @@ async function transformGraphQLSchema(context, options) {
     ...options,
     resourceDir,
     migrate: false,
-    isCLIMigration
+    isCLIMigration,
   };
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);
@@ -132,7 +132,7 @@ async function transformGraphQLSchema(context, options) {
       default: true,
     });
     if (!IsOldApiProject) {
-      throw new Error(`Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.`)
+      throw new Error('Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.');
     }
     return await migrateProject(context, migrateOptions);
   }
