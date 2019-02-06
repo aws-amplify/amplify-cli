@@ -7,7 +7,7 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -219,7 +219,11 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addMutationFields(mutationFields)
     }
 
-    private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createQueries = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+    ) => {
         const typeName = def.name.value
         const queryFields = []
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
@@ -396,7 +400,10 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addObjectExtension(makeModelConnectionType(def.name.value))
     }
 
-    private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    private generateFilterInputs(
+        ctx: TransformerContext,
+        def: ObjectTypeDefinitionNode,
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -404,8 +411,16 @@ export class DynamoDBModelTransformer extends Transformer {
             }
         }
 
+        // Create the Enum filters
+        const enumFilters = makeEnumFilterInputObjects(def, ctx);
+        for (const filter of enumFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
+        }
+
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(def)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }
