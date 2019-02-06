@@ -16,7 +16,6 @@ function getProjectBucket(context) {
   const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
   return projectBucket;
 }
-
 /**
  * Updates build/parameters.json with new timestamps and then uploads the
  * contents of the build/ directory to S3.
@@ -88,6 +87,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
       upload: async (blob) => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
+
         return await s3Client.uploadFile({
           Key: fullKey,
           Body,
@@ -100,10 +100,11 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
 // Hash a directory into a unique value.
 async function hashDirectory(directory) {
   const options = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
+    folders: { exclude: [] },
+    encoding: 'hex',
   };
 
-  return hashElement(directory, options).then(result => result.hash);
+  return hashElement(directory, options).then(result => (result.hash));
 }
 
 module.exports = {
