@@ -7,6 +7,9 @@ const gitManager = require('../extensions/amplify-helpers/git-manager');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
+const { run } = require('../commands/push');
+
+const pushRun = run;
 
 const {
   searchProjectRootPath,
@@ -99,6 +102,12 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
     context.print.warning('If you have added functions or interactions category to your project, please check the \'Auto-migration\' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md');
+    // Run the `amplify push` flow
+    try {
+      await pushRun(context);
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
