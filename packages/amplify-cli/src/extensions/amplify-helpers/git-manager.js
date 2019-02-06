@@ -43,6 +43,9 @@ function getGitIgnoreAppendString() {
     'amplify/\\#current-cloud-backend',
     'amplify/.config/local-*',
     'amplify/backend/amplify-meta.json',
+    'build/',
+    'dist/',
+    'node_modules/',
     'aws-exports.js',
     'awsconfiguration.json'];
 
