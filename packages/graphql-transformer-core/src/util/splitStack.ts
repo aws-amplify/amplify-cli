@@ -21,9 +21,10 @@ interface NestedStackInfo {
     stackDependencyMap: { [k: string]: string[] }
     stackParameterMap: { [k: string]: {[p: string]: any }  }
 }
-export interface StackRules {
-    [key: string]: RegExp[];
-}
+// export interface StackRules {
+//     [key: string]: RegExp[];
+// }
+export type StackRules = Map<RegExp, string>;
 export interface SplitStackOptions {
     stack: Template,
     stackRules: StackRules,
@@ -52,21 +53,18 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     function mapResourcesToStack(
         template: Template,
     ): { [key: string]: string } {
-        const stackNames = Object.keys(stackRules)
         const resourceKeys = Object.keys(template.Resources);
         const resourceStackMap = {};
-        for (const stackName of stackNames) {
-            for (const resourceKey of resourceKeys) {
-                for (const regEx of stackRules[stackName]) {
-                    if (regEx.test(resourceKey)) {
-                        resourceStackMap[resourceKey] = stackName
-                    }
+        for (const resourceKey of resourceKeys) {
+            stackRules.forEach((stackName, regEx) => {
+                if (regEx.test(resourceKey)) {
+                    resourceStackMap[resourceKey] = stackName;
                 }
-            }
+            })
         }
         for (const resourceKey of resourceKeys) {
             if (!resourceStackMap[resourceKey]) {
-                resourceStackMap[resourceKey] = rootStackName
+                resourceStackMap[resourceKey] = rootStackName;
             }
         }
         return resourceStackMap;

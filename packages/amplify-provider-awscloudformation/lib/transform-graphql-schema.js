@@ -179,13 +179,9 @@ async function transformGraphQLSchema(context, options) {
     transformerList.push(new ModelAuthTransformer());
   }
 
-  const transformer = new GraphQLTransform({
-    transformers: transformerList,
-  });
-
   await TransformPackage.buildAPIProject({
     projectDirectory: resourceDir,
-    transform: transformer,
+    transformers: transformerList,
     rootStackFileName: 'cloudformation-template.json',
   });
 
