@@ -280,6 +280,14 @@ function generateBackendConfig(amplifyMeta) {
         amplifyMeta[category][resourceName].dependsOn;
         backendConfig[category][resourceName].build =
         amplifyMeta[category][resourceName].build;
+        // For AppSync we need to store the securityType output as well
+        if (amplifyMeta[category][resourceName].service === 'AppSync') {
+          backendConfig[category][resourceName].output = {};
+          if (amplifyMeta[category][resourceName].output) {
+            backendConfig[category][resourceName].output.securityType =
+            amplifyMeta[category][resourceName].output.securityType;
+          }
+        }
       });
     }
   });
