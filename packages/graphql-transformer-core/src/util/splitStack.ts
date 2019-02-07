@@ -89,7 +89,17 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
                     Conditions: template.Conditions
                 })
             }
-            templateMap[stackName].Resources[resourceId] = template.Resources[resourceId]
+            const resource = template.Resources[resourceId];
+            // Remove any dependsOn that will no longer be in the same template.
+            let depends: string | string[] = (resource.DependsOn as any);
+            if (depends && Array.isArray(depends)) {
+                resource.DependsOn =  depends.filter(id => {
+                    return resourceToStackMap[id] === stackName;
+                })
+            } else if (depends && typeof depends === 'string') {
+                resource.DependsOn = resourceToStackMap[depends] === stackName ? depends : undefined;
+            }
+            templateMap[stackName].Resources[resourceId] = resource;
         }
         // The root stack exposes all parameters at the top level.
         templateMap[rootStackName].Parameters = template.Parameters;
