@@ -24,7 +24,7 @@ interface NestedStackInfo {
 // export interface StackRules {
 //     [key: string]: RegExp[];
 // }
-export type StackRules = Map<RegExp, string>;
+export type StackRules = Map<string, string>;
 export interface SplitStackOptions {
     stack: Template,
     stackRules: StackRules,
@@ -56,7 +56,8 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
         const resourceKeys = Object.keys(template.Resources);
         const resourceStackMap = {};
         for (const resourceKey of resourceKeys) {
-            stackRules.forEach((stackName, regEx) => {
+            stackRules.forEach((stackName, regExStr) => {
+                const regEx = new RegExp(regExStr, 'i');
                 if (regEx.test(resourceKey)) {
                     resourceStackMap[resourceKey] = stackName;
                 }

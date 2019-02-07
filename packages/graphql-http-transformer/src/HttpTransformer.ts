@@ -86,7 +86,7 @@ export class HttpTransformer extends Transformer {
             const dataSourceID = HttpResourceIDs.HttpDataSourceID(baseURL)
             // only create one DataSource per base URL
             if (!ctx.getResource(dataSourceID)) {
-                ctx.addToStackMapping(HTTP_STACK_NAME, new RegExp(`^${dataSourceID}$`))
+                ctx.addToStackMapping(HTTP_STACK_NAME, `^${dataSourceID}$`)
                 ctx.setResource(
                     dataSourceID,
                     this.resources.makeHttpDataSource(baseURL)
@@ -106,7 +106,7 @@ export class HttpTransformer extends Transformer {
     ): void => {
         ctx.addToStackMapping(
             HTTP_STACK_NAME,
-            new RegExp(`^${ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)}$`)
+            `^${ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)}$`
         )
         const url: string = getDirectiveArgument(directive)("url")
         const baseURL: string = url.replace(HttpTransformer.urlRegex, '$1')

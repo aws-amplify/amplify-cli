@@ -60,9 +60,9 @@ const template: Template = {
 
 
 test('Test getTemplateReferences', () => {
-    const stackRules = new Map<RegExp, string>();
-    stackRules.set(/.*PostResolver/, 'PostModel');
-    stackRules.set(/^PostTable*/, 'PostModel');
+    const stackRules = new Map<string, string>();
+    stackRules.set('.*PostResolver', 'PostModel');
+    stackRules.set('^PostTable.*', 'PostModel');
     const formatter = new TransformFormatter({
         stackRules: stackRules,
     });

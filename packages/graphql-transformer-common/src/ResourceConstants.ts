@@ -9,11 +9,11 @@ export class ResourceConstants {
         APIKeyLogicalID: 'GraphQLAPIKey',
 
         // Elasticsearch
-        ElasticsearchAccessIAMRoleLogicalID: 'ElasticsearchAccessIAMRole',
-        ElasticsearchDomainLogicalID: 'ElasticsearchDomain',
-        ElasticsearchStreamingLambdaIAMRoleLogicalID: 'ElasticsearchStreamingLambdaIAMRole',
-        ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticsearchStreamingLambdaFunction',
-        ElasticsearchDataSourceLogicalID: 'ElasticsearchDataSource',
+        ElasticsearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
+        ElasticsearchDomainLogicalID: 'ElasticSearchDomain',
+        ElasticsearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
+        ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
+        ElasticsearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
@@ -32,16 +32,16 @@ export class ResourceConstants {
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // Elasticsearch
-        ElasticsearchDomainName: 'ElasticsearchDomainName',
-        ElasticsearchAccessIAMRoleName: 'ElasticsearchAccessIAMRoleName',
-        ElasticsearchDebugStreamingLambda: 'ElasticsearchDebugStreamingLambda',
-        ElasticsearchStreamingIAMRoleName: 'ElasticsearchStreamingIAMRoleName',
-        ElasticsearchStreamingFunctionName: 'ElasticsearchStreamingFunctionName',
-        ElasticsearchInstanceCount: 'ElasticsearchInstanceCount',
-        ElasticsearchInstanceType: 'ElasticsearchInstanceType',
-        ElasticsearchEBSVolumeGB: 'ElasticsearchEBSVolumeGB',
-        ElasticsearchStreamingLambdaHandlerName: 'ElasticsearchStreamingLambdaHandlerName',
-        ElasticsearchStreamingLambdaRuntime: 'ElasticsearchStreamingLambdaRuntime',
+        ElasticsearchDomainName: 'ElasticSearchDomainName',
+        ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
+        ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
+        ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
+        ElasticsearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
+        ElasticsearchInstanceCount: 'ElasticSearchInstanceCount',
+        ElasticsearchInstanceType: 'ElasticSearchInstanceType',
+        ElasticsearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
+        ElasticsearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
+        ElasticsearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',

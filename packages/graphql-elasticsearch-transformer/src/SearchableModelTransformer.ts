@@ -55,8 +55,11 @@ export class SearchableModelTransformer extends Transformer {
         ctx.mergeParameters(template.Parameters);
         ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
         ctx.putStackMapping(STACK_NAME, [
-            new RegExp('^Elasticsearch.*'),
-            new RegExp('^Searchable.*LambdaMapping$')
+            'ElasticsearchDomain',
+            '^ElasticsearchAccess.*',
+            '^ElasticsearchStreaming.*',
+            '^ElasticsearchDataSource$',
+            '^Searchable.*LambdaMapping$'
         ])
     };
 
@@ -72,7 +75,7 @@ export class SearchableModelTransformer extends Transformer {
     ): void => {
         ctx.addToStackMapping(
             STACK_NAME,
-            new RegExp("^Search" + def.name.value + "Resolver$", 'i')
+            "^Search" + def.name.value + "Resolver$"
         )
         const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
         let shouldMakeSearch = true;

@@ -277,7 +277,7 @@ export default class GraphQLTransform {
 
     private updateContextForStackMappingOverrides(context: TransformerContext) {
         for (const regexString of Object.keys(this.stackMappingOverrides)) {
-            context.addToStackMapping(this.stackMappingOverrides[regexString], new RegExp(regexString));
+            context.addToStackMapping(this.stackMappingOverrides[regexString], regexString);
         }
     }
 
