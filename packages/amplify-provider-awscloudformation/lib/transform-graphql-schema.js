@@ -1,17 +1,15 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-
-const TransformPackage = require('graphql-transformer-core');
-
-const GraphQLTransform = TransformPackage.default;
-const { collectDirectiveNames } = TransformPackage;
 const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
 const ModelAuthTransformer = require('graphql-auth-transformer').default;
 const ModelConnectionTransformer = require('graphql-connection-transformer').default;
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const providerName = require('./constants').ProviderName;
+const TransformPackage = require('graphql-transformer-core');
+
+const { collectDirectiveNames } = TransformPackage;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
@@ -54,12 +52,6 @@ async function migrateProject(context, options) {
     await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     throw e;
   }
-  await inquirer.prompt({
-    name: 'IsOldApiProject',
-    type: 'confirm',
-    message: 'Continue?',
-    default: true,
-  });
   try {
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack({ isCLIMigration });
@@ -67,12 +59,6 @@ async function migrateProject(context, options) {
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
-    await inquirer.prompt({
-      name: 'IsOldApiProject',
-      type: 'confirm',
-      message: 'Revert?',
-      default: true,
-    });
     await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     await updateAndWaitForStack({ isReverting: true, isCLIMigration });
     context.print.error('API successfully reverted.');
