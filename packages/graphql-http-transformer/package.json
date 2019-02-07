@@ -27,7 +27,7 @@
     "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
-    "graphql-transformer-common": "^2.0.0-multienv.1",
+    "graphql-transformer-common": "^2.0.1-multienv.0",
     "graphql-transformer-core": "^2.0.1-multienv.0",
     "cloudform": "^3.5.0",
     "jest": "^23.1.0",

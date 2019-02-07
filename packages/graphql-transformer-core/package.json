@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "graphql": "^0.13.2",
-    "graphql-transformer-common": "^2.0.0-multienv.1",
+    "graphql-transformer-common": "^2.0.1-multienv.0",
     "js-yaml": "^3.12.1"
   },
   "jest": {
