@@ -20,6 +20,22 @@ export class ResourceFactory {
                     ' Setting this to 0 will default to 1 week from the deployment date.' +
                     ' Setting this to -1 will not create an API Key.',
                 Default: 0
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
+                Description: 'The number of read IOPS the table should support.',
+                Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
+                Description: 'The number of write IOPS the table should support.',
+                Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBBillingMode]: new StringParameter({
+                Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+                Default: 'PAY_PER_REQUEST',
+                AllowedValues: [
+                    'PAY_PER_REQUEST',
+                    'PROVISIONED'
+                ]
             })
         }
     }
@@ -46,7 +62,9 @@ export class ResourceFactory {
                     Fn.And([
                         Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
                         Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
-                    ])
+                    ]),
+                [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST')
             }
         }
     }
@@ -146,7 +164,19 @@ export class ResourceFactory {
             StreamSpecification: {
                 StreamViewType: 'NEW_AND_OLD_IMAGES'
             },
-            BillingMode: 'PAY_PER_REQUEST',
+            BillingMode: Fn.If(
+                ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                'PAY_PER_REQUEST',
+                Refs.NoValue
+            ),
+            ProvisionedThroughput: Fn.If(
+                ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                Refs.NoValue,
+                {
+                    ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                    WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+                }
+            ) as any,
             SSESpecification: {
                 SSEEnabled: true
             },

@@ -666,7 +666,9 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
         }
     }
 
-    const filteredParameterValues = {};
+    const filteredParameterValues = {
+        DynamoDBBillingMode: 'PROVISIONED'
+    };
     const filteredTemplateParameters = {
         env: {
             Type: "String",

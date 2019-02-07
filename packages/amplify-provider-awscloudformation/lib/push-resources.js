@@ -124,9 +124,16 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
         // isCLIMigration implies a top level CLI migration is underway.
         // We do not inject an env in such situations so we pass a resourceName.
         // When it is an API level migration, we do pass an env so omit the resourceName.
-        const nestedStack = isCLIMigration ?
-          formNestedStack(context, projectDetails, category, resourceName, 'AppSync') :
-          formNestedStack(context, projectDetails, category);
+        let nestedStack;
+        if (isReverting && isCLIMigration) {
+          // When this is a CLI migration and we are rolling back, we do not want to inject
+          // an [env] for any templates.
+          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
+        } else if (isCLIMigration) {
+          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
+        } else {
+          nestedStack = formNestedStack(context, projectDetails, category);
+        }
         return updateCloudFormationNestedStack(
           context,
           nestedStack,
@@ -389,7 +396,9 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     });
 }
 
-function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName) {
+/* eslint-disable */
+function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
+/* eslint-enable */
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
   const { amplifyMeta } = projectDetails;
@@ -429,13 +438,13 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
         const currentEnv = context.amplify.getEnvInfo().envName;
 
-        if (resourceName) {
+        if (!skipEnv && resourceName) {
           if (resource === resourceName &&
             category === categoryName &&
             amplifyMeta[category][resource].service === serviceName) {
             Object.assign(parameters, { env: currentEnv });
           }
-        } else {
+        } else if (!skipEnv) {
           Object.assign(parameters, { env: currentEnv });
         }
 
