@@ -1,55 +1,46 @@
 const fs = require('fs-extra');
-const path = require('path');
 const ora = require('ora');
-const inquirer = require('inquirer');
-const utils = require('amplify-provider-awscloudformation/lib/utility-functions');
 const mobileHubService = require('amplify-provider-awscloudformation/src/aws-utils/aws-mobilehub');
 
 const spinner = ora('');
 
-const {
-  searchProjectRootPath,
-  getAmplifyMetaFilePath,
-  getBackendConfigFilePath,
-} = require('../extensions/amplify-helpers/path-manager');
-
 async function importProject(context) {
-  const projectPath = searchProjectRootPath();
   if (context.parameters.first) {
     const projectId = context.parameters.first;
     try {
       spinner.start('Importing your project');
-      const mobileHubResources = await getMobileResources(context, projectId);
-      await persistResourcesToConfig(mobileHubResources, projectPath);
+      const mobileHubResources = await getMobileResources(projectId);
+      await persistResourcesToConfig(mobileHubResources, context);
       spinner.succeed('Importing your project was successfully.');
     } catch (error) {
+      console.log(error);
       spinner.fail('There was an error importing your project.');
     }
   } else {
     context.print.error('Something went wrong. You did not specifiy a project id. Try this format \' amplify mobilehub-import [PROJECT-ID] \'');
   }
 }
-async function getMobileResources(context, projectId) {
+async function getMobileResources(projectId) {
   const mobilehubResources = await mobileHubService.getProjectResources(projectId);
   return JSON.parse(mobilehubResources);
 }
 
-async function persistResourcesToConfig(mobileHubResources, projectPath) {
+async function persistResourcesToConfig(mobileHubResources, context) {
   if (mobileHubResources) {
-    const amplifyMetaConfig = getAmplifyMetaConfig(projectPath);
+    const amplifyMetaConfig = getAmplifyMetaConfig(context);
     const mergedBackendConfig = mergeConfig(amplifyMetaConfig, mobileHubResources);
-    persistMergedAmplifyMetaConfig(projectPath, mergedBackendConfig);
+    persistMergedAmplifyMetaConfig(mergedBackendConfig, context);
   }
 }
 
-function persistMergedAmplifyMetaConfig(projectPath, mergedConfigs) {
-  const currentBackedConfigPath = getBackendConfigFilePath(projectPath);
+function persistMergedAmplifyMetaConfig(mergedConfigs, context) {
+  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const jsonString = JSON.stringify(mergedConfigs, null, 4);
-  fs.writeFileSync(currentBackedConfigPath, jsonString, 'utf8');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 }
 
-function getAmplifyMetaConfig(projectPath) {
-  const amplifyMetaConfig = getAmplifyMetaFilePath(projectPath);
+function getAmplifyMetaConfig(context) {
+  const amplifyMetaConfig = context.amplify.pathManager.getAmplifyMetaFilePath();
   return JSON.parse(fs.readFileSync(amplifyMetaConfig));
 }
 
