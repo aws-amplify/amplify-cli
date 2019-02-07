@@ -69,6 +69,14 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
                 }
             }
         }
+        const rootStack = resources.rootStack;
+        for (const resourceKey of Object.keys(rootStack.Resources)) {
+            if (resourceIdMap[resourceKey]) {
+                // Handle any special detials for migrated details.
+                const resource = rootStack.Resources[resourceKey];
+                rootStack.Resources[resourceKey] = formatMigratedResource(resource);
+            }
+        }
     }
     return resources;
 }
@@ -330,7 +338,7 @@ function emptyDirectory(directory: string) {
 /**
  * Writes a deployment to disk at a path.
  */
-async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
+function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
 
     // Delete the last deployments resources.
     emptyDirectory(directory)
@@ -565,17 +573,17 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
 }
 
 function formatMigratedResource(obj: any) {
+    const jsonNode = obj && typeof obj.toJSON === 'function' ? obj.toJSON() : obj;
     // const withReplacedReferences = replaceReferencesForMigration(obj);
-    const withoutEncryption = removeSSE(obj);
+    const withoutEncryption = removeSSE(jsonNode);
     return withoutEncryption;
 }
 
 function removeSSE(resource: any) {
-    const jsonNode = resource && typeof resource.toJSON === 'function' ? resource.toJSON() : resource;
-    if (jsonNode && jsonNode.SSESpecification) {
-        delete jsonNode.SSESpecification;
+    if (resource && resource.Properties && resource.Properties.SSESpecification) {
+        delete resource.Properties.SSESpecification;
     }
-    return jsonNode;
+    return resource;
 }
 
 /**
