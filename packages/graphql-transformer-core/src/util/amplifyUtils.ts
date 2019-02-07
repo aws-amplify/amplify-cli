@@ -536,6 +536,14 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
                 migrationResourceIds.push(key);
                 break;
             }
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for deploying the migration to projects with @searchable.
+                    // This keeps an IAM role needed by the old ES policy document around.
+                    migrationResourceIds.push(key);
+                }
+                break;
+            }
             default: {
                 break;
             }
@@ -629,6 +637,13 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
             case 'AWS::Cognito::UserPoolClient':
                 filteredResources[key] = formatMigratedResource(resource);
                 break;
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for the ES migration case.
+                    filteredResources[key] = resource;
+                }
+                break;
+            }
             case 'AWS::AppSync::GraphQLSchema':
                 const alteredResource = { ...resource };
                 alteredResource.Properties.DefinitionS3Location = {
