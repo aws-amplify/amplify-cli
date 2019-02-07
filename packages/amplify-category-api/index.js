@@ -7,7 +7,7 @@ async function console(context) {
   await run(context);
 }
 
-async function migrate(context) {
+async function migrate(context, serviceName) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
   Object.keys(amplifyMeta).forEach((categoryName) => {
@@ -16,12 +16,14 @@ async function migrate(context) {
         try {
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
           if (providerController) {
-            migrateResourcePromises.push(providerController.migrateResource(
-              context,
-              projectPath,
-              amplifyMeta[category][resourceName].service,
-              resourceName,
-            ));
+            if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
+              migrateResourcePromises.push(providerController.migrateResource(
+                context,
+                projectPath,
+                amplifyMeta[category][resourceName].service,
+                resourceName,
+              ));
+            }
           } else {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
           }

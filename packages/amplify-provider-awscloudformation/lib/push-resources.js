@@ -35,7 +35,7 @@ async function run(context, category, resourceName) {
     .then(() => transformGraphQLSchema(context, {
       noConfig: true,
       handleMigration: opts =>
-        updateStackForAPIMigration(context, category, resourceName, opts),
+        updateStackForAPIMigration(context, 'api', resourceName, opts),
     }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
@@ -125,7 +125,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
         // We do not inject an env in such situations so we pass a resourceName.
         // When it is an API level migration, we do pass an env so omit the resourceName.
         const nestedStack = isCLIMigration ?
-          formNestedStack(context, projectDetails, category, resourceName) :
+          formNestedStack(context, projectDetails, category, resourceName, 'AppSync') :
           formNestedStack(context, projectDetails, category);
         return updateCloudFormationNestedStack(
           context,
@@ -389,7 +389,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     });
 }
 
-function formNestedStack(context, projectDetails, categoryName, resourceName) {
+function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName) {
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
   const { amplifyMeta } = projectDetails;
@@ -430,7 +430,9 @@ function formNestedStack(context, projectDetails, categoryName, resourceName) {
         const currentEnv = context.amplify.getEnvInfo().envName;
 
         if (resourceName) {
-          if (resource === resourceName) {
+          if (resource === resourceName &&
+            category === categoryName &&
+            amplifyMeta[category][resource].service === serviceName) {
             Object.assign(parameters, { env: currentEnv });
           }
         } else {
