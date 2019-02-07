@@ -83,7 +83,7 @@ export class ModelConnectionTransformer extends Transformer {
         const fieldName = field.name.value;
         ctx.addToStackMapping(
             CONNECTION_STACK_NAME,
-            new RegExp(`^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`, 'i')
+            `^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`
         )
         const parentModelDirective = parent.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
         if (!parentModelDirective) {

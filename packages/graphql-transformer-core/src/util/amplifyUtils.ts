@@ -536,14 +536,14 @@ export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project):
                 migrationResourceIds.push(key);
                 break;
             }
-            case 'AWS::IAM::Role': {
-                if (key === 'ElasticSearchAccessIAMRole') {
-                    // A special case for deploying the migration to projects with @searchable.
-                    // This keeps an IAM role needed by the old ES policy document around.
-                    migrationResourceIds.push(key);
-                }
-                break;
-            }
+            // case 'AWS::IAM::Role': {
+            //     if (key === 'ElasticSearchAccessIAMRole') {
+            //         // A special case for deploying the migration to projects with @searchable.
+            //         // This keeps an IAM role needed by the old ES policy document around.
+            //         migrationResourceIds.push(key);
+            //     }
+            //     break;
+            // }
             default: {
                 break;
             }

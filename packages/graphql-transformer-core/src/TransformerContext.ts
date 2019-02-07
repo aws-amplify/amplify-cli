@@ -22,7 +22,11 @@ import {
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 import DefaultSchemaDefinition from './defaultSchema'
-import { InterfaceTypeExtensionNode, UnionTypeExtensionNode, UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode, InputObjectTypeExtensionNode, InputValueDefinitionNode } from 'graphql/language/ast';
+import { 
+    InterfaceTypeExtensionNode, UnionTypeExtensionNode,
+    UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
+    InputObjectTypeExtensionNode, InputValueDefinitionNode
+} from 'graphql/language/ast';
 import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
@@ -72,7 +76,7 @@ export class TransformerContextMetadata {
 }
 
 // export interface StackMapping { [k: RegExp]: string }
-export type StackMapping = Map<RegExp, string>;
+export type StackMapping = Map<string, string>;
 
 /**
  * The transformer context is responsible for accumulating the resources,
@@ -621,19 +625,14 @@ export default class TransformerContext {
         this.nodeMap[en.name.value] = en
     }
 
-    public putStackMapping(stackName: string, listOfRegex: RegExp[]) {
+    public putStackMapping(stackName: string, listOfRegex: string[]) {
         for (const reg of listOfRegex) {
-            this.stackMapping.set(reg, stackName);
+            this.stackMapping.set(reg.toLowerCase(), stackName);
         }
     }
 
-    public addToStackMapping(stackName: string, regex: RegExp) {
-        this.stackMapping.set(regex, stackName);
-        // if (!this.stackMapping[stackName]) {
-        //     this.stackMapping[stackName] = [regex];
-        // } else {
-        //     this.stackMapping[stackName].push(regex);
-        // }
+    public addToStackMapping(stackName: string, regex: string) {
+        this.stackMapping.set(regex.toLowerCase(), stackName);
     }
 
     public getStackMapping(): StackMapping {
