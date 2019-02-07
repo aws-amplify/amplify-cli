@@ -16,7 +16,7 @@ export class ResourceFactory {
         return {
             [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
-                Default: 'AppSyncElasticsearchAccess'
+                Default: 'AppSyncElasticsearchRole'
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
