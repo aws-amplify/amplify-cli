@@ -1,4 +1,4 @@
-import Table, { GlobalSecondaryIndex, KeySchema, Projection, ProvisionedThroughput, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table'
+import Table, { GlobalSecondaryIndex, KeySchema, Projection, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table'
 import Resolver from 'cloudform-types/types/appSync/resolver'
 import Template from 'cloudform-types/types/template'
 import { Fn, Refs } from 'cloudform-types'
@@ -57,7 +57,15 @@ export class ResourceFactory {
                 KeySchema: keySchema,
                 Projection: new Projection({
                     ProjectionType: 'ALL'
-                })
+                }),
+                ProvisionedThroughput: Fn.If(
+                    ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                    Refs.NoValue,
+                    {
+                        ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                        WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+                    }
+                ) as any,
             }))
         }
 

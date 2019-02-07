@@ -4,11 +4,14 @@ import Transformer from './Transformer'
 import GraphQLTransform from './GraphQLTransform'
 import { collectDirectiveNames } from './collectDirectives'
 import { stripDirectives } from './stripDirectives'
-import { 
+import {
     buildProject as buildAPIProject,
     uploadDeployment as uploadAPIProject,
     readSchema as readProjectSchema,
-    migrateAPIProject, revertAPIMigration } from './util/amplifyUtils'
+    migrateAPIProject,
+    revertAPIMigration,
+    readProjectConfiguration
+} from './util/amplifyUtils'
 
 export * from './errors'
 
@@ -23,5 +26,6 @@ export {
     migrateAPIProject,
     uploadAPIProject,
     readProjectSchema,
+    readProjectConfiguration,
     revertAPIMigration
 }

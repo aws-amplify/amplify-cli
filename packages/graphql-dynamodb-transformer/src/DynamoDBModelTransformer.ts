@@ -40,7 +40,7 @@ interface ModelDirectiveArgs {
 }
 
 /**
- * The simple transform.
+ * The @model transformer.
  *
  * This transform creates a single DynamoDB table for all of your application's
  * data. It uses a standard key structure and nested map to store object values.
@@ -130,7 +130,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
         ctx.setResource(
             tableLogicalID,
-            this.resources.makeModelTable(typeName)
+            this.resources.makeModelTable(typeName, undefined, undefined)
         )
         ctx.setResource(
             iamRoleLogicalID,

@@ -162,17 +162,15 @@ type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
  */
 export interface GraphQLTransformOptions {
     transformers: Transformer[],
-    outputPath?: string,
     // Override the formatter's stack mapping. This is useful when handling
     // migrations as all the input/export/ref/getatt changes will be made
     // automatically.
-    stackMapping?: StackMappingOption
+    stackMapping?: StackMappingOption,
 }
 export type StackMappingOption = { [regexStr: string]: string };
 export default class GraphQLTransform {
 
     private transformers: Transformer[]
-    private outputPath?: string
     private stackMappingOverrides: StackMappingOption;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -185,7 +183,6 @@ export default class GraphQLTransform {
             throw new Error('Must provide at least one transformer.')
         }
         this.transformers = options.transformers;
-        this.outputPath = options.outputPath;
         this.stackMappingOverrides = options.stackMapping || {};
     }
 
@@ -269,8 +266,7 @@ export default class GraphQLTransform {
         // Format the context into many stacks.
         this.updateContextForStackMappingOverrides(context);
         const formatter = new TransformFormatter({
-            stackRules: context.getStackMapping(),
-            outputPath: this.outputPath
+            stackRules: context.getStackMapping()
         })
         return formatter.format(context)
     }

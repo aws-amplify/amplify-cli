@@ -31,6 +31,11 @@ export class ResourceConstants {
         AppSyncApiId: 'AppSyncApiId',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
+        // DynamoDB
+        DynamoDBBillingMode:   'DynamoDBBillingMode',
+        DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
+        DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticSearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
@@ -54,6 +59,9 @@ export class ResourceConstants {
     public static CONDITIONS = {
         // Environment
         HasEnvironmentParameter: 'HasEnvironmentParameter',
+
+        // DynamoDB
+        ShouldUsePayPerRequestBilling:   'ShouldUsePayPerRequestBilling',
 
         // Auth
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
