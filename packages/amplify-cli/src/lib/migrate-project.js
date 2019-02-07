@@ -85,7 +85,8 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     });
 
     if (apiMigrateFunction) {
-      categoryMigrationTasks.unshift(() => apiMigrateFunction(context));
+      categoryMigrationTasks.unshift(() => apiMigrateFunction(context, 'AppSync'));
+      categoryMigrationTasks.push(() => apiMigrateFunction(context, 'API Gateway'));
     }
 
     spinner.start('Migrating your project');
