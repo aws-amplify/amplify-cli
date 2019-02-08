@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const chalk = require('chalk');
 const path = require('path');
 const ora = require('ora');
 const { makeId } = require('../extensions/amplify-helpers/make-id');
@@ -46,6 +47,19 @@ async function migrateProject(context) {
   }
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
     if (await prompt.confirm(confirmMigrateMessage)) {
+      const infoMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
+      '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
+      'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
+      '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for all the added categories so that it supports multiple environments\n' +
+      '\n3. After the migration completes, we will give you the option to either push these Cloudformation files right away or you could inspect them yourselves and later push the updated Cloudformation files to the cloud\n' +
+      '\n4. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
+      '\n5. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
+      `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
+      '\n1. Make sure to have an internet connection through the migration process\n' +
+      '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
+      '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n';
+      context.print.info(infoMessage);
+
       if (await prompt.confirm(secondConfirmMessage)) {
         // Currently there are only two project configuration versions, so call this method directly
         // If more versions are involved, switch to apropriate migration method
