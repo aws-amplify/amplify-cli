@@ -24,6 +24,9 @@ Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authoriz
 }
 
 function apiProjectIsFromOldVersion(pathToProject) {
+  if (!pathToProject) {
+    return false;
+  }
   return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/transform.conf.json`);
 }
 
@@ -123,9 +126,6 @@ async function transformGraphQLSchema(context, options) {
       /* eslint-disable */
       previouslyDeployedBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
       /* eslint-enable */
-    } else {
-      // No appsync resource to update/add
-      return;
     }
   }
 
