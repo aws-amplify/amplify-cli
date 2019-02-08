@@ -38,29 +38,36 @@ function apiProjectIsFromOldVersion(pathToProject) {
  * @param {*} resourceDir
  */
 async function migrateProject(context, options) {
-  const { resourceDir, isCLIMigration } = options;
+  const { resourceDir, isCLIMigration, cloudBackendDirectory } = options;
   const updateAndWaitForStack = options.handleMigration || (() => Promise.resolve('Skipping update'));
   let oldProjectConfig;
+  let oldCloudBackend;
   try {
     context.print.info('Migrating your API. This may take a few minutes.');
-    const { old } = await TransformPackage.migrateAPIProject({
+    const { project, cloudBackend } = await TransformPackage.migrateAPIProject({
       projectDirectory: resourceDir,
+      cloudBackendDirectory,
     });
-    oldProjectConfig = old;
+    oldProjectConfig = project;
+    oldCloudBackend = cloudBackend;
     await updateAndWaitForStack({ isCLIMigration });
   } catch (e) {
     await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     throw e;
   }
   try {
+    // After the intermediate update, we need the transform function
+    // to look at this directory since we did not overwrite the currentCloudBackend with the build
+    options.cloudBackendDirectory = resourceDir;
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack({ isCLIMigration });
     context.print.info('Finished migrating API.');
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
-    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
+    await TransformPackage.revertAPIMigration(resourceDir, oldCloudBackend);
     await updateAndWaitForStack({ isReverting: true, isCLIMigration });
+    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     context.print.error('API successfully reverted.');
     throw e;
   }
@@ -104,18 +111,22 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
-  let currentCloudBackendDir = '';
-  if (resources.length > 0) {
-    const resource = resources[0];
-    if (resource.providerPlugin !== providerName) {
+  let previouslyDeployedBackendDir = options.cloudBackendDirectory;
+  if (!previouslyDeployedBackendDir) {
+    if (resources.length > 0) {
+      const resource = resources[0];
+      if (resource.providerPlugin !== providerName) {
+        return;
+      }
+      const { category, resourceName } = resource;
+      const cloudBackendRootDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+      /* eslint-disable */
+      previouslyDeployedBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
+      /* eslint-enable */
+    } else {
+      // No appsync resource to update/add
       return;
     }
-    const { category, resourceName } = resource;
-    const cloudBackendRootDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-    currentCloudBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
-  } else {
-    // No appsync resource to update/add
-    return;
   }
 
   const parametersFilePath = path.join(resourceDir, parametersFileName);
@@ -129,12 +140,13 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const isCLIMigration = options.migrate;
-  const isOldApiVersion = apiProjectIsFromOldVersion(currentCloudBackendDir);
+  const isOldApiVersion = apiProjectIsFromOldVersion(previouslyDeployedBackendDir);
   const migrateOptions = {
     ...options,
     resourceDir,
     migrate: false,
     isCLIMigration,
+    cloudBackendDirectory: previouslyDeployedBackendDir,
   };
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);

@@ -427,47 +427,118 @@ async function deleteDirectory(directory: string): Promise<void> {
             await unlink(fullPath);
         }
     }
+    await rmdir(directory);
+}
+
+async function mkdirIfNone(dir: string) {
+    const pathExists = await exists(dir);
+    if (!pathExists) {
+        fs.mkdirSync(dir);
+    }
+}
+async function writeToPath(directory: string, obj: any): Promise<void> {
+    if (Array.isArray(obj)) {
+        await mkdirIfNone(directory);
+        for (let i = 0; i < obj.length; i++) {
+            const newDir = path.join(directory, `${i}`);
+            await writeToPath(newDir, obj[i]);
+        }
+    } else if (typeof obj === 'object') {
+        await mkdirIfNone(directory);
+        for (const key of Object.keys(obj)) {
+            const newDir = path.join(directory, key);
+            await writeToPath(newDir, obj[key])
+        }
+    } else if (typeof obj === 'string') {
+        fs.writeFileSync(directory, obj)
+    }
+}
+
+async function readFromPath(directory: string): Promise<any> {
+    const pathExists = await exists(directory);
+    if (!pathExists) {
+        return;
+    }
+    const dirStats = await lstat(directory);
+    if (!dirStats.isDirectory()) {
+        const buf = await readFile(directory);
+        return buf.toString();
+    }
+    const files = await readDir(directory);
+    const accum = {};
+    for (const fileName of files) {
+        const fullPath = path.join(directory, fileName);
+        const value = await readFromPath(fullPath);
+        accum[fileName] = value;
+    }
+    return accum;
+}
+
+async function clearAtPath(clearPath: string) {
+    const pathExists = await exists(clearPath);
+    if (pathExists) {
+        const dirStats = await lstat(clearPath);
+        if (dirStats.isDirectory()) {
+            await deleteDirectory(clearPath);
+        } else {
+            await unlink(clearPath);
+        }
+    }
 }
 
 interface MigrationOptions {
-    projectDirectory: string
+    projectDirectory: string,
+    cloudBackendDirectory?: string,
 }
 interface MigrationInfo {
-    old: AmplifyApiV1Project
+    project: AmplifyApiV1Project,
+    cloudBackend: AmplifyApiV1Project,
 }
+/**
+ * Using the current cloudbackend as the source of truth of the current env,
+ * move the deployment forward to the intermediate stage before allowing the
+ * rest of the deployment to take place.
+ * @param opts
+ */
 export async function migrateAPIProject(opts: MigrationOptions) {
     const projectDirectory = opts.projectDirectory;
-    const projectConfig = await readV1ProjectConfiguration(projectDirectory);
-    const copyOfProject = JSON.parse(JSON.stringify(projectConfig));
-    const transformConfig = makeTransformConfigFromOldProject(projectConfig);
-    await updateToIntermediateProject(projectDirectory, projectConfig, transformConfig);
+    const cloudBackendDirectory = opts.cloudBackendDirectory || projectDirectory;
+    const cloudBackendConfig = await readV1ProjectConfiguration(cloudBackendDirectory);
+    const copyOfCloudBackend = JSON.parse(JSON.stringify(cloudBackendConfig));
+    const projectConfig = await readFromPath(projectDirectory);
+    const transformConfig = makeTransformConfigFromOldProject(cloudBackendConfig);
+    await updateToIntermediateProject(projectDirectory, cloudBackendConfig, transformConfig);
     // const result = await updateProject()
     // TODO: Update stack without resolvers/iam roles/etc.
     return {
-        old: copyOfProject
+        project: projectConfig,
+        cloudBackend: copyOfCloudBackend
     }
 }
 export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
-    // Revert the v1 style CF doc.
-    const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
-    fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
-    const oldCloudFormationBuildTemplatePath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
-    fs.writeFileSync(oldCloudFormationBuildTemplatePath, JSON.stringify(oldProject.template, null, 4));
+    await clearAtPath(directory);
+    await writeToPath(directory, oldProject);
 
-    const parametersInputPath = path.join(directory, PARAMETERS_FILE_NAME);
-    fs.writeFileSync(parametersInputPath, JSON.stringify(oldProject.parameters, null, 4));
+    // // Revert the v1 style CF doc.
+    // const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
+    // fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
+    // const oldCloudFormationBuildTemplatePath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
+    // fs.writeFileSync(oldCloudFormationBuildTemplatePath, JSON.stringify(oldProject.template, null, 4));
 
-    // Revert the config file by deleting it.
-    const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
-    if (fs.existsSync(configFilePath)) {
-        fs.unlinkSync(configFilePath);
-    }
+    // const parametersInputPath = path.join(directory, PARAMETERS_FILE_NAME);
+    // fs.writeFileSync(parametersInputPath, JSON.stringify(oldProject.parameters, null, 4));
 
-    // Try to delete the stacks & resolver directories.
-    const stacksDir = path.join(directory, 'stacks');
-    const resolversDir = path.join(directory, 'resolvers');
-    await deleteDirectory(stacksDir);
-    await deleteDirectory(resolversDir);
+    // // Revert the config file by deleting it.
+    // const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
+    // if (fs.existsSync(configFilePath)) {
+    //     fs.unlinkSync(configFilePath);
+    // }
+
+    // // Try to delete the stacks & resolver directories.
+    // const stacksDir = path.join(directory, 'stacks');
+    // const resolversDir = path.join(directory, 'resolvers');
+    // await deleteDirectory(stacksDir);
+    // await deleteDirectory(resolversDir);
 }
 
 interface AmplifyApiV1Project {
@@ -710,7 +781,9 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
 
     // Remove the old cloudformation file.
     const oldCloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
-    fs.unlinkSync(oldCloudFormationTemplatePath);
+    if (fs.existsSync(oldCloudFormationTemplatePath)) {
+        fs.unlinkSync(oldCloudFormationTemplatePath);
+    }
 
     // Write the new cloudformation file to the build.
     const cloudFormationTemplateOutputPath = path.join(projectDirectory, 'build', CLOUDFORMATION_FILE_NAME);
@@ -743,6 +816,7 @@ const readFile = async (p: string) => await promisify(fs.readFile, p)
 const lstat = async (dir: string) => await promisify(fs.lstat, dir)
 const exists = async (p: string) => await new Promise((res) => fs.exists(p, e => res(e)))
 const unlink = async (p: string) => await new Promise((res, rej) => fs.unlink(p, e => e ? rej(e) : res()))
+const rmdir = async (p: string) => await new Promise((res, rej) => fs.rmdir(p, e => e ? rej(e) : res()))
 function promisify<A, O>(fn: (arg: A, cb: (err: Error, data: O) => void) => void, a: A): Promise<O> {
     return new Promise((res, rej) => {
         fn(a, (err, d) => {
