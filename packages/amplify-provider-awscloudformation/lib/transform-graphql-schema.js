@@ -77,17 +77,18 @@ async function transformGraphQLSchema(context, options) {
   const { forceCompile } = options;
 
   // Compilation during the push step
+  const {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    allResources,
+  } = await context.amplify.getResourceStatus(category);
+  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  if (forceCompile) {
+    resources = resources.concat(allResources);
+  }
+  resources = resources.filter(resource => resource.service === 'AppSync');
+
   if (!resourceDir) {
-    const {
-      resourcesToBeCreated,
-      resourcesToBeUpdated,
-      allResources,
-    } = await context.amplify.getResourceStatus(category);
-    let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
-    if (forceCompile) {
-      resources = resources.concat(allResources);
-    }
-    resources = resources.filter(resource => resource.service === 'AppSync');
     // There can only be one appsync resource
     if (resources.length > 0) {
       const resource = resources[0];
@@ -103,6 +104,20 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
+  let currentCloudBackendDir = '';
+  if (resources.length > 0) {
+    const resource = resources[0];
+    if (resource.providerPlugin !== providerName) {
+      return;
+    }
+    const { category, resourceName } = resource;
+    const cloudBackendRootDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+    currentCloudBackendDir = path.normalize(path.join(cloudBackendRootDir, category, resourceName));
+  } else {
+    // No appsync resource to update/add
+    return;
+  }
+
   const parametersFilePath = path.join(resourceDir, parametersFileName);
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
@@ -114,7 +129,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const isCLIMigration = options.migrate;
-  const isOldApiVersion = apiProjectIsFromOldVersion(resourceDir);
+  const isOldApiVersion = apiProjectIsFromOldVersion(currentCloudBackendDir);
   const migrateOptions = {
     ...options,
     resourceDir,
