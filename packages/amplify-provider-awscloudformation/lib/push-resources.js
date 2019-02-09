@@ -141,7 +141,8 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
         );
       }
     })
-    .then((res) => {
+    .then(async (res) => {
+      await context.amplify.updateamplifyMetaAfterPush(resources);
       if (!isCLIMigration) {
         spinner.stop();
       }
