@@ -151,12 +151,18 @@ async function transformGraphQLSchema(context, options) {
   if (isCLIMigration && isOldApiVersion) {
     return await migrateProject(context, migrateOptions);
   } else if (isOldApiVersion) {
-    const { IsOldApiProject } = await inquirer.prompt({
-      name: 'IsOldApiProject',
-      type: 'confirm',
-      message: 'We detected an API that was initialized using an older version of the CLI. Do you want to migrate the API so that it is compatible with the latest version of the CLI?',
-      default: true,
-    });
+    let IsOldApiProject;
+
+    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+      IsOldApiProject = context.exeInfo.inputParams.yes;
+    } else {
+      ({ IsOldApiProject } = await inquirer.prompt({
+        name: 'IsOldApiProject',
+        type: 'confirm',
+        message: 'We detected an API that was initialized using an older version of the CLI. Do you want to migrate the API so that it is compatible with the latest version of the CLI?',
+        default: true,
+      }));
+    }
     if (!IsOldApiProject) {
       throw new Error('Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.');
     }
