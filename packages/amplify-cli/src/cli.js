@@ -9,11 +9,11 @@ async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
 
-  console.log('The @multienv version of the CLI was an experimental and beta version of the CLI for testing purposes. We\'ve merged all the changes to the main CLI version.');
-  console.log('Install the latest version of the CLI using \'npm install -g @aws-amplify/cli\'');
+  console.log('The @multienv version of the CLI was a beta version of the CLI to ensure a smooth migration path and gather customer feedback. We\'ve merged the changes to the main CLI which should be used going forward.');
+  console.log('Install the latest version of the CLI using \'npm install -g @aws-amplify/cli\' and discontinue use of the @multienv version.');
   process.exit(1);
 
-  // Check for old version of projects and ask for migration steps
+  // Check for old version of projects and ask for migration sandteps
   const cli = build()
     .brand('amplify')
     .src(__dirname)
