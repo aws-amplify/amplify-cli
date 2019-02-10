@@ -8,6 +8,11 @@ const MIGRATE = 'migrate';
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
+
+  console.log('The @multienv version of the CLI was an experimental and beta version of the CLI for testing purposes. We\'ve merged all the changes to the main CLI version.');
+  console.log('Install the latest version of the CLI using \'npm install -g @aws-amplify/cli\'');
+  process.exit(1);
+
   // Check for old version of projects and ask for migration steps
   const cli = build()
     .brand('amplify')
