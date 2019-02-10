@@ -23,8 +23,9 @@ Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authoriz
   }
 }
 
-function apiProjectIsFromOldVersion(pathToProject) {
-  if (!pathToProject) {
+function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
+  if (!pathToProject || resources.length > 0) {
     return false;
   }
   return fs.existsSync(`${pathToProject}/cloudformation-template.json`) && !fs.existsSync(`${pathToProject}/transform.conf.json`);
@@ -46,7 +47,7 @@ async function migrateProject(context, options) {
   let oldProjectConfig;
   let oldCloudBackend;
   try {
-    context.print.info('Migrating your API. This may take a few minutes.');
+    context.print.info('\nMigrating your API. This may take a few minutes.');
     const { project, cloudBackend } = await TransformPackage.migrateAPIProject({
       projectDirectory: resourceDir,
       cloudBackendDirectory,
@@ -140,7 +141,10 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const isCLIMigration = options.migrate;
-  const isOldApiVersion = apiProjectIsFromOldVersion(previouslyDeployedBackendDir);
+  const isOldApiVersion = apiProjectIsFromOldVersion(
+    previouslyDeployedBackendDir,
+    resourcesToBeCreated,
+  );
   const migrateOptions = {
     ...options,
     resourceDir,
