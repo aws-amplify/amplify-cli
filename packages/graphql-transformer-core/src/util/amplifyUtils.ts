@@ -311,7 +311,7 @@ async function uploadDirectory(opts: UploadOptions, key: string = '') {
     const files = await readDir(opts.directory)
     for (const file of files) {
         const resourcePath = path.join(opts.directory, file)
-        const uploadKey = path.join(key, file)
+        const uploadKey = path.posix.join(key, file)
         const isDirectory = (await lstat(resourcePath)).isDirectory()
         if (isDirectory) {
             await uploadDirectory({ ...opts, directory: resourcePath }, uploadKey)
