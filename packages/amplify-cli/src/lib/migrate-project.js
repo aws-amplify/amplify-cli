@@ -218,8 +218,14 @@ function generateNewProjectConfig(projectConfig) {
   const frontendPluginPath = Object.keys(projectConfig.frontendHandler)[0];
   const frontendPlugin = frontendPluginPath.split('/')[frontendPluginPath.split('/').length - 1];
   const frontend = frontendPlugin.split('-')[frontendPlugin.split('-').length - 1];
-
   newProjectConfig.frontend = frontend;
+
+  if (projectConfig[`amplify-frontend-${frontend}`]) {
+    newProjectConfig[frontend] = projectConfig[`amplify-frontend-${frontend}`];
+    delete newProjectConfig[`amplify-frontend-${frontend}`];
+  }
+
+
   delete newProjectConfig.frontendHandler;
   newProjectConfig.version = constants.PROJECT_CONFIG_VERSION;
 
