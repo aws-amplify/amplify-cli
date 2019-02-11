@@ -5,6 +5,7 @@ function getGitIgnoreBlob() {
     'amplify/\\#current-cloud-backend',
     'amplify/.config/local-*',
     'amplify/backend/amplify-meta.json',
+    'amplify/backend/awscloudformation',
     'build/',
     'dist/',
     'node_modules/',
