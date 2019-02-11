@@ -393,9 +393,9 @@ export class ResourceFactory {
             TypeName: queryTypeName,
             RequestMappingTemplate: print(
                 compoundExpression([
-                    set(ref('indexPath'), str(`/${type.toLowerCase}/doc/_search`)),
+                    set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
                     ElasticsearchMappingTemplate.searchItem({
-                        path: str('$indexPath.toLowerCase()'),
+                        path: str('$indexPath'),
                         size: ifElse(
                             ref('context.args.limit'),
                             ref('context.args.limit'),
