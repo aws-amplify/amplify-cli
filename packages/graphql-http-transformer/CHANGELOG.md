@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@2.0.0-multienv.1...graphql-http-transformer@2.0.1-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 <a name="2.0.0-multienv.1"></a>
 # [2.0.0-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@1.0.18-multienv.0...graphql-http-transformer@2.0.0-multienv.1) (2018-12-31)
 

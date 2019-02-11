@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.7...amplify-codegen@0.2.2-beta.0) (2019-02-11)
+
+
+### Features
+
+* **amplify-codegen:** add support for max-depth for statements ([#820](https://github.com/aws-amplify/amplify-cli/issues/820)) ([4fe69d1](https://github.com/aws-amplify/amplify-cli/commit/4fe69d1)), closes [#715](https://github.com/aws-amplify/amplify-cli/issues/715) [#745](https://github.com/aws-amplify/amplify-cli/issues/745) [#638](https://github.com/aws-amplify/amplify-cli/issues/638)
+
+
+
+
+
 <a name="0.2.1-multienv.7"></a>
 ## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.6...amplify-codegen@0.2.1-multienv.7) (2019-01-24)
 

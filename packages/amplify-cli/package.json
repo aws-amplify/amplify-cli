@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "0.2.2-multienv.0",
+  "version": "0.2.2-beta.0",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -21,18 +21,18 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "^0.2.1-multienv.6",
-    "amplify-category-api": "^0.2.1-multienv.7",
+    "amplify-category-api": "^0.2.1-beta.0",
     "amplify-category-auth": "^0.2.1-multienv.4",
     "amplify-category-function": "^0.2.1-multienv.7",
     "amplify-category-hosting": "^0.2.1-multienv.5",
-    "amplify-category-interactions": "^0.2.1-multienv.9",
+    "amplify-category-interactions": "^0.2.1-beta.0",
     "amplify-category-notifications": "^0.2.1-multienv.8",
     "amplify-category-storage": "^0.2.1-multienv.6",
-    "amplify-codegen": "^0.2.2-multienv.0",
+    "amplify-codegen": "^0.2.2-beta.0",
     "amplify-frontend-android": "^0.2.1-multienv.1",
     "amplify-frontend-ios": "^0.2.1-multienv.1",
     "amplify-frontend-javascript": "^0.2.1-multienv.3",
-    "amplify-provider-awscloudformation": "^0.2.2-multienv.0",
+    "amplify-provider-awscloudformation": "^0.2.2-beta.0",
     "babel-core": "^6.26.3",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",

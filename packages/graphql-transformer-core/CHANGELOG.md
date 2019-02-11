@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@2.0.1-multienv.0...graphql-transformer-core@2.0.2-beta.0) (2019-02-11)
+
+
+### Bug Fixes
+
+* corrected uploadKey construction for S3 ([d0079cf](https://github.com/aws-amplify/amplify-cli/commit/d0079cf))
+
+
+
+
+
 <a name="2.0.1-multienv.0"></a>
 ## [2.0.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@1.0.33...graphql-transformer-core@2.0.1-multienv.0) (2018-12-31)
 

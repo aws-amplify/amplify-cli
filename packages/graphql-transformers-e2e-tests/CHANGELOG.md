@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@2.0.0-multienv.3...graphql-transformers-e2e-tests@2.0.1-beta.0) (2019-02-11)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** support filter enums in query ([#757](https://github.com/aws-amplify/amplify-cli/issues/757)) ([f053a8b](https://github.com/aws-amplify/amplify-cli/commit/f053a8b)), closes [#712](https://github.com/aws-amplify/amplify-cli/issues/712)
+
+
+
+
+
 <a name="2.0.0-multienv.3"></a>
 # [2.0.0-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@2.0.0-multienv.2...graphql-transformers-e2e-tests@2.0.0-multienv.3) (2019-01-24)
 
