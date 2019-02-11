@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.9...amplify-category-interactions@1.0.1-beta.0) (2019-02-11)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** fix interactions unauth role policy ([b22ec77](https://github.com/aws-amplify/amplify-cli/commit/b22ec77))
+
+
+### Features
+
+* Modify amplify env add/import behvior ([ca4a459](https://github.com/aws-amplify/amplify-cli/commit/ca4a459))
+
+
+
+
+
 <a name="0.2.1-multienv.9"></a>
 ## [0.2.1-multienv.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.8...amplify-category-interactions@0.2.1-multienv.9) (2019-02-01)
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@2.0.0-multienv.1...graphql-transformer-common@3.0.1-beta.0) (2019-02-11)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** support filter enums in query ([#757](https://github.com/aws-amplify/amplify-cli/issues/757)) ([f053a8b](https://github.com/aws-amplify/amplify-cli/commit/f053a8b)), closes [#712](https://github.com/aws-amplify/amplify-cli/issues/712)
+
+
+
+
+
 <a name="2.0.0-multienv.1"></a>
 # [2.0.0-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.34-multienv.0...graphql-transformer-common@2.0.0-multienv.1) (2018-12-31)
 

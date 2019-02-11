@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.2.1-multienv.4...amplify-category-auth@1.0.1-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 <a name="0.2.1-multienv.4"></a>
 ## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@0.2.1-multienv.3...amplify-category-auth@0.2.1-multienv.4) (2019-01-30)
 

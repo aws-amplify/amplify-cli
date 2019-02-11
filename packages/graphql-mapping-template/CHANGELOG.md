@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@2.0.1-multienv.0...graphql-mapping-template@3.0.1-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 <a name="2.0.1-multienv.0"></a>
 ## [2.0.1-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@1.0.33...graphql-mapping-template@2.0.1-multienv.0) (2018-12-31)
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.2...amplify-graphql-docs-generator@1.0.1-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
 <a name="0.2.1-multienv.2"></a>
 ## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.1...amplify-graphql-docs-generator@0.2.1-multienv.2) (2019-01-22)
 
