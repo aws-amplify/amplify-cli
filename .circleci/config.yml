@@ -188,9 +188,6 @@ workflows:
           filters:
             branches:
               only:
-                - release
-                - master
-                - beta
                 - multienv
           requires:
             - build
