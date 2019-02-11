@@ -21,7 +21,6 @@
     "@types/jest": "23.1.0",
     "@types/js-yaml": "^3.11.4",
     "@types/node": "^10.3.4",
-    "cloudform": "^3.5.0",
     "jest": "^23.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
@@ -30,7 +29,9 @@
   "dependencies": {
     "graphql": "^0.13.2",
     "graphql-transformer-common": "^3.0.0",
-    "js-yaml": "^3.12.1"
+    "js-yaml": "^3.12.1",
+    "cloudform": "^3.5.0",
+    "cloudform-types": "^3.7.0"
   },
   "jest": {
     "transform": {
