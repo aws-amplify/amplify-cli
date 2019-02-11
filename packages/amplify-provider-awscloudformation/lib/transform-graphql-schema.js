@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const chalk = require('chalk');
 const inquirer = require('inquirer');
 const DynamoDBModelTransformer = require('graphql-dynamodb-transformer').default;
 const ModelAuthTransformer = require('graphql-auth-transformer').default;
@@ -65,7 +66,7 @@ async function migrateProject(context, options) {
     options.cloudBackendDirectory = resourceDir;
     await transformGraphQLSchema(context, options);
     const result = await updateAndWaitForStack({ isCLIMigration });
-    context.print.info('Finished migrating API.');
+    context.print.info('\nFinished migrating API.');
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
@@ -160,10 +161,21 @@ async function transformGraphQLSchema(context, options) {
     if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       IsOldApiProject = context.exeInfo.inputParams.yes;
     } else {
+      const migrateMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
+      '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
+      'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
+      '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for the GraphQL API service\n' +
+      '\n3. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
+      '\n4. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
+      `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
+      '\n1. Make sure to have an internet connection through the migration process\n' +
+      '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
+      '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n' +
+      '\nDo you want to continue?\n';
       ({ IsOldApiProject } = await inquirer.prompt({
         name: 'IsOldApiProject',
         type: 'confirm',
-        message: 'We detected an API that was initialized using an older version of the CLI. Do you want to migrate the API so that it is compatible with the latest version of the CLI?',
+        message: migrateMessage,
         default: true,
       }));
     }
