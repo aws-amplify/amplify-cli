@@ -13,7 +13,7 @@ async function run(argv) {
   console.log('Install the latest version of the CLI using \'npm install -g @aws-amplify/cli\' and discontinue use of the @multienv version.');
   process.exit(1);
 
-  // Check for old version of projects and ask for migration sandteps
+  // Check for old version of projects and ask for migration steps
   const cli = build()
     .brand('amplify')
     .src(__dirname)
