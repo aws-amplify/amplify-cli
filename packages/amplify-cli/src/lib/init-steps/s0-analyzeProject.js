@@ -123,7 +123,7 @@ async function getEnvName(context) {
   const isEnvNameValid = (inputEnvName) => {
     let valid = true;
 
-    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
+    if (inputEnvName.length > 11 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
       valid = false;
     }
     return valid;
