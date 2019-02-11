@@ -206,4 +206,3 @@ workflows:
                 - release
                 - master
                 - beta
-                - multienv
