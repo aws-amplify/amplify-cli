@@ -71,6 +71,18 @@ async function getConfiguredAwsCfnClient(context) {
     };
   }
   aws.config.update(awsconfig);
+
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
+  if (httpProxy) {
+    const proxyAgent = require('proxy-agent');
+    aws.config.update({
+      httpOptions: {
+        agent: proxyAgent(httpProxy)
+      }
+    });
+  }
+  
   return aws;
 }
 
