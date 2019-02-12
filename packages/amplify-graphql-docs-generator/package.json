@@ -30,7 +30,7 @@
     "@types/graphql": "^0.13.1",
     "@types/handlebars": "4.0.39",
     "@types/jest": "23.3.1",
-    "@types/node": "^8.0.28",
+    "@types/node": "8.0.28",
     "@types/prettier": "^1.13.2",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
