@@ -1,9 +1,9 @@
 const subcommand = 'console';
-const category = 'auth';
+const indexModule = require('../../index');
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
-    context.print.info(`to be implemented: ${category} ${subcommand}`);
+    await indexModule.console(context);
   },
 };

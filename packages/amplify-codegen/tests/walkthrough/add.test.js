@@ -3,7 +3,7 @@ const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/quer
 const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
 const askGenerateCode = require('../../src/walkthrough/questions/generateCode');
 const askShouldGenerateDocs = require('../../src/walkthrough/questions/generateDocs');
-
+const askMaxDepth = require('../../src/walkthrough/questions/maxDepth');
 const {
   getGraphQLDocPath,
   getSchemaDownloadLocation,
@@ -18,15 +18,20 @@ jest.mock('../../src/walkthrough/questions/generatedFileName');
 jest.mock('../../src/utils');
 jest.mock('../../src/walkthrough/questions/generateCode');
 jest.mock('../../src/walkthrough/questions/generateDocs');
+jest.mock('../../src/walkthrough/questions/maxDepth');
 
 describe('Add walk-through', () => {
   const MOCK_TARGET_LANGUAGE = 'MOCK_TARGET_LANGUAGE';
   const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE_PATTERN';
-  const MOCK_CONTEXT = 'MOCK_CONTEXT';
+  const MOCK_CONTEXT = {
+    exeInfo: {
+    },
+  };
   const MOCK_GENERATED_FILE_NAME = 'MOCK_FILE_NAME.ts';
   const MOCK_DOWNLOAD_LOCATION = 'MOCK_SCHEMA_DIR/graphql/schema.json';
   const MOCK_DOCS_FILE_PATH = 'mockDocFilesPath';
   const MOCK_FRONTEND_HANDLER = 'mockFrontEndHandler';
+  const MOCK_MAX_DEPTH = 20;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,6 +47,7 @@ describe('Add walk-through', () => {
       graphQLDirectory: 'src/graphql',
       graphQLExtension: '*.js',
     });
+    askMaxDepth.mockReturnValue(MOCK_MAX_DEPTH);
   });
 
   it('should show questions in walkthrough', async () => {
@@ -59,6 +65,7 @@ describe('Add walk-through', () => {
       schemaLocation: MOCK_DOWNLOAD_LOCATION,
       docsFilePath: MOCK_DOCS_FILE_PATH,
       shouldGenerateDocs: true,
+      maxDepth: MOCK_MAX_DEPTH,
     });
   });
 
@@ -74,6 +81,7 @@ describe('Add walk-through', () => {
       schemaLocation: MOCK_DOWNLOAD_LOCATION,
       docsFilePath: MOCK_DOCS_FILE_PATH,
       shouldGenerateDocs: true,
+      maxDepth: MOCK_MAX_DEPTH,
     });
   });
 

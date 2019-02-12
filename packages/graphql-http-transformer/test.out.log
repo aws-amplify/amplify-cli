@@ -1,0 +1,46 @@
+
+> graphql-connection-transformer@1.0.0 test /Users/parismic/Projects/aws-amplify/packages/graphql-connection-transformer
+> jest
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncTransformer
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncDynamoDBTransformer
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncConnectionTransformer
+
+  console.log src/AppSyncConnectionTransformer.ts:119
+    Connecting Post.comments to type Comment
+
+  console.log src/AppSyncConnectionTransformer.ts:120
+    LeftIsList: true. RightIsList: undefined
+
+  console.log src/AppSyncConnectionTransformer.ts:215
+    Extending type with connection Post.comments: Comment
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncTransformer
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncDynamoDBTransformer
+
+  console.log ../graphql-transform/lib/GraphQLTransform.js:158
+    Transforming with AppSyncConnectionTransformer
+
+  console.log src/AppSyncConnectionTransformer.ts:119
+    Connecting Post.comments to type Comment
+
+  console.log src/AppSyncConnectionTransformer.ts:120
+    LeftIsList: true. RightIsList: false
+
+  console.log src/AppSyncConnectionTransformer.ts:215
+    Extending type with connection Post.comments: Comment
+
+  console.log src/AppSyncConnectionTransformer.ts:119
+    Connecting Comment.post to type Post
+
+  console.log src/AppSyncConnectionTransformer.ts:120
+    LeftIsList: false. RightIsList: true
+

@@ -10,9 +10,13 @@ import isRequired from '../../src/generator/utils/isRequired'
 import getType from '../../src/generator/utils/getType'
 
 import getArgs from '../../src/generator/getArgs'
+import isList from '../../src/generator/utils/isList';
+import isRequiredList from '../../src/generator/utils/isRequiredList';
 
 jest.mock('../../src/generator/utils/isRequired')
 jest.mock('../../src/generator/utils/getType')
+jest.mock('../../src/generator/utils/isList')
+jest.mock('../../src/generator/utils/isRequiredList');
 
 describe('getArgs', () => {
   const id: GraphQLArgument = {
@@ -50,9 +54,12 @@ describe('getArgs', () => {
     jest.resetAllMocks()
     isRequired.mockReturnValue(false)
     getType.mockReturnValue({ name: 'mockType' })
+    isRequiredList.mockReturnValue(false);
+    isList.mockReturnValue(false);
   })
 
   it('should return arguments', () => {
+    isList.mockReturnValueOnce(true);
     const query = schema.getQueryType().getFields().searchArticle
     expect(getArgs(query.args)).toEqual([
       {
@@ -60,12 +67,16 @@ describe('getArgs', () => {
         type: 'mockType',
         defaultValue: '1',
         isRequired: false,
+        isList: true,
+        isListRequired: false,
       },
       {
         name: 'query',
         type: 'mockType',
         defaultValue: undefined,
         isRequired: false,
+        isList: false,
+        isListRequired: false,
       },
     ])
     expect(getType).toHaveBeenCalledTimes(2)
@@ -73,7 +84,10 @@ describe('getArgs', () => {
     expect(getType.mock.calls[1][0]).toEqual(GraphQLString)
 
     expect(isRequired).toHaveBeenCalledTimes(2)
-    expect(isRequired.mock.calls[0][0]).toEqual(query.args[0])
-    expect(isRequired.mock.calls[1][0]).toEqual(query.args[1])
+    expect(isRequired.mock.calls[0][0]).toEqual(query.args[0].type)
+    expect(isRequired.mock.calls[1][0]).toEqual(query.args[1].type)
+
+    expect(isList).toHaveBeenCalledTimes(2);
+    expect(isRequiredList).toHaveBeenCalledTimes(2);
   })
 })

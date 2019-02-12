@@ -6,41 +6,53 @@ import {
   GraphQLSchema,
   GraphQLUnionType,
   GraphQLList,
+  isObjectType,
+  isInterfaceType,
+  isUnionType
 } from 'graphql'
 import getFragment from './getFragment'
-import { GQLConcreteType, GQLTemplateField, GQLTemplateFragment } from './types'
+import { GQLConcreteType, GQLTemplateField, GQLTemplateFragment, GQLDocsGenOptions } from './types'
 import getType from './utils/getType'
+import isS3Object from './utils/isS3Object';
 
 export default function getFields(
   field: GraphQLField<any, any>,
   schema: GraphQLSchema,
-  depth: number = 3
+  depth: number = 2,
+  options: GQLDocsGenOptions
 ): GQLTemplateField {
   const fieldType: GQLConcreteType = getType(field.type)
+  const renderS3FieldFragment = options.useExternalFragmentForS3Object && isS3Object(fieldType);
   const subFields =
-    fieldType instanceof GraphQLObjectType || fieldType instanceof GraphQLInterfaceType
+    !renderS3FieldFragment && (isObjectType(fieldType) || isInterfaceType(fieldType))
       ? fieldType.getFields()
       : []
 
-  let subFragments =
-    fieldType instanceof GraphQLInterfaceType || fieldType instanceof GraphQLUnionType
+  const subFragments: any =
+    isInterfaceType(fieldType) || isUnionType(fieldType)
       ? schema.getPossibleTypes(fieldType)
-      : []
-  if (depth <= 1 && !(fieldType instanceof GraphQLScalarType)) {
+      : {};
+
+  if (depth < 1 && !(fieldType instanceof GraphQLScalarType)) {
     return
   }
 
   const fields: Array<GQLTemplateField> = Object.keys(subFields)
     .map((fieldName) => {
       const subField = subFields[fieldName];
-      // Don't decrease the depth if its a list of items and its not self of the same type
-      const newDepth = (subField.type instanceof GraphQLList  && subField !== field ) ? depth : depth - 1;
-      return getFields(subField, schema, newDepth)
+      return getFields(subField, schema, depth - 1, options);
     })
     .filter((field) => field)
   const fragments: Array<GQLTemplateFragment> = Object.keys(subFragments)
-    .map((fragment) => getFragment(subFragments[fragment], schema, depth, fields))
+    .map((fragment) => getFragment(subFragments[fragment], schema, depth, fields, null, false, options))
     .filter((field) => field)
+
+  // Special treatment for S3 input
+  // Swift SDK needs S3 Object to have fragment
+  if (renderS3FieldFragment) {
+    fragments.push(getFragment(fieldType as GraphQLObjectType, schema, depth, [], 'S3Object', true, options));
+  }
+
   return {
     name: field.name,
     fields,

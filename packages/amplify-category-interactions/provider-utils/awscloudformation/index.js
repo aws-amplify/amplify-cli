@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const authHelper = require('./auth-helper');
 
 const parametersFileName = 'lex-params.json';
+const cfnParametersFilename = 'parameters.json';
 
 let serviceMetadata;
 
@@ -40,15 +41,8 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     },
   ];
   Object.assign(defaultValues, options);
-  defaultValues.botArn = constructBotArn(defaultValues);
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
-}
-
-function constructBotArn(defaultValues) {
-  const { authRoleArn, region, botName } = defaultValues;
-  const accountNumber = authRoleArn.split(':')[4];
-  return `arn:aws:lex:${region}:${accountNumber}:bot:${botName}:*`;
 }
 
 async function addResource(context, category, service, options) {
@@ -60,16 +54,34 @@ async function addResource(context, category, service, options) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
+  const defaultValuesSrc = `${__dirname}/default-values/lex-defaults.js`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+  const { amplify } = context;
+
+  const defaultValues = getAllDefaults(amplify.getProjectDetails());
+
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata)
     .then((answers) => {
       copyCfnTemplate(context, category, answers, cfnFilename);
 
       const parameters = { ...answers };
+      const cfnParameters = {
+        authRoleArn: defaultValues.authRoleArn,
+        authRoleName: defaultValues.authRoleName,
+        unauthRoleName: defaultValues.unauthRoleName,
+      };
+
       const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
       fs.ensureDirSync(resourceDirPath);
+
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-      const jsonString = JSON.stringify(parameters, null, 4);
+      let jsonString = JSON.stringify(parameters, null, 4);
       fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+      const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+      jsonString = JSON.stringify(cfnParameters, null, 4);
+      fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
         answers.resourceName,
@@ -98,6 +110,7 @@ function updateResource(context, category, service) {
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
       const jsonString = JSON.stringify(parameters, null, 4);
       fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
       context.amplify.updateamplifyMetaAfterResourceUpdate(
         category,
         answers.resourceName,
@@ -106,5 +119,19 @@ function updateResource(context, category, service) {
     });
 }
 
+async function migrateResource(context, projectPath, service, resourceName) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
 
-module.exports = { addResource, updateResource };
+  if (!migrate) {
+    context.print.info(`No migration required for ${resourceName}`);
+    return;
+  }
+
+  return await migrate(context, projectPath, resourceName);
+}
+
+
+module.exports = { addResource, updateResource, migrateResource };

@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const Ora = require('ora');
 const path = require('path');
 const opn = require('opn');
 const chalk = require('chalk');
@@ -12,6 +11,7 @@ const constants = require('../constants');
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
+const parametersFileName = 'parameters.json';
 
 
 const DEV = 'DEV (S3 only with HTTP)';
@@ -22,8 +22,11 @@ const Environments = [
 ];
 
 async function enable(context) {
-  let templateFilePath = path.join(__dirname, 'template.json');
+  let templateFilePath = path.join(__dirname, templateFileName);
   context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
+
+  let parametersFilePath = path.join(__dirname, parametersFileName);
+  context.exeInfo.parameters = JSON.parse(fs.readFileSync(parametersFilePath));
 
   // will take this out once cloudformation invoke and wait are separated;
   await checkCDN(context);
@@ -39,8 +42,12 @@ async function enable(context) {
   fs.ensureDirSync(serviceDirPath);
 
   templateFilePath = path.join(serviceDirPath, templateFileName);
-  const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+  let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+  parametersFilePath = path.join(serviceDirPath, parametersFileName);
+  jsonString = JSON.stringify(context.exeInfo.parameters, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
   const metaData = {
     service: serviceName,
@@ -87,25 +94,34 @@ async function configure(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
   const templateFilePath = path.join(serviceDirPath, templateFileName);
+  const parametersFilePath = path.join(serviceDirPath, parametersFileName);
 
   if (fs.existsSync(templateFilePath)) {
     context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
+    context.exeInfo.parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+
     await configManager.configure(context);
-    const jsonString = JSON.stringify(context.exeInfo.template, null, 4);
+
+    let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
     fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+    jsonString = JSON.stringify(context.exeInfo.parameters, null, 4);
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
     return context;
   }
   throw new Error('Missing CloudFormation template for hosting.');
 }
 
 function publish(context, args) {
-  const spinner = new Ora('Uploading files');
-  spinner.start();
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
+  const templateFilePath = path.join(serviceDirPath, templateFileName);
+  const parametersFilePath = path.join(serviceDirPath, parametersFileName);
+  context.exeInfo.template = JSON.parse(fs.readFileSync(templateFilePath));
+  context.exeInfo.parameters = JSON.parse(fs.readFileSync(parametersFilePath));
   return fileUPloader.run(context, args.distributionDirPath)
-    .then(() => {
-      spinner.succeed('Uploading files successful.');
-      return cloudFrontManager.invalidateCloudFront(context);
-    })
+    .then(() => cloudFrontManager.invalidateCloudFront(context))
     .then(() => {
       const { CloudFrontSecureURL } = context.exeInfo.serviceMeta.output;
       if (CloudFrontSecureURL !== undefined) {
@@ -119,7 +135,6 @@ function publish(context, args) {
       }
     })
     .catch((e) => {
-      spinner.fail('Error has occured during publish.');
       throw e;
     });
 }
@@ -134,9 +149,76 @@ function console(context) {
   opn(consoleUrl, { wait: false });
 }
 
+async function migrate(context) {
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, serviceName);
+  if (fs.existsSync(serviceDirPath)) {
+    const templateFilePath = path.join(serviceDirPath, templateFileName);
+    if (fs.existsSync(templateFilePath)) {
+      let template = JSON.parse(fs.readFileSync(templateFilePath));
+      let parameters;
+      const parametersFilePath = path.join(serviceDirPath, parametersFileName);
+      if (fs.existsSync(parametersFilePath)) {
+        parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      }
+
+      const migrationInfo = extractMigrationInfo(template);
+
+      template = migrateTemplate(template, migrationInfo);
+      parameters = migrateParameters(parameters, migrationInfo);
+
+      let jsonString = JSON.stringify(template, null, 4);
+      fs.writeFileSync(templateFilePath, jsonString, 'utf8');
+
+      jsonString = JSON.stringify(parameters, null, 4);
+      fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    }
+  }
+}
+
+function extractMigrationInfo(template) {
+  const migrationInfo = {};
+  if (template.Resources.S3Bucket) {
+    if ((typeof template.Resources.S3Bucket.Properties.BucketName) === 'string') {
+      migrationInfo.BucketName = template.Resources.S3Bucket.Properties.BucketName;
+    }
+  }
+  return migrationInfo;
+}
+
+function migrateTemplate(template, migrationInfo) {
+  const templateFilePath = path.join(__dirname, templateFileName);
+  const templateNewVersion = JSON.parse(fs.readFileSync(templateFilePath));
+
+  template.Parameters = template.Parameters || {};
+  Object.assign(template.Parameters, templateNewVersion.Parameters);
+
+  template.Conditions = template.Conditions || {};
+  Object.assign(template.Conditions, templateNewVersion.Conditions);
+
+  if (migrationInfo.BucketName) {
+    template.Resources.S3Bucket.Properties.BucketName =
+      templateNewVersion.Resources.S3Bucket.Properties.BucketName;
+  }
+
+  return template;
+}
+
+function migrateParameters(parameters, migrationInfo) {
+  parameters = parameters || {};
+  if (migrationInfo.BucketName) {
+    const parametersFilePath = path.join(__dirname, parametersFileName);
+    const parametersNewVersion = JSON.parse(fs.readFileSync(parametersFilePath));
+    parametersNewVersion.bucketName = migrationInfo.BucketName;
+    Object.assign(parameters, parametersNewVersion);
+  }
+  return parameters;
+}
+
 module.exports = {
   enable,
   configure,
   publish,
   console,
+  migrate,
 };

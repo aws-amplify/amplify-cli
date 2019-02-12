@@ -74,10 +74,6 @@
 					{
 						"name": "Create a new DynamoDB table",
 						"value": "newResource"
-					},
-					{
-						"name": "Use a DynamoDB table already deployed on AWS",
-						"value": "cloudResource"
 					}
 				]
 			},

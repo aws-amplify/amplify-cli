@@ -31,20 +31,23 @@ module.exports = {
     }
 
     const resourceName = Object.keys(amplify.getProjectDetails().amplifyMeta.auth)[0];
-    context.updatingAuth = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`));
+    const providerPlugin = context.amplify
+      .getPluginInstance(context, servicesMetadata.Cognito.provider);
+    context.updatingAuth = providerPlugin.loadResourceParameters(context, 'auth', resourceName);
 
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {
           service: result.service,
           providerPlugin: result.providerName,
+          resourceName,
         };
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
           context.print.error('Provider not configured for this category');
           return;
         }
-        return providerController.updateResource(context, category, result.service);
+        return providerController.updateResource(context, category, options);
       })
       .then((resourceName) => { // eslint-disable-line no-shadow
         amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, options);

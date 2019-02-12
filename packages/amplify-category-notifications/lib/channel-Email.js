@@ -37,37 +37,42 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelOutput = {};
-  if (context.exeInfo.serviceMeta.output[channelName]) {
-    channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+    answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+  } else {
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const questions = [
+      {
+        name: 'FromAddress',
+        type: 'input',
+        message: "The 'From' Email address used to send emails",
+        default: channelOutput.FromAddress,
+      },
+      {
+        name: 'Identity',
+        type: 'input',
+        message: 'The ARN of an identity verified with SES',
+        default: channelOutput.Identity,
+      },
+      {
+        name: 'RoleArn',
+        type: 'input',
+        message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
+        default: channelOutput.RoleArn,
+      },
+    ];
+    answers = await inquirer.prompt(questions);
   }
-  const questions = [
-    {
-      name: 'FromAddress',
-      type: 'input',
-      message: "The 'From' Email address used to send emails",
-      default: channelOutput.FromAddress,
-    },
-    {
-      name: 'Identity',
-      type: 'input',
-      message: 'The ARN of an identity verified with SES',
-      default: channelOutput.Identity,
-    },
-    {
-      name: 'RoleArn',
-      type: 'input',
-      message: "The ARN of an IAM Role used to submit events to Mobile notifications' event ingestion service",
-      default: channelOutput.RoleArn,
-    },
-  ];
-  const answers = await inquirer.prompt(questions);
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
-      Enabled: true,
       ...answers,
+      Enabled: true,
     },
   };
 
@@ -87,6 +92,13 @@ async function enable(context, successMessage) {
       }
     });
   });
+}
+
+function validateInputParams(channelInput) {
+  if (!channelInput.FromAddress || !channelInput.Identity || !channelInput.RoleArn) {
+    throw new Error('Missing FromAddress, Identity or RoleArn for the Email channel');
+  }
+  return channelInput;
 }
 
 async function disable(context) {
@@ -111,8 +123,31 @@ async function disable(context) {
   });
 }
 
+function pull(context, pinpointApp) {
+  const params = {
+    ApplicationId: pinpointApp.Id,
+  };
+
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getEmailChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.EmailChannelResponse;
+      return data.EmailChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
+      }
+      spinner.stop();
+      throw err;
+    });
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull,
 };

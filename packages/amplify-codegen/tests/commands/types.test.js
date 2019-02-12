@@ -1,6 +1,6 @@
 const { sync } = require('glob-all');
 const path = require('path');
-const { generate } = require('aws-appsync-codegen');
+const { generate } = require('amplify-graphql-types-generator');
 const jetpack = require('fs-jetpack');
 
 const loadConfig = require('../../src/codegen-config');
@@ -15,7 +15,7 @@ const MOCK_CONTEXT = {
 };
 
 jest.mock('glob-all');
-jest.mock('aws-appsync-codegen');
+jest.mock('amplify-graphql-types-generator');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
 jest.mock('fs-jetpack');
@@ -66,7 +66,6 @@ describe('command - types', () => {
       MOCK_GENERATED_FILE_NAME,
       '',
       MOCK_TARGET,
-      '',
       '',
       { addTypename: true },
     );

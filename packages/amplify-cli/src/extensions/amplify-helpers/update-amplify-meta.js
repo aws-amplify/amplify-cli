@@ -3,6 +3,10 @@ const { filesystem } = require('gluegun/filesystem');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
+const {
+  updateBackendConfigAfterResourceAdd,
+  updateBackendConfigDependsOn,
+} = require('./update-backend-config');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
   const amplifyMeta = JSON.parse(fs.readFileSync(filePath));
@@ -33,6 +37,8 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
 function moveBackendResourcesToCurrentCloudBackend(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
+  const backendConfigFilePath = pathManager.getBackendConfigFilePath();
+  const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
 
   for (let i = 0; i < resources.length; i += 1) {
     const sourceDir = path.normalize(path.join(
@@ -47,13 +53,17 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
       resources[i].resourceName,
     ));
 
-    // If the directory structure does not exist, it is created
+    if (fs.pathExistsSync(targetDir)) {
+      filesystem.remove(targetDir);
+    }
+
     fs.ensureDirSync(targetDir);
 
     fs.copySync(sourceDir, targetDir);
   }
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
+  fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
@@ -68,6 +78,8 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
     const jsonString = JSON.stringify(amplifyMeta, null, '\t');
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
   }
+
+  updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
 
 function updateProvideramplifyMeta(providerName, options) {
@@ -103,6 +115,9 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
+  if (attribute === 'dependsOn') {
+    updateBackendConfigDependsOn(category, resourceName, value);
+  }
 }
 
 async function updateamplifyMetaAfterPush(resources) {
@@ -178,7 +193,7 @@ function updateamplifyMetaAfterResourceDelete(category, resourceName) {
     resourceName,
   ));
 
-  if (amplifyMeta[category][resourceName] !== undefined) {
+  if (amplifyMeta[category] && amplifyMeta[category][resourceName] !== undefined) {
     delete amplifyMeta[category][resourceName];
   }
 

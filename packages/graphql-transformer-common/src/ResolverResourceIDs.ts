@@ -1,3 +1,5 @@
+import { graphqlName } from "./util";
+
 export class ResolverResourceIDs {
     static DynamoDBCreateResolverResourceID(typeName: string): string {
         return `Create${typeName}Resolver`

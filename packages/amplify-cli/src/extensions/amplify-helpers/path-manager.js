@@ -8,10 +8,10 @@ const amplifyCLIConstants = require('./constants.js');
 function projectPathValidate(projectPath) {
   let isGood = false;
   if (fs.existsSync(projectPath)) {
-    const dotamplifyDirPath = getAmplifyDirPath(projectPath);
+    const amplifyDirPath = getAmplifyDirPath(projectPath);
     const infoSubDirPath = getDotConfigDirPath(projectPath);
 
-    isGood = fs.existsSync(dotamplifyDirPath) &&
+    isGood = fs.existsSync(amplifyDirPath) &&
             fs.existsSync(infoSubDirPath);
   }
   return isGood;
@@ -92,12 +92,53 @@ function getAmplifyRcFilePath(projectPath) {
   throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
 }
 
+function getGitIgnoreFilePath(projectPath) {
+  if (!projectPath) {
+    projectPath = searchProjectRootPath();
+  }
+  if (projectPath) {
+    return path.normalize(path.join(
+      projectPath,
+      '.gitignore',
+    ));
+  }
+  throw new Error('You are not working inside a valid amplify project.\nUse \'amplify init\' in the root of your app directory to initialize your project with Amplify');
+}
+
 // ///////////////////level 2
 
 function getProjectConfigFilePath(projectPath) {
   return path.normalize(path.join(
     getDotConfigDirPath(projectPath),
     amplifyCLIConstants.ProjectConfigFileName,
+  ));
+}
+
+function getLocalEnvFilePath(projectPath) {
+  return path.normalize(path.join(
+    getDotConfigDirPath(projectPath),
+    amplifyCLIConstants.LocalEnvFileName,
+  ));
+}
+
+function getProviderInfoFilePath(projectPath) {
+  return path.normalize(path.join(
+    getAmplifyDirPath(projectPath),
+    amplifyCLIConstants.ProviderInfoFileName,
+  ));
+}
+
+function getBackendConfigFilePath(projectPath) {
+  return path.normalize(path.join(
+    getBackendDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
+  ));
+}
+
+function getCurrentBackendConfigFilePath(projectPath) {
+  return path.normalize(path.join(
+    getCurrentCloudBackendDirPath(projectPath),
+    amplifyCLIConstants.BackendConfigFileName,
   ));
 }
 
@@ -134,5 +175,10 @@ module.exports = {
   getCurrentCloudBackendDirPath,
   getPluginConfigFilePath,
   getAmplifyMetaFilePath,
+  getGitIgnoreFilePath,
   getCurentAmplifyMetaFilePath,
+  getLocalEnvFilePath,
+  getProviderInfoFilePath,
+  getBackendConfigFilePath,
+  getCurrentBackendConfigFilePath,
 };

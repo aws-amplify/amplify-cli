@@ -22,6 +22,8 @@ import {
 import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
 import path = require('path');
 
+const STACK_NAME = 'SearchableStack';
+
 interface QueryNameMap {
     search?: string;
 }
@@ -51,7 +53,14 @@ export class SearchableModelTransformer extends Transformer {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources);
         ctx.mergeParameters(template.Parameters);
-        ctx.metadata.set('ElasticSearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
+        ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
+        ctx.putStackMapping(STACK_NAME, [
+            'ElasticsearchDomain',
+            '^ElasticsearchAccess.*',
+            '^ElasticsearchStreaming.*',
+            '^ElasticsearchDataSource$',
+            '^Searchable.*LambdaMapping$'
+        ])
     };
 
     /**
@@ -64,7 +73,10 @@ export class SearchableModelTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-
+        ctx.addToStackMapping(
+            STACK_NAME,
+            "^Search" + def.name.value + "Resolver$"
+        )
         const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
         let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;

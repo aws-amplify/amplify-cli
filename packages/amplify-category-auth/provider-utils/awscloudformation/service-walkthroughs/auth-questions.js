@@ -3,64 +3,51 @@ const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const thirdPartyMap = require('../assets/string-maps').authProviders;
 
+
 async function serviceWalkthrough(
   context,
   defaultValuesFilename,
   stringMapsFilename,
   serviceMetadata,
+  coreAnswers = {},
 ) {
   const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
-  const projectType = Object.keys(amplify.getProjectConfig().frontendHandler)[0];
+  const projectType = amplify.getProjectConfig().frontend;
 
-
-  let coreAnswers = {};
-  /* eslint-disable */
-
-  // QUESTION LOOP
-  for (let i = 0; i < inputs.length; i = i + 1) {
-    // If we are on the second or higher question, we first check to see if the user selected 'learn more' and if learn more text is present on the question object.
-    if (i > 0 && new RegExp(/learn/i).test(coreAnswers[inputs[i-1].key]) && inputs[i-1].learnMore) {
-      // To support line breaks between paragraphs for readability, we splut up the string and joint with template string hard returns
-      const helpTextArray = inputs[i-1].learnMore.split("\n");
-      // !IMPORTANT! Do no change indentation or carriage returns in template string. !IMPORTANT!
-      const helpText = `
-${helpTextArray.join(`
-        
-`)}
-      
-`;
-      inputs[i-1].prefix = chalkpipe(null, chalk.green)(helpText);  // Assign prefix text with chalkpipe 
-      i-- // Decrement the loop iterator by one to 'rewind' to the last question with the suffix displayed.
-
-    };
-  /* eslint-enable */
-
-    // If user selected default, jump out of the loop
-    if (coreAnswers.useDefault === 'default') {
-      break;
-    }
-
+  // loop through questions
+  let j = 0;
+  while (j < inputs.length) {
+    const questionObj = inputs[j];
     const q = await parseInputs(
-      inputs[i],
+      questionObj,
       amplify,
       defaultValuesFilename,
       stringMapsFilename,
       coreAnswers,
       context,
     );
-
-    // Update answers with spreading of previous values and those returning from question prompt
-    coreAnswers = { ...coreAnswers, ...(await inquirer.prompt(q)) };
+    const answer = await inquirer.prompt(q);
+    // user has selected learn more. Don't advance the question
+    if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
+      const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
+      questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
+    } else {
+      // next question
+      j += 1;
+      coreAnswers = { ...coreAnswers, ...answer };
+    }
+    if (coreAnswers.useDefault === 'default') {
+      break;
+    }
   }
-
 
   // POST-QUESTION LOOP PARSING
   /*
     create key/value pairs of third party auth providers,
     where key = name accepted by updateIdentityPool API call and value = id entered by user
-    TODO: evalutate need for abstracted version of this operation
+    TODO: evaluate need for abstracted version of this operation
   */
   if (coreAnswers.thirdPartyAuth) {
     coreAnswers.selectedParties = {};
@@ -95,11 +82,8 @@ ${helpTextArray.join(`
     coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
   }
 
-  const roles = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'staticRoles');
-
   return {
     ...coreAnswers,
-    ...roles,
   };
 }
 

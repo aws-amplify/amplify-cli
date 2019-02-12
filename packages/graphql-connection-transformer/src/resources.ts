@@ -1,13 +1,13 @@
-import Table, { GlobalSecondaryIndex, KeySchema, Projection, ProvisionedThroughput, AttributeDefinition } from 'cloudform/types/dynamoDb/table'
-import Resolver from 'cloudform/types/appSync/resolver'
-import Template from 'cloudform/types/template'
-import { Fn, Refs } from 'cloudform'
+import Table, { GlobalSecondaryIndex, KeySchema, Projection, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table'
+import Resolver from 'cloudform-types/types/appSync/resolver'
+import Template from 'cloudform-types/types/template'
+import { Fn, Refs } from 'cloudform-types'
 import {
     DynamoDBMappingTemplate, str, print,
     ref, obj, set, nul,
     ifElse, compoundExpression, bool, equals, iff, raw
 } from 'graphql-mapping-template'
-import { ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
+import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 export class ResourceFactory {
@@ -35,6 +35,7 @@ export class ResourceFactory {
         table: Table,
         connectionName: string,
         connectionAttributeName: string,
+        sortField: { name: string, type: string } = null
     ): Table {
         const gsis = table.Properties.GlobalSecondaryIndexes || [] as GlobalSecondaryIndex[]
         if (gsis.length >= 5) {
@@ -47,21 +48,24 @@ export class ResourceFactory {
         // If the GSI does not exist yet then add it.
         const existingGSI = gsis.find(gsi => gsi.IndexName === connectionGSIName)
         if (!existingGSI) {
+            const keySchema = [new KeySchema({ AttributeName: connectionAttributeName, KeyType: 'HASH' })]
+            if (sortField) {
+                keySchema.push(new KeySchema({ AttributeName: sortField.name, KeyType: 'RANGE' }))
+            }
             gsis.push(new GlobalSecondaryIndex({
                 IndexName: connectionGSIName,
-                KeySchema: [
-                    new KeySchema({
-                        AttributeName: connectionAttributeName,
-                        KeyType: 'HASH'
-                    })
-                ],
+                KeySchema: keySchema,
                 Projection: new Projection({
                     ProjectionType: 'ALL'
                 }),
-                ProvisionedThroughput: new ProvisionedThroughput({
-                    ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-                    WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
-                }),
+                ProvisionedThroughput: Fn.If(
+                    ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                    Refs.NoValue,
+                    {
+                        ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                        WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+                    }
+                ) as any,
             }))
         }
 
@@ -74,6 +78,17 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }))
         }
+
+        // If the attribute definition does not exist yet, add it.
+        if (sortField) {
+            const existingSortAttribute = attributeDefinitions.find(attr => attr.AttributeName === sortField.name)
+            if (!existingSortAttribute) {
+                const scalarType = DEFAULT_SCALARS[sortField.type]
+                const attributeType = scalarType === 'String' ? 'S' : 'N'
+                attributeDefinitions.push(new AttributeDefinition({ AttributeName: sortField.name, AttributeType: attributeType }))
+            }
+        }
+
         table.Properties.GlobalSecondaryIndexes = gsis
         table.Properties.AttributeDefinitions = attributeDefinitions
         return table
@@ -95,7 +110,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
                     key: obj({
-                        id: ref(`util.dynamodb.toDynamoDBJson($ctx.source.${connectionAttribute})`)
+                        id: ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttribute}, "${NONE_VALUE}"))`)
                     })
                 })
             ),

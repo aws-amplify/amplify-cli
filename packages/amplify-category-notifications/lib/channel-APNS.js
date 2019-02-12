@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
+const fs = require('fs-extra');
 
 const channelName = 'APNS';
 const spinner = ora('');
@@ -40,44 +41,47 @@ async function configure(context) {
 }
 
 async function enable(context, successMessage) {
-  let channelOutput = {};
-  if (context.exeInfo.serviceMeta.output[channelName]) {
-    channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  let channelInput;
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+    channelInput = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+    answers = {
+      DefaultAuthenticationMethod: channelInput.DefaultAuthenticationMethod,
+    };
+  } else {
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const question = {
+      name: 'DefaultAuthenticationMethod',
+      type: 'list',
+      message: 'Choose authentication method used for APNs',
+      choices: ['Certificate', 'Key'],
+      default: channelOutput.DefaultAuthenticationMethod || 'Certificate',
+    };
+    answers = await inquirer.prompt(question);
   }
 
-  const APNSChannelRequest = { Enabled: true };
-
-  const { DefaultAuthenticationMethod } = channelOutput;
-
-  let keyConfig;
-  let certificateConfig;
-
-  const answers = await inquirer.prompt({
-    name: 'DefaultAuthenticationMethod',
-    type: 'list',
-    message: 'Choose authentication method used for APNs',
-    choices: ['Certificate', 'Key'],
-    default: DefaultAuthenticationMethod || 'Certificate',
-  });
-
-  APNSChannelRequest.DefaultAuthenticationMethod = answers.DefaultAuthenticationMethod;
-
   try {
-    if (APNSChannelRequest.DefaultAuthenticationMethod === 'Key') {
-      keyConfig = await configureKey.run();
+    if (answers.DefaultAuthenticationMethod === 'Key') {
+      const keyConfig = await configureKey.run(channelInput);
+      Object.assign(answers, keyConfig);
     } else {
-      certificateConfig = await configureCertificate.run();
+      const certificateConfig = await configureCertificate.run(channelInput);
+      Object.assign(answers, certificateConfig);
     }
   } catch (err) {
     context.print.error(err.message);
     process.exit(1);
   }
 
-  Object.assign(APNSChannelRequest, keyConfig, certificateConfig);
-
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
-    APNSChannelRequest,
+    APNSChannelRequest: {
+      ...answers,
+      Enabled: true,
+    },
   };
 
   spinner.start('Updating APNS Channel.');
@@ -96,6 +100,33 @@ async function enable(context, successMessage) {
       }
     });
   });
+}
+
+function validateInputParams(channelInput) {
+  if (channelInput.DefaultAuthenticationMethod) {
+    const authMethod = channelInput.DefaultAuthenticationMethod;
+    if (authMethod === 'Certificate') {
+      if (!channelInput.P12FilePath) {
+        throw new Error('P12FilePath is missing for the APNS channel');
+      } else if (!fs.existsSync(channelInput.P12FilePath)) {
+        throw new Error(`P12 file ${channelInput.P12FilePath} can NOT be found for the APNS channel`);
+      }
+    } else if (authMethod === 'Key') {
+      if (!channelInput.BundleId || !channelInput.TeamId || !channelInput.TokenKeyId) {
+        throw new Error('Missing BundleId, TeamId or TokenKeyId for the APNS channel');
+      } else if (!channelInput.P8FilePath) {
+        throw new Error('P8FilePath is missing for the APNS channel');
+      } else if (!fs.existsSync(channelInput.P8FilePath)) {
+        throw new Error(`P8 file ${channelInput.P8FilePath} can NOT be found for the APNS channel`);
+      }
+    } else {
+      throw new Error(`DefaultAuthenticationMethod ${authMethod} is unrecognized for the APNS channel`);
+    }
+  } else {
+    throw new Error('DefaultAuthenticationMethod is missing for the APNS channel');
+  }
+
+  return channelInput;
 }
 
 function disable(context) {
@@ -120,8 +151,31 @@ function disable(context) {
   });
 }
 
+function pull(context, pinpointApp) {
+  const params = {
+    ApplicationId: pinpointApp.Id,
+  };
+
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getApnsChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.APNSChannelResponse;
+      return data.APNSChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
+      }
+      spinner.stop();
+      throw err;
+    });
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull,
 };

@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.0.3-beta.0...graphql-transformer-common@3.0.5) (2019-02-11)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [3.0.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.0.3-beta.0...graphql-transformer-common@3.0.3) (2019-02-11)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [3.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@3.0.2...graphql-transformer-common@3.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+<a name="2.0.0-multienv.1"></a>
+# [2.0.0-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.34-multienv.0...graphql-transformer-common@2.0.0-multienv.1) (2018-12-31)
+
+
+### Bug Fixes
+
+* update grahql transformer package versions for multienv ([8b4b2bd](https://github.com/aws-amplify/amplify-cli/commit/8b4b2bd))
+
+
+
+
+<a name="1.0.34-multienv.0"></a>
+## [1.0.34-multienv.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.33...graphql-transformer-common@1.0.34-multienv.0) (2018-11-16)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.33"></a>
+## [1.0.33](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.33-beta.0...graphql-transformer-common@1.0.33) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.33-beta.0"></a>
+## [1.0.33-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.33-beta.0) (2018-11-09)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.32"></a>
+## [1.0.32](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.32-beta.0...graphql-transformer-common@1.0.32) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.32-beta.0"></a>
+## [1.0.32-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.32-beta.0) (2018-11-05)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.31"></a>
+## [1.0.31](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.31) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.30"></a>
+## [1.0.30](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.30-beta.0...graphql-transformer-common@1.0.30) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.30-beta.0"></a>
+## [1.0.30-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.30-beta.0) (2018-11-02)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.29"></a>
+## [1.0.29](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.29-beta.0...graphql-transformer-common@1.0.29) (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
+<a name="1.0.29-beta.0"></a>
+## [1.0.29-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.12...graphql-transformer-common@1.0.29-beta.0) (2018-10-23)
+
+
+
+
+**Note:** Version bump only for package graphql-transformer-common
+
 <a name="1.0.28"></a>
 ## [1.0.28](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@1.0.28-beta.0...graphql-transformer-common@1.0.28) (2018-10-18)
 

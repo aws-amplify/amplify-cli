@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
 
+const category = 'function';
+
 const parametersFileName = 'parameters.json';
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
@@ -163,8 +165,14 @@ async function askDynamoDBQuestions(context, inputs) {
             return { resourceName };
           });
       }
-      case 'cloudResource': {
-        const dynamodbTables = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
+      /* eslint-disable */
+
+      /*Commented this section until we figure out
+        multi-environemnt solution for existing tables - NOT CRITICAL
+
+        case 'cloudResource': {
+        const dynamodbTables =
+          await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getDynamoDBTables');
         const dynamodbOptions = dynamodbTables.map(dynamodbTable => ({
           value: {
             resourceName: dynamodbTable.Name,
@@ -191,10 +199,91 @@ async function askDynamoDBQuestions(context, inputs) {
 
         const dynamoCloudOptionAnswer = await inquirer.prompt([dynamoCloudOptionQuestion]);
         return dynamoCloudOptionAnswer[inputs[7].key];
-      }
+      } */
+
+      /* eslint-enable */
       default: context.print.error('Invalid option selected');
     }
   }
 }
 
-module.exports = { serviceWalkthrough };
+function migrate(projectPath, resourceName) {
+  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
+  const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
+  const oldCfn = JSON.parse(fs.readFileSync(cfnFilePath, 'utf8'));
+  const newCfn = {};
+  Object.assign(newCfn, oldCfn);
+
+  // Add env parameter
+  if (!newCfn.Parameters) {
+    newCfn.Parameters = {};
+  }
+  newCfn.Parameters.env = {
+    Type: 'String',
+  };
+
+  // Add conditions block
+  if (!newCfn.Conditions) {
+    newCfn.Conditions = {};
+  }
+  newCfn.Conditions.ShouldNotCreateEnvResources = {
+    'Fn::Equals': [
+      {
+        Ref: 'env',
+      },
+      'NONE',
+    ],
+  };
+
+  // Add if condition for resource name change
+  const oldFunctionName = newCfn.Resources.LambdaFunction.Properties.FunctionName;
+
+  newCfn.Resources.LambdaFunction.Properties.FunctionName = {
+    'Fn::If': [
+      'ShouldNotCreateEnvResources',
+      oldFunctionName,
+      {
+
+        'Fn::Join': [
+          '',
+          [
+            oldFunctionName,
+            '-',
+            {
+              Ref: 'env',
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  newCfn.Resources.LambdaFunction.Properties.Environment = { Variables: { ENV: { Ref: 'env' } } };
+
+  const oldRoleName = newCfn.Resources.LambdaExecutionRole.Properties.RoleName;
+
+  newCfn.Resources.LambdaExecutionRole.Properties.RoleName = {
+    'Fn::If': [
+      'ShouldNotCreateEnvResources',
+      oldRoleName,
+      {
+
+        'Fn::Join': [
+          '',
+          [
+            oldRoleName,
+            '-',
+            {
+              Ref: 'env',
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const jsonString = JSON.stringify(newCfn, null, '\t');
+  fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+}
+
+module.exports = { serviceWalkthrough, migrate };

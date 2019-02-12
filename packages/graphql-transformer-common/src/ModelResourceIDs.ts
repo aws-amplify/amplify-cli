@@ -2,6 +2,7 @@ import { graphqlName, toUpper } from './util'
 import { DEFAULT_SCALARS } from './definition'
 
 export class ModelResourceIDs {
+
     static ModelTableResourceID(typeName: string): string {
         return `${typeName}Table`
     }
@@ -18,6 +19,14 @@ export class ModelResourceIDs {
         }
         return `Model${name}FilterInput`
     }
+    static ModelFilterListInputTypeName(name: string): string {
+        const nameOverride = DEFAULT_SCALARS[name]
+        if (nameOverride) {
+            return `Model${nameOverride}ListFilterInput`
+        }
+        return `Model${name}ListFilterInput`
+    }
+
     static ModelScalarFilterInputTypeName(name: string): string {
         return `Model${name}FilterInput`
     }
@@ -44,5 +53,14 @@ export class ModelResourceIDs {
     }
     static NonModelInputObjectName(typeName: string): string {
         return graphqlName(toUpper(typeName) + 'Input')
+    }
+    static UrlParamsInputObjectName(typeName: string, fieldName: string) {
+        return graphqlName(toUpper(typeName) + toUpper(fieldName) + 'ParamsInput')
+    }
+    static HttpQueryInputObjectName(typeName: string, fieldName: string) {
+        return graphqlName(toUpper(typeName) + toUpper(fieldName) + 'QueryInput')
+    }
+    static HttpBodyInputObjectName(typeName: string, fieldName: string) {
+        return graphqlName(toUpper(typeName) + toUpper(fieldName) + 'BodyInput')
     }
 }

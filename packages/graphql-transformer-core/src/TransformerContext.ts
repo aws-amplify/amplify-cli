@@ -1,8 +1,8 @@
-import Template from 'cloudform/types/template'
-import Resource from 'cloudform/types/resource'
-import Parameter from 'cloudform/types/parameter'
-import { Condition } from 'cloudform/types/dataTypes'
-import Output from 'cloudform/types/output'
+import Template from 'cloudform-types/types/template'
+import Resource from 'cloudform-types/types/resource'
+import Parameter from 'cloudform-types/types/parameter'
+import { Condition } from 'cloudform-types/types/dataTypes'
+import Output from 'cloudform-types/types/output'
 import {
     TypeSystemDefinitionNode,
     ObjectTypeDefinitionNode,
@@ -17,10 +17,17 @@ import {
     EnumTypeDefinitionNode,
     TypeDefinitionNode,
     DefinitionNode,
-    OperationTypeDefinitionNode
+    OperationTypeDefinitionNode,
+    InterfaceTypeDefinitionNode
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 import DefaultSchemaDefinition from './defaultSchema'
+import { 
+    InterfaceTypeExtensionNode, UnionTypeExtensionNode,
+    UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
+    InputObjectTypeExtensionNode, InputValueDefinitionNode
+} from 'graphql/language/ast';
+import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -68,6 +75,9 @@ export class TransformerContextMetadata {
     }
 }
 
+// export interface StackMapping { [k: RegExp]: string }
+export type StackMapping = Map<string, string>;
+
 /**
  * The transformer context is responsible for accumulating the resources,
  * types, and parameters necessary to support an AppSync transform.
@@ -81,6 +91,8 @@ export default class TransformerContext {
     public inputDocument: DocumentNode
 
     public metadata: TransformerContextMetadata = new TransformerContextMetadata()
+
+    private stackMapping: StackMapping = new Map();
 
     constructor(inputSDL: string) {
         const doc: DocumentNode = parse(inputSDL)
@@ -101,6 +113,7 @@ export default class TransformerContext {
      * Query, Mutation, and Subscription
      */
     private fillNodeMapWithInput(): void {
+        const extensionNodes = [];
         for (const inputDef of this.inputDocument.definitions) {
             switch (inputDef.kind) {
                 case Kind.OBJECT_TYPE_DEFINITION:
@@ -120,8 +133,40 @@ export default class TransformerContext {
                         this.putSchema(typeDef);
                     }
                     break;
+                case Kind.OBJECT_TYPE_EXTENSION:
+                case Kind.ENUM_TYPE_EXTENSION:
+                case Kind.UNION_TYPE_EXTENSION:
+                case Kind.INTERFACE_TYPE_EXTENSION:
+                case Kind.INPUT_OBJECT_TYPE_EXTENSION:
+                    extensionNodes.push(inputDef);
+                    break;
+                case Kind.SCALAR_TYPE_EXTENSION:
                 default:
                 /* pass any others */
+            }
+        }
+        // We add the extension nodes last so that the order of input documents does not matter.
+        // At this point, all input documents have been processed so the base types will be present.
+        for (const ext of extensionNodes) {
+            switch (ext.kind) {
+                case Kind.OBJECT_TYPE_EXTENSION:
+                    this.addObjectExtension(ext);
+                    break;
+                case Kind.INTERFACE_TYPE_EXTENSION:
+                    this.addInterfaceExtension(ext);
+                    break;
+                case Kind.UNION_TYPE_EXTENSION:
+                    this.addUnionExtension(ext);
+                    break;
+                case Kind.ENUM_TYPE_EXTENSION:
+                    this.addEnumExtension(ext);
+                    break;
+                case Kind.INPUT_OBJECT_TYPE_EXTENSION:
+                    this.addInputExtension(ext);
+                    break;
+                case Kind.SCALAR_TYPE_EXTENSION:
+                default:
+                    continue;
             }
         }
         // If no schema definition is provided then fill with the default one.
@@ -399,6 +444,166 @@ export default class TransformerContext {
     }
 
     /**
+     * Add an input object type extension definition node to the context. If a type with this
+     * name does not already exist, an exception is thrown.
+     * @param obj The input object type definition node to add.
+     */
+    public addInputExtension(obj: InputObjectTypeExtensionNode) {
+        if (!this.nodeMap[obj.name.value]) {
+            throw new Error(`Cannot extend non-existant input '${obj.name.value}'.`)
+        }
+        // AppSync does not yet understand type extensions so fold the types in.
+        const oldNode = this.getType(obj.name.value) as InputObjectTypeDefinitionNode
+        const newDirs = obj.directives || []
+        const oldDirs = oldNode.directives || []
+        const mergedDirs = [...oldDirs, ...newDirs]
+
+        // An extension cannot redeclare fields.
+        const oldFields = oldNode.fields || []
+        const oldFieldMap = oldFields.reduce(
+            (acc: any, field: InputValueDefinitionNode) => ({
+                ...acc,
+                [field.name.value]: field
+            }),
+            {}
+        )
+        const newFields = obj.fields || []
+        const mergedFields = [...oldFields]
+        for (const newField of newFields) {
+            if (oldFieldMap[newField.name.value]) {
+                throw new Error(`Input object type extension '${obj.name.value}' cannot redeclare field ${newField.name.value}`)
+            }
+            mergedFields.push(newField)
+        }
+
+        this.nodeMap[oldNode.name.value] = {
+            ...oldNode,
+            directives: mergedDirs,
+            fields: mergedFields
+        }
+    }
+
+    /**
+     * Add an interface extension definition node to the context. If a type with this
+     * name does not already exist, an exception is thrown.
+     * @param obj The interface type definition node to add.
+     */
+    public addInterfaceExtension(obj: InterfaceTypeExtensionNode) {
+        if (!this.nodeMap[obj.name.value]) {
+            throw new Error(`Cannot extend non-existant interface '${obj.name.value}'.`)
+        }
+        // AppSync does not yet understand type extensions so fold the types in.
+        const oldNode = this.getType(obj.name.value) as InterfaceTypeDefinitionNode;
+        const newDirs = obj.directives || []
+        const oldDirs = oldNode.directives || []
+        const mergedDirs = [...oldDirs, ...newDirs]
+
+        // An extension cannot redeclare fields.
+        const oldFields = oldNode.fields || []
+        const oldFieldMap = oldFields.reduce(
+            (acc: any, field: FieldDefinitionNode) => ({
+                ...acc,
+                [field.name.value]: field
+            }),
+            {}
+        )
+        const newFields = obj.fields || []
+        const mergedFields = [...oldFields]
+        for (const newField of newFields) {
+            if (oldFieldMap[newField.name.value]) {
+                throw new Error(`Interface type extension '${obj.name.value}' cannot redeclare field ${newField.name.value}`)
+            }
+            mergedFields.push(newField)
+        }
+
+        this.nodeMap[oldNode.name.value] = {
+            ...oldNode,
+            directives: mergedDirs,
+            fields: mergedFields
+        }
+    }
+
+    /**
+     * Add an union extension definition node to the context. If a type with this
+     * name does not already exist, an exception is thrown.
+     * @param obj The union type definition node to add.
+     */
+    public addUnionExtension(obj: UnionTypeExtensionNode) {
+        if (!this.nodeMap[obj.name.value]) {
+            throw new Error(`Cannot extend non-existant union '${obj.name.value}'.`)
+        }
+        // AppSync does not yet understand type extensions so fold the types in.
+        const oldNode = this.getType(obj.name.value) as UnionTypeDefinitionNode;
+        const newDirs = obj.directives || []
+        const oldDirs = oldNode.directives || []
+        const mergedDirs = [...oldDirs, ...newDirs]
+
+        // An extension cannot redeclare possible values
+        const oldTypes = oldNode.types || []
+        const oldTypeMap = oldTypes.reduce(
+            (acc: any, type: NamedTypeNode) => ({
+                ...acc,
+                [type.name.value]: true
+            }),
+            {}
+        )
+        const newTypes = obj.types || []
+        const mergedFields = [...oldTypes]
+        for (const newType of newTypes) {
+            if (oldTypeMap[newType.name.value]) {
+                throw new Error(`Union type extension '${obj.name.value}' cannot redeclare type ${newType.name.value}`)
+            }
+            mergedFields.push(newType)
+        }
+
+        this.nodeMap[oldNode.name.value] = {
+            ...oldNode,
+            directives: mergedDirs,
+            types: mergedFields
+        }
+    }
+
+    /**
+     * Add an enum extension definition node to the context. If a type with this
+     * name does not already exist, an exception is thrown.
+     * @param obj The enum type definition node to add.
+     */
+    public addEnumExtension(obj: EnumTypeExtensionNode) {
+        if (!this.nodeMap[obj.name.value]) {
+            throw new Error(`Cannot extend non-existant enum '${obj.name.value}'.`)
+        }
+        // AppSync does not yet understand type extensions so fold the types in.
+        const oldNode = this.getType(obj.name.value) as EnumTypeDefinitionNode;
+        const newDirs = obj.directives || []
+        const oldDirs = oldNode.directives || []
+        const mergedDirs = [...oldDirs, ...newDirs]
+
+        // An extension cannot redeclare possible values
+        const oldValues = oldNode.values || []
+        const oldValuesMap = oldValues.reduce(
+            (acc: any, type: EnumValueDefinitionNode) => ({
+                ...acc,
+                [type.name.value]: true
+            }),
+            {}
+        )
+        const newValues = obj.values || []
+        const mergedValues = [...oldValues]
+        for (const newValue of newValues) {
+            if (oldValuesMap[newValue.name.value]) {
+                throw new Error(`Enum type extension '${obj.name.value}' cannot redeclare value ${newValue.name.value}`)
+            }
+            mergedValues.push(newValue)
+        }
+
+        this.nodeMap[oldNode.name.value] = {
+            ...oldNode,
+            directives: mergedDirs,
+            values: mergedValues
+        }
+    }
+
+    /**
      * Add an input type definition node to the context.
      * @param inp The input type definition node to add.
      */
@@ -418,5 +623,19 @@ export default class TransformerContext {
             throw new Error(`Conflicting enum type '${en.name.value}' found.`)
         }
         this.nodeMap[en.name.value] = en
+    }
+
+    public putStackMapping(stackName: string, listOfRegex: string[]) {
+        for (const reg of listOfRegex) {
+            this.stackMapping.set(reg.toLowerCase(), stackName);
+        }
+    }
+
+    public addToStackMapping(stackName: string, regex: string) {
+        this.stackMapping.set(regex.toLowerCase(), stackName);
+    }
+
+    public getStackMapping(): StackMapping {
+        return this.stackMapping
     }
 }

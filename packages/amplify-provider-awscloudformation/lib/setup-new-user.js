@@ -89,15 +89,12 @@ function run(context) {
           },
         ]);
 
-        profileName = answer.pn;
+        profileName = answer.pn.trim();
 
         systemConfigManager.setProfile(awsConfig, profileName);
-        context.newUserInfo = {
-          profileName,
-        };
         context.print.info('');
         context.print.success('Successfully set up the new user.');
-        return context;
+        return profileName;
       }
       context.print.info('');
       context.print.info('You did NOT enter valid keys.');

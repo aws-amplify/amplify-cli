@@ -19,7 +19,7 @@ async function downloadIntrospectionSchema(context, apiId, downloadLocation, reg
     const introspectionDir = dirname(downloadLocation);
     jetpack.dir(introspectionDir);
     jetpack.write(downloadLocation, schema);
-    return relative(amplify.getProjectDetails().projectConfig.projectPath, downloadLocation);
+    return relative(amplify.getEnvInfo().projectPath, downloadLocation);
   } catch (ex) {
     if (ex.code === 'NotFoundException') {
       throw new AmplifyCodeGenAPINotFoundError(constants.ERROR_APPSYNC_API_NOT_FOUND);

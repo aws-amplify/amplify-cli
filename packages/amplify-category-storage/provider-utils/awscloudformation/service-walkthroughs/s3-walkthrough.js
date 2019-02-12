@@ -9,7 +9,7 @@ const templateFileName = 's3-cloudformation-template.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   while (!checkIfAuthExists(context)) {
-    if (await context.prompt.confirm('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
+    if (await context.amplify.confirmPrompt.run('You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?')) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
@@ -258,4 +258,83 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-module.exports = { addWalkthrough, updateWalkthrough };
+function migrate(projectPath, resourceName) {
+  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
+
+  // Change CFN file
+
+  const cfnFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
+  const oldCfn = JSON.parse(fs.readFileSync(cfnFilePath, 'utf8'));
+  const newCfn = {};
+  Object.assign(newCfn, oldCfn);
+
+  // Add env parameter
+  if (!newCfn.Parameters) {
+    newCfn.Parameters = {};
+  }
+  newCfn.Parameters.env = {
+    Type: 'String',
+  };
+
+  // Add conditions block
+  if (!newCfn.Conditions) {
+    newCfn.Conditions = {};
+  }
+  newCfn.Conditions.ShouldNotCreateEnvResources = {
+    'Fn::Equals': [
+      {
+        Ref: 'env',
+      },
+      'NONE',
+    ],
+  };
+
+  // Add if condition for resource name change
+
+  newCfn.Resources.S3Bucket.Properties.BucketName = {
+    'Fn::If': [
+      'ShouldNotCreateEnvResources',
+      {
+        Ref: 'bucketName',
+      },
+      {
+
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'bucketName',
+            },
+            '-',
+            {
+              Ref: 'env',
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  let jsonString = JSON.stringify(newCfn, null, '\t');
+  fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+
+  // Change Parameters file
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const oldParameters = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
+  const newParameters = {};
+  Object.assign(newParameters, oldParameters);
+
+  newParameters.authRoleName = {
+    Ref: 'AuthRoleName',
+  };
+  newParameters.unauthRoleName = {
+    Ref: 'UnauthRoleName',
+  };
+
+
+  jsonString = JSON.stringify(newParameters, null, '\t');
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+
+module.exports = { addWalkthrough, updateWalkthrough, migrate };

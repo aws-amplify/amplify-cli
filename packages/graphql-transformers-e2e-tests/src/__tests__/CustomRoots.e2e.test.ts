@@ -4,8 +4,6 @@ import {
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import { AppSyncTransformer } from 'graphql-appsync-transformer'
-import { ResourceConstants } from 'graphql-transformer-common';
 
 import fs = require('fs');
 import path = require('path');
@@ -30,15 +28,12 @@ test('Test custom root types with additional fields.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query');
@@ -66,15 +61,12 @@ test('Test custom root query with no mutations/subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query');
@@ -106,15 +98,12 @@ test('Test custom root query & mutation with no subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');
@@ -136,6 +125,9 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     }
     type Query2 {
         additionalQueryField: String
+
+        authedField: String
+            @aws_auth(cognito_groups: ["Bloggers", "Readers"])
     }
     type Mutation2 {
         additionalMutationField: String
@@ -151,23 +143,62 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query2');
-    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField', 'authedField'])
+    const authedField = queryType.fields.find(f => f.name.value === 'authedField')
+    expect(authedField.directives.length).toEqual(1)
+    expect(authedField.directives[0].name.value).toEqual('aws_auth')
     const mutationType = getObjectType(parsed, 'Mutation2');
     expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
     const subscriptionType = getObjectType(parsed, 'Subscription2');
     expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'onCreateOrUpdate'])
+});
+
+test('Test custom roots without any directives. This should still be valid.', () => {
+    const validSchema = `
+    schema {
+        query: Query2
+        mutation: Mutation2
+        subscription: Subscription2
+    }
+    type Query2 {
+        getPost: String
+    }
+    type Mutation2 {
+        putPost: String
+    }
+    type Subscription2 {
+        onPutPost: Post
+    }
+    type Post {
+        id: ID!
+        title: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    const definition = out.schema
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query2');
+    expectFields(queryType, ['getPost'])
+    const mutationType = getObjectType(parsed, 'Mutation2');
+    expectFields(mutationType, ['putPost'])
+    const subscriptionType = getObjectType(parsed, 'Subscription2');
+    expectFields(subscriptionType, ['onPutPost'])
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

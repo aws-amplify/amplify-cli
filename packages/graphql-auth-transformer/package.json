@@ -1,10 +1,11 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "1.0.28",
+  "version": "3.0.6",
   "description": "Implements the @auth directive for the appsync model transform.",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
+    "test-ci": "jest --ci -i",
     "build": "tsc",
     "clean": "rm -rf ./lib"
   },
@@ -16,18 +17,17 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^1.0.28",
-    "graphql-transformer-common": "^1.0.28",
-    "graphql-transformer-core": "^1.0.28"
+    "graphql-mapping-template": "^3.0.5",
+    "graphql-transformer-common": "^3.0.5",
+    "graphql-transformer-core": "^3.0.6"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",
-    "@types/jest": "^23.1.1",
+    "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
-    "graphql-appsync-transformer": "^1.0.28",
-    "graphql-dynamodb-transformer": "^1.0.28",
+    "cloudform": "^3.5.0",
+    "graphql-dynamodb-transformer": "^2.0.0-multienv.2",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",

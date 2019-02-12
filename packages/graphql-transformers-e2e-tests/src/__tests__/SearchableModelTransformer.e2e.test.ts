@@ -6,23 +6,29 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import SearchableModelTransformer from 'graphql-elasticsearch-transformer'
-import AppSyncFileTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { S3Client } from '../S3Client'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
+import * as S3 from 'aws-sdk/clients/s3'
+import emptyBucket from '../emptyBucket'
+import * as fs from 'fs'
 
 jest.setTimeout(60000 * 60);
 
 const s3 = new S3Client('us-west-2')
 const cf = new CloudFormationClient('us-west-2')
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `TestSearchableModelTransformer-${dateAppender}`
-const BUCKET_NAME = `testsearchablemodeltransformer-${dateAppender}`
-const FUNCTION_NAME = 'python_streaming_function.zip'
-const FUNCTION_PATH = `${__dirname}/../../node_modules/graphql-elasticsearch-transformer/lib/streaming-lambda.zip`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `TestSearchableModelTransformer-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `testsearchablemodeltransformer-${BUILD_TIMESTAMP}`
+const LOCAL_FS_BUILD_DIR = '/tmp/model_searchable_transform_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
+
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
 const fragments = [
     `fragment FullPost on Post { id author title ups downs percentageUp isPublished }`
@@ -92,28 +98,30 @@ beforeAll(async () => {
         ratings: [Int!]
         percentageUp: Float
         isPublished: Boolean
+        jsonField: AWSJSON
     }
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncFileTransformer(),
             new DynamoDBModelTransformer(),
             new SearchableModelTransformer()
         ]
     })
-    const out = transformer.transform(validSchema);
     try {
-        // create bucket, upload file and get version
-        console.log('Uploading Streaming Lambda Function from: '.concat(FUNCTION_PATH))
-        const s3Response = await s3.setUpS3Resources(BUCKET_NAME, FUNCTION_PATH, FUNCTION_NAME, true)
-        expect(s3Response).toBeDefined()
-
+        await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
+    } catch (e) {
+        console.error(`Failed to create bucket: ${e}`)
+    }
+    try {
+        const out = transformer.transform(validSchema);
+        // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
         // create stack with additional params
-        const additionalParams = generateParams()
+        // const additionalParams = generateParams()
         console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME, additionalParams)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME, undefined, undefined, undefined, 300, 10)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            BUILD_TIMESTAMP
+        )
         // Arbitrary wait to make sure everything is ready.
         await cf.wait(120, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
@@ -136,10 +144,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        console.log('Deleting S3 resources')
-        await s3.cleanUpS3Resources(BUCKET_NAME, FUNCTION_NAME)
-        console.log('Successfully deleted s3 resources')
-
         console.log('Deleting stack ' + STACK_NAME)
         await cf.deleteStack(STACK_NAME)
         await cf.waitForStack(STACK_NAME)
@@ -154,6 +158,11 @@ afterAll(async () => {
             expect(true).toEqual(false)
         }
     }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
+    }
 });
 
 test('Test searchPosts query without filter', async () => {
@@ -162,8 +171,8 @@ test('Test searchPosts query without filter', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts response without filter response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toBeGreaterThan(0)
 })
@@ -176,8 +185,8 @@ test('Test searchPosts query with basic filter', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts response with basic filter response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(7)
 })
@@ -195,8 +204,8 @@ test('Test searchPosts query with non-recursive filter', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts response with non-recursive filter response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].id).toBeDefined()
@@ -225,8 +234,8 @@ test('Test searchPosts query with recursive filter 1', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts response with recursive filter 1 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].id).toBeDefined()
@@ -255,8 +264,8 @@ test('Test searchPosts query with recursive filter 2', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts response with recursive filter 2 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(5)
 })
@@ -284,8 +293,8 @@ test('Test searchPosts query with recursive filter 3', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts query with recursive filter 3 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].id).toBeDefined()
@@ -323,8 +332,8 @@ test('Test searchPosts query with recursive filter 4', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts query with recursive filter 4 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].id).toBeDefined()
@@ -362,8 +371,8 @@ test('Test searchPosts query with recursive filter 5', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts query with recursive filter 5 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].id).toBeDefined()
@@ -400,8 +409,8 @@ test('Test searchPosts query with recursive filter 6', async () => {
             items { ...FullPost }
         }
     }`, 'Test searchPosts query with recursive filter 6 response: ')
-    expect(response).toBeDefined
-    expect(response.data.searchPosts.items).toBeDefined
+    expect(response).toBeDefined()
+    expect(response.data.searchPosts.items).toBeDefined()
     const items = response.data.searchPosts.items
     expect(items.length).toEqual(0)
 })
@@ -412,8 +421,8 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
     const postToBeDeletedResponse = await runQuery(getCreatePostsQuery(
         "test author new", title, 1157, 1000, 22.2, true
     ), 'createPost (to be deleted) response: ');
-    expect(postToBeDeletedResponse).toBeDefined
-    expect(postToBeDeletedResponse.data.createPost).toBeDefined
+    expect(postToBeDeletedResponse).toBeDefined()
+    expect(postToBeDeletedResponse.data.createPost).toBeDefined()
     expect(postToBeDeletedResponse.data.createPost.id).toBeDefined()
 
     // Wait for the Post to sync to Elasticsearch
@@ -426,8 +435,8 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`, 'Test deletePosts syncing with Elasticsearch Search_Before response: ')
-    expect(searchResponse1).toBeDefined
-    expect(searchResponse1.data.searchPosts.items).toBeDefined
+    expect(searchResponse1).toBeDefined()
+    expect(searchResponse1.data.searchPosts.items).toBeDefined()
     const items1 = searchResponse1.data.searchPosts.items
     expect(items1.length).toEqual(1)
     expect(items1[0].id).toEqual(postToBeDeletedResponse.data.createPost.id)
@@ -445,8 +454,8 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             ...FullPost
         }
     }`, 'Test deletePosts syncing with Elasticsearch Perform_Delete response: ')
-    expect(deleteResponse).toBeDefined
-    expect(deleteResponse.data.deletePost).toBeDefined
+    expect(deleteResponse).toBeDefined()
+    expect(deleteResponse.data.deletePost).toBeDefined()
     expect(deleteResponse.data.deletePost.id).toEqual(postToBeDeletedResponse.data.createPost.id)
 
     // Wait for the Deleted Post to sync to Elasticsearch
@@ -459,8 +468,8 @@ test('Test deletePosts syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`, 'Test deletePosts syncing with Elasticsearch Search_After response: ')
-    expect(searchResponse2).toBeDefined
-    expect(searchResponse2.data.searchPosts.items).toBeDefined
+    expect(searchResponse2).toBeDefined()
+    expect(searchResponse2.data.searchPosts.items).toBeDefined()
     const items2 = searchResponse2.data.searchPosts.items
     expect(items2.length).toEqual(0)
 })
@@ -477,8 +486,8 @@ test('Test updatePost syncing with Elasticsearch', async () => {
     const postToBeUpdatedResponse = await runQuery(getCreatePostsQuery(
         author, title, ups, downs, percentageUp, isPublished
     ), 'createPost (to be updated) response: ');
-    expect(postToBeUpdatedResponse).toBeDefined;
-    expect(postToBeUpdatedResponse.data.createPost).toBeDefined;
+    expect(postToBeUpdatedResponse).toBeDefined();
+    expect(postToBeUpdatedResponse.data.createPost).toBeDefined();
 
     const id = postToBeUpdatedResponse.data.createPost.id;
     expect(id).toBeDefined()
@@ -493,8 +502,8 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`, 'Test updatePost syncing with Elasticsearch Search_Before response: ')
-    expect(searchResponse1).toBeDefined;
-    expect(searchResponse1.data.searchPosts.items).toBeDefined;
+    expect(searchResponse1).toBeDefined();
+    expect(searchResponse1.data.searchPosts.items).toBeDefined();
     const items1 = searchResponse1.data.searchPosts.items;
     expect(items1.length).toEqual(1);
     expect(items1[0].id).toEqual(id);
@@ -519,8 +528,8 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             ...FullPost
         }
     }`, 'Test updatePost syncing with Elasticsearch Perform_Update response: ')
-    expect(updateResponse).toBeDefined
-    expect(updateResponse.data.updatePost).toBeDefined
+    expect(updateResponse).toBeDefined()
+    expect(updateResponse.data.updatePost).toBeDefined()
     expect(updateResponse.data.updatePost.id).toEqual(id)
     expect(updateResponse.data.updatePost.title).toEqual(newTitle)
 
@@ -534,8 +543,8 @@ test('Test updatePost syncing with Elasticsearch', async () => {
             items { ...FullPost }
         }
     }`, 'Test updatePost syncing with Elasticsearch Search_After response: ')
-    expect(searchResponse2).toBeDefined;
-    expect(searchResponse2.data.searchPosts.items).toBeDefined;
+    expect(searchResponse2).toBeDefined();
+    expect(searchResponse2.data.searchPosts.items).toBeDefined();
     const items2 = searchResponse2.data.searchPosts.items;
     expect(items2.length).toEqual(1);
     expect(items2[0].id).toEqual(id);
@@ -549,10 +558,8 @@ test('Test updatePost syncing with Elasticsearch', async () => {
 
 function generateParams() {
     const params = {
-        [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket]: BUCKET_NAME,
-        [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key]: FUNCTION_NAME,
-        [ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName]: 'ElasticSearchAccessIAMRoleTest',
-        [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: 'ElasticSearchStreamingIAMRoleTest'
+        [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: 'ElasticsearchAccessIAMRoleTest',
+        [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: 'ElasticsearchStreamingIAMRoleTest'
     }
 
     return params

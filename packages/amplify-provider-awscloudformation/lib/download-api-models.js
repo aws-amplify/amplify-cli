@@ -7,7 +7,7 @@ function downloadAPIModels(context, allResources) {
   const { amplify } = context;
   const projectConfig = amplify.getProjectConfig();
 
-  const framework = Object.keys(projectConfig.frontendHandler)[0];
+  const framework = projectConfig.frontend;
 
   if (framework === 'javascript') {
     return;
@@ -73,7 +73,7 @@ function copyFilesToSrc(context, apiName, framework) {
     case 'android': {
       const generatedSrc = `${tempDir}/${apiName}-Artifact-1.0/src/main/java`;
 
-      const target = `${context.amplify.getProjectConfig().projectPath}/app/src/main/java`;
+      const target = `${context.amplify.getEnvInfo().projectPath}/app/src/main/java`;
 
       fs.ensureDirSync(target);
 
@@ -83,7 +83,7 @@ function copyFilesToSrc(context, apiName, framework) {
     case 'ios': {
       const generatedSrc = `${tempDir}/aws-apigateway-ios-swift/generated-src`;
 
-      const target = `${context.amplify.getProjectConfig().projectPath}/generated-src`;
+      const target = `${context.amplify.getEnvInfo().projectPath}/generated-src`;
 
       fs.ensureDirSync(target);
 

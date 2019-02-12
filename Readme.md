@@ -1,6 +1,7 @@
 <a href="https://aws-amplify.github.io/" target="_blank">
     <img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
 </a>
+
 <p>
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
     <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
@@ -23,7 +24,7 @@ The AWS Amplify CLI is a toolchain which includes a robust feature set for simpl
 * [Commands Summary](#commands-summary)
 * [Tutorials](#tutorials)
 * [Contributing](#contributing)
-* [Start building your app](https://aws-amplify.github.io/media/get_started)
+* [Start building your app](https://aws-amplify.github.io/docs)
 
 > If you're using Windows, the CLI currently supports [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
@@ -52,7 +53,7 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify configure project | Updates configuration settings used to setup the project during the init step |
 | amplify add `<category>` | Adds cloud features to your app. |
 | amplify update `<category>` | Updates existing cloud features in your app. |
-| amplify push \| amplify `<category>` push | Provisions cloud resources with the latest local developments. |
+| amplify push [--no-gql-override]| Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates. |
 | amplify publish | Runs `amplify push`, publishes a static assets to Amazon S3 and Amazon CloudFront (*hosting category is required). |
 | amplify status | Displays the state of local resources that haven't been pushed to the cloud (Create/Update/Delete). |
 | amplify serve | Runs `amplify push`, and then executes the project's start command to test run the client-side application. |
@@ -72,11 +73,9 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Tutorials
 
-- [React tutorial](amplifycli_react_tutorial.md)
-- [GraphQL transform tutorial](graphql-transform-tutorial.md)
-- [How to write your own GraphQL transformer](how-to-write-a-transformer.md)
-- [Native development with Amplify CLI and AWS AppSync](native_guide.md)
-
+- [React & React Native tutorial](https://aws-amplify.github.io/docs/js/react)
+- [GraphQL transform tutorial](https://aws-amplify.github.io/docs/js/graphql)
+- [Native development with Amplify CLI and AWS AppSync](https://aws-amplify.github.io/docs/cli/codegen)
 
 ## Contributing
 

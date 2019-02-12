@@ -44,13 +44,17 @@ export function run(argv: Array<String>): void {
         },
         maxDepth: {
           demand: true,
-          default: 3,
+          default: 2,
           normalize: true,
           type: 'number'
+        },
+        separateFiles: {
+          default: false,
+          type: 'boolean'
         }
       },
       async argv => {
-          generateAllOps(argv.schema, argv.output, { separateFiles: false, language: argv.language, maxDepth: argv.maxDepth })
+          generateAllOps(argv.schema, argv.output, { separateFiles: argv.separateFiles, language: argv.language, maxDepth: argv.maxDepth })
       }
     )
     .help()

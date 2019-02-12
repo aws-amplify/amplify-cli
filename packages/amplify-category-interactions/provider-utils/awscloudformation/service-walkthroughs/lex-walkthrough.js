@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 
 const category = 'interactions';
 const parametersFileName = 'lex-params.json';
+const cfnParametersFilename = 'parameters.json';
 const serviceName = 'Lex';
 const fuzzy = require('fuzzy');
 
@@ -143,7 +144,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     answers = {
       resourceName,
       intents,
-      outputVoice: false,
+      outputVoice: 'Matthew',
       botName,
       coppa,
     };
@@ -709,4 +710,55 @@ async function askLambda(context) {
   };
 }
 
-module.exports = { addWalkthrough, updateWalkthrough };
+async function migrate(context, projectPath, resourceName) {
+  const { amplify } = context;
+
+  const targetDir = amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(targetDir, category, resourceName);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const defaultValuesSrc = `${__dirname}/../default-values/lex-defaults.js`;
+  const { getAllDefaults } = require(defaultValuesSrc);
+  const defaultValues = getAllDefaults(amplify.getProjectDetails());
+
+  let parameters;
+  try {
+    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+  } catch (e) {
+    context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
+    throw e;
+  }
+  Object.assign(defaultValues, parameters);
+  const pluginDir = `${__dirname}/../`;
+  const copyJobs = [
+    {
+      dir: pluginDir,
+      template: 'cloudformation-templates/lex-cloudformation-template.json.ejs',
+      target: `${targetDir}/${category}/${resourceName}/${resourceName}-cloudformation-template.json`,
+    },
+  ];
+
+  // copy over the files
+  await context.amplify.copyBatch(context, copyJobs, defaultValues, true, false);
+
+  // Create parameters.json file
+  const cfnParameters = {
+    authRoleArn: {
+      'Fn::GetAtt': [
+        'AuthRole',
+        'Arn',
+      ],
+    },
+    authRoleName: {
+      Ref: 'AuthRoleName',
+    },
+    unauthRoleName: {
+      Ref: 'UnauthRoleName',
+    },
+  };
+
+  const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+  const jsonString = JSON.stringify(cfnParameters, null, 4);
+  fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
+}
+
+module.exports = { addWalkthrough, updateWalkthrough, migrate };

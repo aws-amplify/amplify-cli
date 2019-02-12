@@ -6,7 +6,7 @@ module.exports = {
   run: async (context) => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
-
+    context.amplify.constructExeInfo(context);
     return amplify.pushResources(context, category, resourceName)
       .catch((err) => {
         context.print.info(err.stack);

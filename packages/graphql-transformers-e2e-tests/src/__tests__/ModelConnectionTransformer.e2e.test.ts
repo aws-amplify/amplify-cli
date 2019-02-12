@@ -5,19 +5,28 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import { deploy } from '../deployNestedStacks'
+import emptyBucket from '../emptyBucket';
+import { S3Client } from '../S3Client';
+import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
+import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `ModelConnectionTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `ModelConnectionTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-connection-transformer-test-${BUILD_TIMESTAMP}`
+const LOCAL_FS_BUILD_DIR = '/tmp/model_connection_transform_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
 
 let GRAPHQL_CLIENT = undefined;
 
@@ -36,30 +45,47 @@ beforeAll(async () => {
         createdAt: String
         updatedAt: String
         comments: [Comment] @connection(name: "PostComments", keyField: "postId")
+        sortedComments: [SortedComment] @connection(name: "SortedPostComments", keyField: "postId", sortField: "when")
     }
     type Comment @model {
         id: ID!
         content: String!
         post: Post @connection(name: "PostComments", keyField: "postId")
     }
+    type SortedComment @model{
+        id: ID!
+        content: String!
+        when: String!
+        post: Post @connection(name: "SortedPostComments", keyField: "postId")
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    try {
+        await awsS3Client.createBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Failed to create S3 bucket: ${e}`)
+    }
     try {
         console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            BUILD_TIMESTAMP
+        )
+
         // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
+        await cf.wait(5, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
+        console.log(JSON.stringify(finishedStack, null, 4))
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         const endpoint = getApiEndpoint(finishedStack.Outputs)
@@ -88,6 +114,11 @@ afterAll(async () => {
             console.error(e)
             expect(true).toEqual(false)
         }
+    }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 
@@ -135,6 +166,140 @@ test('Test queryPost query', async () => {
         const items = queryResponse.data.getPost.comments.items
         expect(items.length).toEqual(1)
         expect(items[0].id).toEqual(createCommentResponse.data.createComment.id)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+const title = "Test Query with Sort Field"
+const comment1 = "a comment and a date! - 1"
+const comment2 = "a comment and a date! - 2"
+const when1 = "2018-10-01T00:00:00.000Z"
+const when2 = "2018-10-01T00:00:01.000Z"
+
+test('Test queryPost query with sortField', async () => {
+    try {
+        const createResponse = await GRAPHQL_CLIENT.query(`mutation {
+            createPost(input: { title: "${title}" }) {
+                id
+                title
+            }
+        }`, {})
+        expect(createResponse.data.createPost.id).toBeDefined()
+        expect(createResponse.data.createPost.title).toEqual(title)
+        const createCommentResponse1 = await GRAPHQL_CLIENT.query(`mutation {
+            createSortedComment(input:
+                { content: "${comment1}",
+                    when: "${when1}"
+                    postId: "${createResponse.data.createPost.id}"
+                }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse1.data.createSortedComment.id).toBeDefined()
+        expect(createCommentResponse1.data.createSortedComment.content).toEqual(comment1)
+        expect(createCommentResponse1.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id)
+        expect(createCommentResponse1.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title)
+
+        // create 2nd comment, 1 second later
+        const createCommentResponse2 = await GRAPHQL_CLIENT.query(`mutation {
+            createSortedComment(input:
+                { content: "${comment2}",
+                    when: "${when2}"
+                    postId: "${createResponse.data.createPost.id}"
+                }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse2.data.createSortedComment.id).toBeDefined()
+        expect(createCommentResponse2.data.createSortedComment.content).toEqual(comment2)
+        expect(createCommentResponse2.data.createSortedComment.post.id).toEqual(createResponse.data.createPost.id)
+        expect(createCommentResponse2.data.createSortedComment.post.title).toEqual(createResponse.data.createPost.title)
+
+        const queryResponse = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${createResponse.data.createPost.id}") {
+                id
+                title
+                sortedComments {
+                    items {
+                        id
+                        when
+                        content
+                    }
+                }
+            }
+        }`, {})
+        expect(queryResponse.data.getPost).toBeDefined()
+        const items = queryResponse.data.getPost.sortedComments.items
+        expect(items.length).toEqual(2)
+        expect(items[0].id).toEqual(createCommentResponse1.data.createSortedComment.id)
+        expect(items[1].id).toEqual(createCommentResponse2.data.createSortedComment.id)
+
+        const queryResponseDesc = await GRAPHQL_CLIENT.query(`query {
+            getPost(id: "${createResponse.data.createPost.id}") {
+                id
+                title
+                sortedComments(sortDirection: DESC) {
+                    items {
+                        id
+                        when
+                        content
+                    }
+                }
+            }
+        }`, {})
+        expect(queryResponseDesc.data.getPost).toBeDefined()
+        const itemsDesc = queryResponseDesc.data.getPost.sortedComments.items
+        expect(itemsDesc.length).toEqual(2)
+        expect(itemsDesc[0].id).toEqual(createCommentResponse2.data.createSortedComment.id)
+        expect(itemsDesc[1].id).toEqual(createCommentResponse1.data.createSortedComment.id)
+    } catch (e) {
+        console.error(e)
+        // fail
+        expect(e).toBeUndefined()
+    }
+})
+
+test('Test create comment without a post and then querying the comment.', async () => {
+    try {
+        const createCommentResponse1 = await GRAPHQL_CLIENT.query(`mutation {
+            createComment(input:
+                { content: "${comment1}" }) {
+                id
+                content
+                post {
+                    id
+                    title
+                }
+            }
+        }`, {})
+        expect(createCommentResponse1.data.createComment.id).toBeDefined()
+        expect(createCommentResponse1.data.createComment.content).toEqual(comment1)
+        expect(createCommentResponse1.data.createComment.post).toBeNull()
+
+        const queryResponseDesc = await GRAPHQL_CLIENT.query(`query {
+            getComment(id: "${createCommentResponse1.data.createComment.id}") {
+                id
+                content
+                post {
+                    id
+                }
+            }
+        }`, {})
+        expect(queryResponseDesc.data.getComment).toBeDefined()
+        expect(queryResponseDesc.data.getComment.post).toBeNull()
     } catch (e) {
         console.error(e)
         // fail

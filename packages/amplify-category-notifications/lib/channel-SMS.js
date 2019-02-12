@@ -79,8 +79,30 @@ function disable(context) {
   });
 }
 
+async function pull(context, pinpointApp) {
+  const params = {
+    ApplicationId: pinpointApp.Id,
+  };
+  spinner.start(`Retrieving channel information for ${channelName}.`);
+  return context.exeInfo.pinpointClient.getSmsChannel(params).promise()
+    .then((data) => {
+      spinner.succeed(`Channel information retrieved for ${channelName}`);
+      pinpointApp[channelName] = data.SMSChannelResponse;
+      return data.SMSChannelResponse;
+    })
+    .catch((err) => {
+      if (err.code === 'NotFoundException') {
+        spinner.succeed(`Channel is not setup for ${channelName} `);
+        return err;
+      }
+      spinner.stop();
+      throw err;
+    });
+}
+
 module.exports = {
   configure,
   enable,
   disable,
+  pull,
 };

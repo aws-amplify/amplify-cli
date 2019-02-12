@@ -5,9 +5,27 @@ const DynamoDB = require('../src/aws-utils/aws-dynamodb');
 const AppSync = require('../src/aws-utils/aws-appsync');
 const Lex = require('../src/aws-utils/aws-lex');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
+const { updateStackForAPIMigration } = require('./push-resources');
 
 module.exports = {
-  compileSchema: (context, options) => transformGraphQLSchema(context, options),
+  compileSchema: async (context, options) => {
+    const category = 'api';
+    const {
+      resourcesToBeCreated,
+      resourcesToBeUpdated,
+      allResources,
+    } = await context.amplify.getResourceStatus(category);
+    let resources = resourcesToBeCreated.concat(resourcesToBeUpdated).concat(allResources);
+    resources = resources.filter(resource => resource.service === 'AppSync');
+    resources = resources.map(resource => resource.resourceName);
+    const optionsWithUpdateHandler = {
+      ...options,
+      handleMigration: resources.length ?
+        (opts => updateStackForAPIMigration(context, category, resources[0], opts)) :
+        undefined,
+    };
+    return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
   getRegions: () => awsRegions.regions,
   getRegionMappings: () => awsRegions.regionMappings,
   /*eslint-disable*/
@@ -119,7 +137,7 @@ module.exports = {
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, { region: options.region })
+    return new AppSync(context, awsOptions)
       .then((result) => {
         const appSyncModel = result;
         return appSyncModel.appSync

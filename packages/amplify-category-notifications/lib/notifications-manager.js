@@ -1,4 +1,5 @@
 const path = require('path');
+const sequential = require('promise-sequential');
 const constants = require('./constants');
 const pintpointHelper = require('./pinpoint-helper');
 
@@ -52,7 +53,7 @@ function getDisabledChannels(context) {
 
 async function enableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.enable(context);
   }
@@ -60,7 +61,7 @@ async function enableChannel(context, channelName) {
 
 async function disableChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.disable(context);
   }
@@ -68,10 +69,20 @@ async function disableChannel(context, channelName) {
 
 async function configureChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
-    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context);
+    context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.configure(context);
   }
+}
+
+async function pullAllChannels(context, pinpointApp) {
+  const pullTasks = [];
+  context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
+  Object.keys(channelWorkers).forEach((channelName) => {
+    const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
+    pullTasks.push(() => channelWorker.pull(context, pinpointApp));
+  });
+  await sequential(pullTasks);
 }
 
 module.exports = {
@@ -81,4 +92,5 @@ module.exports = {
   enableChannel,
   disableChannel,
   configureChannel,
+  pullAllChannels,
 };

@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const parametersFileName = 'api-params.json';
+const cfnParametersFilename = 'parameters.json';
 
 let serviceMetadata;
 
@@ -30,6 +31,21 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 }
 
+
+function console(context, service) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { openConsole } = require(serviceWalkthroughSrc);
+
+  if (!openConsole) {
+    context.print.error('Opening console functionality not available for this option');
+    process.exit(0);
+  }
+
+  return openConsole(context);
+}
+
 function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
@@ -55,11 +71,24 @@ function addResource(context, category, service, options) {
         copyCfnTemplate(context, category, answers, cfnFilename);
 
         const parameters = { ...answers };
+        const cfnParameters = {
+          authRoleName: {
+            Ref: 'AuthRoleName',
+          },
+          unauthRoleName: {
+            Ref: 'UnauthRoleName',
+          },
+        };
         const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
         fs.ensureDirSync(resourceDirPath);
+
         const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-        const jsonString = JSON.stringify(parameters, null, 4);
+        let jsonString = JSON.stringify(parameters, null, 4);
         fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+        const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
+        jsonString = JSON.stringify(cfnParameters, null, 4);
+        fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
       }
       context.amplify.updateamplifyMetaAfterResourceAdd(
         category,
@@ -122,4 +151,20 @@ async function updateResource(context, category, service) {
     });
 }
 
-module.exports = { addResource, updateResource };
+async function migrateResource(context, projectPath, service, resourceName) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { migrate } = require(serviceWalkthroughSrc);
+
+  if (!migrate) {
+    context.print.info(`No migration required for ${resourceName}`);
+    return;
+  }
+
+  return await migrate(context, projectPath, resourceName);
+}
+
+module.exports = {
+  addResource, updateResource, console, migrateResource,
+};

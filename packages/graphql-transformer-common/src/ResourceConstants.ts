@@ -8,39 +8,45 @@ export class ResourceConstants {
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
 
-        // ElasticSearch
-        ElasticSearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
-        ElasticSearchDomainLogicalID: 'ElasticSearchDomain',
-        ElasticSearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
-        ElasticSearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
-        ElasticSearchDataSourceLogicalID: 'ElasticSearchDataSource',
+        // Elasticsearch
+        ElasticsearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
+        ElasticsearchDomainLogicalID: 'ElasticSearchDomain',
+        ElasticsearchStreamingLambdaIAMRoleLogicalID: 'ElasticSearchStreamingLambdaIAMRole',
+        ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
+        ElasticsearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
-        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient'
+        AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
     }
     public static PARAMETERS = {
+        // cli
+        Env: 'env',
+        S3DeploymentBucket: 'S3DeploymentBucket',
+        S3DeploymentRootKey: 'S3DeploymentRootKey',
+
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
+        AppSyncApiId: 'AppSyncApiId',
+        APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
+        DynamoDBBillingMode:   'DynamoDBBillingMode',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
 
-        // ElasticSearch
-        ElasticSearchDomainName: 'ElasticSearchDomainName',
-        ElasticSearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
-        ElasticSearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
-        ElasticSearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
-        ElasticSearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
-        ElasticSearchInstanceCount: 'ElasticSearchInstanceCount',
-        ElasticSearchInstanceType: 'ElasticSearchInstanceType',
-        ElasticSearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
-        ElasticSearchStreamingLambdaCodeS3Bucket: 'ElasticSearchStreamingLambdaCodeS3Bucket',
-        ElasticSearchStreamingLambdaCodeS3Key: 'ElasticSearchStreamingLambdaCodeS3Key',
-        ElasticSearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
-        ElasticSearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
+        // Elasticsearch
+        ElasticsearchDomainName: 'ElasticSearchDomainName',
+        ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
+        ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
+        ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
+        ElasticsearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
+        ElasticsearchInstanceCount: 'ElasticSearchInstanceCount',
+        ElasticsearchInstanceType: 'ElasticSearchInstanceType',
+        ElasticsearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
+        ElasticsearchStreamingLambdaHandlerName: 'ElasticSearchStreamingLambdaHandlerName',
+        ElasticsearchStreamingLambdaRuntime: 'ElasticSearchStreamingLambdaRuntime',
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
@@ -51,8 +57,16 @@ export class ResourceConstants {
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {
+        // Environment
+        HasEnvironmentParameter: 'HasEnvironmentParameter',
+
+        // DynamoDB
+        ShouldUsePayPerRequestBilling:   'ShouldUsePayPerRequestBilling',
+
         // Auth
-        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool'
+        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
+        APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
+        APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
     }
     public static OUTPUTS = {
 
@@ -62,8 +76,8 @@ export class ResourceConstants {
         GraphQLAPIIdOutput: 'GraphQLAPIIdOutput',
 
         // Elasticsearch
-        ElasticSearchStreamingLambdaIAMRoleArn: 'ElasticSearchStreamingLambdaIAMRoleArn',
-        ElasticSearchAccessIAMRoleArn: 'ElasticSearchAccessIAMRoleArn',
+        ElasticsearchStreamingLambdaIAMRoleArn: 'ElasticsearchStreamingLambdaIAMRoleArn',
+        ElasticsearchAccessIAMRoleArn: 'ElasticsearchAccessIAMRoleArn',
 
         // Auth
         AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
@@ -74,6 +88,11 @@ export class ResourceConstants {
 
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
-        VersionedCondition: "versionedCondition"
+        VersionedCondition: "versionedCondition",
+        IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",
+        IsLocalDynamicGroupAuthorizedVariable: "isLocalDynamicGroupAuthorized",
+        IsStaticGroupAuthorizedVariable: "isStaticGroupAuthorized",
+        IsOwnerAuthorizedVariable: "isOwnerAuthorized",
+        IsLocalOwnerAuthorizedVariable: "isLocalOwnerAuthorized"
     }
 }

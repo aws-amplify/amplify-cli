@@ -13,11 +13,27 @@ class S3 {
 
   uploadFile(s3Params) {
     const projectDetails = this.context.amplify.getProjectDetails();
-    const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+    const { envName } = this.context.amplify.getEnvInfo();
+    const projectBucket = projectDetails.amplifyMeta.providers ?
+      projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName :
+      projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
     return this.s3.putObject(s3Params).promise()
       .then(() => projectBucket);
+  }
+
+  getFile(s3Params) {
+    const projectDetails = this.context.amplify.getProjectDetails();
+    const { envName } = this.context.amplify.getEnvInfo();
+
+    const projectBucket = projectDetails.amplifyMeta.providers ?
+      projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName :
+      projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    s3Params.Bucket = projectBucket;
+
+    return this.s3.getObject(s3Params).promise()
+      .then(result => result.Body);
   }
 
   createBucket(bucketName) {

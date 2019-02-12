@@ -2,6 +2,18 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lex chatbot creation from Amplify CLI",
     "Parameters": {
+        "authRoleName": {
+            "Type":  "String"
+        },
+        "unauthRoleName": {
+            "Type":  "String"
+        },
+        "authRoleArn": {
+            "Type":  "String"
+        },
+        "env": {
+            "Type":  "String"
+        }
     },
     "Metadata": {
         "AWS::CloudFormation::Interface": {
@@ -17,13 +29,42 @@
             ]
         }
     },
+    "Conditions": {
+        "ShouldNotCreateEnvResources": {
+            "Fn::Equals": [
+                {
+                    "Ref": "env"
+                },
+                "NONE"
+            ]
+        }
+    },
     "Resources": {
         "LambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Handler": "index.handler",
-                "FunctionName": "<%= props.functionName %>",
+                    "FunctionName": {
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        "<%= props.functionName %>", 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "<%= props.functionName %>",
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
                 "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
+                "Environment": {"Variables" : { "ENV": {"Ref": "env"}}},
                 "Runtime": "nodejs6.10",
                 "Timeout": "300"
             }
@@ -32,7 +73,25 @@
         "LambdaExecutionRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
-                "RoleName": "<%= props.roleName %>",
+                "RoleName": {
+                    "Fn::If": [
+                        "ShouldNotCreateEnvResources",
+                        "<%= props.roleName %>", 
+                        {
+
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "<%= props.roleName %>",
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
                     "Statement": [
@@ -83,6 +142,21 @@
                         }
                     },
                     {
+                        "PolicyName": "IAMPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "iam:*"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "PolicyName": "<%= props.lambdaPolicyName %>",
                         "PolicyDocument": {
                             "Version": "2012-10-17",
@@ -116,7 +190,7 @@
             "Properties": {
               "PolicyName": "<%= props.unauthPolicyName %>",
               "Roles": [ 
-                "<%= props.unauthRoleName %>"
+                {"Ref": "unauthRoleName" }
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -128,7 +202,41 @@
                         ],
                         "Effect": "Allow",
                         "Resource": [
-                            "<%= props.botArn %>"
+                            {
+
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:lex:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
+                                      ":bot:",
+                                      {
+                                        "Fn::If": [
+                                            "ShouldNotCreateEnvResources",
+                                            "<%= props.botName %>", 
+                                            {
+
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "<%= props.botName %>",
+                                                        "_",
+                                                        {
+                                                            "Ref": "env"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -140,7 +248,7 @@
             "Properties": {
                 "PolicyName": "<%= props.authPolicyName %>",
               "Roles": [ 
-                "<%= props.authRoleName %>"
+                {"Ref": "authRoleName" }
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
@@ -152,7 +260,41 @@
                         ],
                         "Effect": "Allow",
                         "Resource": [
-                            "<%= props.botArn %>"
+                            {
+
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:aws:lex:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      { "Fn::Select" : [ "4", { "Fn::Split": [":", {"Ref": "authRoleArn"}]}]},
+                                      ":bot:",
+                                      {
+                                        "Fn::If": [
+                                            "ShouldNotCreateEnvResources",
+                                            "<%= props.botName %>", 
+                                            {
+
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "<%= props.botName %>",
+                                                        "_",
+                                                        {
+                                                            "Ref": "env"
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -167,7 +309,25 @@
             }
         },
         "BotName":  {
-            "Value": "<%= props.botName %>"
+            "Value": {
+                "Fn::If": [
+                    "ShouldNotCreateEnvResources",
+                    "<%= props.botName %>", 
+                    {
+
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<%= props.botName %>",
+                                "_",
+                                {
+                                    "Ref": "env"
+                                }
+                            ]
+                        ]
+                    }
+                ]
+            }
         },
         "FunctionArn": {
             "Value": {

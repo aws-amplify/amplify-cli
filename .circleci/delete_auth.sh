@@ -1,5 +1,5 @@
 #!/bin/sh -xv
-cd aws-amplify-cypress-auth
+cd ../aws-amplify-cypress-auth
 DEPLOYMENT_BUCKET="s3://$(jq -r '.providers.awscloudformation.DeploymentBucketName' amplify/backend/amplify-meta.json)"
 amplify delete
 echo "delete auth executed"

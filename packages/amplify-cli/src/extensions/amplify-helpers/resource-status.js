@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const { print } = require('gluegun/print');
+const chalk = require('chalk');
 const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
+const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
@@ -41,7 +43,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
 
 function getHashForResourceDir(dirPath) {
   const options = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
   };
 
   return hashElement(dirPath, options)
@@ -251,6 +253,13 @@ async function getResourceStatus(category, resourceName, providerName) {
 }
 
 async function showResourceTable(category, resourceName) {
+  const { envName } = getEnvInfo();
+
+  print.info('');
+  print.info(`${chalk.green('Current Environment')}: ${envName}`);
+  print.info('');
+
+
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,

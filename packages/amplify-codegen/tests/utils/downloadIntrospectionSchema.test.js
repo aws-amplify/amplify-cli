@@ -7,14 +7,15 @@ jest.mock('fs-jetpack');
 
 describe('downloadIntrospectionSchema', () => {
   const mockExecuteProviderUtils = jest.fn();
-  const mockGetProjectDetails = jest.fn();
+  const mockGetEnvInfo = jest.fn();
 
   const mockIntroSchema = 'MOCK_INTROSPECTION_SCHEMA';
   const mockProjectPath = '/User/someone/Documents/Project/amplify-test';
   const mockContext = {
     amplify: {
       executeProviderUtils: mockExecuteProviderUtils,
-      getProjectDetails: mockGetProjectDetails,
+      getEnvInfo: mockGetEnvInfo,
+
     },
   };
   const mockApiId = 'mock-api-123';
@@ -23,10 +24,8 @@ describe('downloadIntrospectionSchema', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockExecuteProviderUtils.mockReturnValue(mockIntroSchema);
-    mockGetProjectDetails.mockReturnValue({
-      projectConfig: {
-        projectPath: mockProjectPath,
-      },
+    mockGetEnvInfo.mockReturnValue({
+      projectPath: mockProjectPath,
     });
   });
   it('should download the schema', async () => {

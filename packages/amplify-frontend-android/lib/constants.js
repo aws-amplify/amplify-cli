@@ -1,5 +1,5 @@
 module.exports = {
-  Label: 'amplify-frontend-android',
+  Label: 'android',
   ProjectScanBaseScore: 0,
   ProjectScanMaxScore: 100,
   awsConfigFilename: 'awsconfiguration.json',

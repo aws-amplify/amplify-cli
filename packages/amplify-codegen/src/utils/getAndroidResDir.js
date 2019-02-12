@@ -1,6 +1,6 @@
 const getFrontendHandler = require('./getFrontEndHandler');
 
-const AMPLIFY_FRONTEND_ANDROID_CONFIG_KEY = 'amplify-frontend-android';
+const AMPLIFY_FRONTEND_ANDROID_CONFIG_KEY = 'android';
 function getAndroidResDir(context) {
   // XXX: create a util function in CLI core and use it
   const { amplify } = context;

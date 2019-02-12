@@ -1,6 +1,7 @@
 const initializer = require('./lib/initializer');
+const initializeEnv = require('./lib/initialize-env');
 const resourcePusher = require('./lib/push-resources');
-const projectRemover = require('./lib/delete-project');
+const envRemover = require('./lib/delete-env');
 const resourceBuilder = require('./lib/build-resources');
 const providerUtils = require('./lib/utility-functions');
 const constants = require('./lib/constants');
@@ -8,11 +9,20 @@ const configManager = require('./lib/configuration-manager');
 const setupNewUser = require('./lib/setup-new-user');
 const { displayHelpfulURLs } = require('./lib/display-helpful-urls');
 const aws = require('./src/aws-utils/aws');
+const pinpoint = require('./src/aws-utils/aws-pinpoint');
 const consoleCommand = require('./lib/console');
+const { loadResourceParameters, saveResourceParameters } = require('./src/resourceParams');
+const { formUserAgentParam } = require('./src/aws-utils/user-agent');
 
 function init(context) {
   return initializer.run(context);
 }
+
+function initEnv(context, providerMetadata) {
+  return initializeEnv.run(context, providerMetadata);
+}
+
+// TODO: Change fn name to afterInit or onInitSuccess
 
 function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
@@ -22,8 +32,8 @@ function pushResources(context, category, resourceName) {
   return resourcePusher.run(context, category, resourceName);
 }
 
-function deleteProject(context) {
-  return projectRemover.run(context);
+function deleteEnv(context, envName) {
+  return envRemover.run(context, envName);
 }
 
 function configure(context) {
@@ -34,8 +44,23 @@ function buildResources(context, category, resourceName) {
   return resourceBuilder.run(context, category, resourceName);
 }
 
-function getConfiguredAWSClient(context) {
-  return aws.configureWithCreds(context);
+async function getConfiguredAWSClient(context, category, action) {
+  await aws.configureWithCreds(context);
+  category = category || 'missing';
+  action = action || 'missing';
+  const userAgentAction = `${category}:${action[0]}`;
+  aws.config.update({
+    customUserAgent: formUserAgentParam(context, userAgentAction),
+  });
+  return aws;
+}
+
+function getConfiguredPinpointClient(context) {
+  return pinpoint.getConfiguredPinpointClient(context);
+}
+
+function getPinpointRegionMapping(context) {
+  return pinpoint.getPinpointRegionMapping(context);
 }
 
 function showHelpfulLinks(context, resources) {
@@ -53,6 +78,7 @@ function console(context) {
 module.exports = {
   console,
   init,
+  initEnv,
   onInitSuccessful,
   configure,
   configureNewUser,
@@ -62,6 +88,10 @@ module.exports = {
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
+  getPinpointRegionMapping,
+  getConfiguredPinpointClient,
   showHelpfulLinks,
-  deleteProject,
+  deleteEnv,
+  loadResourceParameters,
+  saveResourceParameters,
 };

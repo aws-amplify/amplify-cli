@@ -4,13 +4,14 @@ const askForGraphQLAPIResource = require('./questions/selectProject');
 const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
+const askMaxDepth = require('./questions/maxDepth');
 const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 async function configureProjectWalkThrough(context, amplifyConfig) {
-  const frontendHandler = getFrontEndHandler(context);
+  const frontend = getFrontEndHandler(context);
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
@@ -24,7 +25,7 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
   const { amplifyExtension } = selectedProjectConfig;
   let targetLanguage = 'android';
 
-  if (frontendHandler !== 'android') {
+  if (frontend !== 'android') {
     targetLanguage = await askCodeGenTargetLanguage(
       context,
       amplifyExtension.codeGenTarget,
@@ -44,7 +45,7 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
 
   selectedProjectConfig.includes = await askCodeGeneQueryFilePattern(includePattern);
 
-  if (!(frontendHandler === 'android' || targetLanguage === 'javascript')) {
+  if (!(frontend === 'android' || targetLanguage === 'javascript')) {
     amplifyExtension.generatedFileName = await askTargetFileName(
       amplifyExtension.generatedFileName || 'API',
       targetLanguage,
@@ -53,6 +54,10 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
     amplifyExtension.generatedFileName = '';
   }
   amplifyExtension.codeGenTarget = targetLanguage;
+
+  amplifyExtension.maxDepth = await askMaxDepth(
+    amplifyExtension.maxDepth,
+  );
 
   return selectedProjectConfig;
 }

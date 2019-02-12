@@ -7,7 +7,7 @@ function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
   const pluginDir = __dirname;
   const projectPath = context.exeInfo ?
-    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ?
     context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
@@ -70,7 +70,7 @@ function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
   const pluginDir = __dirname;
   const projectPath = context.exeInfo ?
-    context.exeInfo.projectConfig.projectPath : amplify.getProjectConfig().projectPath;
+    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
   const projectConfig = context.exeInfo ?
     context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
   const frontendConfig = projectConfig.config;
@@ -152,7 +152,7 @@ function getPinpointConfig(pinpointResources) {
 
   return {
     aws_mobile_analytics_app_id: pinpointResource.output.Id,
-    aws_mobile_analytics_app_region: 'us-east-1',
+    aws_mobile_analytics_app_region: pinpointResource.output.Region,
   };
 }
 

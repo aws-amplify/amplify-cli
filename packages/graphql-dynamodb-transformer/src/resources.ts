@@ -1,9 +1,5 @@
-import DynamoDB from 'cloudform/types/dynamoDb'
-import AppSync from 'cloudform/types/appSync'
-import IAM from 'cloudform/types/iam'
-import Output from 'cloudform/types/output'
-import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter, Refs } from 'cloudform'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction } from 'cloudform-types'
+import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
     ref, obj, set, nul,
@@ -19,6 +15,12 @@ export class ResourceFactory {
                 Description: 'The name of the AppSync API',
                 Default: 'AppSyncSimpleTransform'
             }),
+            [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
+                Description: 'The epoch time in seconds when the API Key should expire.' +
+                    ' Setting this to 0 will default to 1 week from the deployment date.' +
+                    ' Setting this to -1 will not create an API Key.',
+                Default: 0
+            }),
             [ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS]: new NumberParameter({
                 Description: 'The number of read IOPS the table should support.',
                 Default: 5
@@ -26,6 +28,14 @@ export class ResourceFactory {
             [ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS]: new NumberParameter({
                 Description: 'The number of write IOPS the table should support.',
                 Default: 5
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBBillingMode]: new StringParameter({
+                Description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+                Default: 'PAY_PER_REQUEST',
+                AllowedValues: [
+                    'PAY_PER_REQUEST',
+                    'PROVISIONED'
+                ]
             })
         }
     }
@@ -44,6 +54,17 @@ export class ResourceFactory {
                 [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
                 [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
+            },
+            Conditions: {
+                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne]:
+                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive]:
+                    Fn.And([
+                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
+                    ]),
+                [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST')
             }
         }
     }
@@ -53,7 +74,11 @@ export class ResourceFactory {
      */
     public makeAppSyncAPI() {
         return new AppSync.GraphQLApi({
-            Name: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName),
+            Name: Fn.If(
+                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                Fn.Join('-', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName), Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
+                Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiName)
+            ),
             AuthenticationType: 'API_KEY'
         })
     }
@@ -66,9 +91,16 @@ export class ResourceFactory {
     }
 
     public makeAppSyncApiKey() {
+        const oneWeekFromNowInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * 7 /* d */
+        const nowEpochTime = Math.floor(Date.now() / 1000)
         return new AppSync.ApiKey({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-        })
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Expires: Fn.If(
+                ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive,
+                Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch),
+                nowEpochTime + oneWeekFromNowInSeconds
+            ),
+        }).condition(ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne)
     }
 
     /**
@@ -94,13 +126,14 @@ export class ResourceFactory {
         }
     }
 
-    public makeApiKeyOutput(): Output {
+    public makeApiKeyOutput(): any {
         return {
             Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
             Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
-            }
+            },
+            Condition: ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne
         }
     }
 
@@ -125,17 +158,41 @@ export class ResourceFactory {
                 AttributeType: 'S'
             }] : [{ AttributeName: hashKey, AttributeType: 'S' }]
         return new DynamoDB.Table({
-            TableName: Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
+            TableName: this.dynamoDBTableName(typeName),
             KeySchema: keySchema,
             AttributeDefinitions: attributeDefinitions,
-            ProvisionedThroughput: {
-                ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
-                WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
-            },
             StreamSpecification: {
                 StreamViewType: 'NEW_AND_OLD_IMAGES'
-            }
+            },
+            BillingMode: Fn.If(
+                ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                'PAY_PER_REQUEST',
+                Refs.NoValue
+            ),
+            ProvisionedThroughput: Fn.If(
+                ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                Refs.NoValue,
+                {
+                    ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                    WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+                }
+            ) as any,
+            SSESpecification: {
+                SSEEnabled: true
+            },
         })
+    }
+
+    private dynamoDBTableName(typeName: string): IntrinsicFunction {
+        return Fn.If(
+            ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+            Fn.Join('-', [
+                typeName,
+                Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+                Fn.Ref(ResourceConstants.PARAMETERS.Env)
+            ]),
+            Fn.Join('-', [typeName, Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')])
+        )
     }
 
     /**
@@ -143,9 +200,22 @@ export class ResourceFactory {
      * transform.
      * @param name  The name of the IAM role to create.
      */
-    public makeIAMRole(tableId: string) {
+    public makeIAMRole(typeName: string) {
         return new IAM.Role({
-            RoleName: Fn.Join('-', [tableId, 'role', Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')]),
+            RoleName: Fn.If(
+                ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+                Fn.Join('-', [
+                    typeName.slice(0, 21), // max of 64. 64-10-26-4-3 = 21
+                    'role', // 4
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
+                    Fn.Ref(ResourceConstants.PARAMETERS.Env) // 10
+                ]),
+                Fn.Join('-', [
+                    typeName.slice(0, 31), // max of 64. 64-26-4-3 = 31
+                    'role',
+                    Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
+                ])
+            ),
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -177,8 +247,18 @@ export class ResourceFactory {
                                     'dynamodb:UpdateItem'
                                 ],
                                 Resource: [
-                                    Fn.GetAtt(tableId, 'Arn'),
-                                    Fn.Join('/', [Fn.GetAtt(tableId, 'Arn'), '*'])
+                                    Fn.Sub(
+                                        'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}',
+                                        {
+                                            tablename: this.dynamoDBTableName(typeName)
+                                        }
+                                    ),
+                                    Fn.Sub(
+                                        'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tablename}/*',
+                                        {
+                                            tablename: this.dynamoDBTableName(typeName)
+                                        }
+                                    )
                                 ]
                             }
                         ]
@@ -192,17 +272,17 @@ export class ResourceFactory {
      * Given the name of a data source and optional logical id return a CF
      * spec for a data source pointing to the dynamodb table.
      */
-    public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string) {
+    public makeDynamoDBDataSource(tableId: string, iamRoleLogicalID: string, typeName: string) {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Name: tableId,
             Type: 'AMAZON_DYNAMODB',
             ServiceRoleArn: Fn.GetAtt(iamRoleLogicalID, 'Arn'),
             DynamoDBConfig: {
-                AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(tableId, 'Arn'))),
-                TableName: Fn.Ref(tableId)
+                AwsRegion: Refs.Region,
+                TableName: this.dynamoDBTableName(typeName)
             }
-        })
+        }).dependsOn([iamRoleLogicalID])
     }
 
     /**
@@ -223,7 +303,7 @@ export class ResourceFactory {
                     qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
                         key: obj({
-                            id: obj({ S: str(`$util.autoId()`) })
+                            id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`)
                         }),
                         attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
                         condition: obj({
@@ -238,7 +318,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     public makeUpdateResolver(type: string, nameOverride?: string, mutationTypeName: string = 'Mutation') {
@@ -251,7 +331,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     ifElse(
-                        ref(ResourceConstants.SNIPPETS.AuthCondition),
+                        raw(`$${ResourceConstants.SNIPPETS.AuthCondition} && $${ResourceConstants.SNIPPETS.AuthCondition}.expression != ""`),
                         compoundExpression([
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
                             qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
@@ -289,7 +369,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -313,7 +393,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -372,7 +452,7 @@ export class ResourceFactory {
                     raw('$util.toJson($result)')
                 ])
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
 
@@ -411,7 +491,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 raw('$util.toJson($ctx.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 
     /**
@@ -464,6 +544,6 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+        })
     }
 }

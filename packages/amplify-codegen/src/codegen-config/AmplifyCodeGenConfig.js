@@ -11,7 +11,7 @@ class AmplifyCodeGenConfig {
     } catch (e) {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
-        const projectRoot = amplify.getProjectDetails().projectConfig.projectPath || process.cwd();
+        const projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
         const configPath = join(projectRoot, '.graphqlconfig.yml');
         this.gqlConfig = new graphQLConfig.GraphQLConfig(null, configPath);
         this.gqlConfig.config = {};
@@ -61,8 +61,8 @@ class AmplifyCodeGenConfig {
     this.gqlConfig.config.projects = projects;
   }
   removeProject(projectName) {
-    if (Object.keys(this.gqlConfig.config).includes(projectName)) {
-      delete this.gqlConfig.config[projectName];
+    if (Object.keys(this.gqlConfig.getProjects()).includes(projectName)) {
+      delete this.gqlConfig.config.projects[projectName];
       return true;
     }
     return false;

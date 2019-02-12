@@ -33,7 +33,7 @@ describe('getField', () => {
 
   it('should support simple scalar', () => {
     const queries = schema.getQueryType().getFields()
-    expect(getFields(queries.foo, schema, 3)).toEqual({
+    expect(getFields(queries.foo, schema, 3, {useExternalFragmentForS3Object: false})).toEqual({
       name: 'foo',
       fields: [],
       fragments: [],
@@ -44,7 +44,7 @@ describe('getField', () => {
 
   it('it should recursively resolve fields up to max depth', () => {
     const queries = schema.getQueryType().getFields()
-    expect(getFields(queries.nested, schema, 3)).toEqual({
+    expect(getFields(queries.nested, schema, 2, { useExternalFragmentForS3Object: false})).toEqual({
       name: 'nested',
       fields: [
         {
@@ -72,9 +72,9 @@ describe('getField', () => {
     })
   })
 
-  it('should not return anything for complex type when the depth is <= 1', () => {
+  it('should not return anything for complex type when the depth is < 1', () => {
     const queries = schema.getQueryType().getFields()
-    expect(getFields(queries.nested, schema, 1)).toBeUndefined()
+    expect(getFields(queries.nested, schema, 0, { useExternalFragmentForS3Object: false})).toBeUndefined()
   })
   describe('When type is an Interface', () => {
     beforeEach(() => {
@@ -118,7 +118,7 @@ describe('getField', () => {
     it('interface - should return fragments of all the implementations', () => {
       const maxDepth = 2
       const getPossibleTypeSpy = jest.spyOn(schema, 'getPossibleTypes')
-      getFields(schema.getQueryType().getFields().shapeInterface, schema, maxDepth)
+      getFields(schema.getQueryType().getFields().shapeInterface, schema, maxDepth, { useExternalFragmentForS3Object: false})
       expect(getPossibleTypeSpy).toHaveBeenCalled()
       expect(getFragment).toHaveBeenCalled()
 
@@ -175,7 +175,7 @@ describe('getField', () => {
     it('union - should return fragments of all the types', () => {
       const maxDepth = 2
       const getPossibleTypeSpy = jest.spyOn(schema, 'getPossibleTypes')
-      getFields(schema.getQueryType().getFields().shapeResult, schema, maxDepth)
+      getFields(schema.getQueryType().getFields().shapeResult, schema, maxDepth, { useExternalFragmentForS3Object: false})
       expect(getPossibleTypeSpy).toHaveBeenCalled()
       expect(getFragment).toHaveBeenCalled()
 

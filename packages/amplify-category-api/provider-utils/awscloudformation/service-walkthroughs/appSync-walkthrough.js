@@ -1,13 +1,40 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
+const opn = require('opn');
 
 const category = 'api';
 const serviceName = 'AppSync';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const providerName = 'awscloudformation';
+const resolversDirName = 'resolvers';
+const stacksDirName = 'stacks';
+const defaultStackName = 'CustomResources.json';
 
+function openConsole(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const categoryAmplifyMeta = amplifyMeta[category];
+  let appSyncMeta;
+  Object.keys((categoryAmplifyMeta)).forEach((resourceName) => {
+    if (categoryAmplifyMeta[resourceName].service === serviceName &&
+      categoryAmplifyMeta[resourceName].output) {
+      appSyncMeta = categoryAmplifyMeta[resourceName].output;
+    }
+  });
+
+
+  if (appSyncMeta) {
+    const { GraphQLAPIIdOutput } = appSyncMeta;
+    const { Region } = amplifyMeta.providers[providerName];
+
+    const consoleUrl =
+          `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+    opn(consoleUrl, { wait: false });
+  } else {
+    context.print.error('AppSync API is not pushed in the cloud.');
+  }
+}
 
 async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
@@ -44,6 +71,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
+    DynamoDBBillingMode: 'PAY_PER_REQUEST',
   };
 
   // Ask auth/security question
@@ -70,6 +98,20 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const resourceDir = `${backendDir}/${category}/${resourceAnswers[inputs[0].key]}`;
 
+  // Ensure the project directory exists and create the stacks & resolvers directories.
+  fs.ensureDirSync(resourceDir);
+  const resolverDirectoryPath = path.join(resourceDir, resolversDirName);
+  if (!fs.existsSync(resolverDirectoryPath)) {
+    fs.mkdirSync(resolverDirectoryPath);
+  }
+  const stacksDirectoryPath = path.join(resourceDir, stacksDirName);
+  if (!fs.existsSync(stacksDirectoryPath)) {
+    fs.mkdirSync(stacksDirectoryPath);
+  }
+
+  // Write the default custom resources stack out to disk.
+  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
+  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
@@ -82,7 +124,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     };
     const { schemaFilePath } = await inquirer.prompt(filePathQuestion);
 
-    fs.ensureDirSync(resourceDir);
     fs.copyFileSync(schemaFilePath, `${resourceDir}/${schemaFileName}`);
 
     await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
@@ -92,7 +133,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // The user doesn't have an annotated schema file
 
-  if (!await context.prompt.confirm('Do you want a guided schema creation?')) {
+  if (!await amplify.confirmPrompt.run('Do you want a guided schema creation?')) {
     // Copy the most basic schema onto the users resource dir and transform that
 
     const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
@@ -109,7 +150,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     };
     const typeNameAnswer = await inquirer.prompt(typeNameQuestion);
 
-    fs.ensureDirSync(resourceDir);
     // fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
     const schemaDir = `${__dirname}/../appsync-schemas`;
 
@@ -161,7 +201,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const schemaFilePath = `${__dirname}/../appsync-schemas/${templateSelection}`;
   const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
 
-  fs.ensureDirSync(resourceDir);
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
   if (editSchemaChoice) {
@@ -234,8 +273,15 @@ async function updateWalkthrough(context) {
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   amplifyMeta[category][resourceName].output.securityType = authType;
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+
+  backendConfig[category][resourceName].output.securityType = authType;
+  jsonString = JSON.stringify(backendConfig, null, '\t');
+  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
 }
@@ -325,5 +371,11 @@ function checkIfAuthExists(context) {
   return authResourceName;
 }
 
+async function migrate(context) {
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
+}
 
-module.exports = { serviceWalkthrough, updateWalkthrough };
+
+module.exports = {
+  serviceWalkthrough, updateWalkthrough, openConsole, migrate,
+};

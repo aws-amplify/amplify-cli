@@ -1,6 +1,7 @@
 const response = require('cfn-response');
 const aws = require('aws-sdk');
 const lex = new aws.LexModelBuildingService({ apiVersion: '2017-04-19' });
+const iam = new aws.IAM();
 const lambdaClient = new aws.Lambda({ apiVersion: '2017-04-19' });
 exports.handler = function(event, context) {
     if (event.RequestType == 'Delete') {
@@ -96,8 +97,13 @@ exports.handler = function(event, context) {
         },
         <% } %>
     ];
+    let botName = "<%- props.botName %>";
+    if(process.env.ENV && process.env.ENV !== "NONE") {
+      botName = botName + '_' + process.env.ENV;
+    }
+
     let botParams = {
-        "name": "<%- props.botName %>",
+        "name": botName,
         "intents": [
         <% for(var i = 0; i < props.intents.length; i++) { %>
             {
@@ -141,7 +147,8 @@ exports.handler = function(event, context) {
         <% } %>
     };
     
-    return getSlotTypes(newSlotTypeParams)
+    return checkAndCreateLexServiceRole()
+    .then(()=>{ return getSlotTypes(newSlotTypeParams);})
     .then(()=>{ return putSlotTypes(newSlotTypeParams);})
     .then(()=>{ return getIntents(intentParams);})
     .then(()=>{ return putIntents(intentParams);})
@@ -156,6 +163,46 @@ exports.handler = function(event, context) {
         throw err;
     });
 };
+
+function checkAndCreateLexServiceRole() {
+    
+    return checkIfLexServiceRoleExists()
+    .then((roleExists) => {
+        if(!roleExists) {
+            return createNewLexServiceRole();
+        }
+    });
+}
+
+function createNewLexServiceRole() {
+ 
+    // Lex service automatically creates the needed polcies and truust relationships   
+    const params = {
+      AWSServiceName: 'lex.amazonaws.com',
+      Description: 'Allows Amazon Lex to create and manage voice enabled bots on your behalf'
+    };
+    
+    return iam.createServiceLinkedRole(params).promise();
+    
+}
+
+function checkIfLexServiceRoleExists() {
+    let rolePresent;
+    
+    const params = {
+        RoleName: "AWSServiceRoleForLexBots"
+    };
+    
+    return iam.getRole(params).promise()
+    .then((result) => {
+        rolePresent = true;
+        return rolePresent;
+    })
+    .catch((e) => {
+        rolePresent = false;
+        return rolePresent;
+    });
+}
 
 function getSlotTypes(newSlotTypeParams){
     const tasks = []; 

@@ -96,7 +96,7 @@ async function configure(context) {
       {
         name: 'ConfigCustomError',
         type: 'confirm',
-        message: 'Configure Custom Error Reponses',
+        message: 'Configure Custom Error Responses',
         default: true,
       },
     ];
@@ -119,7 +119,7 @@ async function configureCustomErrorResponse(DistributionConfig) {
   if (!DistributionConfig.CustomErrorResponses) {
     DistributionConfig.CustomErrorResponses = [];
   }
-  const done = "I'm done.";
+  const done = 'exit';
   const configActions = ['list', 'add', 'edit', 'remove', 'remove all', done];
   const answer = await inquirer.prompt({
     name: 'action',
@@ -162,7 +162,6 @@ async function configureCustomErrorResponse(DistributionConfig) {
 
 async function addCER(CustomErrorResponses) {
   const unConfiguredCodes = getUnConfiguredErrorCodes(CustomErrorResponses);
-  console.log(unConfiguredCodes);
   if (unConfiguredCodes.length > 0) {
     const selection = await inquirer.prompt({
       name: 'ErrorCode',
