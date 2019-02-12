@@ -59,6 +59,7 @@ async function migrateProject(context) {
       '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
       '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n';
       context.print.info(infoMessage);
+      context.print.info(chalk.red('IF YOU\'VE MODIFIED ANY CLOUDFORMATION FILES MANUALLY, PLEASE CHECK AND DIFF YOUR CLOUDFORMATION FILES BEFORE PUSHING YOUR RESOURCES IN THE CLOUD IN THE LAST STEP OF THIS MIGRATION.'));
 
       if (await prompt.confirm(secondConfirmMessage)) {
         // Currently there are only two project configuration versions, so call this method directly
