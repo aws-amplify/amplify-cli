@@ -78,11 +78,11 @@ async function getConfiguredAwsCfnClient(context) {
     const proxyAgent = require('proxy-agent');
     aws.config.update({
       httpOptions: {
-        agent: proxyAgent(httpProxy)
-      }
+        agent: proxyAgent(httpProxy),
+      },
     });
   }
-  
+
   return aws;
 }
 
