@@ -32,6 +32,7 @@
     "ora": "^3.0.0",
     "os": "^0.1.1",
     "promise-sequential": "^1.1.1",
+    "proxy-agent": "^3.0.3",
     "shortid": "^2.2.8",
     "util": "^0.10.3"
   },
