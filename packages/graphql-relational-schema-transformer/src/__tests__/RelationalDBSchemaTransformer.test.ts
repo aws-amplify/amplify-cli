@@ -15,7 +15,6 @@ const mockTableDName = 'd'
 const region = 'us-east-1'
 const secretStoreArn = 'secretStoreArn'
 const clusterArn = 'clusterArn'
-const dummyTransformer = new RelationalDBSchemaTransformer(region, secretStoreArn, clusterArn, testDBName)
 
 function getTableContext(tableName: string): TableContext {
     const fields = new Array()
@@ -67,7 +66,7 @@ test('Test schema generation end to end', async() => {
         })
     }))
     const mockReader = new MockRelationalDBReader()
-    dummyTransformer.setDBReader(mockReader)
+    const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
 
     const templateContext = await dummyTransformer.introspectDatabaseSchema()
 
@@ -111,7 +110,7 @@ test('Test list tables fails', async() => {
         })
     }))
     const mockReader = new MockRelationalDBReader()
-    dummyTransformer.setDBReader(mockReader)
+    const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
 
     
     try {
@@ -139,7 +138,7 @@ test('Test describe table fails', async() => {
         })
     }))
     const mockReader = new MockRelationalDBReader()
-    dummyTransformer.setDBReader(mockReader)
+    const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
     
     try {
         await dummyTransformer.introspectDatabaseSchema()
@@ -159,6 +158,10 @@ test('Test describe table fails', async() => {
 
 test('Test connection type shape', () => {
     const testType = 'type name'
+    const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
+    }))
+    const mockReader = new MockRelationalDBReader()
+    const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
     const connectionType = dummyTransformer.getConnectionType(testType)
     expect(connectionType.fields.length).toEqual(2)
     expect(connectionType.name.value).toEqual(`${testType}Connection`)
@@ -166,6 +169,10 @@ test('Test connection type shape', () => {
 
 
 test('Test schema type node creation', () => {
+    const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
+    }))
+    const mockReader = new MockRelationalDBReader()
+    const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
     const schemaNode = dummyTransformer.getSchemaType()
     expect(schemaNode.kind).toEqual(Kind.SCHEMA_DEFINITION)
     expect(schemaNode.operationTypes.length).toEqual(3)

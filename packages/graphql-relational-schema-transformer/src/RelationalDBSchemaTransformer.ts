@@ -64,14 +64,9 @@ export class RelationalDBSchemaTransformer {
     dbReader: IRelationalDBReader
     database: string
 
-    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
-        // This will need overloading/conditions in order to add different db types.
-        this.dbReader = new MySQLRelationalDBReader(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database)
-        this.database = database
-    }
-
-    setDBReader(dbReader: IRelationalDBReader) {
+    constructor(dbReader: IRelationalDBReader, database: string) {
         this.dbReader = dbReader
+        this.database = database
     }
 
     public introspectDatabaseSchema = async (): Promise<TemplateContext> => {
