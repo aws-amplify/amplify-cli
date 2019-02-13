@@ -1,19 +1,53 @@
-import { TableContext } from "./RelationalDBSchemaTransformer";
+import TemplateContext, { TableContext } from "./RelationalDBSchemaTransformer";
 import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFromMySQLType,
     getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from './RelationalDBSchemaTransformerUtils'
 import { AuroraDataAPIClient } from "./AuroraDataAPIClient";
+import { IRelationalDBReader } from "./IRelationalDBReader";
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
  * using the Aurora Data API 
  */
-export class MySQLRelationalDBReader {
+export class MySQLRelationalDBReader implements IRelationalDBReader {
 
-    AuroraClient: AuroraDataAPIClient
+    auroraClient: AuroraDataAPIClient
+    dbRegion: string
+    awsSecretStoreArn: string
+    dbClusterOrInstanceArn: string
+    database: string
+
+    setAuroraClient(auroraClient: AuroraDataAPIClient) {
+        this.auroraClient = auroraClient
+    }
 
     constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
-        this.AuroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn,
+        this.auroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn,
              dbClusterOrInstanceArn, database)
+        this.dbRegion = dbRegion
+        this.awsSecretStoreArn = awsSecretStoreArn
+        this.dbClusterOrInstanceArn = dbClusterOrInstanceArn
+        this.database = database
+    }
+
+    /**
+     * Stores some of the Aurora Serverless MySQL context into the template context,
+     * for later consumption.
+     * 
+     * @param contextShell the basic template context, with db source independent fields set.
+     * @returns a fully hydrated template context, complete with Aurora Serverless MySQL context.
+     */
+    hydrateTemplateContext = async(contextShell: TemplateContext): Promise<TemplateContext> => {
+        
+        /**
+         * Information needed for creating the AppSync - RDS Data Source
+         * Store as part of the TemplateContext
+         */
+        contextShell.secretStoreArn = this.awsSecretStoreArn
+        contextShell.rdsClusterIdentifier = this.dbClusterOrInstanceArn
+        contextShell.databaseSchema = 'mysql'
+        contextShell.databaseName =  this.database
+        contextShell.region = this.dbRegion
+        return contextShell
     }
 
     /**
@@ -22,7 +56,7 @@ export class MySQLRelationalDBReader {
      * @returns a list of tablenames inside the database.
      */
     listTables = async (): Promise<string[]> => {
-        const results = await this.AuroraClient.listTables()
+        const results = await this.auroraClient.listTables()
         return results
     }
 
@@ -34,7 +68,7 @@ export class MySQLRelationalDBReader {
      * @returns a list of table names that are applicable as having constraints.
      */
     getTableForeignKeyReferences = async (tableName: string) : Promise<string[]> => {
-        const results = await this.AuroraClient.getTableForeignKeyReferences(tableName)
+        const results = await this.auroraClient.getTableForeignKeyReferences(tableName)
         return results
     }
 
@@ -51,7 +85,7 @@ export class MySQLRelationalDBReader {
      * @returns a promise of a table context structure.
      */
     describeTable = async (tableName: string): Promise<TableContext> => {
-        const columnDescriptions = await this.AuroraClient.describeTable(tableName)
+        const columnDescriptions = await this.auroraClient.describeTable(tableName)
         // Fields in the general type (e.g. Post). Both the identifying field and any others the db dictates will be required.
         const fields = new Array()
         // Fields in the update input type (e.g. UpdatePostInput). Only the identifying field will be required, any others will be optional.

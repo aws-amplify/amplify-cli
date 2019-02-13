@@ -1,102 +1,86 @@
-jest.mock('mysql')
-
-import {createConnection, Connection, MysqlError, FieldInfo} from 'mysql'
-import { RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
-import { Kind, DocumentNode, print } from 'graphql'
+import TemplateContext, { RelationalDBSchemaTransformer, TableContext } from '../RelationalDBSchemaTransformer';
+import { Kind, print } from 'graphql'
 import { RelationalDBParsingException } from '../RelationalDBParsingException';
+import { IRelationalDBReader } from '../IRelationalDBReader';
+import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFromMySQLType,
+    getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from '../RelationalDBSchemaTransformerUtils'
 
 
-const dummyTransformer = new RelationalDBSchemaTransformer()
 
-const testDBUser = 'testUsername'
-const testDBPassword = 'testPassword'
-const testDBHost = 'testHost'
 const testDBName = 'testdb'
-const failureTestDBName = 'failureDB'
-const tableAName = 'a'
-const tableBName = 'b'
-const tableCName = 'c'
-const tableDName = 'd'
+const mockTableAName = 'a'
+const mockTableBName = 'b'
+const mockTableCName = 'c'
+const mockTableDName = 'd'
+const region = 'us-east-1'
+const secretStoreArn = 'secretStoreArn'
+const clusterArn = 'clusterArn'
+const dummyTransformer = new RelationalDBSchemaTransformer(region, secretStoreArn, clusterArn, testDBName)
 
-const MockConnection = jest.fn<Connection>(() => ({
-    end: jest.fn(),
-    query: jest.fn(function (sqlString: string, queryCallback: (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => void) {
-        let results = null
-        // TODO: show tables and getting foreign keys are technically slightly inaccurate as a test. The
-        // library returns 'RowDataPacket { ... }', however this will still test the parsing that we care about.
-        if (sqlString === `SHOW TABLES`) {
-            // For list tables, return a set of four table names
-            results = [ { Tables_in_testdb: tableAName },
-            { Tables_in_testdb: tableBName },
-            { Tables_in_testdb: tableCName },
-            { Tables_in_testdb: tableDName } ]
-        } else if (sqlString === `USE ${testDBName}`) {
-            // If it's the use db, we don't need a response
-            results = ''
-        } else if (sqlString.indexOf(`AND REFERENCED_TABLE_NAME = '${tableBName}'`) > -1) {
-            // For foreign key lookup on table b, we return table a
-            results = [ { TABLE_NAME: tableAName } ]
-        } else if (sqlString.indexOf(`SELECT TABLE_NAME FROM information_schema.key_column_usage`) > -1) {
-            // On other foreign key lookups, return an empty array
-            results = []
-        } else if (sqlString === `DESCRIBE ${tableBName}`) {
-            results = [ {
-                Field: 'id',
-                Type: 'int',
-                Null: 'NO',
-                Key: 'PRI',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'aId',
-                Type: 'int',
-                Null: 'YES',
-                Key: 'MUL',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'name',
-                Type: 'varchar(100)',
-                Null: 'YES',
-                Key: '',
-                Default: null,
-                Extra: '' } ]
-        } else if (sqlString === `DESCRIBE ${tableAName}` || `DESCRIBE ${tableCName}` || sqlString === `DESCRIBE ${tableDName}`) {
-            results = [ {
-                Field: 'id',
-                Type: 'int',
-                Null: 'NO',
-                Key: 'PRI',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'name',
-                Type: 'varchar(100)',
-                Null: 'YES',
-                Key: '',
-                Default: null,
-                Extra: '' } ]
+function getTableContext(tableName: string): TableContext {
+    const fields = new Array()
+    const updateFields = new Array()
+    const createFields = new Array()
+    const primaryKey = 'id'
+    const primaryKeyType = 'VarChar(128)'
+    const stringFieldList = ['name', 'description']
+
+    for (const fieldName of stringFieldList) {
+        
+        const baseType = getNamedType(getGraphQLTypeFromMySQLType(primaryKeyType))
+
+        const type = getNonNullType(baseType)
+        fields.push(getFieldDefinition(fieldName, type))
+
+        createFields.push(getInputValueDefinition(type, fieldName))
+
+        let updateType = null
+        if (primaryKey == fieldName) {
+            updateType = getNonNullType(baseType)
+        } else {
+            updateType = baseType
         }
-        queryCallback(null, results, null)
-    }),
-}))
+        updateFields.push(getInputValueDefinition(updateType, fieldName))
+    }
+    return new TableContext(getTypeDefinition(fields, tableName), 
+                    getInputTypeDefinition(createFields, `Create${tableName}Input`),
+                    getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, 
+                    primaryKeyType, stringFieldList, [])
+}
 
 test('Test schema generation end to end', async() => {
-    const mockConnection = new MockConnection()
-    createConnection.mockReturnValue(mockConnection)
-    const templateContext = await dummyTransformer.processMySQLSchemaOverJDBCWithCredentials(testDBUser, testDBPassword,  testDBHost, testDBName)
+    
+    const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
+        listTables: jest.fn(() => {
+            return  [ mockTableAName, mockTableBName, mockTableCName, mockTableDName]
+        }),
+        describeTable: jest.fn((tableName: string) => {
+            return getTableContext(tableName)
+        }),
+        hydrateTemplateContext: jest.fn((contextShell: TemplateContext) => {      
+            contextShell.secretStoreArn = this.awsSecretStoreArn
+            contextShell.rdsClusterIdentifier = this.dbClusterOrInstanceArn
+            contextShell.databaseSchema = 'mysql'
+            contextShell.databaseName =  this.database
+            contextShell.region = this.dbRegion
+            return contextShell
+        })
+    }))
+    const mockReader = new MockRelationalDBReader()
+    dummyTransformer.setDBReader(mockReader)
 
-    expect(mockConnection.query).toHaveBeenCalledWith(`USE ${testDBName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`SHOW TABLES`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`DESCRIBE ${tableAName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`DESCRIBE ${tableBName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`DESCRIBE ${tableCName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`DESCRIBE ${tableDName}`, expect.any(Function))
+    const templateContext = await dummyTransformer.introspectDatabaseSchema()
+
+    expect(mockReader.listTables).toHaveBeenCalled()
+    expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableAName)
+    expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableBName)
+    expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableCName)
+    expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableDName)
     expect(templateContext.schemaDoc).toBeDefined()
     expect(templateContext.schemaDoc.kind).toBe(Kind.DOCUMENT)
-    // 4 tables * (base, update input, connecton, and create input) + schema, queries, mutations, and subs
-    // (4 * 4) + 4 = 20
-    expect(templateContext.schemaDoc.definitions.length).toBe(20)
+    // 4 tables * (base, update input, and create input) + schema, queries, mutations, and subs
+    // (4 * 3) + 4 = 16
+    expect(templateContext.schemaDoc.definitions.length).toBe(16)
     let objectTypeCount = 0
     let inputTypeCount = 0
     let schemaTypeCount = 0
@@ -111,113 +95,66 @@ test('Test schema generation end to end', async() => {
     }
     expect(schemaTypeCount).toEqual(1) // Singular schema node
     expect(inputTypeCount).toEqual(8) // 4 tables * (update input + create input)
-    expect(objectTypeCount).toEqual(11) // 4 tables * (base shape + connection) + queries + mutations + subs
+    expect(objectTypeCount).toEqual(7) // (4 tables * base shape) + queries + mutations + subs
     const schemaString = print(templateContext.schemaDoc)
     expect(schemaString).toBeDefined()
     console.log(schemaString)
 })
 
-test('Test begin fails on database selection', async() => {
-    const FailConditionMockConnection = jest.fn<Connection>(() => ({
-        query: jest.fn(function (sqlString: string, queryCallback: (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => void) {
-            let results = null
-            let error = null
-            if (sqlString === `USE ${failureTestDBName}`) {
-               error = {errno: 400, name: 'test error', message: 'database does not exist', code: 'test', fatal: true}
-            }
-
-            queryCallback(error, results, null)
-        })
-    })
-    const mockConnection = new FailConditionMockConnection()
-    createConnection.mockReturnValue(mockConnection)
-    try {
-        await dummyTransformer.processMySQLSchemaOverJDBCWithCredentials(testDBUser, testDBPassword,  testDBHost, failureTestDBName)
-        jest.fail()
-    } catch (err) {
-        if (err instanceof RelationalDBParsingException) {
-            // expected
-        } else {
-            jest.fail()
-        }
-
-    }
-    expect(mockConnection.query).toHaveBeenCalledWith(`USE ${failureTestDBName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenLastCalledWith(`USE ${failureTestDBName}`, expect.any(Function))
-    expect(mockConnection.query).not.toHaveBeenCalledWith(`SHOW TABLES`, expect.any(Function))
-})
-
 test('Test list tables fails', async() => {
-    const FailConditionMockConnection = jest.fn<Connection>(() => ({
-        query: jest.fn(function (sqlString: string, queryCallback: (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => void) {
-            let results = null
-            let error = null
-            if (sqlString == `SHOW TABLES`) {
-                error = {errno: 400, name: 'test error', message: 'no tables exist', code: 'test', fatal: true}
-            } else if (sqlString == `USE ${failureTestDBName}`) {
-                // If it's the use db, we don't need a response
-                results = ''
-            } 
-
-            queryCallback(error, results, null)
+    const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
+        listTables: jest.fn(() => {
+            throw new Error('Mocked failure on list tables.')
+        }),
+        describeTable: jest.fn(() => {
+            throw new Error('Mocked failure on describe. THIS SHOULD NOT HAPPEN.')
         })
-    })
-    const mockConnection = new FailConditionMockConnection()
-    createConnection.mockReturnValue(mockConnection)
+    }))
+    const mockReader = new MockRelationalDBReader()
+    dummyTransformer.setDBReader(mockReader)
+
+    
     try {
-        await dummyTransformer.processMySQLSchemaOverJDBCWithCredentials(testDBUser, testDBPassword,  testDBHost, failureTestDBName)
-        jest.fail()
+        await dummyTransformer.introspectDatabaseSchema()
+        throw new Error('Request should have failed.')
     } catch (err) {
         if (err instanceof RelationalDBParsingException) {
             // expected
         } else {
-            jest.fail()
+            throw new Error('Unexpected exception thrown.')
         }
 
     }
-    expect(mockConnection.query).toHaveBeenCalledWith(`USE ${failureTestDBName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`SHOW TABLES`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenLastCalledWith(`SHOW TABLES`, expect.any(Function))
+    expect(mockReader.listTables).toHaveBeenCalled()
+    expect(mockReader.describeTable).not.toHaveBeenCalled()
 })
 
 test('Test describe table fails', async() => {
-    const FailConditionMockConnection = jest.fn<Connection>(() => ({
-        query: jest.fn(function (sqlString: string, queryCallback: (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => void) {
-            let results = null
-            let error = null
-            if (sqlString == `SHOW TABLES`) {
-                // For list tables, return a set of four table names
-                results = [ { Tables_in_failureDB: tableAName },
-                { Tables_in_failureDB: tableBName },
-                { Tables_in_failureDB: tableCName },
-                { Tables_in_failureDB: tableDName } ]
-            } else if (sqlString == `USE ${testDBName}`) {
-                // If it's the use db, we don't need a response
-                results = ''
-            } else if (sqlString == `DESCRIBE ${tableAName}`) {
-                error = {errno: 400, name: 'test error', message: 'no tables exist', code: 'test', fatal: true}
-            }
-
-            queryCallback(error, results, null)
+    const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
+        listTables: jest.fn(() => {
+            return  [ mockTableAName, mockTableBName, mockTableCName, mockTableDName]
+        }),
+        describeTable: jest.fn(() => {
+            throw new Error('Mocked failure on describe.')
         })
-    })
-    const mockConnection = new FailConditionMockConnection()
-    createConnection.mockReturnValue(mockConnection)
+    }))
+    const mockReader = new MockRelationalDBReader()
+    dummyTransformer.setDBReader(mockReader)
+    
     try {
-        await dummyTransformer.processMySQLSchemaOverJDBCWithCredentials(testDBUser, testDBPassword,  testDBHost, failureTestDBName)
-        jest.fail()
+        await dummyTransformer.introspectDatabaseSchema()
+        throw new Error('Request should have failed.')
     } catch (err) {
         if (err instanceof RelationalDBParsingException) {
             // expected
         } else {
-            jest.fail()
+            throw new Error('Unexpected exception thrown.')
         }
 
     }
-    expect(mockConnection.query).toHaveBeenCalledWith(`USE ${failureTestDBName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`SHOW TABLES`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenCalledWith(`DESCRIBE ${tableAName}`, expect.any(Function))
-    expect(mockConnection.query).toHaveBeenLastCalledWith(`DESCRIBE ${tableAName}`, expect.any(Function))
+
+    expect(mockReader.listTables).toHaveBeenCalled()
+    expect(mockReader.describeTable).toHaveBeenCalledWith(mockTableAName)
 })
 
 test('Test connection type shape', () => {

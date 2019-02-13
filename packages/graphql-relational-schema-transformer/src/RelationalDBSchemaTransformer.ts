@@ -4,6 +4,7 @@ import { getNamedType, getOperationFieldDefinition, getNonNullType, getInputValu
     getTypeDefinition, getFieldDefinition, getDirectiveNode, getOperationTypeDefinition } from './RelationalDBSchemaTransformerUtils'
 import { MySQLRelationalDBReader } from './MySQLRelationalDBReader'
 import {RelationalDBParsingException} from './RelationalDBParsingException'
+import { IRelationalDBReader } from './IRelationalDBReader';
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -60,17 +61,28 @@ export default class TemplateContext {
 }
 
 export class RelationalDBSchemaTransformer {
-    mySQLReader: MySQLRelationalDBReader
+    dbReader: IRelationalDBReader
+    database: string
 
-    public introspectMySQLSchema = async (dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string): Promise<TemplateContext> => {
-        this.mySQLReader = new MySQLRelationalDBReader(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database)
+    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
+        // This will need overloading/conditions in order to add different db types.
+        this.dbReader = new MySQLRelationalDBReader(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database)
+        this.database = database
+    }
+
+    setDBReader(dbReader: IRelationalDBReader) {
+        this.dbReader = dbReader
+    }
+
+    public introspectDatabaseSchema = async (): Promise<TemplateContext> => {
+        
 
         // Get all of the tables within the provided db
         let tableNames = null
         try {
-            tableNames = await this.mySQLReader.listTables()
+            tableNames = await this.dbReader.listTables()
         } catch (err) {
-            throw new RelationalDBParsingException(`Failed to list tables in ${database}`, err.stack)
+            throw new RelationalDBParsingException(`Failed to list tables in ${this.database}`, err.stack)
         }
 
         let typeContexts = new Array()
@@ -82,7 +94,7 @@ export class RelationalDBSchemaTransformer {
         for (const tableName of tableNames) {
             let type: TableContext = null
             try {
-                type = await this.mySQLReader.describeTable(tableName)
+                type = await this.dbReader.describeTable(tableName)
             } catch (err) {
                 throw new RelationalDBParsingException(`Failed to describe table ${tableName}`, err.stack)
             }
@@ -90,6 +102,7 @@ export class RelationalDBSchemaTransformer {
             typeContexts.push(type)
             // Generate the 'connection' type for each table type definition
             // TODO: Determine if Connection is needed as Data API doesn't provide pagination
+            // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
             //types.push(this.getConnectionType(tableName))
             // Generate the create operation input for each table type definition
             types.push(type.createTypeDefinition)
@@ -110,17 +123,8 @@ export class RelationalDBSchemaTransformer {
         types.push(this.getSubscriptions(typeContexts))
         types.push(this.getSchemaType())
 
-        let context =  new TemplateContext({kind: Kind.DOCUMENT, definitions: types}, pkeyMap, stringFieldMap, intFieldMap)
-
-        /**
-         * Information needed for creating the AppSync - RDS Data Source
-         * Store as part of the TemplateContext
-         */
-        context.secretStoreArn = awsSecretStoreArn
-        context.rdsClusterIdentifier = dbClusterOrInstanceArn
-        context.databaseSchema = 'mysql'
-        context.databaseName =  database
-        context.region = dbRegion
+        let context =  this.dbReader.hydrateTemplateContext(new TemplateContext({kind: Kind.DOCUMENT, 
+            definitions: types}, pkeyMap, stringFieldMap, intFieldMap))
 
          return context
     }

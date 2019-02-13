@@ -46,7 +46,6 @@ test('Test Base CloudForm Template Generation', () => {
     expect(template.Resources).toBeDefined()
     expect(template.Resources).toHaveProperty('GraphQLAPIKey')
     expect(template.Resources).toHaveProperty('GraphQLAPI')
-    expect(template.Resources).toHaveProperty('AuthCognitoUserPoolJSClient')
     expect(template.Resources).toHaveProperty('RelationalDatabaseAccessRole')
     expect(template.Resources).toHaveProperty('RelationalDatabaseDataSource')
 

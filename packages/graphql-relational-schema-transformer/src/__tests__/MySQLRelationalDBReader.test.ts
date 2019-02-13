@@ -1,88 +1,65 @@
-jest.mock('mysql')
-
-import {createConnection, Connection, MysqlError, FieldInfo} from 'mysql'
-import { TableContext } from '../RelationalDBSchemaTransformer'
+import TemplateContext, { TableContext } from '../RelationalDBSchemaTransformer'
 import { Kind} from 'graphql'
 import { MySQLRelationalDBReader } from '../MySQLRelationalDBReader';
+import { AuroraDataAPIClient, ColumnDescription } from '../AuroraDataAPIClient';
 
-const testDBUser = 'testUsername'
-const testDBPassword = 'testPassword'
-const testDBHost = 'testHost'
+const dbRegion = 'us-east-1'
+const secretStoreArn = 'secretStoreArn'
+const clusterArn = 'clusterArn'
 const testDBName = 'testdb'
 const tableAName = 'a'
 const tableBName = 'b'
 const tableCName = 'c'
-const tableDName = 'd'
+const tableDName = 'd'     
 
-const MockConnection = jest.fn<Connection>(() => ({
-    end: jest.fn(),
-    query: jest.fn(function (sqlString: string, queryCallback: (err: MysqlError | null, results?: any, fields?: FieldInfo[]) => void) {
-        let results = null
-        // TODO: show tables and getting foreign keys are technically slightly inaccurate as a test. The
-        // library returns 'RowDataPacket { ... }', however this will still test the parsing that we care about.
-        if (sqlString == `SHOW TABLES`) {
-            // For list tables, return a set of four table names
-            results = [ { Tables_in_testdb: tableAName },
-            { Tables_in_testdb: tableBName },
-            { Tables_in_testdb: tableCName },
-            { Tables_in_testdb: tableDName } ]
-        } else if (sqlString == `USE ${testDBName}`) {
-            // If it's the use db, we don't need a response
-            results = ''
-        } else if (sqlString.indexOf(`AND REFERENCED_TABLE_NAME = '${tableBName}'`) > -1) {
-            // For foreign key lookup on table b, we return table a
-            results = [ { TABLE_NAME: tableAName } ]
-        } else if (sqlString.indexOf(`SELECT TABLE_NAME FROM information_schema.key_column_usage`) > -1) {
-            // On other foreign key lookups, return an empty array
-            results = []
-        } else if (sqlString == `DESCRIBE ${tableBName}`) {
-            results = [ {
-                Field: 'id',
-                Type: 'int',
-                Null: 'NO',
-                Key: 'PRI',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'aId',
-                Type: 'int',
-                Null: 'YES',
-                Key: 'MUL',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'name',
-                Type: 'varchar(100)',
-                Null: 'YES',
-                Key: '',
-                Default: null,
-                Extra: '' } ]
-        } else if (sqlString == `DESCRIBE ${tableAName}` || `DESCRIBE ${tableCName}` || sqlString == `DESCRIBE ${tableDName}`) {
-            results = [ {
-                Field: 'id',
-                Type: 'int',
-                Null: 'NO',
-                Key: 'PRI',
-                Default: null,
-                Extra: '' },
-              {
-                Field: 'name',
-                Type: 'varchar(100)',
-                Null: 'YES',
-                Key: '',
-                Default: null,
-                Extra: '' } ]
-        }
-        queryCallback(null, results, null)
-    }),
-}))
-
-const dummyReader = new MySQLRelationalDBReader(testDBUser, testDBPassword, testDBHost)
+const dummyReader = new MySQLRelationalDBReader(dbRegion, secretStoreArn, clusterArn, testDBName)
 
 test('Test describe table', async () => {
-    const mockConnection = new MockConnection()
-    createConnection.mockReturnValue(mockConnection)
-    dummyReader.begin(testDBName)
+    const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
+        describeTable: jest.fn((tableName: string) => {
+            const tableColumns = []
+            const idColDescription = new ColumnDescription()
+            const nameColDescription = new ColumnDescription()
+
+            idColDescription.Field = 'id'
+            idColDescription.Type = 'int'
+            idColDescription.Null = 'NO'
+            idColDescription.Key = 'PRI'
+            idColDescription.Default = null
+            idColDescription.Extra = ''
+
+            nameColDescription.Field = 'name'
+            nameColDescription.Type = 'varchar(100)'
+            nameColDescription.Null = 'YES'
+            nameColDescription.Key = ''
+            nameColDescription.Default = null
+            nameColDescription.Extra = ''
+
+            tableColumns.push(idColDescription)
+            tableColumns.push(nameColDescription)
+            if (tableName == tableBName) {
+                const foreignKeyId = new ColumnDescription()
+                foreignKeyId.Field = 'aId'
+                foreignKeyId.Type = 'int'
+                foreignKeyId.Null = 'YES'
+                foreignKeyId.Key = 'MUL'
+                foreignKeyId.Default = null
+                foreignKeyId.Extra = ''
+
+                tableColumns.push(foreignKeyId)
+            } 
+            return tableColumns
+        }),
+        getTableForeignKeyReferences: jest.fn((tableName: string) => {
+            if (tableName == tableBName) {
+                return [tableAName]
+            } 
+            return []
+        })
+    }))
+    const mockClient = new MockAuroraClient()
+    dummyReader.setAuroraClient(mockClient)
+
     describeTableTestCommon(tableAName, 2, false, await dummyReader.describeTable(tableAName))    
     describeTableTestCommon(tableBName, 3, true, await dummyReader.describeTable(tableBName))    
     describeTableTestCommon(tableCName, 2, false, await dummyReader.describeTable(tableCName))    
@@ -121,12 +98,26 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
     expect(tableContext.createTypeDefinition.fields.length).toEqual(fieldLength)
 }
 
+test('Test hydrate template context', async() => {
+    const context = await dummyReader.hydrateTemplateContext(new TemplateContext(null, null, null, null))
+    expect(context.secretStoreArn).toEqual(secretStoreArn)
+    expect(context.databaseName).toEqual(testDBName)
+    expect(context.rdsClusterIdentifier).toEqual(clusterArn)
+    expect(context.region).toEqual(dbRegion)
+    expect(context.databaseSchema).toEqual('mysql')
+})
+
 test('Test list tables', async () => {
-    const mockConnection = new MockConnection()
-    createConnection.mockReturnValue(mockConnection)
-    dummyReader.begin(testDBName)
-    const tableNames = await dummyReader.listTables(testDBName)
-    expect(mockConnection.query).toHaveBeenCalledWith(`SHOW TABLES`, expect.any(Function))
+    const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
+        listTables: jest.fn(() => {
+            return  [ tableAName, tableBName, tableCName, tableDName]
+        })
+    }))
+    const mockClient = new MockAuroraClient()
+    dummyReader.setAuroraClient(mockClient)
+
+    const tableNames = await dummyReader.listTables()
+    expect(mockClient.listTables).toHaveBeenCalled()
     expect(tableNames.length).toBe(4)
     expect(tableNames.indexOf(tableAName) > -1).toBe(true)
     expect(tableNames.indexOf(tableBName) > -1).toBe(true)
@@ -134,17 +125,18 @@ test('Test list tables', async () => {
     expect(tableNames.indexOf(tableDName) > -1).toBe(true)
 })
 
-test('Test begin', () => {
-    const mockConnection = new MockConnection()
-    createConnection.mockReturnValue(mockConnection)
-    dummyReader.begin(testDBName)
-    expect(mockConnection.query).toHaveBeenCalled()
-    expect(mockConnection.query).toHaveBeenCalledWith(`USE ${testDBName}`, expect.any(Function))
-})
-
 test('Test lookup foreign key', async () => {
-    const mockConnection = new MockConnection()
-    createConnection.mockReturnValue(mockConnection)
+    const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({
+        getTableForeignKeyReferences: jest.fn((tableName: string) => {
+            if (tableName == tableBName) {
+                return [tableAName]
+            } 
+            return []
+        })
+    }))
+    const mockClient = new MockAuroraClient()
+    dummyReader.setAuroraClient(mockClient)
+
     const aKeys = await dummyReader.getTableForeignKeyReferences(tableAName)
     const bKeys = await dummyReader.getTableForeignKeyReferences(tableBName)
     const cKeys = await dummyReader.getTableForeignKeyReferences(tableCName)
@@ -158,4 +150,8 @@ test('Test lookup foreign key', async () => {
     expect(cKeys.length).toBe(0)
     expect(dKeys.length).toBe(0)
     expect(bKeys[0]).toBe(tableAName)
+    expect(mockClient.getTableForeignKeyReferences).toHaveBeenCalledWith(tableAName)
+    expect(mockClient.getTableForeignKeyReferences).toHaveBeenCalledWith(tableBName)
+    expect(mockClient.getTableForeignKeyReferences).toHaveBeenCalledWith(tableCName)
+    expect(mockClient.getTableForeignKeyReferences).toHaveBeenCalledWith(tableDName)
 })

@@ -141,7 +141,7 @@ export default class RelationalDBResolverGenerator {
         const selectSql =
             `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
-        return new AppSync.Resolver ({
+        let resolver =  new AppSync.Resolver ({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
             TypeName: mutationTypeName,
@@ -166,6 +166,7 @@ export default class RelationalDBResolverGenerator {
                 ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
             )
         }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, 'RelationalDatabaseDataSource'])
+        return resolver
     }
 
     /**
