@@ -1,11 +1,7 @@
 import TemplateContext, { RelationalDBSchemaTransformer } from './RelationalDBSchemaTransformer';
 import RelationalDBTemplateGenerator from './RelationalDBTemplateGenerator';
 import { print } from 'graphql'
-
-/**
- * Short Script for Testing the Transform
- */
-let testClass = new RelationalDBSchemaTransformer()
+import { MySQLRelationalDBReader} from './MySQLRelationalDBReader'
 
 // Inputs Needed 
 // const secretStoreArn = 'arn:aws:secretsmanager:us-east-1:973253135933:secret:rds-db-credentials/cluster-VG3LSXHGQMQZONK2AZV52IRKLE/ashwin-aJcCFy'
@@ -18,7 +14,14 @@ const secretStoreArn = 'arn:aws:secretsmanager:us-east-1:973253135933:secret:rds
 const dbClusterArn = 'arn:aws:rds:us-east-1:973253135933:cluster:animals'
 const region = 'us-east-1'
 const databaseName = 'Animals'
-let result = testClass.introspectMySQLSchema(region, secretStoreArn, dbClusterArn, databaseName)
+
+/**
+ * Short Script for Testing the Transform for Aurora Serverless MySQL
+ */
+const mySqlReader = new MySQLRelationalDBReader(region, secretStoreArn, dbClusterArn, databaseName)
+let testClass = new RelationalDBSchemaTransformer(mySqlReader, databaseName)
+
+let result = testClass.introspectDatabaseSchema()
 
 result.then(function(data: TemplateContext) {
     console.log(print(data.schemaDoc))

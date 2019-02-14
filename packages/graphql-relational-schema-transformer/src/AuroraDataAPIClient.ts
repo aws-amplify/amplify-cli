@@ -1,12 +1,17 @@
 
 /**
- * 
+ * A wrapper around the RDS data service client, forming their responses for
+ * easier consumption.
  */
 export class AuroraDataAPIClient {
 
     AWS: any
     RDS: any
     Params: DataApiParams
+
+    setRDSClient(rdsClient: any) {
+        this.RDS = rdsClient
+    }
 
     constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
         this.AWS = require('aws-sdk')
@@ -22,6 +27,11 @@ export class AuroraDataAPIClient {
         this.Params.database = database 
     }
 
+    /**
+     * Lists all of the tables in the set database.
+     * 
+     * @return a list of tables in the database.
+     */
     public listTables = async () => {
         this.Params.sqlStatements = 'SHOW TABLES'
         const response = await this.RDS.executeSql(this.Params).promise()
@@ -37,6 +47,12 @@ export class AuroraDataAPIClient {
         return tableList
     }
 
+    /**
+     * Describes the table given, by breaking it down into individual column descriptions.
+     * 
+     * @param the name of the table to be described.
+     * @return a list of column descriptions.
+     */
     public describeTable = async (tableName: string) => {
         this.Params.sqlStatements = `DESCRIBE ${tableName}`
         const response = await this.RDS.executeSql(this.Params).promise()
@@ -60,6 +76,12 @@ export class AuroraDataAPIClient {
         return columnDescriptions
     }
 
+    /**
+     * Gets foreign keys for the given table, if any exist.
+     * 
+     * @param tableName the name of the table to be checked.
+     * @return a list of tables referencing the provided table, if any exist.
+     */
     public getTableForeignKeyReferences = async (tableName: string) => {
         this.Params.sqlStatements = `SELECT TABLE_NAME FROM information_schema.key_column_usage 
             WHERE referenced_table_name is not null 
