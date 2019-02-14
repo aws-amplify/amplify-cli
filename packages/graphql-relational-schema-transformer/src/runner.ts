@@ -21,10 +21,10 @@ const databaseName = 'Animals'
 let result = testClass.introspectMySQLSchema(region, secretStoreArn, dbClusterArn, databaseName)
 
 result.then(function(data: TemplateContext) {
-    //console.log(print(data.schemaDoc))
+    console.log(print(data.schemaDoc))
 
-    let templateGenerator = new RelationalDBTemplateGenerator(data)
-    let template = templateGenerator.createTemplate()
-    template = templateGenerator.addRelationalResolvers(template)
-    console.log(templateGenerator.printCloudformationTemplate(template))
+    //let templateGenerator = new RelationalDBTemplateGenerator(data)
+    //let template = templateGenerator.createTemplate()
+    //template = templateGenerator.addRelationalResolvers(template)
+    //console.log(templateGenerator.printCloudformationTemplate(template))
 })

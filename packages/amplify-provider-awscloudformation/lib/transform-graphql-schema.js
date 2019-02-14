@@ -108,36 +108,11 @@ async function transformGraphQLSchema(context, options) {
   await TransformPackage.buildAPIProject({
     projectDirectory: resourceDir,
     transform: transformer,
-<<<<<<< HEAD
-    rootStackFileName: 'cloudformation-template.json'
-  })
-
-  /**
-   * { 
-   *    rootStack: template, 
-   *    stacks: { [k: string]: Template }, 
-   *    functions: { [k: string]: string}, // path to zip file on disk.
-   *    schema: string,
-   *    resolvers: { [k: string]: string } // VTL text.
-   * }
-   */
-  // let transformResources;
-  // try {
-  //   transformResources = transformer.transform(schemaText);
-  // } catch (e) {
-  //   throw e;
-  // }
-
-  context.print.success(`\nGraphQL schema compiled successfully. Edit your schema at ${schemaFilePath}`);
-
-  // fs.writeFileSync(`${resourceDir}/${templateFileName}`, JSON.stringify(transformResources.rootStack, null, 4), 'utf8');
-=======
     rootStackFileName: 'cloudformation-template.json',
   });
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 
   // Comment this piece for now until transformer lib supports custom DDB ARns
   /* Look for data sources in the cfdoc

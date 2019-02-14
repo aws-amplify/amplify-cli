@@ -1,0 +1,54 @@
+{
+    "Aurora Serverless" : {
+		"inputs": [{
+				"key": "resourceName",
+				"type": "input",
+				"question": "Provide a friendly name for your resource to be used as label for this category in the project:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "Resource name should be alphanumeric"
+				},
+				"required": true
+			},
+			{
+
+				"key": "databaseName",
+				"type": "input",
+				"question": "Provide Database name:",
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-zA-Z0-9]+$",
+					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9"
+				},
+				"required": true
+			},
+			{
+
+				"key": "rdsClusterIdentifier",
+				"type": "input",
+				"question": "Provide the ARN of the RDS cluster that will be used as the data source for you API",
+				"required": true
+			},
+			{
+
+				"key": "rdsSecretStoreArn",
+				"type": "input",
+				"question": "Provide the ARN of the Secret Store ",
+				"required": true
+			},
+			{
+
+				"key": "region",
+				"type": "input",
+				"question": "Provide the region your Cluster is located",
+				"required": true
+			}
+		],
+		"alias": "Aurora Serverless",
+		"defaultValuesFilename": "appSync-rds-defaults.js",
+		"serviceWalkthroughFilename": "appSync-rds-walkthrough.js",
+		"cfnFilename": "appSync-rds-cloudformation-template-default.yml.ejs",
+		"provider": "awscloudformation"
+	}
+}

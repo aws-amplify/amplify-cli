@@ -1,30 +1,52 @@
 const fs = require('fs');
+const RelationalDBSchemaTransformer = require('graphql-relational-schema-transformer').RelationalDBSchemaTransformer
+const RelationalDBTemplateGenerator = require('graphql-relational-schema-transformer').RelationalDBTemplateGenerator
 
 const subcommand = 'add-datasource';
 const category = 'api';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-datasources.json`));
 
 let options;
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
-    console.log('entered');
     const { amplify } = context;
-    return amplify.serviceSelectionPrompt(context, category, servicesMetadata)
+    return amplify.datasourceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
+        console.log(`Selected: ${result.datasource}`)
         options = {
-          service: result.service,
-          providerPlugin: result.providerName,
-        };
-        const providerController =
-                require(`../../provider-utils/${result.providerName}/index`);
+          datasource: result.datasource,
+          providerName: result.providerName
+        }
+
+        const providerController = 
+          require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not configured for this category');
+          context.print.error('Provider not configured for this category')
           return;
         }
 
-        return providerController.addResource(context, category, result.service, options);
+        return providerController.addDatasource(context, category, result.datasource, options)
+      })
+      .then((answers) => {
+        let relationalSchemaTransformer = new RelationalDBSchemaTransformer()
+
+        const secretStoreArn = 'arn:aws:secretsmanager:us-east-1:973253135933:secret:rds-db-credentials/cluster-OGACD5FH3XJHXENR6GVDJG6OVY/ashwin-9P0x04'
+        const dbClusterArn = 'arn:aws:rds:us-east-1:973253135933:cluster:animals'
+        const region = 'us-east-1'
+        const databaseName = 'Animals'
+
+        let results = relationalSchemaTransformer.introspectMySQLSchema(region, secretStoreArn, dbClusterArn, databaseName)
+
+        results.then(function(data) {
+          let templateGenerator = new RelationalDBTemplateGenerator(data)
+          let template = templateGenerator.createTemplate()
+          template = templateGenerator.addRelationalResolvers(template)
+          console.log(templateGenerator.printCloudformationTemplate(template))
+        })
+
+        return answers
       })
       .then((resourceName) => {
         const { print } = context;
@@ -37,25 +59,7 @@ module.exports = {
       })
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('There was an error adding the API resource');
-      });
+        context.print.error('There was an error adding the API resource')
+      })
   },
 };
-
-// function runRDSTransform() {
-//     console.log('Starting Run')
-
-//     let testClass = new RelationalDBSchemaTransformer()
-//     let result = testClass.processMySQLSchemaOverJDBCWithCredentials("root", "ashy", "localhost", "testdb")
-
-//     result.then(function(data: TemplateContext) {
-//         console.log(print(data.schemaDoc))
-
-//         let templateGenerator = new RelationalDBTemplateGenerator(data)
-//         //console.log(templateClass.addRelationalResolvers(templateClass.createTemplate()))
-//         let template = templateGenerator.createTemplate()
-//         template = templateGenerator.addRelationalResolvers(template)
-//         //console.log(template)
-//         console.log(templateGenerator.printCloudformationTemplate(template))
-//     })
-// }

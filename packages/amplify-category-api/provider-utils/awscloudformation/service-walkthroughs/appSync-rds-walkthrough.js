@@ -1,17 +1,28 @@
-
-
-async function serviceWalkthrough(context, defaultValuesFilename) {
+async function serviceWalkthrough(context, defaultValuesFilename, datasourceMetadata) {
   const { amplify } = context;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+  const { inputs } = datasourceMetadata;
+
+  console.log(inputs)
+
+  const resourceQuestions = [
+    {
+      type: inputs[1].type,
+      name: inputs[1].key,
+      message: inputs[1].question,
+      validate: amplify.inputValidation(inputs[1]),
+    },
+  ];
+
+  console.log(resourceQuestions)
+
 
   let answers = {
     paths: [],
   };
 
-  const apiNames = await askApiNames(context, allDefaultValues);
-  answers = { ...answers, ...apiNames };
+  return resourceQuestions
+}
 
-  return pathFlow(context, answers);
+module.exports = {
+  serviceWalkthrough
 }
