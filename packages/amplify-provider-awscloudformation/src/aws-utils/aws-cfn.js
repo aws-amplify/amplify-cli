@@ -3,12 +3,14 @@ const S3 = require('./aws-s3');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
+const BottleNeck = require('bottleneck');
+const chalk = require('chalk');
 const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 const { formUserAgentParam } = require('./user-agent');
 
-const CFN_MAX_CONCURRENT_REQUEST = 15;
-const CFN_POLL_TIME = 7000; // 7sec
+const CFN_MAX_CONCURRENT_REQUEST = 5;
+const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
 
 const CFN_SUCCESS_STATUS = [
   'UPDATE_COMPLETE',
@@ -17,6 +19,7 @@ const CFN_SUCCESS_STATUS = [
   'DELETE_SKIPPED',
 ];
 
+const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 class CloudFormation {
   constructor(context, awsClientWithCreds, userAgentAction) {
     const initializeAwsClient = awsClientWithCreds
@@ -27,6 +30,10 @@ class CloudFormation {
     if (userAgentAction) {
       userAgentParam = formUserAgentParam(context, userAgentAction);
     }
+
+    this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+    this.pollQueueStacks = [];
+    this.stackEvents = [];
 
     return initializeAwsClient.then((awsItem) => {
       if (userAgentAction) {
@@ -64,7 +71,8 @@ class CloudFormation {
             }
             if (completeErr) {
               context.print.error('An error occurred when  creating the CloudFormation stack');
-              reject(completeErr);
+              this.collectStackErrors(cfnParentStackParams.StackName)
+                .then(() => reject(completeErr));
             }
             resolve(waitForStackdata);
           },
@@ -73,99 +81,82 @@ class CloudFormation {
     });
   }
 
-  readStackEvents(stackName) {
-    // Stores all the events displayed to the user (useful to do a diff with new Events)
-    let allShownEvents = [];
-    const self = this;
-    const cfnModel = this.cfn;
-    const params = {
-      StackName: stackName,
-    };
-    let nestedStackQueue = [];
-
-    this.pollForEvents = setInterval(() => {
-      cfnModel.describeStackEvents(params, (err, data) => {
-        if (err) {
-          console.log(err);
-          /* Not throwing error out here since this is an asynchornous event
-          running in the background */
-        } else {
-          let stackEvents = data.StackEvents;
-          stackEvents = stackEvents
-            .filter(event => self.eventStartTime < new Date(event.Timestamp));
-
-          if (allShownEvents.length === 0) {
-            // Showing events for the first time to the user
-            if (stackEvents.length > 0) {
-              showEvents(stackEvents);
-              allShownEvents = stackEvents;
-            }
-          }
-
-          let newEvents = stackEvents;
-          const nestedStackEventPromises = [];
-
-          const uniqueEvents = getUniqueStacksEvents(newEvents);
-          const nestedStacks = filterNestedStacks(uniqueEvents);
-
-          if (!nestedStackQueue.length) {
-            // empty queue
-            nestedStackQueue = nestedStacks;
-          } else {
-            // maintain the order of the queue and remove missing stack
-            nestedStackQueue = _.intersection(nestedStackQueue, nestedStacks);
-
-            // add newly created stack to the end of the queue
-            const newStacks = _.difference(nestedStacks, nestedStackQueue);
-            nestedStackQueue = [...nestedStackQueue, ...newStacks];
-          }
-
-          for (
-            let i = 0;
-            i < Math.min(CFN_MAX_CONCURRENT_REQUEST, nestedStackQueue.length);
-            i += 1
-          ) {
-            nestedStackEventPromises.push(self.getNestedStackEvents(nestedStackQueue[0]));
-            if (nestedStackQueue.length > 1) {
-              nestedStackQueue.shift();
-            }
-          }
-
-          return Promise.all(nestedStackEventPromises).then((nestedstackEvents) => {
-            newEvents = nestedstackEvents.reduce(
-              (combinedEventList, nestedstackEventList) =>
-                combinedEventList.concat(nestedstackEventList),
-              newEvents,
-            );
-            // Just get the new events to display to the user
-
-            newEvents = _.differenceBy(newEvents, allShownEvents, 'EventId');
-            newEvents = _.uniqBy(newEvents, 'EventId');
-            showEvents(newEvents);
-            allShownEvents = allShownEvents.concat(newEvents);
-          });
-        }
+  collectStackErrors(stackName) {
+    // add root stack to see the new stacks
+    this.readStackEvents(stackName);
+    // wait for the poll queue to drain
+    return new Promise((resolve) => {
+      this.pollQueue.once('empty', () => {
+        const failedStacks = this.stackEvents
+          .filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+        showErrorEvents(failedStacks);
+        resolve();
       });
-    }, CFN_POLL_TIME);
+    });
   }
 
-  getNestedStackEvents(stackName) {
+  readStackEvents(stackName) {
+    this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME);
+  }
+
+  pollStack(stackName) {
+    return this.getStackEvents(stackName)
+      .then((stackEvents) => {
+        const uniqueEvents = getUniqueStacksEvents(stackEvents);
+        const nestedStacks = filterNestedStacks(uniqueEvents);
+        nestedStacks.forEach(stackId => this.addToPollQueue(stackId));
+        this.showNewEvents(stackEvents);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  showNewEvents(events) {
+    const allShownEvents = this.stackEvents;
+    let newEvents = [];
+
+    if (allShownEvents.length) {
+      newEvents = _.differenceBy(events, allShownEvents, 'EventId');
+    } else {
+      newEvents = events;
+    }
+    showEvents(_.uniqBy(newEvents, 'EventId'));
+    this.stackEvents = [...allShownEvents, ...newEvents];
+  }
+
+  addToPollQueue(stackId, priority = 5) {
+    if (!this.pollQueueStacks.includes(stackId)) {
+      this.pollQueueStacks.push(stackId);
+      this.pollQueue.schedule({ priority }, () => {
+        this.removeFromPollQueue(stackId);
+        return this.pollStack(stackId);
+      });
+    }
+    return false;
+  }
+
+  removeFromPollQueue(stackId) {
+    const index = this.pollQueueStacks.indexOf(stackId);
+    if (index !== -1) {
+      this.pollQueueStacks.splice(index, 1);
+    }
+  }
+
+  getStackEvents(stackName) {
     const self = this;
     return this.cfn
       .describeStackEvents({ StackName: stackName })
       .promise()
       .then((data) => {
-        let nestedstackEvents = data.StackEvents;
-        nestedstackEvents = nestedstackEvents
-          .filter(event => self.eventStartTime < new Date(event.Timestamp));
-
-        return nestedstackEvents;
+        let events = data.StackEvents;
+        events = events.filter(event => self.eventStartTime < new Date(event.Timestamp));
+        return Promise.resolve(events);
       })
       .catch((e) => {
         if (e && e.code === 'Throttling') {
-          return {};
+          return Promise.resolve([]);
         }
-
         Promise.reject(e);
       });
   }
@@ -252,7 +243,8 @@ class CloudFormation {
                 }
                 if (completeErr) {
                   console.error('Error updating cloudformation stack');
-                  reject(completeErr);
+                  this.collectStackErrors(cfnParentStackParams.StackName)
+                    .then(() => reject(completeErr));
                 } else {
                   return self
                     .updateamplifyMetaFileWithStackOutputs(stackName)
@@ -294,8 +286,7 @@ class CloudFormation {
           Object.keys(amplifyMeta).forEach((category) => {
             Object.keys(amplifyMeta[category]).forEach((resource) => {
               const logicalResourceId = category + resource;
-              const index = resources
-                .findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+              const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
               if (index !== -1) {
                 this.context.amplify.updateamplifyMetaAfterResourceUpdate(
                   category,
@@ -355,7 +346,8 @@ class CloudFormation {
             cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, (completeErr) => {
               if (err) {
                 console.log(`Error deleting stack ${stackName}`);
-                reject(completeErr);
+                this.collectStackErrors(stackName)
+                  .then(() => reject(completeErr));
               } else {
                 resolve();
               }
@@ -389,6 +381,29 @@ function showEvents(events) {
         'LogicalResourceId',
         'ResourceType',
         'Timestamp',
+        'ResourceStatusReason',
+      ],
+      showHeaders: false,
+    }));
+  }
+}
+
+function showErrorEvents(events) {
+  events = events.sort((a, b) => new Date(a.Timestamp) > new Date(b.Timestamp));
+
+  if (events.length > 0) {
+    console.log('\n\n');
+    console.log(chalk.reset.inverse.red.bold('Following stacks failed '));
+    console.log(columnify(events, {
+      truncate: true,
+      config: {
+        ResourceStatusReason: {
+          minWidth: 40,
+        }
+      },
+      columns: [
+        'LogicalResourceId',
+        'ResourceType',
         'ResourceStatusReason',
       ],
       showHeaders: false,

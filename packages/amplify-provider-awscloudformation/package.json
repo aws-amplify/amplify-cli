@@ -10,6 +10,7 @@
     "amplify-codegen": "^1.0.9",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.250.1",
+    "bottleneck": "2.16.2",
     "cfn-lint": "^1.7.2",
     "chalk": "^2.4.1",
     "columnify": "^1.5.4",
