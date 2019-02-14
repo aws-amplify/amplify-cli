@@ -37,7 +37,7 @@ module.exports = {
         const region = 'us-east-1'
         const databaseName = 'Animals'
 
-        let results = relationalSchemaTransformer.introspectMySQLSchema(region, secretStoreArn, dbClusterArn, databaseName)
+        let results = relationalSchemaTransformer.introspectDatabaseSchema(new AuroraServerlessMySQLDatabaseReader(region, secretStoreArn, dbClusterArn, databaseName), databaseName)
 
         results.then(function(data) {
           let templateGenerator = new RelationalDBTemplateGenerator(data)

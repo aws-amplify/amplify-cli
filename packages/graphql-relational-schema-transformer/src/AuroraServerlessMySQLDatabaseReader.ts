@@ -8,7 +8,7 @@ import { IRelationalDBReader } from "./IRelationalDBReader";
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
  * using the Aurora Data API 
  */
-export class MySQLRelationalDBReader implements IRelationalDBReader {
+export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
 
     auroraClient: AuroraDataAPIClient
     dbRegion: string
