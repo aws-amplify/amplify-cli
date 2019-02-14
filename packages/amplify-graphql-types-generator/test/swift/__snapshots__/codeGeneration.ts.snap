@@ -1493,10 +1493,10 @@ public struct ReviewInput: GraphQLMapConvertible {
   /// Favorite color, optional
   public var favoriteColor: ColorInput? {
     get {
-      return graphQLMap[\\"favoriteColor\\"] as! ColorInput?
+      return graphQLMap[\\"favorite_color\\"] as! ColorInput?
     }
     set {
-      graphQLMap.updateValue(newValue, forKey: \\"favoriteColor\\")
+      graphQLMap.updateValue(newValue, forKey: \\"favorite_color\\")
     }
   }
 }"
