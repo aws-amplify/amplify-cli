@@ -3,7 +3,6 @@ const selectProject = require('../../src/walkthrough/questions/selectProject');
 const askCodegenTargetLanguage = require('../../src/walkthrough/questions/languageTarget');
 const askCodegneQueryFilePattern = require('../../src/walkthrough/questions/queryFilePattern');
 const askGeneratedFileName = require('../../src/walkthrough/questions/generatedFileName');
-const askMaxDepth = require('../../src/walkthrough/questions/maxDepth');
 const configure = require('../../src/walkthrough/configure');
 const { getIncludePattern } = require('../../src/utils');
 
@@ -22,7 +21,6 @@ describe('configure walk-through', () => {
   const mockGeneratedFileName = 'MOCK_FILE_NAME.ts';
   const mockGraphQLDirectory = 'MOCK_GQL_DIR';
   const mockGraphQLExtension = 'MOCK_GQL_EXTENSION';
-  const MOCK_MAX_DEPTH = 'MOCK_MAX_DEPTH';
 
   const mockConfigs = [
     {
@@ -32,7 +30,6 @@ describe('configure walk-through', () => {
         graphQLApiId: 'one',
         generatedFileName: 'one-1.ts',
         codeGenTarget: 'language-one',
-        maxDepth: 5,
       },
     },
     {
@@ -40,7 +37,6 @@ describe('configure walk-through', () => {
       includes: ['two/**/*.gql', 'two/**/*.graohql'],
       amplifyExtension: {
         graphQLApiId: 'two',
-        maxDepth: 10,
         generatedFileName: 'two-2.ts',
         codeGenTarget: 'language-two',
       },
@@ -53,7 +49,6 @@ describe('configure walk-through', () => {
     askCodegenTargetLanguage.mockReturnValue(mockTargetLanguage);
     askCodegneQueryFilePattern.mockReturnValue(mockIncludes);
     askGeneratedFileName.mockReturnValue(mockGeneratedFileName);
-    askMaxDepth.mockReturnValue(MOCK_MAX_DEPTH);
     getIncludePattern.mockReturnValue({
       graphQLDirectory: mockGraphQLDirectory,
       graphQLExtension: mockGraphQLExtension,
@@ -84,7 +79,6 @@ describe('configure walk-through', () => {
       mockConfigs[1].amplifyExtension.generatedFileName,
       mockTargetLanguage,
     );
-    expect(askMaxDepth).toHaveBeenCalledWith(10);
     expect(results).toEqual({
       projectName: mockConfigs[1].projectName,
       includes: mockIncludes,
@@ -92,7 +86,6 @@ describe('configure walk-through', () => {
         graphQLApiId: mockConfigs[1].amplifyExtension.graphQLApiId,
         generatedFileName: mockGeneratedFileName,
         codeGenTarget: mockTargetLanguage,
-        maxDepth: MOCK_MAX_DEPTH,
       },
     });
   });

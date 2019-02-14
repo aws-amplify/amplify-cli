@@ -4,7 +4,6 @@ const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askShouldGenerateCode = require('./questions/generateCode');
 const askShouldGenerateDocs = require('./questions/generateDocs');
-const askMaxDepth = require('./questions/maxDepth');
 const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const { getOutputFileName } = require('../utils');
@@ -59,11 +58,6 @@ async function addWalkThrough(context, skip = []) {
     answers.shouldGenerateDocs =
     await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
     answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
-  }
-
-  if (answers.shouldGenerateDocs && !skip.includes('maxDepth')) {
-    answers.maxDepth =
-    await determineValue(inputParams, yesFlag, 'maxDepth', true, askMaxDepth);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {
