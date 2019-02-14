@@ -15,7 +15,7 @@ module.exports = {
     'Do you want to generate GraphQL statements (queries, mutations and subscription) based on your schema types? This will overwrite your current graphql queries, mutations and subscriptions',
   PROMPT_MSG_CHANGE_REGION: 'Do you want to choose a different region',
   PROMPT_MSG_UPDATE_CODE: 'Do you want to update code for your updated GraphQL API',
-  PROMPT_MSG_MAX_DEPTH: 'Enter the maximum depth of statements to be generated',
+  PROMPT_MSG_MAX_DEPTH: 'Enter maximum statement depth [increase from default if your schema is deeply nested]',
   PROMPT_MSG_GENERATE_OPS:
     'Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions',
   PROMPT_MSG_SELECT_PROJECT: 'Choose the AppSync API',
