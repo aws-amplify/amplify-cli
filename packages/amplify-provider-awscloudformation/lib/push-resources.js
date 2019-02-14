@@ -149,6 +149,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
       return res;
     })
     .catch((err) => {
+      console.log(err.stack);
       if (!isCLIMigration) {
         spinner.fail('An error occured when migrating the API project.');
       }
@@ -449,14 +450,16 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
           Object.assign(parameters, { env: currentEnv });
         }
 
-        templateURL = resourceDetails.providerMetadata.s3TemplateURL;
-        nestedStack.Resources[resourceKey] = {
-          Type: 'AWS::CloudFormation::Stack',
-          Properties: {
-            TemplateURL: templateURL,
-            Parameters: parameters,
-          },
-        };
+        if (resourceDetails.providerMetadata) {
+          templateURL = resourceDetails.providerMetadata.s3TemplateURL;
+          nestedStack.Resources[resourceKey] = {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: templateURL,
+              Parameters: parameters,
+            },
+          };
+        }
       }
     });
   });
