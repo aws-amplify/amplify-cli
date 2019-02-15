@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.6...amplify-graphql-types-generator@1.0.7-beta.0) (2019-02-15)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** underscore support in swift ([#877](https://github.com/aws-amplify/amplify-cli/issues/877)) ([50588d2](https://github.com/aws-amplify/amplify-cli/commit/50588d2)), closes [#643](https://github.com/aws-amplify/amplify-cli/issues/643)
+
+
+
+
+
 ## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.5...amplify-graphql-types-generator@1.0.6) (2019-02-12)
 
 
