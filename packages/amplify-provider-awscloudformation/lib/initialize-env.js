@@ -47,7 +47,29 @@ function run(context, providerMetadata) {
       });
     })
     .then(() => new Cloudformation(context))
-    .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName));
+    .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
+    .then(() => {
+      // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+
+      const amplifyMetafilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+      const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
+
+      // Copy providerMetadata for each resource - from what is there in the cloud
+
+      Object.keys(amplifyMeta).forEach((category) => {
+        Object.keys(amplifyMeta[category]).forEach((resource) => {
+          if (currentAmplifyMeta[category][resource]) {
+            amplifyMeta[category][resource].providerMetadata =
+            currentAmplifyMeta[category][resource].providerMetadata;
+          }
+        });
+      });
+
+      const jsonString = JSON.stringify(amplifyMeta, null, 4);
+      fs.writeFileSync(amplifyMetafilePath, jsonString, 'utf8');
+    });
 }
 
 module.exports = {
