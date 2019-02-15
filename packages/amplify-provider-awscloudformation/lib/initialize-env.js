@@ -50,7 +50,6 @@ function run(context, providerMetadata) {
     .then(cfnItem => cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName))
     .then(() => {
       // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
-      console.log(context);
       const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
       const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
 
