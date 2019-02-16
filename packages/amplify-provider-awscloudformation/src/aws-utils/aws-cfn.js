@@ -8,6 +8,7 @@ const chalk = require('chalk');
 const providerName = require('../../lib/constants').ProviderName;
 const columnify = require('columnify');
 const { formUserAgentParam } = require('./user-agent');
+const { print } = require('gluegun/print');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -34,6 +35,7 @@ class CloudFormation {
     this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
     this.pollQueueStacks = [];
     this.stackEvents = [];
+    this.stackParentMap = {};
 
     return initializeAwsClient.then((awsItem) => {
       if (userAgentAction) {
@@ -104,7 +106,10 @@ class CloudFormation {
       .then((stackEvents) => {
         const uniqueEvents = getUniqueStacksEvents(stackEvents);
         const nestedStacks = filterNestedStacks(uniqueEvents);
-        nestedStacks.forEach(stackId => this.addToPollQueue(stackId));
+        nestedStacks.forEach((stackId) => {
+          this.stackParentMap[stackId] = stackName;
+          this.addToPollQueue(stackId);
+        });
         this.showNewEvents(stackEvents);
       })
       .catch((err) => {
@@ -394,20 +399,24 @@ function showErrorEvents(events) {
   if (events.length > 0) {
     console.log('\n\n');
     console.log(chalk.reset.inverse.red.bold('Following stacks failed '));
-    console.log(columnify(events, {
-      truncate: true,
-      config: {
-        ResourceStatusReason: {
-          minWidth: 40,
-        }
-      },
-      columns: [
-        'LogicalResourceId',
-        'ResourceType',
-        'ResourceStatusReason',
-      ],
-      showHeaders: false,
-    }));
+    const tableContent = [['Id', 'Type', 'Reason' ]];
+    events.forEach((ev) => {
+      const row = [
+        ev.PhysicalResourceId,
+        ev.ResourceType,
+        ev.ResourceStatusReason
+      ];
+      tableContent.push(row);
+    });
+
+    // console.log('\n\n\n\n Markdown')
+    // print.table(tableContent, { format: 'markdown' });
+
+    // console.log('\n\n\n\n Default')
+    // print.table(tableContent, { format: 'default' });
+
+    // console.log('\n\n\n\n lean')
+    print.table(tableContent, { format: 'lean' });
   }
 }
 
