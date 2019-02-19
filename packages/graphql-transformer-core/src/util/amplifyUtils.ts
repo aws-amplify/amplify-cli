@@ -503,13 +503,21 @@ interface MigrationInfo {
 export async function migrateAPIProject(opts: MigrationOptions) {
     const projectDirectory = opts.projectDirectory;
     const cloudBackendDirectory = opts.cloudBackendDirectory || projectDirectory;
-    const cloudBackendConfig = await readV1ProjectConfiguration(cloudBackendDirectory);
-    const copyOfCloudBackend = JSON.parse(JSON.stringify(cloudBackendConfig));
+
+    // Read the existing project structures from both the current cloud directory
+    // and the current project environment.
+    const copyOfCloudBackend = await readFromPath(cloudBackendDirectory);
+    if (copyOfCloudBackend.build && !copyOfCloudBackend.build[CLOUDFORMATION_FILE_NAME]) {
+        copyOfCloudBackend.build[CLOUDFORMATION_FILE_NAME] = copyOfCloudBackend[CLOUDFORMATION_FILE_NAME];
+    }
     const projectConfig = await readFromPath(projectDirectory);
+
+    // Perform the intermediate migration.
+    const cloudBackendConfig = await readV1ProjectConfiguration(cloudBackendDirectory);
     const transformConfig = makeTransformConfigFromOldProject(cloudBackendConfig);
     await updateToIntermediateProject(projectDirectory, cloudBackendConfig, transformConfig);
-    // const result = await updateProject()
-    // TODO: Update stack without resolvers/iam roles/etc.
+
+    // Return the old project structures in case of revert.
     return {
         project: projectConfig,
         cloudBackend: copyOfCloudBackend

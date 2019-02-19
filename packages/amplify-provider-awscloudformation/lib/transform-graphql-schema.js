@@ -71,7 +71,11 @@ async function migrateProject(context, options) {
   } catch (e) {
     context.print.error('Reverting API migration.');
     await TransformPackage.revertAPIMigration(resourceDir, oldCloudBackend);
-    await updateAndWaitForStack({ isReverting: true, isCLIMigration });
+    try {
+      await updateAndWaitForStack({ isReverting: true, isCLIMigration });
+    } catch (e) {
+      context.print.error('Error reverting intermediate migration stack.');
+    }
     await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     context.print.error('API successfully reverted.');
     throw e;
