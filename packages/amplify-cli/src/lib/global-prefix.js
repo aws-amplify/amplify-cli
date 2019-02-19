@@ -9,9 +9,11 @@ function getGlobalNodeModuleDirPath() {
   if (__dirname.includes(yarnPrefix)) {
     return path.join(yarnPrefix, 'node_modules');
   }
+
   if (process.platform === 'win32') {
-	return path.join(getNpmPrefix(), 'node_modules');
+    return path.join(getNpmPrefix(), 'node_modules');
   }
+
   return path.join(getNpmPrefix(), 'lib', 'node_modules');
 }
 
