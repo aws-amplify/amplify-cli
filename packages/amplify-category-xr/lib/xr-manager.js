@@ -22,7 +22,7 @@ async function setupAccess(context) {
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
     type: 'confirm',
-    message: 'Allow unauthenticated users to access xr scenes',
+    message: 'Allow unauthenticated users to access your XR scene',
     default: false,
   });
 
@@ -158,7 +158,17 @@ async function addScene(context) {
     validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
-          sceneConfig = require(configFilePath);
+          sumerianConfig = require(configFilePath);
+          const url = sumerianConfig.url;
+          const region = url.match(new RegExp("sumerian." + "(.*)" + ".amazonaws"))[1];
+          if (!region) {
+            sceneConfig = undefined;
+          } else {
+            sumerianConfig['region'] = region;
+            sceneConfig = {
+              sceneConfig: sumerianConfig
+            };
+          }
         }
       } catch (e) {
         sceneConfig = undefined;
@@ -204,8 +214,33 @@ function remove(context) {
         choices: existingScenes,
       }).then((answer) => {
         delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName].output[answer.existingScenes];
+        context.print.info(existingScenes);
         writeAmplifyMeta(context);
       });
+      // Trying to handle if there is only 1 scene left then removing the category
+      // } else if (existingScenes && existingScenes.length === 1) {
+      // One scene remaining in the scene configuration
+      // inquirer.prompt({
+      //   name: 'removeXRConfiguration',
+      //   message: `Would you like to remove ${existingScenes[0]}?`,
+      //   type: 'confirm',
+      //   default: true,
+      // }).then((answer) => {
+      //   if (answer.removeXRConfiguration) {
+      //     delete context.exeInfo.amplifyMeta[constants.CategoryName];
+      //     writeAmplifyMeta(context);
+      //     inquirer.prompt({
+      //       name: 'removePolicies',
+      //       message: 'Do you want to remove IAM policies for sumerian scene access',
+      //       type: 'confirm',
+      //       default: false,
+      //     }).then((answer) => {
+      //       if (answer.removePolicies) {
+      //         removeAccess(context);
+      //       }
+      //     });
+      //   }
+      // });
     } else {
       context.print.warning('Your project does NOT have xr scenes.');
       inquirer.prompt({

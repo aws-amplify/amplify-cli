@@ -206,7 +206,9 @@ function getSumerianConfig(sumerianResources) {
   });
   delete config.service;
   return {
-    aws_sumerian_config: config,
+    xr: {
+      scenes: config
+    }
   };
 }
 
