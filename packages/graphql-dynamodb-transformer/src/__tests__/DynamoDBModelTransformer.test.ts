@@ -6,7 +6,6 @@ import {
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
     const validSchema = `
@@ -19,7 +18,6 @@ test('Test DynamoDBModelTransformer validation happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
@@ -37,15 +35,13 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema)
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    console.log(JSON.stringify(out, null, 4))
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const createPostInput = getInputType(parsed, 'CreatePostInput')
@@ -77,15 +73,12 @@ test('Test DynamoDBModelTransformer with mutation overrides', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -103,15 +96,12 @@ test('Test DynamoDBModelTransformer with only create mutations', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -136,16 +126,13 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
@@ -187,16 +174,13 @@ test('Test DynamoDBModelTransformer with filter', () => {
     }`
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const queryType = getObjectType(parsed, 'Query')
@@ -223,13 +207,11 @@ test('Test DynamoDBModelTransformer with mutations set to null', () => {
       }
       `
     const transformer = new GraphQLTransform({
-        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+        transformers: [new DynamoDBModelTransformer()]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -244,13 +226,11 @@ test('Test DynamoDBModelTransformer with queries set to null', () => {
       }
       `
     const transformer = new GraphQLTransform({
-        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+        transformers: [new DynamoDBModelTransformer()]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -267,13 +247,11 @@ test('Test DynamoDBModelTransformer with subscriptions set to null', () => {
       }
       `
     const transformer = new GraphQLTransform({
-        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+        transformers: [new DynamoDBModelTransformer()]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -292,13 +270,11 @@ test('Test DynamoDBModelTransformer with queries and mutations set to null', () 
       }
       `
     const transformer = new GraphQLTransform({
-        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+        transformers: [new DynamoDBModelTransformer()]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const mutationType = getObjectType(parsed, 'Mutation')
@@ -321,13 +297,11 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
       }
       `
     const transformer = new GraphQLTransform({
-        transformers: [new AppSyncTransformer(), new DynamoDBModelTransformer()]
+        transformers: [new DynamoDBModelTransformer()]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     const parsed = parse(definition);
     const subscriptionType = getObjectType(parsed, 'Subscription')
@@ -370,16 +344,13 @@ test('Test DynamoDBModelTransformer with non-model types and enums', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
 
-    const schema = out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
-    expect(schema).toBeDefined()
-    const definition = schema.Properties.Definition
+    const definition = out.schema
     expect(definition).toBeDefined()
     console.log(`OUTPUT SCHEMA\n${definition}`)
     const parsed = parse(definition);

@@ -6,7 +6,7 @@ import {
   GraphQLInt,
 } from 'graphql'
 
-import { GQLTemplateField, GQLTemplateFragment } from '../../src/generator/types'
+import { GQLTemplateField, GQLTemplateFragment, GQLDocsGenOptions } from '../../src/generator/types'
 import getFields from '../../src/generator/getFields'
 import getFragment from '../../src/generator/getFragment'
 
@@ -51,6 +51,8 @@ describe('getFragments', () => {
     expect(getFragment(impl, schema, currentDepth, [])).toEqual({
       fields: [{ name: 'name' }, { name: 'length' }, { name: 'width' }],
       on: 'Rectangle',
+      external: false,
+      name: 'RectangleFragment',
     })
     expect(getFields).toHaveBeenCalledTimes(3)
   })
@@ -76,6 +78,8 @@ describe('getFragments', () => {
     expect(getFragment(impl, schema, currentDepth, fieldsToFilter)).toEqual({
       fields: [{ name: 'name' }, { name: 'width' }],
       on: 'Rectangle',
+      name: 'RectangleFragment',
+      external: false,
     })
   })
 
@@ -83,5 +87,28 @@ describe('getFragments', () => {
     const impl = schema.getQueryType().getFields().simpleScalar
     const currentDepth = 3
     expect(getFragment(impl, schema, currentDepth)).toBeUndefined()
+  })
+
+  it('should use the name passed as fragment name', () => {
+    const impl = schema.getType('Rectangle')
+    const currentDepth = 3
+    const fragment = getFragment(impl, schema, currentDepth, [], 'FooFragment')
+    expect(fragment.name).toEqual('FooFragment')
+  })
+
+  it('should use the mark fragment as external when passed', () => {
+    const impl = schema.getType('Rectangle')
+    const currentDepth = 3
+    const fragment = getFragment(impl, schema, currentDepth, [], 'FooFragment', true)
+    expect(fragment.external).toEqual(true)
+  })
+
+  it('should pass the options to getFields call', () => {
+    const options: GQLDocsGenOptions = { useExternalFragmentForS3Object: true }
+    const impl = schema.getType('Rectangle')
+    const currentDepth = 3
+    const fragment = getFragment(impl, schema, currentDepth, [], 'FooFragment', false, options)
+    expect(getFields).toHaveBeenCalledTimes(3)
+    expect(getFields.mock.calls[0][3]).toEqual(options)
   })
 })

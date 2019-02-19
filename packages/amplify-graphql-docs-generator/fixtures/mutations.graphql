@@ -1,0 +1,61 @@
+# this is an auto generated file. This will be overwritten
+mutation CreatePost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation CreatePostWithFile($input: CreatePostWithFileInput!) {
+  createPostWithFile(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation UpdatePost($input: UpdatePostInput!) {
+  updatePost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+mutation DeletePost($input: DeletePostInput!) {
+  deletePost(input: $input) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}

@@ -1,9 +1,9 @@
-import AppSync from 'cloudform/types/appSync'
-import IAM from 'cloudform/types/iam'
-import Template from 'cloudform/types/template'
-import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform'
+import AppSync from 'cloudform-types/types/appSync'
+import IAM from 'cloudform-types/types/iam'
+import Template from 'cloudform-types/types/template'
+import { Fn, StringParameter, NumberParameter, Lambda, Elasticsearch, Refs } from 'cloudform-types'
 import {
-    ElasticSearchMappingTemplate,
+    ElasticsearchMappingTemplate,
     print, str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, toJson, ifElse,
     int
@@ -14,50 +14,45 @@ export class ResourceFactory {
 
     public makeParams() {
         return {
-            [ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
-                Default: 'AppSyncElasticSearchAccess'
+                Default: 'AppSyncElasticsearchRole'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket]: new StringParameter({
-                Description: 'S3 bucket containing the DynamoDB streaming lambda code.'
-            }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key]: new StringParameter({
-                Description: 'S3 key containing the DynamoDB streaming lambda code.'
-            }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
                 Default: 'python_streaming_function.lambda_handler'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime]: new StringParameter({
-                Description: 'The lambda runtime (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)',
+            [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime]: new StringParameter({
+                Description: `The lambda runtime \
+                (https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html#SSS-CreateFunction-request-Runtime)`,
                 Default: 'python3.6'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName]: new StringParameter({
                 Description: 'The name of the streaming lambda function.',
                 Default: 'DdbToEsFn'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName]: new StringParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName]: new StringParameter({
                 Description: 'The name of the streaming lambda function IAM role.',
                 Default: 'SearchableLambdaIAMRole'
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchDebugStreamingLambda]: new NumberParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchDebugStreamingLambda]: new NumberParameter({
                 Description: 'Enable debug logs for the Dynamo -> ES streaming lambda.',
                 Default: 1,
                 AllowedValues: [0, 1]
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchInstanceCount]: new NumberParameter({
-                Description: 'The number of instances to launch into the ElasticSearch domain.',
+            [ResourceConstants.PARAMETERS.ElasticsearchInstanceCount]: new NumberParameter({
+                Description: 'The number of instances to launch into the Elasticsearch domain.',
                 Default: 1
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchDomainName]: new StringParameter({
-                Description: 'The name of the ElasticSearch domain.',
+            [ResourceConstants.PARAMETERS.ElasticsearchDomainName]: new StringParameter({
+                Description: 'The name of the Elasticsearch domain.',
                 Default: 'appsync-elasticsearch-domain',
                 AllowedPattern: '^[a-z][a-z0-9-]*$',
                 MinLength: 1,
                 MaxLength: 28
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchInstanceType]: new StringParameter({
-                Description: 'The type of instance to launch into the ElasticSearch domain.',
+            [ResourceConstants.PARAMETERS.ElasticsearchInstanceType]: new StringParameter({
+                Description: 'The type of instance to launch into the Elasticsearch domain.',
                 Default: 't2.small.elasticsearch',
                 AllowedValues: [
                     't2.small.elasticsearch', 't2.medium.elasticsearch', 'c4.large.elasticsearch',
@@ -74,9 +69,9 @@ export class ResourceFactory {
                     'i3.8xlarge.elasticsearch', 'i3.16xlarge.elasticsearch'
                 ]
             }),
-            [ResourceConstants.PARAMETERS.ElasticSearchEBSVolumeGB]: new NumberParameter({
+            [ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB]: new NumberParameter({
                 Description: 'The size in GB of the EBS volumes that contain our data.',
-                Default: 20
+                Default: 10
             })
         }
     }
@@ -88,11 +83,11 @@ export class ResourceFactory {
         return {
             Parameters: this.makeParams(),
             Resources: {
-                [ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID]: this.makeElasticsearchAccessIAMRole(),
-                [ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID]: this.makeElasticSearchDataSource(),
-                [ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID]: this.makeElasticSearchDomain(),
-                [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
-                [ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction()
+                [ResourceConstants.RESOURCES.ElasticsearchAccessIAMRoleLogicalID]: this.makeElasticsearchAccessIAMRole(),
+                [ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID]: this.makeElasticsearchDataSource(),
+                [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
+                [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
+                [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction()
             }
         }
     }
@@ -103,13 +98,13 @@ export class ResourceFactory {
          * @param name The name for the data source. If a logicalId is not provided the name is used.
          * @param logicalId The logicalId of the domain if it is different than the name of the data source.
          */
-    public makeElasticSearchDataSource() {
-        const logicalName = ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
+    public makeElasticsearchDataSource() {
+        const logicalName = ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             Name: logicalName,
             Type: 'AMAZON_ELASTICSEARCH',
-            ServiceRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchAccessIAMRoleLogicalID, 'Arn'),
+            ServiceRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchAccessIAMRoleLogicalID, 'Arn'),
             ElasticsearchConfig: {
                 AwsRegion: Fn.Select(3, Fn.Split(':', Fn.GetAtt(logicalName, 'DomainArn'))),
                 Endpoint:
@@ -118,7 +113,7 @@ export class ResourceFactory {
                         Fn.GetAtt(logicalName, 'DomainEndpoint')
                     ])
             }
-        }).dependsOn(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID)
+        }).dependsOn(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID)
     }
 
     /**
@@ -128,31 +123,37 @@ export class ResourceFactory {
     public makeDynamoDBStreamingFunction() {
         return new Lambda.Function({
             Code: {
-                S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Bucket),
-                S3Key: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaCodeS3Key)
+                S3Bucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                S3Key: Fn.Join('/', [
+                    Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    "functions",
+                    Fn.Join('.', [
+                        ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID,
+                        "zip"
+                    ]),
+                ])
             },
             FunctionName: this.joinWithEnv("-", [
-                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingFunctionName),
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingFunctionName),
                 Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             ]),
-            Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaHandlerName),
-            Role: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
-            Runtime: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingLambdaRuntime),
+            Handler: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaHandlerName),
+            Role: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID, 'Arn'),
+            Runtime: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaRuntime),
             Environment: {
                 Variables: {
                     ES_ENDPOINT: Fn.Join('', [
                         'https://',
-                        Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainEndpoint')
+                        Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint')
                     ]),
-                    ES_REGION: Fn.Select(3, Fn.Split(':', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID, 'DomainArn'))),
-                    DEBUG: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchDebugStreamingLambda)
+                    ES_REGION: Fn.Select(3, Fn.Split(':', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainArn'))),
+                    DEBUG: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchDebugStreamingLambda)
                 }
             }
-        })
-            .dependsOn([
-                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaIAMRoleLogicalID,
-                ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID
-            ])
+        }).dependsOn([
+            ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID,
+            ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID
+        ])
     }
 
     public makeDynamoDBStreamEventSourceMapping(typeName: string) {
@@ -160,13 +161,11 @@ export class ResourceFactory {
             BatchSize: 1,
             Enabled: true,
             EventSourceArn: Fn.GetAtt(ModelResourceIDs.ModelTableResourceID(typeName), 'StreamArn'),
-            FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID, 'Arn'),
+            FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
-        })
-            .dependsOn([
-                ModelResourceIDs.ModelTableResourceID(typeName),
-                ResourceConstants.RESOURCES.ElasticSearchStreamingLambdaFunctionLogicalID
-            ])
+        }).dependsOn([
+            ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID
+        ])
     }
 
     private joinWithEnv(separator: string, listToJoin: any[]) {
@@ -194,7 +193,7 @@ export class ResourceFactory {
     public makeElasticsearchAccessIAMRole() {
         return new IAM.Role({
             RoleName: this.joinWithEnv("-", [
-                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchAccessIAMRoleName),
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName),
                 Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
             ]),
             AssumeRolePolicyDocument: {
@@ -211,7 +210,7 @@ export class ResourceFactory {
             },
             Policies: [
                 new IAM.Role.Policy({
-                    PolicyName: 'ElasticSearchAccess',
+                    PolicyName: 'ElasticsearchAccess',
                     PolicyDocument: {
                         Version: '2012-10-17',
                         Statement: [
@@ -248,7 +247,7 @@ export class ResourceFactory {
     public makeStreamingLambdaIAMRole() {
         return new IAM.Role({
             RoleName: this.joinWithEnv("-", [
-                Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchStreamingIAMRoleName),
+                Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchStreamingIAMRoleName),
                 Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             ]),
             AssumeRolePolicyDocument: {
@@ -265,7 +264,7 @@ export class ResourceFactory {
             },
             Policies: [
                 new IAM.Role.Policy({
-                    PolicyName: 'ElasticSearchAccess',
+                    PolicyName: 'ElasticsearchAccess',
                     PolicyDocument: {
                         Version: '2012-10-17',
                         Statement: [
@@ -357,7 +356,7 @@ export class ResourceFactory {
 
     private domainArn() {
         return Fn.GetAtt(
-            ResourceConstants.RESOURCES.ElasticSearchDomainLogicalID,
+            ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID,
             "DomainArn"
         )
     }
@@ -365,74 +364,69 @@ export class ResourceFactory {
     /**
      * Create the elasticsearch domain.
      */
-    public makeElasticSearchDomain() {
+    public makeElasticsearchDomain() {
         return new Elasticsearch.Domain({
             DomainName: this.domainName(),
             ElasticsearchVersion: '6.2',
             ElasticsearchClusterConfig: {
                 ZoneAwarenessEnabled: false,
-                InstanceCount: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchInstanceCount),
-                InstanceType: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchInstanceType)
+                InstanceCount: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchInstanceCount),
+                InstanceType: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchInstanceType)
             },
             EBSOptions: {
                 EBSEnabled: true,
                 VolumeType: 'gp2',
-                VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticSearchEBSVolumeGB)
+                VolumeSize: Fn.Ref(ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB)
             }
         })
     }
 
     /**
-     * Create the ElasticSearch search resolver.
+     * Create the Elasticsearch search resolver.
      */
     public makeSearchResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)))
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID, 'Name'),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: queryTypeName,
-            RequestMappingTemplate: Fn.Sub(
-                print(
-                    compoundExpression([
-                        set(ref('indexPath'), str('/${DDBTableName}/doc/_search')),
-                        ElasticSearchMappingTemplate.searchItem({
-                            path: str('$indexPath.toLowerCase()'),
-                            size: ifElse(
-                                ref('context.args.limit'),
-                                ref('context.args.limit'),
-                                int(10)),
-                            from: ifElse(
-                                ref('context.args.nextToken'),
-                                ref('context.args.nextToken'),
-                                int(0)),
-                            query: ifElse(
-                                ref('context.args.filter'),
-                                ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
-                                obj({
-                                    'match_all': obj({})
-                                })),
-                            sort: ifElse(
-                                ref('context.args.sort'),
-                                list([
-                                    iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
-                                        obj({
-                                            "$context.args.sort.field": obj({
-                                                "order": str('$context.args.sort.direction')
-                                            })
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+                    ElasticsearchMappingTemplate.searchItem({
+                        path: str('$indexPath'),
+                        size: ifElse(
+                            ref('context.args.limit'),
+                            ref('context.args.limit'),
+                            int(10),
+                            true),
+                        from: ifElse(
+                            ref('context.args.nextToken'),
+                            ref('context.args.nextToken'),
+                            int(0),
+                            true),
+                        query: ifElse(
+                            ref('context.args.filter'),
+                            ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
+                            obj({
+                                'match_all': obj({})
+                            })),
+                        sort: ifElse(
+                            ref('context.args.sort'),
+                            list([
+                                iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
+                                    obj({
+                                        "$context.args.sort.field": obj({
+                                            "order": str('$context.args.sort.direction')
                                         })
-                                    ),
-                                    str('_doc')
-                                ]),
-                                list([]))
-                        })
-                    ])
-                ), {
-                    'DDBTableName': this.joinWithEnv('-', [
-                        type,
-                        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                    ])
-                }
+                                    })
+                                ),
+                                str('_doc')
+                            ]),
+                            list([]))
+                    })
+                ])
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([
@@ -455,10 +449,8 @@ export class ResourceFactory {
                     }))
                 ])
             )
-        })
-            .dependsOn([
-                ResourceConstants.RESOURCES.GraphQLSchemaLogicalID,
-                ResourceConstants.RESOURCES.ElasticSearchDataSourceLogicalID
-            ])
+        }).dependsOn([
+            ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID
+        ])
     }
 }

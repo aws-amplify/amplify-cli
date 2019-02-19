@@ -7,7 +7,6 @@ import GraphQLTransform, { InvalidDirectiveError } from 'graphql-transformer-cor
 import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 
 test('Test ModelConnectionTransformer simple one to many happy case', () => {
     const validSchema = `
@@ -23,15 +22,14 @@ test('Test ModelConnectionTransformer simple one to many happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
 
     // Post.comments field
     const postType = getObjectType(schemaDoc, 'Post')
@@ -67,15 +65,14 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
 
     // Post.comments field
     const postType = getObjectType(schemaDoc, 'Post')
@@ -114,15 +111,14 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
 
     // Post.comments field
     const postType = getObjectType(schemaDoc, 'Post')
@@ -161,16 +157,15 @@ test('Test ModelConnectionTransformer complex one to many happy case', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'post')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Comment', 'post')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
     const postType = getObjectType(schemaDoc, 'Post')
     const commentType = getObjectType(schemaDoc, 'Comment')
 
@@ -213,7 +208,6 @@ test('Test ModelConnectionTransformer many to many should fail', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
@@ -245,7 +239,6 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
@@ -273,15 +266,14 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'things')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'things')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
     const postType = getObjectType(schemaDoc, 'Post')
     const postConnection = getObjectType(schemaDoc, 'ModelPostConnection')
     const thingConnection = getObjectType(schemaDoc, 'ModelThingConnection')
@@ -319,15 +311,14 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined()
-    expect(out.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
-    const schemaDoc = parse(out.Resources[ResourceConstants.RESOURCES.GraphQLSchemaLogicalID].Properties.Definition)
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
 
     // Post.comments field
     const postType = getObjectType(schemaDoc, 'Post')
@@ -377,7 +368,6 @@ test('Test ModelConnectionTransformer with sortField fails if not specified in a
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
@@ -388,7 +378,6 @@ test('Test ModelConnectionTransformer with sortField fails if not specified in a
 test('Test ModelConnectionTransformer throws with invalid key fields', () => {
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
@@ -449,7 +438,6 @@ test('Test ModelConnectionTransformer throws with invalid key fields', () => {
 test('Test ModelConnectionTransformer does not throw with valid key fields', () => {
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]

@@ -156,7 +156,9 @@ export class VersionedModelTransformer extends Transformer {
             const updatedFields = input.fields.filter(f => f.name.value !== versionField)
             if (updatedFields.length === 0) {
                 throw new InvalidDirectiveError(
-                    `After stripping away version field "${versionField}", the create input for type "${typeName}" cannot be created with 0 fields. Add another field to type "${typeName}" to continue.`
+                    `After stripping away version field "${versionField}", \
+                    the create input for type "${typeName}" cannot be created \
+                    with 0 fields. Add another field to type "${typeName}" to continue.`
                 )
             }
             const updatedInput = {

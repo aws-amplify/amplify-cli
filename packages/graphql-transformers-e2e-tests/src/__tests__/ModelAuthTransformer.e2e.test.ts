@@ -12,7 +12,6 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import * as S3 from 'aws-sdk/clients/s3'
-import { CreateBucketRequest, CreateBucketOutput } from 'aws-sdk/clients/s3'
 import {
     CreateGroupRequest, CreateGroupResponse,
     AdminAddUserToGroupRequest
@@ -22,11 +21,11 @@ import {
 } from 'amazon-cognito-identity-js';
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
-import { deploy, cleanupS3Bucket } from '../deploy'
+import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
+import emptyBucket from '../emptyBucket';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -38,6 +37,8 @@ const cf = new CloudFormationClient('us-west-2')
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
 const STACK_NAME = `ModelAuthTransformerTest-${BUILD_TIMESTAMP}`
 const BUCKET_NAME = `appsync-auth-transformer-test-bucket-${BUILD_TIMESTAMP}`
+const LOCAL_FS_BUILD_DIR = '/tmp/model_auth_transform_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -181,34 +182,8 @@ async function addUserToGroup(groupName: string, username: string, userPoolId: s
     })
 }
 
-async function createBucket(name: string) {
-    return new Promise((res, rej) => {
-        const params: CreateBucketRequest = {
-            Bucket: name,
-        }
-        awsS3Client.createBucket(params, (err, data) => err ? rej(err) : res(data))
-    })
-}
-
-async function deleteBucket(name: string) {
-    return new Promise((res, rej) => {
-        const params: CreateBucketRequest = {
-            Bucket: name,
-        }
-        awsS3Client.deleteBucket(params, (err, data) => err ? rej(err) : res(data))
-    })
-}
-
-const TMP_ROOT = '/tmp/model_auth_transform_tests/'
-
-const ROOT_KEY = ''
-
 beforeAll(async () => {
     // Create a stack for the post model with auth enabled.
-    if (!fs.existsSync(TMP_ROOT)) {
-        fs.mkdirSync(TMP_ROOT);
-    }
-    await createBucket(BUCKET_NAME)
     const validSchema = `
     type Post @model @auth(rules: [{ allow: owner }]) {
         id: ID!
@@ -283,18 +258,20 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(TMP_ROOT),
             new DynamoDBModelTransformer(),
             new ModelAuthTransformer()
         ]
     })
     try {
+        await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
+    } catch (e) {
+        console.error(`Failed to create bucket: ${e}`)
+    }
+    try {
         // Clean the bucket
-        deleteDirectory(TMP_ROOT)
         const out = transformer.transform(validSchema)
-
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
@@ -379,13 +356,9 @@ afterAll(async () => {
         }
     }
     try {
-        console.log('[start] deleting deployment bucket')
-        await cleanupS3Bucket(customS3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY, BUILD_TIMESTAMP)
-        await deleteBucket(BUCKET_NAME)
-        console.log('[done] deleting deployment bucket')
+        await emptyBucket(BUCKET_NAME);
     } catch (e) {
-        console.log(`[error] deleting deployment bucket`)
-        console.log(e);
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 

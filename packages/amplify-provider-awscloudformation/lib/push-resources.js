@@ -16,6 +16,7 @@ const { loadResourceParameters } = require('../src/resourceParams');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
+const optionalBuildDirectoryName = 'build';
 
 async function run(context, category, resourceName) {
   const {
@@ -31,7 +32,11 @@ async function run(context, category, resourceName) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => transformGraphQLSchema(context, { noConfig: true }))
+    .then(() => transformGraphQLSchema(context, {
+      noConfig: true,
+      handleMigration: opts =>
+        updateStackForAPIMigration(context, 'api', resourceName, opts),
+    }))
     .then(() => uploadAppSyncFiles(context, resources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
@@ -85,6 +90,68 @@ async function run(context, category, resourceName) {
     })
     .catch((err) => {
       spinner.fail('An error occurred when pushing the resources to the cloud');
+      throw err;
+    });
+}
+
+async function updateStackForAPIMigration(context, category, resourceName, options) {
+  const {
+    resourcesToBeCreated,
+    resourcesToBeUpdated,
+    resourcesToBeDeleted,
+    allResources,
+  } = await context.amplify.getResourceStatus(category, resourceName, providerName);
+
+  const { isReverting, isCLIMigration } = options;
+  let resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  let projectDetails = context.amplify.getProjectDetails();
+
+  validateCfnTemplates(context, resources);
+
+  resources = allResources.filter(resource => resource.service === 'AppSync');
+
+  return packageResources(context, resources)
+    .then(() => uploadAppSyncFiles(context, resources, {
+      useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
+    }))
+    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
+    .then(() => {
+      if (!isCLIMigration) {
+        spinner.start();
+      }
+      projectDetails = context.amplify.getProjectDetails();
+      if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+        // isCLIMigration implies a top level CLI migration is underway.
+        // We do not inject an env in such situations so we pass a resourceName.
+        // When it is an API level migration, we do pass an env so omit the resourceName.
+        let nestedStack;
+        if (isReverting && isCLIMigration) {
+          // When this is a CLI migration and we are rolling back, we do not want to inject
+          // an [env] for any templates.
+          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
+        } else if (isCLIMigration) {
+          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
+        } else {
+          nestedStack = formNestedStack(context, projectDetails, category);
+        }
+        return updateCloudFormationNestedStack(
+          context,
+          nestedStack,
+          resourcesToBeCreated, resourcesToBeUpdated,
+        );
+      }
+    })
+    .then(async (res) => {
+      await context.amplify.updateamplifyMetaAfterPush(resources);
+      if (!isCLIMigration) {
+        spinner.stop();
+      }
+      return res;
+    })
+    .catch((err) => {
+      if (!isCLIMigration) {
+        spinner.fail('An error occured when migrating the API project.');
+      }
       throw err;
     });
 }
@@ -264,17 +331,37 @@ function getAllUniqueCategories(resources) {
   return [...categories];
 }
 
+function getCfnFiles(context, category, resourceName) {
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+  const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
+  /**
+   * The API category w/ GraphQL builds into a build/ directory.
+   * This looks for a build directory and uses it if one exists.
+   * Otherwise falls back to the default behavior.
+   */
+  if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
+    const files = fs.readdirSync(resourceBuildDir);
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    return {
+      resourceDir: resourceBuildDir,
+      cfnFiles,
+    };
+  }
+  const files = fs.readdirSync(resourceDir);
+  const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+  return {
+    resourceDir,
+    cfnFiles,
+  };
+}
+
 function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
   const promises = [];
 
   for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
     const { category, resourceName } = resourcesToBeUpdated[i];
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
-    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-    const files = fs.readdirSync(resourceDir);
-    // Fetch all the CloudFormation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
-
+    const { resourceDir, cfnFiles } = getCfnFiles(context, category, resourceName);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       promises.push(uploadTemplateToS3(
         context,
@@ -310,7 +397,9 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
     });
 }
 
-function formNestedStack(context, projectDetails) {
+/* eslint-disable */
+function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
+/* eslint-enable */
   const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
 
   const { amplifyMeta } = projectDetails;
@@ -319,7 +408,6 @@ function formNestedStack(context, projectDetails) {
   categories = categories.filter(category => category !== 'provider');
   categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
-
     resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
       const resourceKey = category + resource;
@@ -351,7 +439,15 @@ function formNestedStack(context, projectDetails) {
 
         const currentEnv = context.amplify.getEnvInfo().envName;
 
-        Object.assign(parameters, { env: currentEnv });
+        if (!skipEnv && resourceName) {
+          if (resource === resourceName &&
+            category === categoryName &&
+            amplifyMeta[category][resource].service === serviceName) {
+            Object.assign(parameters, { env: currentEnv });
+          }
+        } else if (!skipEnv) {
+          Object.assign(parameters, { env: currentEnv });
+        }
 
         templateURL = resourceDetails.providerMetadata.s3TemplateURL;
         nestedStack.Resources[resourceKey] = {
@@ -369,4 +465,5 @@ function formNestedStack(context, projectDetails) {
 
 module.exports = {
   run,
+  updateStackForAPIMigration,
 };

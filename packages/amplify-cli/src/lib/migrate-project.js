@@ -1,13 +1,16 @@
 const fs = require('fs-extra');
+const chalk = require('chalk');
 const path = require('path');
 const ora = require('ora');
-const sequential = require('promise-sequential');
 const { makeId } = require('../extensions/amplify-helpers/make-id');
 const constants = require('../extensions/amplify-helpers/constants');
 const gitManager = require('../extensions/amplify-helpers/git-manager');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
+const { run } = require('../commands/push');
+
+const pushRun = run;
 
 const {
   searchProjectRootPath,
@@ -44,6 +47,19 @@ async function migrateProject(context) {
   }
   if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
     if (await prompt.confirm(confirmMigrateMessage)) {
+      const infoMessage = `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
+      '\n1. If you have a GraphQL API, we will update the corresponding Cloudformation stack to support larger annotated schemas and custom resolvers.\n' +
+      'In this process, we will be making Cloudformation API calls to update your GraphQL API Cloudformation stack. This operation will result in deletion of your AppSync resolvers and then the creation of new ones and for a brief while your AppSync API will be unavailable until the migration finishes\n' +
+      '\n2. We will be updating your local Cloudformation files present inside the ‘amplify/‘ directory of your app project, for all the added categories so that it supports multiple environments\n' +
+      '\n3. After the migration completes, we will give you the option to either push these Cloudformation files right away or you could inspect them yourselves and later push the updated Cloudformation files to the cloud\n' +
+      '\n4. If for any reason the migration fails, the CLI will rollback your cloud and local changes and you can take a look at https://aws-amplify.github.io/docs/cli/migrate?sdk=js for manually migrating your project so that it’s compatible with the latest version of the CLI\n' +
+      '\n5. ALL THE ABOVE MENTIONED OPERATIONS WILL NOT DELETE ANY DATA FROM ANY OF YOUR DATA STORES\n' +
+      `\n${chalk.bold('Before the migration, please be aware of the following things:')}\n` +
+      '\n1. Make sure to have an internet connection through the migration process\n' +
+      '\n2. Make sure to not exit/terminate the migration process (by interrupting it explicitly in the middle of migration), as this will lead to inconsistency within your project\n' +
+      '\n3. Make sure to take a backup of your entire project (including the amplify related config files)\n';
+      context.print.info(infoMessage);
+
       if (await prompt.confirm(secondConfirmMessage)) {
         // Currently there are only two project configuration versions, so call this method directly
         // If more versions are involved, switch to apropriate migration method
@@ -65,25 +81,48 @@ async function migrateFrom0To1(context, projectPath, projectConfig) {
     const categoryMigrationTasks = [];
 
     const categoryPlugins = context.amplify.getCategoryPlugins(context);
+    let apiMigrateFunction;
 
     Object.keys(categoryPlugins).forEach((category) => {
       try {
         const { migrate } = require(categoryPlugins[category]);
         if (migrate) {
-          categoryMigrationTasks.push(() => migrate(context));
+          if (category !== 'api') {
+            categoryMigrationTasks.push(() => migrate(context));
+          } else {
+            apiMigrateFunction = migrate;
+          }
         }
       } catch (e) {
         // do nothing, it's fine if a category is not setup for migration
       }
     });
 
+    if (apiMigrateFunction) {
+      categoryMigrationTasks.unshift(() => apiMigrateFunction(context, 'AppSync'));
+      categoryMigrationTasks.push(() => apiMigrateFunction(context, 'API Gateway'));
+    }
+
     spinner.start('Migrating your project');
-    await sequential(categoryMigrationTasks);
     persistMigrationContext(context.migrationInfo);
+    // await sequential(categoryMigrationTasks);
+    for (let i = 0; i < categoryMigrationTasks.length; i++) {
+      try {
+        await categoryMigrationTasks[i]();
+      } catch (e) {
+        throw e;
+      }
+    }
     removeAmplifyRCFile(projectPath);
     updateGitIgnoreFile(projectPath);
     spinner.succeed('Migrated your project successfully.');
     context.print.warning('If you have added functions or interactions category to your project, please check the \'Auto-migration\' section at https://github.com/aws-amplify/docs/blob/master/cli/migrate.md');
+    // Run the `amplify push` flow
+    try {
+      await pushRun(context);
+    } catch (e) {
+      throw e;
+    }
   } catch (e) {
     spinner.fail('There was an error migrating your project.');
     rollback(amplifyDirPath, backupAmplifyDirPath);
@@ -179,8 +218,14 @@ function generateNewProjectConfig(projectConfig) {
   const frontendPluginPath = Object.keys(projectConfig.frontendHandler)[0];
   const frontendPlugin = frontendPluginPath.split('/')[frontendPluginPath.split('/').length - 1];
   const frontend = frontendPlugin.split('-')[frontendPlugin.split('-').length - 1];
-
   newProjectConfig.frontend = frontend;
+
+  if (projectConfig[`amplify-frontend-${frontend}`]) {
+    newProjectConfig[frontend] = projectConfig[`amplify-frontend-${frontend}`];
+    delete newProjectConfig[`amplify-frontend-${frontend}`];
+  }
+
+
   delete newProjectConfig.frontendHandler;
   newProjectConfig.version = constants.PROJECT_CONFIG_VERSION;
 
@@ -265,6 +310,14 @@ function generateBackendConfig(amplifyMeta) {
         amplifyMeta[category][resourceName].dependsOn;
         backendConfig[category][resourceName].build =
         amplifyMeta[category][resourceName].build;
+        // For AppSync we need to store the securityType output as well
+        if (amplifyMeta[category][resourceName].service === 'AppSync') {
+          backendConfig[category][resourceName].output = {};
+          if (amplifyMeta[category][resourceName].output) {
+            backendConfig[category][resourceName].output.securityType =
+            amplifyMeta[category][resourceName].output.securityType;
+          }
+        }
       });
     }
   });

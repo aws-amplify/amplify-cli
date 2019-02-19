@@ -7,12 +7,11 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
-    makeNonNullType, makeSchema, makeOperationType, blankObjectExtension,
-    extensionWithFields, ResourceConstants, makeListType
+    makeNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 
@@ -41,7 +40,7 @@ interface ModelDirectiveArgs {
 }
 
 /**
- * The simple transform.
+ * The @model transformer.
  *
  * This transform creates a single DynamoDB table for all of your application's
  * data. It uses a standard key structure and nested map to store object values.
@@ -85,6 +84,7 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
+        ctx.mergeConditions(template.Conditions)
     }
 
     /**
@@ -93,8 +93,20 @@ export class DynamoDBModelTransformer extends Transformer {
      * @param ctx The accumulated context for the transform.
      */
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
-        // Create the object type.
-        // ctx.addObject(def)
+        // Add a stack mapping so that all model resources are pulled
+        // into their own stack at the end of the transformation.
+        ctx.putStackMapping(
+            `${def.name.value}`,
+            [
+                ".*" + def.name.value + "Model",
+                ".*" + def.name.value + "DataSource",
+                ".*" + def.name.value + "IAMRole",
+                "^" + def.name.value + "Table",
+                // All resolvers except the search resolver.
+                "^[^S].*" + def.name.value + "Resolver",
+                "^" + def.name.value + ".+Resolver"
+            ]
+        )
 
         let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
             def,
@@ -118,15 +130,15 @@ export class DynamoDBModelTransformer extends Transformer {
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
         ctx.setResource(
             tableLogicalID,
-            this.resources.makeModelTable(typeName)
+            this.resources.makeModelTable(typeName, undefined, undefined)
         )
         ctx.setResource(
             iamRoleLogicalID,
-            this.resources.makeIAMRole(tableLogicalID)
+            this.resources.makeIAMRole(typeName)
         )
         ctx.setResource(
             ModelResourceIDs.ModelTableDataSourceID(typeName),
-            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID)
+            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
 
         this.createQueries(def, directive, ctx)
@@ -219,7 +231,11 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addMutationFields(mutationFields)
     }
 
-    private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createQueries = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+    ) => {
         const typeName = def.name.value
         const queryFields = []
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
@@ -396,7 +412,10 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addObjectExtension(makeModelConnectionType(def.name.value))
     }
 
-    private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    private generateFilterInputs(
+        ctx: TransformerContext,
+        def: ObjectTypeDefinitionNode,
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -404,8 +423,16 @@ export class DynamoDBModelTransformer extends Transformer {
             }
         }
 
+        // Create the Enum filters
+        const enumFilters = makeEnumFilterInputObjects(def, ctx);
+        for (const filter of enumFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
+        }
+
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(def)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }

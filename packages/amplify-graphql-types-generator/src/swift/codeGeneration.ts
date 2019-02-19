@@ -26,6 +26,7 @@ import { generateOperationId } from '../compiler/visitors/generateOperationId';
 import { collectAndMergeFields } from '../compiler/visitors/collectAndMergeFields';
 
 import '../utilities/array';
+import { isS3Field } from '../utilities/complextypes';
 
 export interface Options {
   namespace?: string;
@@ -853,7 +854,28 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
     const adoptedProtocols = ['GraphQLMapConvertible'];
     const fields = Object.values(type.getFields());
 
-    const properties = fields.map(this.helpers.propertyFromInputField, this.helpers);
+    let properties = fields.map(this.helpers.propertyFromInputField, this.helpers);
+
+    // File input should have localUri and mimeType which is used only in client
+    if (isS3Field(type)) {
+      properties = [
+        ...properties,
+        {
+          propertyName: 'localUri',
+          name: 'localUri',
+          typeName: 'String',
+          isOptional: false,
+          description: '',
+        },
+        {
+          propertyName: 'mimeType',
+          name: 'mimeType',
+          typeName: 'String',
+          isOptional: false,
+          description: '',
+        },
+      ];
+    }
 
     this.structDeclaration(
       { structName, description: description || undefined, adoptedProtocols },

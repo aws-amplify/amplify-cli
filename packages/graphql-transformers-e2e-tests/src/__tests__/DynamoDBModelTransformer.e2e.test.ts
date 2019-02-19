@@ -5,20 +5,33 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import { deploy } from '../deployNestedStacks';
+import { S3Client } from '../S3Client';
+import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
+import emptyBucket from '../emptyBucket';
+import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `DynamoDBModelTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `DynamoDBModelTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`
 
 let GRAPHQL_CLIENT = undefined;
+
+const TMP_ROOT = '/tmp/model_transform_tests/'
+
+const ROOT_KEY = 'deployments'
+
+let GRAPHQL_ENDPOINT = undefined;
 
 function outputValueSelector(key: string) {
     return (outputs: Output[]) => {
@@ -37,6 +50,7 @@ beforeAll(async () => {
         metadata: PostMetadata
         entityMetadata: EntityMetadata
         appearsIn: [Episode!]
+        episode: Episode
     }
     type Author @model {
         id: ID!
@@ -62,22 +76,30 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    try {
+        await awsS3Client.createBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Failed to create S3 bucket: ${e}`)
+    }
     try {
         console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
-        // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
-        console.log('Successfully created stack ' + STACK_NAME)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            BUILD_TIMESTAMP
+        )
         expect(finishedStack).toBeDefined()
-        console.log(finishedStack)
+        console.log(JSON.stringify(finishedStack, null, 4))
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+        GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
+        console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         const endpoint = getApiEndpoint(finishedStack.Outputs)
         const apiKey = getApiKey(finishedStack.Outputs)
@@ -105,7 +127,38 @@ afterAll(async () => {
             console.log(e)
         }
     }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
+    }
 })
+
+afterEach(async () => {
+  try {
+    // delete all the records 
+    console.log('deleting posts');
+    const response = await GRAPHQL_CLIENT.query(`
+    query {
+      listPosts {
+        items {
+          id
+        }
+      }
+    }`, {})
+    const rows = response.data.listPosts.items || [];
+    const deletePromises = [];
+    rows.forEach(row => {
+      deletePromises.push(GRAPHQL_CLIENT.query(`mutation delete{
+        deletePost(input: {id: "${row.id}"}) { id }
+      }`))
+    })
+    await Promise.all(deletePromises)
+  } catch (e) {
+    console.log(e);
+  }
+})
+
 
 /**
  * Test queries below
@@ -373,6 +426,176 @@ test('Test listPosts query with filter', async () => {
         expect(e).toBeUndefined()
     }
 })
+
+test('Test enum filters List', async () => {
+  try {
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+            createPost(input: { title: "Appears in New Hope", appearsIn: [NEWHOPE], episode: NEWHOPE }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
+      {}
+    );
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+            createPost(input: { title: "Appears in Jedi", appearsIn: [JEDI], episode: JEDI }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
+      {}
+    );
+    await GRAPHQL_CLIENT.query(
+        `mutation {
+              createPost(input: { title: "Appears in Empire", appearsIn: [EMPIRE], episode: EMPIRE }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
+        {}
+      );
+
+    await GRAPHQL_CLIENT.query(
+        `mutation {
+              createPost(input: { title: "Appears in Empire & JEDI", appearsIn: [EMPIRE, JEDI] }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
+        {}
+    );
+
+    // filter list of enums
+    const appearsInWithFilterResponseJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {eq: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInWithFilterResponseJedi.data.listPosts.items).toBeDefined();
+    const items = appearsInWithFilterResponseJedi.data.listPosts.items;
+    expect(items.length).toEqual(1);
+    expect(items[0].title).toEqual('Appears in Jedi');
+
+    const appearsInWithFilterResponseNonJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {ne: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
+    const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
+    expect(appearsInNonJediItems.length).toEqual(3);
+    appearsInNonJediItems.forEach((item) => {
+      expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    const appearsInContainingJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {contains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
+    const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
+    expect(appearsInWithJediItems.length).toEqual(2);
+    appearsInWithJediItems.forEach((item) => {
+      expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    const appearsInNotContainingJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {notContains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
+    const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
+    expect(appearsInWithNonJediItems.length).toEqual(2);
+    appearsInWithNonJediItems.forEach((item) => {
+      expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    // enum filter
+    const jediEpisode = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { episode: {eq: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(jediEpisode.data.listPosts.items).toBeDefined();
+    const jediEpisodeItems = jediEpisode.data.listPosts.items;
+    expect(jediEpisodeItems.length).toEqual(1);
+    expect(jediEpisodeItems[0].title).toEqual('Appears in Jedi')
+
+    const nonJediEpisode = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { episode: {ne: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(nonJediEpisode.data.listPosts.items).toBeDefined();
+    const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
+    expect(nonJediEpisodeItems.length).toEqual(3);
+    nonJediEpisodeItems.forEach((item) => {
+      expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title))
+        .toBeTruthy();
+    })
+  } catch (e) {
+    console.log(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test createPost mutation with non-model types', async () => {
     try {

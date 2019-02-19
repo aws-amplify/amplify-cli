@@ -8,8 +8,7 @@
         "emitDecoratorMetadata": true,
         "sourceRoot": "src",
         "lib": [
-            "es7",
-            "es2015",
+            "es2017",
             "dom",
             "esnext.asynciterable",
             "dom"

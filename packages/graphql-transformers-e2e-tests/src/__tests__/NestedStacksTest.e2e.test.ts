@@ -3,36 +3,53 @@ import {
     DefinitionNode, Kind, InputObjectTypeDefinitionNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
-import { ResourceConstants } from 'graphql-transformer-common'
-import { AppSyncTransformer } from '../AppSyncTransformer'
+import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import { ResourceConstants } from 'graphql-transformer-common';
 
 import fs = require('fs');
 import path = require('path');
 
-test('Test AppSyncTransformer validation happy case', () => {
+jest.setTimeout(2000000);
+
+test('Test custom root types with additional fields.', () => {
     const validSchema = `
-    type Post {
+    type Query {
+        additionalQueryField: String
+    }
+    type Mutation {
+        additionalMutationField: String
+    }
+    type Subscription {
+        additionalSubscriptionField: String
+    }
+    type Post @model {
         id: ID!
-        title: String!
-        createdAt: String
-        updatedAt: String
+        title: String
     }
     `
-    const directory = './fileTest';
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(directory + '//')
-
+            new DynamoDBModelTransformer()
         ]
     })
+    // GetAttGraphQLAPIId
     const out = transformer.transform(validSchema);
-    expect(out).toBeDefined()
-    expect(out.Parameters.env).toBeTruthy()
-    expect(out.Conditions.HasEnvironmentParameter).toBeTruthy()
-
-    expect(fs.existsSync('./fileTest/schema.graphql')).toBeTruthy()
-
-    cleanUpFiles(directory)
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    const mainStack = out.rootStack;
+    const postStack = out.stacks.Post;
+    expect(mainStack).toBeDefined()
+    expect(postStack).toBeDefined()
+    const schema = out.schema
+    expect(schema).toBeDefined()
+    const definition = out.schema
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const queryType = getObjectType(parsed, 'Query');
+    expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField'])
+    const mutationType = getObjectType(parsed, 'Mutation');
+    expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost', 'additionalSubscriptionField'])
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

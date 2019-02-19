@@ -152,6 +152,8 @@ def _lambda_handler(event, context):
         # Compute DynamoDB table, type and index for item
         doc_table = ddb_table_name.lower()
         doc_type = DOC_TYPE
+        doc_table_parts = doc_table.split('-')
+        doc_es_index_name = doc_table_parts[0] if len(doc_table_parts) > 0  else doc_table
 
         # Dispatch according to event TYPE
         event_name = record['eventName'].upper()  # INSERT, MODIFY, REMOVE
@@ -186,7 +188,7 @@ def _lambda_handler(event, context):
 
         print(doc_fields)
 
-        doc_index = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
+        doc_id = doc_fields['id'] if 'id' in doc_fields else compute_doc_index(
             ddb['Keys'], ddb_deserializer)
 
         # Generate JSON payload
@@ -195,8 +197,8 @@ def _lambda_handler(event, context):
         # If DynamoDB INSERT or MODIFY, send 'index' to ES
         if is_ddb_insert_or_update:
             # Generate ES payload for item
-            action = {'index': {'_index': doc_table,
-                                '_type': doc_type, '_id': doc_index}}
+            action = {'index': {'_index': doc_es_index_name,
+                                '_type': doc_type, '_id': doc_id}}
             # Action line with 'index' directive
             es_actions.append(json.dumps(action))
             # Payload line
@@ -204,8 +206,8 @@ def _lambda_handler(event, context):
 
         # If DynamoDB REMOVE, send 'delete' to ES
         elif is_ddb_delete:
-            action = {'delete': {'_index': doc_table,
-                                 '_type': doc_type, '_id': doc_index}}
+            action = {'delete': {'_index': doc_es_index_name,
+                                 '_type': doc_type, '_id': doc_id}}
             # Action line with 'index' directive
             es_actions.append(json.dumps(action))
 

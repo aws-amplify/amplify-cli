@@ -5,19 +5,28 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import ModelConnectionTransformer from 'graphql-connection-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
+import { deploy } from '../deployNestedStacks'
+import emptyBucket from '../emptyBucket';
+import { S3Client } from '../S3Client';
+import * as S3 from 'aws-sdk/clients/s3'
 import * as moment from 'moment';
+import * as fs from 'fs';
 
 jest.setTimeout(2000000);
 
 const cf = new CloudFormationClient('us-west-2')
+const customS3Client = new S3Client('us-west-2')
+const awsS3Client = new S3({ region: 'us-west-2' })
 
-const dateAppender = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `ModelConnectionTransformerTest-${dateAppender}`
+const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
+const STACK_NAME = `ModelConnectionTransformerTest-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `appsync-connection-transformer-test-${BUILD_TIMESTAMP}`
+const LOCAL_FS_BUILD_DIR = '/tmp/model_connection_transform_tests/'
+const S3_ROOT_DIR_KEY = 'deployments'
 
 let GRAPHQL_CLIENT = undefined;
 
@@ -52,21 +61,31 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(),
             new DynamoDBModelTransformer(),
             new ModelConnectionTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
+    // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+    try {
+        await awsS3Client.createBucket({
+            Bucket: BUCKET_NAME,
+        }).promise()
+    } catch (e) {
+        console.error(`Failed to create S3 bucket: ${e}`)
+    }
     try {
         console.log('Creating Stack ' + STACK_NAME)
-        const createStackResponse = await cf.createStack(out, STACK_NAME)
-        expect(createStackResponse).toBeDefined()
-        const finishedStack = await cf.waitForStack(STACK_NAME)
+        const finishedStack = await deploy(
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+            BUILD_TIMESTAMP
+        )
+
         // Arbitrary wait to make sure everything is ready.
-        await cf.wait(10, () => Promise.resolve())
+        await cf.wait(5, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
         expect(finishedStack).toBeDefined()
+        console.log(JSON.stringify(finishedStack, null, 4))
         const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
         const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
         const endpoint = getApiEndpoint(finishedStack.Outputs)
@@ -95,6 +114,11 @@ afterAll(async () => {
             console.error(e)
             expect(true).toEqual(false)
         }
+    }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) {
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 

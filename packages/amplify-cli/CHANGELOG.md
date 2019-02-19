@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.2.1-multienv.42"></a>
+## [0.2.1-multienv.42](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.41...@aws-amplify/cli@0.2.1-multienv.42) (2019-02-01)
+
+
+### Bug Fixes
+
+* restrict env names to lowercase ([c4d0523](https://github.com/aws-amplify/amplify-cli/commit/c4d0523)), closes [#373](https://github.com/aws-amplify/amplify-cli/issues/373)
+
+
+### Features
+
+* Modify amplify env add/import behvior ([ca4a459](https://github.com/aws-amplify/amplify-cli/commit/ca4a459))
+
+
+
+
+<a name="0.2.1-multienv.41"></a>
+## [0.2.1-multienv.41](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.40...@aws-amplify/cli@0.2.1-multienv.41) (2019-02-01)
+
+
+
+
+**Note:** Version bump only for package @aws-amplify/cli
+
 <a name="0.2.1-multienv.40"></a>
 ## [0.2.1-multienv.40](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@0.2.1-multienv.39...@aws-amplify/cli@0.2.1-multienv.40) (2019-01-30)
 

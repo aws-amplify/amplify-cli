@@ -1,16 +1,18 @@
-import Template from 'cloudform/types/template'
+import Template from 'cloudform-types/types/template'
 import {
     TypeSystemDefinitionNode, DirectiveDefinitionNode,
     Kind, DirectiveNode, TypeDefinitionNode, ObjectTypeDefinitionNode,
     InterfaceTypeDefinitionNode, ScalarTypeDefinitionNode, UnionTypeDefinitionNode,
     EnumTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode,
-    InputValueDefinitionNode, EnumValueDefinitionNode, validate
+    InputValueDefinitionNode, EnumValueDefinitionNode, validate, TypeExtensionNode
 } from 'graphql'
+import { DeploymentResources } from './DeploymentResources'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
 import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors'
 import { validateModelSchema } from './validation'
+import { TransformFormatter } from './TransformFormatter';
 
 function isFunction(obj: any) {
     return obj && (typeof obj === 'function')
@@ -150,6 +152,8 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
     return isValidLocation;
 }
 
+type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
+
 /**
  * A generic transformation library that takes as input a graphql schema
  * written in SDL and a set of transformers that operate on it. At the
@@ -157,11 +161,17 @@ function matchEnumValueDirective(definition: DirectiveDefinitionNode, directive:
  * is emitted.
  */
 export interface GraphQLTransformOptions {
-    transformers: Transformer[]
+    transformers: Transformer[],
+    // Override the formatter's stack mapping. This is useful when handling
+    // migrations as all the input/export/ref/getatt changes will be made
+    // automatically.
+    stackMapping?: StackMappingOption,
 }
+export type StackMappingOption = { [regexStr: string]: string };
 export default class GraphQLTransform {
 
     private transformers: Transformer[]
+    private stackMappingOverrides: StackMappingOption;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
     // that specifies we have run already run a directive at a given location.
@@ -173,6 +183,7 @@ export default class GraphQLTransform {
             throw new Error('Must provide at least one transformer.')
         }
         this.transformers = options.transformers;
+        this.stackMappingOverrides = options.stackMapping || {};
     }
 
     /**
@@ -183,7 +194,7 @@ export default class GraphQLTransform {
      * @param schema The model schema.
      * @param references Any cloudformation references.
      */
-    public transform(schema: string, template: Template = blankTemplate()): Template {
+    public transform(schema: string): DeploymentResources {
         this.seenTransformations = {}
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
@@ -211,7 +222,7 @@ export default class GraphQLTransform {
             // directives are not used where they are not allowed.
 
             // Apply each transformer and accumulate the context.
-            for (const def of context.inputDocument.definitions as TypeDefinitionNode[]) {
+            for (const def of context.inputDocument.definitions as TypeDefinitionOrExtension[]) {
                 switch (def.kind) {
                     case 'ObjectTypeDefinition':
                         this.transformObject(transformer, def, validDirectiveNameMap, context)
@@ -252,8 +263,18 @@ export default class GraphQLTransform {
             }
             reverseThroughTransformers -= 1
         }
-        // Write the schema.
-        return context.template
+        // Format the context into many stacks.
+        this.updateContextForStackMappingOverrides(context);
+        const formatter = new TransformFormatter({
+            stackRules: context.getStackMapping()
+        })
+        return formatter.format(context)
+    }
+
+    private updateContextForStackMappingOverrides(context: TransformerContext) {
+        for (const regexString of Object.keys(this.stackMappingOverrides)) {
+            context.addToStackMapping(this.stackMappingOverrides[regexString], regexString);
+        }
     }
 
     private transformObject(

@@ -7,7 +7,7 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require('../utils');
 
-async function generateStatements(context, forceDownloadSchema) {
+async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
   if (!projects.length) {
@@ -32,7 +32,11 @@ async function generateStatements(context, forceDownloadSchema) {
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
-    await statementsGen(schema, opsGenDirectory, { separateFiles: true, language });
+    await statementsGen(schema, opsGenDirectory, {
+      separateFiles: true,
+      language,
+      maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
+    });
     opsGenSpinner.succeed(
       constants.INFO_MESSAGE_OPS_GEN_SUCCESS + path.relative(path.resolve('.'), opsGenDirectory),
     );

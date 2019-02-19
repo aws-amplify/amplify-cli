@@ -1,8 +1,4 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
-import Amplify, { Auth } from 'aws-amplify';
+import Amplify from 'aws-amplify';
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -13,7 +9,7 @@ import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import * as S3 from 'aws-sdk/clients/s3'
-import { CreateBucketRequest, CreateBucketOutput } from 'aws-sdk/clients/s3'
+import { CreateBucketRequest } from 'aws-sdk/clients/s3'
 import {
     CreateGroupRequest, CreateGroupResponse,
     AdminAddUserToGroupRequest
@@ -23,11 +19,11 @@ import {
 } from 'amazon-cognito-identity-js';
 import TestStorage from '../TestStorage'
 import { GraphQLClient } from '../GraphQLClient'
-import AppSyncTransformer from 'graphql-appsync-transformer'
 import { S3Client } from '../S3Client';
 import * as path from 'path'
-import { deploy, cleanupS3Bucket } from '../deploy'
+import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
+import emptyBucket from '../emptyBucket';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -39,6 +35,8 @@ const cf = new CloudFormationClient('us-west-2')
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
 const STACK_NAME = `ConnectionsWithAuthTests-${BUILD_TIMESTAMP}`
 const BUCKET_NAME = `connections-with-auth-test-bucket-${BUILD_TIMESTAMP}`
+const LOCAL_BUILD_ROOT = '/tmp/connections_with_auth_test/'
+const DEPLOYMENT_ROOT_KEY = 'deployments'
 
 let GRAPHQL_ENDPOINT = undefined;
 
@@ -195,14 +193,10 @@ async function deleteBucket(name: string) {
     })
 }
 
-const TMP_ROOT = '/tmp/connections_with_auth_test/'
-
-const ROOT_KEY = ''
-
 beforeAll(async () => {
     // Create a stack for the post model with auth enabled.
-    if (!fs.existsSync(TMP_ROOT)) {
-        fs.mkdirSync(TMP_ROOT);
+    if (!fs.existsSync(LOCAL_BUILD_ROOT)) {
+        fs.mkdirSync(LOCAL_BUILD_ROOT);
     }
     await createBucket(BUCKET_NAME)
     const validSchema = `
@@ -219,7 +213,6 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new AppSyncTransformer(TMP_ROOT),
             new DynamoDBModelTransformer(),
             new ModelAuthTransformer(),
             new ModelConnectionTransformer()
@@ -227,11 +220,10 @@ beforeAll(async () => {
     })
     try {
         // Clean the bucket
-        deleteDirectory(TMP_ROOT)
         const out = transformer.transform(validSchema)
 
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, {}, LOCAL_BUILD_ROOT, BUCKET_NAME, DEPLOYMENT_ROOT_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
@@ -313,13 +305,9 @@ afterAll(async () => {
         }
     }
     try {
-        console.log('[start] deleting deployment bucket')
-        await cleanupS3Bucket(customS3Client, TMP_ROOT, BUCKET_NAME, ROOT_KEY, BUILD_TIMESTAMP)
-        await deleteBucket(BUCKET_NAME)
-        console.log('[done] deleting deployment bucket')
+        await emptyBucket(BUCKET_NAME);
     } catch (e) {
-        console.log(`[error] deleting deployment bucket`)
-        console.log(e);
+        console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
 

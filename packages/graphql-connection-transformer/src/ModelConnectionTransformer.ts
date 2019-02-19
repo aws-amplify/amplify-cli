@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
-import Table from 'cloudform/types/dynamoDb/table'
+import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
     Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
@@ -20,6 +20,9 @@ import {
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
+import Resource from 'cloudform-types/types/resource';
+
+const CONNECTION_STACK_NAME = 'ConnectionStack'
 
 function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
@@ -78,6 +81,10 @@ export class ModelConnectionTransformer extends Transformer {
     ): void => {
         const parentTypeName = parent.name.value;
         const fieldName = field.name.value;
+        ctx.addToStackMapping(
+            CONNECTION_STACK_NAME,
+            `^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`
+        )
         const parentModelDirective = parent.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
         if (!parentModelDirective) {
             throw new InvalidDirectiveError(`@connection must be on an @model object type field.`)
@@ -370,7 +377,7 @@ export class ModelConnectionTransformer extends Transformer {
         }
 
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(field)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }
