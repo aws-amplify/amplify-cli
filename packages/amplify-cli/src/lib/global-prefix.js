@@ -9,15 +9,10 @@ function getGlobalNodeModuleDirPath() {
   if (__dirname.includes(yarnPrefix)) {
     return path.join(yarnPrefix, 'node_modules');
   }
-  return path.join(getNpmPrefix(), 'lib', 'node_modules');
-}
-
-function getGlobalWindowsNodeModuleDirPath() {
-  const yarnPrefix = getYarnPrefix();
-  if (__dirname.includes(yarnPrefix)) {
-    return path.join(yarnPrefix, 'node_modules');
+  if (process.platform === 'win32') {
+	return path.join(getNpmPrefix(), 'node_modules');
   }
-  return path.join(getNpmPrefix(), 'node_modules');
+  return path.join(getNpmPrefix(), 'lib', 'node_modules');
 }
 
 function getYarnPrefix() {
@@ -115,4 +110,4 @@ function expand(filePath) {
   return filePath;
 }
 
-module.exports = { getGlobalNodeModuleDirPath, getGlobalWindowsNodeModuleDirPath };
+module.exports = { getGlobalNodeModuleDirPath };

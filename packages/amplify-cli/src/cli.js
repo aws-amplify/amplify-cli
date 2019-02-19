@@ -8,14 +8,12 @@ const MIGRATE = 'migrate';
 async function run(argv) {
   const localNodeModulesDirPath = getLocalNodeModulesDirPath();
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
-  const globalWindowsNodeModulesDirPath = globalPrefix.getGlobalWindowsNodeModuleDirPath();
   // Check for old version of projects and ask for migration steps
   const cli = build()
     .brand('amplify')
     .src(__dirname)
     .plugins(localNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
-    .plugins(globalWindowsNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .version() // provides default for version, v, --version, -v
     .create();
 
