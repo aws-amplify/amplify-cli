@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for this project
 
 ---
-Note: If your feature-request is regarding the AWS Amplify Console service, please log it in the 
+>**Note**: If your feature-request is regarding the AWS Amplify Console service, please log it in the 
 [official AWS Amplify Console forum](https://forums.aws.amazon.com/forum.jspa?forumID=314&start=0)
 
 **Is your feature request related to a problem? Please describe.**
