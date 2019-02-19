@@ -1,4 +1,4 @@
-const featureName = 'interactions';
+const featureName = 'xr';
 
 module.exports = {
   name: featureName,
