@@ -8,7 +8,7 @@ module.exports = {
   run: async (context) => {
     if (!multiEnvironmentSupportAvailable(context)) {
       context.print.info('');
-      context.print.error('Unfortunately, multiple environment support is not available for imported moible hub projects.');
+      context.print.error('Unfortunately, multiple environment support is not available for imported mobile hub projects.');
       return;
     }
     initRun(context);

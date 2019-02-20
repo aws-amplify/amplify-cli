@@ -30,7 +30,7 @@ async function importProject(context) {
       throw error;
     }
   } else {
-    context.print.error('Something went wrong. You did not specifiy a project id. Try this format \' amplify mobilehub-import [PROJECT-ID] \'');
+    context.print.error('Something went wrong. You did not specify a project id. Try this format \' amplify mobilehub-import [PROJECT-ID] \'');
   }
 }
 async function getMobileResources(projectId, context) {
