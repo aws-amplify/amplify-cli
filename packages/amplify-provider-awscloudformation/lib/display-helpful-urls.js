@@ -21,8 +21,7 @@ function showPinpointURL(context, resourcesToBeCreated) {
     const { Id, Region } =
         amplifyMeta[category][resourceName].output;
     const consoleUrl =
-        `https://console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/events`;
-
+      `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     context.print.info(chalk`Pinpoint URL to track events {blue.underline ${consoleUrl}}`);
   }
 }
