@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.6...amplify-graphql-docs-generator@1.0.7-beta.0) (2019-02-20)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** update prettier version ([#901](https://github.com/aws-amplify/amplify-cli/issues/901)) ([da2632d](https://github.com/aws-amplify/amplify-cli/commit/da2632d))
+
+
+
+
+
 ## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.5...amplify-graphql-docs-generator@1.0.6) (2019-02-12)
 
 
