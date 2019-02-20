@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.0.6...graphql-dynamodb-transformer@3.0.7) (2019-02-20)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** generate filters for connection ([#889](https://github.com/aws-amplify/amplify-cli/issues/889)) ([166d12c](https://github.com/aws-amplify/amplify-cli/commit/166d12c)), closes [#865](https://github.com/aws-amplify/amplify-cli/issues/865)
+
+
+
+
+
 ## [3.0.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.0.5...graphql-dynamodb-transformer@3.0.6) (2019-02-12)
 
 
