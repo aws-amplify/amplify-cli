@@ -53,6 +53,7 @@ async function getPinpointChannelDetail(context, options, channel, applicationId
     return await pinpoint.getApnsChannel({ ApplicationId: applicationId }).promise();
   }
 }
+
 module.exports = {
   getLambdaFunctionDetails,
   getDynamoDbDetails,

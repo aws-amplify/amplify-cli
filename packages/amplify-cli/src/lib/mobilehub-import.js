@@ -41,56 +41,55 @@ async function getMobileResources(projectId, context) {
 }
 
 async function createAmplifyMetaConfig(mobileHubResources, context) {
-  const mobileHubAmplifyMap = new Map();
-  mobileHubAmplifyMap.set('user-signin', 'auth');
-  mobileHubAmplifyMap.set('analytics', 'analytics');
-  mobileHubAmplifyMap.set('user-data', 'storage');
-  mobileHubAmplifyMap.set('hosting', 'storage');
-  mobileHubAmplifyMap.set('database', 'database');
-  mobileHubAmplifyMap.set('cloud-api', 'api');
-  mobileHubAmplifyMap.set('bots', 'interactions');
-  const config = {};
-  mobileHubAmplifyMap.forEach((amplifyCategory, mobileHubCategory) => {
-    const featureResult = mobileHubResources.details.resources
-      .filter(resource => resource.feature === mobileHubCategory);
+  const mobileHubAmplifyMap = {
+    'user-signin': 'auth',
+    analytics: 'analytics',
+    'user-data': 'storage',
+    hosting: 'storage',
+    database: 'database',
+    'cloud-api': 'api',
+    bots: 'interactions',
+  };
+  let config = { env: false };
+  const featurePromises = Object.keys(mobileHubAmplifyMap).map(async (mobileHubCategory) => {
+    // eslint-disable-next-line max-len
+    const featureResult = mobileHubResources.details.resources.filter(resource => resource.feature === mobileHubCategory);
     featureResult.region = mobileHubResources.details.region;
     if (featureResult) {
-      buildCategory(featureResult, mobileHubAmplifyMap, mobileHubCategory, config, context);
+      // eslint-disable-next-line max-len
+      config = await buildCategory(featureResult, mobileHubAmplifyMap, mobileHubCategory, config, context);
     }
   });
+  await Promise.all(featurePromises);
   return config;
 }
 
 
 // eslint-disable-next-line max-len
 async function buildCategory(featureResult, mobileHubAmplifyMap, mobileHubCategory, config, context) {
-  const amplifyCategory = mobileHubAmplifyMap.get(mobileHubCategory);
+  const amplifyCategory = mobileHubAmplifyMap[mobileHubCategory];
   switch (amplifyCategory) {
     case 'auth':
-      createAuth(featureResult, config);
-      break;
+      return createAuth(featureResult, config);
     case 'analytics':
-      createAnalytics(featureResult, config, context);
-      break;
+      return await createAnalytics(featureResult, config, context);
     case 'storage':
-      createStorage(featureResult, config, context);
-      break;
+      return createStorage(featureResult, config, context);
     case 'database':
-      createTables(featureResult, config, context);
-      break;
+      return await createTables(featureResult, config, context);
     case 'api':
-      await createApi(featureResult, config, context);
-      break;
+      return await createApi(featureResult, config, context);
     case 'interactions':
-      createInteractions(featureResult, config, context);
-      break;
+      return createInteractions(featureResult, config, context);
     default:
       return config;
   }
 }
 
 function createAuth(featureResult, config) {
-  const hasAuth = featureResult.find(item => item.type === 'AWS::Cognito::IdentityPool') && featureResult.find(item => item.type === 'AWS::Cognito::UserPool');
+  const hasAuth = featureResult.find(item => item.type === 'AWS::Cognito::IdentityPool')
+  && featureResult.find(item => item.type === 'AWS::Cognito::UserPool');
+
   if (hasAuth) {
     config.auth = {};
     config.auth[`cognito${new Date().getMilliseconds()}`] = {
@@ -107,8 +106,8 @@ function createAuth(featureResult, config) {
         UserPoolName: featureResult.find(item => item.type === 'AWS::Cognito::UserPool').name,
       },
     };
-    return config;
   }
+  return config;
 }
 
 async function createAnalytics(featureResult, config, context) {
@@ -141,7 +140,7 @@ function createStorage(featureResult, config) {
       },
     };
   }
-  createHosting(featureResult, config);
+  config = createHosting(featureResult, config);
   return config;
 }
 
@@ -163,6 +162,7 @@ async function createTables(featureResult, config, context) {
           Name: tableName,
         },
       };
+      // eslint-disable-next-line max-len
       const tableDetails = await getDynamoDbDetails(context, { region: featureResult.region }, tableName);
       const partitionKey = tableDetails.Table.KeySchema
         .find(item => item.KeyType === 'HASH').AttributeName;
@@ -171,8 +171,8 @@ async function createTables(featureResult, config, context) {
       config.storage[serviceName].output.PartitionKeyName = partitionKey;
       config.storage[serviceName].output.PartitionKeyType = partitionKeyType;
     }
-    return config;
   }
+  return config;
 }
 
 function createHosting(featureResult, config) {
@@ -213,8 +213,9 @@ async function createApi(featureResult, config, context) {
   if (hasFunctions) {
     const functions = featureResult.filter(item => item.type === 'AWS::Lambda::Function');
     config.function = {};
-    const functionDetails = await getLambdaFunctionDetails(context, { region: 'us-west-2' }, 'newsApi-newsHandler-mobilehub-1519951283');
-    functions.forEach((element) => {
+    const functionPromises = functions.map(async (element) => {
+      // eslint-disable-next-line max-len
+      const functionDetails = await getLambdaFunctionDetails(context, { region: featureResult.region }, element.name);
       if (!element.attributes.status.includes('DELETE_SKIPPED')) {
         config.function[`${element.name}`] = {
           service: 'Lambda',
@@ -223,12 +224,13 @@ async function createApi(featureResult, config, context) {
           build: true,
           output: {
             Region: element.attributes.region,
-            Arn: functionDetails.FunctionArn,
+            Arn: functionDetails.Configuration.FunctionArn,
             Name: element.name,
           },
         };
       }
     });
+    await Promise.all(functionPromises);
   }
   return config;
 }
@@ -242,13 +244,13 @@ function createInteractions(featureResult, config) {
       providerPlugin: 'awscloudformation',
       lastPushTimeStamp: new Date().toISOString(),
       output: {
-        FunctionArn: featureResult.find(item => item.type === 'AWS::Lex::Bot').arn, // TODO
+        FunctionArn: featureResult.find(item => item.type === 'AWS::Lex::Bot').arn,
         Region: featureResult.find(item => item.type === 'AWS::Lex::Bot').attributes.region,
         BotName: featureResult.find(item => item.type === 'AWS::Lex::Bot').name,
       },
     };
-    return config;
   }
+  return config;
 }
 
 async function createNotifications(featureResult, config, context) {
@@ -270,9 +272,10 @@ async function createNotifications(featureResult, config, context) {
       providerPlugin: 'awscloudformation',
       lastPushTimeStamp: new Date().toISOString(),
     };
-    await createNotificationsOutput(featureResult, channels, context);
-    return config;
+    // eslint-disable-next-line max-len
+    config.notifications[appName].output = await createNotificationsOutput(featureResult, channels, context);
   }
+  return config;
 }
 function hasNotifications(featureResult) {
   return featureResult.find(item => item.type === 'AWS::Pinpoint::AnalyticsApplication') &&
@@ -330,7 +333,6 @@ function getAmplifyMetaConfig(context) {
 function mergeConfig(amplifyMetaConfig, mobilehubResources) {
   if (amplifyMetaConfig.providers) {
     Object.keys(mobilehubResources).forEach((category) => {
-      // TODO: prompt user if they want to override
       amplifyMetaConfig[category] = mobilehubResources[category];
     });
   }
