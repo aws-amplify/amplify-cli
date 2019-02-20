@@ -17,8 +17,11 @@
 		"UnauthPolicyName": {
 			"Type": "String",
 			"Default": "UnauthPolicyName"
-		}
-	},
+        },
+        "env": {
+            "Type":  "String"
+        }
+    },
     "Resources": {
         "CognitoAuthPolicy": {
             "Type": "AWS::IAM::Policy",
