@@ -64,7 +64,6 @@ async function disableChannel(context, channelName) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.disable(context);
-    
   }
 }
 
