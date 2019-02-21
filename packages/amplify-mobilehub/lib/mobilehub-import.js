@@ -1,12 +1,12 @@
 const fs = require('fs-extra');
 const ora = require('ora');
-const Mobile = require('amplify-provider-awscloudformation/src/aws-utils/aws-mobilehub');
+const Mobile = require('../../amplify-provider-awscloudformation/src/aws-utils/aws-mobilehub');
 
 const {
   getLambdaFunctionDetails,
   getDynamoDbDetails,
   getPinpointChannelDetail,
-} = require('amplify-provider-awscloudformation/lib/mobilehub-import-helper');
+} = require('../../amplify-provider-awscloudformation/lib/mobilehub-import-helper');
 
 const spinner = ora('');
 

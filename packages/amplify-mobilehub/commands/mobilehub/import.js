@@ -1,7 +1,7 @@
-const { importProject } = require('../lib/mobilehub-import');
+const { importProject } = require('../../lib/mobilehub-import');
 
 module.exports = {
-  name: 'mobilehub-import',
+  name: 'import',
   run: async (context) => {
     await importProject(context);
   },

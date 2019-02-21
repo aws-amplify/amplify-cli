@@ -1,0 +1,17 @@
+{
+  "name": "amplify-mobilehub",
+  "version": "1.0.0",
+  "description": "mobilehub to amplify migrator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "amplify-provider-awscloudformation": "^1.0.8",
+    "eslint": "^4.9.0",
+    "fs-extra": "^7.0.0",
+    "ora": "^3.0.0"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0"
+}
