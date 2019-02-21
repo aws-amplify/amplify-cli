@@ -18,6 +18,12 @@ async function importProject(context) {
   if (context.parameters.first) {
     const projectId = context.parameters.first;
     try {
+      const providerInfoConfig = context.amplify.pathManager.getProviderInfoFilePath();
+      const providerInfo = JSON.parse(fs.readFileSync(providerInfoConfig));
+      if (Object.keys(providerInfo).length > 1) {
+        context.print.error('Importing a mobile hub project into an amplify project, with multiple environments is currently not supported.');
+        return;
+      }
       spinner.start('Importing your project');
       const mobileHubResources = await getMobileResources(projectId, context);
       await persistResourcesToConfig(mobileHubResources, context);
