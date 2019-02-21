@@ -14,15 +14,17 @@ async function migrate(context, serviceName) {
     if (categoryName === category) {
       Object.keys(amplifyMeta[category]).forEach((resourceName) => {
         try {
-          const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-          if (providerController) {
-            if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
-              migrateResourcePromises.push(providerController.migrateResource(
-                context,
-                projectPath,
-                amplifyMeta[category][resourceName].service,
-                resourceName,
-              ));
+          if (amplifyMeta[category][resourceName].providerPlugin) {
+            const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
+            if (providerController) {
+              if (!serviceName || serviceName === amplifyMeta[category][resourceName].service) {
+                migrateResourcePromises.push(providerController.migrateResource(
+                  context,
+                  projectPath,
+                  amplifyMeta[category][resourceName].service,
+                  resourceName,
+                ));
+              }
             }
           } else {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
