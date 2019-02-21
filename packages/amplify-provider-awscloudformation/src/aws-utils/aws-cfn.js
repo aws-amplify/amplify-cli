@@ -9,7 +9,6 @@ const aws = require('./aws.js');
 const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
-const { print } = require('gluegun/print');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -321,7 +320,8 @@ class CloudFormation {
           Object.keys(amplifyMeta).forEach((category) => {
             Object.keys(amplifyMeta[category]).forEach((resource) => {
               const logicalResourceId = category + resource;
-              const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+              const index = resources
+                .findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
               if (index !== -1) {
                 this.context.amplify.updateamplifyMetaAfterResourceUpdate(
                   category,
