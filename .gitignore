@@ -12,3 +12,4 @@ packages/graphql*/lib
 packages/amplify-graphql*/lib
 packages/*/node_modules
 packages/*/package-lock.json
+**/.env
