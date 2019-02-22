@@ -59,6 +59,7 @@ function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath) 
       Key: relativeFilePath,
       Body: fileStream,
       ContentType: contentType || 'text/plain',
+      ACL: 'public-read',
     };
 
     s3Client.upload(uploadParams, (err, data) => {
