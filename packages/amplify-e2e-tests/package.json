@@ -5,14 +5,14 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "e2e": "jest --maxWorkers=3",
-    "setup": "tsc && node ./lib/configure_tests.js",
+    "e2e": "npm run setup-profile && jest --maxWorkers=3",
+    "setup-profile": "tsc && node ./lib/configure_tests.js",
     "clean": "rm -rf ./lib"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "23.1.1",
+    "@types/jest": "23.1.6",
     "@types/node": "10.3.4",
     "aws-amplify": "1.1.4",
     "aws-sdk": "2.259.1",
