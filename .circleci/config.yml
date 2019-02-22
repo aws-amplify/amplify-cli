@@ -216,7 +216,6 @@ workflows:
                 - multienv
                 - beta
                 - release
-                - integtest-jest # TODO: remove this
           requires:
             - build
         
