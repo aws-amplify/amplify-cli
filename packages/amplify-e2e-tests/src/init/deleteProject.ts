@@ -2,7 +2,7 @@ import * as AWS from 'aws-sdk';
 import * as nexpect from 'nexpect';
 
 import { getCLIPath, isCI } from '../utils';
-import getProjectMeta from './projectMeta';
+import { getProjectMeta } from '../utils';
 export default function deleteProject(
   cwd: string,
   deleteDeploymentBucket: Boolean = true,

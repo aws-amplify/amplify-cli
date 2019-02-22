@@ -1,13 +1,12 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 import {
-  getProjectMeta,
   initProjectWithProfile,
   deleteProject,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
   initNewEnvWithProfile
 } from '../src/init';
-import { createNewProjectDir, deleteProjectDir, getEnvVars } from '../src/utils';
+import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../src/utils';
 import { access } from 'fs';
 
 describe('amplify init', () => {

@@ -16,7 +16,7 @@ async function setUpAmplify() {
     AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
       throw new Error(
-        'Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env or as Environment variable in CircleCI'
+        'Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env'
       );
     }
     await configure({
@@ -33,7 +33,7 @@ process.nextTick(async () => {
   try {
     await setUpAmplify();
   } catch (e) {
-    console.log(e);
+    console.log(e.stack);
     process.exit(1);
   }
 });

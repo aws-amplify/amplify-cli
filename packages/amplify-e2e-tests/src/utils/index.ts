@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
-import { Amplify } from 'aws-sdk';
 import { config } from 'dotenv';
+export { default  as getProjectMeta } from './projectMeta';
 
 // run dotenv config to update env variable
 config();

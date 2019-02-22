@@ -1,7 +1,7 @@
 require('../src/aws-matchers/'); // custom matcher for assertion
 
-import { getProjectMeta, initProjectWithProfile, deleteProject } from '../src/init';
-import { createNewProjectDir, deleteProjectDir } from '../src/utils';
+import { initProjectWithProfile, deleteProject } from '../src/init';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
 
 describe('amplify delete', () => {
   let projRoot: string;
