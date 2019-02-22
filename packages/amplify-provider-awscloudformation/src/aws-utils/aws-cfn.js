@@ -106,12 +106,13 @@ class CloudFormation {
   }
 
   generateFailedStackErrorMsgs(eventsWithFailure) {
-    const { envName } = this.context.amplify.getEnvInfo();
+    const { envName = '' } = this.context.amplify.getEnvInfo();
+    const envRegExp = new RegExp(`(-|_)${envName}`);
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map((event) => {
         const err = [];
-        const resourceName = event.PhysicalResourceId.replace(`-${envName}`, '') || event.LogicalResourceId;
+        const resourceName = event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
         err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
         err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
