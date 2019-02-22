@@ -115,7 +115,7 @@ class CloudFormation {
         const cfnURL = getCFNConsoleLink(event, this.cfn);
         err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
         err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
-        err.push(`${chalk.bold('Reson:')} ${event.ResourceStatusReason}`);
+        err.push(`${chalk.bold('Reason:')} ${event.ResourceStatusReason}`);
         if (cfnURL) {
           err.push(`${chalk.bold('URL:')} ${cfnURL}`);
         }
