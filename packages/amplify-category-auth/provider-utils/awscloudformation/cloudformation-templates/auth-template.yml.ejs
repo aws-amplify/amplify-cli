@@ -385,7 +385,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, !Join ['',[<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', '-', !Ref env]]]
     DependsOn: UserPoolClientInputs
   OpenIdLambda:
   # Lambda which sets OpenId Values
