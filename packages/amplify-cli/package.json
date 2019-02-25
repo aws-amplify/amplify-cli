@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "1.1.5-beta.0",
+  "version": "1.1.5-beta.1",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -32,7 +32,7 @@
     "amplify-frontend-android": "^1.0.5",
     "amplify-frontend-ios": "^1.0.5",
     "amplify-frontend-javascript": "^1.0.5",
-    "amplify-provider-awscloudformation": "^1.0.11-beta.0",
+    "amplify-provider-awscloudformation": "^1.0.11-beta.1",
     "babel-core": "^6.26.3",
     "cfonts": "^2.1.2",
     "chalk": "^2.0.1",
