@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.0.5...amplify-category-notifications@1.0.6-beta.0) (2019-02-26)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** fix lint issues ([b2f4dfe](https://github.com/aws-amplify/amplify-cli/commit/b2f4dfe))
+* **amplify-provider-awscloudformation:** fix pinpoint console url ([#912](https://github.com/aws-amplify/amplify-cli/issues/912)) ([77e3af6](https://github.com/aws-amplify/amplify-cli/commit/77e3af6)), closes [#910](https://github.com/aws-amplify/amplify-cli/issues/910)
+
+
+
+
+
 ## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.0.3-beta.0...amplify-category-notifications@1.0.5) (2019-02-11)
 
 **Note:** Version bump only for package amplify-category-notifications
