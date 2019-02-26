@@ -23,15 +23,9 @@ async function createPolicy(context) {
     PolicyDocument: getPolicyDoc(context),
   };
   const iamClient = await getIamClient(context);
-  return new Promise((resolve, reject) => {
-    iamClient.createPolicy(params, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data.Policy);
-      }
-    });
-  });
+
+  const data = await iamClient.createPolicy(params).promise();
+  return data.Policy;
 }
 
 async function attachPolicy(context, policy) {
@@ -48,15 +42,9 @@ async function attachPolicyToRole(context, policy, roleName) {
     PolicyArn: policy.Arn,
   };
   const iamClient = await getIamClient(context, 'update');
-  return new Promise((resolve, reject) => {
-    iamClient.attachRolePolicy(params, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
+
+  const data = await iamClient.attachRolePolicy(params).promise();
+  return data;
 }
 
 async function checkAuth(context) {

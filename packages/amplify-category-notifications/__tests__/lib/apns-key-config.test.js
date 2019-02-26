@@ -16,6 +16,7 @@ describe('apns-key-config', () => {
         TokenKeyId: mockTokenKeyId,
         P8FilePath: mockFielPath
     }; 
+    
     const mockP8DecoderReturn = 'mockP8DecoderReturn'; 
 
     beforeAll(() => {

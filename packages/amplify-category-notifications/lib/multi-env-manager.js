@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const pinpointHelper = require('./pinpoint-helper');
 const constants = require('./constants');
-const notificationManager = require('./notifications-manager');
+const notificationsManager = require('./notifications-manager');
 
 async function initEnv(context) {
   const pinpointNotificationsMeta = await constructPinpointNotificationsMeta(context);
@@ -12,11 +12,6 @@ async function initEnv(context) {
     writeData(context);
   }
   return pinpointNotificationsMeta;
-}
-
-// this function will be called after init and init-push are separated.
-async function initEnvPush(context, pinpointNotificationsMeta) {//eslint-disable-line
-  // await pushChanges(context, pinpointNotificationsMeta);//eslint-disable-line
 }
 
 async function constructPinpointNotificationsMeta(context) {
@@ -58,7 +53,7 @@ async function constructPinpointNotificationsMeta(context) {
   }
 
   if (pinpointApp) {
-    await notificationManager.pullAllChannels(context, pinpointApp);
+    await notificationsManager.pullAllChannels(context, pinpointApp);
     pinpointNotificationsMeta = {
       Name: pinpointApp.Name,
       service: constants.PinpointName,
@@ -113,7 +108,7 @@ async function deletePinpointAppForEnv(context, envName) {
 }
 
 async function pushChanges(context, pinpointNotificationsMeta) {
-  const availableChannels = notificationManager.getAvailableChannels();
+  const availableChannels = notificationsManager.getAvailableChannels();
   let pinpointInputParams;
   if (context.exeInfo &&
     context.exeInfo.inputParams &&
@@ -166,10 +161,10 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   const tasks = [];
   tasks.push(() => pinpointHelper.ensurePinpointApp(context));
   channelsToEnable.forEach((channel) => {
-    tasks.push(() => notificationManager.enableChannel(context, channel));
+    tasks.push(() => notificationsManager.enableChannel(context, channel));
   });
   channelsToDisable.forEach((channel) => {
-    tasks.push(() => notificationManager.disableChannel(context, channel));
+    tasks.push(() => notificationsManager.disableChannel(context, channel));
   });
   // channelsToUpdate.forEach((channel) => {
   //   tasks.push(() => notificationManager.configureChannel(context, channel));
@@ -182,7 +177,7 @@ function writeData(context) {
   const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
   let pinpointMeta;
   if (categoryMeta) {
-    const availableChannels = notificationManager.getAvailableChannels();
+    const availableChannels = notificationsManager.getAvailableChannels();
     const enabledChannels = [];
     const services = Object.keys(categoryMeta);
     for (let i = 0; i < services.length; i++) {
@@ -303,7 +298,7 @@ function extractMigrationInfo(context) {
     migrationInfo.Name = migrationInfo.output.Name;
     migrationInfo.Region = migrationInfo.output.Region;
     migrationInfo.channels = [];
-    const availableChannels = notificationManager.getAvailableChannels();
+    const availableChannels = notificationsManager.getAvailableChannels();
     availableChannels.forEach((channel) => {
       if (migrationInfo.output[channel] && migrationInfo.output[channel].Enabled) {
         migrationInfo.channels.push(channel);
@@ -348,7 +343,6 @@ function fillTeamProviderInfo(context, migrationInfo) {
 
 module.exports = {
   initEnv,
-  initEnvPush,
   deletePinpointAppForEnv,
   writeData,
   migrate,

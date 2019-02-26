@@ -157,18 +157,16 @@ async function createApp(context, pinpointAppName) {
   };
   const pinpointClient = await getPinpointClient(context, 'create');
   spinner.start('Creating Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.createApp(params, (err, data) => {
-      if (err) {
-        spinner.fail('Pinpoint project creation error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
+
+  try {
+    const data = await pinpointClient.createApp(params).promise();
+    spinner.succeed(`Successfully created Pinpoint project: ${data.ApplicationResponse.Name}`);
+    data.ApplicationResponse.Region = pinpointClient.config.region;
+    return data.ApplicationResponse;
+  } catch (err) {
+    spinner.fail('Pinpoint project creation error');
+    throw err;
+  }
 }
 
 async function getApp(context, pinpointAppId) {
@@ -177,18 +175,16 @@ async function getApp(context, pinpointAppId) {
   };
   spinner.start('Retrieving Pinpoint app information.');
   const pinpointClient = await getPinpointClient(context, 'get');
-  return new Promise((resolve, reject) => {
-    pinpointClient.getApp(params, (err, data) => {
-      if (err) {
-        spinner.fail('Pinpoint project retrieval error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
+
+  try {
+    const data = await pinpointClient.getApp(params).promise();
+    spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
+    data.ApplicationResponse.Region = pinpointClient.config.region;
+    return data.ApplicationResponse;
+  } catch (err) {
+    spinner.fail('Pinpoint project retrieval error');
+    throw err;
+  }
 }
 
 async function deleteApp(context, pinpointAppId) {
@@ -197,33 +193,15 @@ async function deleteApp(context, pinpointAppId) {
   };
   const pinpointClient = await getPinpointClient(context, 'delete');
   spinner.start('Deleting Pinpoint app.');
-  return new Promise((resolve, reject) => {
-    pinpointClient.deleteApp(params, (err, data) => {
-      if (err) {
-        spinner.fail('Pinpoint project deletion error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
-}
 
-function console(context) {
-  const { amplifyMeta } = context.exeInfo;
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
-  if (!pinpointApp) {
-    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
-  }
-  if (pinpointApp) {
-    const { Id, Region } = pinpointApp;
-    const consoleUrl =
-          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
-    opn(consoleUrl, { wait: false });
-  } else {
-    context.print.error('Neither notifications nor analytics is anabled in the cloud.');
+  try {
+    const data = await pinpointClient.deleteApp(params).promise();
+    spinner.succeed(`Successfully deleted Pinpoint project: ${data.ApplicationResponse.Name}`);
+    data.ApplicationResponse.Region = pinpointClient.config.region;
+    return data.ApplicationResponse;
+  } catch (err) {
+    spinner.fail('Pinpoint project deletion error');
+    throw err;
   }
 }
 
@@ -243,13 +221,29 @@ function isAnalyticsAdded(context) {
   return result;
 }
 
+function console(context) {
+  const { amplifyMeta } = context.exeInfo;
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
+  if (!pinpointApp) {
+    pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
+  }
+  if (pinpointApp) {
+    const { Id, Region } = pinpointApp;
+    const consoleUrl =
+          `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
+    opn(consoleUrl, { wait: false });
+  } else {
+    context.print.error('Neither notifications nor analytics is anabled in the cloud.');
+  }
+}
+
 
 module.exports = {
   getPinpointApp,
   ensurePinpointApp,
   deletePinpointApp,
+  scanCategoryMetaForPinpoint,
   getPinpointClient,
   isAnalyticsAdded,
-  scanCategoryMetaForPinpoint,
   console,
 };

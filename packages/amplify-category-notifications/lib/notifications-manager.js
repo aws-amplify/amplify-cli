@@ -47,7 +47,6 @@ function getDisabledChannels(context) {
       result.push(channel);
     }
   });
-
   return result;
 }
 
