@@ -34,8 +34,13 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceBuildDir = path.normalize(path.join(backEndDir, category, resourceName, 'build'));
     const projectBucket = getProjectBucket(context);
-    const buildDirectoryHash = await hashDirectory(resourceBuildDir);
-    const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildDirectoryHash}`;
+    let deploymentSubKey;
+    if (useDeprecatedParameters) {
+      deploymentSubKey = new Date().getTime();
+    } else {
+      deploymentSubKey = await hashDirectory(resourceBuildDir);
+    }
+    const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
 
     // Read parameters.json, add timestamps, and write to build/parameters.json
     const parametersFilePath = path.join(backEndDir, category, resourceName, PARAM_FILE_NAME);

@@ -293,10 +293,9 @@ export class DynamoDBModelTransformer extends Transformer {
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
-            this.generateFilterInputs(ctx, def)
-
             queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
         }
+        this.generateFilterInputs(ctx, def)
 
         ctx.addQueryFields(queryFields)
     }

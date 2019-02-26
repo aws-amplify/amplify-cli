@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.0...amplify-provider-awscloudformation@1.1.1) (2019-02-26)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.10...amplify-provider-awscloudformation@1.1.0) (2019-02-25)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix [#931](https://github.com/aws-amplify/amplify-cli/issues/931) ([bc724c9](https://github.com/aws-amplify/amplify-cli/commit/bc724c9))
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** show CFN error when push fail  ([#917](https://github.com/aws-amplify/amplify-cli/issues/917)) ([4502e4f](https://github.com/aws-amplify/amplify-cli/commit/4502e4f))
+
+
+
+
+
+## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.9...amplify-provider-awscloudformation@1.0.10) (2019-02-22)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix pinpoint console url ([#912](https://github.com/aws-amplify/amplify-cli/issues/912)) ([77e3af6](https://github.com/aws-amplify/amplify-cli/commit/77e3af6)), closes [#910](https://github.com/aws-amplify/amplify-cli/issues/910)
+
+
+
+
+
+## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.8...amplify-provider-awscloudformation@1.0.9) (2019-02-20)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.0.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.6...amplify-provider-awscloudformation@1.0.8) (2019-02-15)
+
+
+### Bug Fixes
+
+* add check for presence of s3template when forming nested cfn stack ([cc90080](https://github.com/aws-amplify/amplify-cli/commit/cc90080))
+* copy providerMetadata to amplify-meta during env init ([#880](https://github.com/aws-amplify/amplify-cli/issues/880)) ([b9c5f67](https://github.com/aws-amplify/amplify-cli/commit/b9c5f67))
+* remove console statement ([055967e](https://github.com/aws-amplify/amplify-cli/commit/055967e))
+
+
+
+
+
+## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.6...amplify-provider-awscloudformation@1.0.7) (2019-02-14)
+
+
+### Bug Fixes
+
+* add check for presence of s3template when forming nested cfn stack ([cc90080](https://github.com/aws-amplify/amplify-cli/commit/cc90080))
+* remove console statement ([055967e](https://github.com/aws-amplify/amplify-cli/commit/055967e))
+
+
+
+
+
 ## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.0.5...amplify-provider-awscloudformation@1.0.6) (2019-02-12)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

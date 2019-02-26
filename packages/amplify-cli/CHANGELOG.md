@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.5...@aws-amplify/cli@1.1.6) (2019-02-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/cli:** change get-when fn to use updated proj config ([b1ef085](https://github.com/aws-amplify/amplify-cli/commit/b1ef085))
+
+
+
+
+
+## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.4...@aws-amplify/cli@1.1.5) (2019-02-25)
+
+
+### Bug Fixes
+
+* typo on `amplify env` help text ([4837ec9](https://github.com/aws-amplify/amplify-cli/commit/4837ec9))
+
+
+
+
+
+## [1.1.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.3...@aws-amplify/cli@1.1.4) (2019-02-22)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.2...@aws-amplify/cli@1.1.3) (2019-02-20)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.0...@aws-amplify/cli@1.1.2) (2019-02-15)
+
+
+### Bug Fixes
+
+* remove warning about beta version of the CLI ([5029f4a](https://github.com/aws-amplify/amplify-cli/commit/5029f4a))
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.0...@aws-amplify/cli@1.1.1) (2019-02-14)
+
+
+### Bug Fixes
+
+* remove warning about beta version of the CLI ([5029f4a](https://github.com/aws-amplify/amplify-cli/commit/5029f4a))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.0.5...@aws-amplify/cli@1.1.0) (2019-02-12)
 
 

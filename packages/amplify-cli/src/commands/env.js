@@ -16,7 +16,7 @@ module.exports = {
       },
       {
         name: 'checkout <env-name> [--restore]',
-        description: 'Moves your environment to the environment specified in the command. Use the restore flag to overwirte your local backend configs with the backend configs of the environment specified.',
+        description: 'Moves your environment to the environment specified in the command. Use the restore flag to overwrite your local backend configs with the backend configs of the environment specified.',
       },
       {
         name: 'list [--details] [--json]',
