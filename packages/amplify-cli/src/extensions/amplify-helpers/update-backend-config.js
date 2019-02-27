@@ -4,6 +4,7 @@ const pathManager = require('./path-manager');
 function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  if (options.output) delete options.output;
   if (!backendConfig[category]) {
     backendConfig[category] = {};
   }

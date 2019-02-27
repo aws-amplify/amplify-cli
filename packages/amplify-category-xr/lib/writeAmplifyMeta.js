@@ -16,4 +16,3 @@ module.exports = (context) => {
 
   context.amplify.onCategoryOutputsChange(context);
 };
-

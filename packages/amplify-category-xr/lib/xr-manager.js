@@ -53,15 +53,15 @@ async function setupAccess(context) {
   jsonString = JSON.stringify(parameters, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
-  const metaData = {
-    service: constants.ServiceName,
-    providerPlugin: constants.ProviderPlugin,
-  };
-  await context.amplify.updateamplifyMetaAfterResourceAdd(
-    constants.CategoryName,
-    constants.ServiceName,
-    metaData,
-  );
+  // const metaData = {
+  //   service: constants.ServiceName,
+  //   providerPlugin: constants.ProviderPlugin,
+  // };
+  // await context.amplify.updateamplifyMetaAfterResourceAdd(
+  //   constants.CategoryName,
+  //   constants.ServiceName,
+  //   metaData,
+  // );
 
   context.exeInfo = context.amplify.getProjectDetails();
 }
@@ -140,7 +140,8 @@ function getExistingScenes(context) {
 
 async function addScene(context) {
   await ensureSetup(context);
-  context.print.info('Open the Amazon Sumerian console, and publish the scene you want to add.');
+  context.print.info(`Open the Amazon Sumerian console: ${chalk.green(getSumerianConsoleUrl(context))}`);
+  context.print.info('Publish the scene you want to add.');
   context.print.info('Then download the JSON configuration to your local computer.');
   await inquirer.prompt({
     name: 'pressEnter',
@@ -148,9 +149,26 @@ async function addScene(context) {
     message: 'Press Enter when ready.',
   });
 
-  let sceneConfig;
   let sceneName;
+  const existingScenes = getExistingScenes(context);
+  await inquirer.prompt({
+    name: 'sceneName',
+    type: 'input',
+    message: 'Provide a name for the scene:',
+    validate: (name) => {
+      if (existingScenes.includes(name)) {
+        return `${name} already exists, scene name must be a unique within the project`;
+      }
+      if (name === "") {
+        return "The scene name cannot be empty";
+      }
+      return true;
+    },
+  }).then((answer) => {
+    sceneName = answer.sceneName;
+  });
 
+  let sceneConfig;
   await inquirer.prompt({
     name: 'configFilePath',
     type: 'input',
@@ -159,16 +177,14 @@ async function addScene(context) {
       try {
         if (fs.existsSync(configFilePath)) {
           sumerianConfig = require(configFilePath);
-          const url = sumerianConfig.url;
-          const region = url.match(new RegExp("sumerian." + "(.*)" + ".amazonaws"))[1];
-          if (!region) {
-            sceneConfig = undefined;
-          } else {
-            sumerianConfig['region'] = region;
-            sceneConfig = {
-              sceneConfig: sumerianConfig
-            };
+
+          // Validate that the config is proper structure
+          if (!sumerianConfig.url || !sumerianConfig.sceneId || !sumerianConfig.region) {
+            return "Sumerian scene config is not in the correct format.";
           }
+          sceneConfig = {
+            sceneConfig: sumerianConfig,
+          };
         }
       } catch (e) {
         sceneConfig = undefined;
@@ -180,91 +196,113 @@ async function addScene(context) {
     },
   });
 
-  const existingScenes = getExistingScenes(context);
-  await inquirer.prompt({
-    name: 'sceneName',
-    type: 'input',
-    message: 'Provide a name for the scene:',
-    validate: (name) => {
-      if (!existingScenes.includes(name)) {
-        return true;
-      }
-      return `${name} already exists, scene name must ben unique within the project`;
-    },
-  }).then((answer) => {
-    sceneName = answer.sceneName;
-  });
-
-  const { amplifyMeta } = context.exeInfo;
-  if (!amplifyMeta[constants.CategoryName][constants.ServiceName].output) {
-    amplifyMeta[constants.CategoryName][constants.ServiceName].output = {};
+  const options = {
+    service: 'Sumerian',
+    output: sceneConfig
   }
-  amplifyMeta[constants.CategoryName][constants.ServiceName].output[sceneName] = sceneConfig;
-  writeAmplifyMeta(context);
+  
+  context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, sceneName, options);
+  context.amplify.saveEnvResourceParameters(context, constants.CategoryName, sceneName, sceneConfig);
+  // const { amplifyMeta } = context.exeInfo;
+  // if (!amplifyMeta[constants.CategoryName][constants.ServiceName].output) {
+  //   amplifyMeta[constants.CategoryName][constants.ServiceName].output = {};
+  // }
+  // amplifyMeta[constants.CategoryName][constants.ServiceName].output[sceneName] = sceneConfig;
+  // writeAmplifyMeta(context);
+  // writeTeamProviderInfo(amplifyMeta[constants.CategoryName][constants.ServiceName], context);
+
+  context.print.info(`${sceneName} has been added.`);
 }
 
-function remove(context) {
-  if (isXRSetup(context)) {
-    const existingScenes = getExistingScenes(context);
-    if (existingScenes && existingScenes.length > 0) {
-      inquirer.prompt({
-        name: 'existingScenes',
-        message: 'Choose the scene to remove:',
-        type: 'list',
-        choices: existingScenes,
-      }).then((answer) => {
-        delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName].output[answer.existingScenes];
-        context.print.info(existingScenes);
-        writeAmplifyMeta(context);
-      });
-      // Trying to handle if there is only 1 scene left then removing the category
-      // } else if (existingScenes && existingScenes.length === 1) {
-      // One scene remaining in the scene configuration
-      // inquirer.prompt({
-      //   name: 'removeXRConfiguration',
-      //   message: `Would you like to remove ${existingScenes[0]}?`,
-      //   type: 'confirm',
-      //   default: true,
-      // }).then((answer) => {
-      //   if (answer.removeXRConfiguration) {
-      //     delete context.exeInfo.amplifyMeta[constants.CategoryName];
-      //     writeAmplifyMeta(context);
-      //     inquirer.prompt({
-      //       name: 'removePolicies',
-      //       message: 'Do you want to remove IAM policies for sumerian scene access',
-      //       type: 'confirm',
-      //       default: false,
-      //     }).then((answer) => {
-      //       if (answer.removePolicies) {
-      //         removeAccess(context);
-      //       }
-      //     });
-      //   }
-      // });
-    } else {
-      context.print.warning('Your project does NOT have xr scenes.');
-      inquirer.prompt({
-        name: 'removePolicies',
-        message: 'Do you want to remove IAM policies for sumerian scene access',
-        type: 'confirm',
-        default: false,
-      }).then((answer) => {
-        if (answer.removePolicies) {
-          removeAccess(context);
-        }
-      });
+// function writeTeamProviderInfo(metadata, context) {
+//   const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
+//   if (fs.existsSync(teamProviderInfoFilepath)) {
+//     const { envName } = context.exeInfo.localEnvInfo;
+//     const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
+//     teamProviderInfo[envName] = teamProviderInfo[envName] || {};
+//     teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
+//     teamProviderInfo[envName].categories[constants.CategoryName] =
+//               teamProviderInfo[envName].categories[constants.CategoryName] || {};
+//     teamProviderInfo[envName].categories[constants.CategoryName][constants.ServiceName] = metadata;
+//     const jsonString = JSON.stringify(teamProviderInfo, null, 4);
+//     fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
+//   }
+// }
+
+async function remove(context) {
+  // context.amplify.removeResourceParameters(context, constants.CategoryName);
+  return context.amplify.removeResource(context, constants.CategoryName)
+    .then((resp) => {
+      context.amplify.removeResourceParameters(context, constants.CategoryName, resp.resourceName);
+    })
+    .catch((err) => {
+      context.print.info(err.stack);
+    });
+
+  // if (isXRSetup(context)) {
+  //   let existingScenes = getExistingScenes(context);
+  //   if (existingScenes && existingScenes.length > 1) {
+  //     inquirer.prompt({
+  //       name: 'sceneToRemove',
+  //       message: 'Choose the scene to remove:',
+  //       type: 'list',
+  //       choices: existingScenes,
+  //     }).then((answer) => {
+  //       delete context.exeInfo.amplifyMeta[constants.CategoryName][constants.ServiceName].output[answer.sceneToRemove];
+  //       writeAmplifyMeta(context);
+  //       existingScenes = getExistingScenes(context);
+  //       context.print.info(`${answer.sceneToRemove} has been removed.`);
+  //     });
+  //   } else if (existingScenes && existingScenes.length === 1) {
+  //     // One scene remaining in the scene configuration
+  //     // Prompt to remove the IAM policies
+  //     inquirer.prompt({
+  //       name: 'removeLastScene',
+  //       message: `Would you like to remove ${existingScenes[0]}?`,
+  //       type: 'confirm',
+  //       default: true,
+  //     }).then((answer) => {
+  //       if (answer.removeLastScene) {
+  //         delete context.exeInfo.amplifyMeta[constants.CategoryName];
+  //         context.print.info(`${answer.removeLastScene} has been removed.`);
+  //         writeAmplifyMeta(context);
+  //         context.print.warning('Your project no longer has any XR scenes configured.');
+  //         removePolicyPrompt();
+  //       }
+  //     });
+  //   } else {
+  //     // No XR scenes configured
+  //     context.print.warning('Your project does NOT have any XR scenes configured.');
+  //     removePolicyPrompt();
+  //   }
+  // } else {
+  //   context.print.error('You have NOT added the XR category yet.');
+  // }
+  
+}
+
+function removePolicyPrompt() {
+  inquirer.prompt({
+    name: 'removePolicies',
+    message: 'Do you want to remove IAM policies for sumerian scene access',
+    type: 'confirm',
+    default: false,
+  }).then((answer) => {
+    if (answer.removePolicies) {
+      removeAccess(context);
     }
-  } else {
-    context.print.error('You have NOT added the XR category yet.');
-  }
+  });
+}
+
+function getSumerianConsoleUrl(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const region = amplifyMeta.providers.awscloudformation.Region;
+  const consoleUrl = `https://console.aws.amazon.com/sumerian/home/start?region=${region}`;
+  return consoleUrl;
 }
 
 function console(context) {
-  const amplifyMeta = context.amplify.getProjectMeta();
-  const region = amplifyMeta.providers.awscloudformation.Region;
-  const consoleUrl =
-          `https://console.aws.amazon.com/sumerian/home/start?region=${region}`;
-  context.print.info(chalk.green(consoleUrl));
+  context.print.info(chalk.green(getSumerianConsoleUrl(context)));
   opn(consoleUrl, { wait: false });
 }
 
