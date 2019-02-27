@@ -8,7 +8,9 @@ import {
   GraphQLList,
   isObjectType,
   isInterfaceType,
-  isUnionType
+  isUnionType,
+  isEnumType,
+  isScalarType,
 } from 'graphql'
 import getFragment from './getFragment'
 import { GQLConcreteType, GQLTemplateField, GQLTemplateFragment, GQLDocsGenOptions } from './types'
@@ -33,7 +35,7 @@ export default function getFields(
       ? schema.getPossibleTypes(fieldType)
       : {};
 
-  if (depth < 1 && !(fieldType instanceof GraphQLScalarType)) {
+  if (depth < 1 && !(isScalarType(fieldType) || isEnumType(fieldType))) {
     return
   }
 
