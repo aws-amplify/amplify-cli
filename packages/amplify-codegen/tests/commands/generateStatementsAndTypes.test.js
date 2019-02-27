@@ -4,6 +4,7 @@ const generateTypes = require('../../src/commands/types');
 const generateStatementsAndTypes = require('../../src/commands/generateStatementsAndType');
 const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors');
 const constants = require('../../src/constants');
+const path = require('path');
 
 const {
   downloadIntrospectionSchemaWithProgress,
@@ -13,6 +14,11 @@ const {
 const MOCK_CONTEXT = {
   print: {
     info: jest.fn(),
+  },
+  amplify: {
+    pathManager: {
+      searchProjectRootPath: jest.fn(),
+    },
   },
 };
 
@@ -28,6 +34,7 @@ const MOCK_TARGET = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
+const MOCK_PROJECT_ROOT = 'MOCK_PROJECT_ROOT';
 
 const MOCK_PROJECT = {
   includes: [MOCK_INCLUDE_PATH],
@@ -48,6 +55,7 @@ describe('command - generateStatementsAndTypes', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
+    MOCK_CONTEXT.amplify.pathManager.searchProjectRootPath.mockReturnValue(MOCK_PROJECT_ROOT);
   });
 
   it('should generate statements and types', async () => {
@@ -64,7 +72,7 @@ describe('command - generateStatementsAndTypes', () => {
     expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       MOCK_API_ID,
-      MOCK_SCHEMA,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_REGION,
     );
   });

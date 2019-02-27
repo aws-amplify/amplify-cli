@@ -10,20 +10,22 @@ const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require(
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
+  const projectRoot = context.amplify.pathManager.searchProjectRootPath();
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
   projects.forEach(async (cfg) => {
-    const includeFiles = cfg.includes[0];
-    const opsGenDirectory =
-      cfg.amplifyExtension.docsFilePath || path.dirname(path.dirname(includeFiles));
-    const schema = path.resolve(cfg.schema);
+    const includeFiles = path.join(projectRoot, cfg.includes[0]);
+    const opsGenDirectory = cfg.amplifyExtension.docsFilePath
+      ? path.join(projectRoot, cfg.amplifyExtension.docsFilePath)
+      : path.dirname(path.dirname(includeFiles));
+    const schema = path.join(projectRoot, cfg.schema);
     if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
       await downloadIntrospectionSchemaWithProgress(
         context,
         cfg.amplifyExtension.graphQLApiId,
-        cfg.schema,
+        schema,
         cfg.amplifyExtension.region,
       );
     }
