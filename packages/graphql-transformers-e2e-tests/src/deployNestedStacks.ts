@@ -124,7 +124,7 @@ export async function deploy(
         console.error(`Error cleaning up build directory: ${e}`)
     }
     try {
-        console.log('Adding APIKey to deployment') 
+        console.log('Adding APIKey to deployment')
         addAPIKeys(deploymentResources);
         console.log('Finished adding APIKey to deployment')
 
@@ -166,7 +166,6 @@ export async function deploy(
 }
 
 function addAPIKeys(stack: DeploymentResources) {
-    console.log(stack)
     if (!stack.rootStack.Resources.GraphQLAPIKey) {
         stack.rootStack.Resources.GraphQLAPIKey = {
             "Type": "AWS::AppSync::ApiKey",
@@ -188,19 +187,6 @@ function addAPIKeys(stack: DeploymentResources) {
                     "GraphQLAPIKey",
                     "ApiKey"
                 ]
-            },
-            "Export": {
-                "Name": {
-                    "Fn::Join": [
-                        ":",
-                        [
-                            {
-                                "Ref": "AWS::StackName"
-                            },
-                            "GraphQLApiKey"
-                        ]
-                    ]
-                }
             },
         }
     }
