@@ -47,22 +47,13 @@ export class ResourceFactory {
         return {
             Parameters: this.makeParams(),
             Resources: {
-                [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI(),
-                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
+                [ResourceConstants.RESOURCES.GraphQLAPILogicalID]: this.makeAppSyncAPI()
             },
             Outputs: {
                 [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeAPIIDOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
+                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeAPIEndpointOutput()
             },
             Conditions: {
-                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne]:
-                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
-                [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive]:
-                    Fn.And([
-                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
-                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
-                    ]),
                 [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]:
                     Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST')
             }
@@ -90,19 +81,6 @@ export class ResourceFactory {
         })
     }
 
-    public makeAppSyncApiKey() {
-        const oneWeekFromNowInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * 7 /* d */
-        const nowEpochTime = Math.floor(Date.now() / 1000)
-        return new AppSync.ApiKey({
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Expires: Fn.If(
-                ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive,
-                Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch),
-                nowEpochTime + oneWeekFromNowInSeconds
-            ),
-        }).condition(ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne)
-    }
-
     /**
      * Outputs
      */
@@ -123,17 +101,6 @@ export class ResourceFactory {
             Export: {
                 Name: Fn.Join(':', [Refs.StackName, "GraphQLApiEndpoint"])
             }
-        }
-    }
-
-    public makeApiKeyOutput(): any {
-        return {
-            Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
-            },
-            Condition: ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsNotNegOne
         }
     }
 

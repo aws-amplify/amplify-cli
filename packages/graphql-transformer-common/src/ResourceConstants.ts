@@ -65,7 +65,7 @@ export class ResourceConstants {
 
         // Auth
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
-        APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
+        ShouldCreateAPIKey: 'ShouldCreateAPIKey',
         APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
     }
     public static OUTPUTS = {

@@ -2,7 +2,7 @@ import Template from 'cloudform-types/types/template'
 import Cognito from 'cloudform-types/types/cognito'
 import Output from 'cloudform-types/types/output'
 import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
-import { Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
+import { AppSync, Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
 import { AuthRule } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
@@ -65,17 +65,43 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.AuthCognitoUserPoolLogicalID]: this.makeUserPool(),
                 [ResourceConstants.RESOURCES.AuthCognitoUserPoolNativeClientLogicalID]: this.makeUserPoolNativeClient(),
                 [ResourceConstants.RESOURCES.AuthCognitoUserPoolJSClientLogicalID]: this.makeUserPoolJSClient(),
+                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
             },
             Outputs: {
                 [ResourceConstants.OUTPUTS.AuthCognitoUserPoolNativeClientOutput]: this.makeNativeClientOutput(),
                 [ResourceConstants.OUTPUTS.AuthCognitoUserPoolJSClientOutput]: this.makeJSClientOutput(),
-                [ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput]: this.makeUserPoolOutput()
+                [ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput]: this.makeUserPoolOutput(),
+                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
             },
             Conditions: {
-                [ResourceConstants.CONDITIONS.AuthShouldCreateUserPool]: this.makeShouldCreateUserPoolCondition()
+                [ResourceConstants.CONDITIONS.AuthShouldCreateUserPool]: this.makeShouldCreateUserPoolCondition(),
+                [ResourceConstants.CONDITIONS.ShouldCreateAPIKey]:
+                Fn.And([
+                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId), ResourceConstants.NONE)
+                ]),
+            [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive]:
+                Fn.And([
+                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
+                    Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
+                ]),
             }
         }
     }
+
+    public makeAppSyncApiKey() {
+        const oneWeekFromNowInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * 7 /* d */
+        const nowEpochTime = Math.floor(Date.now() / 1000)
+        return new AppSync.ApiKey({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Expires: Fn.If(
+                ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive,
+                Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch),
+                nowEpochTime + oneWeekFromNowInSeconds
+            ),
+        }).condition(ResourceConstants.CONDITIONS.ShouldCreateAPIKey)
+    }
+
 
     /**
      * Conditions
@@ -87,6 +113,18 @@ export class ResourceFactory {
     /**
      * Outputs
      */
+
+    public makeApiKeyOutput(): any {
+        return {
+            Description: "Your GraphQL API key. Provide via 'x-api-key' header.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
+            Export: {
+                Name: Fn.Join(':', [Refs.StackName, "GraphQLApiKey"])
+            },
+            Condition: ResourceConstants.CONDITIONS.ShouldCreateAPIKey
+        }
+    }
+
     public makeNativeClientOutput(): Output {
         return {
             Description: "Amazon Cognito UserPools native client ID",

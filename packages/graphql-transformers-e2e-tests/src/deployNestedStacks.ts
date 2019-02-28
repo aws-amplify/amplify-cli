@@ -124,6 +124,10 @@ export async function deploy(
         console.error(`Error cleaning up build directory: ${e}`)
     }
     try {
+        console.log('Adding APIKey to deployment') 
+        addAPIKeys(deploymentResources);
+        console.log('Finished adding APIKey to deployment')
+
         console.log('Writing deployment to disk...')
         writeDeploymentToDisk(deploymentResources, buildPath);
         console.log('Finished writing deployment to disk.')
@@ -158,5 +162,46 @@ export async function deploy(
     } catch (e) {
         console.log(`Error deploying cloudformation stack: ${e}`)
         throw(e);
+    }
+}
+
+function addAPIKeys(stack: DeploymentResources) {
+    console.log(stack)
+    if (!stack.rootStack.Resources.GraphQLAPIKey) {
+        stack.rootStack.Resources.GraphQLAPIKey = {
+            "Type": "AWS::AppSync::ApiKey",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                }
+            }
+        }
+    }
+
+    if (!stack.rootStack.Outputs.GraphQLAPIKeyOutput) {
+        stack.rootStack.Outputs.GraphQLAPIKeyOutput = {
+            "Value": {
+                "Fn::GetAtt": [
+                    "GraphQLAPIKey",
+                    "ApiKey"
+                ]
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Join": [
+                        ":",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "GraphQLApiKey"
+                        ]
+                    ]
+                }
+            },
+        }
     }
 }
