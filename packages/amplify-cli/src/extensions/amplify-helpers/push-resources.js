@@ -35,7 +35,13 @@ async function pushResources(context, category, resourceName) {
   }
 
 
-  await showResourceTable(category, resourceName);
+  const hasChanges = await showResourceTable(category, resourceName);
+
+  // no changes detected
+  if (!hasChanges && !context.exeInfo.forcePush) {
+    context.print.info('\nNo changes detected');
+    return context;
+  }
 
   let continueToPush = context.exeInfo.inputParams.yes;
   if (!continueToPush) {

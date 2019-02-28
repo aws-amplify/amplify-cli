@@ -179,7 +179,14 @@ function storeCurrentCloudBackend(context) {
 
     const zip = archiver.create('zip', {});
     zip.pipe(output);
-    zip.directory(currentCloudBackendDir, false);
+    zip.glob(
+      '**',
+      {
+        cwd: currentCloudBackendDir,
+        ignore: ['*/*/build/**', '*/*/dist/**', '*/*/node_modules/**'],
+        dot: true,
+      },
+    );
     zip.finalize();
   })
     .then((result) => {
