@@ -3,6 +3,8 @@ jest.mock('../RelationalDBResolverGenerator')
 import RelationalDBTemplateGenerator from '../RelationalDBTemplateGenerator'
 import TemplateContext from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
+import { ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
+
 
 
 const schema = parse(`
@@ -27,6 +29,15 @@ context.databaseSchema = 'mysql'
 context.databaseName = 'pets'
 context.region = 'us-east-1'
 
+const emptyCliContext = {
+    amplify: {
+        loadEnvResourceParameters(context: any, category: string, service: string) {
+            return {
+            }
+        }
+    }
+}
+
 const templateGenerator = new RelationalDBTemplateGenerator(context)
 
 /**
@@ -34,26 +45,24 @@ const templateGenerator = new RelationalDBTemplateGenerator(context)
  * generating the base cloudform template (the cfn specs sans resolvers)
  */
 test('Test Base CloudForm Template Generation', () => {
-    const template = templateGenerator.createTemplate()
+    const template = templateGenerator.createTemplate(emptyCliContext)
 
     expect(template).toBeDefined()
     expect(template.AWSTemplateFormatVersion).toBeDefined()
     expect(template.AWSTemplateFormatVersion).toBe('2010-09-09')
     expect(template.Parameters).toBeDefined()
-    expect(template.Parameters).toHaveProperty('AppSyncApiName')
+    expect(template.Parameters).toHaveProperty(ResourceConstants.PARAMETERS.AppSyncApiName)
 
     // Verify Resources were created as expected
     expect(template.Resources).toBeDefined()
-    expect(template.Resources).toHaveProperty('GraphQLAPIKey')
-    expect(template.Resources).toHaveProperty('GraphQLAPI')
-    expect(template.Resources).toHaveProperty('RelationalDatabaseAccessRole')
-    expect(template.Resources).toHaveProperty('RelationalDatabaseDataSource')
+    expect(template.Resources).toHaveProperty(ResourceConstants.RESOURCES.RelationalDatabaseAccessRole)
+    expect(template.Resources).toHaveProperty(ResourceConstants.RESOURCES.RelationalDatabaseAccessRole)
 
     // Verify Outputs were created as expected
     expect(template.Outputs).toBeDefined()
-    expect(template.Outputs).toHaveProperty('GraphQLAPIKeyOutput')
-    expect(template.Outputs).toHaveProperty('GraphQLAPIEndpointOutput')
-    expect(template.Outputs).toHaveProperty('GraphQLAPIIdOutput')
+    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
+    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIIdOutput)
 })
 
 /**
@@ -61,7 +70,7 @@ test('Test Base CloudForm Template Generation', () => {
  * a template with the Relational Resolvers attached.
  */
 test('Test Adding Resolvers to CloudForm Template', () => {
-    const baseTemplate = templateGenerator.createTemplate()
+    const baseTemplate = templateGenerator.createTemplate(emptyCliContext)
     expect(baseTemplate).toBeDefined()
     expect(baseTemplate.Resources).toBeDefined()
     expect(baseTemplate.Resources).not.toHaveProperty('')
@@ -75,7 +84,7 @@ test('Test Adding Resolvers to CloudForm Template', () => {
  * cfn template as a JSON string.
  */
 test('Test Printing the cloudform template as a JSON', () => {
-    const baseTemplate = templateGenerator.createTemplate()
+    const baseTemplate = templateGenerator.createTemplate(emptyCliContext)
     expect(baseTemplate).toBeDefined()
 
     const templateJSON = templateGenerator.printCloudformationTemplate(baseTemplate)

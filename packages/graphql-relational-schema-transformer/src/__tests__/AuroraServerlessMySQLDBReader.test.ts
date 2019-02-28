@@ -1,6 +1,6 @@
 import TemplateContext, { TableContext } from '../RelationalDBSchemaTransformer'
 import { Kind} from 'graphql'
-import { MySQLRelationalDBReader } from '../MySQLRelationalDBReader';
+import { AuroraServerlessMySQLDatabaseReader } from '../AuroraServerlessMySQLDatabaseReader';
 import { AuroraDataAPIClient, ColumnDescription } from '../AuroraDataAPIClient';
 
 const dbRegion = 'us-east-1'
@@ -12,7 +12,7 @@ const tableBName = 'b'
 const tableCName = 'c'
 const tableDName = 'd'     
 
-const dummyReader = new MySQLRelationalDBReader(dbRegion, secretStoreArn, clusterArn, testDBName)
+const dummyReader = new AuroraServerlessMySQLDatabaseReader(dbRegion, secretStoreArn, clusterArn, testDBName)
 
 test('Test describe table', async () => {
     const MockAuroraClient = jest.fn<AuroraDataAPIClient>(() => ({

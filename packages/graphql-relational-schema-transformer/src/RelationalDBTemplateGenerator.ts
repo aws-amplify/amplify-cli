@@ -1,7 +1,3 @@
-import ApiKey from 'cloudform-types/types/appSync/apiKey'
-import GraphQLSchema from 'cloudform-types/types/appSync/graphQlSchema'
-import GraphQLApi from 'cloudform-types/types/appSync/graphQlApi'
-import Role, { Policy } from 'cloudform-types/types/iam/role'
 import { ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
 import { print } from 'graphql'
 import DataSource from 'cloudform-types/types/appSync/dataSource'
@@ -43,8 +39,8 @@ export default class RelationalDBTemplateGenerator {
             AWSTemplateFormatVersion: "2010-09-09",
             Parameters: this.makeParameters(this.context.databaseName),
             Resources: {
-                [ResourceConstants.RESOURCES.RelationalDatabaseDataSource]: this.makeIAMDataSourceRole(),
-                [ResourceConstants.RESOURCES.RelationalDatabaseAccessRole]: this.makeRelationalDataSource(context)
+                [ResourceConstants.RESOURCES.RelationalDatabaseDataSource]: this.makeRelationalDataSource(context),
+                [ResourceConstants.RESOURCES.RelationalDatabaseAccessRole]: this.makeIAMDataSourceRole()
             },
             Outputs: {
                 [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeAPIKeyOutput(),
@@ -180,7 +176,7 @@ export default class RelationalDBTemplateGenerator {
         const currentEnvValues = cliContext.amplify.loadEnvResourceParameters(
             cliContext,
             category,
-            service,
+            service
         );
         return new DataSource ({
             Type: 'RELATIONAL_DATABASE',
@@ -198,7 +194,7 @@ export default class RelationalDBTemplateGenerator {
                     AwsSecretStoreArn: currentEnvValues[ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn]
                 }
             }
-        }).dependsOn([ResourceConstants.RESOURCES.GraphQLAPILogicalID, iamRoleLogicalID])
+        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, ResourceConstants.RESOURCES.RelationalDatabaseAccessRole])
     }
 
     /*
