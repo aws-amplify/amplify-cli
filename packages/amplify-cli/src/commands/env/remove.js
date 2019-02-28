@@ -9,7 +9,7 @@ module.exports = {
     const currentEnv = context.amplify.getEnvInfo().envName;
 
     if (!envName) {
-      context.print.error("You must pass in the name of the environment as a part of the 'amplify remove <env-name>' command");
+      context.print.error("You must pass in the name of the environment as a part of the 'amplify env remove <env-name>' command");
       process.exit(1);
     }
     let envFound = false;
@@ -28,7 +28,7 @@ module.exports = {
     } else {
       if (currentEnv === envName) {
         context.print.error('You cannot delete your current environment. Please switch to another environment to delete your current environment');
-        context.print.error("If this is your only environment you can use the 'ampify delete' command to delete your project");
+        context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
         process.exit(1);
       }
 
