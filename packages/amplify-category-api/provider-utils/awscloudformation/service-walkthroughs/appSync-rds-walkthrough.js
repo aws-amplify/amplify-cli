@@ -1,26 +1,173 @@
+const inquirer = require('inquirer');
+const AWS = require('aws-sdk')
+const ora = require('ora')
+const DataApiParams = require('graphql-relational-schema-transformer').default.DataApiParams
+
+const spinner = ora('')
+const category = 'api';
+
 async function serviceWalkthrough(context, defaultValuesFilename, datasourceMetadata) {
-  const { amplify } = context;
-  const { inputs } = datasourceMetadata;
+  const amplifyMeta = context.amplify.getProjectMeta()
 
-  console.log(inputs)
+  // Verify that an API exists in the project before proceeding.
+  if (Object.keys(amplifyMeta[category]).length === 0) {
+    context.print.error('You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.');
+    process.exit(0)
+  }
 
-  const resourceQuestions = [
+  // Loop through to find the AppSync API Resource Name 
+  let appSyncApi;
+  for (const api in amplifyMeta[category]) {
+    if (amplifyMeta[category][api]['service'] === 'AppSync') {
+      appSyncApi = api;
+      break;
+    }
+  }
+
+  // If an AppSync API does not exist, inform the user to create the AppSync API
+  if (!appSyncApi) {
+    context.print.error('You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.');
+    process.exit(0)
+  }
+
+  const { inputs, availableRegions } = datasourceMetadata;
+
+  // Region Question
+  const selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions)
+  
+  // Prepare the SDK with the region
+  AWS.config.update({
+      region: selectedRegion
+  })
+
+  // RDS Cluster Question
+  const { selectedClusterArn, clusterResourceId} = await selectCluster(inputs)
+
+  // Secret Store Question
+  const selectedSecretArn = await getSecretStoreArn(inputs, clusterResourceId)
+
+  // Database Name Question 
+  const selectedDatabase = await selectDatabase(inputs, selectedClusterArn, selectedSecretArn)
+
+  return {
+    "region" : selectedRegion,
+    "dbClusterArn" : selectedClusterArn,
+    "secretStoreArn" : selectedSecretArn,
+    "databaseName" : selectedDatabase,
+    "resourceName" : appSyncApi
+  }
+}
+
+/**
+ * 
+ * @param {*} inputs 
+ */
+async function selectCluster(inputs) {
+  const RDS = new AWS.RDS()
+
+  const describeDBClustersResult = await RDS.describeDBClusters().promise()
+  const rawClusters = describeDBClustersResult['DBClusters']
+  const clusters = new Map()
+
+  for (var i = 0; i < rawClusters.length; i++) {
+    if (rawClusters[i].EngineMode === "serverless") {
+      clusters.set(rawClusters[i].DBClusterIdentifier, rawClusters[i])
+    }
+  }
+
+  const clusterIdentifier = await promptWalkthroughQuestion(inputs, 1, Array.from(clusters.keys()))
+  const selectedCluster = clusters.get(clusterIdentifier)
+
+  return { 'selectedClusterArn' : selectedCluster['DBClusterArn'], 'clusterResourceId' : selectedCluster['DbClusterResourceId'] }
+}
+
+/**
+ * 
+ * @param {*} inputs 
+ * @param {*} clusterResourceId 
+ */
+async function getSecretStoreArn(inputs, clusterResourceId) {
+  const SecretsManager = new AWS.SecretsManager()
+
+  const listSecretsResult = await SecretsManager.listSecrets().promise()
+  const rawSecrets = listSecretsResult['SecretList']
+  const secrets = new Map()
+
+  var selectedSecretArn
+
+  for (var i = 0; i < rawSecrets.length; i++) {
+    /**
+     * Attempt to auto-detect Secret Store that was created by Aurora Serverless
+     * as it follows a specfic format for the Secret Name
+     */
+    if (rawSecrets[i].Name.startsWith("rds-db-credentials/" + clusterResourceId)) {
+      // Found the secret store - store the details and break out.
+      selectedSecretArn = rawSecrets[i].ARN
+      break
+    }
+    secrets.set(rawSecrets[i].Name, rawSecrets[i].ARN)
+  }
+
+  if (!selectedSecretArn) {
+    // Kick off questions flow
+    const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()))
+    selectedSecretArn = secrets.get(selectedSecretName)
+  }
+
+  return selectedSecretArn
+}
+
+/**
+ * 
+ * @param {*} inputs 
+ * @param {*} clusterArn 
+ * @param {*} secretArn 
+ */
+async function selectDatabase(inputs, clusterArn, secretArn) {
+  // Database Name Question 
+  const DataApi = new AWS.RDSDataService()
+  const params = new DataApiParams()
+  params.awsSecretStoreArn = secretArn
+  params.dbClusterOrInstanceArn = clusterArn
+  params.sqlStatements = "SHOW databases"
+
+  spinner.start('Fetching Aurora Serverless cluster.')
+  const dataApiResult = await DataApi.executeSql(params).promise()
+
+  const records = dataApiResult['sqlStatementResults'][0]['resultFrame']['records']
+  const databaseList = []
+
+  for (var i = 0; i < records.length; i++) {
+    const recordValue = records[i]['values'][0]['stringValue']
+    // ignore the three meta tables that the cluster creates
+    if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
+      databaseList.push(recordValue)
+    }
+  }
+
+  spinner.succeed('Fetched Aurora Serverless cluster.')
+
+  return await promptWalkthroughQuestion(inputs, 3, databaseList)
+}
+
+/**
+ * 
+ * @param {*} inputs 
+ * @param {*} questionNumber 
+ * @param {*} choicesList 
+ */
+async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
+  const question = [
     {
-      type: inputs[1].type,
-      name: inputs[1].key,
-      message: inputs[1].question,
-      validate: amplify.inputValidation(inputs[1]),
+      type: inputs[questionNumber].type,
+      name: inputs[questionNumber].key,
+      message: inputs[questionNumber].question,
+      choices: choicesList,
     },
   ];
 
-  console.log(resourceQuestions)
-
-
-  let answers = {
-    paths: [],
-  };
-
-  return resourceQuestions
+  const answer = await inquirer.prompt(question)
+  return answer[inputs[questionNumber].key]
 }
 
 module.exports = {

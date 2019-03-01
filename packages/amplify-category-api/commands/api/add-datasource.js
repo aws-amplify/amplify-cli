@@ -1,9 +1,13 @@
-const fs = require('fs');
-const RelationalDBSchemaTransformer = require('graphql-relational-schema-transformer').RelationalDBSchemaTransformer
-const RelationalDBTemplateGenerator = require('graphql-relational-schema-transformer').RelationalDBTemplateGenerator
+const path = require('path');
+const fs = require('fs-extra');
+const RelationalDBSchemaTransformer = require('graphql-relational-schema-transformer').default.RelationalDBSchemaTransformer
+const RelationalDBTemplateGenerator = require('graphql-relational-schema-transformer').default.RelationalDBTemplateGenerator
+const MySQLRelationalDBReader = require('graphql-relational-schema-transformer').default.MySQLRelationalDBReader
+const graphql = require('graphql')
 
-const subcommand = 'add-datasource';
+const subcommand = 'add-graphql-datasource';
 const category = 'api';
+const serviceProvider = 'awscloudformation'
 const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-datasources.json`));
 
 let options;
@@ -12,9 +16,9 @@ module.exports = {
   name: subcommand,
   run: async (context) => {
     const { amplify } = context;
+    let resourceName;
     return amplify.datasourceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
-        console.log(`Selected: ${result.datasource}`)
         options = {
           datasource: result.datasource,
           providerName: result.providerName
@@ -30,27 +34,68 @@ module.exports = {
         return providerController.addDatasource(context, category, result.datasource, options)
       })
       .then((answers) => {
-        let relationalSchemaTransformer = new RelationalDBSchemaTransformer()
+        resourceName = answers.resourceName
+        /**
+         * Write the new env specific datasource information into 
+         * the team-provider-info file
+         */
+        const currEnv = amplify.getEnvInfo().envName;
+        const teamProviderInfoFilePath = amplify.pathManager.getProviderInfoFilePath();
+        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath))
 
-        const secretStoreArn = 'arn:aws:secretsmanager:us-east-1:973253135933:secret:rds-db-credentials/cluster-OGACD5FH3XJHXENR6GVDJG6OVY/ashwin-9P0x04'
-        const dbClusterArn = 'arn:aws:rds:us-east-1:973253135933:cluster:animals'
-        const region = 'us-east-1'
-        const databaseName = 'Animals'
+        teamProviderInfo[currEnv]['rdsRegion'] = answers.region
+        teamProviderInfo[currEnv]['rdsClusterIdentifier'] = answers.dbClusterArn
+        teamProviderInfo[currEnv]['rdsSecretStoreArn'] = answers.secretStoreArn
+        teamProviderInfo[currEnv]['rdsDatabaseName'] = answers.databaseName
 
-        let results = relationalSchemaTransformer.introspectMySQLSchema(region, secretStoreArn, dbClusterArn, databaseName)
+        fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 
-        results.then(function(data) {
-          let templateGenerator = new RelationalDBTemplateGenerator(data)
-          let template = templateGenerator.createTemplate()
-          template = templateGenerator.addRelationalResolvers(template)
-          console.log(templateGenerator.printCloudformationTemplate(template))
-        })
 
-        return answers
+        /**
+         * Load the MySqlRelationalDBReader
+         */
+        const dbReader = new MySQLRelationalDBReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName)
+
+        
+        /**
+         * Instantiate a new Relational Schema Transformer and perform 
+         * the db instrospection to get the GraphQL Schema and Template Context
+         */
+        const relationalSchemaTransformer = new RelationalDBSchemaTransformer(dbReader, answers.databaseName)
+        return relationalSchemaTransformer.introspectDatabaseSchema()
+      }).then((graphqlSchemaContext) => {
+        const projectBackendDirPath = amplify.pathManager.getBackendDirPath();
+
+        /**
+         * Merge the GraphQL Schema with the existing schema.graphql in the projects stack
+         */
+        const apiDirPath = `${projectBackendDirPath}/${category}/SomeAPI`
+        fs.ensureDirSync(apiDirPath)
+        const graphqlSchemaFilePath = `${apiDirPath}/schema.graphql`
+        fs.ensureFileSync(graphqlSchemaFilePath)
+        const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath, 'utf8')
+
+        /**
+         * Instantiate a new Relational Template Generator and create
+         * the template and relational resolvers
+         */
+        const templateGenerator = new RelationalDBTemplateGenerator(graphqlSchemaContext)
+        let template = templateGenerator.createTemplate()
+        template = templateGenerator.addRelationalResolvers(template)
+        const cfn = templateGenerator.printCloudformationTemplate(template)
+
+        /**
+         * Add the generated the CFN to the appropriate nested stacks directory
+         */
+        const stacksDir = `${projectBackendDirPath}/${category}/${resourceName}/stacks`
+
+        fs.ensureDirSync(stacksDir)
+        const writeToPath = stacksDir + ""
+        fs.writeFileSync(writeToPath, cfn, 'utf8')
       })
-      .then((resourceName) => {
+      .then((datasourceName) => {
         const { print } = context;
-        print.success(`Successfully added resource ${resourceName} locally`);
+        print.success(`Successfully added datasource ${datasourceName} locally`);
         print.info('');
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');

@@ -34,8 +34,8 @@ module.exports = {
         description: 'Compiles your GraphQL schema and generates a corresponding cloudformation template',
       },
       {
-        name: 'add-datasource',
-        description: 'Provisions the AppSync Resources and its dependencies for the provided RDS data source',
+        name: 'add-graphql-datasource',
+        description: 'Provisions the AppSync resources and its dependencies for the provided Aurora Serverless data source',
       },
     ];
 

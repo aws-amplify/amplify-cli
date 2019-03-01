@@ -170,9 +170,7 @@ function addDatasource(context, category, datasource, options) {
   let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  context.print.info(serviceWalkthroughFilename)
-
+  
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
 }
 

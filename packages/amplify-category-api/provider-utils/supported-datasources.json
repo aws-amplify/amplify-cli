@@ -1,47 +1,31 @@
 {
     "Aurora Serverless" : {
 		"inputs": [{
-				"key": "resourceName",
-				"type": "input",
-				"question": "Provide a friendly name for your resource to be used as label for this category in the project:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9]+$",
-					"onErrorMsg": "Resource name should be alphanumeric"
-				},
-				"required": true
-			},
-			{
 
-				"key": "databaseName",
-				"type": "input",
-				"question": "Provide Database name:",
-				"validation": {
-					"operator": "regex",
-					"value": "^[a-zA-Z0-9]+$",
-					"onErrorMsg": "You can use the following characters: a-z A-Z 0-9"
-				},
+				"key": "region",
+				"type": "list",
+				"question": "Provide the region in which your cluster is located:",
 				"required": true
 			},
 			{
 
 				"key": "rdsClusterIdentifier",
-				"type": "input",
-				"question": "Provide the ARN of the RDS cluster that will be used as the data source for you API",
+				"type": "list",
+				"question": "Select the Aurora Serverless cluster that will be used as the data source for your API:",
 				"required": true
 			},
 			{
 
 				"key": "rdsSecretStoreArn",
-				"type": "input",
-				"question": "Provide the ARN of the Secret Store ",
+				"type": "list",
+				"question": "Select the secret used to access your Aurora Serverless cluster:",
 				"required": true
 			},
 			{
 
-				"key": "region",
-				"type": "input",
-				"question": "Provide the region your Cluster is located",
+				"key": "databaseName",
+				"type": "list",
+				"question": "Select the database to use as the datasource:",
 				"required": true
 			}
 		],
@@ -49,6 +33,7 @@
 		"defaultValuesFilename": "appSync-rds-defaults.js",
 		"serviceWalkthroughFilename": "appSync-rds-walkthrough.js",
 		"cfnFilename": "appSync-rds-cloudformation-template-default.yml.ejs",
-		"provider": "awscloudformation"
+		"provider": "awscloudformation",
+		"availableRegions": ["us-east-1"]
 	}
 }

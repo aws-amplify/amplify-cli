@@ -26,8 +26,8 @@ let result = testClass.introspectDatabaseSchema()
 result.then(function(data: TemplateContext) {
     console.log(print(data.schemaDoc))
 
-    //let templateGenerator = new RelationalDBTemplateGenerator(data)
-    //let template = templateGenerator.createTemplate()
-    //template = templateGenerator.addRelationalResolvers(template)
-    //console.log(templateGenerator.printCloudformationTemplate(template))
+    let templateGenerator = new RelationalDBTemplateGenerator(data)
+    let template = templateGenerator.createTemplate()
+    template = templateGenerator.addRelationalResolvers(template)
+    console.log(templateGenerator.printCloudformationTemplate(template))
 })

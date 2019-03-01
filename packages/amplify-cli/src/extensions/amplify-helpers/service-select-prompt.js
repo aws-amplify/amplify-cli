@@ -66,8 +66,6 @@ function serviceSelectionPrompt(context, category, supportedServices) {
 }
 
 function datasourceSelectionPrompt(context, category, supportedDatasources) {
-  const { providers } = getProjectConfig();
-
   const options = [];
   Object.keys(supportedDatasources).forEach((datasource) => {
     const optionName = supportedDatasources[datasource].alias || `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
@@ -86,13 +84,13 @@ function datasourceSelectionPrompt(context, category, supportedDatasources) {
     process.exit(1);
   }
 
-  // if (options.length === 1) {
-  //   // No need to ask questions
-  //   context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
-  //   return new Promise((resolve) => {
-  //     resolve(options[0].value);
-  //   });
-  // }
+  if (options.length === 1) {
+    // No need to ask questions
+    context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
+    return new Promise((resolve) => {
+      resolve(options[0].value);
+    });
+  }
 
   const question = [{
     name: 'datasource',

@@ -1,11 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-<<<<<<< HEAD
-const pythonStreamingFunctionFileName = 'python_streaming_function.zip';
-const schemaFileName = 'schema.graphql';
-=======
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 const TransformPackage = require('graphql-transformer-core');
 const S3 = require('../src/aws-utils/aws-s3');
 
@@ -27,20 +22,10 @@ async function uploadAppSyncFiles(context, resources) {
     const { category, resourceName } = resource;
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     const resourceBuildDir = path.normalize(path.join(backEndDir, category, resourceName, 'build'));
-<<<<<<< HEAD
-    const resolverDir = path.normalize(path.join(resourceBuildDir, 'resolvers'));
-    const functionsDir = path.normalize(path.join(resourceBuildDir, 'functions'));
-    const schemaFilePath = path.normalize(path.join(resourceBuildDir, schemaFileName));
-    const projectBucket = getProjectBucket(context)
-    const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildTimeStamp}`
-
-    const s3Client = await new S3(context)
-=======
     const projectBucket = getProjectBucket(context);
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildTimeStamp}`;
 
     const s3Client = await new S3(context);
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 
     if (!fs.existsSync(resourceBuildDir)) {
       return;
@@ -48,16 +33,6 @@ async function uploadAppSyncFiles(context, resources) {
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
       upload: async (blob) => {
-<<<<<<< HEAD
-        const { Key, Body } = blob
-        const fullKey = `${deploymentRootKey}/${Key}`
-        return await s3Client.uploadFile({
-          Key: fullKey,
-          Body
-        })
-      }
-    })
-=======
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
         return await s3Client.uploadFile({
@@ -66,7 +41,6 @@ async function uploadAppSyncFiles(context, resources) {
         });
       },
     });
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
 
     const parametersFilePath = path.join(backEndDir, category, resourceName, 'parameters.json');
     let currentParameters;
@@ -81,11 +55,7 @@ async function uploadAppSyncFiles(context, resources) {
 
     Object.assign(currentParameters, {
       S3DeploymentBucket: projectBucket,
-<<<<<<< HEAD
-      S3DeploymentRootKey: deploymentRootKey
-=======
       S3DeploymentRootKey: deploymentRootKey,
->>>>>>> 9378224b7137c1d316f9baa07f650abe84c5a79d
     });
     const jsonString = JSON.stringify(currentParameters, null, 4);
     fs.writeFileSync(parametersFilePath, jsonString, 'utf8');

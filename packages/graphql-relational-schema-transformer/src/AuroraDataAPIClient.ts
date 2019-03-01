@@ -36,8 +36,6 @@ export class AuroraDataAPIClient {
         this.Params.sqlStatements = 'SHOW TABLES'
         const response = await this.RDS.executeSql(this.Params).promise()
 
-        console.log(JSON.stringify(response))
-
         let tableList = []
         const records = response['sqlStatementResults'][0]['resultFrame']['records']
         for (const record of records) {
@@ -56,7 +54,6 @@ export class AuroraDataAPIClient {
     public describeTable = async (tableName: string) => {
         this.Params.sqlStatements = `DESCRIBE ${tableName}`
         const response = await this.RDS.executeSql(this.Params).promise()
-        console.log(JSON.stringify(response))
         const listOfColumns = response['sqlStatementResults'][0]['resultFrame']['records']
         let columnDescriptions = []
         for (const column of listOfColumns) {

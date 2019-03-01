@@ -13,12 +13,16 @@
     "amplify-category-auth": "^0.2.1-multienv.3",
     "amplify-category-function": "^0.2.1-multienv.5",
     "amplify-category-storage": "^0.2.1-multienv.5",
+    "graphql-relational-schema-transformer": "../graphql-relational-schema-transformer",
     "eslint": "^4.9.0",
     "fs-extra": "^7.0.0",
     "inquirer": "^6.0.0",
     "moment": "^2.22.2",
     "opn": "^5.3.0",
-    "uuid": "^2.0.3"
+    "uuid": "^2.0.3",
+    "aws-sdk": "^2.391.0",
+    "ora": "^3.0.0",
+    "graphql": "^0.13.2"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",
