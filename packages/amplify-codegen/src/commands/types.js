@@ -28,7 +28,7 @@ async function generateTypes(context, forceDownloadSchema) {
         cwd: projectPath,
         absolute: true,
       });
-      const schema = path.join(projectPath, cfg.schema);
+      const schemaPath = path.join(projectPath, cfg.schema);
       const output = cfg.amplifyExtension.generatedFileName;
       const target = cfg.amplifyExtension.codeGenTarget;
 
@@ -36,17 +36,17 @@ async function generateTypes(context, forceDownloadSchema) {
         return;
       }
       const outputPath = path.join(projectPath, output);
-      if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
+      if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
           cfg.amplifyExtension.graphQLApiId,
-          schema,
+          schemaPath,
           cfg.amplifyExtension.region,
         );
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      generate(queries, schema, path.join(projectPath, output), '', target, '', {
+      generate(queries, schemaPath, path.join(projectPath, output), '', target, '', {
         addTypename: true,
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);

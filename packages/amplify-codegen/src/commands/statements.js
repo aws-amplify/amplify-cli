@@ -20,12 +20,12 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
       : path.dirname(path.dirname(includeFiles));
-    const schema = path.join(projectPath, cfg.schema);
-    if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
+    const schemaPath = path.join(projectPath, cfg.schema);
+    if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
       await downloadIntrospectionSchemaWithProgress(
         context,
         cfg.amplifyExtension.graphQLApiId,
-        schema,
+        schemaPath,
         cfg.amplifyExtension.region,
       );
     }
@@ -34,7 +34,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
-    await statementsGen(schema, opsGenDirectory, {
+    await statementsGen(schemaPath, opsGenDirectory, {
       separateFiles: true,
       language,
       maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,
