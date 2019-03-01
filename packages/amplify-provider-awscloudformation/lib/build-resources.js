@@ -1,5 +1,4 @@
-const fs = require('fs');
-const fsExtra = require('fs-extra');
+const fs = require('fs-extra');
 const path = require('path');
 const moment = require('moment');
 const archiver = require('archiver');
@@ -97,10 +96,11 @@ function removeOutdatedPackage(currentBuildFile) {
       .readdirSync(distDir)
       .map(p => path.join(distDir, p))
       .filter(p => currentBuildFile !== p)
-      .map(p => fsExtra.remove(p));
+      .map(p => fs.remove(p));
     return Promise.all(deletePromises);
   } catch (e) {
     // nothing to do here
+    console.log(`Failed to clean up outdated packages ${e.message}`);
   }
 }
 
