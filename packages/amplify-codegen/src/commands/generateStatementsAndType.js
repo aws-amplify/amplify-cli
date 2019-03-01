@@ -1,3 +1,4 @@
+const { join } = require('path');
 const {
   AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
 } = require('../errors');
@@ -10,6 +11,7 @@ const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush } = req
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
+  const { projectPath } = context.amplify.getEnvInfo();
   if (!projects.length) {
     throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   }
@@ -18,7 +20,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
       downloadIntrospectionSchemaWithProgress(
         context,
         cfg.amplifyExtension.graphQLApiId,
-        cfg.schema,
+        join(projectPath, cfg.schema),
         cfg.amplifyExtension.region,
       ),
     );
