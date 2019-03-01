@@ -50,7 +50,6 @@ module.exports = {
 
         fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 
-
         /**
          * Load the MySqlRelationalDBReader
          */

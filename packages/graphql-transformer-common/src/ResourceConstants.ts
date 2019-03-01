@@ -2,6 +2,16 @@ export class ResourceConstants {
 
     public static NONE = "NONE"
 
+    public static readonly ENVIRONMENT_CONTEXT_KEYS = {
+
+
+        // Aurora Serverless Imports
+        RDSRegion: 'rdsRegion',
+        RDSClusterIdentifier: 'rdsClusterIdentifier',
+        RDSSecretStoreArn: 'rdsSecretStoreArn',
+        RDSDatabaseName: 'rdsDatabaseName'
+    }
+
     public static readonly RESOURCES = {
         // AppSync
         GraphQLAPILogicalID: 'GraphQLAPI',

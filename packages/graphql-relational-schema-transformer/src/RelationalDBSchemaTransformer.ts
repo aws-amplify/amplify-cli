@@ -2,7 +2,6 @@ import { Kind, ObjectTypeDefinitionNode, SchemaDefinitionNode,
     InputObjectTypeDefinitionNode, DocumentNode} from 'graphql'
 import { getNamedType, getOperationFieldDefinition, getNonNullType, getInputValueDefinition,
     getTypeDefinition, getFieldDefinition, getDirectiveNode, getOperationTypeDefinition } from './RelationalDBSchemaTransformerUtils'
-import { MySQLRelationalDBReader } from './MySQLRelationalDBReader'
 import {RelationalDBParsingException} from './RelationalDBParsingException'
 import { IRelationalDBReader } from './IRelationalDBReader';
 
