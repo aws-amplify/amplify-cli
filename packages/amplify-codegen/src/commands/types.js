@@ -29,13 +29,13 @@ async function generateTypes(context, forceDownloadSchema) {
         absolute: true,
       });
       const schemaPath = path.join(projectPath, cfg.schema);
-      const output = cfg.amplifyExtension.generatedFileName;
+      const { generatedFileName } = cfg.amplifyExtension;
       const target = cfg.amplifyExtension.codeGenTarget;
 
-      if (!output || output === '') {
+      if (!generatedFileName || generatedFileName === '') {
         return;
       }
-      const outputPath = path.join(projectPath, output);
+      const outputPath = path.join(projectPath, generatedFileName);
       if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
@@ -46,7 +46,7 @@ async function generateTypes(context, forceDownloadSchema) {
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      generate(queries, schemaPath, path.join(projectPath, output), '', target, '', {
+      generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
         addTypename: true,
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);
