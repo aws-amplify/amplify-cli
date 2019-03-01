@@ -19,31 +19,37 @@ async function generateTypes(context, forceDownloadSchema) {
       return;
     }
 
+    const { projectPath } = context.amplify.getEnvInfo();
+
     projects.forEach(async (cfg) => {
       const excludes = cfg.excludes.map(pattern => `!${pattern}`);
       const includeFiles = cfg.includes;
-      const queries = glob.sync([...includeFiles, ...excludes]);
-      const schema = path.resolve(cfg.schema);
-      const output = cfg.amplifyExtension.generatedFileName;
+      const queries = glob.sync([...includeFiles, ...excludes], {
+        cwd: projectPath,
+        absolute: true,
+      });
+      const schemaPath = path.join(projectPath, cfg.schema);
+      const { generatedFileName } = cfg.amplifyExtension;
       const target = cfg.amplifyExtension.codeGenTarget;
 
-      if (!output || output === '') {
+      if (!generatedFileName || generatedFileName === '') {
         return;
       }
-      if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
+      const outputPath = path.join(projectPath, generatedFileName);
+      if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
           cfg.amplifyExtension.graphQLApiId,
-          cfg.schema,
+          schemaPath,
           cfg.amplifyExtension.region,
         );
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      generate(queries, schema, output, '', target, '', {
+      generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
         addTypename: true,
       });
-      codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${output}`);
+      codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);
     });
   }
 }

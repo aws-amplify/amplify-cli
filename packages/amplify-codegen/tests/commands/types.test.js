@@ -12,6 +12,9 @@ const MOCK_CONTEXT = {
   print: {
     info: jest.fn(),
   },
+  amplify: {
+    getEnvInfo: jest.fn(),
+  },
 };
 
 jest.mock('glob-all');
@@ -28,6 +31,7 @@ const MOCK_TARGET = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
+const MOCK_PROJECT_ROOT = 'MOCK_PROJECT_ROOT';
 
 const MOCK_PROJECT = {
   excludes: [MOCK_EXCLUDE_PATH],
@@ -52,18 +56,20 @@ describe('command - types', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
+    MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
   });
+
   it('should generate types', async () => {
     const forceDownload = false;
     await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`]);
-    expect(jetpack.exists).toHaveBeenCalledWith(path.resolve(MOCK_SCHEMA));
+    expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
+    expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       MOCK_QUERIES,
-      path.resolve(MOCK_SCHEMA),
-      MOCK_GENERATED_FILE_NAME,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      path.join(MOCK_PROJECT_ROOT, MOCK_GENERATED_FILE_NAME),
       '',
       MOCK_TARGET,
       '',
@@ -84,7 +90,7 @@ describe('command - types', () => {
     expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       MOCK_API_ID,
-      MOCK_SCHEMA,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_REGION,
     );
   });
@@ -96,7 +102,7 @@ describe('command - types', () => {
     expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       MOCK_API_ID,
-      MOCK_SCHEMA,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_REGION,
     );
   });
