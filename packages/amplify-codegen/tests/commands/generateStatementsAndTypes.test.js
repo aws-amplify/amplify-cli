@@ -16,9 +16,7 @@ const MOCK_CONTEXT = {
     info: jest.fn(),
   },
   amplify: {
-    pathManager: {
-      searchProjectRootPath: jest.fn(),
-    },
+    getEnvInfo: jest.fn(),
   },
 };
 
@@ -55,7 +53,7 @@ describe('command - generateStatementsAndTypes', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
-    MOCK_CONTEXT.amplify.pathManager.searchProjectRootPath.mockReturnValue(MOCK_PROJECT_ROOT);
+    MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
   });
 
   it('should generate statements and types', async () => {

@@ -19,20 +19,23 @@ async function generateTypes(context, forceDownloadSchema) {
       return;
     }
 
-    const projectRoot = context.amplify.pathManager.searchProjectRootPath();
+    const { projectPath } = context.amplify.getEnvInfo();
 
     projects.forEach(async (cfg) => {
       const excludes = cfg.excludes.map(pattern => `!${pattern}`);
       const includeFiles = cfg.includes;
-      const queries = glob.sync([...includeFiles, ...excludes], { cwd: projectRoot });
-      const schema = path.join(projectRoot, cfg.schema);
+      const queries = glob.sync([...includeFiles, ...excludes], {
+        cwd: projectPath,
+        absolute: true,
+      });
+      const schema = path.join(projectPath, cfg.schema);
       const output = cfg.amplifyExtension.generatedFileName;
       const target = cfg.amplifyExtension.codeGenTarget;
 
       if (!output || output === '') {
         return;
       }
-      const outputPath = path.join(projectRoot, output);
+      const outputPath = path.join(projectPath, output);
       if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
@@ -43,7 +46,7 @@ async function generateTypes(context, forceDownloadSchema) {
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();
-      generate(queries, schema, path.join(projectRoot, output), '', target, '', {
+      generate(queries, schema, path.join(projectPath, output), '', target, '', {
         addTypename: true,
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);

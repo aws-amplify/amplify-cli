@@ -13,9 +13,7 @@ const MOCK_CONTEXT = {
     info: jest.fn(),
   },
   amplify: {
-    pathManager: {
-      searchProjectRootPath: jest.fn(),
-    },
+    getEnvInfo: jest.fn(),
   },
 };
 
@@ -58,7 +56,7 @@ describe('command - types', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
-    MOCK_CONTEXT.amplify.pathManager.searchProjectRootPath.mockReturnValue(MOCK_PROJECT_ROOT);
+    MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
   });
 
   it('should generate types', async () => {
@@ -66,7 +64,7 @@ describe('command - types', () => {
     await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT });
+    expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
     expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       MOCK_QUERIES,
