@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const RelationalDBSchemaTransformer = require('graphql-relational-schema-transformer').default.RelationalDBSchemaTransformer
 const RelationalDBTemplateGenerator = require('graphql-relational-schema-transformer').default.RelationalDBTemplateGenerator
-const MySQLRelationalDBReader = require('graphql-relational-schema-transformer').default.MySQLRelationalDBReader
+const AuroraServerlessMySQLDatabaseReader = require('graphql-relational-schema-transformer').default.AuroraServerlessMySQLDatabaseReader
 const graphql = require('graphql')
 
 const subcommand = 'add-graphql-datasource';
@@ -43,17 +43,17 @@ module.exports = {
         const teamProviderInfoFilePath = amplify.pathManager.getProviderInfoFilePath();
         const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath))
 
-        teamProviderInfo[currEnv]['rdsRegion'] = answers.region
-        teamProviderInfo[currEnv]['rdsClusterIdentifier'] = answers.dbClusterArn
-        teamProviderInfo[currEnv]['rdsSecretStoreArn'] = answers.secretStoreArn
-        teamProviderInfo[currEnv]['rdsDatabaseName'] = answers.databaseName
+        teamProviderInfo[currEnv][serviceProvider]['rdsRegion'] = answers.region
+        teamProviderInfo[currEnv][serviceProvider]['rdsClusterIdentifier'] = answers.dbClusterArn
+        teamProviderInfo[currEnv][serviceProvider]['rdsSecretStoreArn'] = answers.secretStoreArn
+        teamProviderInfo[currEnv][serviceProvider]['rdsDatabaseName'] = answers.databaseName
 
         fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 
         /**
          * Load the MySqlRelationalDBReader
          */
-        const dbReader = new MySQLRelationalDBReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName)
+        const dbReader = new AuroraServerlessMySQLDatabaseReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName)
 
         
         /**
@@ -79,17 +79,19 @@ module.exports = {
          * the template and relational resolvers
          */
         const templateGenerator = new RelationalDBTemplateGenerator(graphqlSchemaContext)
-        let template = templateGenerator.createTemplate()
-        template = templateGenerator.addRelationalResolvers(template)
+        let template = templateGenerator.createTemplate(context)
+        //template = templateGenerator.addRelationalResolvers(template)
         const cfn = templateGenerator.printCloudformationTemplate(template)
+
+        console.log(cfn)
 
         /**
          * Add the generated the CFN to the appropriate nested stacks directory
          */
-        const stacksDir = `${projectBackendDirPath}/${category}/${resourceName}/stacks`
+        const stacksDir = `${projectBackendDirPath}/${category}/${resourceName}/stacks/`
 
         fs.ensureDirSync(stacksDir)
-        const writeToPath = stacksDir + ""
+        const writeToPath = stacksDir + "somename.json"
         fs.writeFileSync(writeToPath, cfn, 'utf8')
       })
       .then((datasourceName) => {
@@ -103,7 +105,7 @@ module.exports = {
       })
       .catch((err) => {
         context.print.info(err.stack);
-        context.print.error('There was an error adding the API resource')
+        context.print.error('There was an error adding the datasource')
       })
   },
 };

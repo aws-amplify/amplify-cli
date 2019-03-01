@@ -8,7 +8,7 @@ import Template from 'cloudform-types/types/template'
 import Output from 'cloudform-types/types/output'
 import TemplateContext from './RelationalDBSchemaTransformer'
 import RelationalDBResolverGenerator from './RelationalDBResolverGenerator'
-
+const fs = require('fs-extra')
 const category = 'api'
 const service = 'awscloudformation'
 
@@ -33,19 +33,12 @@ export default class RelationalDBTemplateGenerator {
      * @returns the created CloudFormation template.
      */
     public createTemplate(context: any): Template {
-        const schemaString = print(this.context.schemaDoc)
-
         const template =  {
             AWSTemplateFormatVersion: "2010-09-09",
             Parameters: this.makeParameters(this.context.databaseName),
             Resources: {
                 [ResourceConstants.RESOURCES.RelationalDatabaseDataSource]: this.makeRelationalDataSource(context),
                 [ResourceConstants.RESOURCES.RelationalDatabaseAccessRole]: this.makeIAMDataSourceRole()
-            },
-            Outputs: {
-                [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeAPIKeyOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput]: this.makeGraphQLApiEndpointOutput(),
-                [ResourceConstants.OUTPUTS.GraphQLAPIIdOutput]: this.makeGraphQLApiIdOutput()
             }
         }
 
@@ -173,58 +166,25 @@ export default class RelationalDBTemplateGenerator {
      * @returns the data source CloudFormation resource.
      */
     private makeRelationalDataSource(cliContext: any): DataSource {
-        const currentEnvValues = cliContext.amplify.loadEnvResourceParameters(
-            cliContext,
-            category,
-            service
-        );
+        const currEnv = cliContext.amplify.getEnvInfo().envName;
+        const teamProviderInfoFilePath = cliContext.amplify.pathManager.getProviderInfoFilePath();
+        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath))
         return new DataSource ({
             Type: 'RELATIONAL_DATABASE',
             Name: `${this.context.databaseName}_rds_DataSource`,
             Description: `RDS Data Source Provisioned for ${this.context.databaseName}`,
-            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             ServiceRoleArn: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseAccessRole, 'Arn'),
             RelationalDatabaseConfig: {
                 RelationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
                 RdsHttpEndpointConfig: {
-                    AwsRegion: currentEnvValues[ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion],
-                    DbClusterIdentifier: currentEnvValues[ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier],
-                    DatabaseName: currentEnvValues[ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName],
+                    AwsRegion: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion],
+                    DbClusterIdentifier: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier],
+                    DatabaseName: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName],
                     Schema: this.context.databaseSchema,
-                    AwsSecretStoreArn: currentEnvValues[ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn]
+                    AwsSecretStoreArn: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn]
                 }
             }
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, ResourceConstants.RESOURCES.RelationalDatabaseAccessRole])
-    }
-
-    /*
-     * Outputs
-     */
-
-    private makeAPIKeyOutput(): Output {
-        return {
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.APIKeyLogicalID, 'ApiKey'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "AppSyncApiKey"])
-            }
-        }
-    }
-
-    private makeGraphQLApiIdOutput(): Output {
-        return {
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "AppSyncApiId"])
-            }
-        }
-    }
-
-    private makeGraphQLApiEndpointOutput(): Output {
-        return {
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'GraphQLUrl'),
-            Export: {
-                Name: Fn.Join(':', [Refs.StackName, "AppSyncApiEndpoint"])
-            }
-        }
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseAccessRole])
     }
 }

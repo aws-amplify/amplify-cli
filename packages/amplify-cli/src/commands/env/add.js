@@ -5,6 +5,9 @@ module.exports = {
   name: 'add',
   run: async (context) => {
     const envName = context.parameters.options.name;
+    console.log(envName)
+    console.log(context.parameters.options)
+    console.log(context.parameters.options.config)
     const config = JSON.parse(context.parameters.options.config);
     const awsInfo = JSON.parse(context.parameters.options.awsInfo);
 

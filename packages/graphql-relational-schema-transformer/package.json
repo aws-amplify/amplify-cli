@@ -16,6 +16,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "fs-extra": "^7.0.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "2.0.1-multienv.0",
     "graphql-transformer-common": "2.0.0-multienv.1",
