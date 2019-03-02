@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const moment = require('moment');
 const archiver = require('archiver');
@@ -24,16 +24,20 @@ function buildResource(context, resource) {
   let zipFilename = resource.distZipFilename;
   let zipFilePath = zipFilename ? path.normalize(path.join(distDir, zipFilename)) : '';
 
-
-  if (!resource.lastBuildTimeStamp ||
-    new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)) {
+  if (
+    !resource.lastBuildTimeStamp ||
+    new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)
+  ) {
     const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     require('child_process').spawnSync(npm, ['install'], { cwd: resourceDir });
     context.amplify.updateamplifyMetaAfterBuild(resource);
   }
 
-  if (!resource.lastPackageTimeStamp || !resource.distZipFilename ||
-    isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)) {
+  if (
+    !resource.lastPackageTimeStamp ||
+    !resource.distZipFilename ||
+    isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)
+  ) {
     zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
 
     if (!fs.existsSync(distDir)) {
@@ -46,7 +50,8 @@ function buildResource(context, resource) {
     return new Promise((resolve, reject) => {
       output.on('close', () => {
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
-        resolve({ zipFilePath, zipFilename });
+        removeOutdatedPackage(zipFilePath).then(() =>
+          resolve({ zipFilePath, zipFilename }));
       });
       output.on('error', () => {
         reject(new Error('Failed to zip code.'));
@@ -82,6 +87,21 @@ function getSourceFiles(dir, ignoredDir) {
     }
     return acc.concat(getSourceFiles(path.join(dir, f)));
   }, []);
+}
+
+function removeOutdatedPackage(currentBuildFile) {
+  try {
+    const distDir = path.dirname(currentBuildFile);
+    const deletePromises = fs
+      .readdirSync(distDir)
+      .map(p => path.join(distDir, p))
+      .filter(p => currentBuildFile !== p)
+      .map(p => fs.remove(p));
+    return Promise.all(deletePromises);
+  } catch (e) {
+    // nothing to do here
+    console.log(`Failed to clean up outdated packages ${e.message}`);
+  }
 }
 
 module.exports = {
