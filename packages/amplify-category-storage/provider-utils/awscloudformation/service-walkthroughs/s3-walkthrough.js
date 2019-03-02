@@ -186,41 +186,55 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 }
 
 async function askReadWrite(userType, context, privacy) {
-  switch (privacy) {
-    case 'r':
-    case 'w':
-    case 'rw':
-      break;
-    default:
-      privacy = 'r';
-  }
+  // switch (privacy) {
+  //   case 'r':
+  //   case 'w':
+  //   case 'rw':
+  //     break;
+  //   default:
+  //     privacy = 'r';
+  // }
 
-  while (true) {
-    const answer = await inquirer.prompt({
-      name: 'permissions',
-      type: 'list',
-      message: `What kind of access do you want for ${userType} users`,
-      choices: [
-        {
-          name: 'read',
-          value: 'r',
-        },
-        {
-          name: 'write',
-          value: 'w',
-        },
-        {
-          name: 'read/write',
-          value: 'rw',
-        },
-      ],
-      default: privacy,
-    });
+  // while (true) {
+  //   const answer = await inquirer.prompt({
+  //     name: 'permissions',
+  //     type: 'list',
+  //     message: `What kind of access do you want for ${userType} users`,
+  //     choices: [
+  //       {
+  //         name: 'read',
+  //         value: 'r',
+  //       },
+  //       {
+  //         name: 'write',
+  //         value: 'w',
+  //       },
+  //       {
+  //         name: 'read/write',
+  //         value: 'rw',
+  //       },
+  //     ],
+  //     default: privacy,
+  //   });
 
-    if (answer.permissions !== 'learn') {
-      return answer.permissions;
-    }
-  }
+  //   if (answer.permissions !== 'learn') {
+  //     console.log('answer.permissions', answer.permissions);
+  //     return answer.permissions;
+  //   }
+
+  const permissionMap = {
+    create: ['s3:PutObject'],
+    read: ['s3:GetObject', 's3:ListBucket'],
+    update: ['s3:PutObject'],
+    delete: ['s3:DeleteObject'],
+  };
+
+  const permissions = context.amplify.crudFlow(
+    'auth',
+    [],
+    [],
+    permissionMap,
+  );
 }
 
 function resourceAlreadyExists(context) {
