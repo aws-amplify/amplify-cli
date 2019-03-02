@@ -17,12 +17,14 @@ module.exports = {
   run: async (context) => {
     const { amplify } = context;
     let resourceName;
+    let datasource;
     return amplify.datasourceSelectionPrompt(context, category, servicesMetadata)
       .then((result) => {
         options = {
           datasource: result.datasource,
           providerName: result.providerName
         }
+        datasource = result.datasource
 
         const providerController = 
           require(`../../provider-utils/${result.providerName}/index`);
@@ -93,10 +95,12 @@ module.exports = {
         fs.ensureDirSync(stacksDir)
         const writeToPath = stacksDir + "somename.json"
         fs.writeFileSync(writeToPath, cfn, 'utf8')
+
+        return datasource
       })
       .then((datasourceName) => {
         const { print } = context;
-        print.success(`Successfully added datasource ${datasourceName} locally`);
+        print.success(`Successfully added the ${datasourceName} datasource locally`);
         print.info('');
         print.success('Some next steps:');
         print.info('"amplify push" will build all your local backend resources and provision it in the cloud');
