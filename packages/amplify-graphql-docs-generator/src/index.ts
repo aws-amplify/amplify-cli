@@ -12,7 +12,7 @@ import {
   IntrospectionQuery,
 } from 'graphql'
 
-import generateAllOps, { GQLTemplateOp, GQLAllOperations } from './generator'
+import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator'
 
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, '../templates'))
 const FILE_EXTENSION_MAP = {
@@ -41,7 +41,10 @@ function generate(
 
   const schema: IntrospectionQuery = schemaData.data || schemaData
   const maxDepth = options.maxDepth || 3
-  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth)
+  const useExternalFragmentForS3Object = options.language === 'graphql'
+  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth, {
+    useExternalFragmentForS3Object: useExternalFragmentForS3Object,
+  })
   registerPartials()
   registerHelpers()
 
@@ -50,10 +53,15 @@ function generate(
     ['queries', 'mutations', 'subscriptions'].forEach((op) => {
       const ops = gqlOperations[op]
       if (ops.length) {
-        const gql = renderOps(gqlOperations[op], language)
+        const gql = render({ operations: gqlOperations[op], fragments: [] }, language)
         fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql)
       }
     })
+
+    if (gqlOperations.fragments.length) {
+      const gql = render({ operations: [], fragments: gqlOperations.fragments }, language)
+      fs.writeFileSync(path.resolve(path.join(outputPath, `fragments.${fileExtension}`)), gql)
+    }
   } else {
     const ops = [
       ...gqlOperations.queries,
@@ -61,13 +69,16 @@ function generate(
       ...gqlOperations.subscriptions,
     ]
     if (ops.length) {
-      const gql = renderOps(ops, language)
+      const gql = render({ operations: ops, fragments: gqlOperations.fragments }, language)
       fs.writeFileSync(path.resolve(outputPath), gql)
     }
   }
 }
 
-function renderOps(operations: Array<GQLTemplateOp>, language: string = 'graphql') {
+function render(
+  doc: { operations: Array<GQLTemplateOp>; fragments?: GQLTemplateFragment[] },
+  language: string = 'graphql'
+) {
   const templateFiles = {
     javascript: 'javascript.hbs',
     graphql: 'graphql.hbs',
@@ -83,7 +94,7 @@ function renderOps(operations: Array<GQLTemplateOp>, language: string = 'graphql
     noEscape: true,
     preventIndent: true,
   })
-  const gql = template({ operations: operations })
+  const gql = template(doc)
   return format(gql, language)
 }
 
@@ -111,7 +122,7 @@ function registerHelpers() {
 
 function format(str: string, language: string = 'graphql'): string {
   const parserMap = {
-    javascript: 'babylon',
+    javascript: 'babel',
     graphql: 'graphql',
     typescript: 'typescript',
     flow: 'flow',

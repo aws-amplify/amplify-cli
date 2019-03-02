@@ -1,0 +1,6 @@
+# this is an auto generated file. This will be overwritten
+fragment S3Object on S3Object {
+  bucket
+  key
+  region
+}

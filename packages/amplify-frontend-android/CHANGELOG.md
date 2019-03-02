@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.0.3-beta.0...amplify-frontend-android@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-frontend-android
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.0.3-beta.0...amplify-frontend-android@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-frontend-android
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.0.2...amplify-frontend-android@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-frontend-android
+
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@0.2.1-multienv.0...amplify-frontend-android@0.2.1-multienv.1) (2018-12-05)
 

@@ -16,7 +16,7 @@ export class ResourceFactory {
         return {
             [ResourceConstants.PARAMETERS.ElasticsearchAccessIAMRoleName]: new StringParameter({
                 Description: 'The name of the IAM role assumed by AppSync for Elasticsearch.',
-                Default: 'AppSyncElasticsearchAccess'
+                Default: 'AppSyncElasticsearchRole'
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchStreamingLambdaHandlerName]: new StringParameter({
                 Description: 'The name of the lambda handler.',
@@ -71,7 +71,7 @@ export class ResourceFactory {
             }),
             [ResourceConstants.PARAMETERS.ElasticsearchEBSVolumeGB]: new NumberParameter({
                 Description: 'The size in GB of the EBS volumes that contain our data.',
-                Default: 20
+                Default: 10
             })
         }
     }
@@ -391,47 +391,42 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),
             FieldName: fieldName,
             TypeName: queryTypeName,
-            RequestMappingTemplate: Fn.Sub(
-                print(
-                    compoundExpression([
-                        set(ref('indexPath'), str('/${DDBTableName}/doc/_search')),
-                        ElasticsearchMappingTemplate.searchItem({
-                            path: str('$indexPath.toLowerCase()'),
-                            size: ifElse(
-                                ref('context.args.limit'),
-                                ref('context.args.limit'),
-                                int(10)),
-                            from: ifElse(
-                                ref('context.args.nextToken'),
-                                ref('context.args.nextToken'),
-                                int(0)),
-                            query: ifElse(
-                                ref('context.args.filter'),
-                                ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
-                                obj({
-                                    'match_all': obj({})
-                                })),
-                            sort: ifElse(
-                                ref('context.args.sort'),
-                                list([
-                                    iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
-                                        obj({
-                                            "$context.args.sort.field": obj({
-                                                "order": str('$context.args.sort.direction')
-                                            })
+            RequestMappingTemplate: print(
+                compoundExpression([
+                    set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
+                    ElasticsearchMappingTemplate.searchItem({
+                        path: str('$indexPath'),
+                        size: ifElse(
+                            ref('context.args.limit'),
+                            ref('context.args.limit'),
+                            int(10),
+                            true),
+                        from: ifElse(
+                            ref('context.args.nextToken'),
+                            ref('context.args.nextToken'),
+                            int(0),
+                            true),
+                        query: ifElse(
+                            ref('context.args.filter'),
+                            ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
+                            obj({
+                                'match_all': obj({})
+                            })),
+                        sort: ifElse(
+                            ref('context.args.sort'),
+                            list([
+                                iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
+                                    obj({
+                                        "$context.args.sort.field": obj({
+                                            "order": str('$context.args.sort.direction')
                                         })
-                                    ),
-                                    str('_doc')
-                                ]),
-                                list([]))
-                        })
-                    ])
-                ), {
-                    'DDBTableName': this.joinWithEnv('-', [
-                        type,
-                        Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId')
-                    ])
-                }
+                                    })
+                                ),
+                                str('_doc')
+                            ]),
+                            list([]))
+                    })
+                ])
             ),
             ResponseMappingTemplate: print(
                 compoundExpression([

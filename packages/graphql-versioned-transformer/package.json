@@ -1,6 +1,6 @@
 {
   "name": "graphql-versioned-transformer",
-  "version": "2.0.0-multienv.2",
+  "version": "3.0.7",
   "description": "A GraphQL transform that enabled object versioning and conflict resolution for a @model type.",
   "main": "lib/index.js",
   "scripts": {
@@ -19,17 +19,16 @@
   "dependencies": {
     "cloudform": "^2.2.1",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^2.0.1-multienv.0",
-    "graphql-transformer-common": "^2.0.0-multienv.1",
-    "graphql-transformer-core": "^2.0.1-multienv.0"
+    "graphql-mapping-template": "^3.0.5",
+    "graphql-transformer-common": "^3.0.5",
+    "graphql-transformer-core": "^3.0.7"
   },
   "devDependencies": {
     "@types/graphql": "^0.13.1",
-    "@types/jest": "^23.1.1",
+    "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
-    "graphql-appsync-transformer": "^2.0.0-multienv.1",
-    "graphql-dynamodb-transformer": "^2.0.0-multienv.2",
+    "graphql-dynamodb-transformer": "^3.0.7",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",

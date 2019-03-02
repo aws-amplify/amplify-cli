@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.6...amplify-graphql-docs-generator@1.0.7) (2019-02-20)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** update prettier version ([#901](https://github.com/aws-amplify/amplify-cli/issues/901)) ([da2632d](https://github.com/aws-amplify/amplify-cli/commit/da2632d))
+
+
+
+
+
+## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.5...amplify-graphql-docs-generator@1.0.6) (2019-02-12)
+
+
+### Bug Fixes
+
+* cloudform/type versions ([ec6f99f](https://github.com/aws-amplify/amplify-cli/commit/ec6f99f))
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.3-beta.0...amplify-graphql-docs-generator@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.3-beta.0...amplify-graphql-docs-generator@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.2...amplify-graphql-docs-generator@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
+<a name="0.2.1-multienv.2"></a>
+## [0.2.1-multienv.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.1...amplify-graphql-docs-generator@0.2.1-multienv.2) (2019-01-22)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** change prettier parser to babel ([609f498](https://github.com/aws-amplify/amplify-cli/commit/609f498))
+
+
+
+
 <a name="0.2.1-multienv.1"></a>
 ## [0.2.1-multienv.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@0.2.1-multienv.0...amplify-graphql-docs-generator@0.2.1-multienv.1) (2018-12-10)
 

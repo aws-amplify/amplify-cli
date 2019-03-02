@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.0.3-beta.0...amplify-category-hosting@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.0.3-beta.0...amplify-category-hosting@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.0.2...amplify-category-hosting@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+<a name="0.2.1-multienv.5"></a>
+## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.2.1-multienv.4...amplify-category-hosting@0.2.1-multienv.5) (2019-01-25)
+
+
+
+
+**Note:** Version bump only for package amplify-category-hosting
+
+<a name="0.2.1-multienv.4"></a>
+## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.2.1-multienv.3...amplify-category-hosting@0.2.1-multienv.4) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-category-hosting
+
 <a name="0.2.1-multienv.3"></a>
 ## [0.2.1-multienv.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@0.2.1-multienv.2...amplify-category-hosting@0.2.1-multienv.3) (2018-12-07)
 

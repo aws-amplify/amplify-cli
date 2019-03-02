@@ -98,6 +98,7 @@ beforeAll(async () => {
         ratings: [Int!]
         percentageUp: Float
         isPublished: Boolean
+        jsonField: AWSJSON
     }
     `
     const transformer = new GraphQLTransform({
@@ -113,7 +114,7 @@ beforeAll(async () => {
     }
     try {
         const out = transformer.transform(validSchema);
-        fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
+        // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4))
         // create stack with additional params
         // const additionalParams = generateParams()
         console.log('Creating Stack ' + STACK_NAME)

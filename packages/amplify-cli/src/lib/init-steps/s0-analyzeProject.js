@@ -8,7 +8,6 @@ const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/con
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
-  context.print.warning('You\'re initializing your project with a beta version of the CLI which supports multiple environments of your project');
 
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
@@ -123,7 +122,7 @@ async function getEnvName(context) {
   const isEnvNameValid = (inputEnvName) => {
     let valid = true;
 
-    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-zA-Z]/g.test(inputEnvName)) {
+    if (inputEnvName.length > 10 || inputEnvName.length < 2 || /[^a-z]/g.test(inputEnvName)) {
       valid = false;
     }
     return valid;
@@ -134,7 +133,7 @@ async function getEnvName(context) {
       ({ envName } = context.exeInfo.inputParams.amplify);
       return envName;
     }
-    context.print.error('Environment name should be between 2 and 10 characters (only alphabets).');
+    context.print.error('Environment name should be between 2 and 10 characters (only lowercase alphabets).');
     process.exit(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
@@ -146,7 +145,7 @@ async function getEnvName(context) {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
-      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters (only alphabets).')) : resolvePromise(true))),
+      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters (only lowercase alphabets).')) : resolvePromise(true))),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.0.5...amplify-category-analytics@1.0.6) (2019-02-26)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.0.3-beta.0...amplify-category-analytics@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.0.3-beta.0...amplify-category-analytics@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.0.2...amplify-category-analytics@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.2.1-multienv.5...amplify-category-analytics@0.2.1-multienv.6) (2019-01-30)
+
+
+
+
+**Note:** Version bump only for package amplify-category-analytics
+
+<a name="0.2.1-multienv.5"></a>
+## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.2.1-multienv.4...amplify-category-analytics@0.2.1-multienv.5) (2019-01-15)
+
+
+
+
+**Note:** Version bump only for package amplify-category-analytics
+
 <a name="0.2.1-multienv.4"></a>
 ## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@0.2.1-multienv.3...amplify-category-analytics@0.2.1-multienv.4) (2018-12-28)
 

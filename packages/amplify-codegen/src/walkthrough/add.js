@@ -4,6 +4,7 @@ const askCodeGenQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askShouldGenerateCode = require('./questions/generateCode');
 const askShouldGenerateDocs = require('./questions/generateDocs');
+const askMaxDepth = require('./questions/maxDepth');
 const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const { getOutputFileName } = require('../utils');
@@ -19,10 +20,9 @@ const {
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
 async function addWalkThrough(context, skip = []) {
-  normalizeInputParams(context);
   let inputParams;
   let yesFlag = false;
-  if (context.exeInfo.inputParams) {
+  if (context.exeInfo && context.exeInfo.inputParams) {
     normalizeInputParams(context);
     inputParams = context.exeInfo.inputParams[constants.Label];
     yesFlag = context.exeInfo.inputParams.yes;
@@ -59,6 +59,11 @@ async function addWalkThrough(context, skip = []) {
     answers.shouldGenerateDocs =
     await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
     answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
+  }
+
+  if (answers.shouldGenerateDocs && !skip.includes('maxDepth')) {
+    answers.maxDepth =
+    await determineValue(inputParams, yesFlag, 'maxDepth', true, askMaxDepth);
   }
 
   if (!(frontend === 'android' || answers.target === 'javascript')) {

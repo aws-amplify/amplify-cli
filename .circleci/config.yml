@@ -48,8 +48,22 @@ jobs:
           key: amplify-cli-npm-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: Run GraphQL end-to-end tests
-          command: npm run e2e
+          command: cd packages/graphql-transformers-e2e-tests/ && npm run e2e
           no_output_timeout: 45m
+
+  amplify_e2e_tests: 
+    <<: *defaults
+    steps: 
+      - attach_workspace: 
+          at: ./
+      - restore_cache: 
+          key: "amplify-cli-npm-deps-{{ .Branch }}-{{ checksum \"package-lock.json\" }}"
+      - run: 
+          command: "cd packages/amplify-e2e-tests && npm run e2e"
+          name: "Run Amplify end-to-end tests"
+          no_output_timeout: 45m
+    working_directory: ~/repo
+
   integration_test:
       working_directory: ~/repo
       docker:
@@ -181,6 +195,7 @@ workflows:
             branches:
               only:
                 - master
+                - multienv
           requires:
             - build
       - integration_test:
@@ -190,6 +205,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - multienv
           requires:
             - build
       - deploy:
@@ -204,4 +220,3 @@ workflows:
                 - release
                 - master
                 - beta
-                - multienv

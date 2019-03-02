@@ -132,7 +132,8 @@
 							"ExposedHeaders": [
 								"x-amz-server-side-encryption",
 								"x-amz-request-id",
-								"x-amz-id-2"
+								"x-amz-id-2",
+								"ETag"
 							],
 							"Id": "S3CORSRuleId1",
 							"MaxAge": "3000"

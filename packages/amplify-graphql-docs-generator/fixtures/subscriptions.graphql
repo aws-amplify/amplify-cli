@@ -1,0 +1,82 @@
+# this is an auto generated file. This will be overwritten
+subscription OnCreatePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onCreatePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+subscription OnUpdatePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onUpdatePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}
+subscription OnDeletePost(
+  $id: ID
+  $author: String
+  $title: String
+  $content: String
+  $url: String
+) {
+  onDeletePost(
+    id: $id
+    author: $author
+    title: $title
+    content: $content
+    url: $url
+  ) {
+    id
+    author
+    title
+    content
+    url
+    ups
+    downs
+    file {
+      ...S3Object
+    }
+    version
+  }
+}

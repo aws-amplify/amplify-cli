@@ -10,6 +10,7 @@ const schemaFileName = 'schema.graphql';
 const providerName = 'awscloudformation';
 const resolversDirName = 'resolvers';
 const stacksDirName = 'stacks';
+const defaultStackName = 'CustomResources.json';
 
 function openConsole(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
@@ -70,6 +71,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
+    DynamoDBBillingMode: 'PAY_PER_REQUEST',
   };
 
   // Ask auth/security question
@@ -98,9 +100,18 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Ensure the project directory exists and create the stacks & resolvers directories.
   fs.ensureDirSync(resourceDir);
-  fs.mkdirSync(`${resourceDir}/${resolversDirName}`);
-  fs.mkdirSync(`${resourceDir}/${stacksDirName}`);
+  const resolverDirectoryPath = path.join(resourceDir, resolversDirName);
+  if (!fs.existsSync(resolverDirectoryPath)) {
+    fs.mkdirSync(resolverDirectoryPath);
+  }
+  const stacksDirectoryPath = path.join(resourceDir, stacksDirName);
+  if (!fs.existsSync(stacksDirectoryPath)) {
+    fs.mkdirSync(stacksDirectoryPath);
+  }
 
+  // Write the default custom resources stack out to disk.
+  const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
+  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
 
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
@@ -262,8 +273,15 @@ async function updateWalkthrough(context) {
   const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
 
   amplifyMeta[category][resourceName].output.securityType = authType;
-  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+
+  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+
+  backendConfig[category][resourceName].output.securityType = authType;
+  jsonString = JSON.stringify(backendConfig, null, '\t');
+  fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
 }
@@ -354,7 +372,7 @@ function checkIfAuthExists(context) {
 }
 
 async function migrate(context) {
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
 }
 
 

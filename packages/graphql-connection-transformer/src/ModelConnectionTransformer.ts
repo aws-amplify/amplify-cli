@@ -83,7 +83,7 @@ export class ModelConnectionTransformer extends Transformer {
         const fieldName = field.name.value;
         ctx.addToStackMapping(
             CONNECTION_STACK_NAME,
-            new RegExp(`^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`, 'i')
+            `^${ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName)}$`
         )
         const parentModelDirective = parent.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
         if (!parentModelDirective) {
@@ -377,7 +377,7 @@ export class ModelConnectionTransformer extends Transformer {
         }
 
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(field)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }

@@ -7,7 +7,7 @@ import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
     makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -40,7 +40,7 @@ interface ModelDirectiveArgs {
 }
 
 /**
- * The simple transform.
+ * The @model transformer.
  *
  * This transform creates a single DynamoDB table for all of your application's
  * data. It uses a standard key structure and nested map to store object values.
@@ -84,6 +84,7 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
+        ctx.mergeConditions(template.Conditions)
     }
 
     /**
@@ -95,15 +96,15 @@ export class DynamoDBModelTransformer extends Transformer {
         // Add a stack mapping so that all model resources are pulled
         // into their own stack at the end of the transformation.
         ctx.putStackMapping(
-            `${def.name.value}ModelStack`,
+            `${def.name.value}`,
             [
-                new RegExp(".*" + def.name.value + "Model", 'i'),
-                new RegExp(".*" + def.name.value + "DataSource", 'i'),
-                new RegExp(".*" + def.name.value + "IAMRole", 'i'),
-                new RegExp("^" + def.name.value + "Table", 'i'),
+                ".*" + def.name.value + "Model",
+                ".*" + def.name.value + "DataSource",
+                ".*" + def.name.value + "IAMRole",
+                "^" + def.name.value + "Table",
                 // All resolvers except the search resolver.
-                new RegExp("^[^S].*" + def.name.value + "Resolver", 'i'),
-                new RegExp("^" + def.name.value + ".+Resolver", 'i')
+                "^[^S].*" + def.name.value + "Resolver",
+                "^" + def.name.value + ".+Resolver"
             ]
         )
 
@@ -129,15 +130,15 @@ export class DynamoDBModelTransformer extends Transformer {
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
         ctx.setResource(
             tableLogicalID,
-            this.resources.makeModelTable(typeName)
+            this.resources.makeModelTable(typeName, undefined, undefined)
         )
         ctx.setResource(
             iamRoleLogicalID,
-            this.resources.makeIAMRole(tableLogicalID)
+            this.resources.makeIAMRole(typeName)
         )
         ctx.setResource(
             ModelResourceIDs.ModelTableDataSourceID(typeName),
-            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID)
+            this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
 
         this.createQueries(def, directive, ctx)
@@ -152,13 +153,6 @@ export class DynamoDBModelTransformer extends Transformer {
         nonModelArray: ObjectTypeDefinitionNode[]
     ) => {
         const typeName = def.name.value
-        // Create the input types.
-        const createInput = makeCreateInputObject(def, nonModelArray, ctx)
-        const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
-        const deleteInput = makeDeleteInputObject(def)
-        ctx.addInput(createInput)
-        ctx.addInput(updateInput)
-        ctx.addInput(deleteInput)
 
         const mutationFields = [];
         // Get any name overrides provided by the user. If an empty map it provided
@@ -199,6 +193,10 @@ export class DynamoDBModelTransformer extends Transformer {
 
         // Create the mutations.
         if (shouldMakeCreate) {
+            const createInput = makeCreateInputObject(def, nonModelArray, ctx)
+            if (!ctx.getType(createInput.name.value)) {
+                ctx.addInput(createInput)
+            }
             const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName), createResolver)
             mutationFields.push(makeField(
@@ -209,6 +207,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         if (shouldMakeUpdate) {
+            const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
+            if (!ctx.getType(updateInput.name.value)) {
+                ctx.addInput(updateInput)
+            }
             const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName), updateResolver)
             mutationFields.push(makeField(
@@ -219,6 +221,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         if (shouldMakeDelete) {
+            const deleteInput = makeDeleteInputObject(def)
+            if (!ctx.getType(deleteInput.name.value)) {
+                ctx.addInput(deleteInput)
+            }
             const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName), deleteResolver)
             mutationFields.push(makeField(
@@ -230,7 +236,11 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addMutationFields(mutationFields)
     }
 
-    private createQueries = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+    private createQueries = (
+        def: ObjectTypeDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext,
+    ) => {
         const typeName = def.name.value
         const queryFields = []
         const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
@@ -288,10 +298,9 @@ export class DynamoDBModelTransformer extends Transformer {
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
-            this.generateFilterInputs(ctx, def)
-
             queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
         }
+        this.generateFilterInputs(ctx, def)
 
         ctx.addQueryFields(queryFields)
     }
@@ -407,7 +416,10 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addObjectExtension(makeModelConnectionType(def.name.value))
     }
 
-    private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    private generateFilterInputs(
+        ctx: TransformerContext,
+        def: ObjectTypeDefinitionNode,
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -415,8 +427,16 @@ export class DynamoDBModelTransformer extends Transformer {
             }
         }
 
+        // Create the Enum filters
+        const enumFilters = makeEnumFilterInputObjects(def, ctx);
+        for (const filter of enumFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
+        }
+
         // Create the ModelXFilterInput
-        const tableXQueryFilterInput = makeModelXFilterInputObject(def)
+        const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
         }

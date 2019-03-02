@@ -162,12 +162,16 @@ type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
  */
 export interface GraphQLTransformOptions {
     transformers: Transformer[],
-    outputPath?: string,
+    // Override the formatter's stack mapping. This is useful when handling
+    // migrations as all the input/export/ref/getatt changes will be made
+    // automatically.
+    stackMapping?: StackMappingOption,
 }
+export type StackMappingOption = { [regexStr: string]: string };
 export default class GraphQLTransform {
 
     private transformers: Transformer[]
-    private outputPath?: string
+    private stackMappingOverrides: StackMappingOption;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
     // that specifies we have run already run a directive at a given location.
@@ -179,7 +183,7 @@ export default class GraphQLTransform {
             throw new Error('Must provide at least one transformer.')
         }
         this.transformers = options.transformers;
-        this.outputPath = options.outputPath;
+        this.stackMappingOverrides = options.stackMapping || {};
     }
 
     /**
@@ -190,7 +194,7 @@ export default class GraphQLTransform {
      * @param schema The model schema.
      * @param references Any cloudformation references.
      */
-    public transform(schema: string, template: Template = blankTemplate()): DeploymentResources {
+    public transform(schema: string): DeploymentResources {
         this.seenTransformations = {}
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
@@ -260,11 +264,17 @@ export default class GraphQLTransform {
             reverseThroughTransformers -= 1
         }
         // Format the context into many stacks.
+        this.updateContextForStackMappingOverrides(context);
         const formatter = new TransformFormatter({
-            stackRules: context.getStackMapping(),
-            outputPath: this.outputPath
+            stackRules: context.getStackMapping()
         })
         return formatter.format(context)
+    }
+
+    private updateContextForStackMappingOverrides(context: TransformerContext) {
+        for (const regexString of Object.keys(this.stackMappingOverrides)) {
+            context.addToStackMapping(this.stackMappingOverrides[regexString], regexString);
+        }
     }
 
     private transformObject(

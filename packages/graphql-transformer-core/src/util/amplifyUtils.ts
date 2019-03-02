@@ -1,21 +1,84 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CloudFormation, Fn } from "cloudform-types";
+import { CloudFormation, Fn, Template } from "cloudform-types";
 import GraphQLTransform from '..';
+import Transformer from '../Transformer';
 import DeploymentResources from '../DeploymentResources';
+import { StackMappingOption } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
+
+const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
+const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
+const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
     projectDirectory: string
-    transform: GraphQLTransform
+    transformers: Transformer[]
     rootStackFileName?: string
 }
 
 export async function buildProject(opts: ProjectOptions) {
     const userProjectConfig = await readProjectConfiguration(opts.projectDirectory)
-    const transformOutput = opts.transform.transform(userProjectConfig.schema.toString())
+    const stackMapping = getStackMappingsFromMigrationConfig(userProjectConfig.config.Migration);
+    const transform = new GraphQLTransform({
+        transformers: opts.transformers,
+        stackMapping
+    });
+    let transformOutput = transform.transform(userProjectConfig.schema.toString());
+    if (userProjectConfig.config && userProjectConfig.config.Migration) {
+        transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
+    }
     const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
     writeDeploymentToDisk(merged, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+}
+
+/**
+ * Returns a map where the keys are the names of the resources and the values are root.
+ * This will be passed to the transform constructor to cause resources from a migration
+ * to remain in the top level stack.
+ */
+function getStackMappingsFromMigrationConfig(migrationConfig?: TransformMigrationConfig): StackMappingOption {
+    if (migrationConfig && migrationConfig.V1) {
+        const resourceIdsToHoist = migrationConfig.V1.Resources || [];
+        return resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: 'root'}), {});
+    }
+    return {};
+}
+
+/**
+ * This adjusts a project build to account for the resources created by a previous
+ * version of the Amplify CLI. Mainly this prevents the deletion of DynamoDB tables
+ * while still allowing the transform to customize that logical resource.
+ * @param resources The resources to change.
+ * @param idsToHoist The logical ids to hoist into the root of the template.
+ */
+function adjustBuildForMigration(resources: DeploymentResources, migrationConfig?: TransformMigrationConfig): DeploymentResources {
+    if (migrationConfig && migrationConfig.V1) {
+        const resourceIdsToHoist = migrationConfig.V1.Resources || [];
+        if (resourceIdsToHoist.length === 0) {
+            return resources;
+        }
+        const resourceIdMap = resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: true}), {});
+        for (const stackKey of Object.keys(resources.stacks)) {
+            const template = resources.stacks[stackKey];
+            for (const resourceKey of Object.keys(template.Resources)) {
+                if (resourceIdMap[resourceKey]) {
+                    // Handle any special detials for migrated details.
+                    const resource = template.Resources[resourceKey];
+                    template.Resources[resourceKey] = formatMigratedResource(resource);
+                }
+            }
+        }
+        const rootStack = resources.rootStack;
+        for (const resourceKey of Object.keys(rootStack.Resources)) {
+            if (resourceIdMap[resourceKey]) {
+                // Handle any special detials for migrated details.
+                const resource = rootStack.Resources[resourceKey];
+                rootStack.Resources[resourceKey] = formatMigratedResource(resource);
+            }
+        }
+    }
+    return resources;
 }
 
 /**
@@ -39,7 +102,17 @@ function mergeUserConfigWithTransformOutput(
 
     // Get all the transform stacks. Custom stacks will depend on all of them
     // so they can always access data sources created by the transform.
-    const allResourceIds = Object.keys(rootStack.Resources);
+    const resourceTypesToDependOn = {
+        "AWS::CloudFormation::Stack": true,
+        "AWS::AppSync::GraphQLApi": true,
+        "AWS::AppSync::GraphQLSchema": true,
+    };
+    const allResourceIds = Object.keys(rootStack.Resources).filter(
+        (k: string) => {
+            const resource = rootStack.Resources[k];
+            return resourceTypesToDependOn[resource.Type];
+        }
+    );
     const parametersKeys = Object.keys(rootStack.Parameters);
     const customStackParams = parametersKeys.reduce((acc: any, k: string) => ({
         ...acc,
@@ -55,11 +128,19 @@ function mergeUserConfigWithTransformOutput(
             throw new Error(`You cannot provide a stack named ${userStack} as it \
             will be overwritten by a stack generated by the GraphQL Transform.`)
         }
-        transformStacks[userStack] = userConfig.stacks[userStack];
+        const userDefinedStack = userConfig.stacks[userStack];
+        // Providing a parameter value when the parameters is not explicitly defined
+        // in the template causes CloudFormation to throw and error. This will only
+        // provide the value to the nested stack if the user has specified it.
+        const parametersForStack = Object.keys(userDefinedStack.Parameters).reduce((acc, k) => ({
+            ...acc,
+            [k]: customStackParams[k],
+        }), {});
+        transformStacks[userStack] = userDefinedStack;
         // Split on non alphabetic characters to make a valid resource id.
         const stackResourceId = userStack.split(/[^A-Za-z]/).join('');
         const customNestedStack = new CloudFormation.Stack({
-            Parameters: customStackParams,
+            Parameters: parametersForStack,
             TemplateURL: Fn.Join(
                 '/',
                 [
@@ -100,7 +181,17 @@ export async function readSchema(projectDirectory: string) {
  * Given an absolute path to an amplify project directory, load the
  * user defined configuration.
  */
-export async function readProjectConfiguration(projectDirectory: string) {
+interface ProjectConfiguration {
+    schema: string;
+    resolvers: {
+        [k: string]: string,
+    },
+    stacks: {
+        [k: string]: Template
+    },
+    config: TransformConfig
+}
+export async function readProjectConfiguration(projectDirectory: string): Promise<ProjectConfiguration> {
     // Schema
     const schema = await readSchema(projectDirectory);
     // Load the resolvers.
@@ -133,19 +224,39 @@ export async function readProjectConfiguration(projectDirectory: string) {
         const stackFiles = await readDir(stacksDirectory)
         for (const stackFile of stackFiles) {
             const stackFilePath = path.join(stacksDirectory, stackFile)
-            const nameParts = stackFile.split('.');
-            const extension = nameParts[nameParts.length - 1];
-            if (extension !== "json" && extension !== "yaml" && extension !== "yml") {
-                throw new Error(`Invalid extension .${extension} for stack ${stackFile}`);
-            }
+            throwIfNotJSON(stackFile);
             const stackBuffer = await readFile(stackFilePath);
-            stacks[stackFile] = stackBuffer.toString();
+            try {
+                stacks[stackFile] = JSON.parse(stackBuffer.toString());
+            } catch (e) {
+                throw new Error(`The CloudFormation template ${stackFiles} does not contain valid JSON.`)
+            }
         }
+    }
+
+    const configPath = path.join(projectDirectory, TRANSFORM_CONFIG_FILE_NAME);
+    const configExists = await exists(configPath);
+    let config = {};
+    if (configExists) {
+        const configStr = await readFile(configPath);
+        config = JSON.parse(configStr.toString());
     }
     return {
         stacks,
         resolvers,
-        schema
+        schema,
+        config
+    }
+}
+
+function throwIfNotJSON(stackFile: string) {
+    const nameParts = stackFile.split('.');
+    const extension = nameParts[nameParts.length - 1];
+    if (extension === "yaml" || extension === "yml") {
+        throw new Error(`Yaml is not yet supported. Please convert the CloudFormation stack ${stackFile} to json.`)
+    }
+    if (extension !== "json") {
+        throw new Error(`Invalid extension .${extension} for stack ${stackFile}`);
     }
 }
 
@@ -200,7 +311,7 @@ async function uploadDirectory(opts: UploadOptions, key: string = '') {
     const files = await readDir(opts.directory)
     for (const file of files) {
         const resourcePath = path.join(opts.directory, file)
-        const uploadKey = path.join(key, file)
+        const uploadKey = path.posix.join(key, file)
         const isDirectory = (await lstat(resourcePath)).isDirectory()
         if (isDirectory) {
             await uploadDirectory({ ...opts, directory: resourcePath }, uploadKey)
@@ -227,7 +338,7 @@ function emptyDirectory(directory: string) {
 /**
  * Writes a deployment to disk at a path.
  */
-async function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
+function writeDeploymentToDisk(deployment: DeploymentResources, directory: string, rootStackFileName: string = 'rootStack.json') {
 
     // Delete the last deployments resources.
     emptyDirectory(directory)
@@ -237,12 +348,12 @@ async function writeDeploymentToDisk(deployment: DeploymentResources, directory:
     const fullSchemaPath = path.normalize(directory + `/schema.graphql`)
     fs.writeFileSync(fullSchemaPath, schema)
 
+    // Setup the directories if they do not exist.
+    initStacksAndResolversDirectories(directory);
+
     // Write resolvers to disk
     const resolverFileNames = Object.keys(deployment.resolvers);
     const resolverRootPath = path.normalize(directory + `/resolvers`)
-    if (!fs.existsSync(resolverRootPath)) {
-        fs.mkdirSync(resolverRootPath);
-    }
     for (const resolverFileName of resolverFileNames) {
         const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
         fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
@@ -251,19 +362,13 @@ async function writeDeploymentToDisk(deployment: DeploymentResources, directory:
     // Write the stacks to disk
     const stackNames = Object.keys(deployment.stacks);
     const stackRootPath = path.normalize(directory + `/stacks`)
-    if (!fs.existsSync(stackRootPath)) {
-        fs.mkdirSync(stackRootPath);
-    }
     for (const stackFileName of stackNames) {
         const fileNameParts = stackFileName.split('.');
         if (fileNameParts.length === 1) {
             fileNameParts.push('json')
         }
         const fullFileName = fileNameParts.join('.');
-        const extension = fileNameParts[fileNameParts.length - 1];
-        if (extension !== "json" && extension !== "yaml" && extension !== "yml") {
-            throw new Error(`Invalid extension .${extension} for stack ${fullFileName}`);
-        }
+        throwIfNotJSON(fullFileName);
         const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
         let stackString: any = deployment.stacks[stackFileName];
         stackString = typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
@@ -303,11 +408,423 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
     return schemaDocuments;
 }
 
+async function deleteDirectory(directory: string): Promise<void> {
+    const pathExists = await exists(directory);
+    if (!pathExists) {
+        return;
+    }
+    const dirStats = await lstat(directory);
+    if (!dirStats.isDirectory()) {
+        return;
+    }
+    const files = await readDir(directory);
+    for (const fileName of files) {
+        const fullPath = path.join(directory, fileName);
+        const stats = await lstat(fullPath);
+        if (stats.isDirectory()) {
+            await deleteDirectory(fullPath);
+        } else if (stats.isFile()) {
+            await unlink(fullPath);
+        }
+    }
+    await rmdir(directory);
+}
+
+async function mkdirIfNone(dir: string) {
+    const pathExists = await exists(dir);
+    if (!pathExists) {
+        fs.mkdirSync(dir);
+    }
+}
+async function writeToPath(directory: string, obj: any): Promise<void> {
+    if (Array.isArray(obj)) {
+        await mkdirIfNone(directory);
+        for (let i = 0; i < obj.length; i++) {
+            const newDir = path.join(directory, `${i}`);
+            await writeToPath(newDir, obj[i]);
+        }
+    } else if (typeof obj === 'object') {
+        await mkdirIfNone(directory);
+        for (const key of Object.keys(obj)) {
+            const newDir = path.join(directory, key);
+            await writeToPath(newDir, obj[key])
+        }
+    } else if (typeof obj === 'string') {
+        fs.writeFileSync(directory, obj)
+    }
+}
+
+async function readFromPath(directory: string): Promise<any> {
+    const pathExists = await exists(directory);
+    if (!pathExists) {
+        return;
+    }
+    const dirStats = await lstat(directory);
+    if (!dirStats.isDirectory()) {
+        const buf = await readFile(directory);
+        return buf.toString();
+    }
+    const files = await readDir(directory);
+    const accum = {};
+    for (const fileName of files) {
+        const fullPath = path.join(directory, fileName);
+        const value = await readFromPath(fullPath);
+        accum[fileName] = value;
+    }
+    return accum;
+}
+
+async function clearAtPath(clearPath: string) {
+    const pathExists = await exists(clearPath);
+    if (pathExists) {
+        const dirStats = await lstat(clearPath);
+        if (dirStats.isDirectory()) {
+            await deleteDirectory(clearPath);
+        } else {
+            await unlink(clearPath);
+        }
+    }
+}
+
+interface MigrationOptions {
+    projectDirectory: string,
+    cloudBackendDirectory?: string,
+}
+interface MigrationInfo {
+    project: AmplifyApiV1Project,
+    cloudBackend: AmplifyApiV1Project,
+}
+/**
+ * Using the current cloudbackend as the source of truth of the current env,
+ * move the deployment forward to the intermediate stage before allowing the
+ * rest of the deployment to take place.
+ * @param opts
+ */
+export async function migrateAPIProject(opts: MigrationOptions) {
+    const projectDirectory = opts.projectDirectory;
+    const cloudBackendDirectory = opts.cloudBackendDirectory || projectDirectory;
+
+    // Read the existing project structures from both the current cloud directory
+    // and the current project environment.
+    const copyOfCloudBackend = await readFromPath(cloudBackendDirectory);
+    if (copyOfCloudBackend.build && !copyOfCloudBackend.build[CLOUDFORMATION_FILE_NAME]) {
+        copyOfCloudBackend.build[CLOUDFORMATION_FILE_NAME] = copyOfCloudBackend[CLOUDFORMATION_FILE_NAME];
+    }
+    const projectConfig = await readFromPath(projectDirectory);
+
+    // Perform the intermediate migration.
+    const cloudBackendConfig = await readV1ProjectConfiguration(cloudBackendDirectory);
+    const transformConfig = makeTransformConfigFromOldProject(cloudBackendConfig);
+    await updateToIntermediateProject(projectDirectory, cloudBackendConfig, transformConfig);
+
+    // Return the old project structures in case of revert.
+    return {
+        project: projectConfig,
+        cloudBackend: copyOfCloudBackend
+    }
+}
+export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
+    await clearAtPath(directory);
+    await writeToPath(directory, oldProject);
+
+    // // Revert the v1 style CF doc.
+    // const oldCloudFormationTemplatePath = path.join(directory, CLOUDFORMATION_FILE_NAME);
+    // fs.writeFileSync(oldCloudFormationTemplatePath, JSON.stringify(oldProject.template, null, 4));
+    // const oldCloudFormationBuildTemplatePath = path.join(directory, 'build', CLOUDFORMATION_FILE_NAME);
+    // fs.writeFileSync(oldCloudFormationBuildTemplatePath, JSON.stringify(oldProject.template, null, 4));
+
+    // const parametersInputPath = path.join(directory, PARAMETERS_FILE_NAME);
+    // fs.writeFileSync(parametersInputPath, JSON.stringify(oldProject.parameters, null, 4));
+
+    // // Revert the config file by deleting it.
+    // const configFilePath = path.join(directory, TRANSFORM_CONFIG_FILE_NAME);
+    // if (fs.existsSync(configFilePath)) {
+    //     fs.unlinkSync(configFilePath);
+    // }
+
+    // // Try to delete the stacks & resolver directories.
+    // const stacksDir = path.join(directory, 'stacks');
+    // const resolversDir = path.join(directory, 'resolvers');
+    // await deleteDirectory(stacksDir);
+    // await deleteDirectory(resolversDir);
+}
+
+interface AmplifyApiV1Project {
+    schema: string;
+    parameters: any;
+    template: Template;
+}
+/**
+ * Read the configuration for the old version of amplify CLI.
+ */
+export async function readV1ProjectConfiguration(projectDirectory: string): Promise<AmplifyApiV1Project> {
+    // Schema
+    const schema = await readSchema(projectDirectory);
+
+    // Get the template
+    const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
+    const cloudFormationTemplateExists = await exists(cloudFormationTemplatePath);
+    if (!cloudFormationTemplateExists) {
+        throw new Error(`Could not find cloudformation template at ${cloudFormationTemplatePath}`);
+    }
+    const cloudFormationTemplateStr = await readFile(cloudFormationTemplatePath);
+    const cloudFormationTemplate = JSON.parse(cloudFormationTemplateStr.toString());
+
+    // Get the params
+    const parametersFilePath = path.join(projectDirectory, 'parameters.json');
+    const parametersFileExists = await exists(parametersFilePath);
+    if (!parametersFileExists) {
+        throw new Error(`Could not find parameters.json at ${parametersFilePath}`);
+    }
+    const parametersFileStr = await readFile(parametersFilePath);
+    const parametersFile = JSON.parse(parametersFileStr.toString());
+
+    return {
+        template: cloudFormationTemplate,
+        parameters: parametersFile,
+        schema
+    }
+}
+
+/**
+ * TransformConfig records a set of logical ids that should be preserved
+ * in the top level template to prevent deleting resources that holds data and
+ * that were created before the new nested stack config.
+ */
+interface TransformMigrationConfig {
+    V1?: {
+        Resources: string[];
+    }
+}
+interface TransformConfig {
+    Migration?: TransformMigrationConfig;
+}
+export function makeTransformConfigFromOldProject(project: AmplifyApiV1Project): TransformConfig {
+    const migrationResourceIds = [];
+    for (const key of Object.keys(project.template.Resources)) {
+        const resource = project.template.Resources[key];
+        switch (resource.Type) {
+            case 'AWS::DynamoDB::Table': {
+                migrationResourceIds.push(key);
+                // When searchable is used we need to keep the output stream arn
+                // output at the top level as well. TODO: Only do this when searchable is enabled.
+                // migrationOutputIds.push(`GetAtt${key}StreamArn`);
+                break;
+            }
+            case 'AWS::Elasticsearch::Domain': {
+                migrationResourceIds.push(key);
+                break;
+            }
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for deploying the migration to projects with @searchable.
+                    // This keeps an IAM role needed by the old ES policy document around.
+                    migrationResourceIds.push(key);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+    // for (const key of Object.keys(project.template.Outputs)) {
+    //     // Pull any outputs that reference a hoisted id.
+    //     const output = project.template.Outputs[key];
+    //     const outputValue = output.Value;
+    //     let refdId;
+    //     if (outputValue["Fn::GetAtt"]) {
+    //         refdId = outputValue["Fn::GetAtt"][0];
+    //     } else if (outputValue["Fn::Ref"]) {
+    //         refdId = outputValue["Fn::Ref"];
+    //     }
+    //     if (refdId && migrationResourceIds.find(id => id === refdId)) {
+    //         migrationOutputIds.push(key);
+    //     }
+    // }
+    return {
+        Migration: {
+            V1: {
+                Resources: migrationResourceIds
+            }
+        }
+    }
+}
+
+function formatMigratedResource(obj: any) {
+    const jsonNode = obj && typeof obj.toJSON === 'function' ? obj.toJSON() : obj;
+    // const withReplacedReferences = replaceReferencesForMigration(obj);
+    const withoutEncryption = removeSSE(jsonNode);
+    return withoutEncryption;
+}
+
+function removeSSE(resource: any) {
+    if (resource && resource.Properties && resource.Properties.SSESpecification) {
+        delete resource.Properties.SSESpecification;
+    }
+    return resource;
+}
+
+/**
+ * Walks the object and replaces the offending Ref with the correct GetAtt
+ * as is required by the migration tool.
+ */
+function replaceReferencesForMigration(obj: any) {
+    const jsonNode = obj && typeof obj.toJSON === 'function' ? obj.toJSON() : obj;
+    if (Array.isArray(jsonNode)) {
+        for (let i = 0; i < jsonNode.length; i++) {
+            const replaced = formatMigratedResource(jsonNode[i]);
+            jsonNode[i] = replaced;
+        }
+        return jsonNode;
+    } else if (typeof jsonNode === 'object') {
+        const ref = jsonNode.Ref || jsonNode['Fn::Ref'];
+        if (ref && ref === 'GetAttGraphQLAPIApiId') {
+            return {
+                "Fn::GetAtt": [
+                    "GraphQLAPI",
+                    "ApiId"
+                ]
+            };
+        }
+        for (const key of Object.keys(jsonNode)) {
+            const replaced = formatMigratedResource(jsonNode[key]);
+            jsonNode[key] = replaced
+        }
+        return jsonNode;
+    }
+    return jsonNode;
+}
+
+/**
+ * Updates the project to a temporary configuration that stages the real migration.
+ */
+async function updateToIntermediateProject(projectDirectory: string, project: AmplifyApiV1Project, config: TransformConfig) {
+    // Write the schema to disk
+    const migrationInfoFilePath = path.join(projectDirectory, TRANSFORM_CONFIG_FILE_NAME);
+    fs.writeFileSync(migrationInfoFilePath, JSON.stringify(config, null, 4));
+
+    const filteredResources = {};
+    for (const key of Object.keys(project.template.Resources)) {
+        const resource = project.template.Resources[key];
+        switch (resource.Type) {
+            case 'AWS::DynamoDB::Table':
+            case 'AWS::Elasticsearch::Domain':
+            case 'AWS::AppSync::GraphQLApi':
+            case 'AWS::AppSync::ApiKey':
+            case 'AWS::Cognito::UserPool':
+            case 'AWS::Cognito::UserPoolClient':
+                filteredResources[key] = formatMigratedResource(resource);
+                break;
+            case 'AWS::IAM::Role': {
+                if (key === 'ElasticSearchAccessIAMRole') {
+                    // A special case for the ES migration case.
+                    filteredResources[key] = resource;
+                }
+                break;
+            }
+            case 'AWS::AppSync::GraphQLSchema':
+                const alteredResource = { ...resource };
+                alteredResource.Properties.DefinitionS3Location = {
+                    "Fn::Sub": [
+                        "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/schema.graphql",
+                        {
+                            "S3DeploymentBucket": {
+                                "Ref": "S3DeploymentBucket"
+                            },
+                            "S3DeploymentRootKey": {
+                                "Ref": "S3DeploymentRootKey"
+                            }
+                        }
+                    ]
+                };
+                filteredResources[key] = alteredResource;
+                break;
+            default:
+                break; // Everything else will live in a nested stack.
+        }
+    }
+
+    const filteredParameterValues = {
+        DynamoDBBillingMode: 'PROVISIONED'
+    };
+    const filteredTemplateParameters = {
+        env: {
+            Type: "String",
+            Description: "The environment name. e.g. Dev, Test, or Production",
+            Default: "NONE"
+        },
+        S3DeploymentBucket: {
+            Type: "String",
+            Description: "The S3 bucket containing all deployment assets for the project."
+        },
+        S3DeploymentRootKey: {
+            Type: "String",
+            Description: "An S3 key relative to the S3DeploymentBucket that points to the root of the deployment directory."
+        }
+    };
+    for (const key of Object.keys(project.template.Parameters)) {
+        switch (key) {
+            case 'ResolverBucket':
+            case 'ResolverRootKey':
+            case 'DeploymentTimestamp':
+            case 'schemaGraphql':
+                break;
+            default: {
+                const param = project.template.Parameters[key];
+                filteredTemplateParameters[key] = param;
+                if (project.parameters[key]) {
+                    filteredParameterValues[key] = project.parameters[key];
+                }
+                break;
+            }
+        }
+    }
+
+    const templateCopy = {
+        ...project.template,
+        Resources: filteredResources,
+        Parameters: filteredTemplateParameters
+    }
+
+    // Remove the old cloudformation file.
+    const oldCloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
+    if (fs.existsSync(oldCloudFormationTemplatePath)) {
+        fs.unlinkSync(oldCloudFormationTemplatePath);
+    }
+
+    // Write the new cloudformation file to the build.
+    const cloudFormationTemplateOutputPath = path.join(projectDirectory, 'build', CLOUDFORMATION_FILE_NAME);
+    fs.writeFileSync(cloudFormationTemplateOutputPath, JSON.stringify(templateCopy, null, 4));
+
+    // We write the filtered values at the top level and the deployment
+    // parameters in the build/ directory. We will no longer change the
+    // top level parameters.json to hold the promise that we do not change
+    // anything outside of build/
+    const parametersInputPath = path.join(projectDirectory, PARAMETERS_FILE_NAME);
+    fs.writeFileSync(parametersInputPath, JSON.stringify(filteredParameterValues, null, 4));
+
+    // If the resolvers & stacks directories do not exist, create them.
+    initStacksAndResolversDirectories(projectDirectory);
+}
+
+function initStacksAndResolversDirectories(directory: string) {
+    const resolverRootPath = path.normalize(directory + `/resolvers`)
+    if (!fs.existsSync(resolverRootPath)) {
+        fs.mkdirSync(resolverRootPath);
+    }
+    const stackRootPath = path.normalize(directory + `/stacks`)
+    if (!fs.existsSync(stackRootPath)) {
+        fs.mkdirSync(stackRootPath);
+    }
+}
+
 const readDir = async (dir: string) => await promisify<string, string[]>(fs.readdir, dir)
 const readFile = async (p: string) => await promisify(fs.readFile, p)
 const lstat = async (dir: string) => await promisify(fs.lstat, dir)
 const exists = async (p: string) => await new Promise((res) => fs.exists(p, e => res(e)))
 const unlink = async (p: string) => await new Promise((res, rej) => fs.unlink(p, e => e ? rej(e) : res()))
+const rmdir = async (p: string) => await new Promise((res, rej) => fs.rmdir(p, e => e ? rej(e) : res()))
 function promisify<A, O>(fn: (arg: A, cb: (err: Error, data: O) => void) => void, a: A): Promise<O> {
     return new Promise((res, rej) => {
         fn(a, (err, d) => {

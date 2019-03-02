@@ -23,7 +23,7 @@ AWS_CONFIG="{\
 \"profileName\":\"default\"\
 }"
 
-amplify env add \
+amplify env import \
 --name dev5 \
 --config $PROVIDER_CONFIG \
 --awsInfo $AWS_CONFIG \

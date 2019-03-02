@@ -41,7 +41,7 @@ function getPublishIgnoreFilePath(context) {
 
 
 async function configurePublishIgnore(context, publishIgnore) {
-  const DONE = "I'm done.";
+  const DONE = 'exit';
   const configActions = ['list', 'add', 'remove', 'remove all', DONE];
   const answer = await inquirer.prompt({
     name: 'action',

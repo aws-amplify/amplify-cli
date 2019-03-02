@@ -33,7 +33,7 @@ const findMatch = (cond, answers, previousValues, amplify) => {
     } else if (cond.operator === 'includes' && (!answers[cond.key] || !answers[cond.key].includes(cond.value))) {
       response = false;
     } else if (cond.operator === 'configMatch' && cond.value && cond.key && amplify) {
-      const configKey = Object.keys(amplify.getProjectConfig()[cond.key])[0];
+      const configKey = amplify.getProjectConfig()[cond.key];
       return configKey.toLowerCase() === cond.value.toLowerCase()
     }
   } else if (previousValues && Object.keys(previousValues).length > 0) {

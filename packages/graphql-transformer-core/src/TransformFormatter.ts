@@ -14,8 +14,7 @@ import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from '.
 import { ResourceConstants } from "graphql-transformer-common";
 
 interface TransformFormatterOptions {
-    stackRules: StackRules,
-    outputPath?: string
+    stackRules: StackRules
 }
 export class TransformFormatter {
 

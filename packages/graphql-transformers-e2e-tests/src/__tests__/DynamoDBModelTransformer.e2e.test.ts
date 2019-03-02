@@ -50,6 +50,7 @@ beforeAll(async () => {
         metadata: PostMetadata
         entityMetadata: EntityMetadata
         appearsIn: [Episode!]
+        episode: Episode
     }
     type Author @model {
         id: ID!
@@ -132,6 +133,32 @@ afterAll(async () => {
         console.error(`Failed to empty S3 bucket: ${e}`)
     }
 })
+
+afterEach(async () => {
+  try {
+    // delete all the records 
+    console.log('deleting posts');
+    const response = await GRAPHQL_CLIENT.query(`
+    query {
+      listPosts {
+        items {
+          id
+        }
+      }
+    }`, {})
+    const rows = response.data.listPosts.items || [];
+    const deletePromises = [];
+    rows.forEach(row => {
+      deletePromises.push(GRAPHQL_CLIENT.query(`mutation delete{
+        deletePost(input: {id: "${row.id}"}) { id }
+      }`))
+    })
+    await Promise.all(deletePromises)
+  } catch (e) {
+    console.log(e);
+  }
+})
+
 
 /**
  * Test queries below
@@ -399,6 +426,176 @@ test('Test listPosts query with filter', async () => {
         expect(e).toBeUndefined()
     }
 })
+
+test('Test enum filters List', async () => {
+  try {
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+            createPost(input: { title: "Appears in New Hope", appearsIn: [NEWHOPE], episode: NEWHOPE }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
+      {}
+    );
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+            createPost(input: { title: "Appears in Jedi", appearsIn: [JEDI], episode: JEDI }) {
+                id
+                title
+                createdAt
+                updatedAt
+            }
+        }`,
+      {}
+    );
+    await GRAPHQL_CLIENT.query(
+        `mutation {
+              createPost(input: { title: "Appears in Empire", appearsIn: [EMPIRE], episode: EMPIRE }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
+        {}
+      );
+
+    await GRAPHQL_CLIENT.query(
+        `mutation {
+              createPost(input: { title: "Appears in Empire & JEDI", appearsIn: [EMPIRE, JEDI] }) {
+                  id
+                  title
+                  createdAt
+                  updatedAt
+              }
+          }`,
+        {}
+    );
+
+    // filter list of enums
+    const appearsInWithFilterResponseJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {eq: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInWithFilterResponseJedi.data.listPosts.items).toBeDefined();
+    const items = appearsInWithFilterResponseJedi.data.listPosts.items;
+    expect(items.length).toEqual(1);
+    expect(items[0].title).toEqual('Appears in Jedi');
+
+    const appearsInWithFilterResponseNonJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {ne: [JEDI]}}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInWithFilterResponseNonJedi.data.listPosts.items).toBeDefined();
+    const appearsInNonJediItems = appearsInWithFilterResponseNonJedi.data.listPosts.items;
+    expect(appearsInNonJediItems.length).toEqual(3);
+    appearsInNonJediItems.forEach((item) => {
+      expect(['Appears in Empire & JEDI', 'Appears in New Hope', 'Appears in Empire'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    const appearsInContainingJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {contains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInContainingJedi.data.listPosts.items).toBeDefined();
+    const appearsInWithJediItems = appearsInContainingJedi.data.listPosts.items;
+    expect(appearsInWithJediItems.length).toEqual(2);
+    appearsInWithJediItems.forEach((item) => {
+      expect(['Appears in Empire & JEDI', 'Appears in Jedi'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    const appearsInNotContainingJedi = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { appearsIn: {notContains: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(appearsInNotContainingJedi.data.listPosts.items).toBeDefined();
+    const appearsInWithNonJediItems = appearsInNotContainingJedi.data.listPosts.items;
+    expect(appearsInWithNonJediItems.length).toEqual(2);
+    appearsInWithNonJediItems.forEach((item) => {
+      expect(['Appears in New Hope', 'Appears in Empire'].includes(item.title))
+        .toBeTruthy();
+    })
+
+    // enum filter
+    const jediEpisode = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { episode: {eq: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(jediEpisode.data.listPosts.items).toBeDefined();
+    const jediEpisodeItems = jediEpisode.data.listPosts.items;
+    expect(jediEpisodeItems.length).toEqual(1);
+    expect(jediEpisodeItems[0].title).toEqual('Appears in Jedi')
+
+    const nonJediEpisode = await GRAPHQL_CLIENT.query(
+      `query {
+            listPosts(filter: { episode: {ne: JEDI }}) {
+                items {
+                    title
+                    id
+                }
+            }
+        }
+        `,
+      {}
+    );
+    expect(nonJediEpisode.data.listPosts.items).toBeDefined();
+    const nonJediEpisodeItems = nonJediEpisode.data.listPosts.items;
+    expect(nonJediEpisodeItems.length).toEqual(3);
+    nonJediEpisodeItems.forEach((item) => {
+      expect(['Appears in New Hope', 'Appears in Empire', 'Appears in Empire & JEDI'].includes(item.title))
+        .toBeTruthy();
+    })
+  } catch (e) {
+    console.log(e);
+    // fail
+    expect(e).toBeUndefined();
+  }
+});
 
 test('Test createPost mutation with non-model types', async () => {
     try {

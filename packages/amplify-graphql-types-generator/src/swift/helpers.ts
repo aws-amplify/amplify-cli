@@ -167,10 +167,12 @@ export class Helpers {
   }
 
   propertyFromInputField(field: GraphQLInputField) {
-    return Object.assign({}, field, {
+    return Object.assign({}, {
       propertyName: camelCase(field.name),
       typeName: this.typeNameFromGraphQLType(field.type),
-      isOptional: !(field.type instanceof GraphQLNonNull)
+      isOptional: !(field.type instanceof GraphQLNonNull),
+      description: field.description || null,
+      name: field.name,
     });
   }
 

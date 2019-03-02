@@ -49,7 +49,6 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     // This id should always be optional.
     // aka a named type node aka name.value would not be set if it were a non null node
     const idField = createPostInput.fields.find(f => f.name.value === 'id')
-    console.log(idField)
     expect((idField.type as NamedTypeNode).name.value).toEqual('ID');
     const queryType = getObjectType(parsed, 'Query')
     expect(queryType).toBeDefined()
@@ -311,7 +310,6 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
     expect(subField.directives.length).toEqual(1)
     expect(subField.directives[0].name.value).toEqual('aws_subscribe')
     const mutationsList = subField.directives[0].arguments.find(a => a.name.value === 'mutations').value as ListValueNode
-    console.log(mutationsList.values)
     const mutList = mutationsList.values.map((v: any) => v.value)
     expect(mutList.length).toEqual(3)
     expect(mutList).toContain('createPost')
@@ -352,7 +350,6 @@ test('Test DynamoDBModelTransformer with non-model types and enums', () => {
 
     const definition = out.schema
     expect(definition).toBeDefined()
-    console.log(`OUTPUT SCHEMA\n${definition}`)
     const parsed = parse(definition);
 
     const postMetaDataInputType = getInputType(parsed, 'PostMetadataInput')
@@ -374,6 +371,77 @@ test('Test DynamoDBModelTransformer with non-model types and enums', () => {
 
     expect(verifyInputCount(parsed, 'PostMetadataInput', 1)).toBeTruthy();
     expect(verifyInputCount(parsed, 'TagInput', 1)).toBeTruthy();
+});
+
+test('Test DynamoDBModelTransformer with mutation input overrides when mutations are disabled', () => {
+    const validSchema = `type Post @model(mutations: null) {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    input CreatePostInput {
+        different: String
+    }
+    input UpdatePostInput {
+        different2: String
+    }
+    input DeletePostInput {
+        different3: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema)
+    expect(out).toBeDefined()
+    const definition = out.schema
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const createPostInput = getInputType(parsed, 'CreatePostInput')
+    expectFieldsOnInputType(createPostInput, ['different'])
+    const updatePostInput = getInputType(parsed, 'UpdatePostInput')
+    expectFieldsOnInputType(updatePostInput, ['different2'])
+    const deletePostInput = getInputType(parsed, 'DeletePostInput')
+    expectFieldsOnInputType(deletePostInput, ['different3'])
+});
+
+test('Test DynamoDBModelTransformer with mutation input overrides when mutations are enabled', () => {
+    const validSchema = `type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    # User defined types always take precedence.
+    input CreatePostInput {
+        different: String
+    }
+    input UpdatePostInput {
+        different2: String
+    }
+    input DeletePostInput {
+        different3: String
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema)
+    expect(out).toBeDefined()
+    const definition = out.schema
+    expect(definition).toBeDefined()
+    const parsed = parse(definition);
+    const createPostInput = getInputType(parsed, 'CreatePostInput')
+    expectFieldsOnInputType(createPostInput, ['different'])
+    const updatePostInput = getInputType(parsed, 'UpdatePostInput')
+    expectFieldsOnInputType(updatePostInput, ['different2'])
+    const deletePostInput = getInputType(parsed, 'DeletePostInput')
+    expectFieldsOnInputType(deletePostInput, ['different3'])
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

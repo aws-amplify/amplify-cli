@@ -21,9 +21,11 @@ interface NestedStackInfo {
     stackDependencyMap: { [k: string]: string[] }
     stackParameterMap: { [k: string]: {[p: string]: any }  }
 }
-export interface StackRules {
-    [key: string]: RegExp[];
-}
+
+// export interface StackRules {
+//     [key: string]: RegExp[];
+// }
+export type StackRules = Map<string, string>;
 export interface SplitStackOptions {
     stack: Template,
     stackRules: StackRules,
@@ -52,21 +54,19 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     function mapResourcesToStack(
         template: Template,
     ): { [key: string]: string } {
-        const stackNames = Object.keys(stackRules)
         const resourceKeys = Object.keys(template.Resources);
         const resourceStackMap = {};
-        for (const stackName of stackNames) {
-            for (const resourceKey of resourceKeys) {
-                for (const regEx of stackRules[stackName]) {
-                    if (regEx.test(resourceKey)) {
-                        resourceStackMap[resourceKey] = stackName
-                    }
+        for (const resourceKey of resourceKeys) {
+            stackRules.forEach((stackName, regExStr) => {
+                const regEx = new RegExp(regExStr, 'i');
+                if (regEx.test(resourceKey)) {
+                    resourceStackMap[resourceKey] = stackName;
                 }
-            }
+            })
         }
         for (const resourceKey of resourceKeys) {
             if (!resourceStackMap[resourceKey]) {
-                resourceStackMap[resourceKey] = rootStackName
+                resourceStackMap[resourceKey] = rootStackName;
             }
         }
         return resourceStackMap;
@@ -90,7 +90,17 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
                     Conditions: template.Conditions
                 })
             }
-            templateMap[stackName].Resources[resourceId] = template.Resources[resourceId]
+            const resource = template.Resources[resourceId];
+            // Remove any dependsOn that will no longer be in the same template.
+            let depends: string | string[] = (resource.DependsOn as any);
+            if (depends && Array.isArray(depends)) {
+                resource.DependsOn =  depends.filter(id => {
+                    return resourceToStackMap[id] === stackName;
+                })
+            } else if (depends && typeof depends === 'string') {
+                resource.DependsOn = resourceToStackMap[depends] === stackName ? depends : undefined;
+            }
+            templateMap[stackName].Resources[resourceId] = resource;
         }
         // The root stack exposes all parameters at the top level.
         templateMap[rootStackName].Parameters = template.Parameters;

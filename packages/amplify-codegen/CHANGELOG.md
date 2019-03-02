@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.8...amplify-codegen@1.0.9) (2019-02-20)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.6...amplify-codegen@1.0.8) (2019-02-15)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.6...amplify-codegen@1.0.7) (2019-02-14)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.5...amplify-codegen@1.0.6) (2019-02-12)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.3-beta.0...amplify-codegen@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.3-beta.0...amplify-codegen@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.2...amplify-codegen@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+<a name="0.2.1-multienv.7"></a>
+## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.6...amplify-codegen@0.2.1-multienv.7) (2019-01-24)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
+<a name="0.2.1-multienv.6"></a>
+## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.5...amplify-codegen@0.2.1-multienv.6) (2019-01-22)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** hide types gen message for JS ([bd39555](https://github.com/aws-amplify/amplify-cli/commit/bd39555))
+
+
+
+
+<a name="0.2.1-multienv.5"></a>
+## [0.2.1-multienv.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.4...amplify-codegen@0.2.1-multienv.5) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-codegen
+
 <a name="0.2.1-multienv.4"></a>
 ## [0.2.1-multienv.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@0.2.1-multienv.3...amplify-codegen@0.2.1-multienv.4) (2018-12-27)
 

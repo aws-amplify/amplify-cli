@@ -70,6 +70,7 @@ Resources:
   # Created upon user selection
   # Depends on SNS Role for Arn if MFA is enabled
     Type: AWS::Cognito::UserPool
+    UpdateReplacePolicy: Retain
     Properties:
       UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
       Schema: 
@@ -384,7 +385,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, <%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, !Join ['',[<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>, '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', '-', !Ref env]]]
     DependsOn: UserPoolClientInputs
   OpenIdLambda:
   # Lambda which sets OpenId Values

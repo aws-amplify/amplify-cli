@@ -5,6 +5,7 @@ const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 const {
   updateBackendConfigAfterResourceAdd,
+  updateBackendConfigDependsOn,
 } = require('./update-backend-config');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
@@ -52,7 +53,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
       resources[i].resourceName,
     ));
 
-    // If the directory structure does not exist, it is created
+    if (fs.pathExistsSync(targetDir)) {
+      filesystem.remove(targetDir);
+    }
+
     fs.ensureDirSync(targetDir);
 
     fs.copySync(sourceDir, targetDir);
@@ -111,6 +115,9 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
+  if (attribute === 'dependsOn') {
+    updateBackendConfigDependsOn(category, resourceName, value);
+  }
 }
 
 async function updateamplifyMetaAfterPush(resources) {

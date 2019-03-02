@@ -53,10 +53,10 @@ describe('getBody', () => {
 
   it('should return a list of arguments', () => {
     const query = schema.getQueryType().getFields().article
-    expect(getBody(query, schema, maxDepth)).toEqual({
+    expect(getBody(query, schema, maxDepth, { useExternalFragmentForS3Object: true})).toEqual({
       args: [{ name: 'id', value: '$id' }],
       ...mockFields,
     })
-    expect(getFields).toHaveBeenCalledWith(query, schema, maxDepth)
+    expect(getFields).toHaveBeenCalledWith(query, schema, maxDepth, { useExternalFragmentForS3Object: true})
   })
 })

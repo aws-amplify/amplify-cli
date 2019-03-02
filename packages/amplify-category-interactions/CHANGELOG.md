@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.0.6...amplify-category-interactions@1.0.7) (2019-02-26)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.0.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.0.5...amplify-category-interactions@1.0.6) (2019-02-22)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.0.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.0.3-beta.0...amplify-category-interactions@1.0.5) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.0.3-beta.0...amplify-category-interactions@1.0.3) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.0.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.0.2...amplify-category-interactions@1.0.3-beta.0) (2019-02-11)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+<a name="0.2.1-multienv.9"></a>
+## [0.2.1-multienv.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.8...amplify-category-interactions@0.2.1-multienv.9) (2019-02-01)
+
+
+
+
+**Note:** Version bump only for package amplify-category-interactions
+
+<a name="0.2.1-multienv.8"></a>
+## [0.2.1-multienv.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.6...amplify-category-interactions@0.2.1-multienv.8) (2019-01-30)
+
+
+
+
+**Note:** Version bump only for package amplify-category-interactions
+
+<a name="0.2.1-multienv.7"></a>
+## [0.2.1-multienv.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.6...amplify-category-interactions@0.2.1-multienv.7) (2019-01-16)
+
+
+
+
+**Note:** Version bump only for package amplify-category-interactions
+
 <a name="0.2.1-multienv.6"></a>
 ## [0.2.1-multienv.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@0.2.1-multienv.5...amplify-category-interactions@0.2.1-multienv.6) (2018-12-28)
 

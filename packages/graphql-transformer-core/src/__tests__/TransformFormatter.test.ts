@@ -60,10 +60,11 @@ const template: Template = {
 
 
 test('Test getTemplateReferences', () => {
+    const stackRules = new Map<string, string>();
+    stackRules.set('.*PostResolver', 'PostModel');
+    stackRules.set('^PostTable.*', 'PostModel');
     const formatter = new TransformFormatter({
-        stackRules: {
-            "PostModel": [/.*PostResolver/, /^PostTable*/]
-        },
+        stackRules: stackRules,
     });
     const context = new TransformerContext('type Post @model { id: ID! title: String }')
     context.template = template;
