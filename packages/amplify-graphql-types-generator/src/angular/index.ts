@@ -10,12 +10,14 @@ import {
 import CodeGenerator from '../utilities/CodeGenerator';
 import {
   typeDeclarationForGraphQLType,
-  interfaceDeclarationForOperation,
   interfaceDeclarationForFragment,
+  propertiesFromFields,
+  updateTypeNameField,
+  propertyDeclarations,
   interfaceNameFromOperation
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
-import { Property } from '../typescript/language';
+import { Property, interfaceDeclaration } from '../typescript/language';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);
@@ -41,16 +43,48 @@ function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext)
   context.typesUsed.forEach(type => typeDeclarationForGraphQLType(generator, type));
 
   Object.values(context.operations).forEach(operation => {
-    const resultField = getOperationResultField(operation);
-    interfaceDeclarationForOperation(generator, {
-      ...operation,
-      fields: resultField ? resultField.fields || [] : operation.fields
-    });
+    interfaceDeclarationForOperation(generator, operation);
   });
 
   Object.values(context.fragments).forEach(operation =>
     interfaceDeclarationForFragment(generator, operation)
   );
+}
+
+function interfaceDeclarationForOperation(
+  generator: CodeGenerator,
+  { operationName, operationType, fields }: LegacyOperation
+) {
+  const interfaceName = interfaceNameFromOperation({ operationName, operationType });
+  fields = fields.map(field => updateTypeNameField(field));
+
+  // Graphql result includes the name of operation as the top level key in response JSON
+  // We are only interested in the shape of the response object and not the name of operation
+  // if the name of query is getAudioAlbum then the response object will look
+  // {
+  //   getAudioAlbum: {
+  //     __typename: "AudioAlbum";
+  //     id: string;
+  //     title: string | null;
+  //     tracks: Array<{
+  //       __typename: "Track";
+  //       id: string;
+  //       title: string | null;
+  //     } | null> | null;
+  //   }
+  // }
+  // but the interface is needed only for the result value of getAudioAlbum
+  const properties = propertiesFromFields(generator.context, fields[0].fields as LegacyField[]);
+  interfaceDeclaration(
+    generator,
+    {
+      interfaceName
+    },
+    () => {
+      propertyDeclarations(generator, properties);
+    }
+  );
+
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
@@ -78,6 +112,7 @@ function generateAngularService(generator: CodeGenerator, context: LegacyCompile
     generator.printOnNewline('}');
   });
 }
+
 function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOperation) {
   const statement = formatTemplateString(generator, op.source);
   const { operationName, operationType } = op;
@@ -196,24 +231,28 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
     generator.withinBlock(
       () => {
         // non nullable arguments
-        vars.filter(v => !v.isNullable).forEach(v => {
-          generator.printOnNewline(`${v.fieldName},`);
-        });
+        vars
+          .filter(v => !v.isNullable)
+          .forEach(v => {
+            generator.printOnNewline(`${v.fieldName},`);
+          });
       },
       '{',
       '}'
     );
     // null able arguments
-    vars.filter(v => v.isNullable).forEach(v => {
-      generator.printOnNewline(`if (${v.fieldName}) `);
-      generator.withinBlock(
-        () => {
-          generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
-        },
-        '{',
-        '}'
-      );
-    });
+    vars
+      .filter(v => v.isNullable)
+      .forEach(v => {
+        generator.printOnNewline(`if (${v.fieldName}) `);
+        generator.withinBlock(
+          () => {
+            generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
+          },
+          '{',
+          '}'
+        );
+      });
   }
 }
 
