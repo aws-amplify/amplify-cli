@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.8-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.7...amplify-graphql-docs-generator@1.0.8-beta.0) (2019-03-04)
+
+
+### Bug Fixes
+
+* **amplify-graphql-docs-generator:** render enums like scalar fields ([4e4de94](https://github.com/aws-amplify/amplify-cli/commit/4e4de94)), closes [#623](https://github.com/aws-amplify/amplify-cli/issues/623)
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.0.6...amplify-graphql-docs-generator@1.0.7) (2019-02-20)
 
 

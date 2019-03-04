@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.8-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.7...amplify-graphql-types-generator@1.0.8-beta.0) (2019-03-04)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** cannot redefine property: flatMap ([06b86b7](https://github.com/aws-amplify/amplify-cli/commit/06b86b7))
+* **amplify-graphql-types-generator:** generate consistent __typename ([#966](https://github.com/aws-amplify/amplify-cli/issues/966)) ([8f532b8](https://github.com/aws-amplify/amplify-cli/commit/8f532b8)), closes [#953](https://github.com/aws-amplify/amplify-cli/issues/953)
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.6...amplify-graphql-types-generator@1.0.7) (2019-02-15)
 
 
