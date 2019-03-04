@@ -16,7 +16,7 @@ export enum Episode {
 }
 
 export type HeroAndFriendsNamesQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
   // The friends of the character, or an empty list if they have none
@@ -87,7 +87,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type HeroAndFriendsNamesQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
   // The friends of the character, or an empty list if they have none
@@ -195,7 +195,7 @@ export type ColorInput = {
 };
 
 export type ReviewMovieMutation = {
-  __typename: string;
+  __typename: \\"Review\\";
   // The number of stars this review gave, 1-5
   stars: number;
   // Comment about the movie
@@ -242,7 +242,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type HeroAndDetailsQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
 };
@@ -294,7 +294,7 @@ export enum Episode {
 }
 
 export type HeroAndFriendsNamesQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
   // The friends of the character, or an empty list if they have none
@@ -353,7 +353,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type StarshipCoordsQuery = {
-  __typename: string;
+  __typename: \\"Starship\\";
   coordinates: Array<Array<number>> | null;
 };
 
@@ -384,7 +384,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type HeroNameQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
 };
@@ -423,7 +423,7 @@ export enum Episode {
 }
 
 export type HeroNameQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
 };
@@ -468,7 +468,7 @@ export enum EnumCommentTestCase {
 }
 
 export type CustomScalarQuery = {
-  __typename: string;
+  __typename: \\"CommentTest\\";
   enumCommentTest: EnumCommentTestCase | null;
 };
 
@@ -499,7 +499,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
-  __typename: string;
+  __typename: \\"InterfaceTestCase\\";
   prop: string;
 };
 
@@ -536,7 +536,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
-  __typename: string;
+  __typename: \\"CommentTest\\";
   // This is a multi-line
   // comment.
   multiLine: string | null;
@@ -569,7 +569,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
-  __typename: string;
+  __typename: \\"CommentTest\\";
   // This is a single-line comment
   singleLine: string | null;
 };
@@ -601,7 +601,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type CustomScalarQuery = {
-  __typename: string;
+  __typename: \\"PartialA\\" | \\"PartialB\\";
 };
 
 @Injectable({
@@ -636,7 +636,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type HeroNameQuery = {
-  __typename: string;
+  __typename: \\"Character\\";
   // The name of the character
   name: string;
 };
@@ -680,7 +680,7 @@ import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
 import * as Observable from \\"zen-observable\\";
 
 export type DroidNameQuery = {
-  __typename: string;
+  __typename: \\"Droid\\";
   // What others call this droid
   name: string;
 };
