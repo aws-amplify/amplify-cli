@@ -29,6 +29,8 @@ async function configure(context) {
 
   const jsonString = JSON.stringify(publishIgnore, null, 4);
   fs.writeFileSync(publishIgnoreFilePath, jsonString, 'utf8');
+
+  return publishIgnore;
 }
 
 function getPublishIgnoreFilePath(context) {

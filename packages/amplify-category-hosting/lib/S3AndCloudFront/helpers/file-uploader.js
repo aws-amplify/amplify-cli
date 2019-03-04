@@ -45,31 +45,25 @@ function getHostingBucketName(context) {
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 
-function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath) {
-  return new Promise((resolve, reject) => {
-    let relativeFilePath = path.relative(distributionDirPath, filePath);
+async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath) {
+  let relativeFilePath = path.relative(distributionDirPath, filePath);
 
-    // make Windows-style relative paths compatible to S3
-    relativeFilePath = relativeFilePath.replace(/\\/g, '/');
+  // make Windows-style relative paths compatible to S3
+  relativeFilePath = relativeFilePath.replace(/\\/g, '/');
 
-    const fileStream = fs.createReadStream(filePath);
-    const contentType = mime.lookup(relativeFilePath);
-    const uploadParams = {
-      Bucket: hostingBucketName,
-      Key: relativeFilePath,
-      Body: fileStream,
-      ContentType: contentType || 'text/plain',
-      ACL: 'public-read',
-    };
+  const fileStream = fs.createReadStream(filePath);
+  const contentType = mime.lookup(relativeFilePath);
+  const uploadParams = {
+    Bucket: hostingBucketName,
+    Key: relativeFilePath,
+    Body: fileStream,
+    ContentType: contentType || 'text/plain',
+    ACL: 'public-read',
+  };
 
-    s3Client.upload(uploadParams, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
+  const data = await s3Client.upload(uploadParams).promise();
+
+  return data;
 }
 
 module.exports = {

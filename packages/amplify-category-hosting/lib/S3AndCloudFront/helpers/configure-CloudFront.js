@@ -108,14 +108,14 @@ async function configure(context) {
     DistributionConfig.DefaultCacheBehavior.MinTTL = answers.DefaultCacheMinTTL;
 
     if (answers.ConfigCustomError) {
-      await configureCustomErrorResponse(DistributionConfig);
+      await configureCustomErrorResponse(context, DistributionConfig);
     }
   }
 
   return context;
 }
 
-async function configureCustomErrorResponse(DistributionConfig) {
+async function configureCustomErrorResponse(context, DistributionConfig) {
   if (!DistributionConfig.CustomErrorResponses) {
     DistributionConfig.CustomErrorResponses = [];
   }
@@ -131,36 +131,35 @@ async function configureCustomErrorResponse(DistributionConfig) {
 
   switch (answer.action) {
     case 'list':
-      console.log();
-      console.log(DistributionConfig.CustomErrorResponses);
-      console.log();
+      context.print.info();
+      context.print.info(DistributionConfig.CustomErrorResponses);
+      context.print.info();
       break;
     case 'add':
-      await addCER(DistributionConfig.CustomErrorResponses);
+      await addCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'edit':
-      await editCER(DistributionConfig.CustomErrorResponses);
+      await editCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'remove':
-      await removeCER(DistributionConfig.CustomErrorResponses);
+      await removeCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'remove all':
       delete DistributionConfig.CustomErrorResponses;
       break;
     default:
-      console.log();
-      console.log(DistributionConfig.CustomErrorResponses);
-      console.log();
+      context.print.info();
+      context.print.info(DistributionConfig.CustomErrorResponses);
+      context.print.info();
       break;
   }
 
-  if (!answer.action === done) {
-    return configureCustomErrorResponse(DistributionConfig);
+  if (answer.action !== done) {
+    await configureCustomErrorResponse(context, DistributionConfig);
   }
-  return DistributionConfig;
 }
 
-async function addCER(CustomErrorResponses) {
+async function addCER(context, CustomErrorResponses) {
   const unConfiguredCodes = getUnConfiguredErrorCodes(CustomErrorResponses);
   if (unConfiguredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -199,12 +198,12 @@ async function addCER(CustomErrorResponses) {
       ResponsePagePath: answers.ResponsePagePath,
     });
   } else {
-    console.log('All configurable error codes from the origin have been mapped.');
-    console.log('You can select to edit those custom error responses.');
+    context.print.info('All configurable error codes from the origin have been mapped.');
+    context.print.info('You can select to edit those custom error responses.');
   }
 }
 
-async function editCER(CustomErrorResponses) {
+async function editCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -243,12 +242,12 @@ async function editCER(CustomErrorResponses) {
     CustomErrorResponses[i].ResponseCode = parseInt(answers.ResponseCode, 10);
     CustomErrorResponses[i].ResponsePagePath = answers.ResponsePagePath;
   } else {
-    console.log('No configurable error code from the origin has been mapped.');
-    console.log('You can select to add custom error responses.');
+    context.print.info('No configurable error code from the origin has been mapped.');
+    context.print.info('You can select to add custom error responses.');
   }
 }
 
-async function removeCER(CustomErrorResponses) {
+async function removeCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -262,7 +261,7 @@ async function removeCER(CustomErrorResponses) {
     const i = getCerIndex(selection.ErrorCode, CustomErrorResponses);
     CustomErrorResponses.splice(i, 1);
   } else {
-    console.log('No configurable error code from the origin has been mapped.');
+    context.print.info('No configurable error code from the origin has been mapped.');
   }
 }
 
@@ -277,7 +276,7 @@ function getConfiguredErrorCodes(CustomErrorResponses) {
 function getCerIndex(errorCode, CustomErrorResponses) {
   let result = -1;
   for (let i = 0; i < CustomErrorResponses.length; i++) {
-    if (errorCode === CustomErrorResponses[i].ErrorCode.toString()) {
+    if (errorCode.toString() === CustomErrorResponses[i].ErrorCode.toString()) {
       result = i;
       break;
     }
