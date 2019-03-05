@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.9...amplify-codegen@1.0.10) (2019-03-05)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** use path relative to project root for codegen ([#951](https://github.com/aws-amplify/amplify-cli/issues/951)) ([7b52efb](https://github.com/aws-amplify/amplify-cli/commit/7b52efb)), closes [#886](https://github.com/aws-amplify/amplify-cli/issues/886)
+
+
+
+
+
 ## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.8...amplify-codegen@1.0.9) (2019-02-20)
 
 **Note:** Version bump only for package amplify-codegen
