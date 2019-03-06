@@ -67,8 +67,8 @@ export default class RelationalDBResolverGenerator {
             `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
         let resolver = new AppSync.Resolver ({
-            ApiId: Fn.GetAtt(ResourceConstants.PARAMETERS.AppSyncApiId, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -93,7 +93,7 @@ export default class RelationalDBResolverGenerator {
             ResponseMappingTemplate: print(
                 ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
             )
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, 'RelationalDatabaseDataSource'])
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
     }
 
@@ -109,8 +109,8 @@ export default class RelationalDBResolverGenerator {
         let sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
         
         let resolver = new AppSync.Resolver ({
-            ApiId: Fn.GetAtt(ResourceConstants.PARAMETERS.AppSyncApiId, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             FieldName: fieldName,
             TypeName: queryTypeName,
             RequestMappingTemplate: print(
@@ -123,7 +123,7 @@ export default class RelationalDBResolverGenerator {
             ResponseMappingTemplate: print(
                 ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
             )
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, 'RelationalDatabaseDataSource'])
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
     }
 
@@ -142,8 +142,8 @@ export default class RelationalDBResolverGenerator {
             `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
         let resolver =  new AppSync.Resolver ({
-            ApiId: Fn.GetAtt(ResourceConstants.PARAMETERS.AppSyncApiId, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -165,7 +165,7 @@ export default class RelationalDBResolverGenerator {
             ResponseMappingTemplate: print(
                 ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
             )
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, 'RelationalDatabaseDataSource'])
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
     }
 
@@ -182,8 +182,8 @@ export default class RelationalDBResolverGenerator {
         const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
 
         let resolver = new AppSync.Resolver ({
-            ApiId: Fn.GetAtt(ResourceConstants.PARAMETERS.AppSyncApiId, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -196,7 +196,7 @@ export default class RelationalDBResolverGenerator {
             ResponseMappingTemplate: print(
                 ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
             )
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, 'RelationalDatabaseDataSource'])
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver
     }
@@ -213,8 +213,8 @@ export default class RelationalDBResolverGenerator {
         const sql = `SELECT * FROM ${type}`
 
         let resolver = new AppSync.Resolver ({
-            ApiId: Fn.GetAtt(ResourceConstants.PARAMETERS.AppSyncApiId, 'ApiId'),
-            DataSourceName: Fn.GetAtt('RelationalDatabaseDataSource', 'Name'),
+            ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+            DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: queryTypeName,
             FieldName: fieldName,
             RequestMappingTemplate: print(
@@ -225,7 +225,7 @@ export default class RelationalDBResolverGenerator {
             ResponseMappingTemplate: print(
                 ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
             )
-        }).dependsOn([ResourceConstants.PARAMETERS.AppSyncApiId, 'RelationalDatabaseDataSource'])
+        }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver
     }

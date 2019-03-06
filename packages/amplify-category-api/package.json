@@ -21,7 +21,8 @@
     "uuid": "^2.0.3",
     "aws-sdk": "^2.391.0",
     "ora": "^3.0.0",
-    "graphql": "^0.13.2"
+    "graphql": "^0.13.2",
+    "graphql-relational-schema-transformer": "../graphql-relational-schema-transformer"
   },
   "devDependencies": {
     "eslint-config-airbnb-base": "^12.1.0",

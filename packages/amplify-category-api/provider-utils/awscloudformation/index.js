@@ -164,12 +164,9 @@ async function migrateResource(context, projectPath, service, resourceName) {
   return await migrate(context, projectPath, resourceName);
 }
 
-function addDatasource(context, category, datasource, options) {
-  let answers;
+function addDatasource(context, category, datasource) {
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-datasources.json`))[datasource];
-  let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   
   return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename)
 }

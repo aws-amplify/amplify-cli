@@ -8,6 +8,8 @@ import Template from 'cloudform-types/types/template'
 import Output from 'cloudform-types/types/output'
 import TemplateContext from './RelationalDBSchemaTransformer'
 import RelationalDBResolverGenerator from './RelationalDBResolverGenerator'
+import { MappingParameters } from 'cloudform-types/types/kinesisAnalytics/applicationReferenceDataSource';
+import { MappingRule } from 'cloudform-types/types/cognito/identityPoolRoleAttachment';
 const fs = require('fs-extra')
 const category = 'api'
 const service = 'awscloudformation'
@@ -35,6 +37,9 @@ export default class RelationalDBTemplateGenerator {
     public createTemplate(context: any): Template {
         const template =  {
             AWSTemplateFormatVersion: "2010-09-09",
+            Mappings: {
+                ['RDSConfigMap'] : {}
+            },
             Parameters: this.makeParameters(this.context.databaseName),
             Resources: {
                 [ResourceConstants.RESOURCES.RelationalDatabaseDataSource]: this.makeRelationalDataSource(context),
@@ -44,6 +49,67 @@ export default class RelationalDBTemplateGenerator {
 
         return template
     }
+
+    /**
+     * 
+     * @param template 
+     * @param cliContext 
+     * @param rdsResourceName 
+     * @param rdsDatasource 
+     */
+    public addRefreshMappings(template: Template, cliContext: any, rdsResourceName: string, rdsDatasource: string) : Template {
+        let mappings = RelationalDBTemplateGenerator.refreshMap(cliContext, rdsResourceName, rdsDatasource)
+        template.Mappings = {...template.Mappings, 'RDSConfigMap' : mappings}
+        return template
+    }
+
+    /**
+     * 
+     * @param templateJson 
+     * @param cliContext 
+     * @param rdsResourceName 
+     * @param rdsDatasource 
+     */
+    public static addRefreshMappings(template: string, cliContext: any, rdsResourceName: string, rdsDatasource: string) : string {
+        const templateJson = JSON.parse(template)
+        if(!templateJson['Mappings']) {
+            templateJson['Mappings'] = {}
+        }
+        templateJson['Mappings']['RDSConfigMap'] = RelationalDBTemplateGenerator.refreshMap(cliContext, rdsResourceName, rdsDatasource)
+        return JSON.stringify(templateJson, null, 4)
+    }
+
+    /**
+     * 
+     * @param cliContext 
+     * @param rdsResourceName 
+     * @param rdsDatasource 
+     */
+    private static refreshMap(cliContext: any, rdsResourceName: string, rdsDatasource: string) {
+        const teamProviderInfoFilePath = cliContext.amplify.pathManager.getProviderInfoFilePath();
+        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath))
+
+        let mappings = {}
+        for (const env in teamProviderInfo) {
+            if (!teamProviderInfo[env][category]
+                || !teamProviderInfo[env][category][rdsResourceName]
+                || !teamProviderInfo[env][category][rdsResourceName][rdsDatasource][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion]) {
+                continue;
+            } 
+            mappings = {
+                ...mappings,
+                [env] : {
+                    [ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion] : teamProviderInfo[env][category][rdsResourceName][rdsDatasource][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion],
+                    [ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier] : teamProviderInfo[env][category][rdsResourceName][rdsDatasource][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier],
+                    [ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName] : teamProviderInfo[env][category][rdsResourceName][rdsDatasource][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName],
+                    [ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn] : teamProviderInfo[env][category][rdsResourceName][rdsDatasource][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn]
+                }
+            }
+        }
+
+        return mappings
+    }
+    
 
     /**
      * Provided a Cloudform Template, this method adds Resolver Resources to the
@@ -111,7 +177,12 @@ export default class RelationalDBTemplateGenerator {
      */
     private makeIAMDataSourceRole() {
         return new IAM.Role ({
-            RoleName: 'RDSDataSource_Access_Role',
+            RoleName: Fn.Join('-', [
+                'role',
+                Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
+                Fn.Ref(ResourceConstants.PARAMETERS.Env)
+            ]),
+
             AssumeRolePolicyDocument: {
                 Version: '2012-10-17',
                 Statement: [
@@ -166,9 +237,6 @@ export default class RelationalDBTemplateGenerator {
      * @returns the data source CloudFormation resource.
      */
     private makeRelationalDataSource(cliContext: any): DataSource {
-        const currEnv = cliContext.amplify.getEnvInfo().envName;
-        const teamProviderInfoFilePath = cliContext.amplify.pathManager.getProviderInfoFilePath();
-        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath))
         return new DataSource ({
             Type: 'RELATIONAL_DATABASE',
             Name: `${this.context.databaseName}_rds_DataSource`,
@@ -178,11 +246,11 @@ export default class RelationalDBTemplateGenerator {
             RelationalDatabaseConfig: {
                 RelationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
                 RdsHttpEndpointConfig: {
-                    AwsRegion: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion],
-                    DbClusterIdentifier: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier],
-                    DatabaseName: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName],
+                    AwsRegion: Fn.FindInMap('RDSConfigMap', Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSRegion),
+                    DbClusterIdentifier: Fn.FindInMap('RDSConfigMap', Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSClusterIdentifier),
+                    DatabaseName: Fn.FindInMap('RDSConfigMap', Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSDatabaseName),
                     Schema: this.context.databaseSchema,
-                    AwsSecretStoreArn: teamProviderInfo[currEnv][service][ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn]
+                    AwsSecretStoreArn: Fn.FindInMap('RDSConfigMap', Fn.Ref(ResourceConstants.PARAMETERS.Env), ResourceConstants.ENVIRONMENT_CONTEXT_KEYS.RDSSecretStoreArn)
                 }
             }
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseAccessRole])

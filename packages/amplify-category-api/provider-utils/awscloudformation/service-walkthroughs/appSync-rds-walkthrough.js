@@ -131,7 +131,7 @@ async function selectDatabase(inputs, clusterArn, secretArn) {
   params.dbClusterOrInstanceArn = clusterArn
   params.sqlStatements = "SHOW databases"
 
-  spinner.start('Fetching Aurora Serverless cluster.')
+  spinner.start('Fetching Aurora Serverless cluster...')
   const dataApiResult = await DataApi.executeSql(params).promise()
 
   const records = dataApiResult['sqlStatementResults'][0]['resultFrame']['records']
