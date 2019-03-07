@@ -35,6 +35,7 @@ export class ResourceConstants {
         DynamoDBBillingMode:   'DynamoDBBillingMode',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+        DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
 
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticSearchDomainName',
@@ -61,7 +62,8 @@ export class ResourceConstants {
         HasEnvironmentParameter: 'HasEnvironmentParameter',
 
         // DynamoDB
-        ShouldUsePayPerRequestBilling:   'ShouldUsePayPerRequestBilling',
+        ShouldUsePayPerRequestBilling: 'ShouldUsePayPerRequestBilling',
+        ShouldUsePointInTimeRecovery: 'ShouldUsePointInTimeRecovery',
 
         // Auth
         AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
