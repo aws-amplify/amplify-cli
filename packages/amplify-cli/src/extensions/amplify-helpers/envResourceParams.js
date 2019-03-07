@@ -69,7 +69,6 @@ function saveEnvResourceParameters(context, category, resource, parameters) {
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
   resources[resource] = parameters;
-  console.log(resources);
   saveAllResourceParams(context, allParams);
 }
 

@@ -8,16 +8,17 @@ const constants = require('./constants');
 const authHelper = require('./auth-helper');
 const writeAmplifyMeta = require('./writeAmplifyMeta');
 
-async function ensureSetup(context) {
+async function ensureSetup(context, resourceName) {
   if (!isXRSetup(context)) {
-    authHelper.ensureAuth(context);
-    await setupAccess(context);
+    await authHelper.ensureAuth(context);
+    await setupAccess(context, resourceName);
   }
 }
 
-async function setupAccess(context) {
+async function setupAccess(context, resourceName) {
   let templateFilePath = path.join(__dirname, constants.TemplateFileName);
-  const template = require(templateFilePath);
+  context.print.info(templateFilePath);
+  const template = JSON.parse(fs.readFileSync(templateFilePath));
 
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
@@ -34,34 +35,29 @@ async function setupAccess(context) {
   const parameters = require(parametersFilePath);
 
   const { projectConfig, amplifyMeta } = context.exeInfo;
-  const providerInfo = amplifyMeta.providers[constants.ProviderPlugin];
   const decoratedProjectName = projectConfig.projectName + context.amplify.makeId(5);
-  parameters.AuthRoleName = providerInfo.AuthRoleName;
-  parameters.UnauthRoleName = providerInfo.UnauthRoleName;
+
+  parameters.AuthRoleName = {
+    "Ref": "AuthRoleName"
+  };
+  parameters.UnauthRoleName = {
+    "Ref": "UnauthRoleName"
+  };
   parameters.AuthPolicyName = `sumerian-auth-${decoratedProjectName}`;
   parameters.UnauthPolicyName = `sumerian-unauth-${decoratedProjectName}`;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
-  fs.ensureDirSync(serviceDirPath);
+  const resourceDirPath = path.join(projectBackendDirPath, constants.CategoryName, resourceName);
 
-  templateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
+  fs.ensureDirSync(resourceDirPath);
+
+  templateFilePath = path.join(resourceDirPath, constants.TemplateFileName);
   let jsonString = JSON.stringify(template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
-  parametersFilePath = path.join(serviceDirPath, constants.ParametersFileName);
+  parametersFilePath = path.join(resourceDirPath, constants.ParametersFileName);
   jsonString = JSON.stringify(parameters, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-
-  // const metaData = {
-  //   service: constants.ServiceName,
-  //   providerPlugin: constants.ProviderPlugin,
-  // };
-  // await context.amplify.updateamplifyMetaAfterResourceAdd(
-  //   constants.CategoryName,
-  //   constants.ServiceName,
-  //   metaData,
-  // );
 
   context.exeInfo = context.amplify.getProjectDetails();
 }
@@ -139,7 +135,7 @@ function getExistingScenes(context) {
 }
 
 async function addScene(context) {
-  await ensureSetup(context);
+  
   context.print.info(`Open the Amazon Sumerian console: ${chalk.green(getSumerianConsoleUrl(context))}`);
   context.print.info('Publish the scene you want to add.');
   context.print.info('Then download the JSON configuration to your local computer.');
@@ -168,7 +164,7 @@ async function addScene(context) {
     sceneName = answer.sceneName;
   });
 
-  let sceneConfig;
+  let sumerianConfig;
   await inquirer.prompt({
     name: 'configFilePath',
     type: 'input',
@@ -182,14 +178,11 @@ async function addScene(context) {
           if (!sumerianConfig.url || !sumerianConfig.sceneId || !sumerianConfig.region) {
             return "Sumerian scene config is not in the correct format.";
           }
-          sceneConfig = {
-            sceneConfig: sumerianConfig,
-          };
         }
       } catch (e) {
-        sceneConfig = undefined;
+        sumerianConfig = undefined;
       }
-      if (sceneConfig) {
+      if (sumerianConfig) {
         return true;
       }
       return 'Can NOT ready the configuration, make sure it is valid.';
@@ -198,42 +191,22 @@ async function addScene(context) {
 
   const options = {
     service: 'Sumerian',
-    output: sceneConfig
+    providerPlugin: 'awscloudformation'
   }
   
+  await ensureSetup(context, sceneName);
+
+  context.amplify.saveEnvResourceParameters(context, constants.CategoryName, sceneName, sumerianConfig);
   context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, sceneName, options);
-  context.amplify.saveEnvResourceParameters(context, constants.CategoryName, sceneName, sceneConfig);
-  // const { amplifyMeta } = context.exeInfo;
-  // if (!amplifyMeta[constants.CategoryName][constants.ServiceName].output) {
-  //   amplifyMeta[constants.CategoryName][constants.ServiceName].output = {};
-  // }
-  // amplifyMeta[constants.CategoryName][constants.ServiceName].output[sceneName] = sceneConfig;
-  // writeAmplifyMeta(context);
-  // writeTeamProviderInfo(amplifyMeta[constants.CategoryName][constants.ServiceName], context);
 
   context.print.info(`${sceneName} has been added.`);
 }
 
-// function writeTeamProviderInfo(metadata, context) {
-//   const teamProviderInfoFilepath = context.amplify.pathManager.getProviderInfoFilePath();
-//   if (fs.existsSync(teamProviderInfoFilepath)) {
-//     const { envName } = context.exeInfo.localEnvInfo;
-//     const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilepath));
-//     teamProviderInfo[envName] = teamProviderInfo[envName] || {};
-//     teamProviderInfo[envName].categories = teamProviderInfo[envName].categories || {};
-//     teamProviderInfo[envName].categories[constants.CategoryName] =
-//               teamProviderInfo[envName].categories[constants.CategoryName] || {};
-//     teamProviderInfo[envName].categories[constants.CategoryName][constants.ServiceName] = metadata;
-//     const jsonString = JSON.stringify(teamProviderInfo, null, 4);
-//     fs.writeFileSync(teamProviderInfoFilepath, jsonString, 'utf8');
-//   }
-// }
-
 async function remove(context) {
   // context.amplify.removeResourceParameters(context, constants.CategoryName);
   return context.amplify.removeResource(context, constants.CategoryName)
-    .then((resp) => {
-      context.amplify.removeResourceParameters(context, constants.CategoryName, resp.resourceName);
+    .then((resource) => {
+      context.amplify.removeResourceParameters(context, constants.CategoryName, resource.resourceName);
     })
     .catch((err) => {
       context.print.info(err.stack);
