@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const _ = require('lodash');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -142,12 +143,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers = { ...answers, storageAccess: accessQuestion.storageAccess };
 
   // auth permissions
-  const authPermissions = await askReadWrite('Authenticated', context, defaultValues.authPermissions);
-  answers = { ...answers, authPermissions, unauthPermissions: '' };
+  await askReadWrite('Authenticated', context, answers);
   let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
-    const unauthPermissions = await askReadWrite('Guest', context, defaultValues.unauthPermissions);
-    answers = { ...answers, unauthPermissions };
+    await askReadWrite('Guest', context, answers);
     allowUnauthenticatedIdentities = true;
   }
 
@@ -185,56 +184,41 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-async function askReadWrite(userType, context, privacy) {
-  // switch (privacy) {
-  //   case 'r':
-  //   case 'w':
-  //   case 'rw':
-  //     break;
-  //   default:
-  //     privacy = 'r';
-  // }
+async function askReadWrite(userType, context, answers) {
+  const answer = {};
 
-  // while (true) {
-  //   const answer = await inquirer.prompt({
-  //     name: 'permissions',
-  //     type: 'list',
-  //     message: `What kind of access do you want for ${userType} users`,
-  //     choices: [
-  //       {
-  //         name: 'read',
-  //         value: 'r',
-  //       },
-  //       {
-  //         name: 'write',
-  //         value: 'w',
-  //       },
-  //       {
-  //         name: 'read/write',
-  //         value: 'rw',
-  //       },
-  //     ],
-  //     default: privacy,
-  //   });
+  // max arrays represent highest possibly privileges for particular S3 keys
+  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
+  const maxPublic = maxPermissions;
+  const maxUploads = ['s3:PutObject'];
+  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
+  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
 
-  //   if (answer.permissions !== 'learn') {
-  //     console.log('answer.permissions', answer.permissions);
-  //     return answer.permissions;
-  //   }
-
+  // map of s3 actions corresponding to CRUD verbs
+  // 'create/update' have been consolidated since s3 only has put concept
   const permissionMap = {
-    create: ['s3:PutObject'],
+    'create/update': ['s3:PutObject'],
     read: ['s3:GetObject', 's3:ListBucket'],
-    update: ['s3:PutObject'],
     delete: ['s3:DeleteObject'],
   };
 
-  const permissions = context.amplify.crudFlow(
-    'auth',
-    [],
-    [],
+  const selectedPermissions = await context.amplify.crudFlow(
+    userType,
     permissionMap,
   );
+
+  function addPermissionKeys(key, possiblePermissions) {
+    const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
+    answers[`s3Permissions${userType}${key}`] = !permissions ? 'DISALLOW' : permissions;
+  }
+
+  addPermissionKeys('Public', maxPublic);
+  addPermissionKeys('Protected', maxProtected);
+  addPermissionKeys('Uploads', maxUploads);
+  addPermissionKeys('Private', maxPrivate);
+  answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
+
+  return null;
 }
 
 function resourceAlreadyExists(context) {
