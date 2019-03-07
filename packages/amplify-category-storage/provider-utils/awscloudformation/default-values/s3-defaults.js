@@ -17,6 +17,12 @@ const getAllDefaults = (project) => {
     bucketName: `${name}${uuid().replace(/-/g, '')}`,
     authPolicyName: `s3_amplify_${shortId}`,
     unauthPolicyName: `s3_amplify_${shortId}`,
+
+    s3PublicPolicy: `s3_amplify_${shortId}`,
+    s3PrivatePolicy: `s3_amplify_${shortId}`,
+    s3ProtectedPolicy: `s3_amplify_${shortId}`,
+    s3UploadsPolicy: `s3_amplify_${shortId}`,
+
     authRoleName,
     unauthRoleName,
     storageAccess: 'auth',

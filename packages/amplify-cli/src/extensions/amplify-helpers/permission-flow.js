@@ -1,17 +1,10 @@
 const inquirer = require('inquirer');
 const _ = require('lodash');
 
-const defaults = [
-  'create',
-  'read',
-  'update',
-  'delete',
-];
 
-const crudFlow = async (role, additionalOperations = [], permissionMap = {}) => {
+const crudFlow = async (role, permissionMap = {}) => {
   if (!role) throw new Error('No role provided to permission question flow');
-  const possibleOperations = defaults
-    .concat(additionalOperations)
+  const possibleOperations = Object.keys(permissionMap)
     .map((el) => {
       return { name: el, value: el };
     });
