@@ -21,7 +21,7 @@ describe('amplify init', () => {
     deleteProjectDir(projRoot);
   });
 
-  fit('should init the project and create new env', async () => {
+  it('should init the project and create new env', async () => {
     await initProjectWithProfile(projRoot, {});
     const meta = getProjectMeta(projRoot).providers.awscloudformation;
     expect(meta.Region).toBeDefined();
