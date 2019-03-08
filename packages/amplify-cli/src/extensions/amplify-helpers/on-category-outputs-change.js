@@ -15,8 +15,8 @@ function onCategoryOutputsChange(context) {
   const pluginNames = Object.keys(context.amplify.getCategoryPlugins(context));
   pluginNames.forEach((pluginName) => {
     const pluginInstance = context.amplify.getPluginInstance(context, pluginName);
-    if (pluginInstance && typeof pluginInstance.callback === 'function') {
-      pluginInstance.callback(context);
+    if (pluginInstance && typeof pluginInstance.onAmplifyCategoryOutputChange === 'function') {
+      pluginInstance.onAmplifyCategoryOutputChange(context);
     }
   });
 }
