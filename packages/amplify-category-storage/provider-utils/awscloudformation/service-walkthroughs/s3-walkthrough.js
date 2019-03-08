@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
+const uuid = require('uuid');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -185,7 +186,8 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 }
 
 async function askReadWrite(userType, context, answers) {
-  const answer = {};
+
+  const [policyId] = uuid().split('-');
 
   // max arrays represent highest possibly privileges for particular S3 keys
   const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
@@ -210,6 +212,7 @@ async function askReadWrite(userType, context, answers) {
   function addPermissionKeys(key, possiblePermissions) {
     const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
     answers[`s3Permissions${userType}${key}`] = !permissions ? 'DISALLOW' : permissions;
+    answers[`s3${key}Policy`] = `${key}_policy_${policyId}`;
   }
 
   addPermissionKeys('Public', maxPublic);
@@ -217,6 +220,7 @@ async function askReadWrite(userType, context, answers) {
   addPermissionKeys('Uploads', maxUploads);
   addPermissionKeys('Private', maxPrivate);
   answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
+  answers.s3ReadPolicy = `read_policy_${policyId}`;
 
   return null;
 }

@@ -5,9 +5,6 @@
 		"bucketName": {
 			"Type": "String"
 		},
-		"s3PublicPolicy": {
-			"Type": "String"
-		},
 		"authPolicyName": {
 			"Type": "String"
 		},
@@ -20,6 +17,9 @@
 		"unauthRoleName": {
 			"Type": "String"
 		},
+		"s3PublicPolicy": {
+			"Type": "String"
+		},
 		"s3PrivatePolicy": {
 			"Type": "String"
 		},
@@ -27,6 +27,9 @@
 			"Type": "String"
 		},
 		"s3UploadsPolicy": {
+			"Type": "String"
+		},
+		"s3ReadPolicy": {
 			"Type": "String"
 		},
 		"s3PermissionsAuthenticatedPublic": {
@@ -57,6 +60,12 @@
 			"Type": "String"
 		},
 		"GuestAllowList": {
+			"Type": "String"
+		},
+		"unauthPermissions": {
+			"Type": "String"
+		},
+		"authPermissions": {
 			"Type": "String"
 		},
 		"env": {
@@ -377,7 +386,7 @@
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
 				"PolicyName": {
-					"Ref": "s3UploadsPolicy"
+					"Ref": "s3ReadPolicy"
 				},
 				"Roles": [
 					{
@@ -494,7 +503,7 @@
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
 				"PolicyName": {
-					"Ref": "s3PublicPolicy"
+					"Ref": "s3UploadsPolicy"
 				},
 				"Roles": [
 					{
@@ -538,7 +547,7 @@
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
 				"PolicyName": {
-					"Ref": "s3UploadsPolicy"
+					"Ref": "s3ReadPolicy"
 				},
 				"Roles": [
 					{
