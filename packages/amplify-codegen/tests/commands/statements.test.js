@@ -11,6 +11,9 @@ const MOCK_CONTEXT = {
   print: {
     info: jest.fn(),
   },
+  amplify: {
+    getEnvInfo: jest.fn(),
+  },
 };
 
 jest.mock('amplify-graphql-docs-generator');
@@ -25,6 +28,7 @@ const MOCK_TARGET_LANGUAGE = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
+const MOCK_PROJECT_ROOT = 'MOCK_PROJECT_ROOT';
 
 const MOCK_PROJECT = {
   includes: [MOCK_INCLUDE_PATH],
@@ -48,6 +52,7 @@ describe('command - statements', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
+    MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
   });
 
   it('should generate statements', async () => {
@@ -56,10 +61,10 @@ describe('command - statements', () => {
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
 
-    expect(jetpack.exists).toHaveBeenCalledWith(path.resolve(MOCK_SCHEMA));
+    expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
-      path.resolve(MOCK_SCHEMA),
-      MOCK_STATEMENTS_PATH,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
       { separateFiles: true, language: MOCK_TARGET_LANGUAGE },
     );
   });
@@ -69,8 +74,8 @@ describe('command - statements', () => {
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
     expect(generate).toHaveBeenCalledWith(
-      path.resolve(MOCK_SCHEMA),
-      MOCK_STATEMENTS_PATH,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
       { separateFiles: true, language: 'graphql' },
     );
   });
@@ -81,7 +86,7 @@ describe('command - statements', () => {
     expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       MOCK_API_ID,
-      MOCK_SCHEMA,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_REGION,
     );
   });
@@ -93,7 +98,7 @@ describe('command - statements', () => {
     expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       MOCK_API_ID,
-      MOCK_SCHEMA,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       MOCK_REGION,
     );
   });

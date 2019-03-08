@@ -179,7 +179,14 @@ function storeCurrentCloudBackend(context) {
 
     const zip = archiver.create('zip', {});
     zip.pipe(output);
-    zip.directory(currentCloudBackendDir, false);
+    zip.glob(
+      '**',
+      {
+        cwd: currentCloudBackendDir,
+        ignore: ['*/*/build/**', '*/*/dist/**', '*/*/node_modules/**'],
+        dot: true,
+      },
+    );
     zip.finalize();
   })
     .then((result) => {
@@ -205,7 +212,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const files = fs.readdirSync(resourceDir);
     // Fetch all the Cloudformation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && file.indexOf('.') !== 0);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {

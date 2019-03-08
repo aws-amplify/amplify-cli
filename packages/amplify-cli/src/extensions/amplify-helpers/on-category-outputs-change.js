@@ -11,6 +11,14 @@ function onCategoryOutputsChange(context) {
       require(frontendPlugins[projectConfig.frontend]);
     frontendHandlerModule.createFrontendConfigs(context, getResourceOutputs());
   }
+
+  const pluginNames = Object.keys(context.amplify.getCategoryPlugins(context));
+  pluginNames.forEach((pluginName) => {
+    const pluginInstance = context.amplify.getPluginInstance(context, pluginName);
+    if (pluginInstance && typeof pluginInstance.onAmplifyCategoryOutputChange === 'function') {
+      pluginInstance.onAmplifyCategoryOutputChange(context);
+    }
+  });
 }
 
 module.exports = {

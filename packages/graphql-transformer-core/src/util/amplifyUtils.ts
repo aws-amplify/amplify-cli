@@ -201,6 +201,10 @@ export async function readProjectConfiguration(projectDirectory: string): Promis
     if (resolverDirExists) {
         const resolverFiles = await readDir(resolverDirectory)
         for (const resolverFile of resolverFiles) {
+            if (resolverFile.indexOf('.') === 0) {
+                continue;
+            }
+
             const resolverFilePath = path.join(resolverDirectory, resolverFile)
             resolvers[resolverFile] = await readFile(resolverFilePath)
         }
@@ -223,6 +227,10 @@ export async function readProjectConfiguration(projectDirectory: string): Promis
     if (stacksDirExists) {
         const stackFiles = await readDir(stacksDirectory)
         for (const stackFile of stackFiles) {
+            if (stackFile.indexOf('.') === 0) {
+                continue;
+            }
+
             const stackFilePath = path.join(stacksDirectory, stackFile)
             throwIfNotJSON(stackFile);
             const stackBuffer = await readFile(stackFilePath);
@@ -395,6 +403,10 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
     const files = await readDir(schemaDirectoryPath);
     let schemaDocuments = [];
     for (const fileName of files) {
+        if (fileName.indexOf('.') === 0) {
+            continue;
+        }
+
         const fullPath = `${schemaDirectoryPath}/${fileName}`;
         const stats = await lstat(fullPath);
         if (stats.isDirectory()) {

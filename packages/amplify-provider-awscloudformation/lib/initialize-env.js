@@ -60,7 +60,7 @@ function run(context, providerMetadata) {
 
       Object.keys(amplifyMeta).forEach((category) => {
         Object.keys(amplifyMeta[category]).forEach((resource) => {
-          if (currentAmplifyMeta[category][resource]) {
+          if (currentAmplifyMeta[category] && currentAmplifyMeta[category][resource]) {
             amplifyMeta[category][resource].providerMetadata =
             currentAmplifyMeta[category][resource].providerMetadata;
           }
