@@ -266,32 +266,19 @@ async function askPrivacy(context, answers, currentPath) {
   }
 }
 
-async function askReadWrite(userType, context, privacy = 'r') {
+async function askReadWrite(userType, context) {
   while (true) {
-    const answer = await inquirer.prompt({
-      name: 'permissions',
-      type: 'list',
-      message: `What kind of access do you want for ${userType} users`,
-      choices: [
-        {
-          name: 'read',
-          value: 'r',
-        },
-        {
-          name: 'write',
-          value: 'w',
-        },
-        {
-          name: 'read/write',
-          value: 'rw',
-        },
-      ],
-      default: privacy,
-    });
+    const permissionMap = {
+      create: ['/POST'],
+      read: ['/GET'],
+      update: ['/PUT', '/PATCH'],
+      delete: ['/DELETE'],
+    };
 
-    if (answer.permissions !== 'learn') {
-      return answer.permissions;
-    }
+    return await context.amplify.crudFlow(
+      userType,
+      permissionMap,
+    );
   }
 }
 
@@ -307,17 +294,14 @@ async function askPaths(context, answers, currentPath) {
   ];
 
   /*
-
   Removing this option for now in favor of multi-env support
   - NOT CRITICAL
-
   if (existingLambdaArns) {
     choices.push({
       name: 'Use a Lambda function already deployed on AWS',
       value: 'arn',
     });
   }
-
   */
 
   if (existingFunctions) {
