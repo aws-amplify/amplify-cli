@@ -215,7 +215,6 @@ workflows:
                 - release
                 - master
                 - beta
-                - amplify-e2e-test-timeout # remove this before commit
           requires:
             - build
 
