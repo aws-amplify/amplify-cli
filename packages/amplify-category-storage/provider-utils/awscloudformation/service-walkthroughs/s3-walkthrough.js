@@ -118,11 +118,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   }
 
   if (parameters.resourceName) {
-    if (parameters.unauthPermissions
-      && parameters.unauthPermissions !== '') {
+    if (parameters.selectedGuestPermissions
+      && parameters.selectedGuestPermissions.length !== 0) {
       Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
     }
-    if (parameters.unauthPermissions || parameters.authPermissions) {
+    if (parameters.selectedGuestPermissions || parameters.selectedAuthenticatedPermissions) {
       convertToCRUD(parameters, answers);
     }
   }
@@ -147,10 +147,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers = { ...answers, storageAccess: accessQuestion.storageAccess };
 
   // auth permissions
-  answers.selectedAuthPermissions = await askReadWrite('Authenticated', context, answers, parameters.authPermissions);
+
+
+  answers.selectedAuthenticatedPermissions = await askReadWrite('Authenticated', context, answers, parameters);
   let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
-    answers.selectedunauthPermissions = await askReadWrite('Guest', context, answers, parameters.unauthPermissions);
+    answers.selectedGuestPermissions = await askReadWrite('Guest', context, answers, parameters);
     allowUnauthenticatedIdentities = true;
   }
 
@@ -188,7 +190,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-async function askReadWrite(userType, context, answers) {
+async function askReadWrite(userType, context, answers, parameters) {
   // map of s3 actions corresponding to CRUD verbs
   // 'create/update' have been consolidated since s3 only has put concept
   const permissionMap = {
@@ -198,11 +200,13 @@ async function askReadWrite(userType, context, answers) {
   };
 
   const defaults = [];
-  Object.values(permissionMap).forEach((el, index) => {
-    if (el.every(i => answers[`selected${userType}Permissions`].includes(i))) {
-      defaults.push(Object.keys(permissionMap)[index]);
-    }
-  });
+  if (parameters[`selected${userType}Permissions`]) {
+    Object.values(permissionMap).forEach((el, index) => {
+      if (el.every(i => parameters[`selected${userType}Permissions`].includes(i))) {
+        defaults.push(Object.keys(permissionMap)[index]);
+      }
+    });
+  }
 
   const selectedPermissions = await context.amplify.crudFlow(
     userType,
@@ -361,6 +365,15 @@ function convertToCRUD(parameters, answers) {
     answers.selectedGuestPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
     createPermissionKeys('Guest', answers, answers.selectedGuestPermissions);
   }
+  if (parameters.authPermissions === 'r') {
+    answers.selectedAuthenticatedPermissions = ['s3:GetObject', 's3:ListBucket'];
+    createPermissionKeys('Authenticated', answers, answers.selectedAuthenticatedPermissions);
+  }
+  if (parameters.authPermissions === 'rw') {
+    answers.selectedAuthenticatedPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
+    createPermissionKeys('Authenticated', answers, answers.selectedAuthenticatedPermissions);
+  }
+
 }
 
 

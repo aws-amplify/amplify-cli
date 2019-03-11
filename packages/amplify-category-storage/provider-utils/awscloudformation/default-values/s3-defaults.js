@@ -22,8 +22,8 @@ const getAllDefaults = (project) => {
     authRoleName,
     unauthRoleName,
     storageAccess: 'auth',
-    authPermissions: 'rw',
-    unauthPermissions: 'r',
+    selectedGuestPermissions: ['s3:GetObject', 's3:ListBucket'],
+    selectedAuthenticatedPermissions: ['s3:GetObject', 's3:ListBucket'],
   };
 
   return defaults;
