@@ -122,6 +122,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       && parameters.unauthPermissions !== '') {
       Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
     }
+    if (parameters.unauthPermissions || parameters.authPermissions) {
+      convertToCRUD(parameters, answers);
+    }
   }
 
   const accessQuestion = await inquirer.prompt({
@@ -144,10 +147,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers = { ...answers, storageAccess: accessQuestion.storageAccess };
 
   // auth permissions
-  await askReadWrite('Authenticated', context, answers);
+  answers.selectedAuthPermissions = await askReadWrite('Authenticated', context, answers, parameters.authPermissions);
   let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
-    await askReadWrite('Guest', context, answers);
+    answers.selectedunauthPermissions = await askReadWrite('Guest', context, answers, parameters.unauthPermissions);
     allowUnauthenticatedIdentities = true;
   }
 
@@ -186,16 +189,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 }
 
 async function askReadWrite(userType, context, answers) {
-
-  const [policyId] = uuid().split('-');
-
-  // max arrays represent highest possibly privileges for particular S3 keys
-  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
-  const maxPublic = maxPermissions;
-  const maxUploads = ['s3:PutObject'];
-  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
-  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
-
   // map of s3 actions corresponding to CRUD verbs
   // 'create/update' have been consolidated since s3 only has put concept
   const permissionMap = {
@@ -204,10 +197,33 @@ async function askReadWrite(userType, context, answers) {
     delete: ['s3:DeleteObject'],
   };
 
+  const defaults = [];
+  Object.values(permissionMap).forEach((el, index) => {
+    if (el.every(i => answers[`selected${userType}Permissions`].includes(i))) {
+      defaults.push(Object.keys(permissionMap)[index]);
+    }
+  });
+
   const selectedPermissions = await context.amplify.crudFlow(
     userType,
     permissionMap,
+    defaults,
   );
+
+  createPermissionKeys(userType, answers, selectedPermissions);
+
+  return selectedPermissions;
+}
+
+function createPermissionKeys(userType, answers, selectedPermissions) {
+  const [policyId] = uuid().split('-');
+
+  // max arrays represent highest possibly privileges for particular S3 keys
+  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
+  const maxPublic = maxPermissions;
+  const maxUploads = ['s3:PutObject'];
+  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
+  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
 
   function addPermissionKeys(key, possiblePermissions) {
     const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
@@ -221,8 +237,6 @@ async function askReadWrite(userType, context, answers) {
   addPermissionKeys('Private', maxPrivate);
   answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
   answers.s3ReadPolicy = `read_policy_${policyId}`;
-
-  return null;
 }
 
 function resourceAlreadyExists(context) {
@@ -336,6 +350,17 @@ function migrate(projectPath, resourceName) {
 
   jsonString = JSON.stringify(newParameters, null, '\t');
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+function convertToCRUD(parameters, answers) {
+  if (parameters.unauthPermissions === 'r') {
+    answers.selectedGuestPermissions = ['s3:GetObject', 's3:ListBucket'];
+    createPermissionKeys('Guest', answers, answers.selectedGuestPermissions);
+  }
+  if (parameters.unauthPermissions === 'rw') {
+    answers.selectedGuestPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
+    createPermissionKeys('Guest', answers, answers.selectedGuestPermissions);
+  }
 }
 
 

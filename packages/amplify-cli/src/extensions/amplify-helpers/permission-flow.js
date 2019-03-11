@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const _ = require('lodash');
 
 
-const crudFlow = async (role, permissionMap = {}) => {
+const crudFlow = async (role, permissionMap = {}, defaults = []) => {
   if (!role) throw new Error('No role provided to permission question flow');
   const possibleOperations = Object.keys(permissionMap)
     .map((el) => {
@@ -14,6 +14,7 @@ const crudFlow = async (role, permissionMap = {}) => {
     type: 'checkbox',
     message: `What kind of access do you want for ${role} users?`,
     choices: possibleOperations,
+    default: defaults,
   });
 
   return _.uniq(_.flatten(answers.permissions.map(e => permissionMap[e])));
