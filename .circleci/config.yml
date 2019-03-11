@@ -208,12 +208,23 @@ workflows:
                 - multienv
           requires:
             - build
+      - amplify_e2e_tests:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - beta
+          requires:
+            - build
+
       - deploy:
           requires:
             - build
             - test
             - integration_test
             - graphql_e2e_tests
+            - amplify_e2e_tests
           filters:
             branches:
               only:
