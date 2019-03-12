@@ -160,7 +160,7 @@ export class ModelConnectionTransformer extends Transformer {
         if (leftConnectionIsList && rightConnectionIsList) {
             // 1. TODO.
             // Use an intermediary table or other strategy like embedded string sets for many to many.
-            throw new InvalidDirectiveError(`Many to Many connections are not yet supported.`)
+            throw new InvalidDirectiveError(`Invalid Connection (${connectionName}): Many to Many connections are not yet supported.`)
         } else if (leftConnectionIsList && rightConnectionIsList === false) {
             // 2. [] to {} when the association exists. Note: false and undefined are not equal.
             // Store a foreign key on the related table and wire up a Query resolver.
