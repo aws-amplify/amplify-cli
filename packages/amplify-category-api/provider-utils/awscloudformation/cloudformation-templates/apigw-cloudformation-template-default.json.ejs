@@ -1,7 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "API Gateway resource stack creation using Amplify CLI",
-    <% let cnt = 0 %>
     <% if (props.dependsOn) { %>
     "Parameters": {
         "authRoleName": {
@@ -36,7 +35,6 @@
     },
     "Resources": {
         <%if (props.privacy.auth) { %>
-        <% cnt = 0 %>
         "PolicyAPIGW<%= props.apiName %>auth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -138,7 +136,6 @@
           },
         <% } %>
         <%if (props.privacy.unauth) { %>
-          <% cnt = 0 %>
         "PolicyAPIGW<%= props.apiName %>unauth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -195,6 +192,9 @@
                     <% if (x !== props.paths[i].privacy.unauth.length - 1) { %>
                       ,
                     <% } %>
+                    <% } %>
+                    <% if (i !== props.paths.length - 1) { %>
+                      ,
                     <% } %>
                     <% } %>
                     <% } %>
