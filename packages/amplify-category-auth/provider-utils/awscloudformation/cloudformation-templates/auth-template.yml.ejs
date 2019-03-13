@@ -287,8 +287,8 @@ Resources:
                   - iam:PassRole
                 Resource: !If
                   - ShouldNotCreateEnvResources
-                  - '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>'
-                  - !Sub '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>-${env}'
+                  - !Sub arn:aws:iam:::role/${mfaLambdaRole}
+                  - !Sub arn:aws:iam:::role/${mfaLambdaRole}-${env}
 
   MFALambda:
   # Lambda which sets MFA config values
@@ -436,8 +436,8 @@ Resources:
                   - iam:PassRole
                 Resource: !If
                   - ShouldNotCreateEnvResources
-                  - '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>'
-                  - !Sub '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>-${env}'
+                  - !Sub arn:aws:iam:::role/${openIdLambdaRoleName}
+                  - !Sub arn:aws:iam:::role/${openIdLambdaRoleName}-${env}
     DependsOn: UserPoolClientInputs
 
   OpenIdLambda:
@@ -593,8 +593,8 @@ Resources:
     Properties:
       IdentityPoolName: !If
         - ShouldNotCreateEnvResources
-        - '<%= props.identityPoolName %>'
-        - !Sub '<%= props.identityPoolName %>__${env}'
+        - !Ref identityPoolName
+        - !Sub ${identityPoolName}__${env}
       <%_ if (props.authSelections !== 'identityPoolOnly') { -%>
       CognitoIdentityProviders:
         -
@@ -608,7 +608,11 @@ Resources:
       SupportedLoginProviders:
         <%_ for (var i = 0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { -%>
           <%_ if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com') { -%>
+            <%_ if (Object.values(props).includes(Object.values(JSON.parse(props.selectedParties))[i])) { -%>
+        <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: !Ref <%= Object.keys(props).find(p => props[p] === Object.values(JSON.parse(props.selectedParties))[i]) %>
+            <%_ } else { -%>
         <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i] %>'
+            <%_ } -%>
           <%_ } -%>
         <%_ } -%>
       <%_ } -%>
@@ -663,18 +667,18 @@ Outputs:
   <%_ } -%>
   <%_ if (props.googleClientId) { -%>
   GoogleWebClient:
-    Value: <%= props.googleClientId %>
+    Value: !Ref googleClientId
   <%_ } -%>
   <%_ if (props.googleIos) { -%>
   GoogleIOSClient:
-    Value: <%= props.googleIos %>
+    Value: !Ref googleIos
   <%_ } -%>
   <%_ if (props.googleAndroid) { -%>
   GoogleAndroidClient:
-    Value: <%= props.googleAndroid %>
+    Value: !Ref googleAndroid
   <%_ } -%>
   <%_ if (props.facebookAppId) { -%>
   FacebookWebClient:
-    Value: <%= props.facebookAppId %>
+    Value: !Ref facebookAppId
   <%_ } -%>
   <%_ } -%>
