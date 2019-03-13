@@ -32,39 +32,43 @@ Parameters:
   <% } -%>
 
 Conditions:
-  ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+  ShouldNotCreateEnvResources: !Equals [!Ref env, NONE]
 
 Resources:
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
-  SNSRole: 
+  SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref roleName, !Join ['',[!Ref roleName, '-', !Ref env]]]
-      AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - Sid: ""
-            Effect: "Allow"
-            Principal: 
-              Service: "cognito-idp.amazonaws.com"
-            Action: 
-              - "sts:AssumeRole"
-            Condition: 
+      RoleName: !If
+        - ShouldNotCreateEnvResources
+        - !Ref roleName
+        - !Sub ${roleName}-${env}
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: cognito-idp.amazonaws.com
+            Action:
+              - sts:AssumeRole
+            Condition:
               StringEquals:
                 sts:ExternalId: !Ref roleExternalId
-      Policies: 
-        - 
+      Policies:
+        -
           PolicyName: !Ref policyName
-          PolicyDocument: 
-            Version: "2012-10-17"
-            Statement: 
-              - 
-                Effect: "Allow"
-                Action: 
-                  - "sns:Publish"
-                Resource: "*"
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: '*'
+
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -72,8 +76,11 @@ Resources:
     Type: AWS::Cognito::UserPool
     UpdateReplacePolicy: Retain
     Properties:
-      UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
-      Schema: 
+      UserPoolName: !If
+        - ShouldNotCreateEnvResources
+        - !Ref userPoolName
+        - !Sub ${userPoolName}-${env}
+      Schema:
         <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
         -
           Name: <%= props.requiredAttributes[i] %>
@@ -96,16 +103,17 @@ Resources:
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
-      SmsConfiguration: 
+      SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: !Ref roleExternalId 
+        ExternalId: !Ref roleExternalId
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
+
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
-    Type: "AWS::Cognito::UserPoolClient"
+    Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: <%= props.userpoolClientName %>Web
       <%if (props.userpoolClientSetAttributes) { %>
@@ -115,10 +123,11 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
+
   UserPoolClient:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
-    Type: "AWS::Cognito::UserPoolClient"
+    Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: !Ref userpoolClientName
       <%if (props.userpoolClientSetAttributes) { %>
@@ -129,225 +138,254 @@ Resources:
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
+
   # BEGIN USER POOL LAMBDA RESOURCES
   UserPoolClientRole:
   # Created to execute Lambda which gets userpool app client config values
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      RoleName: !If
+        - ShouldNotCreateEnvResources
+        - !Ref userpoolClientLambdaRole
+        - !Sub ${userpoolClientLambdaRole}-${env}
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Principal:
               Service:
                 - lambda.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - sts:AssumeRole
     DependsOn: UserPoolClient
+
   UserPoolClientLambda:
   # Lambda which gets userpool app client config values
   # Depends on UserPool for id
   # Depends on UserPoolClientRole for role ARN
-    Type: 'AWS::Lambda::Function'
+    Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: !Join 
-          - |+
-          - - 'const response = require(''cfn-response'');'
-            - 'const aws = require(''aws-sdk'');'
-            - 'const identity = new aws.CognitoIdentityServiceProvider();'
-            - 'exports.handler = (event, context, callback) => {'
-            - ' if (event.RequestType == ''Delete'') { '
-            - '   response.send(event, context, response.SUCCESS, {})'
-            - ' }'
-            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
-            - '   const params = {'
-            - '     ClientId: event.ResourceProperties.clientId,'
-            - '     UserPoolId: event.ResourceProperties.userpoolId'
-            - '   };'
-            - '   identity.describeUserPoolClient(params).promise()'
-            - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
-            - '     })'
-            - '     .catch((err) => {'
-            - '       response.send(event, context, response.FAILED, {err});'
-            - '     });'
-            - ' }'
-            - '};'
+        ZipFile: |+
+          const response = require('cfn-response');
+          const aws = require('aws-sdk');
+          const identity = new aws.CognitoIdentityServiceProvider();
+          exports.handler = (event, context, callback) => {
+            if (event.RequestType == 'Delete') {
+              response.send(event, context, response.SUCCESS, {})
+            }
+            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+              const params = {
+                ClientId: event.ResourceProperties.clientId,
+                UserPoolId: event.ResourceProperties.userpoolId
+              };
+              identity.describeUserPoolClient(params).promise()
+                .then((res) => {
+                  response.send(event, context, response.SUCCESS, {'appSecret': res.UserPoolClient.ClientSecret});
+                })
+                .catch((err) => {
+                  response.send(event, context, response.FAILED, {err});
+               });
+            }
+          };
       Handler: index.handler
       Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - UserPoolClientRole
-        - Arn
+      Timeout: 300
+      Role: !GetAtt UserPoolClientRole.Arn
     DependsOn: UserPoolClientRole
+
   UserPoolClientLambdaPolicy:
   # Sets userpool policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Ref userpoolClientLambdaPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref userpoolClientLambdaRole
+          - !Sub ${userpoolClientLambdaRole}-${env}
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Action:
-              - 'cognito-idp:DescribeUserPoolClient'
+              - cognito-idp:DescribeUserPoolClient
             Resource: !GetAtt UserPool.Arn
     DependsOn: UserPoolClientLambda
+
   UserPoolClientLogPolicy:
   # Sets log policy for the role that executes the Userpool Client Lambda
   # Depends on UserPool for Arn
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Ref userpoolClientLogPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref userpoolClientLambdaRole
+          - !Sub ${userpoolClientLambdaRole}-${env}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Action:
-              - 'logs:CreateLogGroup'
-              - 'logs:CreateLogStream'
-              - 'logs:PutLogEvents'
-            Resource: !Sub  
-              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref UserPoolClientLambda}
-    DependsOn: UserPoolClientLambdaPolicy  
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${UserPoolClientLambda}:log-stream:*
+    DependsOn: UserPoolClientLambdaPolicy
+
   UserPoolClientInputs:
   # Values passed to Userpool client Lambda
   # Depends on UserPool for Id
   # Depends on UserPoolClient for Id
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
-    Type: 'Custom::LambdaCallout'
+    Type: Custom::LambdaCallout
     Properties:
       ServiceToken: !GetAtt UserPoolClientLambda.Arn
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
+
   <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole     , '-', !Ref env]]]
+      RoleName: !If
+        - ShouldNotCreateEnvResources
+        - !Ref mfaLambdaRole
+        - !Sub ${mfaLambdaRole}-${env}
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Principal:
               Service:
                 - lambda.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - sts:AssumeRole
       Policies:
-      - PolicyName: !Ref mfaPassRolePolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', '-', !Ref env]]]
+        -
+          PolicyName: !Ref mfaPassRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !If
+                  - ShouldNotCreateEnvResources
+                  - '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>'
+                  - !Sub '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>-${env}'
+
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
-    Type: 'AWS::Lambda::Function'
+    Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: !Join 
-          - |+
-          - - 'const response = require(''cfn-response'');'
-            - 'const aws = require(''aws-sdk'');'
-            - 'const identity = new aws.CognitoIdentityServiceProvider();'
-            - 'exports.handler = (event, context, callback) => {'
-            - ' if (event.RequestType == ''Delete'') { '
-            - '   response.send(event, context, response.SUCCESS, {})'
-            - ' }'
-            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
-            - '   let totpParams = {};'
-            - '   try {'
-            - '     totpParams = {'
-            - '       UserPoolId: event.ResourceProperties.userPoolId,'
-            - '       MfaConfiguration: event.ResourceProperties.mfaConfiguration,'
-            - '       SmsMfaConfiguration: {'
-            - '         SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,'
-            - '         SmsConfiguration: {'
-            - '           SnsCallerArn: event.ResourceProperties.smsConfigCaller,'
-            - '           ExternalId: event.ResourceProperties.smsConfigExternalId'
-            - '         }'
-            - '       },'
-            - '       SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === ''true'' ? true : false}'
-            - '     };'
-            - '   } catch(e) {'
-            - '     response.send(event, context, response.FAILED, {e});'
-            - '   };'
-            - '   identity.setUserPoolMfaConfig(totpParams).promise()'
-            - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {res});'   
-            - '     })'
-            - '     .catch((err) => {'
-            - '       response.send(event, context, response.FAILED, {err});'
-            - '     });'
-            - ' }'
-            - '};'
+        ZipFile: |+
+          const response = require('cfn-response');
+          const aws = require('aws-sdk');
+          const identity = new aws.CognitoIdentityServiceProvider();
+          exports.handler = (event, context, callback) => {
+            if (event.RequestType == 'Delete') {
+              response.send(event, context, response.SUCCESS, {})
+            }
+            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+              let totpParams = {};
+              try {
+                totpParams = {
+                  UserPoolId: event.ResourceProperties.userPoolId,
+                  MfaConfiguration: event.ResourceProperties.mfaConfiguration,
+                  SmsMfaConfiguration: {
+                    SmsAuthenticationMessage: event.ResourceProperties.smsAuthenticationMessage,
+                    SmsConfiguration: {
+                      SnsCallerArn: event.ResourceProperties.smsConfigCaller,
+                      ExternalId: event.ResourceProperties.smsConfigExternalId
+                    }
+                  },
+                  SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === ''true'' ? true : false}
+                };
+              } catch (e) {
+                response.send(event, context, response.FAILED, {e});
+              };
+              identity.setUserPoolMfaConfig(totpParams).promise()
+                .then((res) => {
+                  response.send(event, context, response.SUCCESS, {res});
+                })
+                .catch((err) => {
+                  response.send(event, context, response.FAILED, {err});
+                });
+            }
+          };
       Handler: index.handler
       Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - MFALambdaRole
-        - Arn
+      Timeout: 300
+      Role: !GetAtt MFALambdaRole.Arn
     DependsOn: MFALambdaRole
+
   MFALambdaPolicy:
   # Sets policy for the role that executes the MFA Lambda
   # Depends on Userpool for Arn
   # Marked as depending on MFALambda for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Ref mfaLambdaIAMPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - 'cognito-idp:SetUserPoolMfaConfig'
-            Resource: !GetAtt UserPool.Arn
-    DependsOn: MFALambda
-  MFALogPolicy:
-  # Sets log policy for the role that executes the MFA Lambda
-  # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
-    Properties:
-      PolicyName: !Ref mfaLambdaLogPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref mfaLambdaRole
+          - !Sub ${mfaLambdaRole}-${env}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Action:
-              - 'logs:CreateLogGroup'
-              - 'logs:CreateLogStream'
-              - 'logs:PutLogEvents'
-            Resource: !Sub  
-              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref MFALambda}
-    DependsOn: MFALambdaPolicy  
+              - cognito-idp:SetUserPoolMfaConfig
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: MFALambda
+
+  MFALogPolicy:
+  # Sets log policy for the role that executes the MFA Lambda
+  # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Ref mfaLambdaLogPolicy
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref mfaLambdaRole
+          - !Sub ${mfaLambdaRole}-${env}
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${MFALambda}:log-stream:*
+    DependsOn: MFALambdaPolicy
+
   MFALambdaInputs:
   # Values passed to MFA Lambda
   # Depends on UserPool for Arn
   # Depends on MFALambda for Arn
   # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
-    Type: 'Custom::LambdaCallout'
+    Type: Custom::LambdaCallout
     Properties:
       ServiceToken: !GetAtt MFALambda.Arn
       userPoolId: !Ref UserPool
@@ -355,8 +393,9 @@ Resources:
       totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
       smsConfigCaller: !GetAtt SNSRole.Arn
       smsAuthenticationMessage: !Ref smsAuthenticationMessage
-      smsConfigExternalId: !Ref roleExternalId 
+      smsConfigExternalId: !Ref roleExternalId
     DependsOn: MFALogPolicy
+
   <% } %>
   <% } -%>
   <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { %>
@@ -365,187 +404,201 @@ Resources:
   OpenIdLambdaRole:
   # Created to execute Lambda which sets MFA config values
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+      RoleName: !If
+        - ShouldNotCreateEnvResources
+        - !Ref openIdLambdaRoleName
+        - !Sub ${openIdLambdaRoleName}-${env}
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Principal:
               Service:
                 - lambda.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - sts:AssumeRole
       Policies:
-      - PolicyName: !Ref openIdRolePolicy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', '-', !Ref env]]]
+        -
+          PolicyName: !Ref openIdRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !If
+                  - ShouldNotCreateEnvResources
+                  - '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>'
+                  - !Sub '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>-${env}'
     DependsOn: UserPoolClientInputs
+
   OpenIdLambda:
   # Lambda which sets OpenId Values
-    Type: 'AWS::Lambda::Function'
+    Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: !Join 
-          - |+
-          - - 'const response = require(''cfn-response'');'
-            - 'const aws = require(''aws-sdk'');'
-            - 'const iam = new aws.IAM();'
-            - 'exports.handler = (event, context) => {'
-            - ' if (event.RequestType == ''Delete'') { '
-            - '   response.send(event, context, response.SUCCESS, {});'
-            - ' }'
-            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
-            - '   const params = {'
-            - '     ClientIDList: event.ResourceProperties.clientIdList.split('',''),'
-            - '     ThumbprintList: ["0000000000000000000000000000000000000000"],'   
-            - '     Url: event.ResourceProperties.url'
-            - '   };'
-            - '   let exists = false;'
-            - '   let existingValue;'
-            - '   iam.listOpenIDConnectProviders({}).promise().then((data) => {'
-            - '     if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {'
-            - '       const vals = data.OpenIDConnectProviderList.map(x => x.Arn);'
-            - '       existingValue = vals.find(i => i.split(''/'')[1] === params.Url.split(''//'')[1]);'
-            - '       if (!existingValue) {'
-            - '         exists = true;'
-            - '       }'
-            - '     }'
-            - '     if (!existingValue) {'
-            - '       iam.createOpenIDConnectProvider(params).promise().then((data) => {'
-            - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'   
-            - '       })'
-            - '       .catch((err) => {'
-            - '         response.send(event, context, response.FAILED, {err});'
-            - '       });'
-            - '     } else {'
-            - '       const findParams = {'
-            - '         OpenIDConnectProviderArn: existingValue'
-            - '       };'
-            - '       iam.getOpenIDConnectProvider(findParams).promise().then((data) => {'
-            - '         const audiences = data.ClientIDList;'
-            - '         const updateCalls = [];'
-            - '         params.ClientIDList.forEach((a) => {'
-            - '           if (!audiences.includes(a)) {'
-            - '             const updateParams = {'
-            - '               ClientID: a,'
-            - '               OpenIDConnectProviderArn: existingValue'
-            - '             };'
-            - '             const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();'
-            - '             updateCalls.push(prom);'
-            - '           }'
-            - '         });'
-            - '         Promise.all(updateCalls).then(function(values) {'
-            - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});'   
-            - '         })'
-            - '         .catch((err3) => {'
-            - '           response.send(event, context, response.FAILED, {err3});'
-            - '         });'
-            - '       })'
-            - '       .catch((err2) => {'
-            - '           response.send(event, context, response.FAILED, {err2});'
-            - '       });'
-            - '     }'
-            - '   })'
-            - '   .catch((err1) => {'
-            - '           response.send(event, context, response.FAILED, {err1});'
-            - '   });'
-            - ' }'
-            - '};'
+        ZipFile: |+
+          const response = require('cfn-response');
+          const aws = require('aws-sdk');
+          const iam = new aws.IAM();
+          exports.handler = (event, context) => {
+            if (event.RequestType == 'Delete') {
+              response.send(event, context, response.SUCCESS, {});
+            }
+            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+              const params = {
+                ClientIDList: event.ResourceProperties.clientIdList.split(','),
+                ThumbprintList: ["0000000000000000000000000000000000000000"],
+                Url: event.ResourceProperties.url
+              };
+              let exists = false;
+              let existingValue;
+              iam.listOpenIDConnectProviders({}).promise().then((data) => {
+                if (data.OpenIDConnectProviderList && data.OpenIDConnectProviderList.length > 0) {
+                  const vals = data.OpenIDConnectProviderList.map(x => x.Arn);
+                  existingValue = vals.find(i => i.split('/')[1] === params.Url.split('//')[1]);
+                  if (!existingValue) {
+                    exists = true;
+                  }
+                }
+                if (!existingValue) {
+                  iam.createOpenIDConnectProvider(params).promise().then((data) => {
+                    response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});
+                  })
+                  .catch((err) => {
+                    response.send(event, context, response.FAILED, {err});
+                  });
+                } else {
+                  const findParams = {
+                    OpenIDConnectProviderArn: existingValue
+                  };
+                  iam.getOpenIDConnectProvider(findParams).promise().then((data) => {
+                    const audiences = data.ClientIDList;
+                    const updateCalls = [];
+                    params.ClientIDList.forEach((a) => {
+                      if (!audiences.includes(a)) {
+                        const updateParams = {
+                          ClientID: a,
+                          OpenIDConnectProviderArn: existingValue
+                        };
+                        const prom = iam.addClientIDToOpenIDConnectProvider(updateParams).promise();
+                        updateCalls.push(prom);
+                      }
+                    });
+                    Promise.all(updateCalls).then(function(values) {
+                      response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});
+                    })
+                    .catch((err3) => {
+                      response.send(event, context, response.FAILED, {err3});
+                    });
+                  })
+                  .catch((err2) => {
+                    response.send(event, context, response.FAILED, {err2});
+                  });
+                }
+              })
+              .catch((err1) => {
+                response.send(event, context, response.FAILED, {err1});
+              });
+            }
+          };
       Handler: index.handler
       Runtime: nodejs6.10
-      Timeout: '300'
-      Role: !GetAtt 
-        - OpenIdLambdaRole
-        - Arn
+      Timeout: 300
+      Role: !GetAtt OpenIdLambdaRole.Arn
     DependsOn: OpenIdLambdaRole
+
   OpenIdLambdaIAMPolicy:
   # Sets policy for the role that executes the OpenId Lambda
   # Depends on OpenIdLambda for Arn
   # Marked as depending on MFALambda for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Ref openIdLambdaIAMPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref openIdLambdaRoleName
+          - !Sub ${openIdLambdaRoleName}-${env}
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Action:
-              - 'iam:CreateOpenIDConnectProvider'
-              - 'iam:GetOpenIDConnectProvider'
-              - 'iam:AddClientIDToOpenIDConnectProvider'
-            Resource: !Sub  
-              - arn:aws:iam::${account}:oidc-provider/accounts.google.com
-              - { account: !Ref "AWS::AccountId"}
-          - Effect: Allow
+              - iam:CreateOpenIDConnectProvider
+              - iam:GetOpenIDConnectProvider
+              - iam:AddClientIDToOpenIDConnectProvider
+            Resource: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/accounts.google.com
+          -
+            Effect: Allow
             Action:
-              - 'iam:ListOpenIDConnectProviders'
-            Resource: !Sub  
-              - arn:aws:iam::${account}:oidc-provider/${selector}
-              - { account: !Ref "AWS::AccountId", selector: '*'}
+              - iam:ListOpenIDConnectProviders
+            Resource: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/*
     DependsOn: OpenIdLambda
+
   OpenIdLogPolicy:
   # Sets log policy for the role that executes the OpenId  Lambda
   # Depends on OpenIdLambda for Arn
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
-    Type: 'AWS::IAM::Policy'
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Ref openIdLogPolicy
-      Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+      Roles:
+        - !If
+          - ShouldNotCreateEnvResources
+          - !Ref openIdLambdaRoleName
+          - !Sub ${openIdLambdaRoleName}-${env}
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          -
+            Effect: Allow
             Action:
-              - 'logs:CreateLogGroup'
-              - 'logs:CreateLogStream'
-              - 'logs:PutLogEvents'
-            Resource: !Sub  
-              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
-              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OpenIdLambda}
-    DependsOn: OpenIdLambdaIAMPolicy  
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${OpenIdLambda}:log-stream:*
+    DependsOn: OpenIdLambdaIAMPolicy
+
   OpenIdLambdaInputs:
   # Values passed to OpenId Lambda
   # Depends on OpenId for Arn
   # Marked as depending on OpenIdLogPolicy for easier to understand CFN sequencing
-    Type: 'Custom::LambdaCallout'
+    Type: Custom::LambdaCallout
     Properties:
       ServiceToken: !GetAtt OpenIdLambda.Arn
       clientIdList: <%= props.audiences.join() %>
-      url: 'https://accounts.google.com'
+      url: https://accounts.google.com
     DependsOn: OpenIdLogPolicy
+
   <% } %>
-  
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
-    Properties: 
-      IdentityPoolName: !If [ShouldNotCreateEnvResources, '<%= props.identityPoolName %>', !Join ['',['<%= props.identityPoolName %>', '__', !Ref env]]]
+    Properties:
+      IdentityPoolName: !If
+        - ShouldNotCreateEnvResources
+        - '<%= props.identityPoolName %>'
+        - !Sub '<%= props.identityPoolName %>__${env}'
       <%if (props.authSelections !== 'identityPoolOnly') { %>
       CognitoIdentityProviders:
-        - ClientId:  !Ref UserPoolClient
-          ProviderName: !Sub
-            - cognito-idp.${region}.amazonaws.com/${client}
-            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
-        - ClientId:  !Ref UserPoolClientWeb
-          ProviderName: !Sub
-            - cognito-idp.${region}.amazonaws.com/${client}
-            - { region: !Ref "AWS::Region",  client: !Ref UserPool}
+        -
+          ClientId: !Ref UserPoolClient
+          ProviderName: !Sub cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+        -
+          ClientId: !Ref UserPoolClientWeb
+          ProviderName: !Sub cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
       <% } -%>
       <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && props.selectedParties !== '{}') { %>
-      SupportedLoginProviders: 
+      SupportedLoginProviders:
         <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
           <%if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com')  { %>
-          <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
+        <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
           <% } -%>
         <% } %> 
       <% } %>
@@ -556,45 +609,45 @@ Resources:
     DependsOn: OpenIdLambdaInputs
       <% } %> 
     <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>   
-    DependsOn: UserPoolClientInputs 
+    DependsOn: UserPoolClientInputs
     <% } %>
-  
+
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
   # Depends on Identity Pool for ID ref
     Type: AWS::Cognito::IdentityPoolRoleAttachment
-    Properties: 
+    Properties:
       IdentityPoolId: !Ref IdentityPool
       Roles:
-          unauthenticated: !Ref unauthRoleArn
-          authenticated: !Ref authRoleArn
+        unauthenticated: !Ref unauthRoleArn
+        authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
   <% } %>
 
-Outputs :
+Outputs:
   <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') { %>
   IdentityPoolId:
-    Value: !Ref 'IdentityPool'
-    Description:  Id for the identity pool
+    Value: !Ref IdentityPool
+    Description: Id for the identity pool
   IdentityPoolName:
-    Value: !GetAtt IdentityPool.Name 
+    Value: !GetAtt IdentityPool.Name
   <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   UserPoolId:
-    Value: !Ref 'UserPool'
-    Description:  Id for the user pool
+    Value: !Ref UserPool
+    Description: Id for the user pool
   UserPoolName:
     Value: !Ref userPoolName
   AppClientIDWeb:
-    Value: !Ref 'UserPoolClientWeb'
+    Value: !Ref UserPoolClientWeb
     Description: The user pool app client id for web
   AppClientID:
-    Value: !Ref 'UserPoolClient'
+    Value: !Ref UserPoolClient
     Description: The user pool app client id
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
   <%if (props.mfaConfiguration != 'OFF') { %>
-  CreatedSNSRole: 
+  CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
   <% } %>
