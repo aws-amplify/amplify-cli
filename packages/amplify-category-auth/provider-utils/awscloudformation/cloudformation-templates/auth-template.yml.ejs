@@ -12,30 +12,30 @@ Parameters:
   unauthRoleArn:
     Type: String
 
-  <% for(var i=0; i < Object.keys(props).length; i++) { -%>
-  <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
-  <%=Object.keys(props)[i]%>:
+  <%_ for (var i = 0; i < Object.keys(props).length; i++) { -%>
+    <%_ if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { -%>
+  <%= Object.keys(props)[i] %>:
     Type: String
-  <% } -%>
-  <% if (typeof Object.values(props)[i] === 'boolean') { %>
-  <%=Object.keys(props)[i]%>:
+    <%_ } -%>
+    <%_ if (typeof Object.values(props)[i] === 'boolean') { -%>
+  <%= Object.keys(props)[i] %>:
     Type: String
-  <% } -%>
-  <% if (typeof Object.values(props)[i] === 'number') { %>
-  <%=Object.keys(props)[i]%>:
+    <%_ } -%>
+    <%_ if (typeof Object.values(props)[i] === 'number') { -%>
+  <%= Object.keys(props)[i] %>:
     Type: Number
-  <% } -%>
-  <% if (Array.isArray(Object.values(props)[i])) { %>
-  <%=Object.keys(props)[i]%>:
+    <%_ } -%>
+    <%_ if (Array.isArray(Object.values(props)[i])) { -%>
+  <%= Object.keys(props)[i] %>:
     Type: CommaDelimitedList
-  <% } -%>
-  <% } -%>
+    <%_ } -%>
+  <%_ } -%>
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [!Ref env, NONE]
 
 Resources:
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <%_ if (props.authSelections !== 'identityPoolOnly') { -%>
   # BEGIN SNS ROLE RESOURCE
   SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -81,24 +81,24 @@ Resources:
         - !Ref userPoolName
         - !Sub ${userPoolName}-${env}
       Schema:
-        <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
+        <%_ for (var i = 0; i < props.requiredAttributes.length; i++) { -%>
         -
           Name: <%= props.requiredAttributes[i] %>
           Required: true
           Mutable: true
-        <% } %>
-      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
+        <%_ } -%>
+      <%_ if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { -%>
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes
-      <% } %>
-      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      <%_ } -%>
+      <%_ if (props.autoVerifiedAttributes.includes('email')) { -%>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
-      <% } %>      
+      <%_ } -%>
       Policies:
         PasswordPolicy:
           MinimumLength: !Ref passwordPolicyMinLength
           RequireLowercase: <%= props.passwordPolicyCharacters.includes('Requires Lowercase') %>
-          RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
+          RequireNumbers: <%= props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
       MfaConfiguration: !Ref mfaConfiguration
@@ -106,9 +106,9 @@ Resources:
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: !Ref roleExternalId
-    <%if (props.mfaConfiguration != 'OFF') { %>      
+    <%_ if (props.mfaConfiguration !== 'OFF') { -%>
     DependsOn: SNSRole
-    <% } %>
+    <%_ } -%>
 
   UserPoolClientWeb:
   # Created provide application access to user pool
@@ -116,10 +116,10 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: <%= props.userpoolClientName %>Web
-      <%if (props.userpoolClientSetAttributes) { %>
+      <%_ if (props.userpoolClientSetAttributes) { -%>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
-      <% } %>
+      <%_ } -%>
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
@@ -130,10 +130,10 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: !Ref userpoolClientName
-      <%if (props.userpoolClientSetAttributes) { %>
+      <%_ if (props.userpoolClientSetAttributes) { -%>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
-      <% } %>
+      <%_ } -%>
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
@@ -172,17 +172,19 @@ Resources:
           const aws = require('aws-sdk');
           const identity = new aws.CognitoIdentityServiceProvider();
           exports.handler = (event, context, callback) => {
-            if (event.RequestType == 'Delete') {
+            if (event.RequestType === 'Delete') {
               response.send(event, context, response.SUCCESS, {})
             }
-            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+            if (event.RequestType === 'Update' || event.RequestType === 'Create') {
               const params = {
                 ClientId: event.ResourceProperties.clientId,
                 UserPoolId: event.ResourceProperties.userpoolId
               };
               identity.describeUserPoolClient(params).promise()
                 .then((res) => {
-                  response.send(event, context, response.SUCCESS, {'appSecret': res.UserPoolClient.ClientSecret});
+                  response.send(event, context, response.SUCCESS, {
+                    appSecret: res.UserPoolClient.ClientSecret
+                  });
                 })
                 .catch((err) => {
                   response.send(event, context, response.FAILED, {err});
@@ -253,7 +255,7 @@ Resources:
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
 
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%_ if (props.mfaConfiguration !== 'OFF') { -%>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
@@ -299,10 +301,10 @@ Resources:
           const aws = require('aws-sdk');
           const identity = new aws.CognitoIdentityServiceProvider();
           exports.handler = (event, context, callback) => {
-            if (event.RequestType == 'Delete') {
+            if (event.RequestType === 'Delete') {
               response.send(event, context, response.SUCCESS, {})
             }
-            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+            if (event.RequestType === 'Update' || event.RequestType === 'Create') {
               let totpParams = {};
               try {
                 totpParams = {
@@ -315,11 +317,13 @@ Resources:
                       ExternalId: event.ResourceProperties.smsConfigExternalId
                     }
                   },
-                  SoftwareTokenMfaConfiguration: {Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === ''true'' ? true : false}
+                  SoftwareTokenMfaConfiguration: {
+                    Enabled: event.ResourceProperties.totpEnabled.toLowerCase() === 'true'
+                  }
                 };
               } catch (e) {
                 response.send(event, context, response.FAILED, {e});
-              };
+              }
               identity.setUserPoolMfaConfig(totpParams).promise()
                 .then((res) => {
                   response.send(event, context, response.SUCCESS, {res});
@@ -396,11 +400,11 @@ Resources:
       smsConfigExternalId: !Ref roleExternalId
     DependsOn: MFALogPolicy
 
-  <% } %>
-  <% } -%>
-  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { %>
+  <%_ } -%>
+  <%_ } -%>
+  <%_ if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { -%>
   # BEGIN IDENTITY POOL RESOURCES
-  <%if (props.audiences && props.audiences.length > 0) { %>
+  <%_ if (props.audiences && props.audiences.length > 0) { -%>
   OpenIdLambdaRole:
   # Created to execute Lambda which sets MFA config values
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
@@ -446,13 +450,13 @@ Resources:
           const aws = require('aws-sdk');
           const iam = new aws.IAM();
           exports.handler = (event, context) => {
-            if (event.RequestType == 'Delete') {
+            if (event.RequestType === 'Delete') {
               response.send(event, context, response.SUCCESS, {});
             }
-            if (event.RequestType == 'Update' || event.RequestType == 'Create') {
+            if (event.RequestType === 'Update' || event.RequestType === 'Create') {
               const params = {
                 ClientIDList: event.ResourceProperties.clientIdList.split(','),
-                ThumbprintList: ["0000000000000000000000000000000000000000"],
+                ThumbprintList: ['0000000000000000000000000000000000000000'],
                 Url: event.ResourceProperties.url
               };
               let exists = false;
@@ -467,7 +471,10 @@ Resources:
                 }
                 if (!existingValue) {
                   iam.createOpenIDConnectProvider(params).promise().then((data) => {
-                    response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});
+                    response.send(event, context, response.SUCCESS, {
+                      providerArn: data.OpenIDConnectProviderArn,
+                      providerIds: params.ClientIDList
+                    });
                   })
                   .catch((err) => {
                     response.send(event, context, response.FAILED, {err});
@@ -489,8 +496,11 @@ Resources:
                         updateCalls.push(prom);
                       }
                     });
-                    Promise.all(updateCalls).then(function(values) {
-                      response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});
+                    Promise.all(updateCalls).then(function (values) {
+                      response.send(event, context, response.SUCCESS, {
+                        providerArn: existingValue,
+                        providerIds: params.ClientIDList
+                      });
                     })
                     .catch((err3) => {
                       response.send(event, context, response.FAILED, {err3});
@@ -576,7 +586,7 @@ Resources:
       url: https://accounts.google.com
     DependsOn: OpenIdLogPolicy
 
-  <% } %>
+  <%_ } -%>
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
@@ -585,7 +595,7 @@ Resources:
         - ShouldNotCreateEnvResources
         - '<%= props.identityPoolName %>'
         - !Sub '<%= props.identityPoolName %>__${env}'
-      <%if (props.authSelections !== 'identityPoolOnly') { %>
+      <%_ if (props.authSelections !== 'identityPoolOnly') { -%>
       CognitoIdentityProviders:
         -
           ClientId: !Ref UserPoolClient
@@ -593,24 +603,24 @@ Resources:
         -
           ClientId: !Ref UserPoolClientWeb
           ProviderName: !Sub cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
-      <% } -%>
-      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && props.selectedParties !== '{}') { %>
+      <%_ } -%>
+      <%_ if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && props.selectedParties !== '{}') { -%>
       SupportedLoginProviders:
-        <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
-          <%if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com')  { %>
-        <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
-          <% } -%>
-        <% } %> 
-      <% } %>
+        <%_ for (var i = 0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { -%>
+          <%_ if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com') { -%>
+        <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i] %>'
+          <%_ } -%>
+        <%_ } -%>
+      <%_ } -%>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
-      <%if (props.audiences && props.audiences.length > 0) { %>
+      <%_ if (props.audiences && props.audiences.length > 0) { -%>
       OpenIdConnectProviderARNs:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
-      <% } %> 
-    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>   
+      <%_ } -%>
+    <%_ if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { -%>
     DependsOn: UserPoolClientInputs
-    <% } %>
+    <%_ } -%>
 
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
@@ -622,17 +632,17 @@ Resources:
         unauthenticated: !Ref unauthRoleArn
         authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
-  <% } %>
+  <%_ } -%>
 
 Outputs:
-  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') { %>
+  <%_ if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { -%>
   IdentityPoolId:
     Value: !Ref IdentityPool
     Description: Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name
-  <% } %>
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <%_ } -%>
+  <%_ if (props.authSelections !== 'identityPoolOnly') { -%>
   UserPoolId:
     Value: !Ref UserPool
     Description: Id for the user pool
@@ -646,25 +656,25 @@ Outputs:
     Description: The user pool app client id
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%_ if (props.mfaConfiguration !== 'OFF') { -%>
   CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
-  <% } %>
-  <%if (props.googleClientId) { %>
+  <%_ } -%>
+  <%_ if (props.googleClientId) { -%>
   GoogleWebClient:
     Value: <%= props.googleClientId %>
-  <% } %> 
-  <%if (props.googleIos) { %>
+  <%_ } -%>
+  <%_ if (props.googleIos) { -%>
   GoogleIOSClient:
     Value: <%= props.googleIos %>
-  <% } %> 
-  <%if (props.googleAndroid) { %>
+  <%_ } -%>
+  <%_ if (props.googleAndroid) { -%>
   GoogleAndroidClient:
     Value: <%= props.googleAndroid %>
-  <% } %>
-  <%if (props.facebookAppId) { %>
+  <%_ } -%>
+  <%_ if (props.facebookAppId) { -%>
   FacebookWebClient:
     Value: <%= props.facebookAppId %>
-  <% } %> 
-  <% } %>
+  <%_ } -%>
+  <%_ } -%>
