@@ -1,5 +1,12 @@
 const uuid = require('uuid');
-const { coreAttributes, appClientReadAttributes, booleanOptions } = require('./string-maps');
+const {
+  coreAttributes,
+  appClientReadAttributes,
+  booleanOptions,
+  oAuthFlows,
+  oAuthScopes,
+  hostedUIProviders,
+} = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
@@ -69,10 +76,17 @@ const userPoolDefaults = projectName => ({
   userpoolClientSetAttributes: false,
 });
 
+const withSocialDefaults = projectName => ({
+  ...getAllDefaults(projectName),
+  hostedUI: true,
+  AllowedOAuthFlows: oAuthFlows.map(i => i.value),
+  AllowedOAuthScopes: oAuthScopes.map(i => i.value),
+  authProvidersUserPool: hostedUIProviders.filter(i => i.value === 'COGNITO').map(x => x.value),
+});
+
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-  thirdPartyAuth: booleanOptions.find(b => b.value === false).value,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
   openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
   openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
@@ -115,6 +129,7 @@ module.exports = {
   getAllDefaults,
   functionMap,
   generalDefaults,
+  withSocialDefaults,
   entityKeys,
   roles,
 };

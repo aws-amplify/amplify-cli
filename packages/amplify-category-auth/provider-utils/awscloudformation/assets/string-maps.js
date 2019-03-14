@@ -10,11 +10,15 @@ const learnMoreOption = [{
 
 const defaultPrompMap = [
   {
-    name: 'Yes, use the default configuration.',
+    name: 'Default configuration',
     value: 'default',
   },
   {
-    name: 'No, I will set up my own configuration.',
+    name: 'Default configuration with Social Provider (Federation)',
+    value: 'defaultSocial',
+  },
+  {
+    name: 'Manual configuration',
     value: 'manual',
   },
   ...learnMoreOption,
@@ -168,6 +172,96 @@ const authProviders = [
   },
 ];
 
+const hostedUIProviders = [
+  {
+    name: 'Cognito UserPool',
+    value: 'COGNITO',
+  },
+  {
+    name: 'Facebook',
+    value: 'Facebook',
+  },
+  {
+    name: 'Google',
+    value: 'Google',
+  },
+  {
+    name: 'Amazon',
+    value: 'Amazon',
+  },
+];
+
+const authorizeScopes = [
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'Public Profile',
+    value: 'public_profile',
+  },
+];
+
+const signInOptions = [
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'Phone Number',
+    value: 'phone_number',
+  },
+];
+
+const socialLoginOptions = [
+  {
+    name: 'Identity Pool',
+    value: 'identityPool',
+  },
+  {
+    name: 'User Pool',
+    value: 'userPool',
+  },
+  {
+    name: 'Neither',
+    value: null,
+  },
+];
+
+const oAuthFlows = [
+  {
+    name: 'Authorization code grant',
+    value: 'code',
+  },
+  {
+    name: 'Implicit grant',
+    value: 'implicit',
+  },
+];
+
+const oAuthScopes = [
+  {
+    name: 'Phone',
+    value: 'phone',
+  },
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'OpenID',
+    value: 'openid',
+  },
+  {
+    name: 'Profile',
+    value: 'profile',
+  },
+  {
+    name: 'aws.cognito.signin.user.admin',
+    value: 'aws.cognito.signin.user.admin',
+  },
+];
+
 const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
@@ -186,6 +280,12 @@ const getAllMaps = ((edit) => {
     emailRegistration,
     defaultPrompMap,
     booleanOptions,
+    signInOptions,
+    socialLoginOptions,
+    hostedUIProviders,
+    oAuthFlows,
+    oAuthScopes,
+    authorizeScopes,
   };
 });
 
@@ -200,5 +300,11 @@ module.exports = {
   emailRegistration,
   defaultPrompMap,
   booleanOptions,
+  signInOptions,
+  socialLoginOptions,
+  hostedUIProviders,
+  authorizeScopes,
+  oAuthFlows,
+  oAuthScopes,
   messages,
 };

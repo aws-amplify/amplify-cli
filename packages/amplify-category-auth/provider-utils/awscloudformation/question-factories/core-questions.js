@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;
-  const { getAllDefaults } = require(defaultValuesSrc);
+  const { getAllDefaults, withSocialDefaults } = require(defaultValuesSrc);
   const { getAllMaps } = require(stringMapsSrc);
 
   // Can have a cool question builder function here based on input json - will iterate on this
@@ -23,7 +23,10 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         return context.updatingAuth[input.key];
       }
 
-      // if not editing or no previous value, get defaults
+      // if not editing or no previous value, get defaults (either with or without social provider flow)
+      if (currentAnswers.useDefault && currentAnswers.useDefault === 'defaultSocial') {
+        return withSocialDefaults(amplify.getProjectDetails(amplify))[input.key];
+      }
       return getAllDefaults(amplify.getProjectDetails(amplify))[input.key];
     },
   };
