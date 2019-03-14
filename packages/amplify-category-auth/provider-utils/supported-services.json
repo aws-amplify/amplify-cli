@@ -24,6 +24,11 @@
 				"andConditions": [
 					{
 						"preventEdit": "always"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
 					}
 				],
 				"validation": {
@@ -50,6 +55,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"preventEdit": "exists",
 						"key": "identityPoolName"
 					}
@@ -67,6 +77,11 @@
 						"key": "authSelections",
 						"value": "userPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
@@ -83,26 +98,33 @@
 						"key": "authSelections",
 						"value": "userPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "authProviders",
-				"question": "Select the 3rd party authentication providers that you want to enable: ",
+				"question": "Select the third party identity providers you want to configure for your identity pool:",
+				"temp": true,
 				"type": "multiselect",
-				"required": true,
 				"map": "authProviders",
+				"required": true,
 				"andConditions": [
 					{
-						"key": "thirdPartyAuth",
-						"value": true,
+						"key": "authSelections",
+						"value": "userPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
 						"operator": "="
 					}
-				],
-				"validation": {
-					"operator": "noEmptyArray",
-					"onErrorMsg": "You must select at least one 3rd party authentication provider from the list."
-				}
+				]
 			},
 			{
 				"key": "facebookAppId",
@@ -195,8 +217,36 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"preventEdit": "exists",
 						"key": "userPoolName"
+					}
+				]
+			},
+			{
+				"key": "usernameAttributes",
+				"question": "Do you want end users to be able to sign up with their email and phone number as their user name?",
+				"type": "multiselect",
+				"map": "signInOptions",
+				"learnMore": "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
+						"preventEdit": "always"
 					}
 				]
 			},
@@ -211,6 +261,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -282,6 +337,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
@@ -295,6 +355,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -320,6 +385,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "autoVerifiedAttributes",
 						"value": "email",
 						"operator": "includes"
@@ -343,6 +413,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "autoVerifiedAttributes",
 						"value": "phone_number",
 						"operator": "includes"
@@ -356,6 +431,11 @@
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
@@ -374,6 +454,11 @@
 					"onErrorMsg": "The minimum password length must be a number and must be greater than 5 and less than 99."
 				},
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "defaultPasswordPolicy",
 						"value": true,
@@ -394,6 +479,11 @@
 				],
 				"andConditions": [
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "defaultPasswordPolicy",
 						"value": true,
 						"operator": "="
@@ -407,7 +497,7 @@
 			},
 			{
 				"key": "requiredAttributes",
-				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Mark the required attributes below:",
+				"question": "What attributes are required for signing up?",
 				"required": true,
 				"requiredOptions": "autoVerifiedAttributes",
 				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
@@ -417,6 +507,11 @@
 					{
 						"preventEdit": "exists",
 						"key": "userPoolName"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					},
 					{
 						"key": "authSelections",
@@ -430,6 +525,11 @@
 				"question": "Specify the app's refresh token expiration period (in days):",
 				"required": true,
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
@@ -448,6 +548,11 @@
 				"temp": true,
 				"required": true,
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
@@ -493,6 +598,251 @@
 						"key": "userpoolClientSetAttributes",
 						"value": true,
 						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "hostedUI",
+				"question": "Do you want to use the Cognito User Pool's Hosted UI?",
+				"required": true,
+				"type": "list",				
+				"map": "booleanOptions",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				],
+				"orConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
+						"key": "useDefault",
+						"value": "defaultSocial",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "hostedUIDomainName",
+				"question": "What is your Hosted UI domain name?",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$",
+					"onErrorMsg": "The value must be a valid domain name format."
+				}
+			},
+			{
+				"key": "CallbackURLs",
+				"question": "Enter your Hosted UI callback URL.",
+				"required": true,
+				"addAnotherLoop" : "Hosted UI Callback URL",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(http|https):\\/\\/(.*?)\\/$",
+					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+				}
+			},
+			{
+				"key": "LogoutURLs",
+				"question": "Enter your Hosted UI signout URL.",
+				"required": true,
+				"addAnotherLoop" : "Hosted UI Signout URL",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(http|https):\\/\\/(.*?)\\/$",
+					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+				}
+			},
+			{
+				"key": "AllowedOAuthFlows",
+				"question": "Select the OAuth flows enabled for this project.",
+				"required": true,
+				"type": "multiselect",
+				"map" : "oAuthFlows",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "AllowedOAuthScopes",
+				"question": "Select the OAuth scopes enabled for this project.",
+				"required": true,
+				"type": "multiselect",
+				"map" : "oAuthScopes",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "authProvidersUserPool",
+				"question": "Select the identity providers you want to configure for your user pool:",
+				"temp": true,
+				"type": "multiselect",
+				"map": "hostedUIProviders",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "facebookAppIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
+				"question": "Enter your Facebook App ID: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Facebook",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "facebookAppSecretUserPool",
+				"question": "Enter your Facebook App Secret: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Facebook",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "facebookAuthorizeScopes",
+				"question": "Enter your Facebook authorize scopes: ",
+				"required": true,
+				"type": "multiselect",
+				"map": "authorizeScopes",
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Facebook",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleClientIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
+				"question": "Enter your Google Web Client ID: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Google",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleAppSecretUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
+				"question": "Enter your Google Web Client Secret: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Google",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleAuthorizeScopes",
+				"question": "Enter your Google authorize scopes: ",
+				"required": true,
+				"type": "multiselect",
+				"map": "authorizeScopes",
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Google",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "amazonAppIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+				"question": "Enter your Amazon App ID: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Amazon",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "amazonAppSecretUserPool",
+				"question": "Enter your Amazon App Secret: ",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Amazon",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "amazonAuthorizeScopes",
+				"question": "Enter your Amazon authorize scopes: ",
+				"required": true,
+				"type": "multiselect",
+				"map": "authorizeScopes",
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Amazon",
+						"operator": "includes"
 					}
 				]
 			}

@@ -12,6 +12,14 @@ const ENV_SPECIFIC_PARAMS = [
   'googleIos',
   'googleAndroid',
   'amazonAppId',
+  'hostedUIProviderCreds',
+];
+
+const privateKeys = [
+  'hostedUIProviderCreds',
+  'facebookAppSecretUserPool',
+  'googleAppSecretUserPool',
+  'amazonAppSecretUserPool',
 ];
 
 function serviceQuestions(
@@ -56,7 +64,14 @@ function saveResourceParameters(
   envSpecificParams = [],
 ) {
   const provider = context.amplify.getPluginInstance(context, providerName);
-  provider.saveResourceParameters(context, category, resource, params, envSpecificParams);
+  provider.saveResourceParameters(
+    context,
+    category,
+    resource,
+    params,
+    envSpecificParams,
+    privateKeys,
+  );
 }
 
 async function addResource(context, category, service) {
@@ -83,8 +98,8 @@ async function addResource(context, category, service) {
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
-      if (!result.authSelections) {
-        result = Object.assign(result, generalDefaults(projectName));
+      if (['default', 'defaultSocial'].includes(result.useDefault)) {
+        result = Object.assign(generalDefaults(projectName), result);
       }
 
       /* merge actual answers object into props object,
