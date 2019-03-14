@@ -84,6 +84,21 @@ const withSocialDefaults = projectName => ({
   authProvidersUserPool: hostedUIProviders.filter(i => i.value === 'COGNITO').map(x => x.value),
 });
 
+const faceBookAttributeMap = {
+  id: 'username',
+  birthday: 'birthdate',
+  email: 'email',
+  first_name: 'given_name',
+  gender: 'gender',
+  last_name: 'family_name',
+  locale: '',
+  location: '',
+  middle_name: '',
+  name: '',
+  timezone: '',
+  verified: '',
+}
+
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
