@@ -62,11 +62,11 @@
 		"GuestAllowList": {
 			"Type": "String"
 		},
-		"unauthPermissions": {
-			"Type": "String"
+		"selectedGuestPermissions": {
+			"Type": "CommaDelimitedList"
 		},
-		"authPermissions": {
-			"Type": "String"
+		"selectedAuthenticatedPermissions": {
+			"Type": "CommaDelimitedList"
 		},
 		"env": {
 			"Type": "String"
