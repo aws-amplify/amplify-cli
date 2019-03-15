@@ -91,7 +91,7 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { DynamoDBEnablePointInTimeRecovery: "true" }, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
