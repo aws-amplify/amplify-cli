@@ -130,8 +130,10 @@ async function pathFlow(context, answers, currentPath) {
   const { dependsOn } = pathsAnswer;
 
   const privacy = {};
-  privacy.auth = pathsAnswer.paths.filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
-  privacy.unauth = pathsAnswer.paths.filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
+  privacy.auth = pathsAnswer.paths
+    .filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
+  privacy.unauth = pathsAnswer.paths
+    .filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
 
   answers = { ...answers, privacy, dependsOn };
 
