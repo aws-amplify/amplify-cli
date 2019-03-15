@@ -13,15 +13,25 @@ function saveResourceParameters(
   resource,
   parameters,
   envSpecificParamsName = [],
+  privateKeys = [],
 ) {
   const resourceDirPath = getResourceDirPath(context, category, resource);
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
   const envSpecificParams = {};
   const sharedParams = { ...parameters };
+
+  // extracting env-specific params from parameters object
   envSpecificParamsName.forEach((paramName) => {
     if (paramName in parameters) {
       envSpecificParams[paramName] = parameters[paramName];
       delete sharedParams[paramName];
+    }
+  });
+
+  // deleting private keys from shared params before they are written to parameters.json
+  privateKeys.forEach((e) => {
+    if (sharedParams[e]) {
+      delete sharedParams[e];
     }
   });
 

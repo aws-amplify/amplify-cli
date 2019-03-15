@@ -1,5 +1,12 @@
 const uuid = require('uuid');
-const { coreAttributes, appClientReadAttributes, booleanOptions } = require('./string-maps');
+const {
+  coreAttributes,
+  appClientReadAttributes,
+  booleanOptions,
+  oAuthFlows,
+  oAuthScopes,
+  hostedUIProviders,
+} = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
@@ -69,10 +76,43 @@ const userPoolDefaults = projectName => ({
   userpoolClientSetAttributes: false,
 });
 
+const withSocialDefaults = projectName => ({
+  ...getAllDefaults(projectName),
+  hostedUI: true,
+  AllowedOAuthFlows: oAuthFlows.map(i => i.value),
+  AllowedOAuthScopes: oAuthScopes.map(i => i.value),
+  authProvidersUserPool: hostedUIProviders.filter(i => i.value === 'COGNITO').map(x => x.value),
+});
+
+const faceBookAttributeMap = {
+  id: 'username',
+  birthday: 'birthdate',
+  email: 'email',
+  first_name: 'given_name',
+  gender: 'gender',
+  last_name: 'family_name',
+  locale: 'locale',
+  middle_name: 'middle_name',
+  name: 'name',
+  timezone: 'timezone',
+};
+
+const googleAttributeMap = {
+  name: 'name',
+  email: 'email',
+  given_name: 'given_name',
+  family_name: 'family_name',
+};
+
+const amazonAttributeMap = {
+  user_id: 'username',
+  name: 'name',
+  email: 'email',
+};
+
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-  thirdPartyAuth: booleanOptions.find(b => b.value === false).value,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
   openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
   openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
@@ -115,6 +155,10 @@ module.exports = {
   getAllDefaults,
   functionMap,
   generalDefaults,
+  withSocialDefaults,
   entityKeys,
+  faceBookAttributeMap,
+  googleAttributeMap,
+  amazonAttributeMap,
   roles,
 };

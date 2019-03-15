@@ -94,6 +94,9 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
+      <% if (props.usernameAttributes) { %>
+      UsernameAttributes: !Ref usernameAttributes
+      <% } %>    
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
