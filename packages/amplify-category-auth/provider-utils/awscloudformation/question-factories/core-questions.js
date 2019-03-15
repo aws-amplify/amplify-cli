@@ -23,7 +23,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         return context.updatingAuth[input.key];
       }
 
-      // if not editing or no previous value, get defaults (either with or without social provider flow)
+      // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)
       if (currentAnswers.useDefault && currentAnswers.useDefault === 'defaultSocial') {
         return withSocialDefaults(amplify.getProjectDetails(amplify))[input.key];
       }
