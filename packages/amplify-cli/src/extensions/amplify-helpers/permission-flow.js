@@ -5,9 +5,7 @@ const _ = require('lodash');
 const crudFlow = async (role, permissionMap = {}, defaults = []) => {
   if (!role) throw new Error('No role provided to permission question flow');
   const possibleOperations = Object.keys(permissionMap)
-    .map((el) => {
-      return { name: el, value: el };
-    });
+    .map(el => ({ name: el, value: el }));
 
   const answers = await inquirer.prompt({
     name: 'permissions',
