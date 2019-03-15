@@ -91,13 +91,24 @@ const faceBookAttributeMap = {
   first_name: 'given_name',
   gender: 'gender',
   last_name: 'family_name',
-  locale: '',
-  location: '',
-  middle_name: '',
-  name: '',
-  timezone: '',
-  verified: '',
-}
+  locale: 'locale',
+  middle_name: 'middle_name',
+  name: 'name',
+  timezone: 'timezone',
+};
+
+const googleAttributeMap = {
+  name: 'name',
+  email: 'email',
+  given_name: 'given_name',
+  family_name: 'family_name',
+};
+
+const amazonAttributeMap = {
+  user_id: 'username',
+  name: 'name',
+  email: 'email',
+};
 
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
@@ -146,5 +157,8 @@ module.exports = {
   generalDefaults,
   withSocialDefaults,
   entityKeys,
+  faceBookAttributeMap,
+  googleAttributeMap,
+  amazonAttributeMap,
   roles,
 };

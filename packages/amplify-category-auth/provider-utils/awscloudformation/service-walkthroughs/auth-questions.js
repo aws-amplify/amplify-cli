@@ -2,6 +2,9 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const thirdPartyMap = require('../assets/string-maps').authProviders;
+const facebook = require('../assets/cognito-defaults').faceBookAttributeMap;
+const google = require('../assets/cognito-defaults').googleAttributeMap;
+const amazon = require('../assets/cognito-defaults').amazonAttributeMap;
 
 
 async function serviceWalkthrough(
@@ -67,48 +70,65 @@ async function serviceWalkthrough(
   }
 
   // POST-QUESTION LOOP PARSING
-  /*
-    create key/value pairs of third party auth providers,
-    where key = name accepted by updateIdentityPool API call and value = id entered by user
-    TODO: evaluate need for abstracted version of this operation
-  */
-  if (coreAnswers.thirdPartyAuth) {
-    coreAnswers.selectedParties = {};
-    thirdPartyMap.forEach((e) => {
-      // don't send google value in cf if native project, since we need to make an openid provider
-      if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
-        if (coreAnswers[e.answerHashKey]) {
-          coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
-        }
-        /*
-          certain third party providers require multiple values,
-          which Cognito requires to be a concatenated string -
-          so here we build the string using 'concatKeys' defined in the thirdPartyMap
-        */
-        if (coreAnswers[e.answerHashKey] && e.concatKeys) {
-          e.concatKeys.forEach((i) => {
-            coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
-          });
-        }
-      }
-    });
-    if (projectType !== 'javascript' && coreAnswers.authProviders.includes('accounts.google.com')) {
-      coreAnswers.audiences = [coreAnswers.googleClientId];
-      if (projectType === 'ios') {
-        coreAnswers.audiences.push(coreAnswers.googleIos);
-      } else if (projectType === 'android') {
-        coreAnswers.audiences.push(coreAnswers.googleAndroid);
-      }
-    }
 
-    coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
+  // formatting data for identity pool providers
+  if (coreAnswers.thirdPartyAuth) {
+    identityPoolProviders(coreAnswers, projectType);
   }
 
+  // formatting data for user pool providers / hosted UI
+  if (coreAnswers.authProvidersUserPool || coreAnswers.hostedUI) {
+    userPoolProviders(coreAnswers);
+  }
 
+  return {
+    ...coreAnswers,
+  };
+}
+
+/*
+  create key/value pairs of third party auth providers,
+  where key = name accepted by updateIdentityPool API call and value = id entered by user
+  TODO: evaluate need for abstracted version of this operation
+*/
+function identityPoolProviders(coreAnswers, projectType) {
+  coreAnswers.selectedParties = {};
+  thirdPartyMap.forEach((e) => {
+    // don't send google value in cf if native project, since we need to make an openid provider
+    if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
+      if (coreAnswers[e.answerHashKey]) {
+        coreAnswers.selectedParties[e.value] = coreAnswers[e.answerHashKey];
+      }
+      /*
+        certain third party providers require multiple values,
+        which Cognito requires to be a concatenated string -
+        so here we build the string using 'concatKeys' defined in the thirdPartyMap
+      */
+      if (coreAnswers[e.answerHashKey] && e.concatKeys) {
+        e.concatKeys.forEach((i) => {
+          coreAnswers.selectedParties[e.value] = coreAnswers.selectedParties[e.value].concat(';', coreAnswers[i]);
+        });
+      }
+    }
+  });
+  if (projectType !== 'javascript' && coreAnswers.authProviders.includes('accounts.google.com')) {
+    coreAnswers.audiences = [coreAnswers.googleClientId];
+    if (projectType === 'ios') {
+      coreAnswers.audiences.push(coreAnswers.googleIos);
+    } else if (projectType === 'android') {
+      coreAnswers.audiences.push(coreAnswers.googleAndroid);
+    }
+  }
+
+  coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
+}
+
+function userPoolProviders(coreAnswers) {
+  const maps = { facebook, google, amazon };
   if (coreAnswers.authProvidersUserPool) {
     coreAnswers.hostedUIProviderMeta = coreAnswers.authProvidersUserPool
       .filter(el => el !== 'COGNITO')
-      .map(el => (JSON.stringify({ ProviderName: el, authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join() })));
+      .map(el => (JSON.stringify({ ProviderName: el, authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(), AttributeMapping: maps[`${el.toLowerCase()}`] })));
     coreAnswers.hostedUIProviderCreds = coreAnswers.authProvidersUserPool
       .filter(el => el !== 'COGNITO')
       .map(el => (JSON.stringify({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
@@ -128,10 +148,6 @@ async function serviceWalkthrough(
       LogoutURLs,
     };
   }
-
-  return {
-    ...coreAnswers,
-  };
 }
 
 module.exports = { serviceWalkthrough };
