@@ -36,7 +36,15 @@ export class ResourceFactory {
                     'PAY_PER_REQUEST',
                     'PROVISIONED'
                 ]
-            })
+            }),
+            [ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery]: new StringParameter({
+                Description: 'Whether to enable Point in Time Recovery on the table',
+                Default: 'false',
+                AllowedValues: [
+                    'true',
+                    'false'
+                ]
+            }),
         }
     }
 
@@ -64,7 +72,10 @@ export class ResourceFactory {
                         Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), 0))
                     ]),
                 [ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling]:
-                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST')
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST'),
+
+                [ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true')
             }
         }
     }
@@ -180,6 +191,13 @@ export class ResourceFactory {
             SSESpecification: {
                 SSEEnabled: true
             },
+            PointInTimeRecoverySpecification: Fn.If(
+                ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery,
+                {
+                    PointInTimeRecoveryEnabled: true
+                },
+                Refs.NoValue
+            ) as any,
         })
     }
 
