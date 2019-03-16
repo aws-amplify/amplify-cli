@@ -75,6 +75,8 @@ export class ResourceConstants {
         // Elasticsearch
         ElasticsearchStreamingLambdaIAMRoleArn: 'ElasticsearchStreamingLambdaIAMRoleArn',
         ElasticsearchAccessIAMRoleArn: 'ElasticsearchAccessIAMRoleArn',
+        ElasticsearchDomainArn: 'ElasticsearchDomainArn',
+        ElasticsearchDomainEndpoint: 'ElasticsearchDomainEndpoint',
 
         // Auth
         AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',
