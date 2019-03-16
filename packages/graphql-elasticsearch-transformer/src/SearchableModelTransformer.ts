@@ -53,6 +53,7 @@ export class SearchableModelTransformer extends Transformer {
         const template = this.resources.initTemplate();
         ctx.mergeResources(template.Resources);
         ctx.mergeParameters(template.Parameters);
+        ctx.mergeOutputs(template.Outputs);
         ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
         ctx.putStackMapping(STACK_NAME, [
             'ElasticsearchDomain',
