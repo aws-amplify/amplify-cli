@@ -17,11 +17,13 @@ const getAllDefaults = (project) => {
     bucketName: `${name}${uuid().replace(/-/g, '')}`,
     authPolicyName: `s3_amplify_${shortId}`,
     unauthPolicyName: `s3_amplify_${shortId}`,
+
+
     authRoleName,
     unauthRoleName,
     storageAccess: 'auth',
-    authPermissions: 'rw',
-    unauthPermissions: 'r',
+    selectedGuestPermissions: ['s3:GetObject', 's3:ListBucket'],
+    selectedAuthenticatedPermissions: ['s3:GetObject', 's3:ListBucket'],
   };
 
   return defaults;

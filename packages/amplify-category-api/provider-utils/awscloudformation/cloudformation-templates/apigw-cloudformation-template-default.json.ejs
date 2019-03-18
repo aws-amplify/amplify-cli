@@ -1,7 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "API Gateway resource stack creation using Amplify CLI",
-    <% let cnt = 0 %>
     <% if (props.dependsOn) { %>
     "Parameters": {
         "authRoleName": {
@@ -36,7 +35,6 @@
     },
     "Resources": {
         <%if (props.privacy.auth) { %>
-        <% cnt = 0 %>
         "PolicyAPIGW<%= props.apiName %>auth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -57,8 +55,8 @@
                     ],
                     "Resource": [
                     <% for(var i=0; i < props.paths.length; i++) { %>
-                    <%if (props.paths[i].privacy.auth === 'rw') { %>
-                    <% cnt++ %>
+                    <% if (props.paths[i].privacy && props.paths[i].privacy.auth) { %>
+                    <% for(var x=0; x < props.paths[i].privacy.auth.length; x++) { %>
                       {
                         "Fn::Join": [
                           "",
@@ -85,12 +83,12 @@
                                 } 
                               ]
                             },
-                            "/*",
+                              "<%= props.paths[i].privacy.auth[x] %>",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
                       },
-                      {
+                                            {
                         "Fn::Join": [
                           "",
                           [
@@ -116,400 +114,19 @@
                                 } 
                               ]
                             },
-                            "/*",
+                              "<%= props.paths[i].privacy.auth[x] %>",
                             "<%= props.paths[i].name %>"
                           ]
                         ]
                       }
-                    <% if (props.privacy.auth !== cnt) { %>
+                    <% if (x !== props.paths[i].privacy.auth.length - 1) { %>
                       ,
-                    <% }%>
                     <% } %>
-                    <%if (props.paths[i].privacy.auth === 'r') { %>
-                    <% cnt++ %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/GET",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/GET",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/HEAD",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/HEAD",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      }
-                    <% if (props.privacy.auth !== cnt) { %>
+                    <% } %>
+                    <% if (i !== props.paths.length - 1) { %>
                       ,
-                    <% }%>
                     <% } %>
-                    <%if (props.paths[i].privacy.auth === 'w') { %>
-                    <% cnt++ %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/DELETE",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/DELETE",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PATCH",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PATCH",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/POST",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/POST",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PUT",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PUT",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      }
-                    <% if (props.privacy.auth !== cnt) { %>
-                      ,
-                    <% }%>
                     <% } %>
-                    
                     <% } %>
                     ]
                   }
@@ -519,7 +136,6 @@
           },
         <% } %>
         <%if (props.privacy.unauth) { %>
-          <% cnt = 0 %>
         "PolicyAPIGW<%= props.apiName %>unauth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -538,10 +154,10 @@
                     "Action": [
                       "execute-api:Invoke"
                     ],
-                    "Resource": [
+                     "Resource": [
                     <% for(var i=0; i < props.paths.length; i++) { %>
-                    <%if (props.paths[i].privacy.unauth === 'rw') { %>
-                    <% cnt++ %>
+                    <% if (props.paths[i].privacy && props.paths[i].privacy.unauth) { %>
+                    <% for(var x=0; x < props.paths[i].privacy.unauth.length; x++) { %>
                       {
                         "Fn::Join": [
                           "",
@@ -568,429 +184,18 @@
                                 } 
                               ]
                             },
-                            "/*",
+                              "<%= props.paths[i].privacy.unauth[x] %>",
                             "<%= props.paths[i].name %>/*"
                           ]
                         ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/*",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
                       }
-                    <% if (props.privacy.unauth !== cnt) { %>
+                    <% if (x !== props.paths[i].privacy.unauth.length - 1) { %>
                       ,
-                    <% }%>
                     <% } %>
-                    <%if (props.paths[i].privacy.unauth === 'r') { %>
-                    <% cnt++ %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/GET",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/GET",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/HEAD",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/HEAD",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      }
-                    <% if (props.privacy.unauth !== cnt) { %>
-                      ,
-                    <% }%>
                     <% } %>
-                    <%if (props.paths[i].privacy.unauth === 'w') { %>
-                    <% cnt++ %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/DELETE",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/DELETE",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PATCH",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PATCH",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/POST",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/POST",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PUT",
-                            "<%= props.paths[i].name %>/*"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                            "/PUT",
-                            "<%= props.paths[i].name %>"
-                          ]
-                        ]
-                      }
-                    <% if (props.privacy.unauth !== cnt) { %>
+                    <% if (i !== props.paths.length - 1) { %>
                       ,
-                    <% }%>
+                    <% } %>
                     <% } %>
                     <% } %>
                     ]
