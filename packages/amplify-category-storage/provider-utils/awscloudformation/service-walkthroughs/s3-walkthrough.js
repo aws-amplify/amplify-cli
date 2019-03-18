@@ -373,6 +373,12 @@ function convertToCRUD(parameters, answers) {
     answers.selectedAuthenticatedPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
     createPermissionKeys('Authenticated', answers, answers.selectedAuthenticatedPermissions);
   }
+  if (parameters.unauthPermissions) {
+    delete parameters.unauthPermissions;
+  }
+  if (parameters.authPermissions) {
+    delete parameters.authPermissions;
+  }
 }
 
 
