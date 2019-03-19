@@ -17,9 +17,19 @@ const ENV_SPECIFIC_PARAMS = [
 
 const privateKeys = [
   'hostedUIProviderCreds',
+  'facebookAppIdUserPool',
+  'facebookAuthorizeScopes',
   'facebookAppSecretUserPool',
   'googleAppSecretUserPool',
+  'googleAuthorizeScopes',
+  'googleAppSecretUserPool',
   'amazonAppSecretUserPool',
+  'amazonAuthorizeScopes',
+  'amazonAppSecretUserPool',
+  'CallbackURLs',
+  'LogoutURLs',
+  'AllowedOAuthFlows',
+  'AllowedOAuthScopes',
 ];
 
 function serviceQuestions(
