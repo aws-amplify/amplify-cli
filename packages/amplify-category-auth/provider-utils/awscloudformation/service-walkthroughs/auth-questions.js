@@ -19,6 +19,14 @@ async function serviceWalkthrough(
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
 
+  if (context.updatingAuth && context.updatingAuth.oAuthMetadata) {
+    parseOAuthMetaData(context.updatingAuth);
+  }
+
+  if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
+    parseOAuthCreds(context, amplify);
+  }
+
   // loop through questions
   let j = 0;
   while (j < inputs.length) {
@@ -77,8 +85,13 @@ async function serviceWalkthrough(
   }
 
   // formatting data for user pool providers / hosted UI
-  if (coreAnswers.authProvidersUserPool || coreAnswers.hostedUI) {
+  if (coreAnswers.authProvidersUserPool) {
     userPoolProviders(coreAnswers);
+  }
+
+  // formatting oAuthMetaData
+  if (coreAnswers.hostedUI) {
+    structureoAuthMetaData(coreAnswers);
   }
 
   return {
@@ -126,14 +139,14 @@ function identityPoolProviders(coreAnswers, projectType) {
 function userPoolProviders(coreAnswers) {
   const maps = { facebook, google, amazon };
   if (coreAnswers.authProvidersUserPool) {
-    coreAnswers.hostedUIProviderMeta = coreAnswers.authProvidersUserPool
-      .filter(el => el !== 'COGNITO')
-      .map(el => (JSON.stringify({ ProviderName: el, authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(), AttributeMapping: maps[`${el.toLowerCase()}`] })));
-    coreAnswers.hostedUIProviderCreds = coreAnswers.authProvidersUserPool
-      .filter(el => el !== 'COGNITO')
-      .map(el => (JSON.stringify({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
+    coreAnswers.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
+      .map(el => ({ ProviderName: el, authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(), AttributeMapping: maps[`${el.toLowerCase()}`] })));
+    coreAnswers.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
+      .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
   }
+}
 
+function structureoAuthMetaData(coreAnswers) {
   if (coreAnswers.hostedUI) {
     const {
       AllowedOAuthFlows,
@@ -141,12 +154,38 @@ function userPoolProviders(coreAnswers) {
       CallbackURLs,
       LogoutURLs,
     } = coreAnswers;
-    coreAnswers.oAuthMetadata = {
+    coreAnswers.oAuthMetadata = JSON.stringify({
       AllowedOAuthFlows,
       AllowedOAuthScopes,
       CallbackURLs,
       LogoutURLs,
-    };
+    });
+  }
+}
+
+function parseOAuthMetaData(previousAnswers) {
+  if (previousAnswers && previousAnswers.oAuthMetadata) {
+    previousAnswers = Object.assign(previousAnswers, JSON.parse(previousAnswers.oAuthMetadata));
+    delete previousAnswers.oAuthMetadata;
+  }
+}
+
+function parseOAuthCreds(context, amplify) {
+  const previousAnswers = context.updatingAuth;
+  if (previousAnswers && previousAnswers.authProvidersUserPool) {
+    const providers = previousAnswers.authProvidersUserPool;
+    const parsedMetaData = JSON.parse(previousAnswers.hostedUIProviderMeta);
+    const rawCreds = amplify.loadEnvResourceParameters(context, 'auth', previousAnswers.resourceName);
+    if (rawCreds) {
+      const parsedCreds = JSON.parse(rawCreds.hostedUIProviderCreds);
+      providers.forEach((el) => {
+        const provider = parsedMetaData.find(i => i.ProviderName === el);
+        const creds = parsedCreds.find(i => i.ProviderName === el);
+        previousAnswers[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
+        previousAnswers[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+        previousAnswers[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
+      });
+    }
   }
 }
 
