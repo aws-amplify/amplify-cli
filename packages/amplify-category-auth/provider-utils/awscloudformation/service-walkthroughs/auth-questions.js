@@ -140,7 +140,14 @@ function userPoolProviders(coreAnswers) {
   const maps = { facebook, google, amazon };
   if (coreAnswers.authProvidersUserPool) {
     coreAnswers.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
-      .map(el => ({ ProviderName: el, authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(), AttributeMapping: maps[`${el.toLowerCase()}`] })));
+      .map((el) => {
+        const delimmiter = el === 'Facebook' ? ',' : ' ';
+        return {
+          ProviderName: el,
+          authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(delimmiter),
+          AttributeMapping: maps[`${el.toLowerCase()}`],
+        };
+      }));
     coreAnswers.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
       .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
   }
