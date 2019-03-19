@@ -123,6 +123,11 @@
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="
+					},
+					{
+						"key": "thirdPartyAuth",
+						"value": true,
+						"operator": "="
 					}
 				]
 			},
@@ -640,13 +645,13 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}$",
-					"onErrorMsg": "The value must be a valid domain name format."
+					"value": "^(?=[a-zA-Z0-9])([a-z0-9A-Z-.]){1,67}$",
+					"onErrorMsg": "The value must be a valid domain name format.  A valid format consists of a maximum of 67 alphanumeric characters, '.' or '-' (but must begin with an alphanumeric)."
 				}
 			},
 			{
 				"key": "CallbackURLs",
-				"question": "Enter your Hosted UI callback URL.",
+				"question": "Enter your Hosted UI callback URL:",
 				"required": true,
 				"addAnotherLoop" : "Hosted UI Callback URL",
 				"andConditions": [
@@ -664,7 +669,7 @@
 			},
 			{
 				"key": "LogoutURLs",
-				"question": "Enter your Hosted UI signout URL.",
+				"question": "Enter your Hosted UI signout URL:",
 				"required": true,
 				"addAnotherLoop" : "Hosted UI Signout URL",
 				"andConditions": [

@@ -174,10 +174,6 @@ const authProviders = [
 
 const hostedUIProviders = [
   {
-    name: 'Cognito UserPool',
-    value: 'COGNITO',
-  },
-  {
     name: 'Facebook',
     value: 'Facebook',
   },
