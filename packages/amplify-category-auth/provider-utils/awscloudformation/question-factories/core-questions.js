@@ -32,11 +32,18 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
     if (context.updatingAuth && input.iterator) {
+      if (context.updatingAuth[input.iterator]) {
+        question = Object.assign({
+          choices: context.updatingAuth[input.iterator].map(i => ({
+            name: i,
+            value: i,
+          })),
+        }, question);
+      }
+    } else if (input.iterator) {
+      // TODO: make iterator key useful for non-update actions
       question = Object.assign({
-        choices: context.updatingAuth[input.iterator].map(i => ({
-          name: i,
-          value: i,
-        })),
+        choices: [],
       }, question);
     }
     if (!input.requiredOptions || !question.when()) {

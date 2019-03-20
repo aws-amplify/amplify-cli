@@ -29,9 +29,9 @@ async function serviceWalkthrough(
 
   if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
     coreAnswers.updateFlow = context.updateFlow.type;
-    inputs = inputs.filter(i => i.updateGroup === coreAnswers.updateFlow);
-  } else {
-    inputs = inputs.filter(i => !i.updateGroup);
+    inputs = inputs.filter(i => i.updateGroups && i.updateGroups.includes(coreAnswers.updateFlow));
+  } else if (!context.updateFlow || context.updateFlow.type === 'all') {
+    inputs = inputs.filter(i => !i.updateGroups || i.updateGroups.includes('all'));
   }
 
   // loop through questions
@@ -46,6 +46,7 @@ async function serviceWalkthrough(
       coreAnswers,
       context,
     );
+
     const answer = await inquirer.prompt(q);
     
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
@@ -108,7 +109,7 @@ async function serviceWalkthrough(
 
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
-    userPoolProviders(coreAnswers);
+    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers));
   }
 
   // formatting oAuthMetaData
@@ -158,8 +159,9 @@ function identityPoolProviders(coreAnswers, projectType) {
 
 function userPoolProviders(coreAnswers) {
   const maps = { facebook, google, amazon };
+  const res = {};
   if (coreAnswers.authProvidersUserPool) {
-    coreAnswers.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
+    res.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
       .map((el) => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         return {
@@ -168,32 +170,45 @@ function userPoolProviders(coreAnswers) {
           AttributeMapping: maps[`${el.toLowerCase()}`],
         };
       }));
-    coreAnswers.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
+    res.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
       .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
   }
+  return res;
 }
 
 function structureoAuthMetaData(coreAnswers, context) {
   const prev = context.updatingAuth ? context.updatingAuth : {};
   const answers = Object.assign(prev, coreAnswers);
-  const {
+  let {
     AllowedOAuthFlows,
-    AllowedOAuthScopes,
-    LogoutURLs,
-  } = answers;
-  let { CallbackURLs } = answers;
-  if (coreAnswers.newCallbackURLs) {
-    CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
-  }
-
-  coreAnswers.oAuthMetadata = JSON.stringify({
-    AllowedOAuthFlows,
-    AllowedOAuthScopes,
     CallbackURLs,
     LogoutURLs,
-  });
+  } = answers;
+  const { AllowedOAuthScopes } = answers;
+  if (CallbackURLs && coreAnswers.newCallbackURLs) {
+    CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
+  } else if (coreAnswers.newCallbackURLs) {
+    CallbackURLs = coreAnswers.newCallbackURLs;
+  }
+  if (LogoutURLs && coreAnswers.newLogoutURLs) {
+    LogoutURLs = LogoutURLs.concat(coreAnswers.newLogoutURLs);
+  } else if (coreAnswers.newLogoutURLs) {
+    LogoutURLs = coreAnswers.newLogoutURLs;
+  }
+
+  AllowedOAuthFlows = [AllowedOAuthFlows];
+
+  if (AllowedOAuthFlows && AllowedOAuthScopes && CallbackURLs && LogoutURLs) {
+    coreAnswers.oAuthMetadata = JSON.stringify({
+      AllowedOAuthFlows,
+      AllowedOAuthScopes,
+      CallbackURLs,
+      LogoutURLs,
+    });
+  }
 }
 
+// changes serialized oAuthMetadata value to individual parameters
 function parseOAuthMetaData(previousAnswers) {
   if (previousAnswers && previousAnswers.oAuthMetadata) {
     previousAnswers = Object.assign(previousAnswers, JSON.parse(previousAnswers.oAuthMetadata));
@@ -201,6 +216,7 @@ function parseOAuthMetaData(previousAnswers) {
   }
 }
 
+// changes serialized oAuthCredentials value to individual parameters
 function parseOAuthCreds(context, amplify) {
   const previousAnswers = context.updatingAuth;
   if (previousAnswers && previousAnswers.authProvidersUserPool) {
@@ -220,4 +236,4 @@ function parseOAuthCreds(context, amplify) {
   }
 }
 
-module.exports = { serviceWalkthrough };
+module.exports = { serviceWalkthrough, userPoolProviders };
