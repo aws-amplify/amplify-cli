@@ -15,7 +15,7 @@ test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer()
+            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -38,7 +38,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => 
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer()
+            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -61,7 +61,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer()
+            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -85,7 +85,7 @@ test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', (
         const transformer = new GraphQLTransform({
             transformers: [
                 new DynamoDBModelTransformer(),
-                new ModelAuthTransformer()
+                new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
             ]
         })
         const out = transformer.transform(validSchema)

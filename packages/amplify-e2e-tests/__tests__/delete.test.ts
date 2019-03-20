@@ -6,7 +6,7 @@ import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/ut
 describe('amplify delete', () => {
   let projRoot: string;
   beforeAll(async () => {
-    jest.setTimeout(1000 * 60 * 20); // 20 minutes
+    jest.setTimeout(1000 * 60 * 60); // 1 hour
     projRoot = createNewProjectDir();
     await initProjectWithProfile(projRoot, {});
   });

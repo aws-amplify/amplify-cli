@@ -1,0 +1,4 @@
+type Todo @model {
+    id: ID!
+    content: String
+}
