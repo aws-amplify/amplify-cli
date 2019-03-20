@@ -1,6 +1,7 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
+const providerSerialization = require('../awscloudformation/service-walkthroughs/auth-questions').userPoolProviders;
 
 let serviceMetadata;
 
@@ -16,11 +17,10 @@ const ENV_SPECIFIC_PARAMS = [
 ];
 
 const privateKeys = [
-  'hostedUIProviderCreds',
   'facebookAppIdUserPool',
   'facebookAuthorizeScopes',
   'facebookAppSecretUserPool',
-  'googleAppSecretUserPool',
+  'googleAppIdUserPool',
   'googleAuthorizeScopes',
   'googleAppSecretUserPool',
   'amazonAppSecretUserPool',
@@ -30,6 +30,16 @@ const privateKeys = [
   'LogoutURLs',
   'AllowedOAuthFlows',
   'AllowedOAuthScopes',
+  'EditURLS',
+  'newCallbackURLs',
+  'addCallbackOnUpdate',
+  'updateFlow',
+  'newCallbackURLs',
+  'addCallbackOnUpdate',
+  'selectedParties',
+  'newLogoutURLs',
+  'editLogoutURLs',
+  'addLogoutOnUpdate',
 ];
 
 function serviceQuestions(
@@ -62,7 +72,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
 
   // copy over the files
   // Todo: move to provider as each provider should decide where to store vars, and cfn
-  return await context.amplify.copyBatch(context, copyJobs, options, true, false);
+  return await context.amplify.copyBatch(context, copyJobs, options, true, false, privateKeys);
 }
 
 function saveResourceParameters(
@@ -130,7 +140,7 @@ async function addResource(context, category, service) {
     .then(() => props.resourceName);
 }
 
-function updateResource(context, category, serviceResult) {
+async function updateResource(context, category, serviceResult) {
   const { service, resourceName } = serviceResult;
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
@@ -141,6 +151,39 @@ function updateResource(context, category, serviceResult) {
     serviceWalkthroughFilename,
     provider,
   } = serviceMetadata;
+
+  let baseUpdateOptions = [
+    {
+      name: 'Walkthrough all the auth configurations',
+      value: 'all',
+    },
+    {
+      name: 'Add callback URLs for your hosted UI',
+      value: 'callbacks',
+      condition: 'oAuthMetadata',
+      conditionMsg: 'You have not initially configured Hosted UI.',
+    },
+    {
+      name: 'Update social provider credentials for your hosted UI',
+      value: 'providers',
+      condition: 'hostedUIProviderCreds',
+      conditionMsg: 'You have not initially configured Hosted UI.',
+    },
+  ];
+
+  baseUpdateOptions = baseUpdateOptions.map((o) => {
+    if (o.condition && !context.updatingAuth[o.condition]) {
+      return Object.assign(o, { disabled: `Disabled: ${o.conditionMsg}` });
+    }
+    return o;
+  });
+
+  context.updateFlow = await inquirer.prompt({
+    name: 'type',
+    message: 'What do you want to edit?',
+    type: 'list',
+    choices: baseUpdateOptions,
+  });
 
   return serviceQuestions(
     context,
@@ -161,7 +204,7 @@ function updateResource(context, category, serviceResult) {
 
       const defaults = getAllDefaults(resourceName);
 
-      const immutables = {};
+      let immutables = {};
       // loop through service questions
       serviceMetadata.inputs.forEach((s) => {
         // find those that would not be displayed if user was entering values manually
@@ -171,6 +214,9 @@ function updateResource(context, category, serviceResult) {
           if (context.updatingAuth[s.key]) {
             immutables[s.key] = context.updatingAuth[s.key];
           }
+        }
+        if (context.updatingAuth.authProvidersUserPool) {
+          immutables = Object.assign(immutables, providerSerialization(context.updatingAuth));
         }
       });
 
@@ -195,7 +241,10 @@ function updateResource(context, category, serviceResult) {
         ); // eslint-disable-line max-len
       }
 
-      if (!result.thirdPartyAuth) {
+      if (
+        (!result.updateFlow && !result.thirdPartyAuth) ||
+        (result.updateFlow === 'all' && !result.thirdPartyAuth)
+      ) {
         delete props.selectedParties;
         delete props.authProviders;
         authProviders.forEach((a) => {

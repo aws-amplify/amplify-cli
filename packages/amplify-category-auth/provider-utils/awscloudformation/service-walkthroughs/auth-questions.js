@@ -14,7 +14,7 @@ async function serviceWalkthrough(
   serviceMetadata,
   coreAnswers = {},
 ) {
-  const { inputs } = serviceMetadata;
+  let { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
@@ -25,6 +25,13 @@ async function serviceWalkthrough(
 
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     parseOAuthCreds(context, amplify);
+  }
+
+  if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
+    coreAnswers.updateFlow = context.updateFlow.type;
+    inputs = inputs.filter(i => i.updateGroups && i.updateGroups.includes(coreAnswers.updateFlow));
+  } else if (!context.updateFlow || context.updateFlow.type === 'all') {
+    inputs = inputs.filter(i => !i.updateGroups || i.updateGroups.includes('all'));
   }
 
   // loop through questions
@@ -39,12 +46,35 @@ async function serviceWalkthrough(
       coreAnswers,
       context,
     );
+
     const answer = await inquirer.prompt(q);
-    // user has selected learn more. Don't advance the question
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
+      /*
+        user has selected learn more. Don't advance the question
+      */
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
-    } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
+    } else if (
+      questionObj.iterator &&
+      answer[questionObj.key] &&
+      answer[questionObj.key].length > 0
+    ) {
+      /*
+        if a question has an iterator, we create an editing question for all selected values
+      */
+      const replacementArray = context.updatingAuth[questionObj.iterator];
+      for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+        const newValue = await inquirer.prompt({
+          name: 'updated',
+          message: `Update ${answer[questionObj.key][t]}`,
+        });
+        replacementArray.splice(
+          replacementArray.indexOf(answer[questionObj.key][t]),
+          1,
+          newValue.updated,
+        );
+      }
+    } if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
@@ -86,13 +116,11 @@ async function serviceWalkthrough(
 
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
-    userPoolProviders(coreAnswers);
+    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers));
   }
 
   // formatting oAuthMetaData
-  if (coreAnswers.hostedUI) {
-    structureoAuthMetaData(coreAnswers);
-  }
+  structureoAuthMetaData(coreAnswers, context);
 
   return {
     ...coreAnswers,
@@ -138,8 +166,9 @@ function identityPoolProviders(coreAnswers, projectType) {
 
 function userPoolProviders(coreAnswers) {
   const maps = { facebook, google, amazon };
+  const res = {};
   if (coreAnswers.authProvidersUserPool) {
-    coreAnswers.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
+    res.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
       .map((el) => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         return {
@@ -148,19 +177,35 @@ function userPoolProviders(coreAnswers) {
           AttributeMapping: maps[`${el.toLowerCase()}`],
         };
       }));
-    coreAnswers.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
+    res.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
       .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
   }
+  return res;
 }
 
-function structureoAuthMetaData(coreAnswers) {
-  if (coreAnswers.hostedUI) {
-    const {
-      AllowedOAuthFlows,
-      AllowedOAuthScopes,
-      CallbackURLs,
-      LogoutURLs,
-    } = coreAnswers;
+function structureoAuthMetaData(coreAnswers, context) {
+  const prev = context.updatingAuth ? context.updatingAuth : {};
+  const answers = Object.assign(prev, coreAnswers);
+  let {
+    AllowedOAuthFlows,
+    CallbackURLs,
+    LogoutURLs,
+  } = answers;
+  const { AllowedOAuthScopes } = answers;
+  if (CallbackURLs && coreAnswers.newCallbackURLs) {
+    CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
+  } else if (coreAnswers.newCallbackURLs) {
+    CallbackURLs = coreAnswers.newCallbackURLs;
+  }
+  if (LogoutURLs && coreAnswers.newLogoutURLs) {
+    LogoutURLs = LogoutURLs.concat(coreAnswers.newLogoutURLs);
+  } else if (coreAnswers.newLogoutURLs) {
+    LogoutURLs = coreAnswers.newLogoutURLs;
+  }
+
+  AllowedOAuthFlows = [AllowedOAuthFlows];
+
+  if (AllowedOAuthFlows && AllowedOAuthScopes && CallbackURLs && LogoutURLs) {
     coreAnswers.oAuthMetadata = JSON.stringify({
       AllowedOAuthFlows,
       AllowedOAuthScopes,
@@ -170,6 +215,7 @@ function structureoAuthMetaData(coreAnswers) {
   }
 }
 
+// changes serialized oAuthMetadata value to individual parameters
 function parseOAuthMetaData(previousAnswers) {
   if (previousAnswers && previousAnswers.oAuthMetadata) {
     previousAnswers = Object.assign(previousAnswers, JSON.parse(previousAnswers.oAuthMetadata));
@@ -177,6 +223,7 @@ function parseOAuthMetaData(previousAnswers) {
   }
 }
 
+// changes serialized oAuthCredentials value to individual parameters
 function parseOAuthCreds(context, amplify) {
   const previousAnswers = context.updatingAuth;
   if (previousAnswers && previousAnswers.authProvidersUserPool) {
@@ -196,4 +243,4 @@ function parseOAuthCreds(context, amplify) {
   }
 }
 
-module.exports = { serviceWalkthrough };
+module.exports = { serviceWalkthrough, userPoolProviders };
