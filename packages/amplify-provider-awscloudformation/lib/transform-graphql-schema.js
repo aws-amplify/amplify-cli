@@ -205,18 +205,16 @@ async function transformGraphQLSchema(context, options) {
     { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
   );
 
+  const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
   const transformerList = [
     new DynamoDBModelTransformer(getModelConfig(project)),
+    new ModelAuthTransformer({ authMode }),
     new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
   ];
 
   if (usedDirectives.includes('searchable')) {
     transformerList.push(new SearchableModelTransformer());
-  }
-
-  if (parameters.AuthCognitoUserPoolId) {
-    transformerList.push(new ModelAuthTransformer());
   }
 
   await TransformPackage.buildAPIProject({

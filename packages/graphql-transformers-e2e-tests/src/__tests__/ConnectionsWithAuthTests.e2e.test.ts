@@ -7,9 +7,9 @@ import ModelConnectionTransformer from 'graphql-connection-transformer'
 import * as fs from 'fs'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import * as S3 from 'aws-sdk/clients/s3'
 import { CreateBucketRequest } from 'aws-sdk/clients/s3'
+import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import {
     CreateGroupRequest, CreateGroupResponse,
     AdminAddUserToGroupRequest
@@ -24,6 +24,7 @@ import * as path from 'path'
 import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
+import { createUserPool, createUserPoolClient, deleteUserPool } from '../testUtils';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require("node-fetch");
@@ -54,6 +55,8 @@ let GRAPHQL_CLIENT_2 = undefined;
  * Client 3 is logged in and has no group memberships.
  */
 let GRAPHQL_CLIENT_3 = undefined;
+
+let USER_POOL_ID = undefined;
 
 const USERNAME1 = 'user1@test.com'
 const USERNAME2 = 'user2@test.com'
@@ -214,16 +217,20 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer(),
+            new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
             new ModelConnectionTransformer()
         ]
     })
+    const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
+    USER_POOL_ID = userPoolResponse.UserPool.Id;
+    const userPoolClientResponse = await createUserPoolClient(cognitoClient, USER_POOL_ID, `UserPool${STACK_NAME}`);
+    const userPoolClientId = userPoolClientResponse.UserPoolClient.ClientId;
     try {
         // Clean the bucket
         const out = transformer.transform(validSchema)
 
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, LOCAL_BUILD_ROOT, BUCKET_NAME, DEPLOYMENT_ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { AuthCognitoUserPoolId: USER_POOL_ID }, LOCAL_BUILD_ROOT, BUCKET_NAME, DEPLOYMENT_ROOT_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()
@@ -231,16 +238,9 @@ beforeAll(async () => {
         GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs)
         console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
-        // Get the details of the created user pool
-        const userPoolIdSelector = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolIdOutput)
-        const userPoolClientIdSelector = outputValueSelector(ResourceConstants.OUTPUTS.AuthCognitoUserPoolJSClientOutput)
-        const userPoolId = userPoolIdSelector(finishedStack.Outputs);
-        const userPoolClientId = userPoolClientIdSelector(finishedStack.Outputs);
-
-
         // Verify we have all the details
         expect(GRAPHQL_ENDPOINT).toBeTruthy()
-        expect(userPoolId).toBeTruthy()
+        expect(USER_POOL_ID).toBeTruthy()
         expect(userPoolClientId).toBeTruthy()
 
         // Configure Amplify, create users, and sign in.
@@ -248,30 +248,30 @@ beforeAll(async () => {
             Auth: {
                 // REQUIRED - Amazon Cognito Region
                 region: 'us-west-2',
-                userPoolId: userPoolId,
+                userPoolId: USER_POOL_ID,
                 userPoolWebClientId: userPoolClientId,
                 storage: new TestStorage()
             }
         })
 
-        const authRes: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
-        const authRes2: any = await signupAndAuthenticateUser(userPoolId, USERNAME2)
-        const authRes3: any = await signupAndAuthenticateUser(userPoolId, USERNAME3)
+        const authRes: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1)
+        const authRes2: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2)
+        const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3)
 
-        await createGroup(userPoolId, ADMIN_GROUP_NAME)
-        await createGroup(userPoolId, PARTICIPANT_GROUP_NAME)
-        await createGroup(userPoolId, WATCHER_GROUP_NAME)
-        await createGroup(userPoolId, DEVS_GROUP_NAME)
-        await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, userPoolId)
-        await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, userPoolId)
-        await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, userPoolId)
-        await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, userPoolId)
-        const authResAfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME1)
+        await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME)
+        await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME)
+        await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME)
+        await createGroup(USER_POOL_ID, DEVS_GROUP_NAME)
+        await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID)
+        await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID)
+        await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID)
+        await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID)
+        const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1)
 
         const idToken = authResAfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
 
-        const authRes2AfterGroup: any = await signupAndAuthenticateUser(userPoolId, USERNAME2)
+        const authRes2AfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2)
         const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 })
 
@@ -292,6 +292,7 @@ afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
         await cf.deleteStack(STACK_NAME)
+        await deleteUserPool(cognitoClient, USER_POOL_ID)
         await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
