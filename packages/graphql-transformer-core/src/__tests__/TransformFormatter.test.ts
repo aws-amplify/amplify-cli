@@ -55,6 +55,12 @@ const template: Template = {
                 Fn.Ref("PostTable")
             ])
         })
+    },
+    Outputs: {
+        PostTableOutput: {
+            Description: "PostTable Arn.",
+            Value: Fn.GetAtt("PostTable", 'Arn')
+        }
     }
 }
 
@@ -71,4 +77,6 @@ test('Test getTemplateReferences', () => {
     const deploymentResources = formatter.format(context)
     expect(Object.keys(deploymentResources.stacks.PostModel.Resources)).toHaveLength(4)
     expect(Object.keys(deploymentResources.rootStack.Resources)).toHaveLength(3)
+    expect(Object.keys(deploymentResources.stacks.PostModel.Outputs)).toHaveLength(1);
+    expect(Object.keys(deploymentResources.rootStack.Outputs)).toHaveLength(0);
 });
