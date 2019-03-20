@@ -943,9 +943,6 @@ Outputs :
   OAuthMetadata:
     Value: !Ref oAuthMetadata
   <% } %>
-  HostedUIDomain:
-    Value: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
-  <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   UserPoolId:
     Value: !Ref 'UserPool'
