@@ -1,6 +1,6 @@
 const moment = require('moment');
 const path = require('path');
-const archiver = require('archiver');
+const archiver = require('../src/utils/archiver');
 const fs = require('fs-extra');
 const ora = require('ora');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
@@ -126,21 +126,7 @@ function storeCurrentCloudBackend(context) {
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const output = fs.createWriteStream(zipFilePath);
-
-  return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      resolve({ zipFilePath, zipFilename });
-    });
-    output.on('error', () => {
-      reject(new Error('Failed to zip code.'));
-    });
-
-    const zip = archiver.create('zip', {});
-    zip.pipe(output);
-    zip.directory(currentCloudBackendDir, false);
-    zip.finalize();
-  })
+  return archiver.run(currentCloudBackendDir, zipFilePath)
     .then((result) => {
       const s3Key = `${result.zipFilename}`;
       return new S3(context)
