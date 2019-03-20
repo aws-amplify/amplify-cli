@@ -482,7 +482,7 @@ export class ResourceFactory {
     public makeDomainEndpointOutput(): Output {
         return {
             Description: "Elasticsearch instance Domain Endpoint.",
-            Value: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint'),
+            Value: Fn.Join('', ['https://', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint')]),
             Export: {
                 Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", "Elasticsearch", "DomainEndpoint"])
             }
