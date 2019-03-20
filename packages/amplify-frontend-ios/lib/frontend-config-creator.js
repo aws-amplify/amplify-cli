@@ -113,6 +113,38 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     };
   }
 
+  let domain;
+  let scope;
+  let redirectSignIn;
+  let redirectSignOut;
+
+  if (cognitoResource.output.HostedUIDomain) {
+    domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
+  }
+
+  if (cognitoResource.output.OAuthMetadata) {
+    const oAuthMetadata = JSON.parse(cognitoResource.output.OAuthMetadata);
+    scope = oAuthMetadata.AllowedOAuthScopes;
+    redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
+    redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
+  }
+
+  const oauth = {
+    WebDomain: domain,
+    AppClientID: cognitoResource.output.AppClientID,
+    SignInRedirectURI: redirectSignIn,
+    SignOutRedirectURI: redirectSignOut,
+    Scopes: scope,
+  };
+
+  Object.assign(cognitoConfig, {
+    Auth: {
+      Default: {
+        OAuth: oauth,
+      },
+    },
+  });
+
   return cognitoConfig;
 }
 

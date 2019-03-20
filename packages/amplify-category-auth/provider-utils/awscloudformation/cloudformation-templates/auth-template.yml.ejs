@@ -234,6 +234,359 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
+  <%if (props.hostedUIDomainName) { %>
+  HostedUICustomResource:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - ' const userPoolId = event.ResourceProperties.userPoolId;'
+            - ' const inputDomainName = event.ResourceProperties.hostedUIDomainName;'
+            - ' let deleteUserPoolDomain = (domainName) => {'
+            - '   let params = { Domain: domainName, UserPoolId: userPoolId };'
+            - '   return identity.deleteUserPoolDomain(params).promise();'
+            - ' };'
+            - ' if (event.RequestType == ''Delete'') {'
+            - '  return deleteUserPoolDomain(inputDomainName)'
+            - '   .then(() => response.send(event, context, response.SUCCESS, {}))'
+            - '   .catch((err) => { console.log(err); response.send(event, context, response.FAILED, {err}) });'
+            - ' }'
+            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
+            - '  let checkDomainAvailability = (domainName) => {'
+            - '  let params = { Domain: domainName };'   
+            - '  return identity.describeUserPoolDomain(params).promise().then((res) => {'
+            - '   if (res.DomainDescription && res.DomainDescription.UserPool) {'
+            - '    return false;'
+            - '   }'
+            - '   return true;'
+            - '   }).catch((err) => { return false; });'
+            - ' };'
+            - ' let createUserPoolDomain = (domainName) => {'
+            - '  let params = { Domain: domainName, UserPoolId: userPoolId };'
+            - '   return identity.createUserPoolDomain(params).promise();'
+            - ' };'
+            - ' return identity.describeUserPool({UserPoolId: userPoolId }).promise().then((result) => {'
+            - '  if (inputDomainName) {'
+            - '   if (result.UserPool.Domain === inputDomainName) {'
+            - '    return;'
+            - '    } else {'
+            - '       if (!result.UserPool.Domain) {'
+            - '         return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {'
+            - '           if (isDomainAvailable) {'
+            - '             return createUserPoolDomain(inputDomainName);'
+            - '           } else {'
+            - '               throw new Error(''Domain not available'');'
+            - '           }'
+            - '         });'
+            - '       } else {'
+            - '           return checkDomainAvailability(inputDomainName).then((isDomainAvailable) => {'
+            - '             if (isDomainAvailable) {'
+            - '               return deleteUserPoolDomain(result.UserPool.Domain).then(() => createUserPoolDomain(inputDomainName));'
+            - '             } else {'
+            - '                 throw new Error(''Domain not available'');'
+            - '             }'
+            - '           });'
+            - '       }'
+            - '     }'
+            - '   } else {'
+            - '       if (result.UserPool.Domain) {'
+            - '         return deleteUserPoolDomain(result.UserPool.Domain);'
+            - '       }'
+            - '   }'
+            - ' }).then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - ' console.log(err);  response.send(event, context, response.FAILED, {err});'
+            - ' });'
+            - '}}'
+
+
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - UserPoolClientRole
+        - Arn
+    DependsOn: UserPoolClientRole
+
+  HostedUICustomResourcePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'hostedUI']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:CreateUserPoolDomain'
+              - 'cognito-idp:DescribeUserPool'
+              - 'cognito-idp:DeleteUserPoolDomain'
+            Resource: !GetAtt UserPool.Arn
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:DescribeUserPoolDomain'
+            Resource: '*'
+    DependsOn: HostedUICustomResource
+  HostedUICustomResourceLogPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'hostedUILogPolicy']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub  
+              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
+              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref HostedUICustomResource}
+    DependsOn: HostedUICustomResourcePolicy
+  HostedUICustomResourceInputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt HostedUICustomResource.Arn
+      userPoolId: !Ref UserPool
+      hostedUIDomainName: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
+    DependsOn: HostedUICustomResourceLogPolicy
+  <% } %>
+
+  <%if (props.hostedUIProviderMeta) { %>
+  HostedUIProvidersCustomResource:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - 'try{'
+            - ' const userPoolId = event.ResourceProperties.userPoolId;'
+            - ' let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);'
+            - ' let hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);'
+            - ' if (event.RequestType == ''Delete'') {'
+            - '  response.send(event, context, response.SUCCESS, {});'
+            - ' }'
+            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
+            - '  let getRequestParams = (providerName) => {'
+            - '   let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);'   
+            - '   let providerMeta =  hostedUIProviderMeta[providerMetaIndex];'
+            - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
+            - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
+            - '   let requestParams = {'
+            - '    ProviderDetails: {'
+            - '     ''client_id'': providerCreds.client_id,'
+            - '     ''client_secret'': providerCreds.client_secret,'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes'
+            - '    },'
+            - '    ProviderName: providerMeta.ProviderName,'
+            - '    UserPoolId: userPoolId,'
+            - '    AttributeMapping: providerMeta.AttributeMapping'
+            - '   };'
+            - '   return requestParams;'
+            - '  };'
+            - '  let createIdentityProvider = (providerName) => {'
+            - '   let requestParams = getRequestParams(providerName);'
+            - '   requestParams.ProviderType = requestParams.ProviderName;'
+            - '   return identity.createIdentityProvider(requestParams).promise();'
+            - '  };'
+            - '  let updateIdentityProvider = (providerName) => {'
+            - '   let requestParams = getRequestParams(providerName);'
+            - '   return identity.updateIdentityProvider(requestParams).promise();'
+            - '  };'
+            - '  let deleteIdentityProvider = (providerName) => {'
+            - '   let params = {ProviderName: providerName, UserPoolId: userPoolId};'
+            - '   return identity.deleteIdentityProvider(params).promise();'
+            - '  };'
+            - '  let providerPromises = [];'
+            - '  return identity.listIdentityProviders({UserPoolId: userPoolId, MaxResults: 60}).promise()'
+            - '  .then((result) => {'
+            - '   let providerList = result.Providers.map(provider => provider.ProviderName);'
+            - '   let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);'
+            - '   hostedUIProviderMeta.forEach((providerMetadata) => {'
+            - '    if(providerList.indexOf(providerMetadata.ProviderName) > -1) {'
+            - '     providerPromises.push(updateIdentityProvider(providerMetadata.ProviderName));'
+            - '    } else {'
+            - '     providerPromises.push(createIdentityProvider(providerMetadata.ProviderName));'
+            - '    }'
+            - '  });'
+            - '  providerList.forEach((provider) => {'
+            - '   if(providerListInParameters.indexOf(provider) < 0) {'
+            - '    providerPromises.push(deleteIdentityProvider(provider));'
+            - '   }'
+            - '  });'
+            - '  return Promise.all(providerPromises);'
+            - ' }).then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - '   console.log(err.stack); response.send(event, context, response.FAILED, {err})'
+            - ' });'
+            - ' } '
+            - ' } catch(err) { console.log(err.stack); response.send(event, context, response.FAILED, {err});};'
+            - '} '
+
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - UserPoolClientRole
+        - Arn
+    DependsOn: UserPoolClientRole
+
+  HostedUIProvidersCustomResourcePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProvider']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:CreateIdentityProvider'
+              - 'cognito-idp:UpdateIdentityProvider'
+              - 'cognito-idp:ListIdentityProviders'
+              - 'cognito-idp:DeleteIdentityProvider'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: HostedUIProvidersCustomResource
+
+  HostedUIProvidersCustomResourceLogPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProviderLogPolicy']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub  
+              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
+              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref HostedUIProvidersCustomResource}
+    DependsOn: HostedUIProvidersCustomResourcePolicy
+
+  HostedUIProvidersCustomResourceInputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt HostedUIProvidersCustomResource.Arn
+      userPoolId: !Ref UserPool
+      hostedUIProviderMeta: !Ref hostedUIProviderMeta
+      hostedUIProviderCreds: !Ref hostedUIProviderCreds
+    DependsOn: HostedUIProvidersCustomResourceLogPolicy
+  <% } %>
+  <%if (props.oAuthMetadata) { %>
+  OAuthCustomResource:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Join 
+          - |+
+          - - 'const response = require(''cfn-response'');'
+            - 'const aws = require(''aws-sdk'');'
+            - 'const identity = new aws.CognitoIdentityServiceProvider();'
+            - 'exports.handler = (event, context, callback) => {'
+            - 'try{'
+            - ' const userPoolId = event.ResourceProperties.userPoolId;'
+            - ' let webClientId = event.ResourceProperties.webClientId;'
+            - ' let nativeClientId = event.ResourceProperties.nativeClientId;'
+            - ' let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);'
+            - ' let oAuthMetadata = JSON.parse(event.ResourceProperties.oAuthMetadata);'
+            - ' let providerList = hostedUIProviderMeta.map(provider => provider.ProviderName);'
+            - ' providerList.push(''COGNITO'');'
+            - ' if (event.RequestType == ''Delete'') {'
+            - '  response.send(event, context, response.SUCCESS, {});'
+            - ' }'
+            - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
+            - '  let params = {'
+            - '   UserPoolId: userPoolId,'   
+            - '   AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,'
+            - '   AllowedOAuthFlowsUserPoolClient: true,'
+            - '   AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,'
+            - '   CallbackURLs: oAuthMetadata.CallbackURLs,'
+            - '   ExplicitAuthFlows: [''ADMIN_NO_SRP_AUTH'', ''CUSTOM_AUTH_FLOW_ONLY'', ''USER_PASSWORD_AUTH''],'
+            - '   LogoutURLs: oAuthMetadata.LogoutURLs,'
+            - '   SupportedIdentityProviders: providerList'
+            - '  };'
+            - '  let updateUserPoolClientPromises = [];'
+            - '  params.ClientId = webClientId;'
+            - '  updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());'
+            - '  params.ClientId = nativeClientId;'
+            - '  updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());'
+            - '  return Promise.all(updateUserPoolClientPromises)'
+            - '  .then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - '    console.log(err.stack); response.send(event, context, response.FAILED, {err});'
+            - '  });'
+            - ' }'
+            - '} catch(err) { console.log(err.stack); response.send(event, context, response.FAILED, {err});};'
+            - '}'
+
+      Handler: index.handler
+      Runtime: nodejs6.10
+      Timeout: '300'
+      Role: !GetAtt 
+        - UserPoolClientRole
+        - Arn
+    DependsOn: UserPoolClientRole
+
+  OAuthCustomResourcePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'OAuth']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'cognito-idp:UpdateUserPoolClient'
+            Resource: !GetAtt UserPool.Arn
+    DependsOn: OAuthCustomResource
+
+  OAuthCustomResourceLogPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join ['-',[!Ref UserPool, 'OAuthLogPolicy']]
+      Roles: 
+        - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub  
+              - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
+              - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OAuthCustomResource}
+    DependsOn: OAuthCustomResourcePolicy
+
+  OAuthCustomResourceInputs:
+    Type: 'Custom::LambdaCallout'
+    Properties:
+      ServiceToken: !GetAtt OAuthCustomResource.Arn
+      userPoolId: !Ref UserPool
+      hostedUIProviderMeta: !Ref hostedUIProviderMeta
+      oAuthMetadata: !Ref oAuthMetadata
+      webClientId: !Ref 'UserPoolClientWeb'
+      nativeClientId: !Ref 'UserPoolClient'
+    DependsOn: OAuthCustomResourceLogPolicy
+  <% } %>
+
   <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
@@ -581,6 +934,17 @@ Outputs :
     Description:  Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name 
+  <% } %>
+  <%if (props.hostedUIDomainName) { %>
+  HostedUIDomain:
+    Value: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
+  <% } %>
+  <%if (props.oAuthMetadata) { %>
+  OAuthMetadata:
+    Value: !Ref oAuthMetadata
+  <% } %>
+  HostedUIDomain:
+    Value: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
   <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   UserPoolId:
