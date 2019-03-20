@@ -18,11 +18,10 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     when: amplify.getWhen(input, currentAnswers, context.updatingAuth, amplify),
     validate: amplify.inputValidation(input),
     default: (answers) => { // eslint-disable-line no-unused-vars
-      // if the user is editing and there is a previous value, this is alwasys the default
+      // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
         return context.updatingAuth[input.key];
       }
-
       // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)
       if (currentAnswers.useDefault && currentAnswers.useDefault === 'defaultSocial') {
         return withSocialDefaults(amplify.getProjectDetails(amplify))[input.key];
@@ -32,6 +31,14 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   };
 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
+    if (context.updatingAuth && input.iterator) {
+      question = Object.assign({
+        choices: context.updatingAuth[input.iterator].map(i => ({
+          name: i,
+          value: i,
+        })),
+      }, question);
+    }
     if (!input.requiredOptions || !question.when()) {
       question = Object.assign({
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,

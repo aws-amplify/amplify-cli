@@ -14,7 +14,7 @@ async function serviceWalkthrough(
   serviceMetadata,
   coreAnswers = {},
 ) {
-  const { inputs } = serviceMetadata;
+  let { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
@@ -25,6 +25,13 @@ async function serviceWalkthrough(
 
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     parseOAuthCreds(context, amplify);
+  }
+
+  if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
+    coreAnswers.updateFlow = context.updateFlow.type;
+    inputs = inputs.filter(i => i.updateGroup === coreAnswers.updateFlow);
+  } else {
+    inputs = inputs.filter(i => !i.updateGroup);
   }
 
   // loop through questions
@@ -40,11 +47,26 @@ async function serviceWalkthrough(
       context,
     );
     const answer = await inquirer.prompt(q);
-    // user has selected learn more. Don't advance the question
+    
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
+      /*
+        user has selected learn more. Don't advance the question
+      */
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
-    } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
+    } else if (questionObj.iterator && answer[questionObj.key] && answer[questionObj.key].length > 0) {
+      /*
+        if a question has an iterator, we create an editing question for all selected values
+      */
+      const replacementArray = context.updatingAuth[questionObj.iterator];
+      for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+        const newValue = await inquirer.prompt({
+          name: 'updated',
+          message: `Update ${answer[questionObj.key][t]}`,
+        });
+        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+      }
+    } if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
@@ -90,9 +112,7 @@ async function serviceWalkthrough(
   }
 
   // formatting oAuthMetaData
-  if (coreAnswers.hostedUI) {
-    structureoAuthMetaData(coreAnswers);
-  }
+  structureoAuthMetaData(coreAnswers, context);
 
   return {
     ...coreAnswers,
@@ -153,21 +173,25 @@ function userPoolProviders(coreAnswers) {
   }
 }
 
-function structureoAuthMetaData(coreAnswers) {
-  if (coreAnswers.hostedUI) {
-    const {
-      AllowedOAuthFlows,
-      AllowedOAuthScopes,
-      CallbackURLs,
-      LogoutURLs,
-    } = coreAnswers;
-    coreAnswers.oAuthMetadata = JSON.stringify({
-      AllowedOAuthFlows,
-      AllowedOAuthScopes,
-      CallbackURLs,
-      LogoutURLs,
-    });
+function structureoAuthMetaData(coreAnswers, context) {
+  const prev = context.updatingAuth ? context.updatingAuth : {};
+  const answers = Object.assign(prev, coreAnswers);
+  const {
+    AllowedOAuthFlows,
+    AllowedOAuthScopes,
+    LogoutURLs,
+  } = answers;
+  let { CallbackURLs } = answers;
+  if (coreAnswers.newCallbackURLs) {
+    CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   }
+
+  coreAnswers.oAuthMetadata = JSON.stringify({
+    AllowedOAuthFlows,
+    AllowedOAuthScopes,
+    CallbackURLs,
+    LogoutURLs,
+  });
 }
 
 function parseOAuthMetaData(previousAnswers) {

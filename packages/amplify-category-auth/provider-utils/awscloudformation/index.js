@@ -16,11 +16,10 @@ const ENV_SPECIFIC_PARAMS = [
 ];
 
 const privateKeys = [
-  'hostedUIProviderCreds',
   'facebookAppIdUserPool',
   'facebookAuthorizeScopes',
   'facebookAppSecretUserPool',
-  'googleAppSecretUserPool',
+  'googleClientIdUserPool',
   'googleAuthorizeScopes',
   'googleAppSecretUserPool',
   'amazonAppSecretUserPool',
@@ -30,6 +29,10 @@ const privateKeys = [
   'LogoutURLs',
   'AllowedOAuthFlows',
   'AllowedOAuthScopes',
+  'EditURLS',
+  'newCallbackURLs',
+  'addCallbackOnUpdate',
+  'updateFlow',
 ];
 
 function serviceQuestions(
@@ -62,7 +65,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
 
   // copy over the files
   // Todo: move to provider as each provider should decide where to store vars, and cfn
-  return await context.amplify.copyBatch(context, copyJobs, options, true, false);
+  return await context.amplify.copyBatch(context, copyJobs, options, true, false, privateKeys);
 }
 
 function saveResourceParameters(
@@ -130,7 +133,7 @@ async function addResource(context, category, service) {
     .then(() => props.resourceName);
 }
 
-function updateResource(context, category, serviceResult) {
+async function updateResource(context, category, serviceResult) {
   const { service, resourceName } = serviceResult;
   let props = {};
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
@@ -141,6 +144,26 @@ function updateResource(context, category, serviceResult) {
     serviceWalkthroughFilename,
     provider,
   } = serviceMetadata;
+
+  context.updateFlow = await inquirer.prompt({
+    name: 'type',
+    message: 'What do you want to edit?',
+    type: 'list',
+    choices: [
+      {
+        name: 'Walkthrough all the auth configurations',
+        value: 'all',
+      },
+      {
+        name: 'Add callback URLs for your hosted UI',
+        value: 'callbacks',
+      },
+      {
+        name: 'Update social provider credentials/attributes for your hosted UI',
+        value: 'providers',
+      },
+    ],
+  });
 
   return serviceQuestions(
     context,
