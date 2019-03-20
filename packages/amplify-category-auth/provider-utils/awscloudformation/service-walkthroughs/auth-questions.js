@@ -48,14 +48,17 @@ async function serviceWalkthrough(
     );
 
     const answer = await inquirer.prompt(q);
-    
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       /*
         user has selected learn more. Don't advance the question
       */
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
-    } else if (questionObj.iterator && answer[questionObj.key] && answer[questionObj.key].length > 0) {
+    } else if (
+      questionObj.iterator &&
+      answer[questionObj.key] &&
+      answer[questionObj.key].length > 0
+    ) {
       /*
         if a question has an iterator, we create an editing question for all selected values
       */
@@ -65,7 +68,11 @@ async function serviceWalkthrough(
           name: 'updated',
           message: `Update ${answer[questionObj.key][t]}`,
         });
-        replacementArray.splice(replacementArray.indexOf(answer[questionObj.key][t]), 1, newValue.updated);
+        replacementArray.splice(
+          replacementArray.indexOf(answer[questionObj.key][t]),
+          1,
+          newValue.updated,
+        );
       }
     } if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
