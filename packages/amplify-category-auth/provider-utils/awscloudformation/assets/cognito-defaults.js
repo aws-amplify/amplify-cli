@@ -5,7 +5,6 @@ const {
   booleanOptions,
   oAuthFlows,
   oAuthScopes,
-  hostedUIProviders,
 } = require('./string-maps');
 
 const [sharedId] = uuid().split('-');

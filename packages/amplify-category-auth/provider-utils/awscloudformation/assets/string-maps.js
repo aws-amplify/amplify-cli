@@ -90,6 +90,152 @@ const authSelectionMap = [
   ...learnMoreOption,
 ];
 
+const attributeProviderMap = {
+  address: {
+    facebook: {
+      attr: 'address',
+      scope: 'default',
+    },
+    google: {},
+    amazon: {},
+  },
+  birthdate: {
+    facebook: {
+      attr: 'birthday',
+      scope: 'user_birthday',
+    },
+    google: {
+      attr: 'birthdays',
+      scope: 'profile',
+    },
+    amazon: {},
+  },
+  email: {
+    facebook: {
+      attr: 'email',
+      scope: 'email',
+    },
+    google: {
+      attr: 'email',
+      scope: 'email',
+    },
+    amazon: {
+      attr: 'email',
+      scope: 'profile',
+    },
+  },
+  family_name: {
+    facebook: {
+      attr: 'last_name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'family_name',
+      scope: 'profile',
+    },
+    amazon: {},
+  },
+  gender: {
+    facebook: {
+      attr: 'gender',
+      scope: 'user_gender',
+    },
+    google: {
+      attr: 'genders',
+      scope: 'profile',
+    },
+    gender: {},
+  },
+  given_name: {
+    facebook: {
+      attr: 'given_name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'given_name',
+      scope: 'profile',
+    },
+    amazon: {},
+  },
+  locale: {
+    facebook: {
+      attr: 'location',
+      scope: 'user_location',
+    },
+    google: {},
+    amazon: {
+      attr: 'postal_code',
+      scope: 'postal_code',
+    },
+  },
+  middle_name: {
+    facebook: {
+      attr: 'middle_name',
+      scope: 'default',
+    },
+    google: {},
+    amazon: {},
+  },
+  name: {
+    facebook: {
+      attr: 'name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'name',
+      scope: 'profile',
+    },
+    amazon: {
+      attr: 'name',
+      scope: 'profile',
+    },
+  },
+  nickname: {
+    facebook: {},
+    google: {},
+    amazon: {},
+  },
+  phone_number: {
+    facebook: {},
+    google: {
+      attr: 'phoneNumbers',
+      scope: 'profile',
+    },
+    amazon: {},
+  },
+  picture: {
+    facebook: {
+      attr: 'picture',
+      scope: 'default',
+    },
+    google: {
+      attr: 'picture',
+      scope: 'profile',
+    },
+    amazon: {},
+  },
+  preferred_username: {
+    facebook: {},
+    google: {},
+    amazon: {},
+  },
+  profile: {
+    facebook: {},
+    google: {},
+    amazon: {},
+  },
+  zoneinfo: {
+    facebook: {},
+    google: {},
+    amazon: {},
+  },
+  website: {
+    facebook: {},
+    google: {},
+    amazon: {},
+  },
+};
+
 const coreAttributes = [
   {
     name: 'Address',
@@ -282,6 +428,7 @@ const getAllMaps = ((edit) => {
     oAuthFlows,
     oAuthScopes,
     authorizeScopes,
+    attributeProviderMap,
   };
 });
 
@@ -303,4 +450,5 @@ module.exports = {
   oAuthFlows,
   oAuthScopes,
   messages,
+  attributeProviderMap,
 };
