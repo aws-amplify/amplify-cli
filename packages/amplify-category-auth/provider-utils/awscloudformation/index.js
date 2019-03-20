@@ -1,6 +1,7 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
+const providerSerialization = require('../awscloudformation/service-walkthroughs/auth-questions').userPoolProviders;
 
 let serviceMetadata;
 
@@ -19,7 +20,7 @@ const privateKeys = [
   'facebookAppIdUserPool',
   'facebookAuthorizeScopes',
   'facebookAppSecretUserPool',
-  'googleClientIdUserPool',
+  'googleAppIdUserPool',
   'googleAuthorizeScopes',
   'googleAppSecretUserPool',
   'amazonAppSecretUserPool',
@@ -33,6 +34,12 @@ const privateKeys = [
   'newCallbackURLs',
   'addCallbackOnUpdate',
   'updateFlow',
+  'newCallbackURLs',
+  'addCallbackOnUpdate',
+  'selectedParties',
+  'newLogoutURLs',
+  'editLogoutURLs',
+  'addLogoutOnUpdate',
 ];
 
 function serviceQuestions(
@@ -145,24 +152,37 @@ async function updateResource(context, category, serviceResult) {
     provider,
   } = serviceMetadata;
 
+  let baseUpdateOptions = [
+    {
+      name: 'Walkthrough all the auth configurations',
+      value: 'all',
+    },
+    {
+      name: 'Add callback URLs for your hosted UI',
+      value: 'callbacks',
+      condition: 'oAuthMetadata',
+      conditionMsg: 'You have not initially configured Hosted UI.',
+    },
+    {
+      name: 'Update social provider credentials for your hosted UI',
+      value: 'providers',
+      condition: 'hostedUIProviderCreds',
+      conditionMsg: 'You have not initially configured Hosted UI.',
+    },
+  ];
+
+  baseUpdateOptions = baseUpdateOptions.map((o) => {
+    if (o.condition && !context.updatingAuth[o.condition]) {
+      return Object.assign(o, { disabled: `Disabled: ${o.conditionMsg}` });
+    }
+    return o;
+  });
+
   context.updateFlow = await inquirer.prompt({
     name: 'type',
     message: 'What do you want to edit?',
     type: 'list',
-    choices: [
-      {
-        name: 'Walkthrough all the auth configurations',
-        value: 'all',
-      },
-      {
-        name: 'Add callback URLs for your hosted UI',
-        value: 'callbacks',
-      },
-      {
-        name: 'Update social provider credentials/attributes for your hosted UI',
-        value: 'providers',
-      },
-    ],
+    choices: baseUpdateOptions,
   });
 
   return serviceQuestions(
@@ -184,7 +204,7 @@ async function updateResource(context, category, serviceResult) {
 
       const defaults = getAllDefaults(resourceName);
 
-      const immutables = {};
+      let immutables = {};
       // loop through service questions
       serviceMetadata.inputs.forEach((s) => {
         // find those that would not be displayed if user was entering values manually
@@ -194,6 +214,9 @@ async function updateResource(context, category, serviceResult) {
           if (context.updatingAuth[s.key]) {
             immutables[s.key] = context.updatingAuth[s.key];
           }
+        }
+        if (context.updatingAuth.authProvidersUserPool) {
+          immutables = Object.assign(immutables, providerSerialization(context.updatingAuth));
         }
       });
 
@@ -218,7 +241,10 @@ async function updateResource(context, category, serviceResult) {
         ); // eslint-disable-line max-len
       }
 
-      if (!result.thirdPartyAuth) {
+      if (
+        (!result.updateFlow && !result.thirdPartyAuth) ||
+        (result.updateFlow === 'all' && !result.thirdPartyAuth)
+      ) {
         delete props.selectedParties;
         delete props.authProviders;
         authProviders.forEach((a) => {

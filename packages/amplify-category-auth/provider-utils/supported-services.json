@@ -650,7 +650,7 @@
 				}
 			},
 			{
-				"key": "CallbackURLs",
+				"key": "newCallbackURLs",
 				"question": "Enter your Hosted UI callback URL:",
 				"required": true,
 				"addAnotherLoop" : "Hosted UI Callback URL",
@@ -659,6 +659,10 @@
 						"key": "hostedUI",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "CallbackURLs"
 					}
 				],
 				"validation": {
@@ -671,22 +675,39 @@
 				"key": "EditURLS",
 				"question": "Which Callback URLs do you want to edit?",
 				"type": "multiselect",
-				"map": "CallbackURLs",
-				"updateGroup": "callbacks",
-				"iterator": "CallbackURLs"
+				"updateGroups": ["callbacks", "all"],
+				"iterator": "CallbackURLs",
+				"andConditions": [
+					{
+						"key": "CallbackURLs",
+						"operator": "exists"
+					},
+					{
+						"onCreate": "never"
+					}
+				]
 			},
 			{
 				"key": "addCallbackOnUpdate",
 				"question": "Do you want to add Hosted UI callback URLs?",
-				"updateGroup": "callbacks",
+				"updateGroups": ["callbacks", "all"],
 				"required": true,
-				"type": "confirm"
+				"type": "confirm",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "newCallbackURLs"
+					}
+				]
 			},
 			{
 				"key": "newCallbackURLs",
 				"question": "Enter your new Hosted UI callback URL:",
 				"required": true,
-				"updateGroup": "callbacks",
+				"updateGroups": ["callbacks", "all"],
 				"concatKey": "CallbackURLs",
 				"addAnotherLoop" : "Hosted UI Callback URL",
 				"andConditions": [
@@ -694,6 +715,9 @@
 						"key": "addCallbackOnUpdate",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"onCreate": "never"
 					}
 				],
 				"validation": {
@@ -703,15 +727,74 @@
 				}
 			},
 			{
-				"key": "LogoutURLs",
-				"question": "Enter your Hosted UI signout URL:",
+				"key": "newLogoutURLs",
+				"question": "Enter your Hosted UI Signout URL:",
 				"required": true,
-				"addAnotherLoop" : "Hosted UI Signout URL",
+				"addAnotherLoop" : "Hosted UI SignOut URL",
 				"andConditions": [
 					{
 						"key": "hostedUI",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "LogoutURLs"
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(http|https):\\/\\/(.*?)\\/$",
+					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+				}
+			},
+			{
+				"key": "editLogoutURLs",
+				"question": "Which SignOut URLs do you want to edit?",
+				"type": "multiselect",
+				"updateGroups": ["callbacks", "all"],
+				"iterator": "LogoutURLs",
+				"andConditions": [
+					{
+						"key": "LogoutURLs",
+						"operator": "exists"
+					},
+					{
+						"onCreate": "never"
+					}
+				]
+			},
+			{
+				"key": "addLogoutOnUpdate",
+				"question": "Do you want to add Hosted UI signout URLs?",
+				"updateGroups": ["callbacks", "all"],
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "newLogoutURLs"
+					}
+				]
+			},
+			{
+				"key": "newLogoutURLs",
+				"question": "Enter your new Hosted UI signout URL:",
+				"required": true,
+				"updateGroups": ["callbacks", "all"],
+				"concatKey": "LogoutURLs",
+				"addAnotherLoop" : "Hosted UI signout URL",
+				"andConditions": [
+					{
+						"key": "addLogoutOnUpdate",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"onCreate": "never"
 					}
 				],
 				"validation": {
@@ -724,7 +807,7 @@
 				"key": "AllowedOAuthFlows",
 				"question": "Select the OAuth flows enabled for this project.",
 				"required": true,
-				"type": "multiselect",
+				"type": "list",
 				"map" : "oAuthFlows",
 				"andConditions": [
 					{
@@ -765,27 +848,23 @@
 						"key": "hostedUI",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"preventEdit": "always"
 					}
 				]
 			},
 			{
 				"key": "authProvidersUserPool",
 				"question": "Select the identity providers you want to configure for your user pool:",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"temp": true,
 				"type": "multiselect",
 				"map": "hostedUIProviders",
 				"required": true,
-				"orConditions": [
+				"andConditions": [
 					{
-						"key": "hostedUI",
-						"value": true,
-						"operator": "="
-					},
-					{
-						"key": "updateFlow",
-						"value": "providers",
-						"operator": "="
+						"onCreate": "never"
 					}
 				]
 			},
@@ -793,7 +872,7 @@
 				"key": "facebookAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
 				"question": "Enter your Facebook App ID: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -806,7 +885,7 @@
 			{
 				"key": "facebookAppSecretUserPool",
 				"question": "Enter your Facebook App Secret: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -819,7 +898,7 @@
 			{
 				"key": "facebookAuthorizeScopes",
 				"question": "Enter your Facebook authorize scopes: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"type": "multiselect",
 				"map": "authorizeScopes",
@@ -832,10 +911,10 @@
 				]
 			},
 			{
-				"key": "googleClientIdUserPool",
+				"key": "googleAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
 				"question": "Enter your Google Web Client ID: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -849,7 +928,7 @@
 				"key": "googleAppSecretUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
 				"question": "Enter your Google Web Client Secret: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -862,7 +941,7 @@
 			{
 				"key": "googleAuthorizeScopes",
 				"question": "Enter your Google authorize scopes: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"type": "multiselect",
 				"map": "authorizeScopes",
@@ -878,7 +957,7 @@
 				"key": "amazonAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
 				"question": "Enter your Amazon App ID: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -891,7 +970,7 @@
 			{
 				"key": "amazonAppSecretUserPool",
 				"question": "Enter your Amazon App Secret: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"andConditions": [
 					{
@@ -904,7 +983,7 @@
 			{
 				"key": "amazonAuthorizeScopes",
 				"question": "Enter your Amazon authorize scopes: ",
-				"updateGroup": "providers",
+				"updateGroups": ["providers", "all"],
 				"required": true,
 				"type": "multiselect",
 				"map": "authorizeScopes",
