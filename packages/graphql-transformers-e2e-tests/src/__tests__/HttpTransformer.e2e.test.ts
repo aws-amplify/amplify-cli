@@ -1,6 +1,7 @@
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import HttpTransformer from '../../../graphql-http-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -87,6 +88,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
+            new ModelAuthTransformer(),
             new HttpTransformer()
         ]
     })
