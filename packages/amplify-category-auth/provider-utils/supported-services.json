@@ -663,6 +663,10 @@
 					{
 						"preventEdit": "exists",
 						"key": "CallbackURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "CallbackURLs"
 					}
 				],
 				"validation": {
@@ -685,6 +689,18 @@
 					{
 						"onCreate": "never"
 					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -700,6 +716,18 @@
 					{
 						"preventEdit": "existsInCurrent",
 						"key": "newCallbackURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
 					}
 				]
 			},
@@ -740,6 +768,10 @@
 					{
 						"preventEdit": "exists",
 						"key": "LogoutURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "LogoutURLs"
 					}
 				],
 				"validation": {
@@ -762,6 +794,18 @@
 					{
 						"onCreate": "never"
 					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -777,6 +821,18 @@
 					{
 						"preventEdit": "existsInCurrent",
 						"key": "newLogoutURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
 					}
 				]
 			},
@@ -865,6 +921,18 @@
 				"andConditions": [
 					{
 						"onCreate": "never"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "providers",
+						"operator": "="
 					}
 				]
 			},
