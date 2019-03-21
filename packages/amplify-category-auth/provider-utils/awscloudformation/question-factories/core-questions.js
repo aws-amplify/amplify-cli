@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const _ = require('lodash');
 
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
@@ -48,16 +49,14 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
     } else {
-      const sourceValues = currentAnswers[input.requiredOptions] ||
-      context.updatingAuth[input.requiredOptions] ||
-      [];
+      /*eslint-disable*/
+      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => currentAnswers[i] || context.updatingAuth[i]))));
       const requiredOptions = getAllMaps()[input.map]
         .filter(x => sourceValues
           .includes(x.value));
       const trueOptions = getAllMaps()[input.map]
         .filter(x => !sourceValues
           .includes(x.value));
-      /*eslint-disable*/
       question = Object.assign(question, {
         choices: [new inquirer.Separator(`--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
         filter: ((input) => { // eslint-disable-line no-shadow
