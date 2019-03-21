@@ -60,7 +60,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         });
       });
       question = Object.assign({ choices }, question);
-    } else if (!input.requiredOptions || !question.when()) {
+    } else if (!input.requiredOptions || (question.when && !question.when())) {
       question = Object.assign({
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
