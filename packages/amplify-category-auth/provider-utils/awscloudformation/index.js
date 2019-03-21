@@ -225,7 +225,7 @@ async function updateResource(context, category, serviceResult) {
          * we grab all of the static defaults
          * but make sure to pass existing resource name so we don't create a 2nd auth resource
          * and we don't overwrite immutables from the originally entered values */
-        
+
         props = Object.assign(defaults, immutables, result);
       } else {
         /* if the user does NOT choose defaults during an edit,
