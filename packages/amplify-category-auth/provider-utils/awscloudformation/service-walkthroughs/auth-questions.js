@@ -58,6 +58,7 @@ async function serviceWalkthrough(
     ) {
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+        questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({
           name: 'updated',
           message: `Update ${answer[questionObj.key][t]}`,
@@ -69,8 +70,9 @@ async function serviceWalkthrough(
           newValue.updated,
         );
       }
+      j += 1;
     // ADD-ANOTHER BLOCK
-    } if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
+    } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
@@ -94,12 +96,27 @@ async function serviceWalkthrough(
         j += 1;
       }
     // INCREMENT QUESTION LOOP COUNTER
+    } else if (coreAnswers.useDefault === 'default') {
+      if (!context.updatingAuth) {
+        const attributeInputs = inputs.filter(i => ['requiredAttributes', 'usernameAttributes'].includes(i.key));
+        for (let a = 0; a < attributeInputs.length; a += 1) {
+          const attributeQuestion = await parseInputs(
+            attributeInputs[a],
+            amplify,
+            defaultValuesFilename,
+            stringMapsFilename,
+            coreAnswers,
+            context,
+          );
+          attributeQuestion.when = true;
+          const attributeAnswer = await inquirer.prompt(attributeQuestion);
+          coreAnswers = { ...coreAnswers, ...attributeAnswer };
+        }
+      }
+      break;
     } else {
       j += 1;
       coreAnswers = { ...coreAnswers, ...answer };
-    }
-    if (coreAnswers.useDefault === 'default') {
-      break;
     }
   }
 
@@ -112,6 +129,12 @@ async function serviceWalkthrough(
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
     coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers, context.updatingAuth));
+  }
+
+  // making sure that on create we have write attributes based on required Attributes
+  if (!context.updatingAuth && !coreAnswers.userpoolClientWriteAttributes) {
+    const writeDefaults = { userpoolClientWriteAttributes: coreAnswers.requiredAttributes };
+    coreAnswers = Object.assign(coreAnswers, writeDefaults);
   }
 
   // formatting oAuthMetaData

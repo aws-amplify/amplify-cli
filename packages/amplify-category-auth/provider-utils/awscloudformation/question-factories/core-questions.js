@@ -44,21 +44,41 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         choices: [],
       }, question);
     }
-    if (!input.requiredOptions || !question.when()) {
+    if (input.filter) {
+      // TODO: make this generic
+      const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
+      const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
+      const attrMap = getAllMaps().attributeProviderMap;
+      requiredAttributes.forEach((attr) => {
+        choices.forEach((choice) => {
+          choice.missingAttributes = [];
+          if (!attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
+            choice.missingAttributes = choice.missingAttributes.length < 1 ? [attr] : choice.missingAttributes.push(attr);
+            const newList = choice.missingAttributes.join(', ');
+            choice.disabled = `Your userpool is configured to require ${newList.substring(0, newList.length)}, which cannot be retrieved from ${choice.name}`;
+          }
+        });
+      });
+      question = Object.assign({ choices }, question);
+    } else if (!input.requiredOptions || !question.when()) {
       question = Object.assign({
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
     } else {
       /*eslint-disable*/
-      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => currentAnswers[i] || context.updatingAuth[i] || []))));
+      const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth: {},  currentAnswers);
+      const sourceArray = _.uniq(_.flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
       const requiredOptions = getAllMaps()[input.map]
-        .filter(x => sourceValues
+        .filter(x => sourceArray
           .includes(x.value));
       const trueOptions = getAllMaps()[input.map]
-        .filter(x => !sourceValues
+        .filter(x => !sourceArray
           .includes(x.value));
+      const msg = requiredOptions && requiredOptions.length > 0 ?
+     `--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---` :
+      '';
       question = Object.assign(question, {
-        choices: [new inquirer.Separator(`--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---`), ...trueOptions],
+        choices: [ new inquirer.Separator(msg), ...trueOptions],
         filter: ((input) => { // eslint-disable-line no-shadow
           input = input.concat(...requiredOptions.map(z => z.value));
           return input;
