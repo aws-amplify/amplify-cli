@@ -250,7 +250,6 @@ const coreAttributes = [
     name: 'Family Name',
     value: 'family_name',
   }, {
-  }, {
     name: 'Middle Name',
     value: 'middle_name',
   }, {
