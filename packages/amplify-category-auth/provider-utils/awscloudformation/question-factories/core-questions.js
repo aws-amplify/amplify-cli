@@ -50,7 +50,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       }, question);
     } else {
       /*eslint-disable*/
-      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => currentAnswers[i] || context.updatingAuth[i]))));
+      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => currentAnswers[i] || context.updatingAuth[i] || []))));
       const requiredOptions = getAllMaps()[input.map]
         .filter(x => sourceValues
           .includes(x.value));
