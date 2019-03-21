@@ -263,6 +263,14 @@ async function updateResource(context, category, serviceResult) {
         }
       }
 
+      if (props.useDefault === 'default' || props.hostedUI === false) {
+        delete props.oAuthMetadata;
+        delete props.hostedUIProviderMeta;
+        delete props.hostedUIProviderCreds;
+        delete props.hostedUIDomainName;
+        delete props.authProvidersUserPool;
+      }
+
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
     })

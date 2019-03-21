@@ -78,37 +78,11 @@ const userPoolDefaults = projectName => ({
 });
 
 const withSocialDefaults = projectName => ({
-  ...getAllDefaults(projectName),
   hostedUI: true,
+  hostedUIDomainName: `${projectName}-${sharedId}`,
   AllowedOAuthFlows: oAuthFlows.map(i => i.value),
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
-
-const faceBookAttributeMap = {
-  id: 'username',
-  birthday: 'birthdate',
-  email: 'email',
-  first_name: 'given_name',
-  gender: 'gender',
-  last_name: 'family_name',
-  locale: 'locale',
-  middle_name: 'middle_name',
-  name: 'name',
-  timezone: 'timezone',
-};
-
-const googleAttributeMap = {
-  name: 'name',
-  email: 'email',
-  given_name: 'given_name',
-  family_name: 'family_name',
-};
-
-const amazonAttributeMap = {
-  user_id: 'username',
-  name: 'name',
-  email: 'email',
-};
 
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
@@ -146,6 +120,7 @@ const getAllDefaults = (name) => {
   const sources = [
     userPoolDefaults(projectName),
     identityAndUserPoolDefaults(projectName),
+    withSocialDefaults(projectName),
   ];
 
   return Object.assign(target, ...sources);
@@ -157,8 +132,5 @@ module.exports = {
   generalDefaults,
   withSocialDefaults,
   entityKeys,
-  faceBookAttributeMap,
-  googleAttributeMap,
-  amazonAttributeMap,
   roles,
 };

@@ -663,6 +663,10 @@
 					{
 						"preventEdit": "exists",
 						"key": "CallbackURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "CallbackURLs"
 					}
 				],
 				"validation": {
@@ -685,6 +689,18 @@
 					{
 						"onCreate": "never"
 					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -700,6 +716,18 @@
 					{
 						"preventEdit": "existsInCurrent",
 						"key": "newCallbackURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
 					}
 				]
 			},
@@ -740,6 +768,10 @@
 					{
 						"preventEdit": "exists",
 						"key": "LogoutURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "LogoutURLs"
 					}
 				],
 				"validation": {
@@ -762,6 +794,18 @@
 					{
 						"onCreate": "never"
 					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -777,6 +821,18 @@
 					{
 						"preventEdit": "existsInCurrent",
 						"key": "newLogoutURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
 					}
 				]
 			},
@@ -866,6 +922,18 @@
 					{
 						"onCreate": "never"
 					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "providers",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -887,21 +955,6 @@
 				"question": "Enter your Facebook App Secret: ",
 				"updateGroups": ["providers", "all"],
 				"required": true,
-				"andConditions": [
-					{
-						"key": "authProvidersUserPool",
-						"value": "Facebook",
-						"operator": "includes"
-					}
-				]
-			},
-			{
-				"key": "facebookAuthorizeScopes",
-				"question": "Enter your Facebook authorize scopes: ",
-				"updateGroups": ["providers", "all"],
-				"required": true,
-				"type": "multiselect",
-				"map": "authorizeScopes",
 				"andConditions": [
 					{
 						"key": "authProvidersUserPool",
@@ -939,21 +992,6 @@
 				]
 			},
 			{
-				"key": "googleAuthorizeScopes",
-				"question": "Enter your Google authorize scopes: ",
-				"updateGroups": ["providers", "all"],
-				"required": true,
-				"type": "multiselect",
-				"map": "authorizeScopes",
-				"andConditions": [
-					{
-						"key": "authProvidersUserPool",
-						"value": "Google",
-						"operator": "includes"
-					}
-				]
-			},
-			{
 				"key": "amazonAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
 				"question": "Enter your Amazon App ID: ",
@@ -972,21 +1010,6 @@
 				"question": "Enter your Amazon App Secret: ",
 				"updateGroups": ["providers", "all"],
 				"required": true,
-				"andConditions": [
-					{
-						"key": "authProvidersUserPool",
-						"value": "Amazon",
-						"operator": "includes"
-					}
-				]
-			},
-			{
-				"key": "amazonAuthorizeScopes",
-				"question": "Enter your Amazon authorize scopes: ",
-				"updateGroups": ["providers", "all"],
-				"required": true,
-				"type": "multiselect",
-				"map": "authorizeScopes",
 				"andConditions": [
 					{
 						"key": "authProvidersUserPool",

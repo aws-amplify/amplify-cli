@@ -1,11 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const thirdPartyMap = require('../assets/string-maps').authProviders;
-const facebook = require('../assets/cognito-defaults').faceBookAttributeMap;
-const google = require('../assets/cognito-defaults').googleAttributeMap;
-const amazon = require('../assets/cognito-defaults').amazonAttributeMap;
-
+const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
 async function serviceWalkthrough(
   context,
@@ -116,7 +112,7 @@ async function serviceWalkthrough(
 
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
-    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers));
+    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers, context.updatingAuth));
   }
 
   // formatting oAuthMetaData
@@ -134,7 +130,7 @@ async function serviceWalkthrough(
 */
 function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = {};
-  thirdPartyMap.forEach((e) => {
+  authProviders.forEach((e) => {
     // don't send google value in cf if native project, since we need to make an openid provider
     if (projectType === 'javascript' || e.answerHashKey !== 'googleClientId') {
       if (coreAnswers[e.answerHashKey]) {
@@ -164,17 +160,36 @@ function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
 }
 
-function userPoolProviders(coreAnswers) {
-  const maps = { facebook, google, amazon };
+function userPoolProviders(coreAnswers, prevAnswers) {
+  if (coreAnswers.useDefault === 'default') {
+    return null;
+  }
+  const answers = Object.assign({ requiredAttributes: ['email'] }, prevAnswers, coreAnswers);
   const res = {};
   if (coreAnswers.authProvidersUserPool) {
     res.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
       .map((el) => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
+        const scopes = [];
+        const maps = {};
+        answers.requiredAttributes.forEach((a) => {
+          const attributeKey = attributeProviderMap[a];
+          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
+            if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
+              scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
+            }
+          }
+          if (el === 'Google') {
+            scopes.unshift('open_id');
+          }
+          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
+            maps[a] = attributeKey[`${el.toLowerCase()}`].attr;
+          }
+        });
         return {
           ProviderName: el,
-          authorize_scopes: coreAnswers[`${el.toLowerCase()}AuthorizeScopes`].join(delimmiter),
-          AttributeMapping: maps[`${el.toLowerCase()}`],
+          authorize_scopes: scopes.join(delimmiter),
+          AttributeMapping: maps,
         };
       }));
     res.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
@@ -184,6 +199,10 @@ function userPoolProviders(coreAnswers) {
 }
 
 function structureoAuthMetaData(coreAnswers, context) {
+  if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
+    delete context.updatingAuth.oAuthMetadata;
+    return null;
+  }
   const prev = context.updatingAuth ? context.updatingAuth : {};
   const answers = Object.assign(prev, coreAnswers);
   let {
