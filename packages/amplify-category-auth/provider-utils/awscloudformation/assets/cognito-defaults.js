@@ -84,32 +84,6 @@ const withSocialDefaults = projectName => ({
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
-const faceBookAttributeMap = {
-  id: 'username',
-  birthday: 'birthdate',
-  email: 'email',
-  first_name: 'given_name',
-  gender: 'gender',
-  last_name: 'family_name',
-  locale: 'locale',
-  middle_name: 'middle_name',
-  name: 'name',
-  timezone: 'timezone',
-};
-
-const googleAttributeMap = {
-  name: 'name',
-  email: 'email',
-  given_name: 'given_name',
-  family_name: 'family_name',
-};
-
-const amazonAttributeMap = {
-  user_id: 'username',
-  name: 'name',
-  email: 'email',
-};
-
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
@@ -157,8 +131,5 @@ module.exports = {
   generalDefaults,
   withSocialDefaults,
   entityKeys,
-  faceBookAttributeMap,
-  googleAttributeMap,
-  amazonAttributeMap,
   roles,
 };
