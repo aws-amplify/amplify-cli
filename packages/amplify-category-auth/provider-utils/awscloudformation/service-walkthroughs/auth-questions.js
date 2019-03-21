@@ -23,17 +23,17 @@ async function serviceWalkthrough(
     parseOAuthCreds(context, amplify);
   }
 
-  if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
-    coreAnswers.updateFlow = context.updateFlow.type;
-    inputs = inputs.filter(i => i.updateGroups && i.updateGroups.includes(coreAnswers.updateFlow));
-  } else if (!context.updateFlow || context.updateFlow.type === 'all') {
-    inputs = inputs.filter(i => !i.updateGroups || i.updateGroups.includes('all'));
+  if (context.updatingAuth) {
+    inputs = filterInputs(coreAnswers, context, inputs);
   }
 
-  // loop through questions
+
+  // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
     const questionObj = inputs[j];
+
+    // CREATE QUESTION OBJECT
     const q = await parseInputs(
       questionObj,
       amplify,
@@ -43,26 +43,26 @@ async function serviceWalkthrough(
       context,
     );
 
+    // ASK QUESTION
     const answer = await inquirer.prompt(q);
+
+    // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
-      /*
-        user has selected learn more. Don't advance the question
-      */
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
+    // ITERATOR BLOCK
     } else if (
       questionObj.iterator &&
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
     ) {
-      /*
-        if a question has an iterator, we create an editing question for all selected values
-      */
       const replacementArray = context.updatingAuth[questionObj.iterator];
       for (let t = 0; t < answer[questionObj.key].length; t += 1) {
+        questionObj.validation = questionObj.iteratorValidation;
         const newValue = await inquirer.prompt({
           name: 'updated',
           message: `Update ${answer[questionObj.key][t]}`,
+          validate: amplify.inputValidation(questionObj),
         });
         replacementArray.splice(
           replacementArray.indexOf(answer[questionObj.key][t]),
@@ -70,7 +70,9 @@ async function serviceWalkthrough(
           newValue.updated,
         );
       }
-    } if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
+      j += 1;
+    // ADD-ANOTHER BLOCK
+    } else if (questionObj.addAnotherLoop && Object.keys(answer).length > 0) {
       /*
         if the input has an 'addAnotherLoop' value, we first make sure that the answer
         will be recorded as an array index, and if it is already an array we push the new value.
@@ -93,18 +95,32 @@ async function serviceWalkthrough(
       if (!addAnother.repeater) {
         j += 1;
       }
+    // INCREMENT QUESTION LOOP COUNTER
+    } else if (coreAnswers.useDefault === 'default') {
+      if (!context.updatingAuth) {
+        const attributeInputs = inputs.filter(i => ['requiredAttributes', 'usernameAttributes'].includes(i.key));
+        for (let a = 0; a < attributeInputs.length; a += 1) {
+          const attributeQuestion = await parseInputs(
+            attributeInputs[a],
+            amplify,
+            defaultValuesFilename,
+            stringMapsFilename,
+            coreAnswers,
+            context,
+          );
+          attributeQuestion.when = true;
+          const attributeAnswer = await inquirer.prompt(attributeQuestion);
+          coreAnswers = { ...coreAnswers, ...attributeAnswer };
+        }
+      }
+      break;
     } else {
-      // next question
       j += 1;
       coreAnswers = { ...coreAnswers, ...answer };
-    }
-    if (coreAnswers.useDefault === 'default') {
-      break;
     }
   }
 
   // POST-QUESTION LOOP PARSING
-
   // formatting data for identity pool providers
   if (coreAnswers.thirdPartyAuth) {
     identityPoolProviders(coreAnswers, projectType);
@@ -113,6 +129,12 @@ async function serviceWalkthrough(
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
     coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers, context.updatingAuth));
+  }
+
+  // making sure that on create we have write attributes based on required Attributes
+  if (!context.updatingAuth && !coreAnswers.userpoolClientWriteAttributes) {
+    const writeDefaults = { userpoolClientWriteAttributes: coreAnswers.requiredAttributes };
+    coreAnswers = Object.assign(coreAnswers, writeDefaults);
   }
 
   // formatting oAuthMetaData
@@ -124,9 +146,8 @@ async function serviceWalkthrough(
 }
 
 /*
-  create key/value pairs of third party auth providers,
+  Create key/value pairs of third party auth providers,
   where key = name accepted by updateIdentityPool API call and value = id entered by user
-  TODO: evaluate need for abstracted version of this operation
 */
 function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = {};
@@ -160,6 +181,11 @@ function identityPoolProviders(coreAnswers, projectType) {
   coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
 }
 
+/*
+  Format hosted UI providers data per lambda spec
+  hostedUIProviderMeta is saved in parameters.json.
+  hostedUIprovierCreds is saved in team-providers.
+*/
 function userPoolProviders(coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
     return null;
@@ -198,6 +224,9 @@ function userPoolProviders(coreAnswers, prevAnswers) {
   return res;
 }
 
+/*
+  Format hosted UI oAuth data per lambda spec
+*/
 function structureoAuthMetaData(coreAnswers, context) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
@@ -234,7 +263,9 @@ function structureoAuthMetaData(coreAnswers, context) {
   }
 }
 
-// changes serialized oAuthMetadata value to individual parameters
+/*
+  Deserialize oAuthData for CLI update flow
+*/
 function parseOAuthMetaData(previousAnswers) {
   if (previousAnswers && previousAnswers.oAuthMetadata) {
     previousAnswers = Object.assign(previousAnswers, JSON.parse(previousAnswers.oAuthMetadata));
@@ -242,7 +273,9 @@ function parseOAuthMetaData(previousAnswers) {
   }
 }
 
-// changes serialized oAuthCredentials value to individual parameters
+/*
+  Deserialize oAuthCredentials for CLI update flow
+*/
 function parseOAuthCreds(context, amplify) {
   const previousAnswers = context.updatingAuth;
   if (previousAnswers && previousAnswers.authProvidersUserPool) {
@@ -260,6 +293,20 @@ function parseOAuthCreds(context, amplify) {
       });
     }
   }
+}
+
+
+/*
+  Filter inputs for update flow
+*/
+function filterInputs(coreAnswers, context, inputs) {
+  if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
+    coreAnswers.updateFlow = context.updateFlow.type;
+    inputs = inputs.filter(i => i.updateGroups && i.updateGroups.includes(coreAnswers.updateFlow));
+  } else if (!context.updateFlow || context.updateFlow.type === 'all') {
+    inputs = inputs.filter(i => !i.updateGroups || i.updateGroups.includes('all'));
+  }
+  return inputs;
 }
 
 module.exports = { serviceWalkthrough, userPoolProviders };

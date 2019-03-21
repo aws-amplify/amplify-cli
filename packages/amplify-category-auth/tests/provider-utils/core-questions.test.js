@@ -90,16 +90,7 @@ describe('When generating auth questions...', () => {
     it('should return the choices from the input.options if getWhen is false', () => {
       mockAmplify.getWhen.mockReturnValue(() => false);
       input.type = 'list';
-      input.requiredOptions = [{ key: 'required1' }];
-      input.options = [{ key: 'testkey', val: 'testval' }];
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices).toEqual(input.options);
-    });
-
-    it('should return the choices from the input.options if getWhen is false', () => {
-      mockAmplify.getWhen.mockReturnValue(() => true);
-      input.type = 'list';
-      input.requiredOptions = null;
+      input.requiredOptions = [{ key: ['required1'] }];
       input.options = [{ key: 'testkey', val: 'testval' }];
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
       expect(res.choices).toEqual(input.options);
@@ -107,6 +98,7 @@ describe('When generating auth questions...', () => {
 
     it('should render inputs of type "multiselect" as type "checkbox"', () => {
       input.type = 'multiselect';
+      input.when = () => true;
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('checkbox');
     });
@@ -140,18 +132,9 @@ describe('When generating auth questions...', () => {
       expect(res.choices).toEqual(mappedOptions1);
     });
 
-    it('should get mapped option values for list inputs with map values when getWhen is true but requiredOptions are missing ', () => {
-      mockAmplify.getWhen.mockReturnValue(() => true);
-      input.requiredOptions = undefined;
-      input.type = 'list';
-      input.map = 'mappedOptions1';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices).toEqual(mappedOptions1);
-    });
-
     it('should get mapped option values for list inputs with map value when getWhen is false and requiredOptions are missing ', () => {
       mockAmplify.getWhen.mockReturnValue(() => false);
-      input.requiredOptions = undefined;
+      input.requiredOptions = [undefined];
       input.type = 'list';
       input.map = 'mappedOptions1';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -161,7 +144,7 @@ describe('When generating auth questions...', () => {
     it('should add required options to the inputs answers using the filter method', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions1';
-      input.requiredOptions = 'mappedOptions2';
+      input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'valueone';
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -171,7 +154,7 @@ describe('When generating auth questions...', () => {
     it('should remove required options from the choices presented to the user (currentAnswers variant)', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
-      input.requiredOptions = 'mappedOptions2';
+      input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'value2';
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -182,7 +165,7 @@ describe('When generating auth questions...', () => {
     it('should remove required options from the choices presented to the user (updatingAuth variant)', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions3';
-      input.requiredOptions = 'mappedOptions2';
+      input.requiredOptions = ['mappedOptions2'];
       Object.assign(mockContext, { updatingAuth: { mappedOptions2: 'value2' } });
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);

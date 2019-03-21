@@ -94,7 +94,7 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
-      <% if (props.usernameAttributes) { %>
+      <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { %>
       UsernameAttributes: !Ref usernameAttributes
       <% } %>    
       MfaConfiguration: !Ref mfaConfiguration
