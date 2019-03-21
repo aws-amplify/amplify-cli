@@ -98,6 +98,7 @@ describe('When generating auth questions...', () => {
 
     it('should render inputs of type "multiselect" as type "checkbox"', () => {
       input.type = 'multiselect';
+      input.when = () => true;
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('checkbox');
     });
