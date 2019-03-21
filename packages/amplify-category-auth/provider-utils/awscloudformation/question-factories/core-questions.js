@@ -68,9 +68,9 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       /*eslint-disable*/
       const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth: {},  currentAnswers);
       const sourceArray = _.uniq(_.flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
-      const requiredOptions = getAllMaps()[input.map]
+      const requiredOptions = getAllMaps()[input.map] ?  getAllMaps()[input.map]
         .filter(x => sourceArray
-          .includes(x.value));
+        .includes(x.value)) : [];
       const trueOptions = getAllMaps()[input.map]
         .filter(x => !sourceArray
           .includes(x.value));
