@@ -504,7 +504,7 @@
 				"key": "requiredAttributes",
 				"question": "What attributes are required for signing up?",
 				"required": true,
-				"requiredOptions": "autoVerifiedAttributes",
+				"requiredOptions": ["autoVerifiedAttributes", "usernameAttributes"],
 				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
 				"type": "multiselect",
 				"map": "coreAttributes",
@@ -591,7 +591,7 @@
 				"required": true,
 				"type": "multiselect",				
 				"map": "coreAttributes",
-				"requiredOptions": "requiredAttributes",
+				"requiredOptions": ["requiredAttributes"],
 				"requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
 				"andConditions": [
 					{
@@ -681,6 +681,11 @@
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "CallbackURLs",
+				"validation": {
+					"operator": "regex",
+					"value": "^(http|https):\\/\\/(.*?)\\/$",
+					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+				},
 				"andConditions": [
 					{
 						"key": "CallbackURLs",
@@ -786,6 +791,11 @@
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "LogoutURLs",
+				"validation": {
+					"operator": "regex",
+					"value": "^(http|https):\\/\\/(.*?)\\/$",
+					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+				},
 				"andConditions": [
 					{
 						"key": "LogoutURLs",
