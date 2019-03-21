@@ -29,6 +29,9 @@
         },
         "region": {
             "Type": "String"
+        },
+        "projectName": {
+            "Type": "String"
         }
     },
     "Resources": {
@@ -64,9 +67,9 @@
                                             {
                                                 "Ref": "AWS::AccountId"
                                             },
-                                            ":project",
+                                            ":project:",
                                             {
-                                                "Ref": "sceneId"
+                                                "Ref": "projectName"
                                             }
 										]
 									]
@@ -103,15 +106,15 @@
 										[
 											"arn:aws:sumerian:",
 											{
-												"Ref": "AWS::Region"
+												"Ref": "region"
                                             },
                                             ":",
                                             {
                                                 "Ref": "AWS::AccountId"
                                             },
-                                            ":project",
+                                            ":project:",
                                             {
-                                                "Ref": "sceneId"
+                                                "Ref": "projectName"
                                             }
 										]
 									]
@@ -138,6 +141,11 @@
             "Value": {
 				"Ref": "region"
 			}
+        },
+        "projectName": {
+            "Value": {
+                "Ref": "projectName"
+            }
         }
 	}
 }

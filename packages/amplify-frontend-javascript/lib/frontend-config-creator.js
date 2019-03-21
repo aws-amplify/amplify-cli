@@ -199,15 +199,17 @@ function getLexConfig(lexResources) {
 }
 
 function getSumerianConfig(sumerianResources) {
-  const scenes = [];
+  const scenes = {};
   sumerianResources.forEach((r) => {
-    const { output } = r;
+    const { resourceName, output } = r;
     delete output.service;
 
-    scenes.push(output);
+    scenes[resourceName] = {
+      sceneConfig: output
+    }
   });
   return {
-    xr: {
+    XR: {
       scenes
     }
   };
