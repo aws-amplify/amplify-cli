@@ -96,6 +96,15 @@ describe('When generating auth questions...', () => {
       expect(res.choices).toEqual(input.options);
     });
 
+    it('should return the choices from the input.options if getWhen is false', () => {
+      mockAmplify.getWhen.mockReturnValue(() => true);
+      input.type = 'list';
+      input.requiredOptions = [null];
+      input.options = [{ key: 'testkey', val: 'testval' }];
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      expect(res.choices).toEqual(input.options);
+    });
+
     it('should render inputs of type "multiselect" as type "checkbox"', () => {
       input.type = 'multiselect';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
