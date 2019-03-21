@@ -158,7 +158,7 @@ async function updateResource(context, category, serviceResult) {
       value: 'all',
     },
     {
-      name: 'Add/Edit callback and sign URLs for your Hosted UI',
+      name: 'Add/Edit callback and signout URLs for your Hosted UI',
       value: 'callbacks',
       condition: 'oAuthMetadata',
       conditionMsg: 'You have not initially configured Hosted UI.',
