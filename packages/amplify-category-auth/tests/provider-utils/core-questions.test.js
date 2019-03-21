@@ -142,7 +142,7 @@ describe('When generating auth questions...', () => {
 
     it('should get mapped option values for list inputs with map values when getWhen is true but requiredOptions are missing ', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
-      input.requiredOptions = undefined;
+      input.requiredOptions = [undefined];
       input.type = 'list';
       input.map = 'mappedOptions1';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -151,7 +151,7 @@ describe('When generating auth questions...', () => {
 
     it('should get mapped option values for list inputs with map value when getWhen is false and requiredOptions are missing ', () => {
       mockAmplify.getWhen.mockReturnValue(() => false);
-      input.requiredOptions = undefined;
+      input.requiredOptions = [undefined];
       input.type = 'list';
       input.map = 'mappedOptions1';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
@@ -161,7 +161,7 @@ describe('When generating auth questions...', () => {
     it('should add required options to the inputs answers using the filter method', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
       input.map = 'mappedOptions1';
-      input.requiredOptions = 'mappedOptions2';
+      input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'valueone';
       input.type = 'list';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
