@@ -144,7 +144,7 @@ const attributeProviderMap = {
       attr: 'genders',
       scope: 'profile',
     },
-    gender: {},
+    amazon: {},
   },
   given_name: {
     facebook: {
@@ -250,8 +250,12 @@ const coreAttributes = [
     name: 'Family Name',
     value: 'family_name',
   }, {
-    name: 'Given Name',
-    value: 'given_name',
+  }, {
+    name: 'Middle Name',
+    value: 'middle_name',
+  }, {
+    name: 'Gender',
+    value: 'gender',
   }, {
     name: 'Locale',
     value: 'locale',
@@ -346,6 +350,10 @@ const authorizeScopes = [
 
 const signInOptions = [
   {
+    name: 'Username',
+    value: 'username',
+  },
+  {
     name: 'Email',
     value: 'email',
   },
@@ -353,6 +361,11 @@ const signInOptions = [
     name: 'Phone Number',
     value: 'phone_number',
   },
+  {
+    name: 'Email and Phone Number',
+    value: 'email, phone_number',
+  },
+  ...learnMoreOption,
 ];
 
 const socialLoginOptions = [

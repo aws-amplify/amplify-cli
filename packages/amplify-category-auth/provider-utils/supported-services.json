@@ -234,10 +234,10 @@
 			},
 			{
 				"key": "usernameAttributes",
-				"question": "Do you want end users to be able to sign up with their email and phone number as their user name?",
-				"type": "multiselect",
+				"question": "How do you want end users to be able to sign up?",
+				"type": "list",
 				"map": "signInOptions",
-				"learnMore": "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.",
+				"learnMore": "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
 				"required": true,
 				"andConditions": [
 					{
@@ -246,12 +246,19 @@
 						"operator": "!="
 					},
 					{
+						"preventEdit": "always"
+					}
+				],
+				"orConditions": [
+					{
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="
 					},
 					{
-						"preventEdit": "always"
+						"key": "useDefault",
+						"value": "defaultSocial",
+						"operator": "="
 					}
 				]
 			},
@@ -504,7 +511,7 @@
 				"key": "requiredAttributes",
 				"question": "What attributes are required for signing up?",
 				"required": true,
-				"requiredOptions": ["autoVerifiedAttributes", "usernameAttributes"],
+				"filter": "requiredAttributes",
 				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
 				"type": "multiselect",
 				"map": "coreAttributes",
@@ -514,14 +521,21 @@
 						"key": "userPoolName"
 					},
 					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				],
+				"orConditions": [
+					{
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="
 					},
 					{
-						"key": "authSelections",
-						"value": "identityPoolOnly",
-						"operator": "!="
+						"key": "useDefault",
+						"value": "defaultSocial",
+						"operator": "="
 					}
 				]
 			},
@@ -609,8 +623,9 @@
 			{
 				"key": "hostedUI",
 				"question": "Do you want to use the Cognito User Pool's Hosted UI?",
+				"learnMore": "When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app.",
 				"required": true,
-				"type": "list",				
+				"type": "list",
 				"map": "booleanOptions",
 				"andConditions": [
 					{
@@ -681,7 +696,7 @@
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "CallbackURLs",
-				"validation": {
+				"iteratorValidation": {
 					"operator": "regex",
 					"value": "^(http|https):\\/\\/(.*?)\\/$",
 					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
@@ -791,7 +806,7 @@
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "LogoutURLs",
-				"validation": {
+				"iteratorValidation": {
 					"operator": "regex",
 					"value": "^(http|https):\\/\\/(.*?)\\/$",
 					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
@@ -902,6 +917,7 @@
 				"question": "Select the identity providers you want to configure for your user pool:",
 				"temp": true,
 				"type": "multiselect",
+				"filter": "requiredAttributes",
 				"map": "hostedUIProviders",
 				"required": true,
 				"andConditions": [
@@ -924,6 +940,7 @@
 				"key": "authProvidersUserPool",
 				"question": "Select the identity providers you want to configure for your user pool:",
 				"updateGroups": ["providers", "all"],
+				"filter": "requiredAttributes",
 				"temp": true,
 				"type": "multiselect",
 				"map": "hostedUIProviders",
