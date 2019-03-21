@@ -11,8 +11,8 @@ const writeAmplifyMeta = require('./writeAmplifyMeta');
 async function ensureSetup(context, resourceName) {
   if (!isXRSetup(context)) {
     await authHelper.ensureAuth(context);
-    await setupAccess(context, resourceName);
   }
+  await setupAccess(context, resourceName);
 }
 
 async function setupAccess(context, resourceName) {
@@ -64,8 +64,8 @@ async function setupAccess(context, resourceName) {
 
 async function configureAccess(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
-  const backendTemplateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
+  // const serviceDirPath = path.join(projectBackendDirPath, constants.CategoryName, constants.ServiceName);
+  // const backendTemplateFilePath = path.join(serviceDirPath, constants.TemplateFileName);
   const backendTemplate = require(backendTemplateFilePath);
 
   let isUnAuthAccessAllowed = false;
@@ -111,7 +111,8 @@ async function removeAccess(context) {
 
 async function configure(context) {
   if (isXRSetup(context)) {
-    configureAccess(context);
+    updateScene(context);
+    // configureAccess(context);
   } else {
     context.print.error('You have NOT added the XR category yet.');
   }
@@ -119,23 +120,21 @@ async function configure(context) {
 
 function isXRSetup(context) {
   const { amplifyMeta } = context.exeInfo;
-  return amplifyMeta[constants.CategoryName] &&
-    amplifyMeta[constants.CategoryName][constants.ServiceName];
+  return amplifyMeta[constants.CategoryName] ? true : false;
 }
 
 function getExistingScenes(context) {
   let result = [];
   if (isXRSetup(context)) {
     const { amplifyMeta } = context.exeInfo;
-    if (amplifyMeta[constants.CategoryName][constants.ServiceName].output) {
-      result = Object.keys(amplifyMeta[constants.CategoryName][constants.ServiceName].output);
+    if (amplifyMeta[constants.CategoryName]) {
+      result = Object.keys(amplifyMeta[constants.CategoryName]);
     }
   }
   return result;
 }
 
 async function addScene(context) {
-  
   context.print.info(`Open the Amazon Sumerian console: ${chalk.green(getSumerianConsoleUrl(context))}`);
   context.print.info('Publish the scene you want to add.');
   context.print.info('Then download the JSON configuration to your local computer.');
@@ -164,19 +163,35 @@ async function addScene(context) {
     sceneName = answer.sceneName;
   });
 
+  await addSceneConfig(context, sceneName);
+
+  context.print.info(`${sceneName} has been added.`);
+}
+
+async function addSceneConfig(context, sceneName) {
   let sumerianConfig;
   await inquirer.prompt({
     name: 'configFilePath',
     type: 'input',
-    message: 'Enter the path to the downloaded JSON configuration file:',
+    message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
     validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
           sumerianConfig = require(configFilePath);
 
-          // Validate that the config is proper structure
-          if (!sumerianConfig.url || !sumerianConfig.sceneId || !sumerianConfig.region) {
+          // Sumerian config must have a url and sceneId
+          if (!sumerianConfig.url || !sumerianConfig.sceneId) {
             return "Sumerian scene config is not in the correct format.";
+          }
+
+          const sumerianResourceUrl = new URL(sumerianConfig.url);
+          // If region is not an existing parameter, extract from the resource url
+          if (!sumerianConfig.region) {
+            sumerianConfig['region'] = getRegionFromHost(sumerianResourceUrl.host);
+          }
+          // If projectName is not an existing parameter, extract from the resource url
+          if (!sumerianConfig.projectName) {
+            sumerianConfig['projectName'] = getProjectNameFromPath(sumerianResourceUrl.pathname);
           }
         }
       } catch (e) {
@@ -186,7 +201,7 @@ async function addScene(context) {
         return true;
       }
       return 'Can NOT ready the configuration, make sure it is valid.';
-    },
+    }
   });
 
   const options = {
@@ -198,12 +213,31 @@ async function addScene(context) {
 
   context.amplify.saveEnvResourceParameters(context, constants.CategoryName, sceneName, sumerianConfig);
   context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, sceneName, options);
+}
 
-  context.print.info(`${sceneName} has been added.`);
+async function updateScene(context) {
+  if (!isXRSetup(context)) {
+    context.print.error('You have NOT added the XR category yet.');
+    return;
+  }
+  const existingScenes = getExistingScenes(context);
+  if (existingScenes.length <= 0) {
+    context.print.error('You do not have any scenes configured.');
+    return;
+  }
+
+  await inquirer.prompt({
+    name: 'sceneToUpdate',
+    message: 'Choose the scene you would like to update',
+    type: 'list',
+    choices: existingScenes,
+  }).then(async (answer) => {
+    await addSceneConfig(context, answer.sceneToUpdate);
+    context.print.info(`${answer.sceneToUpdate} has been updated.`);
+  });  
 }
 
 async function remove(context) {
-  // context.amplify.removeResourceParameters(context, constants.CategoryName);
   return context.amplify.removeResource(context, constants.CategoryName)
     .then((resource) => {
       context.amplify.removeResourceParameters(context, constants.CategoryName, resource.resourceName);
@@ -274,6 +308,32 @@ function getSumerianConsoleUrl(context) {
   return consoleUrl;
 }
 
+function getProjectNameFromPath(path) {
+  /* Sumerian URL path format:
+   * /${date}/projects/${projectName}/release/authTokens
+   */
+  const regex = /projects\/([^\/]*)\/release/;
+  const match = regex.exec(path);
+  if (!match) {
+    return null;
+  }
+  const projectName = match[1];
+  return projectName;
+}
+
+function getRegionFromHost(host) {
+  /* Sumerian URL host format:
+   * sumerian.${region}.amazonaws.com
+   */
+  const regex = /sumerian\.([^\.]*)\.amazonaws/;
+  const match = regex.exec(host);
+  if (!match) {
+    return null;
+  }
+  const region = match[1];
+  return region;
+}
+
 function console(context) {
   context.print.info(chalk.green(getSumerianConsoleUrl(context)));
   opn(consoleUrl, { wait: false });
@@ -285,6 +345,7 @@ module.exports = {
   configure,
   getExistingScenes,
   addScene,
+  addSceneConfig,
   remove,
   console,
 };
