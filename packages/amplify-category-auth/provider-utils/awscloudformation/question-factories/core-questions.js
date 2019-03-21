@@ -44,13 +44,14 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         choices: [],
       }, question);
     }
-    if (!input.requiredOptions || !question.when()) {
+    if (!input.requiredOptions || (!question.when || !question.when())) {
       question = Object.assign({
         choices: input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options,
       }, question);
     } else {
       /*eslint-disable*/
-      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => currentAnswers[i] || context.updatingAuth[i] || []))));
+      const lookups = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
+      const sourceValues = _.uniq(_.flatten(input.requiredOptions.map((i => lookups[i] || []))));
       const requiredOptions = getAllMaps()[input.map]
         .filter(x => sourceValues
           .includes(x.value));
