@@ -96,12 +96,38 @@ function generateAWSExportsFile(context, configOutput) {
 function getCognitoConfig(cognitoResources, projectRegion) {
   // There can only be one cognito resource
   const cognitoResource = cognitoResources[0];
+  let domain;
+  let scope;
+  let redirectSignIn;
+  let redirectSignOut;
+  let responseType;
+
+  if (cognitoResource.output.HostedUIDomain) {
+    domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
+  }
+  if (cognitoResource.output.OAuthMetadata) {
+    const oAuthMetadata = JSON.parse(cognitoResource.output.OAuthMetadata);
+    scope = oAuthMetadata.AllowedOAuthScopes;
+    redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
+    redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
+    [responseType] = oAuthMetadata.AllowedOAuthFlows;
+  }
+
+  const oauth = {
+    domain,
+    scope,
+    redirectSignIn,
+    redirectSignOut,
+    responseType,
+  };
+
 
   return {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
     aws_cognito_region: projectRegion,
     aws_user_pools_id: cognitoResource.output.UserPoolId,
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
+    oauth,
   };
 }
 
