@@ -78,8 +78,8 @@ const userPoolDefaults = projectName => ({
 });
 
 const withSocialDefaults = projectName => ({
-  ...getAllDefaults(projectName),
   hostedUI: true,
+  hostedUIDomainName: `${projectName}-${sharedId}`,
   AllowedOAuthFlows: oAuthFlows.map(i => i.value),
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
@@ -120,6 +120,7 @@ const getAllDefaults = (name) => {
   const sources = [
     userPoolDefaults(projectName),
     identityAndUserPoolDefaults(projectName),
+    withSocialDefaults(projectName),
   ];
 
   return Object.assign(target, ...sources);
