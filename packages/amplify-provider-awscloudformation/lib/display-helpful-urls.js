@@ -5,6 +5,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showPinpointURL(context, resourcesToBeCreated);
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
+  showHostedUIURLs(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -66,6 +67,32 @@ function showHostingURL(context, resourcesToBeCreated) {
     const hostingEndpoint = CloudFrontSecureURL || WebsiteURL;
 
     context.print.info(chalk`Hosting endpoint: {blue.underline ${hostingEndpoint}}`);
+  }
+}
+
+function showHostedUIURLs(context, resourcesToBeCreated) {
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'Cognito');
+
+  if (resources.length > 0) {
+    const resource = resources[0];
+    const { category, resourceName } = resource;
+    const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
+    const { Region } = amplifyMeta.providers.awscloudformation;
+
+    const { HostedUIDomain, AppClientIDWeb, OAuthMetadata } =
+    amplifyMeta[category][resourceName].output;
+
+    const oAuthMetadata = JSON.parse(OAuthMetadata);
+    const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
+
+    context.print.info('Hosted UI endpoint(s):\n');
+    redirectURIs.forEach((uri) => {
+      const hostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${uri}\n`;
+      context.print.info(chalk`{blue.underline ${hostedUIEndpoint}}`);
+    });
   }
 }
 
