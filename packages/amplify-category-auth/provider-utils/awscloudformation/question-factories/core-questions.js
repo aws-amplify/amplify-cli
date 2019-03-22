@@ -55,7 +55,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
         requiredAttributes.forEach((attr) => {
           choices.forEach((choice) => {
             choice.missingAttributes = [];
-            if (!attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
+            if (!attrMap[attr] || !attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
               choice.missingAttributes = choice.missingAttributes.length < 1 ?
                 [attr] :
                 choice.missingAttributes.concat(attr);
@@ -79,10 +79,12 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
                 choice.missingProviders = choice.missingProviders.length < 1 ?
                   [providerName] :
                   choice.missingProviders.concat(providerName);
-                const newList = choice.missingProviders.join(', ');
-                choice.name = `${choice.name} (This attribute is not supported by ${newList.substring(0, newList.length)}.)`;
               }
             });
+            if (choice.missingProviders && choice.missingProviders.length > 0) {
+              const newList = choice.missingProviders.join(', ');
+              choice.name = `${choice.name} (This attribute is not supported by ${newList.substring(0, newList.length)}.)`;
+            }
           }
         });
         question = Object.assign({ choices }, question);
