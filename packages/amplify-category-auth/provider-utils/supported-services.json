@@ -649,7 +649,7 @@
 			},
 			{
 				"key": "hostedUIDomainName",
-				"question": "What is your Hosted UI domain name?",
+				"question": "What domain name prefix you want us to create for you?",
 				"required": true,
 				"andConditions": [
 					{
@@ -666,9 +666,9 @@
 			},
 			{
 				"key": "newCallbackURLs",
-				"question": "Enter your Hosted UI callback URL:",
+				"question": "Enter your redirect URI :",
 				"required": true,
-				"addAnotherLoop" : "Hosted UI Callback URL",
+				"addAnotherLoop" : "Hosted UI redirect URI",
 				"andConditions": [
 					{
 						"key": "hostedUI",
@@ -686,20 +686,20 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
 			{
 				"key": "EditURLS",
-				"question": "Which Callback URLs do you want to edit?",
+				"question": "Which redirect URIs do you want to edit?",
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				},
 				"andConditions": [
 					{
@@ -725,7 +725,7 @@
 			},
 			{
 				"key": "addCallbackOnUpdate",
-				"question": "Do you want to add Hosted UI callback URLs?",
+				"question": "Do you want to add redirect URIs?",
 				"updateGroups": ["callbacks", "all"],
 				"required": true,
 				"type": "confirm",
@@ -753,11 +753,11 @@
 			},
 			{
 				"key": "newCallbackURLs",
-				"question": "Enter your new Hosted UI callback URL:",
+				"question": "Enter your new Hosted UI redirect URI:",
 				"required": true,
 				"updateGroups": ["callbacks", "all"],
 				"concatKey": "CallbackURLs",
-				"addAnotherLoop" : "Hosted UI Callback URL",
+				"addAnotherLoop" : "Hosted UI redirect URI",
 				"andConditions": [
 					{
 						"key": "addCallbackOnUpdate",
@@ -770,8 +770,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
 			{
@@ -796,8 +796,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
 			{
@@ -808,8 +808,8 @@
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				},
 				"andConditions": [
 					{
@@ -880,8 +880,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(http|https):\\/\\/(.*?)\\/$",
-					"onErrorMsg": "The value must be a valid URL with a trailing forward slash."
+					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
 			{
@@ -895,6 +895,11 @@
 						"key": "hostedUI",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
 					}
 				]
 			},
@@ -909,6 +914,11 @@
 						"key": "hostedUI",
 						"value": true,
 						"operator": "="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
 					}
 				]
 			},
@@ -1005,7 +1015,6 @@
 			},
 			{
 				"key": "googleAppSecretUserPool",
-				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
 				"question": "Enter your Google Web Client Secret: ",
 				"updateGroups": ["providers", "all"],
 				"required": true,
