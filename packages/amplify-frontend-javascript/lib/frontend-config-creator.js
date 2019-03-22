@@ -205,13 +205,13 @@ function getSumerianConfig(sumerianResources) {
     delete output.service;
 
     scenes[resourceName] = {
-      sceneConfig: output
-    }
+      sceneConfig: output,
+    };
   });
   return {
     XR: {
-      scenes
-    }
+      scenes,
+    },
   };
 }
 

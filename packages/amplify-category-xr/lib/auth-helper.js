@@ -7,7 +7,7 @@ async function ensureAuth(context) {
   const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
   if (foundUnmetRequirements) {
-    context.print.warning(`Adding XR to your project requires the Auth category.`);
+    context.print.warning('Adding XR to your project requires the Auth category.');
     try {
       await externalAuthEnable(context, constants.CategoryName, constants.ServiceName, xrRequirements);
     } catch (e) {
