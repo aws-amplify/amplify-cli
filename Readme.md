@@ -18,7 +18,7 @@
 
 # AWS Amplify CLI 
 
-The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks, which allows you to add or modify configurations locally before you push them for execution in your account.
+The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
 
 * [Install the CLI](#install-the-cli)
 * [Commands Summary](#commands-summary)
@@ -48,7 +48,7 @@ The Amplify CLI supports the commands shown in the following table.
 | --- | --- |
 | amplify configure | Configures the AWS access credentials, AWS Region and sets up a new AWS User Profile |
 | amplify init | Initializes a new project, sets up deployment resources in the cloud and prepares your project for Amplify.|
-| amplify configure project | Updates configuration settings used to setup the project during the init step |
+| amplify configure project | Updates configuration settings used to setup the project during the init step. |
 | amplify add `<category>` | Adds cloud features to your app. |
 | amplify update `<category>` | Updates existing cloud features in your app. |
 | amplify push [--no-gql-override]| Provisions cloud resources with the latest local developments. The 'no-gql-override' flag does not automatically compile your annotated GraphQL schema and will override your local AppSync resolvers and templates. |

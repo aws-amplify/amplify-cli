@@ -1,12 +1,13 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "",
   "main": "index.js",
   "private": true,
   "scripts": {
     "e2e": "npm run setup-profile && jest --maxWorkers=3",
     "setup-profile": "tsc && node ./lib/configure_tests.js",
+    "build": "tsc",
     "clean": "rm -rf ./lib"
   },
   "author": "Amazon Web Services",

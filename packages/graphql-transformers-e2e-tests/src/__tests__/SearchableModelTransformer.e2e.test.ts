@@ -6,6 +6,7 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import SearchableModelTransformer from 'graphql-elasticsearch-transformer'
+import ModelAuthTransformer from 'graphql-versioned-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { S3Client } from '../S3Client'
 import { Output } from 'aws-sdk/clients/cloudformation'
@@ -104,6 +105,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
+            new ModelAuthTransformer(),
             new SearchableModelTransformer()
         ]
     })

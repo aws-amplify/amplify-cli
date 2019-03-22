@@ -6,13 +6,15 @@ const globalPrefix = require('./lib/global-prefix');
 const MIGRATE = 'migrate';
 
 async function run(argv) {
-  const localNodeModulesDirPath = getLocalNodeModulesDirPath();
+  const localNodeModulesDirPath = path.normalize(path.join(__dirname, '../', 'node_modules'));
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
+  const parentNodeModulesDirPath = getParentNodeModulesDirPath(globalNodeModulesDirPath);
   // Check for old version of projects and ask for migration steps
   const cli = build()
     .brand('amplify')
     .src(__dirname)
     .plugins(localNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
+    .plugins(parentNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .plugins(globalNodeModulesDirPath, { matching: 'amplify-*', hidden: false })
     .version() // provides default for version, v, --version, -v
     .create();
@@ -29,14 +31,16 @@ async function run(argv) {
   return context;
 }
 
-function getLocalNodeModulesDirPath() {
+function getParentNodeModulesDirPath(globalNodeModulesDirPath) {
   let result;
-  let baseDirPath = path.join(__dirname, '../');
+  let baseDirPath = path.join(__dirname, '../../');
 
   do {
-    const localNMDirPath = path.join(baseDirPath, 'node_modules');
-    if (fs.existsSync(localNMDirPath)) {
-      result = localNMDirPath;
+    const parentNMDirPath = path.normalize(path.join(baseDirPath, 'node_modules'));
+    if (fs.existsSync(parentNMDirPath)) {
+      if (parentNMDirPath !== globalNodeModulesDirPath) {
+        result = parentNMDirPath;
+      }
       break;
     } else {
       const parentDirPath = path.dirname(baseDirPath);
