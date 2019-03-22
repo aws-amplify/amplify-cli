@@ -1,7 +1,7 @@
 import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
-import { AuthRule, ModelQuery, ModelMutation } from './AuthRule'
+import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
 import { ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode } from 'graphql'
 import { ResourceConstants, ResolverResourceIDs, isListType } from 'graphql-transformer-common'
 import {
@@ -82,17 +82,54 @@ export class ModelAuthTransformer extends Transformer {
             `
             directive @auth(rules: [AuthRule!]!) on OBJECT
             input AuthRule {
+                # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
                 allow: AuthStrategy!
+
+                # Specifies the name of the claim to look for on the request's JWT token
+                # from Cognito User Pools (and in the future OIDC) that contains the identity
+                # of the user. If 'allow' is 'groups', this value should point to a list of groups
+                # in the claims. If 'allow' is 'owner', this value should point to the logged in user identity string.
+                # Defaults to "cognito:username" for Cognito User Pools auth.
+                identityField: String
+
+                # Allowed when the 'allow' argument is 'owner'.
+                # Specifies the field of type String or [String] that contains owner(s) that can access the object.
                 ownerField: String # defaults to "owner"
-                identityField: String # defaults to "cognito:username"
+
+                # Allowed when the 'allow' argument is 'groups'.
+                # Specifies the field of type String or [String] that contains group(s) that can access the object.
                 groupsField: String
+
+                # Allowed when the 'allow' argument is 'groups'.
+                # Specifies a static list of groups that should have access to the object.
                 groups: [String]
+
+                # Specifies operations to which this auth rule should be applied.
+                operations: [ModelOperation]
+
+                # Deprecated. It is recommended to use the 'operations' arguments.
                 queries: [ModelQuery]
+                    @deprecated(reason: "The 'queries' argument will be replaced by the 'operations' argument in a future release.")
+
+                # Deprecated. It is recommended to use the 'operations' arguments.
                 mutations: [ModelMutation]
+                    @deprecated(reason: "The 'mutations' argument will be replaced by the 'operations' argument in a future release.")
             }
             enum AuthStrategy { owner groups }
-            enum ModelQuery { get list }
-            enum ModelMutation { create update delete }
+            enum ModelOperation { create update delete read }
+            enum ModelQuery
+                @deprecated(reason: "ModelQuery will be replaced by the 'ModelOperation' in a future release.")
+            {
+                get
+                list
+            }
+            enum ModelMutation
+                @deprecated(reason: "ModelMutation will be replaced by the 'ModelOperation' in a future release.")
+            {
+                create
+                update
+                delete
+            }
             `
         )
         this.config = config || { authMode: 'API_KEY' };
@@ -133,8 +170,9 @@ export class ModelAuthTransformer extends Transformer {
             throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.')
         }
 
-        // Get the auth rules.
+        // Get and validate the auth rules.
         const rules = getArg('rules', []) as AuthRule[]
+        this.validateRules(rules)
 
         // Create a reverse index on rules from operation -> rules list.
         const queryRules: { [k in ModelQuery]: AuthRule[] } = {
@@ -164,20 +202,40 @@ export class ModelAuthTransformer extends Transformer {
             }
             return true
         }
+        const matchOperation = (op: ModelOperation) => (rule: AuthRule) => {
+            if (rule.operations) {
+                const matchesOp = rule.operations.find(o => o === op)
+                return Boolean(matchesOp)
+            } else if (rule.operations === null) {
+                return false
+            }
+            return true
+        }
+        // The 'queries' and 'mutations' arguments are marked as @deprecated
+        // and will log a warning when in use. No behaviors will break with the
+        // new operations directive but changing will provide more robust functionality.
+        const matchOperationOrQuery =
+            (op: ModelQuery) =>
+                (rule: AuthRule) =>
+                    rule.operations ? matchOperation('read')(rule) : matchQuery(op)(rule)
+        const matchOperationOrMutation =
+            (op: ModelMutation) =>
+                (rule: AuthRule) =>
+                    rule.operations ? matchOperation(op)(rule) : matchMutation(op)(rule)
         for (const rule of rules) {
-            if (matchQuery('get')(rule)) {
+            if (matchOperationOrQuery('get')(rule)) {
                 queryRules.get.push(rule)
             }
-            if (matchQuery('list')(rule)) {
+            if (matchOperationOrQuery('list')(rule)) {
                 queryRules.list.push(rule)
             }
-            if (matchMutation('create')(rule)) {
+            if (matchOperationOrMutation('create')(rule)) {
                 mutationRules.create.push(rule)
             }
-            if (matchMutation('update')(rule)) {
+            if (matchOperationOrMutation('update')(rule)) {
                 mutationRules.update.push(rule)
             }
-            if (matchMutation('delete')(rule)) {
+            if (matchOperationOrMutation('delete')(rule)) {
                 mutationRules.delete.push(rule)
             }
         }
@@ -188,6 +246,19 @@ export class ModelAuthTransformer extends Transformer {
         this.protectDeleteMutation(ctx, ResolverResourceIDs.DynamoDBDeleteResolverResourceID(def.name.value), mutationRules.delete, def)
         this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get)
         this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
+    }
+
+    private validateRules(rules: AuthRule[]) {
+        for (const rule of rules) {
+            const { queries, mutations, operations } = rule;
+            if (mutations && operations) {
+                console.warn(
+                    `It is not recommended to use 'mutations' and 'operations'. The 'operations' argument will be used.`)
+            } else if (queries && operations) {
+                console.warn(
+                    `It is not recommended to use 'queries' and 'operations'. The 'operations' argument will be used.`)
+            }
+        }
     }
 
     /**

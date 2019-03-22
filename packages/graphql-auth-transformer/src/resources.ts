@@ -130,6 +130,7 @@ export class ResourceFactory {
         }
         // TODO: Enhance cognito:groups to work with non cognito based auth.
         return block('Static Group Authorization Checks', [
+            comment(`Authorization rule: { allow: "groups", groups: "${JSON.stringify(allowedGroups)}" }`),
             this.setUserGroups(),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
