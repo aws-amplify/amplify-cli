@@ -1,9 +1,6 @@
 const uuid = require('uuid');
 const {
-  coreAttributes,
-  appClientReadAttributes,
   booleanOptions,
-  oAuthFlows,
   oAuthScopes,
 } = require('./string-maps');
 
