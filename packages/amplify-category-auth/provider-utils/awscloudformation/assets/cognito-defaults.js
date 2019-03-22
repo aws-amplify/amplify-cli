@@ -73,8 +73,6 @@ const userPoolDefaults = projectName => ({
   userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy`,
   userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy`,
   userpoolClientSetAttributes: false,
-  AllowedOAuthFlows: oAuthFlows.map(i => i.value),
-  AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
 const withSocialDefaults = projectName => ({
