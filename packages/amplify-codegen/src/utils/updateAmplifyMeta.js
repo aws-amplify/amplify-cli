@@ -1,5 +1,5 @@
 
-module.exports = (context, apiDetails) => {
+module.exports = async (context, apiDetails) => {
   const fs = context.filesystem;
 
   const appsyncMetadata = {
@@ -35,6 +35,6 @@ module.exports = (context, apiDetails) => {
   currentAmplifyMeta.api[apiDetails.name] = appsyncMetadata;
   fs.write(currentAmplifyMetaFilePath, currentAmplifyMeta);
 
-  context.amplify.onCategoryOutputsChange(context);
+  await context.amplify.onCategoryOutputsChange(context);
   context.print.success(`Successfully added API ${apiDetails.name} to your Amplify project`);
 };
