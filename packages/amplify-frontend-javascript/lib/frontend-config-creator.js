@@ -32,7 +32,7 @@ function createAmplifyConfig(context, amplifyResources) {
   }
 }
 
-function createAWSExports(context, amplifyResources) {
+async function createAWSExports(context, amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {};
 
@@ -62,11 +62,11 @@ function createAWSExports(context, amplifyResources) {
       default: break;
     }
   });
-  generateAWSExportsFile(context, configOutput);
+  await generateAWSExportsFile(context, configOutput);
   return context;
 }
 
-function generateAWSExportsFile(context, configOutput) {
+async function generateAWSExportsFile(context, configOutput) {
   const { amplify } = context;
   const pluginDir = __dirname;
   const projectPath = context.exeInfo ?
@@ -92,7 +92,7 @@ function generateAWSExportsFile(context, configOutput) {
 
   // copy over the files
   const forceOverwrite = true;
-  return amplify.copyBatch(context, copyJobs, options, forceOverwrite);
+  await amplify.copyBatch(context, copyJobs, options, forceOverwrite);
 }
 
 function getCognitoConfig(cognitoResources, projectRegion) {
