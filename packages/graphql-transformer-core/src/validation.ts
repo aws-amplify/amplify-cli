@@ -125,7 +125,6 @@ export function validateModelSchema(doc: DocumentNode) {
     const directives = fullDocument.definitions
         .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
         .map((d: DirectiveDefinitionNode) => {
-            console.log(`Building directive: ${d.name.value}`);
             return builder.buildDirective(d)
         })
     const types = fullDocument.definitions
