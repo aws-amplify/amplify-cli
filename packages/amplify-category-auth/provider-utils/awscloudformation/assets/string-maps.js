@@ -234,6 +234,20 @@ const attributeProviderMap = {
     google: {},
     amazon: {},
   },
+  username: {
+    facebook: {
+      attr: 'id',
+      scope: 'default',
+    },
+    google: {
+      attr: 'sub',
+      scope: 'profile',
+    },
+    amazon: {
+      attr: 'user_id',
+      scope: 'profile:user_id',
+    },
+  },
 };
 
 const coreAttributes = [

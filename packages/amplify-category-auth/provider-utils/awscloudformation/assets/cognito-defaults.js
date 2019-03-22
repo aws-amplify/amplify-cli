@@ -1,9 +1,6 @@
 const uuid = require('uuid');
 const {
-  coreAttributes,
-  appClientReadAttributes,
   booleanOptions,
-  oAuthFlows,
   oAuthScopes,
 } = require('./string-maps');
 
@@ -56,15 +53,11 @@ const userPoolDefaults = projectName => ({
     'Requires Numbers',
     'Requires Symbols',
   ],
-  requiredAttributes: [
-    coreAttributes.find(b => b.name === 'Email').value,
-  ],
+  requiredAttributes: ['email'],
   userpoolClientName: `${projectName}_app_client`,
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
-  userpoolClientReadAttributes: [
-    appClientReadAttributes.find(d => d.name === 'Email').value,
-  ],
+  userpoolClientReadAttributes: ['email'],
   mfaLambdaRole: `${projectName}_totp_lambda_role`,
   mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,
   mfaPassRolePolicy: `${projectName}_totp_pass_role_policy`,
@@ -78,7 +71,7 @@ const userPoolDefaults = projectName => ({
 const withSocialDefaults = projectName => ({
   hostedUI: true,
   hostedUIDomainName: `${projectName}-${sharedId}`,
-  AllowedOAuthFlows: oAuthFlows.filter(i => i.value === 'code').map(c => c.value),
+  AllowedOAuthFlows: ['code'],
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
