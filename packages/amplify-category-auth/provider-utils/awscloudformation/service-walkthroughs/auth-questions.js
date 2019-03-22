@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
+
 async function serviceWalkthrough(
   context,
   defaultValuesFilename,
@@ -14,6 +15,8 @@ async function serviceWalkthrough(
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
+  const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
+  const { getAllDefaults } = require(defaultValuesSrc);
 
   if (context.updatingAuth && context.updatingAuth.oAuthMetadata) {
     parseOAuthMetaData(context.updatingAuth);
@@ -138,7 +141,7 @@ async function serviceWalkthrough(
   }
 
   // formatting oAuthMetaData
-  structureoAuthMetaData(coreAnswers, context);
+  structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 
   return {
     ...coreAnswers,
@@ -227,7 +230,7 @@ function userPoolProviders(coreAnswers, prevAnswers) {
 /*
   Format hosted UI oAuth data per lambda spec
 */
-function structureoAuthMetaData(coreAnswers, context) {
+function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
@@ -236,10 +239,10 @@ function structureoAuthMetaData(coreAnswers, context) {
   const answers = Object.assign(prev, coreAnswers);
   let {
     AllowedOAuthFlows,
+    AllowedOAuthScopes,
     CallbackURLs,
     LogoutURLs,
   } = answers;
-  const { AllowedOAuthScopes } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
   } else if (coreAnswers.newCallbackURLs) {
@@ -251,7 +254,18 @@ function structureoAuthMetaData(coreAnswers, context) {
     LogoutURLs = coreAnswers.newLogoutURLs;
   }
 
-  AllowedOAuthFlows = [AllowedOAuthFlows];
+  if (CallbackURLs && LogoutURLs) {
+    if (!answers.AllowedOAuthScopes) {
+      /* eslint-disable */
+      AllowedOAuthScopes = defaults(amplify.getProjectDetails(amplify)).AllowedOAuthScopes;
+    }
+    if (!answers.AllowedOAuthFlows) {
+      AllowedOAuthFlows = defaults(amplify.getProjectDetails(amplify)).AllowedOAuthFlows;
+      /* eslint-enable */
+    } else {
+      AllowedOAuthFlows = [AllowedOAuthFlows];
+    }
+  }
 
   if (AllowedOAuthFlows && AllowedOAuthScopes && CallbackURLs && LogoutURLs) {
     coreAnswers.oAuthMetadata = JSON.stringify({
