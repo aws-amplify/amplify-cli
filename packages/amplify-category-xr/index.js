@@ -2,7 +2,7 @@ const xrManager = require('./lib/xr-manager');
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 
-const SUMERIAN_SERVICE_NAME = "Sumerian";
+const SUMERIAN_SERVICE_NAME = 'Sumerian';
 const XR_CATEGORY_NAME = 'xr';
 
 function console(context) {
@@ -20,49 +20,57 @@ async function initEnv(context) {
   }
 
   if (Object.keys(allEnvs).length > 1) {
-    const answer = await inquirer.prompt({
+    const useConfigAnswer = await inquirer.prompt({
       name: 'useExistingEnvConfig',
       type: 'confirm',
       message: 'Would you like to use XR configuration from an existing environment?',
       default: false,
     });
-  
-    if (answer.useExistingEnvConfig) {
+
+    if (useConfigAnswer.useExistingEnvConfig) {
       // Get environments with XR defined
       const envsWithXR = [];
-      for (let [env, config] of Object.entries(allEnvs)) {
+      // for (const [env, config] of Object.entries(allEnvs)) {
+      Object.entries(allEnvs).forEach(([env, config]) => {
         if (XR_CATEGORY_NAME in config.categories) {
           envsWithXR.push(env);
         }
-      }
+      });
 
       await inquirer.prompt({
         name: 'envToUse',
         message: 'Choose the environment configuration to use:',
         type: 'list',
         choices: envsWithXR,
-      }).then((answer) => {
-        const xrResources = allEnvs[answer.envToUse].categories[XR_CATEGORY_NAME];
-        for (let [resource, config] of Object.entries(xrResources)) {
+      }).then((envAnswer) => {
+        const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
+        // for (const [resource, config] of Object.entries(xrResources)) {
+        Object.entries(xrResources).forEach(([resource, config]) => {
           const options = {
             service: SUMERIAN_SERVICE_NAME,
-            output: config
-          }
+            output: config,
+          };
           context.amplify.saveEnvResourceParameters(context, XR_CATEGORY_NAME, resource, config);
           context.amplify.updateamplifyMetaAfterResourceAdd(XR_CATEGORY_NAME, resource, options);
-        }
-        context.print.info(`XR configuration from ${answer.envToUse} saved for ${thisEnvName}`);
+        });
+        context.print.info(`XR configuration from ${envAnswer.envToUse} saved for ${thisEnvName}`);
       });
       return;
     }
   }
 
-  // Hydrate XR resources defined in cloud backend config
   const backendConfig = JSON.parse(fs.readFileSync(context.amplify.pathManager.getBackendConfigFilePath()));
   const xrResources = Object.keys(backendConfig.xr);
 
-  for (const sceneName of xrResources) {
-    await xrManager.addSceneConfig(context, sceneName);
+  if (xrResources.length > 0) {
+    context.print.warning('To continue, you will need to add configuration for the following resources:');
+    context.print.warning(xrResources);
+
+    // Hydrate XR resources defined in cloud backend config
+    // for (const sceneName of xrResources) {
+    xrResources.forEach(async (sceneName) => {
+      await xrManager.addSceneConfig(context, sceneName);
+    });
   }
 }
 
