@@ -54,7 +54,7 @@ module.exports = {
           if (answer.deletePinpointApp) {
             await pinpointHelper.deletePinpointApp(context);
             context.print.info('The Pinpoint application has been successfully deleted.');
-            multiEnvManager.writeData(context);
+            await multiEnvManager.writeData(context);
           }
         }
       }
