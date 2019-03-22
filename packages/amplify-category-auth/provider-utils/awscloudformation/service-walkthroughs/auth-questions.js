@@ -193,7 +193,8 @@ function userPoolProviders(coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
     return null;
   }
-  const answers = Object.assign({ requiredAttributes: ['email'] }, prevAnswers, coreAnswers);
+  const answers = Object.assign(prevAnswers || {}, coreAnswers);
+  answers.requiredAttributes = answers.requiredAttributes.concat('username');
   const res = {};
   if (coreAnswers.authProvidersUserPool) {
     res.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
@@ -263,7 +264,9 @@ function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
       AllowedOAuthFlows = defaults(amplify.getProjectDetails(amplify)).AllowedOAuthFlows;
       /* eslint-enable */
     } else {
-      AllowedOAuthFlows = [AllowedOAuthFlows];
+      AllowedOAuthFlows = Array.isArray(AllowedOAuthFlows) ?
+        AllowedOAuthFlows :
+        [AllowedOAuthFlows];
     }
   }
 
