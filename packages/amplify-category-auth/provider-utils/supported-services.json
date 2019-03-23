@@ -622,7 +622,7 @@
 			},
 			{
 				"key": "hostedUI",
-				"question": "Do you want to use the Cognito User Pool's Hosted UI?",
+				"question": "Do you want to use an OAuth flow?",
 				"learnMore": "When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app.",
 				"required": true,
 				"type": "list",
@@ -666,9 +666,9 @@
 			},
 			{
 				"key": "newCallbackURLs",
-				"question": "Enter your redirect URI :",
+				"question": "Enter your redirect signin URI :",
 				"required": true,
-				"addAnotherLoop" : "Hosted UI redirect URI",
+				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
 					{
 						"key": "hostedUI",
@@ -692,7 +692,7 @@
 			},
 			{
 				"key": "EditURLS",
-				"question": "Which redirect URIs do you want to edit?",
+				"question": "Which redirect signin URIs do you want to edit?",
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "CallbackURLs",
@@ -725,7 +725,7 @@
 			},
 			{
 				"key": "addCallbackOnUpdate",
-				"question": "Do you want to add redirect URIs?",
+				"question": "Do you want to add redirect signin URIs?",
 				"updateGroups": ["callbacks", "all"],
 				"required": true,
 				"type": "confirm",
@@ -753,11 +753,11 @@
 			},
 			{
 				"key": "newCallbackURLs",
-				"question": "Enter your new Hosted UI redirect URI:",
+				"question": "Enter your new redirect signin URI:",
 				"required": true,
 				"updateGroups": ["callbacks", "all"],
 				"concatKey": "CallbackURLs",
-				"addAnotherLoop" : "Hosted UI redirect URI",
+				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
 					{
 						"key": "addCallbackOnUpdate",
@@ -776,9 +776,9 @@
 			},
 			{
 				"key": "newLogoutURLs",
-				"question": "Enter your Hosted UI Signout URL:",
+				"question": "Enter your redirect signout URI:",
 				"required": true,
-				"addAnotherLoop" : "Hosted UI SignOut URL",
+				"addAnotherLoop" : "redirect signout URI",
 				"andConditions": [
 					{
 						"key": "hostedUI",
@@ -802,7 +802,7 @@
 			},
 			{
 				"key": "editLogoutURLs",
-				"question": "Which SignOut URLs do you want to edit?",
+				"question": "Which redirect signout URIs do you want to edit?",
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "all"],
 				"iterator": "LogoutURLs",
@@ -835,7 +835,7 @@
 			},
 			{
 				"key": "addLogoutOnUpdate",
-				"question": "Do you want to add Hosted UI signout URLs?",
+				"question": "Do you want to add redirect signout URIs?",
 				"updateGroups": ["callbacks", "all"],
 				"required": true,
 				"type": "confirm",
@@ -863,11 +863,11 @@
 			},
 			{
 				"key": "newLogoutURLs",
-				"question": "Enter your new Hosted UI signout URL:",
+				"question": "Enter your new redirect signout URI:",
 				"required": true,
 				"updateGroups": ["callbacks", "all"],
 				"concatKey": "LogoutURLs",
-				"addAnotherLoop" : "Hosted UI signout URL",
+				"addAnotherLoop" : "redirect signout URI",
 				"andConditions": [
 					{
 						"key": "addLogoutOnUpdate",
