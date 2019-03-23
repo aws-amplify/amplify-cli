@@ -1,7 +1,8 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
-const providerSerialization = require('../awscloudformation/service-walkthroughs/auth-questions').userPoolProviders;
+const _ = require('lodash');
+const { userPoolProviders } = require('../awscloudformation/service-walkthroughs/auth-questions');
 
 let serviceMetadata;
 
@@ -9,10 +10,16 @@ let serviceMetadata;
 
 const ENV_SPECIFIC_PARAMS = [
   'facebookAppId',
+  'facebookAppIdUserPool',
+  'facebookAppSecretUserPool',
   'googleClientId',
   'googleIos',
   'googleAndroid',
+  'googleAppIdUserPool',
+  'googleAppSecretUserPool',
   'amazonAppId',
+  'amazonAppIdUserPool',
+  'amazonAppSecretUserPool',
   'hostedUIProviderCreds',
 ];
 
@@ -35,7 +42,6 @@ const privateKeys = [
   'addCallbackOnUpdate',
   'updateFlow',
   'newCallbackURLs',
-  'addCallbackOnUpdate',
   'selectedParties',
   'newLogoutURLs',
   'editLogoutURLs',
@@ -158,16 +164,16 @@ async function updateResource(context, category, serviceResult) {
       value: 'all',
     },
     {
-      name: 'Add/Edit callback and signout URLs for your Hosted UI',
+      name: 'Add/Edit signin and signout redirect URIs',
       value: 'callbacks',
       condition: 'oAuthMetadata',
-      conditionMsg: 'You have not initially configured Hosted UI.',
+      conditionMsg: 'You have not initially configured OAuth.',
     },
     {
-      name: 'Update social provider credentials for your Hosted UI',
+      name: 'Update OAuth social providers',
       value: 'providers',
       condition: 'hostedUIProviderCreds',
-      conditionMsg: 'You have not initially configured Hosted UI.',
+      conditionMsg: 'You have not initially configured OAuth.',
     },
   ];
 
@@ -215,10 +221,11 @@ async function updateResource(context, category, serviceResult) {
             immutables[s.key] = context.updatingAuth[s.key];
           }
         }
-        if (context.updatingAuth.authProvidersUserPool) {
-          immutables = Object.assign(immutables, providerSerialization(context.updatingAuth));
-        }
       });
+
+      if (context.updatingAuth.authProvidersUserPool) {
+        immutables = Object.assign(immutables, userPoolProviders(context.updatingAuth.authProvidersUserPool, result, context.updatingAuth));
+      }
 
       if (result.useDefault && result.useDefault === 'default') {
         /* if the user elects to use defaults during an edit,
@@ -291,10 +298,24 @@ async function updateConfigOnEnvInit(context, category, service) {
     category,
     service,
   );
+
+  const { hostedUIProviderMeta } = resourceParams;
+  let configuredProviders;
+
+  if (hostedUIProviderMeta) {
+    const oAuthProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
+    const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
+    configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
+    const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
+    deltaProviders.forEach((d) => {
+      currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
+      currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
+    });
+  }
+
   srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
     ENV_SPECIFIC_PARAMS.includes(input.key) &&
-      !Object.keys(currentEnvSpecificValues).includes(input.key));
-
+    !Object.keys(currentEnvSpecificValues).includes(input.key));
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
@@ -331,8 +352,29 @@ async function updateConfigOnEnvInit(context, category, service) {
     resourceParams,
   );
   const envParams = {};
+  if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+    envParams.hostedUIProviderCreds = [];
+    const inputResult = JSON.parse(result.hostedUIProviderCreds);
+    const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
+    const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
+
+
+    currentProviders.forEach((c) => {
+      const previousProvider = previousResult.find(p => p.ProviderName === c);
+      const resultProvider = inputResult.find(r => r.ProviderName === c);
+      envParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
+    });
+
+    envParams.hostedUIProviderCreds = JSON.stringify(envParams.hostedUIProviderCreds);
+  } else if (currentEnvSpecificValues.hostedUIProviderCreds && !result.hostedUIProviderCreds) {
+    envParams.hostedUIProviderCreds = currentEnvSpecificValues.hostedUIProviderCreds;
+  } else if (!currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+    envParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
+  }
   ENV_SPECIFIC_PARAMS.forEach((paramName) => {
-    if (paramName in result) {
+    if (paramName in result &&
+      paramName !== 'hostedUIProviderCreds' &&
+      privateKeys.indexOf(paramName) === -1) {
       envParams[paramName] = result[paramName];
     }
   });
