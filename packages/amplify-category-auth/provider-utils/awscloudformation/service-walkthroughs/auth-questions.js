@@ -25,7 +25,9 @@ async function serviceWalkthrough(
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
     const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
     const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
+    /* eslint-disable */
     const oAuthCreds = parseOAuthCreds(context, authProvidersUserPool, hostedUIProviderMeta, resourceName, hostedUIProviderCreds);
+    /* eslint-enable */
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
@@ -134,7 +136,9 @@ async function serviceWalkthrough(
 
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
+    /* eslint-disable */
     coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers.authProvidersUserPool, coreAnswers, context.updatingAuth));
+    /* eslint-enable */
   }
 
   // making sure that on create we have write attributes based on required Attributes
