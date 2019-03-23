@@ -224,7 +224,9 @@ async function updateResource(context, category, serviceResult) {
       });
 
       if (context.updatingAuth.authProvidersUserPool) {
+        /* eslint-disable */
         immutables = Object.assign(immutables, userPoolProviders(context.updatingAuth.authProvidersUserPool, result, context.updatingAuth));
+        /* eslint-enable */
       }
 
       if (result.useDefault && result.useDefault === 'default') {
@@ -356,7 +358,8 @@ async function updateConfigOnEnvInit(context, category, service) {
     envParams.hostedUIProviderCreds = [];
     const inputResult = JSON.parse(result.hostedUIProviderCreds);
     const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
-    const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
+    const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta)
+      .map(h => h.ProviderName);
 
 
     currentProviders.forEach((c) => {
