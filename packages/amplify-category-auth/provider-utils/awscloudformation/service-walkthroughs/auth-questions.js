@@ -23,7 +23,12 @@ async function serviceWalkthrough(
   }
 
   if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
-    parseOAuthCreds(context, amplify);
+    const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
+    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
+    /* eslint-disable */
+    const oAuthCreds = parseOAuthCreds(context, authProvidersUserPool, hostedUIProviderMeta, resourceName, hostedUIProviderCreds);
+    /* eslint-enable */
+    context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
   if (context.updatingAuth) {
@@ -131,7 +136,9 @@ async function serviceWalkthrough(
 
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
-    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers, context.updatingAuth));
+    /* eslint-disable */
+    coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers.authProvidersUserPool, coreAnswers, context.updatingAuth));
+    /* eslint-enable */
   }
 
   // making sure that on create we have write attributes based on required Attributes
@@ -189,15 +196,15 @@ function identityPoolProviders(coreAnswers, projectType) {
   hostedUIProviderMeta is saved in parameters.json.
   hostedUIprovierCreds is saved in team-providers.
 */
-function userPoolProviders(coreAnswers, prevAnswers) {
+function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
     return null;
   }
   const answers = Object.assign(prevAnswers || {}, coreAnswers);
   answers.requiredAttributes = answers.requiredAttributes.concat('username');
   const res = {};
-  if (coreAnswers.authProvidersUserPool) {
-    res.hostedUIProviderMeta = JSON.stringify(coreAnswers.authProvidersUserPool
+  if (oAuthProviders) {
+    res.hostedUIProviderMeta = JSON.stringify(oAuthProviders
       .map((el) => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         const scopes = [];
@@ -222,7 +229,7 @@ function userPoolProviders(coreAnswers, prevAnswers) {
           AttributeMapping: maps,
         };
       }));
-    res.hostedUIProviderCreds = JSON.stringify(coreAnswers.authProvidersUserPool
+    res.hostedUIProviderCreds = JSON.stringify(oAuthProviders
       .map(el => ({ ProviderName: el, client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`], client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`] })));
   }
   return res;
@@ -293,23 +300,26 @@ function parseOAuthMetaData(previousAnswers) {
 /*
   Deserialize oAuthCredentials for CLI update flow
 */
-function parseOAuthCreds(context, amplify) {
-  const previousAnswers = context.updatingAuth;
-  if (previousAnswers && previousAnswers.authProvidersUserPool) {
-    const providers = previousAnswers.authProvidersUserPool;
-    const parsedMetaData = JSON.parse(previousAnswers.hostedUIProviderMeta);
-    const rawCreds = amplify.loadEnvResourceParameters(context, 'auth', previousAnswers.resourceName);
-    if (rawCreds) {
-      const parsedCreds = JSON.parse(rawCreds.hostedUIProviderCreds);
-      providers.forEach((el) => {
+function parseOAuthCreds(context, providers, metadata, resourceName, envCreds) {
+  const providerKeys = {};
+  try {
+    const parsedMetaData = JSON.parse(metadata);
+    const parsedCreds = JSON.parse(envCreds);
+    providers.forEach((el) => {
+      try {
         const provider = parsedMetaData.find(i => i.ProviderName === el);
         const creds = parsedCreds.find(i => i.ProviderName === el);
-        previousAnswers[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
-        previousAnswers[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
-        previousAnswers[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
-      });
-    }
+        providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
+        providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+        providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
+      } catch (e) {
+        return null;
+      }
+    });
+  } catch (e) {
+    return {};
   }
+  return providerKeys;
 }
 
 
@@ -326,4 +336,4 @@ function filterInputs(coreAnswers, context, inputs) {
   return inputs;
 }
 
-module.exports = { serviceWalkthrough, userPoolProviders };
+module.exports = { serviceWalkthrough, userPoolProviders, parseOAuthCreds };
