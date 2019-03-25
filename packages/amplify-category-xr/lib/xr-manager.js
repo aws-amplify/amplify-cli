@@ -117,7 +117,12 @@ async function addScene(context) {
 
   await addSceneConfig(context, sceneName);
 
-  context.print.info(`${sceneName} has been added.`);
+  context.print.success(`Successfully added resource ${sceneName} locally`);
+  context.print.info('');
+  context.print.success('Some next steps:');
+  context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
+  context.print.info('"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud');
+  context.print.info('');
 }
 
 async function addSceneConfig(context, sceneName) {
@@ -139,11 +144,20 @@ async function addSceneConfig(context, sceneName) {
           const sumerianResourceUrl = new URL(sumerianConfig.url);
           // If region is not an existing parameter, extract from the resource url
           if (!sumerianConfig.region) {
+            try {
             sumerianConfig.region = getRegionFromHost(sumerianResourceUrl.host);
+            } catch(e) {
+              return 'Could not read the scene region. Make sure the scene url is valid.';
+            }
           }
           // If projectName is not an existing parameter, extract from the resource url
           if (!sumerianConfig.projectName) {
-            sumerianConfig.projectName = getProjectNameFromPath(sumerianResourceUrl.pathname);
+            try {
+              let projectName = getProjectNameFromPath(sumerianResourceUrl.pathname);
+              sumerianConfig.projectName = decodeURIComponent(projectName);
+            } catch(e) {
+              return 'Could not read the scene projectName. Make sure the scene url is valid.';
+            }
           }
         }
       } catch (e) {
