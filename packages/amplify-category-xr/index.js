@@ -30,7 +30,6 @@ async function initEnv(context) {
     if (useConfigAnswer.useExistingEnvConfig) {
       // Get environments with XR defined
       const envsWithXR = [];
-      // for (const [env, config] of Object.entries(allEnvs)) {
       Object.entries(allEnvs).forEach(([env, config]) => {
         if (XR_CATEGORY_NAME in config.categories) {
           envsWithXR.push(env);
@@ -44,7 +43,6 @@ async function initEnv(context) {
         choices: envsWithXR,
       }).then((envAnswer) => {
         const xrResources = allEnvs[envAnswer.envToUse].categories[XR_CATEGORY_NAME];
-        // for (const [resource, config] of Object.entries(xrResources)) {
         Object.entries(xrResources).forEach(([resource, config]) => {
           const options = {
             service: SUMERIAN_SERVICE_NAME,
@@ -67,7 +65,6 @@ async function initEnv(context) {
     context.print.warning(xrResources);
 
     // Hydrate XR resources defined in cloud backend config
-    // for (const sceneName of xrResources) {
     for (let i = 0; i < xrResources.length; i += 1) {
       await xrManager.addSceneConfig(context, xrResources[i]);
     }
