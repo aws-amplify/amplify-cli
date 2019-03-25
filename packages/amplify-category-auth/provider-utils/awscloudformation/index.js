@@ -2,7 +2,6 @@ const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
-const { userPoolProviders } = require('../awscloudformation/service-walkthroughs/auth-questions');
 
 let serviceMetadata;
 
@@ -21,6 +20,28 @@ const ENV_SPECIFIC_PARAMS = [
   'amazonAppIdUserPool',
   'amazonAppSecretUserPool',
   'hostedUIProviderCreds',
+];
+
+const safeDefaults = [
+  'allowUnauthenticatedIdentities',
+  'thirdPartyAuth',
+  'authProviders',
+  'smsAuthenticationMessage',
+  'emailVerificationSubject',
+  'emailVerificationMessage',
+  'smsVerificationMessage',
+  'passwordPolicyMinLength',
+  'passwordPolicyCharacters',
+  'userpoolClientRefreshTokenValidity',
+];
+
+const protectedValues = [
+  'resourceName',
+  'userPoolName',
+  'identityPoolName',
+  'usernameAttributes',
+  'autoVerifiedAttributes',
+  'requiredAttributes',
 ];
 
 const privateKeys = [
@@ -158,39 +179,6 @@ async function updateResource(context, category, serviceResult) {
     provider,
   } = serviceMetadata;
 
-  let baseUpdateOptions = [
-    {
-      name: 'Walkthrough all the auth configurations',
-      value: 'all',
-    },
-    {
-      name: 'Add/Edit signin and signout redirect URIs',
-      value: 'callbacks',
-      condition: 'oAuthMetadata',
-      conditionMsg: 'You have not initially configured OAuth.',
-    },
-    {
-      name: 'Update OAuth social providers',
-      value: 'providers',
-      condition: 'hostedUIProviderCreds',
-      conditionMsg: 'You have not initially configured OAuth.',
-    },
-  ];
-
-  baseUpdateOptions = baseUpdateOptions.map((o) => {
-    if (o.condition && !context.updatingAuth[o.condition]) {
-      return Object.assign(o, { disabled: `Disabled: ${o.conditionMsg}` });
-    }
-    return o;
-  });
-
-  context.updateFlow = await inquirer.prompt({
-    name: 'type',
-    message: 'What do you want to edit?',
-    type: 'list',
-    choices: baseUpdateOptions,
-  });
-
   return serviceQuestions(
     context,
     defaultValuesFilename,
@@ -199,7 +187,7 @@ async function updateResource(context, category, serviceResult) {
   )
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, getAllDefaults } = require(defaultValuesSrc);
+      const { functionMap } = require(defaultValuesSrc);
       const { authProviders } = require(`${__dirname}/assets/string-maps.js`);
 
       /* if user has used the default configuration,
@@ -208,51 +196,30 @@ async function updateResource(context, category, serviceResult) {
         result.authSelections = 'identityPoolAndUserPool';
       }
 
-      const defaults = getAllDefaults(resourceName);
+      const defaults = functionMap[result.authSelections](context.updatingAuth.resourceName);
 
-      let immutables = {};
-      // loop through service questions
-      serviceMetadata.inputs.forEach((s) => {
-        // find those that would not be displayed if user was entering values manually
-        if (!context.amplify.getWhen(s, defaults, context.updatingAuth, context.amplify)()) {
-          // if a value wouldn't be displayed,
-          // we update the immutable object with they key/value from previous answers
-          if (context.updatingAuth[s.key]) {
-            immutables[s.key] = context.updatingAuth[s.key];
+      // removing protected values from results
+      for (let i = 0; i < protectedValues.length; i += 1) {
+        if (context.updatingAuth[protectedValues[i]]) {
+          if (protectedValues[i] !== 'identityPoolName') {
+            delete result[protectedValues[i]];
+          } else if (result.authSelections === 'userPoolOnly') {
+            delete result[protectedValues[i]];
           }
         }
-      });
-
-      if (context.updatingAuth.authProvidersUserPool) {
-        /* eslint-disable */
-        immutables = Object.assign(immutables, userPoolProviders(context.updatingAuth.authProvidersUserPool, result, context.updatingAuth));
-        /* eslint-enable */
       }
 
-      if (result.useDefault && result.useDefault === 'default') {
-        /* if the user elects to use defaults during an edit,
-         * we grab all of the static defaults
-         * but make sure to pass existing resource name so we don't create a 2nd auth resource
-         * and we don't overwrite immutables from the originally entered values */
-
-        props = Object.assign(defaults, immutables, result);
-      } else {
-        /* if the user does NOT choose defaults during an edit,
-         * we merge actual answers object into props object of previous answers,
-         * and in turn merge these into the defaults
-         * ensuring that manual entries override previous which then
-         * override defaults (except immutables) */
-        props = Object.assign(
-          functionMap[result.authSelections](context.updatingAuth.resourceName),
-          context.updatingAuth,
-          immutables,
-          result,
-        ); // eslint-disable-line max-len
+      if (result.useDefault && ['default', 'defaultSocial'].includes(result.useDefault)) {
+        for (let i = 0; i < safeDefaults.length; i += 1) {
+          delete context.updatingAuth[safeDefaults[i]];
+        }
       }
+      props = Object.assign(defaults, context.updatingAuth, result);
+
 
       if (
         (!result.updateFlow && !result.thirdPartyAuth) ||
-        (result.updateFlow === 'all' && !result.thirdPartyAuth)
+        (result.updateFlow === 'manual' && !result.thirdPartyAuth)
       ) {
         delete props.selectedParties;
         delete props.authProviders;
@@ -354,25 +321,26 @@ async function updateConfigOnEnvInit(context, category, service) {
     resourceParams,
   );
   const envParams = {};
-  if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
-    envParams.hostedUIProviderCreds = [];
-    const inputResult = JSON.parse(result.hostedUIProviderCreds);
-    const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
-    const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta)
-      .map(h => h.ProviderName);
-
-
-    currentProviders.forEach((c) => {
-      const previousProvider = previousResult.find(p => p.ProviderName === c);
-      const resultProvider = inputResult.find(r => r.ProviderName === c);
-      envParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
-    });
-
-    envParams.hostedUIProviderCreds = JSON.stringify(envParams.hostedUIProviderCreds);
-  } else if (currentEnvSpecificValues.hostedUIProviderCreds && !result.hostedUIProviderCreds) {
-    envParams.hostedUIProviderCreds = currentEnvSpecificValues.hostedUIProviderCreds;
-  } else if (!currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
-    envParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
+  if (resourceParams.hostedUIProviderMeta) {
+    if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+      envParams.hostedUIProviderCreds = [];
+      const inputResult = JSON.parse(result.hostedUIProviderCreds);
+      const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
+      if (resourceParams.hostedUIProviderMeta) {
+        const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta)
+          .map(h => h.ProviderName);
+        currentProviders.forEach((c) => {
+          const previousProvider = previousResult.find(p => p.ProviderName === c);
+          const resultProvider = inputResult.find(r => r.ProviderName === c);
+          envParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
+        });
+        envParams.hostedUIProviderCreds = JSON.stringify(envParams.hostedUIProviderCreds);
+      }
+    } else if (currentEnvSpecificValues.hostedUIProviderCreds && !result.hostedUIProviderCreds) {
+      envParams.hostedUIProviderCreds = currentEnvSpecificValues.hostedUIProviderCreds;
+    } else if (!currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+      envParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
+    }
   }
   ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in result &&

@@ -8,7 +8,26 @@
 				"type": "list",
 				"default": true,
 				"learnMore": "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",
-				"map": "defaultPrompMap"
+				"map": "defaultPrompMap",
+				"andConditions": [
+					{
+						"preventEdit": "always"
+					}
+				]
+			},
+			{
+				"key": "updateFlow",
+				"question": "What do you want to edit?",
+				"type": "list",
+				"default": true,
+				"filter": "updateOptions",
+				"learnMore": "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",
+				"map": "updateFlowMap",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					}
+				]
 			},
 			{
 				"key": "authSelections",
@@ -16,7 +35,14 @@
 				"required": true,
 				"type": "list",
 				"map": "authSelectionMap",
-				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool."
+				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",
+				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
+					}
+				]
 			},
 			{
 				"key": "resourceName",
@@ -237,6 +263,8 @@
 				"question": "How do you want end users to be able to sign up?",
 				"type": "list",
 				"map": "signInOptions",
+				"prefix": "Warning: you will not be able to edit these selections.",
+				"prefixColor": "red",
 				"learnMore": "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
 				"required": true,
 				"andConditions": [
@@ -247,18 +275,6 @@
 					},
 					{
 						"preventEdit": "always"
-					}
-				],
-				"orConditions": [
-					{
-						"key": "useDefault",
-						"value": "manual",
-						"operator": "="
-					},
-					{
-						"key": "useDefault",
-						"value": "defaultSocial",
-						"operator": "="
 					}
 				]
 			},
@@ -510,6 +526,8 @@
 			{
 				"key": "requiredAttributes",
 				"question": "What attributes are required for signing up?",
+				"prefix": "Warning: you will not be able to edit these selections.",
+				"prefixColor": "red",
 				"required": true,
 				"filter": "attributes",
 				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
@@ -524,18 +542,6 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
-					}
-				],
-				"orConditions": [
-					{
-						"key": "useDefault",
-						"value": "manual",
-						"operator": "="
-					},
-					{
-						"key": "useDefault",
-						"value": "defaultSocial",
-						"operator": "="
 					}
 				]
 			},
@@ -632,17 +638,10 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
-					}
-				],
-				"orConditions": [
-					{
-						"key": "useDefault",
-						"value": "manual",
-						"operator": "="
 					},
 					{
 						"key": "useDefault",
-						"value": "defaultSocial",
+						"value": "manual",
 						"operator": "="
 					}
 				]
@@ -694,7 +693,7 @@
 				"key": "EditURLS",
 				"question": "Which redirect signin URIs do you want to edit?",
 				"type": "multiselect",
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
@@ -726,7 +725,7 @@
 			{
 				"key": "addCallbackOnUpdate",
 				"question": "Do you want to add redirect signin URIs?",
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
@@ -755,7 +754,7 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your new redirect signin URI:",
 				"required": true,
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "CallbackURLs",
 				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
@@ -804,7 +803,7 @@
 				"key": "editLogoutURLs",
 				"question": "Which redirect signout URIs do you want to edit?",
 				"type": "multiselect",
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
@@ -836,7 +835,7 @@
 			{
 				"key": "addLogoutOnUpdate",
 				"question": "Do you want to add redirect signout URIs?",
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
@@ -865,7 +864,7 @@
 				"key": "newLogoutURLs",
 				"question": "Enter your new redirect signout URI:",
 				"required": true,
-				"updateGroups": ["callbacks", "all"],
+				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "LogoutURLs",
 				"addAnotherLoop" : "redirect signout URI",
 				"andConditions": [
@@ -949,7 +948,7 @@
 			{
 				"key": "authProvidersUserPool",
 				"question": "Select the identity providers you want to configure for your user pool:",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"temp": true,
 				"type": "multiselect",
 				"map": "hostedUIProviders",
@@ -976,7 +975,7 @@
 				"key": "facebookAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
 				"question": "Enter your Facebook App ID: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -989,7 +988,7 @@
 			{
 				"key": "facebookAppSecretUserPool",
 				"question": "Enter your Facebook App Secret: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1003,7 +1002,7 @@
 				"key": "googleAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
 				"question": "Enter your Google Web Client ID: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1016,7 +1015,7 @@
 			{
 				"key": "googleAppSecretUserPool",
 				"question": "Enter your Google Web Client Secret: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1030,7 +1029,7 @@
 				"key": "amazonAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
 				"question": "Enter your Amazon App ID: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
@@ -1043,7 +1042,7 @@
 			{
 				"key": "amazonAppSecretUserPool",
 				"question": "Enter your Amazon App Secret: ",
-				"updateGroups": ["providers", "all"],
+				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
 					{
