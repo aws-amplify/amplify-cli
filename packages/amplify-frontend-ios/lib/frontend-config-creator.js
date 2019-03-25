@@ -16,7 +16,20 @@ function createAmplifyConfig(context, amplifyResources) {
   }
 }
 
-function createAWSConfig(context, amplifyResources) {
+function createAWSConfig(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSConfig = getAWSConfigObject(amplifyResources);
+  const cloudAWSConfig = getAWSConfigObject(cloudAmplifyResources);
+  const currentAWSConfig = getCurrentAWSConfig(context);
+
+  const customConfigs = getCustomConfigs(cloudAWSConfig, currentAWSConfig);
+
+  Object.assign(newAWSConfig, customConfigs);
+
+  generateAWSConfigFile(context, newAWSConfig);
+  return context;
+}
+
+function getAWSConfigObject(amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
     UserAgent: 'aws-amplify/cli',
@@ -45,8 +58,34 @@ function createAWSConfig(context, amplifyResources) {
       default: break;
     }
   });
-  generateAWSConfigFile(context, configOutput);
-  return context;
+
+  return configOutput;
+}
+
+function getCurrentAWSConfig(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ?
+    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const srcDirPath = path.join(projectPath);
+  const targetFilePath = path.join(srcDirPath, constants.awsConfigFilename);
+
+  let awsConfig = {};
+
+  if (fs.existsSync(targetFilePath)) {
+    awsConfig = JSON.parse(fs.readFileSync(targetFilePath));
+  }
+  return awsConfig;
+}
+
+
+function getCustomConfigs(cloudAWSConfig, currentAWSConfig) {
+  const customConfigs = {};
+  Object.keys(currentAWSConfig).forEach((key) => {
+    if (!cloudAWSConfig[key]) {
+      customConfigs[key] = currentAWSConfig[key];
+    }
+  });
+  return customConfigs;
 }
 
 function generateAWSConfigFile(context, configOutput) {
