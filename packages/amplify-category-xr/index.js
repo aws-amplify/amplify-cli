@@ -68,9 +68,9 @@ async function initEnv(context) {
 
     // Hydrate XR resources defined in cloud backend config
     // for (const sceneName of xrResources) {
-    xrResources.forEach(async (sceneName) => {
-      await xrManager.addSceneConfig(context, sceneName);
-    });
+    for (let i = 0; i < xrResources.length; i+=1) {
+      await xrManager.addSceneConfig(context, xrResources[i]);
+    }
   }
 }
 
