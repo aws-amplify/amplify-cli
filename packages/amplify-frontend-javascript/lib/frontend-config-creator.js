@@ -32,11 +32,33 @@ function createAmplifyConfig(context, amplifyResources) {
   }
 }
 
-async function createAWSExports(context, amplifyResources) {
-  const { serviceResourceMapping } = amplifyResources;
+async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
+  const newAWSExports = getAWSExportsObject(amplifyResources);
+  const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
+  const currentAWSExports = await getCurrentAWSExports(context);
+
+  const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
+
+  Object.assign(newAWSExports, customConfigs);
+  generateAWSExportsFile(context, newAWSExports);
+  return context;
+}
+
+function getCustomConfigs(cloudAWSExports, currentAWSExports) {
+  const customConfigs = {};
+  Object.keys(currentAWSExports).forEach((key) => {
+    if (!cloudAWSExports[key]) {
+      customConfigs[key] = currentAWSExports[key];
+    }
+  });
+  return customConfigs;
+}
+
+function getAWSExportsObject(resources) {
+  const { serviceResourceMapping } = resources;
   const configOutput = {};
 
-  const projectRegion = amplifyResources.metadata.Region;
+  const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
@@ -60,8 +82,29 @@ async function createAWSExports(context, amplifyResources) {
       default: break;
     }
   });
-  await generateAWSExportsFile(context, configOutput);
-  return context;
+
+  return configOutput;
+}
+
+async function getCurrentAWSExports(context) {
+  const { amplify } = context;
+  const projectPath = context.exeInfo ?
+    context.exeInfo.localEnvInfo.projectPath : amplify.getEnvInfo().projectPath;
+  const projectConfig = context.exeInfo ?
+    context.exeInfo.projectConfig[constants.Label] : amplify.getProjectConfig()[constants.Label];
+  const frontendConfig = projectConfig.config;
+  const srcDirPath = path.join(projectPath, frontendConfig.SourceDir);
+
+  const targetFilePath = path.join(srcDirPath, constants.exportsFilename);
+  let awsExports = {};
+
+  if (fs.existsSync(targetFilePath)) {
+    await context.patching.replace(targetFilePath, 'export default awsmobile;\n', 'module.exports = {awsmobile};\n');
+    awsExports = require(targetFilePath).awsmobile;
+    await context.patching.replace(targetFilePath, 'module.exports = {awsmobile};\n', 'export default awsmobile;\n');
+  }
+
+  return awsExports;
 }
 
 async function generateAWSExportsFile(context, configOutput) {

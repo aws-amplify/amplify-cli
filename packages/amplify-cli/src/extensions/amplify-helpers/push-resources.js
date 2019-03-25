@@ -50,8 +50,12 @@ async function pushResources(context, category, resourceName) {
 
   if (continueToPush) {
     try {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+
       await providersPush(context);
-      await onCategoryOutputsChange(context);
+      await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
