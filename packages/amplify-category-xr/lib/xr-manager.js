@@ -145,17 +145,17 @@ async function addSceneConfig(context, sceneName) {
           // If region is not an existing parameter, extract from the resource url
           if (!sumerianConfig.region) {
             try {
-            sumerianConfig.region = getRegionFromHost(sumerianResourceUrl.host);
-            } catch(e) {
+              sumerianConfig.region = getRegionFromHost(sumerianResourceUrl.host);
+            } catch (e) {
               return 'Could not read the scene region. Make sure the scene url is valid.';
             }
           }
           // If projectName is not an existing parameter, extract from the resource url
           if (!sumerianConfig.projectName) {
             try {
-              let projectName = getProjectNameFromPath(sumerianResourceUrl.pathname);
+              const projectName = getProjectNameFromPath(sumerianResourceUrl.pathname);
               sumerianConfig.projectName = decodeURIComponent(projectName);
-            } catch(e) {
+            } catch (e) {
               return 'Could not read the scene projectName. Make sure the scene url is valid.';
             }
           }
