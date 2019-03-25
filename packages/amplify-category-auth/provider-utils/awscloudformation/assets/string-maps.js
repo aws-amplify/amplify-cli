@@ -24,6 +24,35 @@ const defaultPrompMap = [
   ...learnMoreOption,
 ];
 
+const updateFlowMap = [
+  {
+    name: 'Default configuration',
+    value: 'default',
+    conditionKey: 'useDefault',
+  },
+  {
+    name: 'Default configuration with Social Provider (Federation)',
+    value: 'defaultSocial',
+    conditionKey: 'useDefault',
+  },
+  {
+    name: 'Walkthrough all the auth configurations',
+    value: 'manual',
+  },
+  {
+    name: 'Add/Edit signin and signout redirect URIs',
+    value: 'callbacks',
+    conditionKey: 'CallbackURLs',
+    conditionMsg: 'You have not initially configured OAuth.',
+  },
+  {
+    name: 'Update OAuth social providers',
+    value: 'providers',
+    conditionKey: 'hostedUIProviderCreds',
+    conditionMsg: 'You have not initially configured OAuth.',
+  },
+];
+
 const booleanOptions = [
   {
     name: 'Yes',
@@ -455,6 +484,7 @@ const getAllMaps = ((edit) => {
     oAuthScopes,
     authorizeScopes,
     attributeProviderMap,
+    updateFlowMap,
   };
 });
 
@@ -477,4 +507,5 @@ module.exports = {
   oAuthScopes,
   messages,
   attributeProviderMap,
+  updateFlowMap,
 };

@@ -11,7 +11,7 @@ async function serviceWalkthrough(
   serviceMetadata,
   coreAnswers = {},
 ) {
-  let { inputs } = serviceMetadata;
+  const { inputs } = serviceMetadata;
   const { amplify } = context;
   const { parseInputs } = require(`${__dirname}/../question-factories/core-questions.js`);
   const projectType = amplify.getProjectConfig().frontend;
@@ -31,15 +31,17 @@ async function serviceWalkthrough(
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
-  if (context.updatingAuth) {
-    inputs = filterInputs(coreAnswers, context, inputs);
-  }
-
-
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
     const questionObj = inputs[j];
+
+    if (context.updatingAuth &&
+      coreAnswers.updateFlow &&
+      filterInput(inputs[j], coreAnswers.updateFlow)
+    ) {
+      j += 1;
+    }
 
     // CREATE QUESTION OBJECT
     const q = await parseInputs(
@@ -60,6 +62,10 @@ async function serviceWalkthrough(
       questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
     // ITERATOR BLOCK
     } else if (
+      /*
+        if the input has an 'iterator' value, we generate a loop which uses the iterator value as a
+        key to find the array of values it should splice into.
+      */
       questionObj.iterator &&
       answer[questionObj.key] &&
       answer[questionObj.key].length > 0
@@ -103,32 +109,34 @@ async function serviceWalkthrough(
       if (!addAnother.repeater) {
         j += 1;
       }
-    // INCREMENT QUESTION LOOP COUNTER
-    } else if (coreAnswers.useDefault === 'default') {
-      if (!context.updatingAuth) {
-        const attributeInputs = inputs.filter(i => ['requiredAttributes', 'usernameAttributes'].includes(i.key));
-        for (let a = 0; a < attributeInputs.length; a += 1) {
-          const attributeQuestion = await parseInputs(
-            attributeInputs[a],
-            amplify,
-            defaultValuesFilename,
-            stringMapsFilename,
-            coreAnswers,
-            context,
-          );
-          attributeQuestion.when = true;
-          const attributeAnswer = await inquirer.prompt(attributeQuestion);
-          coreAnswers = { ...coreAnswers, ...attributeAnswer };
+    } else if (questionObj.key === 'updateFlow') {
+      /*
+        if the user selects a default or fully manual config option during an update,
+        we set the useDefault value so that the appropriate questions are displayed
+      */
+      if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
+        answer.useDefault = answer.updateFlow;
+        if (answer.useDefault === 'defaultSocial') {
+          coreAnswers.hostedUI = true;
         }
+        delete answer.updateFlow;
       }
-      break;
-    } else {
-      j += 1;
       coreAnswers = { ...coreAnswers, ...answer };
+      j += 1;
+    } else if (!context.updatingAuth && answer.useDefault && answer.useDefault === 'defaultSocial') {
+      // if the user selects defaultSocial, we set hostedUI to true to avoid reasking this question
+      coreAnswers = { ...coreAnswers, ...answer };
+      coreAnswers.authSelections = 'identityPoolAndUserPool';
+      coreAnswers.hostedUI = true;
+      j += 1;
+    } else {
+      coreAnswers = { ...coreAnswers, ...answer };
+      j += 1;
     }
   }
 
   // POST-QUESTION LOOP PARSING
+
   // formatting data for identity pool providers
   if (coreAnswers.thirdPartyAuth) {
     identityPoolProviders(coreAnswers, projectType);
@@ -150,11 +158,11 @@ async function serviceWalkthrough(
   // formatting oAuthMetaData
   structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 
-  if (coreAnswers.usernameAttributes) {
+  if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
     if (coreAnswers.usernameAttributes === 'username') {
       delete coreAnswers.usernameAttributes;
     } else {
-      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes;
+      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split();
     }
   }
 
@@ -195,7 +203,6 @@ function identityPoolProviders(coreAnswers, projectType) {
       coreAnswers.audiences.push(coreAnswers.googleAndroid);
     }
   }
-
   coreAnswers.selectedParties = JSON.stringify(coreAnswers.selectedParties);
 }
 
@@ -209,7 +216,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     return null;
   }
   const answers = Object.assign(prevAnswers || {}, coreAnswers);
-  answers.requiredAttributes = answers.requiredAttributes.concat('username');
+  const attributesForMapping = JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username');
   const res = {};
   if (oAuthProviders) {
     res.hostedUIProviderMeta = JSON.stringify(oAuthProviders
@@ -217,7 +224,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
         const scopes = [];
         const maps = {};
-        answers.requiredAttributes.forEach((a) => {
+        attributesForMapping.forEach((a) => {
           const attributeKey = attributeProviderMap[a];
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
             if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
@@ -334,14 +341,11 @@ function parseOAuthCreds(context, providers, metadata, resourceName, envCreds) {
 /*
   Filter inputs for update flow
 */
-function filterInputs(coreAnswers, context, inputs) {
-  if (context.updateFlow && context.updateFlow.type && context.updateFlow.type !== 'all') {
-    coreAnswers.updateFlow = context.updateFlow.type;
-    inputs = inputs.filter(i => i.updateGroups && i.updateGroups.includes(coreAnswers.updateFlow));
-  } else if (!context.updateFlow || context.updateFlow.type === 'all') {
-    inputs = inputs.filter(i => !i.updateGroups || i.updateGroups.includes('all'));
+function filterInput(input, updateFlow) {
+  if (input.updateGroups && !input.updateGroups.includes('manual') && !input.updateGroups.includes(updateFlow.type)) {
+    return true;
   }
-  return inputs;
+  return false;
 }
 
 module.exports = { serviceWalkthrough, userPoolProviders, parseOAuthCreds };
