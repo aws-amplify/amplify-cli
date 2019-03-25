@@ -87,14 +87,14 @@ describe('When generating auth questions...', () => {
       expect(def).toEqual('my old answer');
     });
 
-    it('should return the choices from the input.options if getWhen is false', () => {
-      mockAmplify.getWhen.mockReturnValue(() => false);
-      input.type = 'list';
-      input.requiredOptions = [{ key: ['required1'] }];
-      input.options = [{ key: 'testkey', val: 'testval' }];
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices).toEqual(input.options);
-    });
+    // it('should return the choices from the input.options if getWhen is false', () => {
+    //   mockAmplify.getWhen.mockReturnValue(() => false);
+    //   input.type = 'list';
+    //   input.requiredOptions = [{ key: ['required1'] }];
+    //   input.options = [{ key: 'testkey', val: 'testval' }];
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   expect(res.choices).toEqual(input.options);
+    // });
 
     it('should render inputs of type "multiselect" as type "checkbox"', () => {
       input.type = 'multiselect';
@@ -123,23 +123,23 @@ describe('When generating auth questions...', () => {
   });
 
   describe('...and when generating complex inputs', () => {
-    it('should get mapped option values for list inputs with map values when getWhen is false but requiredOptions are present', () => {
-      mockAmplify.getWhen.mockReturnValue(() => false);
-      input.requiredOptions = 'keyone';
-      input.type = 'list';
-      input.map = 'mappedOptions1';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices).toEqual(mappedOptions1);
-    });
+    // it('should get mapped option values for list inputs with map values when getWhen is false but requiredOptions are present', () => {
+    //   mockAmplify.getWhen.mockReturnValue(() => false);
+    //   input.requiredOptions = 'keyone';
+    //   input.type = 'list';
+    //   input.map = 'mappedOptions1';
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   expect(res.choices).toEqual(mappedOptions1);
+    // });
 
-    it('should get mapped option values for list inputs with map value when getWhen is false and requiredOptions are missing ', () => {
-      mockAmplify.getWhen.mockReturnValue(() => false);
-      input.requiredOptions = [undefined];
-      input.type = 'list';
-      input.map = 'mappedOptions1';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      expect(res.choices).toEqual(mappedOptions1);
-    });
+    // it('should get mapped option values for list inputs with map value when getWhen is false and requiredOptions are missing ', () => {
+    //   mockAmplify.getWhen.mockReturnValue(() => false);
+    //   input.requiredOptions = [undefined];
+    //   input.type = 'list';
+    //   input.map = 'mappedOptions1';
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   expect(res.choices).toEqual(mappedOptions1);
+    // });
 
     it('should add required options to the inputs answers using the filter method', () => {
       mockAmplify.getWhen.mockReturnValue(() => true);
