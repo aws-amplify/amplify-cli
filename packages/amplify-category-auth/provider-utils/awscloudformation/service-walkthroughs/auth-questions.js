@@ -150,6 +150,10 @@ async function serviceWalkthrough(
   // formatting oAuthMetaData
   structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 
+  if (coreAnswers.usernameAttributes) {
+    coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split(', ');
+  }
+
   return {
     ...coreAnswers,
   };
