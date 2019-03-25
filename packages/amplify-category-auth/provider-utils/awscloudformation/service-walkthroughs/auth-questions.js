@@ -151,7 +151,11 @@ async function serviceWalkthrough(
   structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 
   if (coreAnswers.usernameAttributes) {
-    coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split(', ');
+    if (coreAnswers.usernameAttributes === 'username') {
+      delete coreAnswers.usernameAttributes;
+    } else {
+      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split(', ');
+    }
   }
 
   return {
