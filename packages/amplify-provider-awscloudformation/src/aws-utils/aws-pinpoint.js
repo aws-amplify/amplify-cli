@@ -33,6 +33,17 @@ async function getConfiguredPinpointClient(context, category, action) {
     region: mapServiceRegion(aws.config.region || configurationManager.resolveRegion()),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   });
+
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
+  if (httpProxy) {
+    const proxyAgent = require('proxy-agent');
+    aws.config.update({
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+      },
+    });
+  }
   return new aws.Pinpoint();
 }
 

@@ -51,6 +51,17 @@ function setProfile(awsConfig, profileName) {
     config[keyName] = {
       region: awsConfig.region,
     };
+
+    const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
+    if (httpProxy) {
+      const proxyAgent = require('proxy-agent');
+      aws.config.update({
+        httpOptions: {
+          agent: proxyAgent(httpProxy),
+        },
+      });
+    }
   }
 
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials));
