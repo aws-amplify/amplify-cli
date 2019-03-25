@@ -539,7 +539,7 @@ Resources:
       Role: !GetAtt 
         - UserPoolClientRole
         - Arn
-    DependsOn: UserPoolClientRole
+    DependsOn: HostedUIProvidersCustomResourceInputs
 
   OAuthCustomResourcePolicy:
     Type: 'AWS::IAM::Policy'
