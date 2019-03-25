@@ -1,5 +1,8 @@
 const inquirer = require('inquirer');
 const _ = require('lodash');
+const chalk = require('chalk');
+const chalkpipe = require('chalk-pipe');
+
 
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
@@ -11,10 +14,12 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   // Can also have some validations here based on the input json
   // Uncool implementation here
 
+  const prefix = input.prefix ? `${'\n'} ${chalkpipe(null, input.prefixColor ? chalk[input.prefixColor] : chalk.green)(input.prefix)} ${'\n'}` : '';
+
   let question = {
     name: input.key,
     message: input.question,
-    prefix: input.prefix,
+    prefix,
     suffix: input.suffix,
     when: amplify.getWhen(input, currentAnswers, context.updatingAuth, amplify),
     validate: amplify.inputValidation(input),
@@ -150,6 +155,25 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
       }
     });
     question = Object.assign({ choices }, question);
+  }
+  if (input.filter === 'updateOptions' && context.updatingAuth) {
+    const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
+    const newChoices = JSON.parse(JSON.stringify(choices));
+    choices.forEach((c) => {
+      if (c.conditionKey === 'useDefault' && context.updatingAuth[c.conditionKey] === c.value && !c.conditionMsg) {
+        const index = newChoices.findIndex(i => i.name === c.name);
+        newChoices.splice(index, 1);
+      } else if (c.conditionMsg && !context.updatingAuth[c.conditionKey]) {
+        if (context.updatingAuth.useDefault === 'defaultSocial') {
+          const index = newChoices.findIndex(i => i.name === c.name);
+          newChoices[index].disabled = `Disabled: ${c.conditionMsg}`;
+        } else {
+          const index = newChoices.findIndex(i => i.name === c.name);
+          newChoices.splice(index, 1);
+        }
+      }
+    });
+    question = Object.assign({ choices: newChoices }, question);
   }
   return question;
 }
