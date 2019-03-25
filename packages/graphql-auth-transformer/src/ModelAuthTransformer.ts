@@ -59,11 +59,24 @@ import {
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
+export type AppSyncAuthModeModes = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS'; // Introduce later: | 'AWS_IAM' | 'OPENID_CONNECT';
+const validateAuthMode = (mode: string) => {
+    if (
+        mode !== 'API_KEY' &&
+        mode !== 'AMAZON_COGNITO_USER_POOLS'
+    ) {
+        throw new Error(`Invalid auth mode ${mode}`);
+    }
+}
+export interface ModelAuthTransformerConfig {
+    authMode: AppSyncAuthModeModes
+}
 export class ModelAuthTransformer extends Transformer {
 
-    resources: ResourceFactory
+    resources: ResourceFactory;
+    config: ModelAuthTransformerConfig;
 
-    constructor() {
+    constructor(config?: ModelAuthTransformerConfig) {
         super(
             'ModelAuthTransformer',
             `
@@ -82,6 +95,8 @@ export class ModelAuthTransformer extends Transformer {
             enum ModelMutation { create update delete }
             `
         )
+        this.config = config || { authMode: 'API_KEY' };
+        validateAuthMode(this.config.authMode);
         this.resources = new ResourceFactory();
     }
 
@@ -89,9 +104,9 @@ export class ModelAuthTransformer extends Transformer {
      * Updates the GraphQL API record to use user pool auth.
      */
     private updateAPIForUserPools = (ctx: TransformerContext): void => {
-        const apiRecord = ctx.getResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID) as GraphQLAPI
-        const updated = this.resources.updateGraphQLAPIWithAuth(apiRecord)
-        ctx.setResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID, updated)
+        const apiRecord = ctx.getResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID) as GraphQLAPI;
+        const updated = this.resources.updateGraphQLAPIWithAuth(apiRecord, this.config.authMode);
+        ctx.setResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID, updated);
     }
 
     public before = (ctx: TransformerContext): void => {

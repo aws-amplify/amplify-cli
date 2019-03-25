@@ -30,7 +30,7 @@ module.exports = {
       if (channelName) {
         await pinpointHelper.ensurePinpointApp(context);
         await notificationManager.enableChannel(context, channelName);
-        multiEnvManager.writeData(context);
+        await multiEnvManager.writeData(context);
       }
     } else {
       context.print.info('All the available notification channels have already been enabled.');

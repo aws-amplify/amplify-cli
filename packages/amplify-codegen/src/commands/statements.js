@@ -10,20 +10,22 @@ const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require(
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
+  const { projectPath } = context.amplify.getEnvInfo();
   if (!projects.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
   projects.forEach(async (cfg) => {
-    const includeFiles = cfg.includes[0];
-    const opsGenDirectory =
-      cfg.amplifyExtension.docsFilePath || path.dirname(path.dirname(includeFiles));
-    const schema = path.resolve(cfg.schema);
-    if (forceDownloadSchema || jetpack.exists(schema) !== 'file') {
+    const includeFiles = path.join(projectPath, cfg.includes[0]);
+    const opsGenDirectory = cfg.amplifyExtension.docsFilePath
+      ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
+      : path.dirname(path.dirname(includeFiles));
+    const schemaPath = path.join(projectPath, cfg.schema);
+    if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
       await downloadIntrospectionSchemaWithProgress(
         context,
         cfg.amplifyExtension.graphQLApiId,
-        cfg.schema,
+        schemaPath,
         cfg.amplifyExtension.region,
       );
     }
@@ -32,7 +34,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
-    await statementsGen(schema, opsGenDirectory, {
+    await statementsGen(schemaPath, opsGenDirectory, {
       separateFiles: true,
       language,
       maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,

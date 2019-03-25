@@ -1,3 +1,4 @@
+import Output from 'cloudform-types/types/output';
 import AppSync from 'cloudform-types/types/appSync'
 import IAM from 'cloudform-types/types/iam'
 import Template from 'cloudform-types/types/template'
@@ -88,6 +89,10 @@ export class ResourceFactory {
                 [ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID]: this.makeElasticsearchDomain(),
                 [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaIAMRoleLogicalID]: this.makeStreamingLambdaIAMRole(),
                 [ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID]: this.makeDynamoDBStreamingFunction()
+            },
+            Outputs: {
+                [ResourceConstants.OUTPUTS.ElasticsearchDomainArn]: this.makeDomainArnOutput(),
+                [ResourceConstants.OUTPUTS.ElasticsearchDomainEndpoint]: this.makeDomainEndpointOutput()
             }
         }
     }
@@ -452,5 +457,35 @@ export class ResourceFactory {
         }).dependsOn([
             ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID
         ])
+    }
+
+    /**
+     * OUTPUTS
+     */
+    /**
+     * Create output to export the Elasticsearch DomainArn
+     * @returns Output
+     */
+    public makeDomainArnOutput(): Output {
+        return {
+            Description: "Elasticsearch instance Domain ARN.",
+            Value: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainArn'),
+            Export: {
+                Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", "Elasticsearch", "DomainArn"])
+            }
+        }
+    }
+    /**
+     * Create output to export the Elasticsearch DomainEndpoint
+     * @returns Output
+     */
+    public makeDomainEndpointOutput(): Output {
+        return {
+            Description: "Elasticsearch instance Domain Endpoint.",
+            Value: Fn.Join('', ['https://', Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDomainLogicalID, 'DomainEndpoint')]),
+            Export: {
+                Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", "Elasticsearch", "DomainEndpoint"])
+            }
+        }
     }
 }

@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.7...@aws-amplify/cli@1.1.8) (2019-03-22)
+
+
+### Bug Fixes
+
+* **cli:** allow update value to be other types ([c3832b6](https://github.com/aws-amplify/amplify-cli/commit/c3832b6))
+
+
+
+
+
+## [1.1.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.6...@aws-amplify/cli@1.1.7) (2019-03-05)
+
+
+### Bug Fixes
+
+* mispelling with amplify delete instructions ([1bca2cd](https://github.com/aws-amplify/amplify-cli/commit/1bca2cd))
+* remove env command instructions ([6207dc2](https://github.com/aws-amplify/amplify-cli/commit/6207dc2))
+* **cli:** added global windows npm path to plugin import ([6c1a2e7](https://github.com/aws-amplify/amplify-cli/commit/6c1a2e7))
+
+
+### Performance Improvements
+
+* speed up push ([#963](https://github.com/aws-amplify/amplify-cli/issues/963)) ([eb8b852](https://github.com/aws-amplify/amplify-cli/commit/eb8b852)), closes [#914](https://github.com/aws-amplify/amplify-cli/issues/914)
+
+
+
+
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.5...@aws-amplify/cli@1.1.6) (2019-02-26)
 
 

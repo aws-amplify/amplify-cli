@@ -13,7 +13,7 @@ describe('amplify init', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 20); // 20 minutes
+    jest.setTimeout(1000 * 60 * 60); // 1 hour
   });
 
   afterEach(async () => {

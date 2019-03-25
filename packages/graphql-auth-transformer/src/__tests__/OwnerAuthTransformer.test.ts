@@ -19,7 +19,7 @@ test('Test ModelAuthTransformer validation happy case', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer()
+            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
         ]
     })
     const out = transformer.transform(validSchema)

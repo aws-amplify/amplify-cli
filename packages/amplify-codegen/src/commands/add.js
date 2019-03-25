@@ -48,7 +48,7 @@ async function add(context, apiId = null) {
           apiDetails.apiKey = await selectAPIKey(apiDetails.apiKeys);
         }
 
-        updateAmplifyMeta(context, apiDetails);
+        await updateAmplifyMeta(context, apiDetails);
         break;
       } catch (e) {
         apiDetailSpinner.fail();

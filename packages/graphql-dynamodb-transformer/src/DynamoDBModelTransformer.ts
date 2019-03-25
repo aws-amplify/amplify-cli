@@ -153,13 +153,6 @@ export class DynamoDBModelTransformer extends Transformer {
         nonModelArray: ObjectTypeDefinitionNode[]
     ) => {
         const typeName = def.name.value
-        // Create the input types.
-        const createInput = makeCreateInputObject(def, nonModelArray, ctx)
-        const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
-        const deleteInput = makeDeleteInputObject(def)
-        ctx.addInput(createInput)
-        ctx.addInput(updateInput)
-        ctx.addInput(deleteInput)
 
         const mutationFields = [];
         // Get any name overrides provided by the user. If an empty map it provided
@@ -200,6 +193,10 @@ export class DynamoDBModelTransformer extends Transformer {
 
         // Create the mutations.
         if (shouldMakeCreate) {
+            const createInput = makeCreateInputObject(def, nonModelArray, ctx)
+            if (!ctx.getType(createInput.name.value)) {
+                ctx.addInput(createInput)
+            }
             const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName), createResolver)
             mutationFields.push(makeField(
@@ -210,6 +207,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         if (shouldMakeUpdate) {
+            const updateInput = makeUpdateInputObject(def, nonModelArray, ctx)
+            if (!ctx.getType(updateInput.name.value)) {
+                ctx.addInput(updateInput)
+            }
             const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName), updateResolver)
             mutationFields.push(makeField(
@@ -220,6 +221,10 @@ export class DynamoDBModelTransformer extends Transformer {
         }
 
         if (shouldMakeDelete) {
+            const deleteInput = makeDeleteInputObject(def)
+            if (!ctx.getType(deleteInput.name.value)) {
+                ctx.addInput(deleteInput)
+            }
             const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName), deleteResolver)
             mutationFields.push(makeField(

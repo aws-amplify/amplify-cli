@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.0.8...graphql-transformer-core@3.0.9) (2019-03-22)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [3.0.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.0.7...graphql-transformer-core@3.0.8) (2019-03-05)
+
+
+### Bug Fixes
+
+* ignore file starting with a dot when compiling configs ([#905](https://github.com/aws-amplify/amplify-cli/issues/905)) ([f094160](https://github.com/aws-amplify/amplify-cli/commit/f094160))
+
+
+
+
+
 ## [3.0.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.0.6...graphql-transformer-core@3.0.7) (2019-02-20)
 
 **Note:** Version bump only for package graphql-transformer-core

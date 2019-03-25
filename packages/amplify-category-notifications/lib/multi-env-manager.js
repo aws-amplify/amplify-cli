@@ -9,7 +9,7 @@ async function initEnv(context) {
   if (pinpointNotificationsMeta) {
     // remove this line after init and init-push are separated.
     await pushChanges(context, pinpointNotificationsMeta);
-    writeData(context);
+    await writeData(context);
   }
   return pinpointNotificationsMeta;
 }
@@ -178,7 +178,7 @@ async function pushChanges(context, pinpointNotificationsMeta) {
   await sequential(tasks);
 }
 
-function writeData(context) {
+async function writeData(context) {
   const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
   let pinpointMeta;
   if (categoryMeta) {
@@ -213,7 +213,7 @@ function writeData(context) {
   writeBackendConfig(pinpointMeta, context.amplify.pathManager.getCurrentBackendConfigFilePath());
   writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getAmplifyMetaFilePath());
   writeAmplifyMeta(categoryMeta, context.amplify.pathManager.getCurentAmplifyMetaFilePath());
-  context.amplify.onCategoryOutputsChange(context);
+  await context.amplify.onCategoryOutputsChange(context);
 }
 
 function writeTeamProviderInfo(pinpointMeta, context) {

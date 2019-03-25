@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const archiver = require('archiver');
 const cfnLint = require('cfn-lint');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
@@ -13,6 +12,7 @@ const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
+const archiver = require('../src/utils/archiver');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -167,21 +167,7 @@ function storeCurrentCloudBackend(context) {
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const output = fs.createWriteStream(zipFilePath);
-
-  return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      resolve({ zipFilePath, zipFilename });
-    });
-    output.on('error', () => {
-      reject(new Error('Failed to zip code.'));
-    });
-
-    const zip = archiver.create('zip', {});
-    zip.pipe(output);
-    zip.directory(currentCloudBackendDir, false);
-    zip.finalize();
-  })
+  return archiver.run(currentCloudBackendDir, zipFilePath)
     .then((result) => {
       const s3Key = `${result.zipFilename}`;
       return new S3(context)
@@ -205,7 +191,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const files = fs.readdirSync(resourceDir);
     // Fetch all the Cloudformation templates for the resource (can be json or yml)
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = files.filter(file => file.indexOf('template') !== -1 && file.indexOf('.') !== 0);
     for (let j = 0; j < cfnFiles.length; j += 1) {
       const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
       try {
