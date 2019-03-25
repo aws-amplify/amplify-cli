@@ -154,7 +154,7 @@ async function serviceWalkthrough(
     if (coreAnswers.usernameAttributes === 'username') {
       delete coreAnswers.usernameAttributes;
     } else {
-      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes.split(', ');
+      coreAnswers.usernameAttributes = coreAnswers.usernameAttributes;
     }
   }
 
