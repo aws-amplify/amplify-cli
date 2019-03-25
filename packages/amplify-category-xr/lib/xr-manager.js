@@ -64,7 +64,6 @@ async function setupAccess(context, resourceName) {
 async function configure(context) {
   if (isXRSetup(context)) {
     updateScene(context);
-    // configureAccess(context);
   } else {
     context.print.error('You have NOT added the XR category yet.');
   }
