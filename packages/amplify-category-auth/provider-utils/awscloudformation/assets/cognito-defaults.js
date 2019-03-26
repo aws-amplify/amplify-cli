@@ -57,6 +57,7 @@ const userPoolDefaults = projectName => ({
   userpoolClientName: `${projectName}_app_client`,
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
+  userpoolClientWriteAttributes: ['email'],
   userpoolClientReadAttributes: ['email'],
   mfaLambdaRole: `${projectName}_totp_lambda_role`,
   mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,

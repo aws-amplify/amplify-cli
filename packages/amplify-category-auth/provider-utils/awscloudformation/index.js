@@ -151,7 +151,6 @@ async function addResource(context, category, service) {
 
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
-
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
