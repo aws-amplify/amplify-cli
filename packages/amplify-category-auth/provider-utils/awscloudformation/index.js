@@ -201,11 +201,7 @@ async function updateResource(context, category, serviceResult) {
       // removing protected values from results
       for (let i = 0; i < protectedValues.length; i += 1) {
         if (context.updatingAuth[protectedValues[i]]) {
-          if (protectedValues[i] !== 'identityPoolName') {
-            delete result[protectedValues[i]];
-          } else if (result.authSelections === 'userPoolOnly') {
-            delete result[protectedValues[i]];
-          }
+          delete result[protectedValues[i]];
         }
       }
 
