@@ -149,12 +149,6 @@ async function serviceWalkthrough(
     /* eslint-enable */
   }
 
-  // making sure that on create we have write attributes based on required Attributes
-  if (!context.updatingAuth && !coreAnswers.userpoolClientWriteAttributes) {
-    const writeDefaults = { userpoolClientWriteAttributes: coreAnswers.requiredAttributes };
-    coreAnswers = Object.assign(coreAnswers, writeDefaults);
-  }
-
   // formatting oAuthMetaData
   structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
 

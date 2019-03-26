@@ -117,19 +117,21 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     const { requiredAttributes } = Object.assign(context.updatingAuth ?
       context.updatingAuth :
       {}, currentAnswers);
-    const attrMap = getAllMaps().attributeProviderMap;
-    requiredAttributes.forEach((attr) => {
-      choices.forEach((choice) => {
-        choice.missingAttributes = [];
-        if (!attrMap[attr] || !attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
-          choice.missingAttributes = choice.missingAttributes.length < 1 ?
-            [attr] :
-            choice.missingAttributes.concat(attr);
-          const newList = choice.missingAttributes.join(', ');
-          choice.disabled = `Your userpool is configured to require ${newList.substring(0, newList.length)}, which cannot be retrieved from ${choice.name}`;
-        }
+    if (requiredAttributes) {
+      const attrMap = getAllMaps().attributeProviderMap;
+      requiredAttributes.forEach((attr) => {
+        choices.forEach((choice) => {
+          choice.missingAttributes = [];
+          if (!attrMap[attr] || !attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
+            choice.missingAttributes = choice.missingAttributes.length < 1 ?
+              [attr] :
+              choice.missingAttributes.concat(attr);
+            const newList = choice.missingAttributes.join(', ');
+            choice.disabled = `Your userpool is configured to require ${newList.substring(0, newList.length)}, which cannot be retrieved from ${choice.name}`;
+          }
+        });
       });
-    });
+    }
     question = Object.assign({ choices }, question);
   }
   if (input.filter === 'attributes') {
