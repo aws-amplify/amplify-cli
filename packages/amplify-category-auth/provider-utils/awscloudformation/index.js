@@ -151,7 +151,6 @@ async function addResource(context, category, service) {
 
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
-
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
@@ -201,11 +200,7 @@ async function updateResource(context, category, serviceResult) {
       // removing protected values from results
       for (let i = 0; i < protectedValues.length; i += 1) {
         if (context.updatingAuth[protectedValues[i]]) {
-          if (protectedValues[i] !== 'identityPoolName') {
-            delete result[protectedValues[i]];
-          } else if (result.authSelections === 'userPoolOnly') {
-            delete result[protectedValues[i]];
-          }
+          delete result[protectedValues[i]];
         }
       }
 
