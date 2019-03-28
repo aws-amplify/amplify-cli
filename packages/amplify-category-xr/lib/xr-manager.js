@@ -16,7 +16,6 @@ async function ensureSetup(context, resourceName) {
 
 async function setupAccess(context, resourceName) {
   let templateFilePath = path.join(__dirname, constants.TemplateFileName);
-  context.print.info(templateFilePath);
   const template = JSON.parse(fs.readFileSync(templateFilePath));
 
   const answer = await inquirer.prompt({
