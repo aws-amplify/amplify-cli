@@ -103,10 +103,11 @@ async function addScene(context) {
     message: 'Provide a name for the scene:',
     validate: (name) => {
       if (existingScenes.includes(name)) {
-        return `${name} already exists, scene name must be a unique within the project`;
+        return `${name} already exists. The scene name must be unique within the project`;
       }
-      if (name === '') {
-        return 'The scene name cannot be empty';
+
+      if (!isSceneNameValid(name)) {
+        return 'Project name should be between 3 and 20 characters and alphanumeric';
       }
       return true;
     },
@@ -212,6 +213,12 @@ async function remove(context) {
     });
 }
 
+function console(context) {
+  const consoleUrl = getSumerianConsoleUrl(context);
+  context.print.info(chalk.green(consoleUrl));
+  opn(consoleUrl, { wait: false });
+}
+
 function getSumerianConsoleUrl(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
   const region = amplifyMeta.providers.awscloudformation.Region;
@@ -245,10 +252,11 @@ function getRegionFromHost(host) {
   return region;
 }
 
-function console(context) {
-  const consoleUrl = getSumerianConsoleUrl(context);
-  context.print.info(chalk.green(consoleUrl));
-  opn(consoleUrl, { wait: false });
+function isSceneNameValid(sceneName) {
+  return sceneName &&
+          sceneName.length >= 3 &&
+          sceneName.length <= 20 &&
+          /^[a-zA-Z0-9]+$/i.test(sceneName);
 }
 
 module.exports = {
