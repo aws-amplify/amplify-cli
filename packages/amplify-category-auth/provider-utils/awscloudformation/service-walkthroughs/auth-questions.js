@@ -225,9 +225,6 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
               scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
             }
           }
-          if (el === 'Google') {
-            scopes.unshift('open_id');
-          }
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
             maps[a] = attributeKey[`${el.toLowerCase()}`].attr;
           }
