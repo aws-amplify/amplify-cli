@@ -6,6 +6,9 @@ export class ModelResourceIDs {
     static ModelTableResourceID(typeName: string): string {
         return `${typeName}Table`
     }
+    static ModelTableStreamArn(typeName: string): string {
+        return `${typeName}TableStreamArn`
+    }
     static ModelTableDataSourceID(typeName: string): string {
         return `${typeName}DataSource`
     }

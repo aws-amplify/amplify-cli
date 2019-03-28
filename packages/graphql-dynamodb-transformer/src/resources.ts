@@ -115,6 +115,16 @@ export class ResourceFactory {
         }
     }
 
+    public makeTableStreamArnOutput(resourceId: string): Output {
+        return {
+            Description: "Your DynamoDB table StreamArn.",
+            Value: Fn.GetAtt(resourceId, "StreamArn"),
+            Export: {
+                Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", resourceId, "StreamArn"])
+            }
+        }
+    }
+
     public makeDataSourceOutput(resourceId: string): Output {
         return {
             Description: "Your model DataSource name.",
