@@ -160,7 +160,7 @@
 			{
 				"key": "facebookAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
-				"question": "Enter your Facebook App ID: ",
+				"question": "Enter your Facebook App ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -173,7 +173,7 @@
 			{
 				"key": "googleClientId",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-				"question": "Enter your Google Web Client ID: ",
+				"question": "Enter your Google Web Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -186,7 +186,7 @@
 			{
 				"key": "googleIos",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
-				"question": "Enter your Google iOS Client ID: ",
+				"question": "Enter your Google iOS Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -204,7 +204,7 @@
 			{
 				"key": "googleAndroid",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
-				"question": "Enter your Google Android Client ID: ",
+				"question": "Enter your Google Android Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -222,7 +222,7 @@
 			{
 				"key": "amazonAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
-				"question": "Enter your Amazon App ID: ",
+				"question": "Enter your Amazon App ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -667,6 +667,7 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your redirect signin URI :",
 				"required": true,
+				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
 					{
@@ -694,6 +695,7 @@
 				"question": "Which redirect signin URIs do you want to edit?",
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "manual"],
+				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
@@ -754,6 +756,7 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your new redirect signin URI:",
 				"required": true,
+				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "CallbackURLs",
 				"addAnotherLoop" : "redirect signin URI",
@@ -775,6 +778,7 @@
 			},
 			{
 				"key": "newLogoutURLs",
+				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"question": "Enter your redirect signout URI:",
 				"required": true,
 				"addAnotherLoop" : "redirect signout URI",
@@ -863,6 +867,7 @@
 			{
 				"key": "newLogoutURLs",
 				"question": "Enter your new redirect signout URI:",
+				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"required": true,
 				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "LogoutURLs",
@@ -974,7 +979,7 @@
 			{
 				"key": "facebookAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
-				"question": "Enter your Facebook App ID: ",
+				"question": "Enter your Facebook App ID for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
@@ -987,7 +992,7 @@
 			},
 			{
 				"key": "facebookAppSecretUserPool",
-				"question": "Enter your Facebook App Secret: ",
+				"question": "Enter your Facebook App Secret for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
@@ -1001,7 +1006,7 @@
 			{
 				"key": "googleAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-				"question": "Enter your Google Web Client ID: ",
+				"question": "Enter your Google Web Client ID for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
@@ -1014,7 +1019,7 @@
 			},
 			{
 				"key": "googleAppSecretUserPool",
-				"question": "Enter your Google Web Client Secret: ",
+				"question": "Enter your Google Web Client Secret for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
@@ -1028,7 +1033,7 @@
 			{
 				"key": "loginwithamazonAppIdUserPool",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
-				"question": "Enter your Amazon App ID: ",
+				"question": "Enter your Amazon App ID for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
@@ -1041,7 +1046,7 @@
 			},
 			{
 				"key": "loginwithamazonAppSecretUserPool",
-				"question": "Enter your Amazon App Secret: ",
+				"question": "Enter your Amazon App Secret for your OAuth flow: ",
 				"updateGroups": ["providers", "manual"],
 				"required": true,
 				"andConditions": [
