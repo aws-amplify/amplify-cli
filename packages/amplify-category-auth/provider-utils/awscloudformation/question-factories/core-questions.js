@@ -122,7 +122,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
       requiredAttributes.forEach((attr) => {
         choices.forEach((choice) => {
           choice.missingAttributes = [];
-          if (!attrMap[attr] || !attrMap[attr][`${choice.name.toLowerCase()}`].attr) {
+          if (!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) {
             choice.missingAttributes = choice.missingAttributes.length < 1 ?
               [attr] :
               choice.missingAttributes.concat(attr);
@@ -144,7 +144,10 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
         Object.values(attrMap[choice.value]).forEach((provider, index) => {
           if (!provider.attr) {
             const providerKey = Object.keys(attrMap[choice.value])[index];
-            const providerName = providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
+            let providerName = providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
+            if (providerName === 'Loginwithamazon') {
+              providerName = 'Login With Amazon';
+            }
             choice.missingProviders = choice.missingProviders.length < 1 ?
               [providerName] :
               choice.missingProviders.concat(providerName);

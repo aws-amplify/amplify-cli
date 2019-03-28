@@ -17,8 +17,8 @@ const ENV_SPECIFIC_PARAMS = [
   'googleAppIdUserPool',
   'googleAppSecretUserPool',
   'amazonAppId',
-  'amazonAppIdUserPool',
-  'amazonAppSecretUserPool',
+  'loginwithamazonAppIdUserPool',
+  'loginwithamazonAppSecretUserPool',
   'hostedUIProviderCreds',
 ];
 
@@ -51,9 +51,9 @@ const privateKeys = [
   'googleAppIdUserPool',
   'googleAuthorizeScopes',
   'googleAppSecretUserPool',
-  'amazonAppSecretUserPool',
-  'amazonAuthorizeScopes',
-  'amazonAppSecretUserPool',
+  'loginwithamazonAppIdUserPool',
+  'loginwithamazonAuthorizeScopes',
+  'loginwithamazonAppSecretUserPool',
   'CallbackURLs',
   'LogoutURLs',
   'AllowedOAuthFlows',
