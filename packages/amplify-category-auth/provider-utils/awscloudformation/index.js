@@ -257,39 +257,20 @@ async function updateConfigOnEnvInit(context, category, service) {
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
-  const currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(
+  let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(
     context,
     category,
     service,
   );
 
-  const { hostedUIProviderMeta } = resourceParams;
-  let configuredProviders;
-
-  if (hostedUIProviderMeta) {
-    const oAuthProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
-    const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
-    configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
-    const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
-    deltaProviders.forEach((d) => {
-      currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
-    });
-  }
-
-  srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
-    ENV_SPECIFIC_PARAMS.includes(input.key) &&
-    !Object.keys(currentEnvSpecificValues).includes(input.key));
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
-  const { serviceWalkthrough } = require(serviceWalkthroughSrc);
-
   // headless mode
   if (isInHeadlessMode(context)) {
     const envParams = {};
-    if (resourceParams.thirdPartyAuth) {
+    let mergedValues;
+    if (resourceParams.thirdPartyAuth || resourceParams.hostedUIProviderMeta) {
       const authParams = getHeadlessParams(context);
       const projectType = context.amplify.getProjectConfig().frontend;
-      const mergedValues = { ...resourceParams, ...authParams };
+      mergedValues = { ...resourceParams, ...authParams };
       const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
       const missingParams = [];
       requiredParams.forEach((p) => {
@@ -304,8 +285,23 @@ async function updateConfigOnEnvInit(context, category, service) {
         throw Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
+    if (resourceParams.hostedUIProviderMeta) {
+      parseCredsForHeadless(mergedValues, envParams);
+    }
     return envParams;
   }
+
+  const { hostedUIProviderMeta } = resourceParams;
+
+  if (hostedUIProviderMeta) {
+    currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
+  }
+
+  srvcMetaData.inputs = srvcMetaData.inputs.filter(input =>
+    ENV_SPECIFIC_PARAMS.includes(input.key) &&
+    !Object.keys(currentEnvSpecificValues).includes(input.key));
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
   // interactive mode
   const result = await serviceWalkthrough(
@@ -315,27 +311,9 @@ async function updateConfigOnEnvInit(context, category, service) {
     srvcMetaData,
     resourceParams,
   );
-  const envParams = {};
+  let envParams = {};
   if (resourceParams.hostedUIProviderMeta) {
-    if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
-      envParams.hostedUIProviderCreds = [];
-      const inputResult = JSON.parse(result.hostedUIProviderCreds);
-      const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
-      if (resourceParams.hostedUIProviderMeta) {
-        const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta)
-          .map(h => h.ProviderName);
-        currentProviders.forEach((c) => {
-          const previousProvider = previousResult.find(p => p.ProviderName === c);
-          const resultProvider = inputResult.find(r => r.ProviderName === c);
-          envParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
-        });
-        envParams.hostedUIProviderCreds = JSON.stringify(envParams.hostedUIProviderCreds);
-      }
-    } else if (currentEnvSpecificValues.hostedUIProviderCreds && !result.hostedUIProviderCreds) {
-      envParams.hostedUIProviderCreds = currentEnvSpecificValues.hostedUIProviderCreds;
-    } else if (!currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
-      envParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
-    }
+    envParams = formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParams);
   }
   ENV_SPECIFIC_PARAMS.forEach((paramName) => {
     if (paramName in result &&
@@ -388,6 +366,53 @@ function getHeadlessParams(context) {
   return categories.auth || {};
 }
 
+function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
+  const oAuthProviders = JSON.parse(resourceParams.hostedUIProviderMeta).map(h => h.ProviderName);
+  const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
+  const configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
+  const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
+  deltaProviders.forEach((d) => {
+    currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
+    currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
+  });
+  return currentEnvSpecificValues;
+}
+
+function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParams) {
+  const partialParams = {};
+  if (currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+    partialParams.hostedUIProviderCreds = [];
+    const inputResult = JSON.parse(result.hostedUIProviderCreds);
+    const previousResult = JSON.parse(currentEnvSpecificValues.hostedUIProviderCreds);
+    if (resourceParams.hostedUIProviderMeta) {
+      const currentProviders = JSON.parse(resourceParams.hostedUIProviderMeta)
+        .map(h => h.ProviderName);
+      currentProviders.forEach((c) => {
+        const previousProvider = previousResult.find(p => p.ProviderName === c);
+        const resultProvider = inputResult.find(r => r.ProviderName === c);
+        partialParams.hostedUIProviderCreds.push(Object.assign(resultProvider, previousProvider));
+      });
+      partialParams.hostedUIProviderCreds = JSON.stringify(partialParams.hostedUIProviderCreds);
+    }
+  } else if (currentEnvSpecificValues.hostedUIProviderCreds && !result.hostedUIProviderCreds) {
+    partialParams.hostedUIProviderCreds = currentEnvSpecificValues.hostedUIProviderCreds;
+  } else if (!currentEnvSpecificValues.hostedUIProviderCreds && result.hostedUIProviderCreds) {
+    partialParams.hostedUIProviderCreds = result.hostedUIProviderCreds;
+  }
+  return partialParams;
+}
+
+function parseCredsForHeadless(mergedValues, envParams) {
+  const oAuthProviders = JSON.parse(mergedValues.hostedUIProviderMeta)
+    .map(h => h.ProviderName);
+  envParams.hostedUIProviderCreds = JSON.stringify(oAuthProviders
+    .map(el => ({ ProviderName: el, client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`], client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`] })));
+  oAuthProviders.forEach((i) => {
+    delete envParams[`${i.toLowerCase()}AppIdUserPool`];
+    delete envParams[`${i.toLowerCase()}AppSecretUserPool`];
+  });
+}
+
 function getRequiredParamsForHeadlessInit(projectType, previousValues) {
   const requiredParams = [];
 
@@ -406,6 +431,16 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
     }
     if (previousValues.authProviders.includes('www.amazon.com')) {
       requiredParams.push('amazonAppId');
+    }
+  }
+
+  if (previousValues.hostedUIProviderMeta) {
+    const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
+    if (oAuthProviders && oAuthProviders.length > 0) {
+      oAuthProviders.forEach((o) => {
+        requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
+        requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
+      });
     }
   }
   return requiredParams;
