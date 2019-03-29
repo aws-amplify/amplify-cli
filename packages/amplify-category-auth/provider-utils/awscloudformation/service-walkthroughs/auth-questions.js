@@ -129,11 +129,13 @@ async function serviceWalkthrough(
       }
       coreAnswers = { ...coreAnswers, ...answer };
       j += 1;
-    } else if (!context.updatingAuth && answer.useDefault && answer.useDefault === 'defaultSocial') {
+    } else if (!context.updatingAuth && answer.useDefault && ['default', 'defaultSocial'].includes(answer.useDefault)) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid reasking this question
       coreAnswers = { ...coreAnswers, ...answer };
       coreAnswers.authSelections = 'identityPoolAndUserPool';
-      coreAnswers.hostedUI = true;
+      if (coreAnswers.useDefault === 'defaultSocial') {
+        coreAnswers.hostedUI = true;
+      }
       j += 1;
     } else {
       coreAnswers = { ...coreAnswers, ...answer };
