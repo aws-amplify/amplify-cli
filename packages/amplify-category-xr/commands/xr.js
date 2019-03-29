@@ -9,19 +9,19 @@ module.exports = {
     const commands = [
       {
         name: 'add',
-        description: `Takes you through a CLI flow to add an XR resource to your local backend`,
+        description: 'Takes you through a CLI flow to add an XR resource to your local backend',
       },
       {
         name: 'update',
-        description: `Takes you through a CLI flow to update an XR resource`,
+        description: 'Takes you through a CLI flow to update an XR resource',
       },
       {
         name: 'push',
-        description: `Provisions only XR cloud resources with the latest local developments`,
+        description: 'Provisions only XR cloud resources with the latest local developments',
       },
       {
         name: 'remove',
-        description: `Removes XR resource from your local backend which would be removed from the cloud on the next push command`,
+        description: 'Removes XR resource from your local backend which would be removed from the cloud on the next push command',
       },
     ];
 
