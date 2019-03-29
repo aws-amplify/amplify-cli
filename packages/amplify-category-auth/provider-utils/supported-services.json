@@ -260,7 +260,7 @@
 			},
 			{
 				"key": "usernameAttributes",
-				"question": "How do you want users to be able to sign up?",
+				"question": "How do you want users to be able to sign in?",
 				"type": "list",
 				"map": "signInOptions",
 				"prefix": "Warning: you will not be able to edit these selections.",
