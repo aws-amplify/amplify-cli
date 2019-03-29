@@ -36,8 +36,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
     if (context.updatingAuth && input.iterator) {
       question = iteratorQuestion(input, question, context);
-    }
-    if (input.filter) {
+    } else if (input.filter) {
       question = filterInputs(input, question, getAllMaps, context, currentAnswers);
     } else if (input.requiredOptions) {
       question = getRequiredOptions(input, question, getAllMaps, context, currentAnswers);

@@ -260,7 +260,7 @@
 			},
 			{
 				"key": "usernameAttributes",
-				"question": "How do you want users to be able to sign in?",
+				"question": "How do you want users to be able to sign in when using your Cognito User Pool?",
 				"type": "list",
 				"map": "signInOptions",
 				"prefix": "Warning: you will not be able to edit these selections.",
@@ -686,7 +686,7 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
@@ -699,7 +699,7 @@
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				},
 				"andConditions": [
@@ -772,7 +772,7 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
@@ -799,7 +799,7 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
@@ -811,7 +811,7 @@
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				},
 				"andConditions": [
@@ -884,7 +884,7 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
 					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
 				}
 			},
