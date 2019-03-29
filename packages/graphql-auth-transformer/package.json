@@ -28,7 +28,7 @@
     "@types/node": "^10.3.4",
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
-    "graphql-dynamodb-transformer": "^2.0.0-multienv.2",
+    "graphql-dynamodb-transformer": "^3.0.9",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
