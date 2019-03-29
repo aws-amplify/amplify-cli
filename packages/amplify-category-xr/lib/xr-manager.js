@@ -122,7 +122,7 @@ async function addScene(context) {
   await addSceneConfig(context, sceneName);
 
   context.print.success(`Successfully added resource ${sceneName} locally`);
-  context.print.warning('Note the XR resource provisioned in the cloud is only the IAM policy for the scene resource and will not change the scene in the Sumerian console');
+  context.print.warning('Note that only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console');
   context.print.info('');
   context.print.success('Some next steps:');
   context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
