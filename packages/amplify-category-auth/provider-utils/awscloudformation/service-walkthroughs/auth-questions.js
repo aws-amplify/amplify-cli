@@ -31,6 +31,12 @@ async function serviceWalkthrough(
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
 
+  if (context.updatingAuth &&
+    context.updatingAuth.authSelections === 'identityPoolOnly'
+  ) {
+    coreAnswers.authSelections = 'identityPoolAndUserPool';
+  }
+
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
@@ -225,7 +231,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
               scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
             }
           }
-          if (el === 'Google') {
+          if (el === 'Google' && !scopes.includes('openid')) {
             scopes.unshift('openid');
           }
           if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
