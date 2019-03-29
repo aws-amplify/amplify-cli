@@ -8,6 +8,8 @@ const { URL } = require('url');
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
 
+const SUMERIAN_CONSOLE_URL = 'https://console.aws.amazon.com/sumerian/home/start';
+
 async function ensureSetup(context, resourceName) {
   if (!isXRSetup(context)) {
     await authHelper.ensureAuth(context);
@@ -22,7 +24,7 @@ async function setupAccess(context, resourceName) {
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
     type: 'confirm',
-    message: 'Allow unauthenticated users to access your XR scene',
+    message: 'Would you like to allow unauthenticated users access to the Sumerian project for this scene?',
     default: false,
   });
 
@@ -86,8 +88,8 @@ function getExistingScenes(context) {
 }
 
 async function addScene(context) {
-  context.print.info(`Open the Amazon Sumerian console: ${chalk.green(getSumerianConsoleUrl(context))}`);
-  context.print.info('Publish the scene you want to add.');
+  context.print.info(`Open the Amazon Sumerian console: ${chalk.green(SUMERIAN_CONSOLE_URL)}`);
+  context.print.info(`Publish the scene you want to add. See ${chalk.green('https://aws-amplify.github.io/docs/js/xr#configuration')}`);
   context.print.info('Then download the JSON configuration to your local computer.');
   await inquirer.prompt({
     name: 'pressEnter',
@@ -95,13 +97,15 @@ async function addScene(context) {
     message: 'Press Enter when ready.',
   });
 
+  context.print.warning('Note the following scene name is used to identify the scene in the Amplify framework');
+  context.print.warning('It does NOT have to match the scene name in the Sumerian console');
   let sceneName;
-  const existingScenes = getExistingScenes(context);
   await inquirer.prompt({
     name: 'sceneName',
     type: 'input',
     message: 'Provide a name for the scene:',
     validate: (name) => {
+      const existingScenes = getExistingScenes(context);
       if (existingScenes.includes(name)) {
         return `${name} already exists. The scene name must be unique within the project`;
       }
@@ -118,6 +122,7 @@ async function addScene(context) {
   await addSceneConfig(context, sceneName);
 
   context.print.success(`Successfully added resource ${sceneName} locally`);
+  context.print.warning('Note the XR resource provisioned in the cloud is only the IAM policy for the scene resource and will not change the scene in the Sumerian console');
   context.print.info('');
   context.print.success('Some next steps:');
   context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
@@ -214,16 +219,8 @@ async function remove(context) {
 }
 
 function console(context) {
-  const consoleUrl = getSumerianConsoleUrl(context);
-  context.print.info(chalk.green(consoleUrl));
-  opn(consoleUrl, { wait: false });
-}
-
-function getSumerianConsoleUrl(context) {
-  const amplifyMeta = context.amplify.getProjectMeta();
-  const region = amplifyMeta.providers.awscloudformation.Region;
-  const consoleUrl = `https://console.aws.amazon.com/sumerian/home/start?region=${region}`;
-  return consoleUrl;
+  context.print.info(chalk.green(SUMERIAN_CONSOLE_URL));
+  opn(SUMERIAN_CONSOLE_URL, { wait: false });
 }
 
 function getProjectNameFromPath(urlPath) {
