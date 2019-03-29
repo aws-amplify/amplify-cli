@@ -374,7 +374,7 @@ const hostedUIProviders = [
     value: 'Google',
   },
   {
-    name: 'Amazon',
+    name: 'Login With Amazon',
     value: 'LoginWithAmazon',
   },
 ];
