@@ -41,9 +41,6 @@
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="	
-					},
-					{
-						"preventEdit": "always"
 					}
 				]
 			},

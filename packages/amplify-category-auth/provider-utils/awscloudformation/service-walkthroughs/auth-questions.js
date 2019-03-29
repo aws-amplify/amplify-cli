@@ -143,6 +143,19 @@ async function serviceWalkthrough(
 
   // POST-QUESTION LOOP PARSING
 
+  // if user selects user pool only, ensure that we clean id pool options
+  if (coreAnswers.authSelections === 'userPoolOnly') {
+    delete context.updatingAuth.identityPoolName;
+    delete context.updatingAuth.allowUnauthenticatedIdentities;
+    delete context.updatingAuth.thirdPartyAuth;
+    delete context.updatingAuth.authProviders;
+    delete context.updatingAuth.facebookAppId;
+    delete context.updatingAuth.googleClientId;
+    delete context.updatingAuth.googleIos;
+    delete context.updatingAuth.googleAndroid;
+    delete context.updatingAuth.amazonAppId;
+  }
+
   // formatting data for identity pool providers
   if (coreAnswers.thirdPartyAuth) {
     identityPoolProviders(coreAnswers, projectType);
