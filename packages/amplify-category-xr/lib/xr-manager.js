@@ -3,6 +3,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const opn = require('opn');
 const chalk = require('chalk');
+const { URL } = require('url');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
