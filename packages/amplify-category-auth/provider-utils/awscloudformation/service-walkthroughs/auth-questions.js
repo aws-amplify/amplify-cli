@@ -146,7 +146,7 @@ async function serviceWalkthrough(
   // POST-QUESTION LOOP PARSING
 
   // if user selects user pool only, ensure that we clean id pool options
-  if (coreAnswers.authSelections === 'userPoolOnly') {
+  if (coreAnswers.authSelections === 'userPoolOnly' && context.updatingAuth) {
     delete context.updatingAuth.identityPoolName;
     delete context.updatingAuth.allowUnauthenticatedIdentities;
     delete context.updatingAuth.thirdPartyAuth;
