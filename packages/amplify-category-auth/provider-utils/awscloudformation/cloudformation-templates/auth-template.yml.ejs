@@ -179,7 +179,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -252,8 +252,8 @@ Resources:
             - '   return identity.deleteUserPoolDomain(params).promise();'
             - ' };'
             - ' if (event.RequestType == ''Delete'') {'
-            - '  return deleteUserPoolDomain(inputDomainName)'
-            - '   .then(() => response.send(event, context, response.SUCCESS, {}))'
+            - '   deleteUserPoolDomain(inputDomainName)'
+            - '   .then(() => {response.send(event, context, response.SUCCESS, {})})'
             - '   .catch((err) => { console.log(err); response.send(event, context, response.FAILED, {err}) });'
             - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
@@ -270,7 +270,7 @@ Resources:
             - '  let params = { Domain: domainName, UserPoolId: userPoolId };'
             - '   return identity.createUserPoolDomain(params).promise();'
             - ' };'
-            - ' return identity.describeUserPool({UserPoolId: userPoolId }).promise().then((result) => {'
+            - ' identity.describeUserPool({UserPoolId: userPoolId }).promise().then((result) => {'
             - '  if (inputDomainName) {'
             - '   if (result.UserPool.Domain === inputDomainName) {'
             - '    return;'
@@ -298,14 +298,14 @@ Resources:
             - '         return deleteUserPoolDomain(result.UserPool.Domain);'
             - '       }'
             - '   }'
-            - ' }).then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - ' }).then(() => {response.send(event, context, response.SUCCESS, {})}).catch((err) => {'
             - ' console.log(err);  response.send(event, context, response.FAILED, {err});'
             - ' });'
             - '}}'
 
 
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -409,7 +409,7 @@ Resources:
             - '   return identity.deleteIdentityProvider(params).promise();'
             - '  };'
             - '  let providerPromises = [];'
-            - '  return identity.listIdentityProviders({UserPoolId: userPoolId, MaxResults: 60}).promise()'
+            - '  identity.listIdentityProviders({UserPoolId: userPoolId, MaxResults: 60}).promise()'
             - '  .then((result) => {'
             - '   let providerList = result.Providers.map(provider => provider.ProviderName);'
             - '   let providerListInParameters = hostedUIProviderMeta.map(provider => provider.ProviderName);'
@@ -426,7 +426,7 @@ Resources:
             - '   }'
             - '  });'
             - '  return Promise.all(providerPromises);'
-            - ' }).then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - ' }).then(() => {response.send(event, context, response.SUCCESS, {})}).catch((err) => {'
             - '   console.log(err.stack); response.send(event, context, response.FAILED, {err})'
             - ' });'
             - ' } '
@@ -434,7 +434,7 @@ Resources:
             - '} '
 
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -525,8 +525,8 @@ Resources:
             - '  updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());'
             - '  params.ClientId = nativeClientId;'
             - '  updateUserPoolClientPromises.push(identity.updateUserPoolClient(params).promise());'
-            - '  return Promise.all(updateUserPoolClientPromises)'
-            - '  .then(() => response.send(event, context, response.SUCCESS, {})).catch((err) => {'
+            - '  Promise.all(updateUserPoolClientPromises)'
+            - '  .then(() => {response.send(event, context, response.SUCCESS, {})}).catch((err) => {'
             - '    console.log(err.stack); response.send(event, context, response.FAILED, {err});'
             - '  });'
             - ' }'
@@ -534,7 +534,7 @@ Resources:
             - '}'
 
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -655,7 +655,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - MFALambdaRole
@@ -815,7 +815,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs6.10
+      Runtime: nodejs8.10
       Timeout: '300'
       Role: !GetAtt 
         - OpenIdLambdaRole
