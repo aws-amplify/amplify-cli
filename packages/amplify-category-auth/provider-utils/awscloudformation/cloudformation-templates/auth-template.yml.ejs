@@ -355,7 +355,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt HostedUICustomResource.Arn
       userPoolId: !Ref UserPool
-      hostedUIDomainName: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
+      hostedUIDomainName: !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-',[!Ref hostedUIDomainName, !Ref env]]]
     DependsOn: HostedUICustomResourceLogPolicy
   <% } %>
 
@@ -937,7 +937,7 @@ Outputs :
   <% } %>
   <%if (props.hostedUIDomainName) { %>
   HostedUIDomain:
-    Value: !Join ['-',[!Ref hostedUIDomainName, !Ref env]]
+    Value: !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-',[!Ref hostedUIDomainName, !Ref env]]]
   <% } %>
   <%if (props.oAuthMetadata) { %>
   OAuthMetadata:
