@@ -131,28 +131,41 @@ async function addScene(context) {
 }
 
 async function addSceneConfig(context, sceneName) {
+  inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
+
   let sumerianConfig;
-  await inquirer.prompt({
-    name: 'configFilePath',
-    type: 'input',
-    message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
-    validate: (configFilePath) => {
+  let isConfigValid = false;
+  while (!isConfigValid) {
+    await inquirer.prompt({
+      name: 'configFilePath',
+      type: 'fuzzypath',
+      excludePath: nodePath => filterSceneConfig(nodePath),
+      itemType: 'file',
+      rootPath: process.cwd(),
+      message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
+      suggestOnly: false,
+    }).then((answer) => {
+      const configFilePath = answer.configFilePath;
       try {
         if (fs.existsSync(configFilePath)) {
           sumerianConfig = require(configFilePath);
-
           // Sumerian config must have a url and sceneId
-          if (!sumerianConfig.url || !sumerianConfig.sceneId) {
-            return 'Sumerian scene config is not in the correct format.';
+          if (!sumerianConfig.url) {
+            context.print.error('The scene config is missing a \'url\' parameter.');
+            return;
           }
-
+          if (!sumerianConfig.sceneId) {
+            context.print.error('The scene config is missing a \'sceneId\' parameter.');
+            return;
+          }
           const sumerianResourceUrl = new URL(sumerianConfig.url);
           // If region is not an existing parameter, extract from the resource url
           if (!sumerianConfig.region) {
             try {
               sumerianConfig.region = getRegionFromHost(sumerianResourceUrl.host);
             } catch (e) {
-              return 'Could not read the scene region. Make sure the scene url is valid.';
+              context.print.error('Could not read the scene region. Make sure the scene url is valid.');
+              return;
             }
           }
           // If projectName is not an existing parameter, extract from the resource url
@@ -161,19 +174,21 @@ async function addSceneConfig(context, sceneName) {
               const projectName = getProjectNameFromPath(sumerianResourceUrl.pathname);
               sumerianConfig.projectName = decodeURIComponent(projectName);
             } catch (e) {
-              return 'Could not read the scene projectName. Make sure the scene url is valid.';
+              context.print.error('Could not read the scene projectName. Make sure the scene url is valid.');
+              return;
             }
           }
         }
       } catch (e) {
-        sumerianConfig = undefined;
+        context.print.error('Can NOT read the scene configuration, make sure it is valid.');
+        return;
       }
+
       if (sumerianConfig) {
-        return true;
+        isConfigValid = true;
       }
-      return 'Can NOT ready the configuration, make sure it is valid.';
-    },
-  });
+    });
+  }
 
   const options = {
     service: 'Sumerian',
@@ -204,7 +219,7 @@ async function updateScene(context) {
     choices: existingScenes,
   }).then(async (answer) => {
     await addSceneConfig(context, answer.sceneToUpdate);
-    context.print.info(`${answer.sceneToUpdate} has been updated.`);
+    context.print.info(chalk.green(`${answer.sceneToUpdate} has been updated.`));
   });
 }
 
@@ -254,6 +269,23 @@ function isSceneNameValid(sceneName) {
           sceneName.length >= 3 &&
           sceneName.length <= 20 &&
           /^[a-zA-Z0-9]+$/i.test(sceneName);
+}
+
+function filterSceneConfig(nodePath) {
+  // Ignore specific directories to optimize search speed
+  const stats = fs.statSync(nodePath);
+  const isDir = stats.isDirectory();
+  const isIgnoreDirectory =
+    isDir && (nodePath.endsWith('node_modules')
+    || nodePath.endsWith('amplify')
+    || nodePath.endsWith('.git')
+    || nodePath.endsWith('.gitignore'));
+  // Ignore non json files
+  const isNotJsonFile = !isDir && !nodePath.endsWith('.json');
+  // Ignore package json files
+  const isPackageJson = nodePath.endsWith('package.json') || nodePath.endsWith('package-lock.json');
+
+  return isNotJsonFile || isIgnoreDirectory || isPackageJson;
 }
 
 module.exports = {
