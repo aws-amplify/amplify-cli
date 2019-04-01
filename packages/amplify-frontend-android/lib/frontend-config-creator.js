@@ -176,7 +176,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
   const oauth = {
     WebDomain: domain,
-    AppClientID: cognitoResource.output.AppClientID,
+    AppClientId: cognitoResource.output.AppClientID,
     SignInRedirectURI: redirectSignIn,
     SignOutRedirectURI: redirectSignOut,
     Scopes: scope,
