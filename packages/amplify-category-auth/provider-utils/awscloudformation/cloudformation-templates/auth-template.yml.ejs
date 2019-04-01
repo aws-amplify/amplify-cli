@@ -902,7 +902,7 @@ Resources:
         <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { %>
         graph.facebook.com: !Ref facebookAppId
         <% } %>
-        <%if (props.authProviders.indexOf('accounts.google.com') !== -1) { %>
+        <%if (props.authProviders.indexOf('accounts.google.com') !== -1 && !props.audiences) { %>
         accounts.google.com: !Ref googleClientId
         <% } %>
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
