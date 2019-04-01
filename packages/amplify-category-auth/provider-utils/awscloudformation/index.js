@@ -67,6 +67,7 @@ const privateKeys = [
   'newLogoutURLs',
   'editLogoutURLs',
   'addLogoutOnUpdate',
+  'audiences',
 ];
 
 function serviceQuestions(
