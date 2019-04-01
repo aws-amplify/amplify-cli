@@ -145,6 +145,10 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   let redirectSignOut;
   let responseType;
 
+  let userPoolFederation = false;
+  let idpFederation = false;
+  let federationTarget;
+
   if (cognitoResource.output.HostedUIDomain) {
     domain = `${cognitoResource.output.HostedUIDomain}.auth.${projectRegion}.amazoncognito.com`;
   }
@@ -154,6 +158,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
     redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
     [responseType] = oAuthMetadata.AllowedOAuthFlows;
+    userPoolFederation = true;
   }
 
   const oauth = {
@@ -164,6 +169,22 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     responseType,
   };
 
+  if (cognitoResource.output.GoogleWebClient ||
+    cognitoResource.output.FacebookWebClient ||
+    cognitoResource.output.AmazonWebClient) {
+    idpFederation = true;
+  }
+
+  if (userPoolFederation) {
+    if (idpFederation) {
+      federationTarget = 'COGNITO_USER_AND_IDENTITY_POOLS';
+    } else {
+      federationTarget = 'COGNITO_USER_POOLS';
+    }
+  } else if (idpFederation) {
+    federationTarget = 'COGNITO_IDENTITY_POOLS';
+  }
+
 
   return {
     aws_cognito_identity_pool_id: cognitoResource.output.IdentityPoolId,
@@ -171,6 +192,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     aws_user_pools_id: cognitoResource.output.UserPoolId,
     aws_user_pools_web_client_id: cognitoResource.output.AppClientIDWeb,
     oauth,
+    federationTarget,
   };
 }
 
