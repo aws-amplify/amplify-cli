@@ -49,6 +49,8 @@ function getResourceOutputs() {
         if (!outputsForFrontend.serviceResourceMapping[resourceMeta.service]) {
           outputsForFrontend.serviceResourceMapping[resourceMeta.service] = [];
         }
+
+        resourceMeta.resourceName = resourceName;
         outputsForFrontend.serviceResourceMapping[resourceMeta.service].push(resourceMeta);
       }
     });

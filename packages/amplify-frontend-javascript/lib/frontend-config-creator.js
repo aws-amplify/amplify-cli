@@ -57,6 +57,8 @@ async function createAWSExports(context, amplifyResources) {
         break;
       case 'Lex': Object.assign(configOutput, getLexConfig(serviceResourceMapping[service], projectRegion));
         break;
+      case 'Sumerian': Object.assign(configOutput, getSumerianConfig(serviceResourceMapping[service], projectRegion));
+        break;
       default: break;
     }
   });
@@ -193,6 +195,23 @@ function getLexConfig(lexResources) {
   return {
     aws_bots: 'enable',
     aws_bots_config: config,
+  };
+}
+
+function getSumerianConfig(sumerianResources) {
+  const scenes = {};
+  sumerianResources.forEach((r) => {
+    const { resourceName, output } = r;
+    delete output.service;
+
+    scenes[resourceName] = {
+      sceneConfig: output,
+    };
+  });
+  return {
+    XR: {
+      scenes,
+    },
   };
 }
 
