@@ -71,7 +71,7 @@ const userPoolDefaults = projectName => ({
 
 const withSocialDefaults = projectName => ({
   hostedUI: true,
-  hostedUIDomainName: `${projectName}-${sharedId}`,
+  hostedUIDomainName: `${projectName.toLowerCase()}${sharedId.toLowerCase()}`,
   AllowedOAuthFlows: ['code'],
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
