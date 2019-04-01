@@ -20,7 +20,7 @@ npm run e2e __tests__/init.test.ts
 ```
 
 ## Writing a new integration test
-E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. 
+E2E tests internally use [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
 
 ```typescript
 require('../src/aws-matchers/'); // custom matcher for assertion
