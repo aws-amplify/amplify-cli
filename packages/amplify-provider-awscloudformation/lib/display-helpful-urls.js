@@ -88,13 +88,13 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
 
     if (OAuthMetadata) {
       const oAuthMetadata = JSON.parse(OAuthMetadata);
+      const hostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/`;
+      context.print.info(chalk`Hosted UI Endpoint: {blue.underline ${hostedUIEndpoint}}`);
       const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
-
-      context.print.info('Hosted UI endpoint(s):\n');
-      redirectURIs.forEach((uri) => {
-        const hostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${uri}\n`;
-        context.print.info(chalk`{blue.underline ${hostedUIEndpoint}}`);
-      });
+      if(redirectURIs.length > 0) {
+        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=code&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
+        context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
+      }
     }
   }
 }
