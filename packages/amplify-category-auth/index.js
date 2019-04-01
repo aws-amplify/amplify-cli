@@ -194,7 +194,9 @@ async function initEnv(context) {
     amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
   });
 
-  let authTasks = resourcesToBeCreated.map((authResource) => {
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  const authTasks = tasks.map((authResource) => {
     const { resourceName } = authResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
@@ -202,15 +204,6 @@ async function initEnv(context) {
     };
   });
 
-  const updateTasks = resourcesToBeUpdated.map((authResource) => {
-    const { resourceName } = authResource;
-    return async () => {
-      const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
-      context.amplify.saveEnvResourceParameters(context, 'auth', resourceName, config);
-    };
-  });
-
-  authTasks = authTasks.concat(updateTasks);
   await sequential(authTasks);
 }
 
