@@ -899,6 +899,11 @@
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="	
+					},
+					{
+						"key": "frontend",
+						"value": "javascript",
+						"operator": "configMatch"
 					}
 				]
 			},
