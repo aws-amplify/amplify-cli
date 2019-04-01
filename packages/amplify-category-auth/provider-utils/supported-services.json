@@ -667,7 +667,6 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your redirect signin URI :",
 				"required": true,
-				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
 					{
@@ -686,8 +685,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				}
 			},
 			{
@@ -695,12 +694,11 @@
 				"question": "Which redirect signin URIs do you want to edit?",
 				"type": "multiselect",
 				"updateGroups": ["callbacks", "manual"],
-				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				},
 				"andConditions": [
 					{
@@ -756,7 +754,6 @@
 				"key": "newCallbackURLs",
 				"question": "Enter your new redirect signin URI:",
 				"required": true,
-				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "CallbackURLs",
 				"addAnotherLoop" : "redirect signin URI",
@@ -772,13 +769,12 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				}
 			},
 			{
 				"key": "newLogoutURLs",
-				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"question": "Enter your redirect signout URI:",
 				"required": true,
 				"addAnotherLoop" : "redirect signout URI",
@@ -799,8 +795,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				}
 			},
 			{
@@ -811,8 +807,8 @@
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				},
 				"andConditions": [
 					{
@@ -867,7 +863,6 @@
 			{
 				"key": "newLogoutURLs",
 				"question": "Enter your new redirect signout URI:",
-				"prefix": " \n  Please be aware that certain URIs may require the use of the https protocol. You are not required to enter a value with https here, but failing to do so for a URI where it is needed could cause your push to fail. \n",
 				"required": true,
 				"updateGroups": ["callbacks", "manual"],
 				"concatKey": "LogoutURLs",
@@ -884,8 +879,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash."
+					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used in lieu of HTTP."
 				}
 			},
 			{
