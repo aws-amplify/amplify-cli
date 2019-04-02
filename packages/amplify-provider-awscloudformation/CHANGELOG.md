@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.3...amplify-provider-awscloudformation@1.1.4-beta.0) (2019-04-02)
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
 ## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.2...amplify-provider-awscloudformation@1.1.3) (2019-03-22)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
