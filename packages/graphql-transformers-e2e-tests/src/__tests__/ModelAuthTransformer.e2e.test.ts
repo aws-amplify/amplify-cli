@@ -2542,6 +2542,81 @@ test(`Test updateAllThree and deleteAllThree as a member of a dynamic group.`, a
     }
 })
 
+// Testing scenario outlined here: https://github.com/aws-amplify/amplify-cli/issues/360
+test(`Test updateAllThree when a record has no groups and I am not the owner or admin.`, async () => {
+    try {
+        const ownedByNoOne = await GRAPHQL_CLIENT_1.query(`
+        mutation {
+            createAllThree(input: {
+                owner: "${USERNAME2}",
+                editors: [],
+                groups: []
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByNoOne, null, 4))
+        expect(ownedByNoOne.data.createAllThree).toBeTruthy()
+        expect(ownedByNoOne.data.createAllThree.owner).toEqual(USERNAME2)
+        expect(ownedByNoOne.data.createAllThree.editors).toHaveLength(0)
+        expect(ownedByNoOne.data.createAllThree.groups).toHaveLength(0)
+        expect(ownedByNoOne.data.createAllThree.alternativeGroup).toBeNull()
+
+        // When the logged in user was enrolled in no groups, this used to fail.
+        const ownedByUpdate = await GRAPHQL_CLIENT_3.query(`
+        mutation {
+            updateAllThree(input: {
+                id: "${ownedByNoOne.data.createAllThree.id}",
+                alternativeGroup: "Devs"
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByUpdate, null, 4))
+        expect((ownedByUpdate.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+
+        const ownedByDelete = await GRAPHQL_CLIENT_3.query(`
+        mutation {
+            deleteAllThree(input: {
+                id: "${ownedByNoOne.data.createAllThree.id}"
+            }) {
+                id
+                owner
+                editors
+                groups
+                alternativeGroup
+            }
+        }
+        `)
+        console.log(JSON.stringify(ownedByDelete, null, 4))
+        expect((ownedByDelete.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException')
+
+        const deleteReq = await GRAPHQL_CLIENT_1.query(`
+            mutation {
+                deleteAllThree(input: { id: "${ownedByNoOne.data.createAllThree.id}" }) {
+                    id
+                }
+            }
+        `)
+        console.log(JSON.stringify(deleteReq, null, 4))
+        expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByNoOne.data.createAllThree.id)
+    } catch (e) {
+        console.error(e)
+        expect(e).toBeUndefined();
+    }
+})
+
+
 test(`Test updateAllThree and deleteAllThree as a member of the alternative group.`, async () => {
     try {
         const ownedByDevs = await GRAPHQL_CLIENT_1.query(`
