@@ -212,9 +212,7 @@ workflows:
           filters:
             branches:
               only:
-                - release
                 - master
-                - beta
           requires:
             - build
 
