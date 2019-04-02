@@ -33,6 +33,10 @@ module.exports = {
         name: 'gql-compile',
         description: 'Compiles your GraphQL schema and generates a corresponding cloudformation template',
       },
+      {
+        name: 'add-graphql-datasource',
+        description: 'Provisions the AppSync resources and its dependencies for the provided Aurora Serverless data source',
+      },
     ];
 
     context.amplify.showHelp(header, commands);
