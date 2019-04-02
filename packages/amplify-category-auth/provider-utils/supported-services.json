@@ -685,8 +685,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				}
 			},
 			{
@@ -697,8 +697,8 @@
 				"iterator": "CallbackURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				},
 				"andConditions": [
 					{
@@ -769,8 +769,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				}
 			},
 			{
@@ -795,8 +795,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				}
 			},
 			{
@@ -807,8 +807,8 @@
 				"iterator": "LogoutURLs",
 				"iteratorValidation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				},
 				"andConditions": [
 					{
@@ -879,8 +879,8 @@
 				],
 				"validation": {
 					"operator": "regex",
-					"value": "^(?!http:\/\/)([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:/?#@!$&'()*+,;=]{1,})\/$",
-					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP."
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
 				}
 			},
 			{
