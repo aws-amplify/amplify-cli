@@ -101,6 +101,8 @@ export class DynamoDBModelTransformer extends Transformer {
                 ".*" + def.name.value + "Model",
                 ".*" + def.name.value + "DataSource",
                 ".*" + def.name.value + "IAMRole",
+                // Backward compatibility map addition to prevent breaking current deploys.
+                "^GetAtt" + def.name.value + "Table",
                 // All resolvers except the search resolver.
                 "^[^S].*" + def.name.value + "Resolver",
                 "^" + def.name.value + ".+Resolver",
@@ -143,7 +145,8 @@ export class DynamoDBModelTransformer extends Transformer {
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
         ctx.setOutput(
-            ModelResourceIDs.ModelTableStreamArn(typeName),
+            // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
+            `GetAtt${ModelResourceIDs.ModelTableStreamArn(typeName)}`,
             this.resources.makeTableStreamArnOutput(tableLogicalID)
         )
         ctx.setOutput(
