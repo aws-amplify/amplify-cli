@@ -207,7 +207,7 @@ async function updateScene(context) {
     choices: existingScenes,
   }).then(async (answer) => {
     await addSceneConfig(context, answer.sceneToUpdate);
-    context.print.info(`${answer.sceneToUpdate} has been updated.`);
+    context.print.info(`${chalk.green(answer.sceneToUpdate)} has been updated.`);
   });
 }
 
