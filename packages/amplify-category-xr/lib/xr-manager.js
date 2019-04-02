@@ -127,7 +127,7 @@ async function addScene(context) {
   context.print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   context.print.info('"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud');
   context.print.info('');
-  context.print.warning('Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console');
+  context.print.warning('Only the IAM policy for this scene resource will be provisioned in the cloud. This will not change the scene in the Sumerian console.');
 }
 
 async function addSceneConfig(context, sceneName) {
@@ -136,15 +136,15 @@ async function addSceneConfig(context, sceneName) {
   let sumerianConfig;
   let isConfigValid = false;
   while (!isConfigValid) {
-    await inquirer.prompt({
+    await inquirer.prompt([{
       name: 'configFilePath',
       type: 'fuzzypath',
       excludePath: nodePath => filterSceneConfig(nodePath),
       itemType: 'file',
       rootPath: process.cwd(),
       message: `Enter the path to the downloaded JSON configuration file for ${sceneName}:`,
-      suggestOnly: false,
-    }).then((answer) => {
+      suggestOnly: true,
+    }]).then((answer) => {
       const configFilePath = answer.configFilePath;
       try {
         if (fs.existsSync(configFilePath)) {
@@ -178,6 +178,9 @@ async function addSceneConfig(context, sceneName) {
               return;
             }
           }
+        } else {
+          context.print.error('Can NOT read the configuration file path, make sure it is valid.');
+          return;
         }
       } catch (e) {
         context.print.error('Can NOT read the scene configuration, make sure it is valid.');
