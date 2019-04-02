@@ -165,8 +165,7 @@ async function addSceneConfig(context, sceneName) {
             }
           }
         } else {
-          context.print.error('Can NOT read the configuration file path, make sure it is valid.');
-          return;
+          return 'Can NOT read the configuration file path, make sure it is valid.';
         }
       } catch (e) {
         sumerianConfig = undefined;
