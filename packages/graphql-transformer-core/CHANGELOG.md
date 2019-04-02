@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.0.9...graphql-transformer-core@3.2.1-beta.0) (2019-04-02)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** map output to stack ([b7a8f6d](https://github.com/aws-amplify/amplify-cli/commit/b7a8f6d)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+* **graphql-elasticsearch-transformer:** test output to stack map ([cf8b0be](https://github.com/aws-amplify/amplify-cli/commit/cf8b0be)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+
+
+
+
+
 ## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.0.8...graphql-transformer-core@3.0.9) (2019-03-22)
 
 **Note:** Version bump only for package graphql-transformer-core

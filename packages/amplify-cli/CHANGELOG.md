@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.8...@aws-amplify/cli@1.3.1-beta.0) (2019-04-02)
+
+
+### Bug Fixes
+
+* lint errors ([4cb6e57](https://github.com/aws-amplify/amplify-cli/commit/4cb6e57))
+* use helper functions for adding metadata ([50f8d76](https://github.com/aws-amplify/amplify-cli/commit/50f8d76))
+* **amplify-cli:** promise not resolving in lts/dubnium ([#1028](https://github.com/aws-amplify/amplify-cli/issues/1028)) ([8a966be](https://github.com/aws-amplify/amplify-cli/commit/8a966be))
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+* use cloudformation to update meta ([d4ae437](https://github.com/aws-amplify/amplify-cli/commit/d4ae437))
+
+
+
+
+
 ## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.7...@aws-amplify/cli@1.1.8) (2019-03-22)
 
 
