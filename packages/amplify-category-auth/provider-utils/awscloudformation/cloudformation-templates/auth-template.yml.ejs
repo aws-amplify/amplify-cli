@@ -897,13 +897,17 @@ Resources:
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } -%>
-      <%if (props.selectedParties && Object.keys(props.selectedParties).length > 0 && props.selectedParties !== '{}') { %>
+      <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}') { %>
       SupportedLoginProviders: 
-        <% for(var i=0; i < Object.keys(JSON.parse(props.selectedParties)).length; i++) { %>
-          <%if (!props.audiences || Object.keys(JSON.parse(props.selectedParties))[i] !== 'accounts.google.com')  { %>
-          <%= Object.keys(JSON.parse(props.selectedParties))[i] %>: '<%= Object.values(JSON.parse(props.selectedParties))[i]%>'
-          <% } -%>
-        <% } %> 
+        <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { %>
+        graph.facebook.com: !Ref facebookAppId
+        <% } %>
+        <%if (props.authProviders.indexOf('accounts.google.com') !== -1 && !props.audiences) { %>
+        accounts.google.com: !Ref googleClientId
+        <% } %>
+        <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
+        www.amazon.com: !Ref amazonAppId
+        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -964,18 +968,22 @@ Outputs :
   <% } %>
   <%if (props.googleClientId) { %>
   GoogleWebClient:
-    Value: <%= props.googleClientId %>
+    Value: !Ref googleClientId
   <% } %> 
   <%if (props.googleIos) { %>
   GoogleIOSClient:
-    Value: <%= props.googleIos %>
+    Value: !Ref googleIos
   <% } %> 
   <%if (props.googleAndroid) { %>
   GoogleAndroidClient:
-    Value: <%= props.googleAndroid %>
+    Value: !Ref googleAndroid
   <% } %>
   <%if (props.facebookAppId) { %>
   FacebookWebClient:
-    Value: <%= props.facebookAppId %>
+    Value: !Ref facebookAppId
+  <% } %> 
+  <%if (props.amazonAppId) { %>
+  AmazonWebClient:
+    Value: !Ref amazonAppId
   <% } %> 
   <% } %>

@@ -26,12 +26,12 @@ const defaultPrompMap = [
 
 const updateFlowMap = [
   {
-    name: 'Default configuration',
+    name: 'Apply default configuration',
     value: 'default',
     conditionKey: 'useDefault',
   },
   {
-    name: 'Default configuration with Social Provider (Federation)',
+    name: 'Apply default configuration with Social Provider (Federation)',
     value: 'defaultSocial',
     conditionKey: 'useDefault',
   },

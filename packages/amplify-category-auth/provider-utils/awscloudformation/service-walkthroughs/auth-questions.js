@@ -26,7 +26,7 @@ async function serviceWalkthrough(
     const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
     const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
     /* eslint-disable */
-    const oAuthCreds = parseOAuthCreds(context, authProvidersUserPool, hostedUIProviderMeta, resourceName, hostedUIProviderCreds);
+    const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
     /* eslint-enable */
     context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
   }
@@ -146,7 +146,7 @@ async function serviceWalkthrough(
   // POST-QUESTION LOOP PARSING
 
   // if user selects user pool only, ensure that we clean id pool options
-  if (coreAnswers.authSelections === 'userPoolOnly') {
+  if (coreAnswers.authSelections === 'userPoolOnly' && context.updatingAuth) {
     delete context.updatingAuth.identityPoolName;
     delete context.updatingAuth.allowUnauthenticatedIdentities;
     delete context.updatingAuth.thirdPartyAuth;
@@ -315,6 +315,8 @@ function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
       LogoutURLs,
     });
   }
+
+  return coreAnswers;
 }
 
 /*
@@ -330,7 +332,7 @@ function parseOAuthMetaData(previousAnswers) {
 /*
   Deserialize oAuthCredentials for CLI update flow
 */
-function parseOAuthCreds(context, providers, metadata, resourceName, envCreds) {
+function parseOAuthCreds(providers, metadata, envCreds) {
   const providerKeys = {};
   try {
     const parsedMetaData = JSON.parse(metadata);
@@ -363,4 +365,9 @@ function filterInput(input, updateFlow) {
   return false;
 }
 
-module.exports = { serviceWalkthrough, userPoolProviders, parseOAuthCreds };
+module.exports = {
+  serviceWalkthrough,
+  userPoolProviders,
+  parseOAuthCreds,
+  structureoAuthMetaData,
+};

@@ -301,7 +301,6 @@ describe('When generating auth questions...', () => {
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
       const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
-      console.log('res', res);
       expect(res.choices.length).toEqual(5);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
