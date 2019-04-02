@@ -115,6 +115,16 @@ export class ResourceFactory {
         }
     }
 
+    public makeDataSourceOutput(resourceId: string): Output {
+        return {
+            Description: "Your model DataSource name.",
+            Value: Fn.GetAtt(resourceId, "Name"),
+            Export: {
+                Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", resourceId, "Name"])
+            }
+        }
+    }
+
     public makeTableNameOutput(resourceId: string): Output {
         return {
             Description: "Your DynamoDB table name.",
