@@ -72,6 +72,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
     parameters = {};
   }
   parameters.resourceName = updateApi.resourceName;
+
   Object.assign(allDefaultValues, parameters);
   answers = { ...answers, ...parameters };
   [answers.uuid] = uuid().split('-');
@@ -129,8 +130,10 @@ async function pathFlow(context, answers, currentPath) {
   const { dependsOn } = pathsAnswer;
 
   const privacy = {};
-  privacy.auth = pathsAnswer.paths.filter(path => path.privacy.auth).length;
-  privacy.unauth = pathsAnswer.paths.filter(path => path.privacy.unauth).length;
+  privacy.auth = pathsAnswer.paths
+    .filter(path => path.privacy.auth && path.privacy.auth.length > 0).length;
+  privacy.unauth = pathsAnswer.paths
+    .filter(path => path.privacy.unauth && path.privacy.unauth.length > 0).length;
 
   answers = { ...answers, privacy, dependsOn };
 
@@ -214,8 +217,16 @@ async function askPrivacy(context, answers, currentPath) {
       privacy: answer.privacy,
     };
 
-    const { privacy: { auth: authPrivacy } } = currentPath || { privacy: {} };
-    const { privacy: { unauth: unauthPrivacy } } = currentPath || { privacy: {} };
+    let { privacy: { auth: authPrivacy } } = currentPath || { privacy: {} };
+    let { privacy: { unauth: unauthPrivacy } } = currentPath || { privacy: {} };
+
+    // convert legacy permissions to CRUD structure
+    if (authPrivacy && ['r', 'rw'].includes(authPrivacy)) {
+      authPrivacy = convertToCRUD(authPrivacy);
+    }
+    if (unauthPrivacy && ['r', 'rw'].includes(unauthPrivacy)) {
+      unauthPrivacy = convertToCRUD(unauthPrivacy);
+    }
 
     if (answer.privacy === 'private') {
       privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
@@ -266,33 +277,28 @@ async function askPrivacy(context, answers, currentPath) {
   }
 }
 
-async function askReadWrite(userType, context, privacy = 'r') {
-  while (true) {
-    const answer = await inquirer.prompt({
-      name: 'permissions',
-      type: 'list',
-      message: `What kind of access do you want for ${userType} users`,
-      choices: [
-        {
-          name: 'read',
-          value: 'r',
-        },
-        {
-          name: 'write',
-          value: 'w',
-        },
-        {
-          name: 'read/write',
-          value: 'rw',
-        },
-      ],
-      default: privacy,
-    });
+async function askReadWrite(userType, context, privacy) {
+  const permissionMap = {
+    create: ['/POST'],
+    read: ['/GET'],
+    update: ['/PUT', '/PATCH'],
+    delete: ['/DELETE'],
+  };
 
-    if (answer.permissions !== 'learn') {
-      return answer.permissions;
-    }
+  const defaults = [];
+  if (privacy) {
+    Object.values(permissionMap).forEach((el, index) => {
+      if (el.every(i => privacy.includes(i))) {
+        defaults.push(Object.keys(permissionMap)[index]);
+      }
+    });
   }
+
+  return await context.amplify.crudFlow(
+    userType,
+    permissionMap,
+    defaults,
+  );
 }
 
 async function askPaths(context, answers, currentPath) {
@@ -307,17 +313,14 @@ async function askPaths(context, answers, currentPath) {
   ];
 
   /*
-
   Removing this option for now in favor of multi-env support
   - NOT CRITICAL
-
   if (existingLambdaArns) {
     choices.push({
       name: 'Use a Lambda function already deployed on AWS',
       value: 'arn',
     });
   }
-
   */
 
   if (existingFunctions) {
@@ -624,6 +627,14 @@ async function migrate(context, projectPath, resourceName) {
 //   }
 //   return authExists;
 // }
+function convertToCRUD(privacy) {
+  if (privacy === 'r') {
+    privacy = ['/GET'];
+  } else if (privacy === 'rw') {
+    privacy = ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
+  }
 
+  return privacy;
+}
 
 module.exports = { serviceWalkthrough, updateWalkthrough, migrate };

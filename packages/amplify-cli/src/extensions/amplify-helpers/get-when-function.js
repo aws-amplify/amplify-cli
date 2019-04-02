@@ -24,6 +24,9 @@ function getWhen(input, answers, previousValues, amplify) {
 const findMatch = (cond, answers, previousValues, amplify) => {
   let response = true;
 
+  if (!previousValues && cond.onCreate) {
+    return false;
+  }
   /*eslint-disable*/
   if (!cond.preventEdit) {
     if (cond.operator === '=' && (answers[cond.key] != undefined && answers[cond.key] !== cond.value|| !answers[cond.key] )) {
@@ -35,6 +38,8 @@ const findMatch = (cond, answers, previousValues, amplify) => {
     } else if (cond.operator === 'configMatch' && cond.value && cond.key && amplify) {
       const configKey = amplify.getProjectConfig()[cond.key];
       return configKey.toLowerCase() === cond.value.toLowerCase()
+    } else if (cond.operator === 'exists' && previousValues && !previousValues[cond.key]) {
+      return false;
     }
   } else if (previousValues && Object.keys(previousValues).length > 0) {
     if (cond.preventEdit === 'always') {
@@ -43,6 +48,10 @@ const findMatch = (cond, answers, previousValues, amplify) => {
       response = false;
     } else if (cond.preventEdit === '=' && previousValues[cond.key] != undefined && previousValues[cond.key] === cond.value ) {
       response = false;
+    } else if (cond.preventEdit === 'existsInCurrent') {
+      if (answers[cond.key]) {
+        return false
+      }
     }
   }
   /* eslint-enable */

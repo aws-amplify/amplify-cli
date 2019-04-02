@@ -18,10 +18,11 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function createFrontendConfigs(context, amplifyResources) {
-  const { outputsForFrontend } = amplifyResources;
+async function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
+  const newOutputsForFrontend = amplifyResources.outputsForFrontend;
+  const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
   // createAmplifyConfig(context, outputsByCategory);
-  return createAWSExports(context, outputsForFrontend);
+  return await createAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
 
 function configure(context) {

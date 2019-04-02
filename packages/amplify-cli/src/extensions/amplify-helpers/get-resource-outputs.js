@@ -1,9 +1,11 @@
 const fs = require('fs');
 const pathManager = require('./path-manager');
 
-function getResourceOutputs() {
-  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+function getResourceOutputs(amplifyMeta) {
+  if (!amplifyMeta) {
+    const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+    amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  }
 
   // Build the provider object
   const outputsByProvider = {};
