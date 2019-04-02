@@ -132,7 +132,7 @@ async function addScene(context) {
 
 async function addSceneConfig(context, sceneName) {
   inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'));
-  
+
   let sumerianConfig;
   let isConfigValid = false;
   while (!isConfigValid) {
