@@ -18,6 +18,8 @@ function saveResourceParameters(
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
   const envSpecificParams = {};
   const sharedParams = { ...parameters };
+
+  // extracting env-specific params from parameters object
   envSpecificParamsName.forEach((paramName) => {
     if (paramName in parameters) {
       envSpecificParams[paramName] = parameters[paramName];
