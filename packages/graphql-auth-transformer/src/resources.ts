@@ -315,7 +315,7 @@ export class ResourceFactory {
                     raw(`$util.qr($groupAuthExpressions.add("contains(#${groupsAttributeName}, :${groupName}$foreach.count)"))`),
                     raw(`$util.qr($groupAuthExpressionValues.put(":${groupName}$foreach.count", { "S": $userGroup }))`),
                 ]),
-                raw(`$util.qr($groupAuthExpressionNames.put("#${groupsAttributeName}", "${groupsAttribute}"))`),
+                iff(raw('$userGroups.size() > 0'), raw(`$util.qr($groupAuthExpressionNames.put("#${groupsAttributeName}", "${groupsAttribute}"))`)),
             )
             ruleNumber++
         }
@@ -579,6 +579,6 @@ export class ResourceFactory {
     }
 
     public setUserGroups(): SetNode {
-        return set(ref('userGroups'), ref('ctx.identity.claims.get("cognito:groups")'));
+        return set(ref('userGroups'), raw('$util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), [])'));
     }
 }
