@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const { print } = require('gluegun/print');
 
-function run(context) {
+async function run(context) {
   const { projectPath } = context.exeInfo;
   const { amplify } = context;
 
@@ -12,6 +12,8 @@ function run(context) {
   jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
   fs.writeFileSync(envFilePath, jsonString, 'utf8');
+
+  await context.amplify.onCategoryOutputsChange(context);
 
   printWelcomeMessage();
 }

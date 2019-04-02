@@ -10,14 +10,47 @@ const learnMoreOption = [{
 
 const defaultPrompMap = [
   {
-    name: 'Yes, use the default configuration.',
+    name: 'Default configuration',
     value: 'default',
   },
   {
-    name: 'No, I will set up my own configuration.',
+    name: 'Default configuration with Social Provider (Federation)',
+    value: 'defaultSocial',
+  },
+  {
+    name: 'Manual configuration',
     value: 'manual',
   },
   ...learnMoreOption,
+];
+
+const updateFlowMap = [
+  {
+    name: 'Apply default configuration without Social Provider (Federation)',
+    value: 'default',
+    conditionKey: 'useDefault',
+  },
+  {
+    name: 'Apply default configuration with Social Provider (Federation)',
+    value: 'defaultSocial',
+    conditionKey: 'useDefault',
+  },
+  {
+    name: 'Walkthrough all the auth configurations',
+    value: 'manual',
+  },
+  {
+    name: 'Add/Edit signin and signout redirect URIs',
+    value: 'callbacks',
+    conditionKey: 'CallbackURLs',
+    conditionMsg: 'You have not initially configured OAuth.',
+  },
+  {
+    name: 'Update OAuth social providers',
+    value: 'providers',
+    conditionKey: 'hostedUIProviderCreds',
+    conditionMsg: 'You have not initially configured OAuth.',
+  },
 ];
 
 const booleanOptions = [
@@ -86,6 +119,166 @@ const authSelectionMap = [
   ...learnMoreOption,
 ];
 
+const attributeProviderMap = {
+  address: {
+    facebook: {
+      attr: 'address',
+      scope: 'default',
+    },
+    google: {},
+    loginwithamazon: {},
+  },
+  birthdate: {
+    facebook: {
+      attr: 'birthday',
+      scope: 'user_birthday',
+    },
+    google: {
+      attr: 'birthdays',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  email: {
+    facebook: {
+      attr: 'email',
+      scope: 'email',
+    },
+    google: {
+      attr: 'email',
+      scope: 'email',
+    },
+    loginwithamazon: {
+      attr: 'email',
+      scope: 'profile',
+    },
+  },
+  family_name: {
+    facebook: {
+      attr: 'last_name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'family_name',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  gender: {
+    facebook: {
+      attr: 'gender',
+      scope: 'user_gender',
+    },
+    google: {
+      attr: 'genders',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  given_name: {
+    facebook: {
+      attr: 'given_name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'given_name',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  locale: {
+    facebook: {
+      attr: 'location',
+      scope: 'user_location',
+    },
+    google: {},
+    loginwithamazon: {
+      attr: 'postal_code',
+      scope: 'postal_code',
+    },
+  },
+  middle_name: {
+    facebook: {
+      attr: 'middle_name',
+      scope: 'default',
+    },
+    google: {},
+    loginwithamazon: {},
+  },
+  name: {
+    facebook: {
+      attr: 'name',
+      scope: 'default',
+    },
+    google: {
+      attr: 'name',
+      scope: 'profile',
+    },
+    loginwithamazon: {
+      attr: 'name',
+      scope: 'profile',
+    },
+  },
+  nickname: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
+  },
+  phone_number: {
+    facebook: {},
+    google: {
+      attr: 'phoneNumbers',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  picture: {
+    facebook: {
+      attr: 'picture',
+      scope: 'default',
+    },
+    google: {
+      attr: 'picture',
+      scope: 'profile',
+    },
+    loginwithamazon: {},
+  },
+  preferred_username: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
+  },
+  profile: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
+  },
+  zoneinfo: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
+  },
+  website: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
+  },
+  username: {
+    facebook: {
+      attr: 'id',
+      scope: 'default',
+    },
+    google: {
+      attr: 'sub',
+      scope: 'profile',
+    },
+    loginwithamazon: {
+      attr: 'user_id',
+      scope: 'profile:user_id',
+    },
+  },
+};
+
 const coreAttributes = [
   {
     name: 'Address',
@@ -100,8 +293,11 @@ const coreAttributes = [
     name: 'Family Name',
     value: 'family_name',
   }, {
-    name: 'Given Name',
-    value: 'given_name',
+    name: 'Middle Name',
+    value: 'middle_name',
+  }, {
+    name: 'Gender',
+    value: 'gender',
   }, {
     name: 'Locale',
     value: 'locale',
@@ -168,6 +364,101 @@ const authProviders = [
   },
 ];
 
+const hostedUIProviders = [
+  {
+    name: 'Facebook',
+    value: 'Facebook',
+  },
+  {
+    name: 'Google',
+    value: 'Google',
+  },
+  {
+    name: 'Login With Amazon',
+    value: 'LoginWithAmazon',
+  },
+];
+
+const authorizeScopes = [
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'Public Profile',
+    value: 'public_profile',
+  },
+];
+
+const signInOptions = [
+  {
+    name: 'Username',
+    value: 'username',
+  },
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'Phone Number',
+    value: 'phone_number',
+  },
+  {
+    name: 'Email and Phone Number',
+    value: 'email, phone_number',
+  },
+  ...learnMoreOption,
+];
+
+const socialLoginOptions = [
+  {
+    name: 'Identity Pool',
+    value: 'identityPool',
+  },
+  {
+    name: 'User Pool',
+    value: 'userPool',
+  },
+  {
+    name: 'Neither',
+    value: null,
+  },
+];
+
+const oAuthFlows = [
+  {
+    name: 'Authorization code grant',
+    value: 'code',
+  },
+  {
+    name: 'Implicit grant',
+    value: 'token',
+  },
+];
+
+const oAuthScopes = [
+  {
+    name: 'Phone',
+    value: 'phone',
+  },
+  {
+    name: 'Email',
+    value: 'email',
+  },
+  {
+    name: 'OpenID',
+    value: 'openid',
+  },
+  {
+    name: 'Profile',
+    value: 'profile',
+  },
+  {
+    name: 'aws.cognito.signin.user.admin',
+    value: 'aws.cognito.signin.user.admin',
+  },
+];
+
 const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
@@ -186,6 +477,14 @@ const getAllMaps = ((edit) => {
     emailRegistration,
     defaultPrompMap,
     booleanOptions,
+    signInOptions,
+    socialLoginOptions,
+    hostedUIProviders,
+    oAuthFlows,
+    oAuthScopes,
+    authorizeScopes,
+    attributeProviderMap,
+    updateFlowMap,
   };
 });
 
@@ -200,5 +499,13 @@ module.exports = {
   emailRegistration,
   defaultPrompMap,
   booleanOptions,
+  signInOptions,
+  socialLoginOptions,
+  hostedUIProviders,
+  authorizeScopes,
+  oAuthFlows,
+  oAuthScopes,
   messages,
+  attributeProviderMap,
+  updateFlowMap,
 };

@@ -188,19 +188,22 @@ async function checkRequirements(requirements, context) {
 
 async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted } = await amplify.getResourceStatus('auth');
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('auth');
 
   resourcesToBeDeleted.forEach((authResource) => {
     amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
   });
 
-  const authTasks = resourcesToBeCreated.map((authResource) => {
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  const authTasks = tasks.map((authResource) => {
     const { resourceName } = authResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, 'auth', resourceName);
       context.amplify.saveEnvResourceParameters(context, 'auth', resourceName, config);
     };
   });
+
   await sequential(authTasks);
 }
 

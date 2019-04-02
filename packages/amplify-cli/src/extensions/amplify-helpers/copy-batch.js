@@ -8,7 +8,7 @@ const fs = require('fs');
  * @param {any}   props          - The props to use for variable replacement.
  * @param {any}   opts           - Additional options
  */
-async function copyBatch(context, jobs, props, force, writeParams) {
+async function copyBatch(context, jobs, props, force, writeParams, privateKeys) {
   // grab some features
   const {
     template,
@@ -18,6 +18,16 @@ async function copyBatch(context, jobs, props, force, writeParams) {
   const {
     confirm,
   } = prompt;
+
+  // deleting private keys from shared params before they are written to parameters.json
+  if (privateKeys && privateKeys.length > 0) {
+    // deleting private keys from shared params before they are written to parameters.json
+    privateKeys.forEach((e) => {
+      if (props[e]) {
+        delete props[e];
+      }
+    });
+  }
 
   // If the file exists
   const shouldGenerate = async (target) => {

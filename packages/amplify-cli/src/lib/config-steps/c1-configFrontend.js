@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const { getFrontendPlugins } = require('../../extensions/amplify-helpers/get-frontend-plugins');
-const { getResourceOutputs } = require('../../extensions/amplify-helpers/get-resource-outputs');
 const { normalizeFrontendHandlerName } = require('../input-params-manager');
 
 async function run(context) {
@@ -12,8 +11,7 @@ async function run(context) {
   if (selectedFrontend !== frontend) {
     delete context.exeInfo.projectConfig[frontend];
     const frontendModule = require(frontendPlugins[selectedFrontend]);
-    await frontendModule.init(context)
-      .then(() => frontendModule.createFrontendConfigs(context, getResourceOutputs()));
+    await frontendModule.init(context);
     context.exeInfo.projectConfig.frontend = selectedFrontend;
   } else {
     const frontendModule = require(frontendPlugins[selectedFrontend]);
