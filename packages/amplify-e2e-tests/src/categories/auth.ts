@@ -49,6 +49,19 @@ export function addAuthWithDefaultSocial(
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
     } = getEnvVars();
+
+    if (
+      !FACEBOOK_APP_ID ||
+      !FACEBOOK_APP_SECRET ||
+      !GOOGLE_APP_ID ||
+      !GOOGLE_APP_SECRET ||
+      !AMAZON_APP_ID ||
+      !AMAZON_APP_SECRET
+    ) {
+      throw new Error(
+        'Please set social provider app IDs and app secrets in .env'
+      );
+    }
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
