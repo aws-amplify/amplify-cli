@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@3.0.9...graphql-auth-transformer@3.4.0) (2019-04-03)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** conditional group expression ([#1186](https://github.com/aws-amplify/amplify-cli/issues/1186)) ([83ef244](https://github.com/aws-amplify/amplify-cli/commit/83ef244)), closes [#360](https://github.com/aws-amplify/amplify-cli/issues/360)
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
 ## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@3.0.8...graphql-auth-transformer@3.0.9) (2019-03-22)
 
 **Note:** Version bump only for package graphql-auth-transformer
