@@ -29,7 +29,6 @@ describe('amplify add auth', () => {
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    // const id = Object.values(meta.auth)[0].output.UserPoolId;
     const userPool = await getUserPool(id);
     await expect(userPool.UserPool).toBeDefined()
   });
