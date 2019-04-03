@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.1.2...amplify-category-storage@1.4.1-beta.0) (2019-04-03)
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.1.1...amplify-category-storage@1.1.2) (2019-03-22)
 
 **Note:** Version bump only for package amplify-category-storage

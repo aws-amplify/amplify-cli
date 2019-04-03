@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.0.7...amplify-category-auth@1.3.1-beta.0) (2019-04-03)
+
+
+### Bug Fixes
+
+* fix redirect URI regex ([eaec6c2](https://github.com/aws-amplify/amplify-cli/commit/eaec6c2))
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.0.6...amplify-category-auth@1.0.7) (2019-03-22)
 
 

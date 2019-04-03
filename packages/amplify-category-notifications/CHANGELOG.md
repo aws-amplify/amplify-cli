@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.0.7...amplify-category-notifications@1.3.1-beta.0) (2019-04-03)
+
+
+### Bug Fixes
+
+* **amplify-cli:** promise not resolving in lts/dubnium ([#1028](https://github.com/aws-amplify/amplify-cli/issues/1028)) ([8a966be](https://github.com/aws-amplify/amplify-cli/commit/8a966be))
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.0.6...amplify-category-notifications@1.0.7) (2019-03-22)
 
 **Note:** Version bump only for package amplify-category-notifications
