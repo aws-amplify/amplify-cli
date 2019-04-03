@@ -27,8 +27,8 @@ const roles = {
   },
 };
 
-const generalDefaults = () => ({
-  resourceName: `cognito${sharedId}`,
+const generalDefaults = projectName => ({
+  resourceName: `${projectName}_${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
   ...roles,
 });
