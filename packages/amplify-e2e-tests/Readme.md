@@ -9,6 +9,19 @@ AWS_ACCESS_KEY_ID=<your access key>
 AWS_SECRET_ACCESS_KEY=<your secrete key>
 ```
 
+If you are running tests for the auth category you will need to include App Ids and Secrets for Facebook, Google and Login with Amazon:
+
+```
+FACEBOOK_APP_ID=<your Facebook App ID>
+FACEBOOK_APP_SECRET=<your Facebook App Secret>
+
+GOOGLE_APP_ID=<your Google App ID>
+GOOGLE_APP_SECRET=<your Google App Secret>
+
+AMAZON_APP_ID=<your Login with Amazon App ID>
+AMAZON_APP_SECRET=<your Login with Amazon App Secret>
+```
+
 The `.env` file does not get commited as its in the `.gitignore` file.
 
 ## Running individual tests

@@ -48,7 +48,7 @@ export function addAuthWithDefaultSocial(
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
-    } = getEnvVars();
+    }: any = getEnvVars();
 
     if (
       !FACEBOOK_APP_ID ||
