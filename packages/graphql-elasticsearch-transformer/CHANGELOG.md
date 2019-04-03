@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.0.9...graphql-elasticsearch-transformer@3.4.0) (2019-04-03)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** export domain arn and endpoint ([97b8cad](https://github.com/aws-amplify/amplify-cli/commit/97b8cad)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+* **graphql-elasticsearch-transformer:** output endpoint with https ([a5e7b73](https://github.com/aws-amplify/amplify-cli/commit/a5e7b73)), closes [#1047](https://github.com/aws-amplify/amplify-cli/issues/1047)
+
+
+
+
+
 ## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.0.8...graphql-elasticsearch-transformer@3.0.9) (2019-03-22)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer
