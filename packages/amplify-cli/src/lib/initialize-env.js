@@ -6,13 +6,22 @@ const spinner = ora('');
 
 const { getProviderPlugins } = require('../extensions/amplify-helpers/get-provider-plugins');
 
-async function initializeEnv(context) {
+async function initializeEnv(context, currentAmplifyMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
     const amplifyMeta = {};
     amplifyMeta.providers = JSON.parse(fs.readFileSync(providerInfoFilePath))[currentEnv];
+
+    if (!currentAmplifyMeta) {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+
+      if (fs.existsSync(currentAmplifyMetafilePath)) {
+        currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+      }
+    }
 
     if (!context.exeInfo.restoreBackend) {
       populateAmplifyMeta(context, amplifyMeta);
@@ -67,7 +76,7 @@ async function initializeEnv(context) {
       await sequential(providerPushTasks);
     }
     // Generate AWS exports/configurtion file
-    await context.amplify.onCategoryOutputsChange(context);
+    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
     context.print.success('Initialized your environment successfully.');
   } catch (e) {
     spinner.fail('There was an error initializing your environment.');
