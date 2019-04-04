@@ -223,7 +223,7 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
-            - minortest
+            - xr
           filters:
             branches:
               only:
