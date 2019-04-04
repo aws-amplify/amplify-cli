@@ -49,6 +49,7 @@ async function initEnv(context) {
   const rdsClusterIdentifier = 'rdsClusterIdentifier';
   const rdsSecretStoreArn = 'rdsSecretStoreArn';
   const rdsDatabaseName = 'rdsDatabaseName';
+
   const { amplify } = context;
 
   /**
@@ -126,6 +127,9 @@ async function initEnv(context) {
        = answers.databaseName;
 
       fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
+    })
+    .then(() => {
+      context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true });
     });
 }
 

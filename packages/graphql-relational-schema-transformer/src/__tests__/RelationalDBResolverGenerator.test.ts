@@ -26,7 +26,7 @@ const generator = new RelationalDBResolverGenerator(context)
  * creates the CRUDL AppSync Resolver resources.
  */
 test('Test Basic CRUDL Resolver Generation', () => {
-    const resources: { [key: string]: any } = generator.createRelationalResolvers()
+    const resources: { [key: string]: any } = generator.createRelationalResolvers("someFilePath")
     expect(resources).toBeDefined()
 
     // Verify all CRUDL resolvers were created for the Pet Type

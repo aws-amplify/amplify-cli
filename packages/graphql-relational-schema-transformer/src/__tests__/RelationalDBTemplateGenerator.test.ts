@@ -3,7 +3,8 @@ jest.mock('../RelationalDBResolverGenerator')
 import RelationalDBTemplateGenerator from '../RelationalDBTemplateGenerator'
 import TemplateContext from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
-import { ResourceConstants, ModelResourceIDs } from 'graphql-transformer-common'
+import { ResourceConstants as CommonResourceConstants } from 'graphql-transformer-common'
+import { ResourceConstants } from '../ResourceConstants'
 
 
 
@@ -60,9 +61,9 @@ test('Test Base CloudForm Template Generation', () => {
 
     // Verify Outputs were created as expected
     expect(template.Outputs).toBeDefined()
-    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-    expect(template.Outputs).toHaveProperty(ResourceConstants.OUTPUTS.GraphQLAPIIdOutput)
+    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
+    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
+    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIIdOutput)
 })
 
 /**
@@ -75,7 +76,7 @@ test('Test Adding Resolvers to CloudForm Template', () => {
     expect(baseTemplate.Resources).toBeDefined()
     expect(baseTemplate.Resources).not.toHaveProperty('')
 
-    const finalTemplate = templateGenerator.addRelationalResolvers(baseTemplate)
+    const finalTemplate = templateGenerator.addRelationalResolvers(baseTemplate, 'someFilePath')
     expect(finalTemplate).toBeDefined()
 })
 
