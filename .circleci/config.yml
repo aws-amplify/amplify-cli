@@ -223,10 +223,10 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
-            - xr
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - xr
