@@ -65,45 +65,6 @@ function serviceSelectionPrompt(context, category, supportedServices) {
   return serviceQuestionWalkthrough(context, supportedServices, category);
 }
 
-function datasourceSelectionPrompt(context, category, supportedDatasources) {
-  const options = [];
-  Object.keys(supportedDatasources).forEach((datasource) => {
-    const optionName = supportedDatasources[datasource].alias || `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
-    options.push({
-      name: optionName,
-      value: {
-        provider: supportedDatasources[datasource].provider,
-        datasource,
-        providerName: supportedDatasources[datasource].provider,
-      },
-    });
-  });
-
-  if (options.length === 0) {
-    context.print.error(`No datasources defined by configured providers for category: ${category}`);
-    process.exit(1);
-  }
-
-  if (options.length === 1) {
-    // No need to ask questions
-    context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
-    return new Promise((resolve) => {
-      resolve(options[0].value);
-    });
-  }
-
-  const question = [{
-    name: 'datasource',
-    message: 'Please select from one of the below mentioned datasources',
-    type: 'list',
-    choices: options,
-  }];
-
-  return inquirer.prompt(question)
-    .then(answer => answer.datasource);
-}
-
 module.exports = {
   serviceSelectionPrompt,
-  datasourceSelectionPrompt,
 };

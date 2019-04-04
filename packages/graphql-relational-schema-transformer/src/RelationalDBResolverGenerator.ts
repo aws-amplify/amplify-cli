@@ -3,9 +3,13 @@ import { DocumentNode } from 'graphql'
 import { Fn } from 'cloudform'
 import AppSync from 'cloudform-types/types/appSync'
 import { print, obj, set, str, list, forEach, ref, compoundExpression } from 'graphql-mapping-template'
-import { ResourceConstants, graphqlName, toUpper, plurality } from 'graphql-transformer-common'
+import { graphqlName, toUpper, plurality } from 'graphql-transformer-common'
+import { ResourceConstants } from './ResourceConstants'
 import RelationalDBMappingTemplate from './RelationalDBMappingTemplate'
+import * as fs from 'fs-extra'
 
+const s3BaseUrl = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}'
+const resolverFileName = 'ResolverFileName'
 /**
  * This Class is responsible for Generating the RDS Resolvers based on the
  * GraphQL Schema + Metadata of the RDS Cluster (i.e. Primary Keys for Tables).
@@ -19,7 +23,7 @@ export default class RelationalDBResolverGenerator {
     typePrimaryKeyMap: Map<string, string>;
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
-
+    resolverFilePath: string
 
     constructor(context: TemplateContext) {
         this.document = context.schemaDoc
@@ -32,8 +36,9 @@ export default class RelationalDBResolverGenerator {
      * Creates the CRUDL+Q Resolvers as a Map of Cloudform Resources. The output can then be
      * merged with an existing Template's map of Resources.
      */
-    public createRelationalResolvers() {
+    public createRelationalResolvers(resolverFilePath: string) {
         let resources = {}
+        this.resolverFilePath = resolverFilePath
         this.typePrimaryKeyMap.forEach((value: string, key: string) => {
             resources = {
                 ...resources,
@@ -66,32 +71,56 @@ export default class RelationalDBResolverGenerator {
         let selectSql =
             `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
 
+        const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
+        const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
+
+        const reqTemplate = print(
+            compoundExpression([
+                set(ref('cols'), list([])),
+                set(ref('vals'), list([])),
+                forEach(
+                    ref('entry'),
+                    ref(`ctx.args.create${toUpper(type)}Input.keySet()`),
+                    [
+                        set(ref('discard'), ref(`cols.add($entry)`)),
+                        set(ref('discard'), ref(`vals.add("'$ctx.args.create${toUpper(type)}Input[$entry]'")`))
+                    ]
+                ),
+                set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
+                set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(createSql), str(selectSql)])
+                })
+            ])
+        )
+
+        const resTemplate = print(
+            ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
+        )
+
+        fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
+        fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
+
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    set(ref('cols'), list([])),
-                    set(ref('vals'), list([])),
-                    forEach(
-                        ref('entry'),
-                        ref(`ctx.args.create${toUpper(type)}Input.keySet()`),
-                        [
-                            set(ref('discard'), ref(`cols.add($entry)`)),
-                            set(ref('discard'), ref(`vals.add("'$ctx.args.create${toUpper(type)}Input[$entry]'")`))
-                        ]
-                    ),
-                    set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
-                    set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
-                    RelationalDBMappingTemplate.rdsQuery({
-                        statements: list([str(createSql), str(selectSql)])
-                    })
-                ])
+            RequestMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: reqFileName
+                }
             ),
-            ResponseMappingTemplate: print(
-                ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: resFileName
+                }
             )
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
@@ -107,21 +136,44 @@ export default class RelationalDBResolverGenerator {
     private makeGetRelationalResolver(type: string, queryTypeName: string = 'Query') {
         const fieldName = graphqlName('get' + toUpper(type))
         let sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`
+        const resFileName = `${queryTypeName}.${fieldName}.res.vtl`
+
+        const reqTemplate = print(
+            compoundExpression([
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(sql)])
+                })
+            ])
+        )
+
+        const resTemplate = print(
+            ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
+        )
+
+        fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
+        fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
         
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             FieldName: fieldName,
             TypeName: queryTypeName,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    RelationalDBMappingTemplate.rdsQuery({
-                        statements: list([str(sql)])
-                    })
-                ])
+            RequestMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: reqFileName
+                }
             ),
-            ResponseMappingTemplate: print(
-                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: resFileName
+                }
             )
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
@@ -140,31 +192,54 @@ export default class RelationalDBResolverGenerator {
             `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
         const selectSql =
             `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(type)}Input.${this.typePrimaryKeyMap.get(type)}`
+        const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
+        const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
+
+        const reqTemplate = print(
+            compoundExpression([
+                set(ref('updateList'), obj({})),
+                forEach(
+                    ref('entry'),
+                    ref(`ctx.args.update${toUpper(type)}Input.keySet()`),
+                    [
+                        set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${toUpper(type)}Input[$entry]'")`))
+                    ]
+                ),
+                set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(updateSql), str(selectSql)])
+                })
+            ])
+        )
+
+        const resTemplate = print(
+            ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
+        )
+
+        fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
+        fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
         let resolver =  new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    set(ref('updateList'), obj({})),
-                    forEach(
-                        ref('entry'),
-                        ref(`ctx.args.update${toUpper(type)}Input.keySet()`),
-                        [
-                            set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${toUpper(type)}Input[$entry]'")`))
-                        ]
-                    ),
-                    set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
-                    RelationalDBMappingTemplate.rdsQuery({
-                        statements: list([str(updateSql), str(selectSql)])
-                    })
-                ])
+            RequestMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: reqFileName
+                }
             ),
-            ResponseMappingTemplate: print(
-                ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])')
-            )
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: resFileName
+                }
+            ) 
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
     }
@@ -180,22 +255,43 @@ export default class RelationalDBResolverGenerator {
         const fieldName = graphqlName('delete' + toUpper(type))
         const selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
         const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`
+        const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`
+        const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`
+        const reqTemplate = print(
+            compoundExpression([
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(selectSql), str(deleteSql)])
+                })
+            ])
+        )
+        const resTemplate = print(
+            ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
+        )
+
+        fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
+        fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: mutationTypeName,
             FieldName: fieldName,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    RelationalDBMappingTemplate.rdsQuery({
-                        statements: list([str(selectSql), str(deleteSql)])
-                    })
-                ])
+            RequestMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: reqFileName
+                }
             ),
-            ResponseMappingTemplate: print(
-                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])')
-            )
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: resFileName
+                }
+            ) 
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver
@@ -211,20 +307,41 @@ export default class RelationalDBResolverGenerator {
     private makeListRelationalResolver(type: string, queryTypeName: string = 'Query') {
         const fieldName = graphqlName('list' + plurality(toUpper(type)))
         const sql = `SELECT * FROM ${type}`
+        const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`
+        const resFileName = `${queryTypeName}.${fieldName}.res.vtl`
+        const reqTemplate = print(
+            RelationalDBMappingTemplate.rdsQuery({
+                statements: list([str(sql)])
+            })
+        )
+        const resTemplate = print(
+            ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
+        )
+
+        fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
+        fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
 
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
             TypeName: queryTypeName,
             FieldName: fieldName,
-            RequestMappingTemplate: print(
-                RelationalDBMappingTemplate.rdsQuery({
-                    statements: list([str(sql)])
-                })
+            RequestMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: reqFileName
+                }
             ),
-            ResponseMappingTemplate: print(
-                ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])')
-            )
+            ResponseMappingTemplateS3Location: Fn.Sub(
+                s3BaseUrl,
+                {
+                    [ResourceConstants.PARAMETERS.S3DeploymentBucket]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                    [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                    [resolverFileName]: resFileName
+                }
+            ) 
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver

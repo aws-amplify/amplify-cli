@@ -142,13 +142,19 @@ function mergeUserConfigWithTransformOutput(
          * if there are any Parameters that are present in the child but not the
          * root stack - if so, add it to the root stack.
          */
-        const parameterKeys = Object.keys(userDefinedStack.Parameters);
-
-        for (let i = 0; i < parameterKeys.length; i += 1) {
-            if (customStackParams[parameterKeys[i]] == null) {
-                customStackParams[parameterKeys[i]] = Fn.Ref(parameterKeys[i]);
-                // Add the entire parameter entry from the user defined stack's parameter
-                updatedParameters[parameterKeys[i]] = userDefinedStack.Parameters[parameterKeys[i]];
+        for (const key of Object.keys(userDefinedStack.Parameters)) {
+            if (customStackParams[key] == null) {
+                customStackParams[key] = Fn.Ref(key);
+                /**
+                 * First check to the ensure that the key does not already exist in the Root stack
+                 * This helps to prevent the customer from overwriting parameters that are used by the library
+                 */
+                if (updatedParameters[key]) {
+                    throw new Error(`Cannot redefine CloudFormation parameter ${key} in stack ${userStack}.`);
+                } else {
+                    // Add the entire parameter entry from the user defined stack's parameter
+                    updatedParameters[key] = userDefinedStack.Parameters[key];
+                }
             }
         }
         // Providing a parameter value when the parameters is not explicitly defined

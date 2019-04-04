@@ -2,16 +2,6 @@ export class ResourceConstants {
 
     public static NONE = "NONE"
 
-    public static readonly ENVIRONMENT_CONTEXT_KEYS = {
-
-
-        // Aurora Serverless Imports
-        RDSRegion: 'rdsRegion',
-        RDSClusterIdentifier: 'rdsClusterIdentifier',
-        RDSSecretStoreArn: 'rdsSecretStoreArn',
-        RDSDatabaseName: 'rdsDatabaseName'
-    }
-
     public static readonly RESOURCES = {
         // AppSync
         GraphQLAPILogicalID: 'GraphQLAPI',
@@ -32,10 +22,6 @@ export class ResourceConstants {
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
         AuthCognitoUserPoolJSClientLogicalID: 'AuthCognitoUserPoolJSClient',
-
-        // Relational Database
-        RelationalDatabaseDataSource: 'RelationalDatabaseDataSource',
-        RelationalDatabaseAccessRole: 'RelationalDatabaseAccessRole',
     }
     public static PARAMETERS = {
         // cli
@@ -68,16 +54,6 @@ export class ResourceConstants {
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
-        AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
-        AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
-        AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
-        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity',
-
-        // Aurora Serverless
-        rdsRegion: 'rdsRegion',
-        rdsClusterIdentifier: 'rdsClusterIdentifier',
-        rdsSecretStoreArn: 'rdsSecretStoreArn',
-        rdsDatabaseName: 'rdsDatabaseName'
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {

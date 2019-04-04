@@ -1,7 +1,9 @@
 const fs = require('fs-extra');
+const inquirer = require('inquirer');
 const graphql = require('graphql');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
 const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
+const { mergeTypes } = require('merge-graphql-schemas');
 
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
@@ -23,7 +25,7 @@ module.exports = {
     let resourceName;
     let datasource;
     let databaseName;
-    return amplify.datasourceSelectionPrompt(context, category, servicesMetadata)
+    return datasourceSelectionPrompt(context, servicesMetadata)
       .then((result) => {
         datasource = result.datasource; // eslint-disable-line prefer-destructuring
 
@@ -97,7 +99,6 @@ module.exports = {
         /**
          * Merge the GraphQL Schema with the existing schema.graphql in the projects stack
          *
-         * TODO: Does a dummy concat currently, next step is to do a deeper concatenation
          */
         const apiDirPath = `${projectBackendDirPath}/${category}/${resourceName}`;
         fs.ensureDirSync(apiDirPath);
@@ -105,28 +106,14 @@ module.exports = {
         fs.ensureFileSync(graphqlSchemaFilePath);
         const graphqlSchemaRaw = fs.readFileSync(graphqlSchemaFilePath, 'utf8');
         const currGraphQLSchemaDoc = graphql.parse(graphqlSchemaRaw);
+
         const rdsGraphQLSchemaDoc = graphqlSchemaContext.schemaDoc;
+
         const concatGraphQLSchemaDoc
-         = graphql.concatAST([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc]);
+         = mergeTypes([currGraphQLSchemaDoc, rdsGraphQLSchemaDoc], { all: true });
 
-        // Validate there are no conflicting types
-        const typeSeen = [];
-        const definitions = Object.keys(concatGraphQLSchemaDoc.definitions);
-        for (let i = 0; i < definitions.length; i += 1) {
-          if (definitions[i].kind === 'ObjectTypeDefinition') {
-            if (typeSeen[definitions[i].name.value]) {
-              context.print.error(`Failed to add generated schema to schema.graphql, there is a schema conflict on type ${definitions[i].name.value}.`);
-              context.print.error('Fix the conflict and run the \'add-graphql-datasource\' command again.');
-              process.exit(0);
-            } else {
-              typeSeen[definitions[i].name.value] = true;
-            }
-          }
-        }
-
-        const newGraphQLSchema = graphql.print(concatGraphQLSchemaDoc);
-
-        fs.writeFileSync(graphqlSchemaFilePath, newGraphQLSchema, 'utf8');
+        fs.writeFileSync(graphqlSchemaFilePath, concatGraphQLSchemaDoc, 'utf8');
+        const resolversDir = `${projectBackendDirPath}/${category}/${resourceName}/resolvers`;
 
         /**
          * Instantiate a new Relational Template Generator and create
@@ -136,7 +123,7 @@ module.exports = {
         context[rdsResourceName] = resourceName;
         context[rdsDatasource] = datasource;
         let template = templateGenerator.createTemplate(context);
-        template = templateGenerator.addRelationalResolvers(template);
+        template = templateGenerator.addRelationalResolvers(template, resolversDir);
         const cfn = templateGenerator.printCloudformationTemplate(template);
 
         /**
@@ -167,3 +154,41 @@ module.exports = {
       });
   },
 };
+
+function datasourceSelectionPrompt(context, supportedDatasources) {
+  const options = [];
+  Object.keys(supportedDatasources).forEach((datasource) => {
+    const optionName = supportedDatasources[datasource].alias || `${supportedDatasources[datasource].providerName}:${supportedDatasources[datasource].service}`;
+    options.push({
+      name: optionName,
+      value: {
+        provider: supportedDatasources[datasource].provider,
+        datasource,
+        providerName: supportedDatasources[datasource].provider,
+      },
+    });
+  });
+
+  if (options.length === 0) {
+    context.print.error(`No datasources defined by configured providers for category: ${category}`);
+    process.exit(1);
+  }
+
+  if (options.length === 1) {
+    // No need to ask questions
+    context.print.info(`Using datasource: ${options[0].value.datasource}, provided by: ${options[0].value.providerName}`);
+    return new Promise((resolve) => {
+      resolve(options[0].value);
+    });
+  }
+
+  const question = [{
+    name: 'datasource',
+    message: 'Please select from one of the below mentioned datasources',
+    type: 'list',
+    choices: options,
+  }];
+
+  return inquirer.prompt(question)
+    .then(answer => answer.datasource);
+}

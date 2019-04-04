@@ -1,4 +1,4 @@
-import { ResourceConstants } from 'graphql-transformer-common'
+import { ResourceConstants } from './ResourceConstants'
 import DataSource from 'cloudform-types/types/appSync/dataSource'
 import IAM from 'cloudform-types/types/iam'
 
@@ -47,9 +47,9 @@ export default class RelationalDBTemplateGenerator {
      * @param template - the Cloudform template
      * @returns the given template, updated with new resolvers.
      */
-    public addRelationalResolvers(template: Template) : Template {
+    public addRelationalResolvers(template: Template, resolverFilePath: string) : Template {
         let resolverGenerator = new RelationalDBResolverGenerator(this.context)
-        template.Resources = {...template.Resources, ...resolverGenerator.createRelationalResolvers()}
+        template.Resources = {...template.Resources, ...resolverGenerator.createRelationalResolvers(resolverFilePath)}
         return template
     }
 
