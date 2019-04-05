@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as handlebars from 'handlebars'
 import * as prettier from 'prettier'
 const camelCase = require('camel-case')
+import loadSchemaDocument from './generator/utils/loadSchemaDocument';
 
 import {
   buildClientSchema,
@@ -26,24 +27,24 @@ const FILE_EXTENSION_MAP = {
 function generate(
   schemaPath: string,
   outputPath: string,
-  options: { separateFiles: boolean; language: string; maxDepth: number }
+  options: { separateFiles: boolean; language: string; maxDepth: number, renderMultiAuthDirectives: boolean }
 ): void {
   const language = options.language || 'graphql'
-  const schemaContent = fs.readFileSync(schemaPath, 'utf8').trim()
-  const schemaData = JSON.parse(schemaContent)
-  if (!schemaData.data && !schemaData.__schema) {
-    // tslint:disable-line
-    throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
+  let schema;
+  try {
+    schema = loadSchemaDocument(schemaPath)
+  } catch (e) {
+    throw new Error('GraphQL schema file should contain a valid GraphQL Schema')
   }
   if (!Object.keys(FILE_EXTENSION_MAP).includes(language)) {
     throw new Error(`Language ${language} not supported`)
   }
 
-  const schema: IntrospectionQuery = schemaData.data || schemaData
   const maxDepth = options.maxDepth || 3
   const useExternalFragmentForS3Object = options.language === 'graphql'
   const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth, {
     useExternalFragmentForS3Object: useExternalFragmentForS3Object,
+    renderMultiAuthDirectives: options.renderMultiAuthDirectives
   })
   registerPartials()
   registerHelpers()

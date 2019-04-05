@@ -55,7 +55,8 @@ export type GQLTemplateOpBody = GQLTemplateField & {
 
 export type GQLTemplateGenericOp = {
   args: Array<GQLTemplateArgDeclaration>
-  body: GQLTemplateOpBody
+  body: GQLTemplateOpBody,
+  directives: Array<Object>
 }
 
 export type GQLTemplateOp = GQLTemplateGenericOp & {
@@ -71,5 +72,6 @@ export type GQLAllOperations = {
 }
 
 export type GQLDocsGenOptions = {
-  useExternalFragmentForS3Object: boolean
+  useExternalFragmentForS3Object: boolean,
+  renderMultiAuthDirectives: boolean
 }

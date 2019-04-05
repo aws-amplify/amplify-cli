@@ -1,0 +1,5 @@
+{{#if directives.length}}
+  {{#each directives}}
+    @{{name}}{{#unless @last}} {{/unless}}
+  {{/each}}
+{{/if}}

@@ -1,4 +1,4 @@
-{{type}} {{name}} {{>renderArgDeclaration args=args}}{
+{{type}} {{name}} {{>renderArgDeclaration args=args}} {{>renderDirectives directives=directives}} {
     {{body.name}}{{> renderCallArgs args=body.args}} 
     {{#if body.hasBody}} {
       {{> renderFields fields=body.fields}}

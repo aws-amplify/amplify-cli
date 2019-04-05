@@ -1,0 +1,19 @@
+# this is an auto generated file. This will be overwritten
+query AllBlogs @aws_iam @cognito_auth {
+  allBlogs {
+    CreatedAt
+    Description
+    Id
+    User
+  }
+}
+query AllPosts @cognito_auth {
+  allPosts {
+    Id
+  }
+}
+query GetPost {
+  getPost {
+    Id
+  }
+}

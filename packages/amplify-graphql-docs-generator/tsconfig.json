@@ -6,20 +6,21 @@
         "outDir": "lib",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "sourceRoot": "src",
         "lib": [
             "es2017",
             "dom",
             "esnext.asynciterable",
             "dom"
         ],
+        "types": ["jest"]
     },
     "exclude": [
         "node_modules",
         "lib",
-        "__tests__"
+        "__tests__",
+        "__integration__"
     ],
     "include": [
-        "src/"
+        "src/**/*.ts"
     ]
 }

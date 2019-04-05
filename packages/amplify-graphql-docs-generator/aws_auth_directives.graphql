@@ -1,0 +1,4 @@
+directive @cognito_auth(cognito_groups: [String]) on OBJECT| FIELD_DEFINITION
+directive @public on OBJECT | FIELD_DEFINITION
+directive @oidc on OBJECT | FIELD_DEFINITION
+directive @aws_iam on OBJECT | FIELD_DEFINITION

@@ -70,13 +70,28 @@ type PageInfo {
 }
 
 type Query {
-	hero(episode: Episode): Character
+	hero(episode: Episode): Character 
 	reviews(episode: Episode!): [Review]
 	search(text: String): [SearchResult]
 	character(id: ID!): Character
 	droid(id: ID!): Droid
 	human(id: ID!): Human
 	starship(id: ID!): Starship
+	myName: User @cognito_auth(cognito_groups: ["user"]) @oidc
+	searchUser(text: String): UserResult @public
+	updateSearchIndex: Boolean @aws_iam
+
+}
+
+type User {
+	name: String
+	location: String
+}
+
+type UserResult {
+	items: [
+		User
+	]
 }
 
 # Represents a review for a movie

@@ -1,0 +1,20 @@
+schema {
+  query: Query
+}
+ 
+type Blog {
+  CreatedAt: String @oidc
+  Description: String @public
+  Id: ID
+  User: String @cognito_auth(cognito_groups : ["Admin"])
+}
+ 
+type Post @public {
+  Id: ID
+}
+ 
+type Query {
+  allBlogs: Blog @aws_iam @cognito_auth(cognito_groups : ["Admin"])
+  allPosts: Post @cognito_auth(cognito_groups : ["Admin"])
+  getPost: Post
+}

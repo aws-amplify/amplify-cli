@@ -3,6 +3,7 @@ import {
   generateQueries,
   generateMutations,
   generateSubscriptions,
+  collectExternalFragments
 } from '../../src/generator/generateAllOperations'
 import { buildClientSchema } from 'graphql'
 import { GQLDocsGenOptions } from '../../src/generator/types'
@@ -14,14 +15,18 @@ describe('generate', () => {
   const getQueryType = jest.fn()
   const getMutationType = jest.fn()
   const getSubscriptionType = jest.fn()
-
+  
+  const MOCK_GENERATED_QUERY = ['MOCK_GENERATED_QUERY'];
+  const MOCK_GENERATED_MUTATION = ['MOCK_GENERATED_MUTATION']
+  const MOCK_GENERATED_SUBSCRIPTION = ['MOCK_GENERATED_SUBSCRIPTION']
+  const MOCK_GENERATED_FRAGMENTS = ['MOCK_GENERATED_FRAGMENT']];
   const mockSchema = {
     getQueryType,
     getMutationType,
     getSubscriptionType,
   }
   const maxDepth = 4
-  const generateOption: GQLDocsGenOptions = { useExternalFragmentForS3Object: true }
+  const generateOption: GQLDocsGenOptions = { useExternalFragmentForS3Object: false }
   beforeEach(() => {
     jest.resetAllMocks()
     getQueryType.mockReturnValue('QUERY_TYPE')
@@ -29,18 +34,14 @@ describe('generate', () => {
     getSubscriptionType.mockReturnValue('SUBSCRIPTION_TYPE')
 
     buildClientSchema.mockReturnValue(mockSchema)
-    generateQueries.mockReturnValue('MOCK_GENERATED_QUERY')
-    generateMutations.mockReturnValue('MOCK_GENERATED_MUTATION')
-    generateSubscriptions.mockReturnValue('MOCK_GENERATED_SUBSCRIPTION')
-  })
-
-  it('should build the client schema from schema document', () => {
-    generate(MOCK_SCHEMA_DOC, maxDepth, generateOption)
-    expect(buildClientSchema).toHaveBeenCalledWith(MOCK_SCHEMA_DOC)
+    generateQueries.mockReturnValue(MOCK_GENERATED_QUERY)
+    generateMutations.mockReturnValue(MOCK_GENERATED_MUTATION)
+    generateSubscriptions.mockReturnValue(MOCK_GENERATED_SUBSCRIPTION)
+    collectExternalFragments.mockReturnValue(MOCK_GENERATED_FRAGMENTS)
   })
 
   it('should generate operations using the helper methods', () => {
-    generate(MOCK_SCHEMA_DOC, maxDepth, generateOption)
+    generate(mockSchema, maxDepth, generateOption)
     expect(generateQueries).toHaveBeenCalledWith(
       mockSchema.getQueryType(),
       mockSchema,
@@ -59,13 +60,25 @@ describe('generate', () => {
       maxDepth,
       generateOption
     )
+    expect(collectExternalFragments).not.toHaveBeenCalled()
   })
 
   it('should call the individual operation generator and return the value from them', () => {
-    expect(generate(MOCK_SCHEMA_DOC, maxDepth, generateOption)).toEqual({
-      queries: 'MOCK_GENERATED_QUERY',
-      subscriptions: 'MOCK_GENERATED_SUBSCRIPTION',
-      mutations: 'MOCK_GENERATED_MUTATION',
+    expect(generate(mockSchema, maxDepth, generateOption)).toEqual({
+      queries: MOCK_GENERATED_QUERY,
+      subscriptions: MOCK_GENERATED_SUBSCRIPTION,
+      mutations: MOCK_GENERATED_MUTATION,
+      fragments: []
     })
+  })
+
+  it('should generate fragnents when useExternalFragmentForS3Object is passed', () => {
+      expect(generate(mockSchema, maxDepth, { useExternalFragmentForS3Object: true })).toEqual({
+      queries: MOCK_GENERATED_QUERY,
+      subscriptions: MOCK_GENERATED_SUBSCRIPTION,
+      mutations: MOCK_GENERATED_MUTATION,
+      fragments: MOCK_GENERATED_FRAGMENTS,
+    })
+    expect(collectExternalFragments).toHaveBeenCalledWith([...MOCK_GENERATED_QUERY, ...MOCK_GENERATED_MUTATION, ...MOCK_GENERATED_SUBSCRIPTION ])
   })
 })
