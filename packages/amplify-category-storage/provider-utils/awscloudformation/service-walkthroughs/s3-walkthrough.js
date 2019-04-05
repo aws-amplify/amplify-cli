@@ -236,11 +236,20 @@ function createPermissionKeys(userType, answers, selectedPermissions) {
   }
 
   addPermissionKeys('Public', maxPublic);
-  addPermissionKeys('Protected', maxProtected);
   addPermissionKeys('Uploads', maxUploads);
-  addPermissionKeys('Private', maxPrivate);
+  if (userType !== 'Guest') {
+    addPermissionKeys('Protected', maxProtected);
+    addPermissionKeys('Private', maxPrivate);
+  }
   answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
   answers.s3ReadPolicy = `read_policy_${policyId}`;
+
+  // double-check to make sure guest is denied
+  if (answers.storageAccess !== 'authAndGuest') {
+    answers.s3PermissionsGuestPublic = 'DISALLOW';
+    answers.s3PermissionsGuestUploads = 'DISALLOW';
+    answers.GuestAllowList = 'DISALLOW';
+  }
 }
 
 function resourceAlreadyExists(context) {

@@ -47,12 +47,6 @@
 		"s3PermissionsGuestPublic": {
 			"Type": "String"
 		},	
-		"s3PermissionsGuestProtected": {
-			"Type": "String"
-		},	
-		"s3PermissionsGuestPrivate": {
-			"Type": "String"
-		},
 		"s3PermissionsGuestUploads": {
 			"Type": "String"
 		},
