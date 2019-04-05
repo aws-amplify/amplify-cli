@@ -24,6 +24,10 @@ const getAllDefaults = (project) => {
     storageAccess: 'auth',
     selectedGuestPermissions: ['s3:GetObject', 's3:ListBucket'],
     selectedAuthenticatedPermissions: ['s3:GetObject', 's3:ListBucket'],
+
+    s3PermissionsGuestPublic: 'DISALLOW',
+    s3PermissionsGuestUploads: 'DISALLOW',
+    GuestAllowList: 'DISALLOW',
   };
 
   return defaults;
