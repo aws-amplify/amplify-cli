@@ -101,7 +101,7 @@ export class DynamoDBModelTransformer extends Transformer {
                 ".*" + def.name.value + "Model",
                 ".*" + def.name.value + "DataSource",
                 ".*" + def.name.value + "IAMRole",
-                "^" + def.name.value + "Table",
+                ".*" + def.name.value + "Table",
                 // All resolvers except the search resolver.
                 "^[^S].*" + def.name.value + "Resolver",
                 "^" + def.name.value + ".+Resolver"
@@ -139,6 +139,10 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.setResource(
             ModelResourceIDs.ModelTableDataSourceID(typeName),
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
+        )
+        ctx.setOutput(
+            `GetAtt${tableLogicalID}Name`,
+            this.resources.makeTableNameOutput(tableLogicalID)
         )
 
         this.createQueries(def, directive, ctx)
