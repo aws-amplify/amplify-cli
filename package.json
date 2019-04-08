@@ -11,7 +11,7 @@
     "lint": "lerna run lint",
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",
-    "production-build": "lerna bootstrap --hoist && lerna run build",
+    "production-build": "lerna exec -- rm -f package-lock.json && lerna bootstrap --hoist && lerna run build",
     "setup-dev": "lerna exec -- rm -f package-lock.json && lerna bootstrap && cd packages/amplify-cli && rm -f -- package-lock.json && npm link && cd ../.. && lerna run build",
     "setup-dev-win": "lerna exec -- del /f package-lock.json && lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link && cd ../.. && lerna run build",
     "publish:master": "lerna publish --canary --yes  --preid=alpha --message 'chore(release): Publish [ci skip]' --no-git-tag-version --no-push",
