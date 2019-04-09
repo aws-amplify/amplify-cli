@@ -45,16 +45,18 @@
 			"Type": "String"
 		},
 		"s3PermissionsGuestPublic": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},	
 		"s3PermissionsGuestUploads": {
-			"Type": "String"
-		},
+			"Type": "String",
+			"Default" : "DISALLOW"		},
 		"AuthenticatedAllowList": {
 			"Type": "String"
 		},
 		"GuestAllowList": {
-			"Type": "String"
+			"Type": "String",
+			"Default" : "DISALLOW"
 		},
 		"selectedGuestPermissions": {
 			"Type": "CommaDelimitedList"
