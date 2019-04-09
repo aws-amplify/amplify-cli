@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "1.5.0",
+  "version": "1.5.1-beta.0",
   "description": "amplify-cli storage plugin",
   "main": "index.js",
   "dependencies": {
