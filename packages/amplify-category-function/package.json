@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-function",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "^1.6.0",
+    "amplify-category-storage": "^1.6.1",
     "eslint": "^4.19.1",
     "fs-extra": "^7.0.0",
     "grunt": "^1.0.3",
