@@ -12,7 +12,7 @@
             "esnext.asynciterable",
             "dom"
         ],
-        "types": ["jest"]
+        "types": ["jest", "node"]
     },
     "exclude": [
         "node_modules",

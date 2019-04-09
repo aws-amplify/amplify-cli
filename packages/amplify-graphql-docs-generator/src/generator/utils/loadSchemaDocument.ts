@@ -15,7 +15,6 @@ function loadSchemaFromIntrospection(file: string): GraphQLSchema {
   const schemaContent = readFileSync(file, 'utf8').trim()
   const schemaData = JSON.parse(schemaContent)
   if (!schemaData.data && !schemaData.__schema) {
-    // tslint:disable-line
     throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
   }
   const schema: IntrospectionQuery = schemaData.data || schemaData
