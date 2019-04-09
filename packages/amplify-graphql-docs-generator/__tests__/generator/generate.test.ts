@@ -15,11 +15,11 @@ describe('generate', () => {
   const getQueryType = jest.fn()
   const getMutationType = jest.fn()
   const getSubscriptionType = jest.fn()
-  
+
   const MOCK_GENERATED_QUERY = ['MOCK_GENERATED_QUERY'];
   const MOCK_GENERATED_MUTATION = ['MOCK_GENERATED_MUTATION']
   const MOCK_GENERATED_SUBSCRIPTION = ['MOCK_GENERATED_SUBSCRIPTION']
-  const MOCK_GENERATED_FRAGMENTS = ['MOCK_GENERATED_FRAGMENT']];
+  const MOCK_GENERATED_FRAGMENTS = ['MOCK_GENERATED_FRAGMENT'];
   const mockSchema = {
     getQueryType,
     getMutationType,

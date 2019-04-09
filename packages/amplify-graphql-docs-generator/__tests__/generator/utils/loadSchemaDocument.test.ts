@@ -58,7 +58,6 @@ describe('loadSchmeaDocument', () => {
     const mockAst = 'MOCK_AST'
     const mockConcatenateAst = 'MOCK_CONCATENATE_AST'
 
-
     beforeEach(() => {
       jest.resetAllMocks()
       readFileSync.mockImplementation((path) => {
@@ -67,7 +66,6 @@ describe('loadSchmeaDocument', () => {
         }
         return mockSDLSchema
       })
-  
     })
 
     it('should load SDL Schema', () => {
@@ -79,7 +77,7 @@ describe('loadSchmeaDocument', () => {
       expect(readFileSync.mock.calls[0][0]).toEqual('foo.graphql')
 
       expect(parse).toHaveBeenCalledTimes(2)
-      
+
       expect(concatAST).toHaveBeenCalled()
       expect(buildASTSchema).toHaveBeenCalledWith(mockConcatenateAst)
     })
