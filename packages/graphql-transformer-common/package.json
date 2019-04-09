@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "Common code and constants for AppSync Transformers",
   "main": "lib/index.js",
   "scripts": {
