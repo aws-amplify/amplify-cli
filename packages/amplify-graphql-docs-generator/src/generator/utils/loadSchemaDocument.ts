@@ -5,7 +5,7 @@ import { join, extname } from 'path';
 function loadSchemaFromSDL(file: string): GraphQLSchema {
   const schemaDoc = new Source(readFileSync(file, 'utf8'), file)
   const authDirectives = new Source(
-    readFileSync(join(__dirname, '..', '..', '..', 'aws_auth_directives.graphql'), 'utf8')
+    readFileSync(join(__dirname, '..', '..', '..', 'appsync_custom_directives.graphql'), 'utf8')
   )
   const doc = concatAST([schemaDoc, authDirectives].map((source) => parse(source)))
   return buildASTSchema(doc);

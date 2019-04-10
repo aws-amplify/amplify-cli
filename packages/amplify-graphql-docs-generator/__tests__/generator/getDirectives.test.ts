@@ -14,14 +14,47 @@ describe('getDirectives', () => {
         directives: [
           {
             name: {
-              value: 'directive1',
+              value: 'aws_iam',
+            },
+            arguments: [],
+          },
+          {
+            name: {
+              value: 'oidc',
+            },
+            arguments: [],
+          },
+          {
+            name: {
+              value: 'public',
+            },
+            arguments: [],
+          },
+          {
+            name: {
+              value: 'cognito_auth',
             },
             arguments: [],
           },
         ],
       },
     }
-    expect(getDirectives(op)).toEqual([{ name: 'directive1', args: [] }])
+    expect(getDirectives(op)).toEqual([{ name: 'aws_iam', args: [] }, { name: 'oidc', args: [] }, { name: 'public', args: [] }, { name: 'cognito_auth', args: [] }])
+  })
+  it('should not include any directive that are not multiauth directives', () => {
+    const op = {
+      astNode: {
+        directives: [
+          {
+            name: {
+              value: 'foo',
+            },
+            arguments: [],
+          },
+        ],
+      },
+    }
+    expect(getDirectives(op)).toEqual([])
   })
 })
 

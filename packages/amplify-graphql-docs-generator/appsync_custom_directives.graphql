@@ -1,4 +1,9 @@
+# MultiAuth directives
 directive @cognito_auth(cognito_groups: [String]) on OBJECT| FIELD_DEFINITION
 directive @public on OBJECT | FIELD_DEFINITION
 directive @oidc on OBJECT | FIELD_DEFINITION
 directive @aws_iam on OBJECT | FIELD_DEFINITION
+
+# Other custom AWS directives
+directive @aws_subscribe(mutations: [String]) on FIELD_DEFINITION
+directive @aws_auth(cognito_groups: [String]) on FIELD_DEFINITION

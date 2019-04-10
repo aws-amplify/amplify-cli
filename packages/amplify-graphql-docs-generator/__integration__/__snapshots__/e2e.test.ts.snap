@@ -2453,6 +2453,9 @@ query SearchUser($text: String) @public {
 query UpdateSearchIndex @aws_iam {
   updateSearchIndex
 }
+query AwsAuthQuery {
+  awsAuthQuery
+}
 mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -2964,6 +2967,10 @@ export const searchUser = \`query SearchUser($text: String) @public {
 \`;
 export const updateSearchIndex = \`query UpdateSearchIndex @aws_iam {
   updateSearchIndex
+}
+\`;
+export const awsAuthQuery = \`query AwsAuthQuery {
+  awsAuthQuery
 }
 \`;
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
@@ -3481,6 +3488,10 @@ export const updateSearchIndex = \`query UpdateSearchIndex @aws_iam {
   updateSearchIndex
 }
 \`;
+export const awsAuthQuery = \`query AwsAuthQuery {
+  awsAuthQuery
+}
+\`;
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {
   createReview(episode: $episode, review: $review) {
     episode
@@ -3994,6 +4005,10 @@ export const searchUser = \`query SearchUser($text: String) @public {
 \`;
 export const updateSearchIndex = \`query UpdateSearchIndex @aws_iam {
   updateSearchIndex
+}
+\`;
+export const awsAuthQuery = \`query AwsAuthQuery {
+  awsAuthQuery
 }
 \`;
 export const createReview = \`mutation CreateReview($episode: Episode, $review: ReviewInput!) {

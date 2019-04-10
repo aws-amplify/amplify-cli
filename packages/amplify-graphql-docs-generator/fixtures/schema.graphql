@@ -70,7 +70,7 @@ type PageInfo {
 }
 
 type Query {
-	hero(episode: Episode): Character 
+	hero(episode: Episode): Character
 	reviews(episode: Episode!): [Review]
 	search(text: String): [SearchResult]
 	character(id: ID!): Character
@@ -80,7 +80,7 @@ type Query {
 	myName: User @cognito_auth(cognito_groups: ["user"]) @oidc
 	searchUser(text: String): UserResult @public
 	updateSearchIndex: Boolean @aws_iam
-
+	awsAuthQuery: Boolean @aws_auth
 }
 
 type User {
@@ -107,7 +107,7 @@ input ReviewInput {
 	favorite_color: ColorInput
 }
 
-union SearchResult = Human | Droid | Starship 
+union SearchResult = Human | Droid | Starship
 
 type Starship {
 	id: ID!

@@ -13,6 +13,8 @@ import {
 import getArgs from './getArgs'
 import getType from './utils/getType'
 
+const APPSYNC_MULTI_AUTH_DIRECTIVES = ['cognito_auth', 'public', 'oidc', 'aws_iam'];
+
 export default function getDirectives(operation: GraphQLField<any, any>) {
   const astNode = operation.astNode
   if (!astNode) {
@@ -24,7 +26,7 @@ export default function getDirectives(operation: GraphQLField<any, any>) {
       name: dNode.name.value,
       args: getArguments(dNode.arguments),
     }
-  })
+  }).filter(d => APPSYNC_MULTI_AUTH_DIRECTIVES.includes(d.name))
   return d
 }
 
