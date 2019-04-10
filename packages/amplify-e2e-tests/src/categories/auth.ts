@@ -50,21 +50,21 @@ export function addAuthWithDefaultSocial(
       AMAZON_APP_SECRET,
     }: any = getEnvVars();
 
-    if (
-      !FACEBOOK_APP_ID ||
-      !FACEBOOK_APP_SECRET ||
-      !GOOGLE_APP_ID ||
-      !GOOGLE_APP_SECRET ||
-      !AMAZON_APP_ID ||
-      !AMAZON_APP_SECRET
-    ) {
-      throw new Error(
-        'Please set social provider app IDs and app secrets in .env'
-      );
+    const missingVars = [];
+    if (!FACEBOOK_APP_ID) { missingVars.push('FACEBOOK_APP_ID') };
+    if (!FACEBOOK_APP_SECRET) { missingVars.push('FACEBOOK_APP_SECRET') };
+    if (!GOOGLE_APP_ID) { missingVars.push('GOOGLE_APP_ID') };
+    if (!GOOGLE_APP_SECRET) { missingVars.push('GOOGLE_APP_SECRET') };
+    if (!AMAZON_APP_ID) { missingVars.push('AMAZON_APP_ID') };
+    if (!AMAZON_APP_SECRET) { missingVars.push('AMAZON_APP_SECRET') };
+
+    if (missingVars.length > 0) {
+      throw new Error(`.env file is missing the following key/values: ${missingVars.join(', ')} `);
     }
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
       .wait('Do you want to use the default authentication and security configuration?')
+      // j = down arrow
       .sendline('j')
       .sendline('\r')
       .wait('How do you want users to be able to sign in when using your Cognito User Pool?')
@@ -106,7 +106,6 @@ export function addAuthWithDefaultSocial(
       .sendline(AMAZON_APP_SECRET)
       .sendline('\r')
       .sendEof()
-      // tslint:disable-next-line
       .run(function(err: Error) {
         if (!err) {
           resolve();

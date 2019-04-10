@@ -3,24 +3,9 @@
 This packages contains end to end tests that are run in CircleCI to ensure that your changes are not breaking the CLI. Each test in this package creates resources in the cloud.
 
 ## Setup
-To run the tests locally, you need to have your AWS credentials stored in a `.env` file of this package. These values are used to configure one of the project in test using access key and screte key
-```
-AWS_ACCESS_KEY_ID=<your access key>
-AWS_SECRET_ACCESS_KEY=<your secrete key>
-```
+To run the tests locally, you need to have your AWS credentials stored in a `.env` file of this package. These values are used to configure the test projects.
 
-If you are running tests for the auth category you will need to include App Ids and Secrets for Facebook, Google and Login with Amazon:
-
-```
-FACEBOOK_APP_ID=<your Facebook App ID>
-FACEBOOK_APP_SECRET=<your Facebook App Secret>
-
-GOOGLE_APP_ID=<your Google App ID>
-GOOGLE_APP_SECRET=<your Google App Secret>
-
-AMAZON_APP_ID=<your Login with Amazon App ID>
-AMAZON_APP_SECRET=<your Login with Amazon App Secret>
-```
+Please see sample.env for the keys that are expected in your `.env` file.
 
 The `.env` file does not get commited as its in the `.gitignore` file.
 
