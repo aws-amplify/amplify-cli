@@ -39,7 +39,12 @@ describe('getDirectives', () => {
         ],
       },
     }
-    expect(getDirectives(op)).toEqual([{ name: 'aws_iam', args: [] }, { name: 'oidc', args: [] }, { name: 'public', args: [] }, { name: 'cognito_auth', args: [] }])
+    expect(getDirectives(op)).toEqual([
+      { name: 'aws_iam', args: [] },
+      { name: 'oidc', args: [] },
+      { name: 'public', args: [] },
+      { name: 'cognito_auth', args: [] },
+    ])
   })
   it('should not include any directive that are not multiauth directives', () => {
     const op = {
@@ -84,14 +89,14 @@ describe('getValueFromValeNode', () => {
       fields: [
         {
           name: {
-            value: 'Foo'
+            value: 'Foo',
           },
           value: {
             kind: 'StringValue',
             value: 'bar',
-          }
+          },
         },
-      ]
+      ],
     }
     expect(getValueFromValeNode(val)).toEqual({ Foo: 'bar' })
   })
@@ -99,7 +104,7 @@ describe('getValueFromValeNode', () => {
   it('should return a number when value is FloatValue', () => {
     const val = {
       kind: 'FloatValue',
-      value: '22.2'
+      value: '22.2',
     }
     expect(getValueFromValeNode(val)).toEqual(22.2)
   })
@@ -107,7 +112,7 @@ describe('getValueFromValeNode', () => {
   it('should return a number when value is IntValue', () => {
     const val = {
       kind: 'FloatValue',
-      value: '22'
+      value: '22',
     }
     expect(getValueFromValeNode(val)).toEqual(22)
   })
@@ -115,7 +120,7 @@ describe('getValueFromValeNode', () => {
   it('should return a number when value is boolean', () => {
     const val = {
       kind: 'BooleanValue',
-      value: true
+      value: true,
     }
     expect(getValueFromValeNode(val)).toEqual(true)
   })
