@@ -665,7 +665,7 @@
 			},
 			{
 				"key": "newCallbackURLs",
-				"question": "Enter your redirect signin URI :",
+				"question": "Enter your redirect signin URI:",
 				"required": true,
 				"addAnotherLoop" : "redirect signin URI",
 				"andConditions": [
