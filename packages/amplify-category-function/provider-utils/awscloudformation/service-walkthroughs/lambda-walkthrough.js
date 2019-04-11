@@ -15,6 +15,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const dependsOn = [];
   // Ask resource and Lambda function name
 
+
+  if (context.pendingCognitoTrigger) {
+    const cognitoTrigger = JSON.parse(JSON.stringify(context.pendingCognitoTrigger));
+    delete context.pendingCognitoTrigger;
+    return { answers: cognitoTrigger, dependsOn: [] };
+  }
+
   const resourceQuestions = [
     {
       type: inputs[0].type,

@@ -1,0 +1,6 @@
+{
+  "presignup": {
+    "name": "Pre Sign-up",
+    "description": "This trigger is invoked when a user submits their information to sign up, allowing you to perform custom validation to accept or deny the sign up request."
+  }
+}

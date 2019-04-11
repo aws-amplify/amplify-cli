@@ -13,6 +13,7 @@
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
+    "amplify-category-function": "^1.4.1",
     "chalk": "^2.4.1",
     "chalk-pipe": "^1.2.0",
     "eslint": "^4.19.1",

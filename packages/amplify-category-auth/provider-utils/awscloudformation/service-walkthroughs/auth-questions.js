@@ -36,7 +36,6 @@ async function serviceWalkthrough(
   ) {
     coreAnswers.authSelections = 'identityPoolAndUserPool';
   }
-
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
@@ -168,6 +167,11 @@ async function serviceWalkthrough(
     /* eslint-disable */
     coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers.authProvidersUserPool, coreAnswers, context.updatingAuth));
     /* eslint-enable */
+  }
+
+  if (coreAnswers.authSelections !== 'identityPoolOnly') {
+    const triggers = await lambdaFlow(context);
+    coreAnswers = Object.assign(coreAnswers, triggers);
   }
 
   // formatting oAuthMetaData
@@ -363,6 +367,39 @@ function filterInput(input, updateFlow) {
     return true;
   }
   return false;
+}
+
+/*
+  Adding lambda triggers
+*/
+async function lambdaFlow(context) {
+  const trigger = await context.amplify.triggerFlow('cognito');
+  if (trigger && trigger.length > 0) {
+    for (let t = 0; t < trigger.length; t += 1) {
+      let add;
+      try {
+        ({ add } = require('amplify-category-function'));
+      } catch (e) {
+        throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+      }
+      context.pendingCognitoTrigger = {
+        functionName: 'exampleTrigger',
+        resourceName: 'exampleTrigger',
+        triggerResource: 'cognito',
+        triggerCategory: trigger[t].name,
+        functionTemplate: trigger[t].template,
+      };
+      add(context, 'awscloudformation', 'Lambda')
+        .then(() => {
+          context.print.success('Succesfully added the Lambda function locally');
+        });
+    }
+  }
+  const triggerKeyValues = {};
+  trigger.forEach((t) => {
+    triggerKeyValues[t.name] = t.template;
+  });
+  return triggerKeyValues;
 }
 
 module.exports = {

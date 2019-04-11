@@ -23,76 +23,95 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
   }];
 
-  switch (options.functionTemplate) {
-    case 'helloWorld':
-      copyJobs.push(...[
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/index.js',
-          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/event.json',
-          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/package.json.ejs',
-          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-        },
-      ]);
-      break;
-    case 'serverless':
-      copyJobs.push(...[
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/serverless-index.js',
-          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/serverless-app.js.ejs',
-          target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/serverless-package.json.ejs',
-          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/serverless-event.json',
-          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-        },
-      ]);
-      break;
-    default:
-      copyJobs.push(...[
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/crud-index.js',
-          target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/crud-app.js.ejs',
-          target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/crud-package.json.ejs',
-          target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
-        },
-        {
-          dir: pluginDir,
-          template: 'function-template-dir/crud-event.json',
-          target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
-        },
-      ]);
-      break;
+  if (options.triggerResource) {
+    copyJobs.push(...[
+      {
+        dir: pluginDir,
+        template: `function-template-dir/triggers/${options.triggerResource}/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-index.js`,
+        target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+      },
+      {
+        dir: pluginDir,
+        template: `function-template-dir/triggers/${options.triggerResource}/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-event.json`,
+        target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+      },
+      {
+        dir: pluginDir,
+        template: 'function-template-dir/triggers/package.json.ejs',
+        target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+      },
+    ]);
+  } else {
+    switch (options.functionTemplate) {
+      case 'helloWorld':
+        copyJobs.push(...[
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/index.js',
+            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/event.json',
+            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/package.json.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+          },
+        ]);
+        break;
+      case 'serverless':
+        copyJobs.push(...[
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/serverless-index.js',
+            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/serverless-app.js.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/serverless-package.json.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/serverless-event.json',
+            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+          },
+        ]);
+        break;
+      default:
+        copyJobs.push(...[
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/crud-index.js',
+            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/crud-app.js.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/app.js`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/crud-package.json.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
+          },
+          {
+            dir: pluginDir,
+            template: 'function-template-dir/crud-event.json',
+            target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
+          },
+        ]);
+        break;
+    }
   }
-
   // copy over the files
   return context.amplify.copyBatch(context, copyJobs, options);
 }
@@ -126,16 +145,20 @@ async function addResource(context, category, service, options) {
 async function openEditor(context, category, options) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
-    switch (options.functionTemplate) {
-      case 'helloWorld':
-        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
-        break;
-      case 'serverless':
-        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
-        break;
-      default:
-        await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
-        break;
+    if (options.triggerResource) {
+      context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
+    } else {
+      switch (options.functionTemplate) {
+        case 'helloWorld':
+          await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
+          break;
+        case 'serverless':
+          await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
+          break;
+        default:
+          await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
+          break;
+      }
     }
   }
 }
