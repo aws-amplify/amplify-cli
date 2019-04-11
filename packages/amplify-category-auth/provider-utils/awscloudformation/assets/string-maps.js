@@ -302,8 +302,8 @@ const coreAttributes = [
     name: 'Locale',
     value: 'locale',
   }, {
-    name: 'Middle Name',
-    value: 'middle_name',
+    name: 'Given Name',
+    value: 'given_name',
   },
   {
     name: 'Name',
