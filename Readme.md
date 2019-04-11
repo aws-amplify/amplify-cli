@@ -58,6 +58,7 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify delete | (Experimental Feature) Attempts to delete resources tied to the project. |
 | amplify help \| amplify `<category>` help | Displays help for the core CLI. |
 | amplify codegen add \| generate | Performs generation of strongly typed objects using a GraphQL schema. |
+| amplify env add \| list \| remove \| get \| pull \| import | See the [multienv docs](https://aws-amplify.github.io/docs/cli/multienv). |
 
 ### Category specific commands:
 - [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
