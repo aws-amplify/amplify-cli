@@ -1,1 +1,0 @@
-{"version":3,"file":"projectMeta.js","sourceRoot":"","sources":["../../src/utils/projectMeta.ts"],"names":[],"mappings":";;AAAA,6BAA4B;AAC5B,yBAAkC;AAClC,wBAAuC,WAAmB;IACxD,IAAM,YAAY,GAAG,WAAI,CAAC,WAAW,EAAE,SAAS,EAAE,wBAAwB,EAAE,mBAAmB,CAAC,CAAC;IACjG,OAAO,IAAI,CAAC,KAAK,CAAC,iBAAY,CAAC,YAAY,EAAE,MAAM,CAAC,CAAC,CAAC;AACxD,CAAC;AAHD,iCAGC"}

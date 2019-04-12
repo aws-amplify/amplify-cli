@@ -15,9 +15,6 @@ export class ResourceConstants {
         ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
         ElasticsearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
-        // Local. Try not to collide with model data sources.
-        NoneDataSource: 'NoneDataSource',
-
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
