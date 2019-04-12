@@ -432,7 +432,7 @@ const oAuthFlows = [
   },
   {
     name: 'Implicit grant',
-    value: 'token',
+    value: 'implicit',
   },
 ];
 
