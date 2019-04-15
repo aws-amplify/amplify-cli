@@ -6,7 +6,7 @@ import {
     ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode, TypeDefinitionNode, Kind,
     FieldDefinitionNode, InterfaceTypeDefinitionNode
 } from 'graphql'
-import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType, AuthResourceIDs } from 'graphql-transformer-common'
+import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType } from 'graphql-transformer-common'
 import {
     Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression, or, newline,
     comment
@@ -257,18 +257,13 @@ Static group authorization should perform as expected.`
             let resolver = ctx.getResource(resolverResourceId)
             if (!resolver) {
                 // If we need a none data source for the blank resolver, add it.
-                const noneDSResourceId = AuthResourceIDs.NoneDataSourceForModelResourceID(typeName);
-                const noneDS = ctx.getResource(noneDSResourceId)
+                const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource)
                 if (!noneDS) {
-                    // We need to map one NoneDataSource per model stack in order to get
-                    // around a CloudFromation DELETE_FAILED case caused by CFN calling delete on
-                    // the DS before deleting the child stack w/ resolvers.
-                    ctx.setResource(noneDSResourceId, this.resources.noneDataSource(typeName))
-                    ctx.putStackMapping(typeName, [noneDSResourceId])
+                    ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
                 }
                 // We also need to add a stack mapping so that this resolver is added to the model stack.
-                ctx.addToStackMapping(typeName, `^${resolverResourceId}$`)
-                resolver = this.resources.localResolver(typeName, fieldName)
+                ctx.addToStackMapping(`${typeName}`, resolverResourceId)
+                resolver = this.resources.blankResolver(typeName, fieldName)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
             // If a resolver exists, a @connection for example. Prepend it to the req.

@@ -10,7 +10,7 @@ import {
     or, Expression, SetNode, and, not, parens,
     block, print
 } from 'graphql-mapping-template'
-import { ResourceConstants, NONE_VALUE, AuthResourceIDs } from 'graphql-transformer-common'
+import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
 
 import {
@@ -109,10 +109,10 @@ export class ResourceFactory {
         })
     }
 
-    public localResolver(type: string, field: string) {
+    public blankResolver(type: string, field: string) {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: AuthResourceIDs.NoneDataSourceForModelName(type),
+            DataSourceName: 'NONE',
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(obj({
@@ -120,13 +120,13 @@ export class ResourceFactory {
                 "payload": obj({})
             })),
             ResponseMappingTemplate: print(ref(`util.toJson($context.source.${field})`))
-        }).dependsOn(AuthResourceIDs.NoneDataSourceForModelName(type))
+        })
     }
 
-    public noneDataSource(typeName: string) {
+    public noneDataSource() {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Name: AuthResourceIDs.NoneDataSourceForModelName(typeName),
+            Name: 'NONE',
             Type: 'NONE'
         })
     }
