@@ -472,7 +472,8 @@ Static group authorization should perform as expected.`
             if (mutations && operations) {
                 console.warn(
                     `It is not recommended to use 'mutations' and 'operations'. The 'operations' argument will be used.`)
-            } else if (queries && operations) {
+            }
+            if (queries && operations) {
                 console.warn(
                     `It is not recommended to use 'queries' and 'operations'. The 'operations' argument will be used.`)
             }
