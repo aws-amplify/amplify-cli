@@ -392,35 +392,72 @@ Static group authorization should perform as expected.`
             }
             return true
         }
-        // The 'queries' and 'mutations' arguments are marked as @deprecated
-        // and will log a warning when in use. No behaviors will break with the
-        // new operations directive but changing will provide more robust functionality.
-        const matchOperationOrQuery =
-            (op: ModelQuery) =>
-                (rule: AuthRule) =>
-                    rule.queries ? matchQuery(op)(rule) : matchOperation('read')(rule)
-        const matchOperationOrMutation =
-            (op: ModelMutation) =>
-                (rule: AuthRule) =>
-                    rule.mutations ? matchMutation(op)(rule) : matchOperation(op)(rule)
         for (const rule of rules) {
-            if (matchOperationOrQuery('get')(rule)) {
-                queryRules.get.push(rule)
-            }
-            if (matchOperationOrQuery('list')(rule)) {
-                queryRules.list.push(rule)
-            }
-            if (!rule.queries && matchOperation('read')(rule)) {
-                operationRules.read.push(rule)
-            }
-            if (matchOperationOrMutation('create')(rule)) {
-                operationRules.create.push(rule)
-            }
-            if (matchOperationOrMutation('update')(rule)) {
-                operationRules.update.push(rule)
-            }
-            if (matchOperationOrMutation('delete')(rule)) {
-                operationRules.delete.push(rule)
+            // If operations is provided, then it takes precendence.
+            if (
+                isTruthyOrNull(rule.operations)
+            ) {
+                // If operations is given use it.
+                if (matchOperation('read')(rule)) {
+                    queryRules.get.push(rule)
+                    queryRules.list.push(rule)
+                    operationRules.read.push(rule)
+                }
+                if (matchOperation('create')(rule)) {
+                    operationRules.create.push(rule)
+                }
+                if (matchOperation('update')(rule)) {
+                    operationRules.update.push(rule)
+                }
+                if (matchOperation('delete')(rule)) {
+                    operationRules.delete.push(rule)
+                }
+            } else {
+                // If operations is not provided, either use the default behavior or deprecated 
+                // behavior from the queries/mutations arguments for backwards compatibility.
+
+                // Handle default or deprecated query use case
+                if (
+                    isUndefined(rule.queries)
+                ) {
+                    // If both operations and queries are undefined, default to read operation protection.
+                    // This is the default behavior. E.G. @auth(rules: [{ allow: owner }])
+                    queryRules.get.push(rule)
+                    queryRules.list.push(rule)
+                    operationRules.read.push(rule)
+                } else {
+                    // If operations is undefined & queries is defined, use queries.
+                    // This is the old behavior for backwards compatibility.
+                    if (matchQuery('get')(rule)) {
+                        queryRules.get.push(rule)
+                    }
+                    if (matchQuery('list')(rule)) {
+                        queryRules.list.push(rule)
+                    }
+                }
+
+                // Handle default or deprecated mutation use case
+                if (
+                    isUndefined(rule.mutations)
+                ) {
+                    // If both operations and mutations are undefined, default to create, update, delete
+                    // operation protection. This is the default behavior. E.G. @auth(rules: [{ allow: owner }])
+                    operationRules.create.push(rule)
+                    operationRules.update.push(rule)
+                    operationRules.delete.push(rule)
+                } else {
+                    // If operations is undefined & mutations is defined, use mutations.
+                    // This is the old behavior for backwards compatibility.
+                    if (matchMutation('create')(rule)) {
+                        operationRules.create.push(rule)
+                    }
+                    if (matchMutation('update')(rule)) {
+                        operationRules.update.push(rule)
+                    }
+                    if (matchMutation('delete')(rule)) {
+                        operationRules.delete.push(rule)
+                    }
+                }
             }
         }
         return {
@@ -832,4 +869,11 @@ function hasDirective(field: FieldDefinitionNode, directiveName: string): boolea
     return field.directives && field.directives.length && Boolean(field.directives.find(
         (d: DirectiveNode) => d.name.value === directiveName
     ))
+}
+
+function isTruthyOrNull(obj: any): boolean {
+    return obj || obj === null;
+}
+function isUndefined(obj: any): boolean {
+    return obj === undefined;
 }
