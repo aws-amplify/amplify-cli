@@ -122,7 +122,7 @@ beforeAll(async () => {
         owner: String
         protected: [ConnectionProtected] @connection(name: "ProtectedConnection")
     }
-    type ConnectionProtected @model(queries: null) @auth(rules: [{ allow: owner, operations: [read] }]) {
+    type ConnectionProtected @model(queries: null) @auth(rules: [{ allow: owner }]) {
         id: ID!
         name: String
         owner: String

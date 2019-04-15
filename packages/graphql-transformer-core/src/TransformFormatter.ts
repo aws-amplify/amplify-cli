@@ -33,6 +33,10 @@ export class TransformFormatter {
     public format(ctx: TransformerContext): DeploymentResources {
         ctx.mergeConditions(this.schemaResourceUtil.makeEnvironmentConditions())
         const resolversFunctionsAndSchema = this.collectResolversFunctionsAndSchema(ctx);
+        const defaultDependencies = [ResourceConstants.RESOURCES.GraphQLSchemaLogicalID];
+        if (ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource)) {
+            defaultDependencies.push(ResourceConstants.RESOURCES.NoneDataSource);
+        }
         const nestedStacks = splitStack({
             stack: ctx.template,
             stackRules: this.opts.stackRules,
@@ -52,7 +56,7 @@ export class TransformFormatter {
                 deploymentKeyParameterName: ResourceConstants.PARAMETERS.S3DeploymentRootKey
             },
             importExportPrefix: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
-            defaultDependencies: [ResourceConstants.RESOURCES.GraphQLSchemaLogicalID]
+            defaultDependencies
         })
         return {
             ...nestedStacks,

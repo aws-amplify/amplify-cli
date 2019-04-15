@@ -398,11 +398,11 @@ Static group authorization should perform as expected.`
         const matchOperationOrQuery =
             (op: ModelQuery) =>
                 (rule: AuthRule) =>
-                    rule.operations ? matchOperation('read')(rule) : matchQuery(op)(rule)
+                    rule.queries ? matchQuery(op)(rule) : matchOperation('read')(rule)
         const matchOperationOrMutation =
             (op: ModelMutation) =>
                 (rule: AuthRule) =>
-                    rule.operations ? matchOperation(op)(rule) : matchMutation(op)(rule)
+                    rule.mutations ? matchMutation(op)(rule) : matchOperation(op)(rule)
         for (const rule of rules) {
             if (matchOperationOrQuery('get')(rule)) {
                 queryRules.get.push(rule)
@@ -410,7 +410,7 @@ Static group authorization should perform as expected.`
             if (matchOperationOrQuery('list')(rule)) {
                 queryRules.list.push(rule)
             }
-            if (rule.operations && matchOperation('read')(rule)) {
+            if (!rule.queries && matchOperation('read')(rule)) {
                 operationRules.read.push(rule)
             }
             if (matchOperationOrMutation('create')(rule)) {
