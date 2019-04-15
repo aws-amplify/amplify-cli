@@ -208,8 +208,8 @@ afterAll(async () => {
             expect(true).toEqual(true)
             console.log('Successfully deleted stack ' + STACK_NAME)
         } else {
-            console.error(e)
-            expect(true).toEqual(false)
+            console.error(e);
+            throw e;
         }
     }
     try {
