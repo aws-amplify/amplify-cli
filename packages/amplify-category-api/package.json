@@ -13,11 +13,16 @@
     "amplify-category-auth": "^1.5.1",
     "amplify-category-function": "^1.4.1",
     "amplify-category-storage": "^1.6.1",
+    "aws-sdk": "^2.391.0",
     "eslint": "^4.9.0",
     "fs-extra": "^7.0.0",
+    "graphql": "^0.13.2",
+    "graphql-relational-schema-transformer": "^1.0.0",
     "inquirer": "^6.0.0",
+    "merge-graphql-schemas": "^1.5.8",
     "moment": "^2.22.2",
     "opn": "^5.3.0",
+    "ora": "^3.0.0",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
