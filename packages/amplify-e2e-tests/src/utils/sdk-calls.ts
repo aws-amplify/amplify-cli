@@ -1,9 +1,9 @@
 import * as AWS from 'aws-sdk';
 
-AWS.config.update({ region: 'us-west-2' });
-const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
 
-const getUserPool = async (userpoolId) => {
+const getUserPool = async (userpoolId, region) => {
+  AWS.config.update({ region });
+  const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
   let res;
   try {
     res = await new CognitoIdentityServiceProvider().describeUserPool({UserPoolId: userpoolId}).promise();
@@ -13,7 +13,9 @@ const getUserPool = async (userpoolId) => {
   return res;
 }
 
-const getUserPoolClients = async (userpoolId) => {
+const getUserPoolClients = async (userpoolId, region) => {
+  AWS.config.update({ region });
+  const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
   const provider = new CognitoIdentityServiceProvider();
   let res = [];
   try {
