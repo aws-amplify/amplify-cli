@@ -54,18 +54,23 @@ test('Test "create", "update", "delete" auth operations', () => {
     expect(
         out.resolvers['Query.getPost.res.vtl']
     ).not.toContain('Authorization rule:')
+    expect(out.resolvers['Query.getPost.res.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Query.listPosts.res.vtl']
     ).not.toContain('Authorization rule:')
+    expect(out.resolvers['Query.listPosts.res.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.createPost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.updatePost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.deletePost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.deletePost.req.vtl']).toMatchSnapshot();
 });
 
 test('Test that operation overwrites queries in auth operations', () => {
@@ -91,16 +96,21 @@ test('Test that operation overwrites queries in auth operations', () => {
     expect(
         out.resolvers['Query.getPost.res.vtl']
     ).not.toContain('Authorization rule:')
+    expect(out.resolvers['Query.getPost.res.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Query.listPosts.res.vtl']
     ).not.toContain('Authorization rule:')
+    expect(out.resolvers['Query.listPosts.res.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.createPost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.updatePost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
     expect(
         out.resolvers['Mutation.deletePost.req.vtl']
     ).toContain('Authorization rule:')
+    expect(out.resolvers['Mutation.deletePost.req.vtl']).toMatchSnapshot();
 });
