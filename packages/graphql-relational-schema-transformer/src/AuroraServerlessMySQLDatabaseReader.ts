@@ -139,13 +139,20 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         }
 
         // Add foreign key for this table
-        let tablesWithRef = await this.getTableForeignKeyReferences(tableName)
-        for (const tableWithRef of tablesWithRef) {
-            if (tableWithRef && tableWithRef.length > 0) {
-                const baseType = getNamedType(`${tableWithRef}Connection`)
-                fields.push(getFieldDefinition(`${tableWithRef}`, baseType))
-            }
-        }
+
+        // NOTE from @mikeparisstuff: It would be great to re-enable this such that foreign key relationships are
+        // resolver automatically. This code was breaking compilation because it was not
+        // creating XConnection types correctly. This package also does not yet support
+        // wiring up the resolvers (or ideally selection set introspection & automatic JOINs)
+        // so there is not point in creating these connection fields anyway. Disabling until
+        // supported.
+        // let tablesWithRef = await this.getTableForeignKeyReferences(tableName)
+        // for (const tableWithRef of tablesWithRef) {
+        //     if (tableWithRef && tableWithRef.length > 0) {
+        //         const baseType = getNamedType(`${tableWithRef}Connection`)
+        //         fields.push(getFieldDefinition(`${tableWithRef}`, baseType))
+        //     }
+        // }
 
         return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${tableName}Input`),
                 getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
