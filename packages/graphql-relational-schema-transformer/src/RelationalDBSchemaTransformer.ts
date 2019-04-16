@@ -93,22 +93,28 @@ export class RelationalDBSchemaTransformer {
                 throw new RelationalDBParsingException(`Failed to describe table ${tableName}`, err.stack)
             }
 
-            typeContexts.push(type)
-            // Generate the 'connection' type for each table type definition
-            // TODO: Determine if Connection is needed as Data API doesn't provide pagination
-            // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
-            //types.push(this.getConnectionType(tableName))
-            // Generate the create operation input for each table type definition
-            types.push(type.createTypeDefinition)
-            // Generate the default shape for the table's structure
-            types.push(type.tableTypeDefinition)
-            // Generate the update operation input for each table type definition
-            types.push(type.updateTypeDefinition)
+            // NOTE from @mikeparisstuff. The GraphQL schema generation breaks
+            // when the table does not have an explicit primary key.
+            if (type.tableKeyField) {
+                typeContexts.push(type)
+                // Generate the 'connection' type for each table type definition
+                // TODO: Determine if Connection is needed as Data API doesn't provide pagination
+                // TODO: As we add different db sources, we should conditionally do this even if we don't for Aurora serverless.
+                //types.push(this.getConnectionType(tableName))
+                // Generate the create operation input for each table type definition
+                types.push(type.createTypeDefinition)
+                // Generate the default shape for the table's structure
+                types.push(type.tableTypeDefinition)
+                // Generate the update operation input for each table type definition
+                types.push(type.updateTypeDefinition)
 
-            // Update the field map with the new field lists for the current table
-            stringFieldMap.set(tableName, type.stringFieldList)
-            intFieldMap.set(tableName, type.intFieldList)
-            pkeyMap.set(tableName, type.tableKeyField)
+                // Update the field map with the new field lists for the current table
+                stringFieldMap.set(tableName, type.stringFieldList)
+                intFieldMap.set(tableName, type.intFieldList)
+                pkeyMap.set(tableName, type.tableKeyField)
+            } else {
+                console.warn(`Skipping table ${type.tableTypeDefinition.name.value} because it does not have a single PRIMARY KEY.`)
+            }
         }
 
         // Generate the mutations and queries based on the table structures
