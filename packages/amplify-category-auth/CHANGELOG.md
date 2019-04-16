@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.1...amplify-category-auth@1.5.2-beta.0) (2019-04-16)
+
+
+### Bug Fixes
+
+* fix [#1254](https://github.com/aws-amplify/amplify-cli/issues/1254) ([0962650](https://github.com/aws-amplify/amplify-cli/commit/0962650))
+* **amplify-category-auth:** fixes cloudformation template ([706de43](https://github.com/aws-amplify/amplify-cli/commit/706de43)), closes [#1247](https://github.com/aws-amplify/amplify-cli/issues/1247)
+* fix [#1264](https://github.com/aws-amplify/amplify-cli/issues/1264) ([d901daf](https://github.com/aws-amplify/amplify-cli/commit/d901daf))
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.4.0...amplify-category-auth@1.5.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-category-auth
