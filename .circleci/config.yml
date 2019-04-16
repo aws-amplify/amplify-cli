@@ -195,7 +195,7 @@ workflows:
             branches:
               only:
                 - master
-                - multienv
+                - graphql_e2e_testing
           requires:
             - build
       - integration_test:
