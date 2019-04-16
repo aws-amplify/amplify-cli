@@ -29,9 +29,9 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient('us-west-2')
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss')
-const STACK_NAME = `ConnectionsWithAuthTests-${BUILD_TIMESTAMP}`
-const BUCKET_NAME = `connections-with-auth-test-bucket-${BUILD_TIMESTAMP}`
-const LOCAL_BUILD_ROOT = '/tmp/connections_with_auth_test/'
+const STACK_NAME = `PerFieldAuthTests-${BUILD_TIMESTAMP}`
+const BUCKET_NAME = `per-field-auth-tests-bucket-${BUILD_TIMESTAMP}`
+const LOCAL_BUILD_ROOT = '/tmp/per_field_auth_tests/'
 const DEPLOYMENT_ROOT_KEY = 'deployments'
 
 let GRAPHQL_ENDPOINT = undefined;
@@ -216,7 +216,7 @@ afterAll(async () => {
             console.log('Successfully deleted stack ' + STACK_NAME)
         } else {
             console.error(e)
-            expect(true).toEqual(false)
+            throw e;
         }
     }
     try {
