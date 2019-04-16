@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -17,7 +17,7 @@
     "eslint": "^4.9.0",
     "fs-extra": "^7.0.0",
     "graphql": "^0.13.2",
-    "graphql-relational-schema-transformer": "^1.0.1",
+    "graphql-relational-schema-transformer": "^1.0.2",
     "inquirer": "^6.0.0",
     "merge-graphql-schemas": "^1.5.8",
     "moment": "^2.22.2",
