@@ -14,3 +14,5 @@ packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
+# PHPStorm
+.idea
