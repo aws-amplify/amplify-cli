@@ -34,13 +34,13 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run test-changed"
+      "pre-push": "npm run lint && npm run test-changed"
     }
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "^3.10.8"
+    "lerna": "3.10.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",

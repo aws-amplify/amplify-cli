@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.6.1...amplify-provider-awscloudformation@1.7.0) (2019-04-16)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** ignore dot files ([#1256](https://github.com/aws-amplify/amplify-cli/issues/1256)) ([845298a](https://github.com/aws-amplify/amplify-cli/commit/845298a)), closes [#1135](https://github.com/aws-amplify/amplify-cli/issues/1135)
+
+
+### Features
+
+* add support for ap-northeast-2 ([a263afc](https://github.com/aws-amplify/amplify-cli/commit/a263afc))
+* **field-level-auth:** Add field level auth support via the [@auth](https://github.com/auth) directive ([#1262](https://github.com/aws-amplify/amplify-cli/issues/1262)) ([3b1c600](https://github.com/aws-amplify/amplify-cli/commit/3b1c600)), closes [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.5.0...amplify-provider-awscloudformation@1.6.1) (2019-04-09)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.3...amplify-provider-awscloudformation@1.5.0) (2019-04-03)
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.2...amplify-provider-awscloudformation@1.1.3) (2019-03-22)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.1...amplify-provider-awscloudformation@1.1.2) (2019-03-05)
+
+
+### Bug Fixes
+
+* ignore file starting with a dot when compiling configs ([#905](https://github.com/aws-amplify/amplify-cli/issues/905)) ([f094160](https://github.com/aws-amplify/amplify-cli/commit/f094160))
+
+
+### Performance Improvements
+
+* speed up push ([#963](https://github.com/aws-amplify/amplify-cli/issues/963)) ([eb8b852](https://github.com/aws-amplify/amplify-cli/commit/eb8b852)), closes [#914](https://github.com/aws-amplify/amplify-cli/issues/914)
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.1.0...amplify-provider-awscloudformation@1.1.1) (2019-02-26)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

@@ -20,10 +20,13 @@ function updateAwsMetaFile(filePath, category, resourceName, attribute, value, t
   if (!amplifyMeta[category][resourceName][attribute]) {
     amplifyMeta[category][resourceName][attribute] = {};
   }
-  if (Array.isArray(amplifyMeta[category][resourceName][attribute])) {
-    amplifyMeta[category][resourceName][attribute] = value;
-  } else {
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    if (!amplifyMeta[category][resourceName][attribute]) {
+      amplifyMeta[category][resourceName][attribute] = {};
+    }
     Object.assign(amplifyMeta[category][resourceName][attribute], value);
+  } else {
+    amplifyMeta[category][resourceName][attribute] = value;
   }
   if (timeStamp) {
     amplifyMeta[category][resourceName].lastPushTimeStamp = timeStamp;

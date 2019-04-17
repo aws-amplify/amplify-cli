@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
 import {
   LegacyCompilerContext,
@@ -10,12 +10,14 @@ import {
 import CodeGenerator from '../utilities/CodeGenerator';
 import {
   typeDeclarationForGraphQLType,
-  interfaceDeclarationForOperation,
   interfaceDeclarationForFragment,
+  propertiesFromFields,
+  updateTypeNameField,
+  propertyDeclarations,
   interfaceNameFromOperation
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
-import { Property } from '../typescript/language';
+import { Property, interfaceDeclaration } from '../typescript/language';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);
@@ -41,11 +43,7 @@ function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext)
   context.typesUsed.forEach(type => typeDeclarationForGraphQLType(generator, type));
 
   Object.values(context.operations).forEach(operation => {
-    const resultField = getOperationResultField(operation);
-    interfaceDeclarationForOperation(generator, {
-      ...operation,
-      fields: resultField ? resultField.fields || [] : operation.fields
-    });
+    interfaceDeclarationForOperation(generator, operation);
   });
 
   Object.values(context.fragments).forEach(operation =>
@@ -53,9 +51,56 @@ function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext)
   );
 }
 
+function interfaceDeclarationForOperation(
+  generator: CodeGenerator,
+  { operationName, operationType, fields }: LegacyOperation
+) {
+  const interfaceName = interfaceNameFromOperation({ operationName, operationType });
+  fields = fields.map(field => updateTypeNameField(field));
+
+  // Graphql result includes the name of operation as the top level key in response JSON
+  // We are only interested in the shape of the response object and not the name of operation
+  // if the name of query is getAudioAlbum then the response object will look
+  // {
+  //   getAudioAlbum: {
+  //     __typename: "AudioAlbum";
+  //     id: string;
+  //     title: string | null;
+  //     tracks: Array<{
+  //       __typename: "Track";
+  //       id: string;
+  //       title: string | null;
+  //     } | null> | null;
+  //   }
+  // }
+  // but the interface is needed only for the result value of getAudioAlbum
+  if (fields[0].fields) { // execute only if there are sub fields
+    const properties = propertiesFromFields(generator.context, fields[0].fields as LegacyField[]);
+    interfaceDeclaration(
+      generator,
+      {
+        interfaceName
+      },
+      () => {
+        propertyDeclarations(generator, properties);
+      }
+    );
+  }
+
+}
+
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
   if (operation.fields.length && operation.fields[0].fields) {
     return operation.fields[0];
+  }
+}
+
+function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): String {
+  const { operationName, operationType } = op;
+  if (isScalarType(op.fields[0].type)) {
+    return typeNameFromGraphQLType(generator.context, op.fields[0].type)
+  } else {
+    return interfaceNameFromOperation({ operationName, operationType });
   }
 }
 
@@ -78,10 +123,11 @@ function generateAngularService(generator: CodeGenerator, context: LegacyCompile
     generator.printOnNewline('}');
   });
 }
+
 function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOperation) {
   const statement = formatTemplateString(generator, op.source);
-  const { operationName, operationType } = op;
-  const returnType = interfaceNameFromOperation({ operationName, operationType });
+  const { operationName } = op;
+  const returnType = getReturnTypeName(generator, op);
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
@@ -92,9 +138,8 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
 
 function generateQueryOrMutationOperation(generator: CodeGenerator, op: LegacyOperation) {
   const statement = formatTemplateString(generator, op.source);
-  const { operationName, operationType } = op;
   const vars = variablesFromField(generator.context, op.variables);
-  const returnType = interfaceNameFromOperation({ operationName, operationType });
+  const returnType = getReturnTypeName(generator, op);
   const resultField = getOperationResultField(op);
   const resultProp = resultField ? `.${resultField.responseName}` : '';
 
@@ -196,24 +241,28 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
     generator.withinBlock(
       () => {
         // non nullable arguments
-        vars.filter(v => !v.isNullable).forEach(v => {
-          generator.printOnNewline(`${v.fieldName},`);
-        });
+        vars
+          .filter(v => !v.isNullable)
+          .forEach(v => {
+            generator.printOnNewline(`${v.fieldName},`);
+          });
       },
       '{',
       '}'
     );
     // null able arguments
-    vars.filter(v => v.isNullable).forEach(v => {
-      generator.printOnNewline(`if (${v.fieldName}) `);
-      generator.withinBlock(
-        () => {
-          generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
-        },
-        '{',
-        '}'
-      );
-    });
+    vars
+      .filter(v => v.isNullable)
+      .forEach(v => {
+        generator.printOnNewline(`if (${v.fieldName}) `);
+        generator.withinBlock(
+          () => {
+            generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
+          },
+          '{',
+          '}'
+        );
+      });
   }
 }
 

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.4.1...amplify-codegen@1.4.2) (2019-04-16)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.3.1...amplify-codegen@1.4.1) (2019-04-09)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.10...amplify-codegen@1.3.1) (2019-04-03)
+
+
+### Bug Fixes
+
+* **amplify-cli:** promise not resolving in lts/dubnium ([#1028](https://github.com/aws-amplify/amplify-cli/issues/1028)) ([8a966be](https://github.com/aws-amplify/amplify-cli/commit/8a966be))
+
+
+
+
+
+## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.9...amplify-codegen@1.0.10) (2019-03-05)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** use path relative to project root for codegen ([#951](https://github.com/aws-amplify/amplify-cli/issues/951)) ([7b52efb](https://github.com/aws-amplify/amplify-cli/commit/7b52efb)), closes [#886](https://github.com/aws-amplify/amplify-cli/issues/886)
+
+
+
+
+
 ## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.0.8...amplify-codegen@1.0.9) (2019-02-20)
 
 **Note:** Version bump only for package amplify-codegen

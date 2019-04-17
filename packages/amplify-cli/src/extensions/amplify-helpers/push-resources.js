@@ -35,17 +35,28 @@ async function pushResources(context, category, resourceName) {
   }
 
 
-  await showResourceTable(category, resourceName);
+  const hasChanges = await showResourceTable(category, resourceName);
+
+  // no changes detected
+  if (!hasChanges && !context.exeInfo.forcePush) {
+    context.print.info('\nNo changes detected');
+    return context;
+  }
 
   let continueToPush = context.exeInfo.inputParams.yes;
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt.run('Are you sure you want to continue?');
+    context.exeInfo.pushAborted = !continueToPush;
   }
 
   if (continueToPush) {
     try {
+      // Get current-cloud-backend's amplify-meta
+      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+
       await providersPush(context);
-      await onCategoryOutputsChange(context);
+      await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);

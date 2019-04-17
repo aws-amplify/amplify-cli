@@ -1,0 +1,57 @@
+{
+  "name": "graphql-relational-schema-transformer",
+  "version": "1.0.2",
+  "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc",
+    "clean": "rm -rf ./lib"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "fs-extra": "^7.0.0",
+    "graphql": "^0.13.2",
+    "graphql-mapping-template": "^3.0.5",
+    "graphql-transformer-common": "^3.6.0",
+    "graphql-transformer-core": "^3.6.0",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.3",
+    "@types/jest": "23.1.1",
+    "@types/mysql": "^2.15.5",
+    "aws-sdk": "^2.391.0",
+    "cloudform": "^3.5.0",
+    "jest": "23.1.0",
+    "ts-jest": "22.4.6",
+    "typescript": "^3.2.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}

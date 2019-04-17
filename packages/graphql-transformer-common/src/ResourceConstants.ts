@@ -15,6 +15,9 @@ export class ResourceConstants {
         ElasticsearchStreamingLambdaFunctionLogicalID: 'ElasticSearchStreamingLambdaFunction',
         ElasticsearchDataSourceLogicalID: 'ElasticSearchDataSource',
 
+        // Local. Try not to collide with model data sources.
+        NoneDataSource: 'NoneDataSource',
+
         // Auth
         AuthCognitoUserPoolLogicalID: 'AuthCognitoUserPool',
         AuthCognitoUserPoolNativeClientLogicalID: 'AuthCognitoUserPoolNativeClient',
@@ -35,6 +38,7 @@ export class ResourceConstants {
         DynamoDBBillingMode:   'DynamoDBBillingMode',
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
+        DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
 
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticSearchDomainName',
@@ -50,10 +54,6 @@ export class ResourceConstants {
 
         // Auth
         AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
-        AuthCognitoUserPoolName: 'AuthCognitoUserPoolName',
-        AuthCognitoUserPoolMobileClientName: 'AuthCognitoUserPoolMobileClientName',
-        AuthCognitoUserPoolJSClientName: 'AuthCognitoUserPoolJSClientName',
-        AuthCognitoUserPoolRefreshTokenValidity: 'AuthCognitoUserPoolRefreshTokenValidity'
     }
     public static MAPPINGS = {}
     public static CONDITIONS = {
@@ -61,11 +61,11 @@ export class ResourceConstants {
         HasEnvironmentParameter: 'HasEnvironmentParameter',
 
         // DynamoDB
-        ShouldUsePayPerRequestBilling:   'ShouldUsePayPerRequestBilling',
+        ShouldUsePayPerRequestBilling: 'ShouldUsePayPerRequestBilling',
+        ShouldUsePointInTimeRecovery: 'ShouldUsePointInTimeRecovery',
 
         // Auth
-        AuthShouldCreateUserPool: 'AuthShouldCreateUserPool',
-        APIKeyExpirationEpochIsNotNegOne: 'APIKeyExpirationEpochIsNotNegOne',
+        ShouldCreateAPIKey: 'ShouldCreateAPIKey',
         APIKeyExpirationEpochIsPositive: 'APIKeyExpirationEpochIsPositive',
     }
     public static OUTPUTS = {
@@ -78,6 +78,8 @@ export class ResourceConstants {
         // Elasticsearch
         ElasticsearchStreamingLambdaIAMRoleArn: 'ElasticsearchStreamingLambdaIAMRoleArn',
         ElasticsearchAccessIAMRoleArn: 'ElasticsearchAccessIAMRoleArn',
+        ElasticsearchDomainArn: 'ElasticsearchDomainArn',
+        ElasticsearchDomainEndpoint: 'ElasticsearchDomainEndpoint',
 
         // Auth
         AuthCognitoUserPoolIdOutput: 'AuthCognitoUserPoolIdOutput',

@@ -5,6 +5,7 @@ import {
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -76,7 +77,8 @@ beforeAll(async () => {
     `
     const transformer = new GraphQLTransform({
         transformers: [
-            new DynamoDBModelTransformer()
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -91,7 +93,7 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { DynamoDBEnablePointInTimeRecovery: "true" }, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
             BUILD_TIMESTAMP
         )
         expect(finishedStack).toBeDefined()

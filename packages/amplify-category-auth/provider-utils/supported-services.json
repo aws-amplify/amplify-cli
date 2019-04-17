@@ -7,8 +7,27 @@
 				"question": "Do you want to use the default authentication and security configuration?",
 				"type": "list",
 				"default": true,
+				"learnMore": "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.\nIf you choose the 'Default configuration with Social Provider (Federation)', the providers will be federated with Cognito User Pools.\nIn either case, User Pools will be federated with Identity Pools allowing any users logging in to get both identity tokens as well as AWS Credentials.",
+				"map": "defaultPrompMap",
+				"andConditions": [
+					{
+						"preventEdit": "always"
+					}
+				]
+			},
+			{
+				"key": "updateFlow",
+				"question": "What do you want to do?",
+				"type": "list",
+				"default": true,
+				"filter": "updateOptions",
 				"learnMore": "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",
-				"map": "defaultPrompMap"
+				"map": "updateFlowMap",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					}
+				]
 			},
 			{
 				"key": "authSelections",
@@ -16,7 +35,14 @@
 				"required": true,
 				"type": "list",
 				"map": "authSelectionMap",
-				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool."
+				"learnMore": "Amazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.",
+				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
+					}
+				]
 			},
 			{
 				"key": "resourceName",
@@ -24,6 +50,11 @@
 				"andConditions": [
 					{
 						"preventEdit": "always"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
 					}
 				],
 				"validation": {
@@ -50,6 +81,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"preventEdit": "exists",
 						"key": "identityPoolName"
 					}
@@ -67,6 +103,11 @@
 						"key": "authSelections",
 						"value": "userPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
@@ -83,31 +124,43 @@
 						"key": "authSelections",
 						"value": "userPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
 			{
 				"key": "authProviders",
-				"question": "Select the 3rd party authentication providers that you want to enable: ",
+				"question": "Select the third party identity providers you want to configure for your identity pool:",
+				"temp": true,
 				"type": "multiselect",
-				"required": true,
 				"map": "authProviders",
+				"required": true,
 				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "userPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "thirdPartyAuth",
 						"value": true,
 						"operator": "="
 					}
-				],
-				"validation": {
-					"operator": "noEmptyArray",
-					"onErrorMsg": "You must select at least one 3rd party authentication provider from the list."
-				}
+				]
 			},
 			{
 				"key": "facebookAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
-				"question": "Enter your Facebook App ID: ",
+				"question": "Enter your Facebook App ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -120,7 +173,7 @@
 			{
 				"key": "googleClientId",
 				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
-				"question": "Enter your Google Web Client ID: ",
+				"question": "Enter your Google Web Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -133,7 +186,7 @@
 			{
 				"key": "googleIos",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an iOS project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an iOS Client ID. \n",
-				"question": "Enter your Google iOS Client ID: ",
+				"question": "Enter your Google iOS Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -151,7 +204,7 @@
 			{
 				"key": "googleAndroid",
 				"prefix": " \n You've opted to allow users to authenticate via Google within an Android project.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an Android Client ID. \n",
-				"question": "Enter your Google Android Client ID: ",
+				"question": "Enter your Google Android Client ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -169,7 +222,7 @@
 			{
 				"key": "amazonAppId",
 				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
-				"question": "Enter your Amazon App ID: ",
+				"question": "Enter your Amazon App ID for your identity pool: ",
 				"required": true,
 				"andConditions": [
 					{
@@ -195,8 +248,33 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"preventEdit": "exists",
 						"key": "userPoolName"
+					}
+				]
+			},
+			{
+				"key": "usernameAttributes",
+				"question": "How do you want users to be able to sign in when using your Cognito User Pool?",
+				"type": "list",
+				"map": "signInOptions",
+				"prefix": "Warning: you will not be able to edit these selections.",
+				"prefixColor": "red",
+				"learnMore": "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"preventEdit": "always"
 					}
 				]
 			},
@@ -211,6 +289,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					},
 					{
 						"key": "mfaConfiguration",
@@ -282,6 +365,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
@@ -295,6 +383,11 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					},
 					{
 						"key": "autoVerifiedAttributes",
@@ -320,6 +413,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "autoVerifiedAttributes",
 						"value": "email",
 						"operator": "includes"
@@ -343,6 +441,11 @@
 						"operator": "!="
 					},
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "autoVerifiedAttributes",
 						"value": "phone_number",
 						"operator": "includes"
@@ -356,6 +459,11 @@
 				"required": true,
 				"type": "confirm",
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
@@ -374,6 +482,11 @@
 					"onErrorMsg": "The minimum password length must be a number and must be greater than 5 and less than 99."
 				},
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "defaultPasswordPolicy",
 						"value": true,
@@ -394,6 +507,11 @@
 				],
 				"andConditions": [
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "defaultPasswordPolicy",
 						"value": true,
 						"operator": "="
@@ -407,9 +525,11 @@
 			},
 			{
 				"key": "requiredAttributes",
-				"question": "Userpool users are created with a standard set of attributes defined by the OpenID Connect specification.  Mark the required attributes below:",
+				"question": "What attributes are required for signing up?",
+				"prefix": "Warning: you will not be able to edit these selections.",
+				"prefixColor": "red",
 				"required": true,
-				"requiredOptions": "autoVerifiedAttributes",
+				"filter": "attributes",
 				"requiredOptionsMsg": "You have already selected the following attributes as part of your user verification process.  They are required attributes by default:",
 				"type": "multiselect",
 				"map": "coreAttributes",
@@ -431,6 +551,11 @@
 				"required": true,
 				"andConditions": [
 					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
+					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
@@ -448,6 +573,11 @@
 				"temp": true,
 				"required": true,
 				"andConditions": [
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					},
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
@@ -481,7 +611,7 @@
 				"required": true,
 				"type": "multiselect",				
 				"map": "coreAttributes",
-				"requiredOptions": "requiredAttributes",
+				"requiredOptions": ["requiredAttributes"],
 				"requiredOptionsMsg": "You have already selected the following attributes as required for this User Pool.  They are writeable by default:",
 				"andConditions": [
 					{
@@ -493,6 +623,437 @@
 						"key": "userpoolClientSetAttributes",
 						"value": true,
 						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "hostedUI",
+				"question": "Do you want to use an OAuth flow?",
+				"learnMore": "When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app.",
+				"required": true,
+				"type": "list",
+				"map": "booleanOptions",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "hostedUIDomainName",
+				"question": "What domain name prefix you want us to create for you?",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
+					"onErrorMsg": "The value must be a valid domain name format.  A valid format consists of lowercase alphanumeric characters."
+				}
+			},
+			{
+				"key": "newCallbackURLs",
+				"question": "Enter your redirect signin URI:",
+				"required": true,
+				"addAnotherLoop" : "redirect signin URI",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "CallbackURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "CallbackURLs"
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				}
+			},
+			{
+				"key": "EditURLS",
+				"question": "Which redirect signin URIs do you want to edit?",
+				"type": "multiselect",
+				"updateGroups": ["callbacks", "manual"],
+				"iterator": "CallbackURLs",
+				"iteratorValidation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				},
+				"andConditions": [
+					{
+						"key": "CallbackURLs",
+						"operator": "exists"
+					},
+					{
+						"onCreate": "never"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "addCallbackOnUpdate",
+				"question": "Do you want to add redirect signin URIs?",
+				"updateGroups": ["callbacks", "manual"],
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "newCallbackURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "newCallbackURLs",
+				"question": "Enter your new redirect signin URI:",
+				"required": true,
+				"updateGroups": ["callbacks", "manual"],
+				"concatKey": "CallbackURLs",
+				"addAnotherLoop" : "redirect signin URI",
+				"andConditions": [
+					{
+						"key": "addCallbackOnUpdate",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"onCreate": "never"
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				}
+			},
+			{
+				"key": "newLogoutURLs",
+				"question": "Enter your redirect signout URI:",
+				"required": true,
+				"addAnotherLoop" : "redirect signout URI",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"preventEdit": "exists",
+						"key": "LogoutURLs"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "LogoutURLs"
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				}
+			},
+			{
+				"key": "editLogoutURLs",
+				"question": "Which redirect signout URIs do you want to edit?",
+				"type": "multiselect",
+				"updateGroups": ["callbacks", "manual"],
+				"iterator": "LogoutURLs",
+				"iteratorValidation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				},
+				"andConditions": [
+					{
+						"key": "LogoutURLs",
+						"operator": "exists"
+					},
+					{
+						"onCreate": "never"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "addLogoutOnUpdate",
+				"question": "Do you want to add redirect signout URIs?",
+				"updateGroups": ["callbacks", "manual"],
+				"required": true,
+				"type": "confirm",
+				"andConditions": [
+					{
+						"onCreate": "never"
+					},
+					{
+						"preventEdit": "existsInCurrent",
+						"key": "newLogoutURLs"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "callbacks",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "newLogoutURLs",
+				"question": "Enter your new redirect signout URI:",
+				"required": true,
+				"updateGroups": ["callbacks", "manual"],
+				"concatKey": "LogoutURLs",
+				"addAnotherLoop" : "redirect signout URI",
+				"andConditions": [
+					{
+						"key": "addLogoutOnUpdate",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"onCreate": "never"
+					}
+				],
+				"validation": {
+					"operator": "regex",
+					"value": "^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=\/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$",
+					"onErrorMsg": "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+				}
+			},
+			{
+				"key": "AllowedOAuthFlows",
+				"question": "Select the OAuth flows enabled for this project.",
+				"required": true,
+				"type": "list",
+				"map" : "oAuthFlows",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
+					},
+					{
+						"key": "frontend",
+						"value": "javascript",
+						"operator": "configMatch"
+					}
+				]
+			},
+			{
+				"key": "AllowedOAuthScopes",
+				"question": "Select the OAuth scopes enabled for this project.",
+				"required": true,
+				"type": "multiselect",
+				"map" : "oAuthScopes",
+				"andConditions": [
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="	
+					}
+				]
+			},
+			{
+				"key": "authProvidersUserPool",
+				"question": "Select the social providers you want to configure for your user pool:",
+				"temp": true,
+				"type": "multiselect",
+				"filter": "providers",
+				"map": "hostedUIProviders",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"key": "hostedUI",
+						"value": true,
+						"operator": "="
+					},
+					{
+						"preventEdit": "always"
+					}
+				]
+			},
+			{
+				"key": "authProvidersUserPool",
+				"question": "Select the identity providers you want to configure for your user pool:",
+				"updateGroups": ["providers", "manual"],
+				"temp": true,
+				"type": "multiselect",
+				"map": "hostedUIProviders",
+				"required": true,
+				"andConditions": [
+					{
+						"onCreate": "never"
+					}
+				],
+				"orConditions": [
+					{
+						"key": "hostedUI",
+						"value": false,
+						"operator": "!="
+					},
+					{
+						"key": "updateFlow",
+						"value": "providers",
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "facebookAppIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Facebook.  If you haven't already, you'll need to go to https://developers.facebook.com and create an App ID. \n",
+				"question": "Enter your Facebook App ID for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Facebook",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "facebookAppSecretUserPool",
+				"question": "Enter your Facebook App Secret for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Facebook",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleAppIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Google.  If you haven't already, you'll need to go to https://developers.google.com/identity and create an App ID. \n",
+				"question": "Enter your Google Web Client ID for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Google",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "googleAppSecretUserPool",
+				"question": "Enter your Google Web Client Secret for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "Google",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "loginwithamazonAppIdUserPool",
+				"prefix": " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+				"question": "Enter your Amazon App ID for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "LoginWithAmazon",
+						"operator": "includes"
+					}
+				]
+			},
+			{
+				"key": "loginwithamazonAppSecretUserPool",
+				"question": "Enter your Amazon App Secret for your OAuth flow: ",
+				"updateGroups": ["providers", "manual"],
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authProvidersUserPool",
+						"value": "LoginWithAmazon",
+						"operator": "includes"
 					}
 				]
 			}

@@ -39,7 +39,7 @@ module.exports = {
         if (channelName !== PinpointApp) {
           await pinpointHelper.ensurePinpointApp(context);
           await notificationManager.disableChannel(context, channelName);
-          multiEnvManager.writeData(context);
+          await multiEnvManager.writeData(context);
         } else if (pinpointHelper.isAnalyticsAdded(context)) {
           context.print.error('Execution aborted.');
           context.print.info('You have an analytics resource in your backend tied to the Amazon Pinpoint resource');
@@ -54,7 +54,7 @@ module.exports = {
           if (answer.deletePinpointApp) {
             await pinpointHelper.deletePinpointApp(context);
             context.print.info('The Pinpoint application has been successfully deleted.');
-            multiEnvManager.writeData(context);
+            await multiEnvManager.writeData(context);
           }
         }
       }

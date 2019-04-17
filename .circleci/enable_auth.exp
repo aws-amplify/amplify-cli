@@ -2,6 +2,10 @@
 spawn ./.circleci/auth.sh
 expect "Do you want to use default authentication and security configuration?\r"
 send -- "\r"
+expect "How do you want users to be able to sign in when using your Cognito User Pool?\r"
+send -- "\r"
+expect "What attributes are required for signing up?\r"
+send -- "\r"
 set timeout 70
 expect "Are you sure you want to continue?\r"
 send -- "Y\r"

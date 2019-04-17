@@ -314,6 +314,10 @@ async function showResourceTable(category, resourceName) {
     tableOptions,
     { format: 'markdown' },
   );
+
+  const changedResourceCount =
+    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeDeleted.length;
+  return changedResourceCount;
 }
 
 module.exports = {

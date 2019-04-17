@@ -20,6 +20,14 @@ async function run(context) {
   fs.ensureDirSync(backendDirPath);
   fs.ensureDirSync(currentBackendDirPath);
 
+  // Get current-cloud-backend's amplify-meta
+  const currentAmplifyMetafilePath = amplify.pathManager.getCurentAmplifyMetaFilePath();
+
+  let currentAmplifyMeta = {};
+
+  if (fs.existsSync(currentAmplifyMetafilePath)) {
+    currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+  }
 
   const providerPlugins = getProviderPlugins(context);
   const providerOnSuccessTasks = [];
@@ -40,7 +48,7 @@ async function run(context) {
 
   await sequential(providerOnSuccessTasks);
 
-  await initializeEnv(context);
+  await initializeEnv(context, currentAmplifyMeta);
 
   printWelcomeMessage();
   // Exit the process with a success code

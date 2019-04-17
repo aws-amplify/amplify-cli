@@ -24,7 +24,7 @@ module.exports = {
 
     await pinpointHelper.ensurePinpointApp(context);
     await notificationManager.configureChannel(context, channelName);
-    multiEnvManager.writeData(context);
+    await multiEnvManager.writeData(context);
 
     return context;
   },

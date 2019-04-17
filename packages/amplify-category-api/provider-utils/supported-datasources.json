@@ -1,0 +1,39 @@
+{
+    "Aurora Serverless" : {
+		"inputs": [{
+
+				"key": "region",
+				"type": "list",
+				"question": "Provide the region in which your cluster is located:",
+				"required": true
+			},
+			{
+
+				"key": "rdsClusterIdentifier",
+				"type": "list",
+				"question": "Select the Aurora Serverless cluster that will be used as the data source for your API:",
+				"required": true
+			},
+			{
+
+				"key": "rdsSecretStoreArn",
+				"type": "list",
+				"question": "Select the secret used to access your Aurora Serverless cluster:",
+				"required": true
+			},
+			{
+
+				"key": "databaseName",
+				"type": "list",
+				"question": "Select the database to use as the datasource:",
+				"required": true
+			}
+		],
+		"alias": "Aurora Serverless",
+		"defaultValuesFilename": "appSync-rds-defaults.js",
+		"serviceWalkthroughFilename": "appSync-rds-walkthrough.js",
+		"cfnFilename": "appSync-rds-cloudformation-template-default.yml.ejs",
+		"provider": "awscloudformation",
+		"availableRegions": ["us-east-1"]
+	}
+}
