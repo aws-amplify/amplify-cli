@@ -4,7 +4,7 @@ const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
 const reactConfig = {
   SourceDir: 'src',
-  DistributionDir: 'build',
+  DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
 };

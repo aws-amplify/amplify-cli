@@ -4,7 +4,7 @@ IFS='|'
 
 REACTCONFIG="{\
 \"SourceDir\":\"src\",\
-\"DistributionDir\":\"build\",\
+\"DistributionDir\":\"dist\",\
 \"BuildCommand\":\"npm run-script build\",\
 \"StartCommand\":\"npm run-script start\"\
 }"
