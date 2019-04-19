@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.2...amplify-category-api@1.5.3) (2019-04-16)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.1...amplify-category-api@1.5.2) (2019-04-16)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.4.0...amplify-category-api@1.5.1) (2019-04-09)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+# [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.0.8...amplify-category-api@1.4.0) (2019-04-03)
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+
+
+
+
+
 ## [1.0.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.0.7...amplify-category-api@1.0.8) (2019-03-22)
 
 **Note:** Version bump only for package amplify-category-api

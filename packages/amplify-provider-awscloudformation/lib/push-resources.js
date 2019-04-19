@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const archiver = require('archiver');
 const cfnLint = require('cfn-lint');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
@@ -13,6 +12,7 @@ const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
+const archiver = require('../src/utils/archiver');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -167,28 +167,7 @@ function storeCurrentCloudBackend(context) {
   }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-  const output = fs.createWriteStream(zipFilePath);
-
-  return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      resolve({ zipFilePath, zipFilename });
-    });
-    output.on('error', () => {
-      reject(new Error('Failed to zip code.'));
-    });
-
-    const zip = archiver.create('zip', {});
-    zip.pipe(output);
-    zip.glob(
-      '**',
-      {
-        cwd: currentCloudBackendDir,
-        ignore: ['*/*/build/**', '*/*/dist/**', '*/*/node_modules/**'],
-        dot: true,
-      },
-    );
-    zip.finalize();
-  })
+  return archiver.run(currentCloudBackendDir, zipFilePath)
     .then((result) => {
       const s3Key = `${result.zipFilename}`;
       return new S3(context)
@@ -349,14 +328,18 @@ function getCfnFiles(context, category, resourceName) {
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const files = fs.readdirSync(resourceBuildDir);
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = files
+      .filter(file => file.indexOf('.') !== 0)
+      .filter(file => file.indexOf('template') !== -1);
     return {
       resourceDir: resourceBuildDir,
       cfnFiles,
     };
   }
   const files = fs.readdirSync(resourceDir);
-  const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+  const cfnFiles = files
+    .filter(file => file.indexOf('.') !== 0)
+    .filter(file => file.indexOf('template') !== -1);
   return {
     resourceDir,
     cfnFiles,

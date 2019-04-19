@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.2...@aws-amplify/cli@1.6.3) (2019-04-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.1...@aws-amplify/cli@1.6.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **cli:** publish check user response ([f88e9b2](https://github.com/aws-amplify/amplify-cli/commit/f88e9b2)), closes [#965](https://github.com/aws-amplify/amplify-cli/issues/965)
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.5.1...@aws-amplify/cli@1.6.1) (2019-04-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.5.0...@aws-amplify/cli@1.5.1) (2019-04-03)
+
+
+### Bug Fixes
+
+* fix [#1201](https://github.com/aws-amplify/amplify-cli/issues/1201) ([0dfdda5](https://github.com/aws-amplify/amplify-cli/commit/0dfdda5))
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.8...@aws-amplify/cli@1.5.0) (2019-04-03)
+
+
+### Bug Fixes
+
+* **amplify-cli:** promise not resolving in lts/dubnium ([#1028](https://github.com/aws-amplify/amplify-cli/issues/1028)) ([8a966be](https://github.com/aws-amplify/amplify-cli/commit/8a966be))
+* fixes update of aws exports when switching envs ([55a14bf](https://github.com/aws-amplify/amplify-cli/commit/55a14bf))
+* lint errors ([4cb6e57](https://github.com/aws-amplify/amplify-cli/commit/4cb6e57))
+* use helper functions for adding metadata ([50f8d76](https://github.com/aws-amplify/amplify-cli/commit/50f8d76))
+
+
+### Features
+
+* support for provisioning Cognito Hosted UI and support CRUD operations in Storage and API categories ([729b0de](https://github.com/aws-amplify/amplify-cli/commit/729b0de))
+* use cloudformation to update meta ([d4ae437](https://github.com/aws-amplify/amplify-cli/commit/d4ae437))
+
+
+
+
+
 ## [1.1.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.1.7...@aws-amplify/cli@1.1.8) (2019-03-22)
 
 

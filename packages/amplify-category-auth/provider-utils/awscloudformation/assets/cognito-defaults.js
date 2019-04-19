@@ -1,5 +1,8 @@
 const uuid = require('uuid');
-const { coreAttributes, appClientReadAttributes, booleanOptions } = require('./string-maps');
+const {
+  booleanOptions,
+  oAuthScopes,
+} = require('./string-maps');
 
 const [sharedId] = uuid().split('-');
 
@@ -50,15 +53,12 @@ const userPoolDefaults = projectName => ({
     'Requires Numbers',
     'Requires Symbols',
   ],
-  requiredAttributes: [
-    coreAttributes.find(b => b.name === 'Email').value,
-  ],
+  requiredAttributes: ['email'],
   userpoolClientName: `${projectName}_app_client`,
   userpoolClientGenerateSecret: true,
   userpoolClientRefreshTokenValidity: 30,
-  userpoolClientReadAttributes: [
-    appClientReadAttributes.find(d => d.name === 'Email').value,
-  ],
+  userpoolClientWriteAttributes: ['email'],
+  userpoolClientReadAttributes: ['email'],
   mfaLambdaRole: `${projectName}_totp_lambda_role`,
   mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,
   mfaPassRolePolicy: `${projectName}_totp_pass_role_policy`,
@@ -69,10 +69,16 @@ const userPoolDefaults = projectName => ({
   userpoolClientSetAttributes: false,
 });
 
+const withSocialDefaults = projectName => ({
+  hostedUI: true,
+  hostedUIDomainName: `${projectName}-${sharedId}`,
+  AllowedOAuthFlows: ['code'],
+  AllowedOAuthScopes: oAuthScopes.map(i => i.value),
+});
+
 const identityPoolDefaults = projectName => ({
   identityPoolName: `${projectName}_identitypool_${sharedId}`,
   allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-  thirdPartyAuth: booleanOptions.find(b => b.value === false).value,
   lambdaLogPolicy: `${projectName}_lambda_log_policy`,
   openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
   openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
@@ -106,6 +112,7 @@ const getAllDefaults = (name) => {
   const sources = [
     userPoolDefaults(projectName),
     identityAndUserPoolDefaults(projectName),
+    withSocialDefaults(projectName),
   ];
 
   return Object.assign(target, ...sources);
@@ -115,6 +122,7 @@ module.exports = {
   getAllDefaults,
   functionMap,
   generalDefaults,
+  withSocialDefaults,
   entityKeys,
   roles,
 };

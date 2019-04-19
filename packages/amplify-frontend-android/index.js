@@ -16,11 +16,13 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function createFrontendConfigs(context, amplifyResources) {
-  const { outputsForFrontend } = amplifyResources;
+function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
+  const newOutputsForFrontend = amplifyResources.outputsForFrontend;
+  const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
   // createAmplifyConfig(context, outputsByCategory);
-  return createAWSConfig(context, outputsForFrontend);
+  return createAWSConfig(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
+
 
 function configure(context) {
   return configManager.configure(context);

@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const _ = require('lodash');
+const uuid = require('uuid');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -116,9 +118,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   }
 
   if (parameters.resourceName) {
-    if (parameters.unauthPermissions
-      && parameters.unauthPermissions !== '') {
+    if (parameters.selectedGuestPermissions
+      && parameters.selectedGuestPermissions.length !== 0) {
       Object.assign(defaultValues, { storageAccess: 'authAndGuest' });
+    }
+    if (parameters.selectedGuestPermissions || parameters.selectedAuthenticatedPermissions) {
+      convertToCRUD(parameters, answers);
     }
   }
 
@@ -142,12 +147,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers = { ...answers, storageAccess: accessQuestion.storageAccess };
 
   // auth permissions
-  const authPermissions = await askReadWrite('Authenticated', context, defaultValues.authPermissions);
-  answers = { ...answers, authPermissions, unauthPermissions: '' };
+
+
+  answers.selectedAuthenticatedPermissions = await askReadWrite('Authenticated', context, answers, parameters);
   let allowUnauthenticatedIdentities = false;
   if (answers.storageAccess === 'authAndGuest') {
-    const unauthPermissions = await askReadWrite('Guest', context, defaultValues.unauthPermissions);
-    answers = { ...answers, unauthPermissions };
+    answers.selectedGuestPermissions = await askReadWrite('Guest', context, answers, parameters);
     allowUnauthenticatedIdentities = true;
   }
 
@@ -185,41 +190,65 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   return resource;
 }
 
-async function askReadWrite(userType, context, privacy) {
-  switch (privacy) {
-    case 'r':
-    case 'w':
-    case 'rw':
-      break;
-    default:
-      privacy = 'r';
+async function askReadWrite(userType, context, answers, parameters) {
+  // map of s3 actions corresponding to CRUD verbs
+  // 'create/update' have been consolidated since s3 only has put concept
+  const permissionMap = {
+    'create/update': ['s3:PutObject'],
+    read: ['s3:GetObject', 's3:ListBucket'],
+    delete: ['s3:DeleteObject'],
+  };
+
+  const defaults = [];
+  if (parameters[`selected${userType}Permissions`]) {
+    Object.values(permissionMap).forEach((el, index) => {
+      if (el.every(i => parameters[`selected${userType}Permissions`].includes(i))) {
+        defaults.push(Object.keys(permissionMap)[index]);
+      }
+    });
   }
 
-  while (true) {
-    const answer = await inquirer.prompt({
-      name: 'permissions',
-      type: 'list',
-      message: `What kind of access do you want for ${userType} users`,
-      choices: [
-        {
-          name: 'read',
-          value: 'r',
-        },
-        {
-          name: 'write',
-          value: 'w',
-        },
-        {
-          name: 'read/write',
-          value: 'rw',
-        },
-      ],
-      default: privacy,
-    });
+  const selectedPermissions = await context.amplify.crudFlow(
+    userType,
+    permissionMap,
+    defaults,
+  );
 
-    if (answer.permissions !== 'learn') {
-      return answer.permissions;
-    }
+  createPermissionKeys(userType, answers, selectedPermissions);
+
+  return selectedPermissions;
+}
+
+function createPermissionKeys(userType, answers, selectedPermissions) {
+  const [policyId] = uuid().split('-');
+
+  // max arrays represent highest possibly privileges for particular S3 keys
+  const maxPermissions = ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'];
+  const maxPublic = maxPermissions;
+  const maxUploads = ['s3:PutObject'];
+  const maxPrivate = userType === 'Authenticated' ? maxPermissions : [];
+  const maxProtected = userType === 'Authenticated' ? maxPermissions : ['s3:GetObject'];
+
+  function addPermissionKeys(key, possiblePermissions) {
+    const permissions = _.intersection(selectedPermissions, possiblePermissions).join();
+    answers[`s3Permissions${userType}${key}`] = !permissions ? 'DISALLOW' : permissions;
+    answers[`s3${key}Policy`] = `${key}_policy_${policyId}`;
+  }
+
+  addPermissionKeys('Public', maxPublic);
+  addPermissionKeys('Uploads', maxUploads);
+  if (userType !== 'Guest') {
+    addPermissionKeys('Protected', maxProtected);
+    addPermissionKeys('Private', maxPrivate);
+  }
+  answers[`${userType}AllowList`] = selectedPermissions.includes('s3:GetObject') ? 'ALLOW' : 'DISALLOW';
+  answers.s3ReadPolicy = `read_policy_${policyId}`;
+
+  // double-check to make sure guest is denied
+  if (answers.storageAccess !== 'authAndGuest') {
+    answers.s3PermissionsGuestPublic = 'DISALLOW';
+    answers.s3PermissionsGuestUploads = 'DISALLOW';
+    answers.GuestAllowList = 'DISALLOW';
   }
 }
 
@@ -334,6 +363,25 @@ function migrate(projectPath, resourceName) {
 
   jsonString = JSON.stringify(newParameters, null, '\t');
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
+function convertToCRUD(parameters, answers) {
+  if (parameters.unauthPermissions === 'r') {
+    answers.selectedGuestPermissions = ['s3:GetObject', 's3:ListBucket'];
+    createPermissionKeys('Guest', answers, answers.selectedGuestPermissions);
+  }
+  if (parameters.unauthPermissions === 'rw') {
+    answers.selectedGuestPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
+    createPermissionKeys('Guest', answers, answers.selectedGuestPermissions);
+  }
+  if (parameters.authPermissions === 'r') {
+    answers.selectedAuthenticatedPermissions = ['s3:GetObject', 's3:ListBucket'];
+    createPermissionKeys('Authenticated', answers, answers.selectedAuthenticatedPermissions);
+  }
+  if (parameters.authPermissions === 'rw') {
+    answers.selectedAuthenticatedPermissions = ['s3:GetObject', 's3:ListBucket', 's3:PutObject', 's3:DeleteObject'];
+    createPermissionKeys('Authenticated', answers, answers.selectedAuthenticatedPermissions);
+  }
 }
 
 

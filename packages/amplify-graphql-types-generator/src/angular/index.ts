@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
 import {
   LegacyCompilerContext,
@@ -74,22 +74,33 @@ function interfaceDeclarationForOperation(
   //   }
   // }
   // but the interface is needed only for the result value of getAudioAlbum
-  const properties = propertiesFromFields(generator.context, fields[0].fields as LegacyField[]);
-  interfaceDeclaration(
-    generator,
-    {
-      interfaceName
-    },
-    () => {
-      propertyDeclarations(generator, properties);
-    }
-  );
+  if (fields[0].fields) { // execute only if there are sub fields
+    const properties = propertiesFromFields(generator.context, fields[0].fields as LegacyField[]);
+    interfaceDeclaration(
+      generator,
+      {
+        interfaceName
+      },
+      () => {
+        propertyDeclarations(generator, properties);
+      }
+    );
+  }
 
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
   if (operation.fields.length && operation.fields[0].fields) {
     return operation.fields[0];
+  }
+}
+
+function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): String {
+  const { operationName, operationType } = op;
+  if (isScalarType(op.fields[0].type)) {
+    return typeNameFromGraphQLType(generator.context, op.fields[0].type)
+  } else {
+    return interfaceNameFromOperation({ operationName, operationType });
   }
 }
 
@@ -115,8 +126,8 @@ function generateAngularService(generator: CodeGenerator, context: LegacyCompile
 
 function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOperation) {
   const statement = formatTemplateString(generator, op.source);
-  const { operationName, operationType } = op;
-  const returnType = interfaceNameFromOperation({ operationName, operationType });
+  const { operationName } = op;
+  const returnType = getReturnTypeName(generator, op);
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
@@ -127,9 +138,8 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
 
 function generateQueryOrMutationOperation(generator: CodeGenerator, op: LegacyOperation) {
   const statement = formatTemplateString(generator, op.source);
-  const { operationName, operationType } = op;
   const vars = variablesFromField(generator.context, op.variables);
-  const returnType = interfaceNameFromOperation({ operationName, operationType });
+  const returnType = getReturnTypeName(generator, op);
   const resultField = getOperationResultField(op);
   const resultProp = resultField ? `.${resultField.responseName}` : '';
 

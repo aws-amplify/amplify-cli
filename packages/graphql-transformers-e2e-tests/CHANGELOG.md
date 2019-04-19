@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.4.1...graphql-transformers-e2e-tests@3.5.0) (2019-04-16)
+
+
+### Features
+
+* **field-level-auth:** Add field level auth support via the [@auth](https://github.com/auth) directive ([#1262](https://github.com/aws-amplify/amplify-cli/issues/1262)) ([3b1c600](https://github.com/aws-amplify/amplify-cli/commit/3b1c600)), closes [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.3.1...graphql-transformers-e2e-tests@3.4.1) (2019-04-09)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.0.9...graphql-transformers-e2e-tests@3.3.1) (2019-04-03)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** conditional group expression ([#1186](https://github.com/aws-amplify/amplify-cli/issues/1186)) ([83ef244](https://github.com/aws-amplify/amplify-cli/commit/83ef244)), closes [#360](https://github.com/aws-amplify/amplify-cli/issues/360)
+
+
+
+
+
 ## [3.0.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.0.8...graphql-transformers-e2e-tests@3.0.9) (2019-03-22)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

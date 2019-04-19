@@ -54,6 +54,7 @@ const {
 const { showHelp } = require('./amplify-helpers/show-help');
 const { executeProviderUtils } = require('./amplify-helpers/execute-provider-utils');
 const { showHelpfulProviderLinks } = require('./amplify-helpers/show-helpful-provider-links');
+const { crudFlow } = require('./amplify-helpers/permission-flow');
 
 const {
   loadEnvResourceParameters,
@@ -68,6 +69,7 @@ module.exports = (context) => {
     constants,
     constructExeInfo,
     copyBatch,
+    crudFlow,
     deleteProject,
     executeProviderUtils,
     getAllEnvs,

@@ -17,73 +17,129 @@
 		"unauthRoleName": {
 			"Type": "String"
 		},
-		"unauthPermissions": {
+		"s3PublicPolicy": {
 			"Type": "String"
 		},
-		"authPermissions": {
+		"s3PrivatePolicy": {
 			"Type": "String"
+		},
+		"s3ProtectedPolicy": {
+			"Type": "String"
+		},
+		"s3UploadsPolicy": {
+			"Type": "String"
+		},
+		"s3ReadPolicy": {
+			"Type": "String"
+		},
+		"s3PermissionsAuthenticatedPublic": {
+			"Type": "String"
+		},
+		"s3PermissionsAuthenticatedProtected": {
+			"Type": "String"
+		},
+		"s3PermissionsAuthenticatedPrivate": {
+			"Type": "String"
+		},
+		"s3PermissionsAuthenticatedUploads": {
+			"Type": "String"
+		},
+		"s3PermissionsGuestPublic": {
+			"Type": "String",
+			"Default" : "DISALLOW"
+		},	
+		"s3PermissionsGuestUploads": {
+			"Type": "String",
+			"Default" : "DISALLOW"		},
+		"AuthenticatedAllowList": {
+			"Type": "String"
+		},
+		"GuestAllowList": {
+			"Type": "String",
+			"Default" : "DISALLOW"
+		},
+		"selectedGuestPermissions": {
+			"Type": "CommaDelimitedList"
+		},
+		"selectedAuthenticatedPermissions": {
+			"Type": "CommaDelimitedList"
 		},
 		"env": {
-            "Type": "String"
-        }
-
+			"Type": "String"
+		}
 	},
 	"Conditions": {
 		"ShouldNotCreateEnvResources": {
-            "Fn::Equals": [
-                {
-                    "Ref": "env"
-                },
-                "NONE"
-            ]
-        },
-		"EnableUnauthReadWrite": {
 			"Fn::Equals": [
 				{
-					"Ref": "unauthPermissions"
+					"Ref": "env"
 				},
-				"rw"
+				"NONE"
 			]
 		},
-		"EnableUnauthRead": {
-			"Fn::Equals": [
-				{
-					"Ref": "unauthPermissions"
-				},
-				"r"
-			]
+		"CreateAuthPublic": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsAuthenticatedPublic"},
+					 "DISALLOW"
+				]
+		 }]
 		},
-		"EnableUnauthWrite": {
-			"Fn::Equals": [
-				{
-					"Ref": "unauthPermissions"
-				},
-				"w"
-			]
+		"CreateAuthProtected": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsAuthenticatedProtected"},
+					 "DISALLOW"
+				]
+		 }]
 		},
-		"EnableAuthReadWrite": {
-			"Fn::Equals": [
-				{
-					"Ref": "authPermissions"
-				},
-				"rw"
-			]
+		"CreateAuthPrivate": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsAuthenticatedPrivate"},
+					 "DISALLOW"
+				]
+		 }]
 		},
-		"EnableAuthRead": {
-			"Fn::Equals": [
-				{
-					"Ref": "authPermissions"
-				},
-				"r"
-			]
+		"CreateAuthUploads": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsAuthenticatedUploads"},
+					 "DISALLOW"
+				]
+		 }]
 		},
-		"EnableAuthWrite": {
-			"Fn::Equals": [
-				{
-					"Ref": "authPermissions"
-				},
-				"w"
-			]
+		"CreateGuestPublic": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsGuestPublic"},
+					 "DISALLOW"
+				]
+		 }]
+		},
+		"CreateGuestUploads": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "s3PermissionsGuestUploads"},
+					 "DISALLOW"
+				]
+		 }]
+		},
+		"AuthReadAndList": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "AuthenticatedAllowList"},
+					 "DISALLOW"
+				]
+		 }]
+		},
+		"GuestReadAndList": {
+			"Fn::Not" : [{
+				"Fn::Equals" : [
+					 {"Ref" : "GuestAllowList"},
+					 "DISALLOW"
+				]
+		 }]
 		}
 	},
 	"Resources": {
@@ -142,274 +198,15 @@
 				}
 			}
 		},
-		"S3UnauthPolicyRW": {
-			"Condition": "EnableUnauthReadWrite",
+		"S3AuthPublicPolicy": {
 			"DependsOn": [
 				"S3Bucket"
 			],
+			"Condition": "CreateAuthPublic",
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
 				"PolicyName": {
-					"Ref": "authPolicyName"
-				},
-				"Roles": [
-					{
-						"Ref": "unauthRoleName"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject",
-								"s3:PutObject",
-								"s3:DeleteObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/public/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:PutObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/uploads/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/protected/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:ListBucket"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											}
-										]
-									]
-								}
-							],
-							"Condition": {
-								"StringLike": {
-									"s3:prefix": [
-										"public/",
-										"public/*",
-										"protected/",
-										"protected/*"
-									]
-								}
-							}
-						}
-					]
-				}
-			}
-		},
-		"S3UnauthPolicyR": {
-			"Condition": "EnableUnauthRead",
-			"DependsOn": [
-				"S3Bucket"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": {
-					"Ref": "authPolicyName"
-				},
-				"Roles": [
-					{
-						"Ref": "unauthRoleName"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:ListBucket"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											}
-										]
-									]
-								}
-							],
-							"Condition": {
-								"StringLike": {
-									"s3:prefix": [
-										"public/",
-										"public/*",
-										"protected/",
-										"protected/*"
-									]
-								}
-							}
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/protected/*"
-										]
-									]
-								},
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/public/*"
-										]
-									]
-								}
-							]
-						}
-					]
-				}
-			}
-		},
-		"S3UnauthPolicyW": {
-			"Condition": "EnableUnauthWrite",
-			"DependsOn": [
-				"S3Bucket"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": {
-					"Ref": "authPolicyName"
-				},
-				"Roles": [
-					{
-						"Ref": "unauthRoleName"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:PutObject",
-								"s3:DeleteObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/public/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:PutObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/uploads/*"
-										]
-									]
-								}
-							]
-						}
-					]
-				}
-			}
-		},
-		"S3AuthPolicyRW": {
-			"Condition": "EnableAuthReadWrite",
-			"DependsOn": [
-				"S3Bucket"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": {
-					"Ref": "authPolicyName"
+					"Ref": "s3PublicPolicy"
 				},
 				"Roles": [
 					{
@@ -421,11 +218,11 @@
 					"Statement": [
 						{
 							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject",
-								"s3:PutObject",
-								"s3:DeleteObject"
-							],
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsAuthenticatedPublic"
+								} ] 
+							},
 							"Resource": [
 								{
 									"Fn::Join": [
@@ -438,7 +235,39 @@
 											"/public/*"
 										]
 									]
-								},
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"S3AuthProtectedPolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "CreateAuthProtected",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3ProtectedPolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "authRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsAuthenticatedProtected"
+								} ] 
+							},
+							"Resource": [
 								{
 									"Fn::Join": [
 										"",
@@ -450,7 +279,39 @@
 											"/protected/${cognito-identity.amazonaws.com:sub}/*"
 										]
 									]
-								},
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"S3AuthPrivatePolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "CreateAuthPrivate",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3PrivatePolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "authRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsAuthenticatedPrivate"
+								} ] 
+							},
+							"Resource": [
 								{
 									"Fn::Join": [
 										"",
@@ -464,12 +325,36 @@
 									]
 								}
 							]
-						},
+						}
+					]
+				}
+			}
+		},
+		"S3AuthUploadPolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "CreateAuthUploads",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3UploadsPolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "authRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
 						{
 							"Effect": "Allow",
-							"Action": [
-								"s3:PutObject"
-							],
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsAuthenticatedUploads"
+								} ] 
+							},
 							"Resource": [
 								{
 									"Fn::Join": [
@@ -484,7 +369,29 @@
 									]
 								}
 							]
-						},
+						}
+					]
+				}
+			}
+		},
+		"S3AuthReadPolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "AuthReadAndList",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3ReadPolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "authRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
 						{
 							"Effect": "Allow",
 							"Action": [
@@ -540,24 +447,132 @@
 				}
 			}
 		},
-		"S3AuthPolicyR": {
-			"Condition": "EnableAuthRead",
+		"S3GuestPublicPolicy": {
 			"DependsOn": [
 				"S3Bucket"
 			],
+			"Condition": "CreateGuestPublic",
 			"Type": "AWS::IAM::Policy",
 			"Properties": {
 				"PolicyName": {
-					"Ref": "authPolicyName"
+					"Ref": "s3PublicPolicy"
 				},
 				"Roles": [
 					{
-						"Ref": "authRoleName"
+						"Ref": "unauthRoleName"
 					}
 				],
 				"PolicyDocument": {
 					"Version": "2012-10-17",
 					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsGuestPublic"
+								} ] 
+							},
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/public/*"
+										]
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"S3GuestUploadPolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "CreateGuestUploads",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3UploadsPolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "unauthRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": {
+								"Fn::Split" : [ "," , {
+									"Ref": "s3PermissionsGuestUploads"
+								} ] 
+							},
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/uploads/*"
+										]
+									]
+								}
+							]
+						}
+					]
+				}
+			}
+		},
+		"S3GuestReadPolicy": {
+			"DependsOn": [
+				"S3Bucket"
+			],
+			"Condition": "GuestReadAndList",
+			"Type": "AWS::IAM::Policy",
+			"Properties": {
+				"PolicyName": {
+					"Ref": "s3ReadPolicy"
+				},
+				"Roles": [
+					{
+						"Ref": "unauthRoleName"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Action": [
+								"s3:GetObject"
+							],
+							"Resource": [
+								{
+									"Fn::Join": [
+										"",
+										[
+											"arn:aws:s3:::",
+											{
+												"Ref": "S3Bucket"
+											},
+											"/protected/*"
+										]
+									]
+								}
+							]
+						},
 						{
 							"Effect": "Allow",
 							"Action": [
@@ -583,177 +598,6 @@
 										"public/*",
 										"protected/",
 										"protected/*"
-									]
-								}
-							}
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/protected/*"
-										]
-									]
-								},
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/public/*"
-										]
-									]
-								}
-							]
-						}
-					]
-				}
-			}
-		},
-		"S3AuthPolicyW": {
-			"Condition": "EnableAuthWrite",
-			"DependsOn": [
-				"S3Bucket"
-			],
-			"Type": "AWS::IAM::Policy",
-			"Properties": {
-				"PolicyName": {
-					"Ref": "authPolicyName"
-				},
-				"Roles": [
-					{
-						"Ref": "authRoleName"
-					}
-				],
-				"PolicyDocument": {
-					"Version": "2012-10-17",
-					"Statement": [
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject",
-								"s3:PutObject",
-								"s3:DeleteObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/public/*"
-										]
-									]
-								},
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/protected/${cognito-identity.amazonaws.com:sub}/*"
-										]
-									]
-								},
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/private/${cognito-identity.amazonaws.com:sub}/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:PutObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/uploads/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:GetObject"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											},
-											"/protected/*"
-										]
-									]
-								}
-							]
-						},
-						{
-							"Effect": "Allow",
-							"Action": [
-								"s3:ListBucket"
-							],
-							"Resource": [
-								{
-									"Fn::Join": [
-										"",
-										[
-											"arn:aws:s3:::",
-											{
-												"Ref": "S3Bucket"
-											}
-										]
-									]
-								}
-							],
-							"Condition": {
-								"StringLike": {
-									"s3:prefix": [
-										"public/",
-										"public/*",
-										"protected/",
-										"protected/*",
-										"private/${cognito-identity.amazonaws.com:sub}/",
-										"private/${cognito-identity.amazonaws.com:sub}/*"
 									]
 								}
 							}
