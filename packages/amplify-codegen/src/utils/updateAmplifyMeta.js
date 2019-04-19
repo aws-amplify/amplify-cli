@@ -8,11 +8,17 @@ module.exports = async (context, apiDetails) => {
       securityType: apiDetails.securityType,
       GraphQLAPIIdOutput: apiDetails.id,
       GraphQLAPIEndpointOutput: apiDetails.endpoint,
+      additionalAuthenticationProviders: apiDetails.additionalAuthenticationProviders,
+      name: apiDetails.name,
     },
     lastPushTimeStamp: new Date(),
   };
-  if (apiDetails.apiKey) {
-    appsyncMetadata.output.GraphQLAPIKeyOutput = apiDetails.apiKey;
+  if (apiDetails.region) {
+    appsyncMetadata.output.region = apiDetails.region;
+  }
+  if (apiDetails.apiKeys && apiDetails.apiKeys.length) {
+    // eslint-disable-next-line prefer-destructuring
+    appsyncMetadata.output.GraphQLAPIKeyOutput = apiDetails.apiKeys[0].id;
   }
 
   const { amplifyMeta } = context.amplify.getProjectDetails();
@@ -32,7 +38,6 @@ module.exports = async (context, apiDetails) => {
   if (!currentAmplifyMeta.api) {
     currentAmplifyMeta.api = {};
   }
-  currentAmplifyMeta.api[apiDetails.name] = appsyncMetadata;
   fs.write(currentAmplifyMetaFilePath, currentAmplifyMeta);
 
   await context.amplify.onCategoryOutputsChange(context);

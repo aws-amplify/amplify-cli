@@ -14,7 +14,6 @@ const {
   getAppSyncAPIInfo,
   getProjectAwsRegion,
   updateAmplifyMeta,
-  selectAPIKey,
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
@@ -44,9 +43,9 @@ async function add(context, apiId = null) {
         apiDetailSpinner.start('Getting API details');
         apiDetails = await getAppSyncAPIInfo(context, apiId, region);
         apiDetailSpinner.succeed();
-        if (apiDetails.securityType === 'API_KEY') {
-          apiDetails.apiKey = await selectAPIKey(apiDetails.apiKeys);
-        }
+        // if (apiDetails.securityType === 'API_KEY') {
+        //   apiDetails.apiKey = await selectAPIKey(apiDetails.apiKeys);
+        // }
 
         await updateAmplifyMeta(context, apiDetails);
         break;
