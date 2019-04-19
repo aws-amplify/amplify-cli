@@ -81,7 +81,7 @@ function getCurrentAWSConfig(context) {
   let awsConfig = {};
 
   if (fs.existsSync(targetFilePath)) {
-    awsConfig = JSON.parse(fs.readFileSync(targetFilePath));
+    awsConfig = amplify.readJsonFile(targetFilePath);
   }
   return awsConfig;
 }
