@@ -19,7 +19,7 @@ async function ensureSetup(context, resourceName) {
 
 async function setupAccess(context, resourceName) {
   let templateFilePath = path.join(__dirname, constants.TemplateFileName);
-  const template = JSON.parse(fs.readFileSync(templateFilePath));
+  const template = context.amplify.readJsonFile(templateFilePath);
 
   const answer = await inquirer.prompt({
     name: 'allowUnAuthAccess',
@@ -139,7 +139,7 @@ async function addSceneConfig(context, sceneName) {
     validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
-          sumerianConfig = require(configFilePath);
+          sumerianConfig = context.amplify.readJsonFile(configFilePath);
 
           // Sumerian config must have a url and sceneId
           if (!sumerianConfig.url || !sumerianConfig.sceneId) {
