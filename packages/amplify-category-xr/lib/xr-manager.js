@@ -139,7 +139,7 @@ async function addSceneConfig(context, sceneName) {
     validate: (configFilePath) => {
       try {
         if (fs.existsSync(configFilePath)) {
-          sumerianConfig = require(configFilePath);
+          sumerianConfig = JSON.parse(fs.readFileSync(configFilePath));
 
           // Sumerian config must have a url and sceneId
           if (!sumerianConfig.url || !sumerianConfig.sceneId) {
