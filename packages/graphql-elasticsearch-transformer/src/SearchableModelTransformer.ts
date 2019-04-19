@@ -60,7 +60,9 @@ export class SearchableModelTransformer extends Transformer {
             '^ElasticsearchAccess.*',
             '^ElasticsearchStreaming.*',
             '^ElasticsearchDataSource$',
-            '^Searchable.*LambdaMapping$'
+            '^Searchable.*LambdaMapping$',
+            '^ElasticsearchDomainArn$',
+            '^ElasticsearchDomainEndpoint$'
         ])
     };
 
