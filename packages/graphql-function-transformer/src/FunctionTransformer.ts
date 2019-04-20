@@ -18,8 +18,8 @@ export class FunctionTransformer extends Transformer {
         this.resources = new ResourceFactory();
     }
 
-    // TODO: should be under graphql-transformer-common for consistency 
-    private lambdaDataSourceID = (fieldName: string) => toUpper(fieldName) + "LambdaDataSource";
+    private lambdaDataSourceName = (name: string) => toUpper(name.replace(/-?_?\${[^}]*}/g, ''));
+    private lambdaDataSourceID = (name: string) => this.lambdaDataSourceName(name) + "LambdaDataSource";
 
     // collects all function directives and creates associated datasources
     public before = (ctx: TransformerContext) => 
@@ -33,21 +33,22 @@ export class FunctionTransformer extends Transformer {
             }))
             .filter(({directive, }) => directive)
             .forEach(({directive, fieldName}) => {
-                const name: string = getDirectiveArgument(directive)("name")
-                if (!name) {
+                const functionName: string = getDirectiveArgument(directive)("name")
+                if (!functionName) {
                     throw new InvalidDirectiveError('@function directive must provide lambda function name')
                 }
 
-                const dataSourceID = this.lambdaDataSourceID(fieldName)
+                const dataSourceName = this.lambdaDataSourceName(functionName)
+                const dataSourceID = this.lambdaDataSourceID(functionName)
                 const iamRoleID = dataSourceID + "Role"
                 if(!ctx.getResource(dataSourceID)){
                     ctx.setResource(
                         dataSourceID,
-                        this.resources.makeLambdaDataSource(name, iamRoleID)
+                        this.resources.makeLambdaDataSource(functionName, dataSourceName, iamRoleID)
                     )
                     ctx.setResource(
                         iamRoleID,
-                        this.resources.makeInvokeLambdaIAMRole(name, iamRoleID + '-${env}')
+                        this.resources.makeInvokeLambdaIAMRole(functionName, iamRoleID + '-${env}')
                     )
                 }
             })
@@ -58,8 +59,14 @@ export class FunctionTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
+        const incompatible = field.directives.find((dir) => dir.name.value === 'connection' || dir.name.value === 'http')
+        if (incompatible) {
+            throw new InvalidDirectiveError('@function directive cannot be used alongside other directive that creates a resolver. (Only one resolver is allowed per field)')
+        }
+
+        const functionName: string = getDirectiveArgument(directive)("name")
         const resolverID = ResolverResourceIDs.ResolverResourceID(toUpper(parent.name.value), toUpper(field.name.value))
-        const lambdaDataSourceID = this.lambdaDataSourceID(field.name.value)
+        const lambdaDataSourceID = this.lambdaDataSourceID(functionName)
         ctx.setResource(
             resolverID,
             this.resources.makeResolver(lambdaDataSourceID, parent.name.value, field.name.value)

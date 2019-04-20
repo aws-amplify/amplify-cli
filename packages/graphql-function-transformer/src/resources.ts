@@ -9,13 +9,10 @@ import {
 
 export class ResourceFactory {
 
-    public makeLambdaDataSource(lambdaName: string, iamRoleLogicalID: string) {
-        // strip ${env} and capitalize
-        let baseName = toUpper(lambdaName.replace(/-?_?\${[^}]*}/g, ''))
-
+    public makeLambdaDataSource(lambdaName: string, dataSourceName: string, iamRoleLogicalID: string) {
         return new AppSync.DataSource({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            Name: baseName,
+            Name: dataSourceName,
             Type: 'AWS_LAMBDA',
             ServiceRoleArn: Fn.GetAtt(iamRoleLogicalID, 'Arn'),
             LambdaConfig: {
