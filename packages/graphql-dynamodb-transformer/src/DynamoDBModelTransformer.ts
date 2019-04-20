@@ -101,10 +101,12 @@ export class DynamoDBModelTransformer extends Transformer {
                 ".*" + def.name.value + "Model",
                 ".*" + def.name.value + "DataSource",
                 ".*" + def.name.value + "IAMRole",
-                ".*" + def.name.value + "Table",
+                "^" + def.name.value + "Table",
                 // All resolvers except the search resolver.
                 "^[^S].*" + def.name.value + "Resolver",
-                "^" + def.name.value + ".+Resolver"
+                "^" + def.name.value + ".+Resolver",
+                def.name.value + "Table",
+                "^GetAtt" + def.name.value + "Table"
             ]
         )
 
