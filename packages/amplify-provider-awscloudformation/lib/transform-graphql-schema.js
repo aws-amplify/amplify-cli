@@ -208,8 +208,8 @@ async function transformGraphQLSchema(context, options) {
   const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
   const transformerList = [
     new DynamoDBModelTransformer(getModelConfig(project)),
-    new ModelAuthTransformer({ authMode }),
     new ModelConnectionTransformer(),
+    new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
   ];
 

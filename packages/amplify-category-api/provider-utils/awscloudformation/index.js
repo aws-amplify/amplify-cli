@@ -99,7 +99,6 @@ function addResource(context, category, service, options) {
     });
 }
 
-
 async function updateResource(context, category, service) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
@@ -165,6 +164,12 @@ async function migrateResource(context, projectPath, service, resourceName) {
   return await migrate(context, projectPath, resourceName);
 }
 
+function addDatasource(context, category, datasource) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-datasources.json`))[datasource];
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename);
+}
+
 module.exports = {
-  addResource, updateResource, console, migrateResource,
+  addResource, updateResource, console, migrateResource, addDatasource,
 };

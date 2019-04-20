@@ -5,11 +5,12 @@ npm-debug.log
 coverage
 .nyc_output
 yarn.lock
-/package-lock.json
+package-lock.json
 packages/amplify-cli/amplify/.config/
 .vscode
 packages/graphql*/lib
 packages/amplify-graphql*/lib
+packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
 **/.env
