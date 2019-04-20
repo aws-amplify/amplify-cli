@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.2...@aws-amplify/cli@1.6.3) (2019-04-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.1...@aws-amplify/cli@1.6.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **cli:** publish check user response ([f88e9b2](https://github.com/aws-amplify/amplify-cli/commit/f88e9b2)), closes [#965](https://github.com/aws-amplify/amplify-cli/issues/965)
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.5.1...@aws-amplify/cli@1.6.1) (2019-04-09)
 
 **Note:** Version bump only for package @aws-amplify/cli

@@ -93,7 +93,7 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
      *   comments: CommentConnection
      * }
     */ 
-    expect(tableContext.tableTypeDefinition.fields.length).toEqual(isForeignKey ? fieldLength+1 : fieldLength)
+    expect(tableContext.tableTypeDefinition.fields.length).toEqual(fieldLength)
     expect(tableContext.updateTypeDefinition.fields.length).toEqual(fieldLength)
     expect(tableContext.createTypeDefinition.fields.length).toEqual(fieldLength)
 }
