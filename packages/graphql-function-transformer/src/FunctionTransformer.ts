@@ -1,8 +1,10 @@
-import { Transformer, TransformerContext } from "graphql-transformer-core"
-import { Kind, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graphql";
-import { getDirectiveArgument } from 'graphql-transformer-common'
+import { Transformer, TransformerContext, InvalidDirectiveError } from "graphql-transformer-core"
+import { Kind, FieldDefinitionNode, ObjectTypeDefinitionNode, DirectiveNode, InterfaceTypeDefinitionNode } from "graphql";
+import { getDirectiveArgument, ResolverResourceIDs } from 'graphql-transformer-common'
 import { ResourceFactory } from './resources'
-import { toUpper } from 'graphql-transformer-common'
+import { toUpper, toCamelCase } from 'graphql-transformer-common'
+
+// const LAMBDA_STACK_NAME = 'LambdaStack'
 
 export class FunctionTransformer extends Transformer {
 
@@ -15,6 +17,9 @@ export class FunctionTransformer extends Transformer {
         )
         this.resources = new ResourceFactory();
     }
+
+    // TODO: should be under graphql-transformer-common for consistency 
+    private lambdaDataSourceID = (fieldName: string) => toUpper(fieldName) + "LambdaDataSource";
 
     // collects all function directives and creates associated datasources
     public before = (ctx: TransformerContext) => 
@@ -29,11 +34,35 @@ export class FunctionTransformer extends Transformer {
             .filter(({directive, }) => directive)
             .forEach(({directive, fieldName}) => {
                 const name: string = getDirectiveArgument(directive)("name")
-                const dataSourceID = toUpper(fieldName) + "LambdaDataSource"
+                if (!name) {
+                    throw new InvalidDirectiveError('@function directive must provide lambda function name')
+                }
+
+                const dataSourceID = this.lambdaDataSourceID(fieldName)
                 const iamRoleID = dataSourceID + "Role"
-                ctx.setResource(
-                    dataSourceID,
-                    this.resources.makeLambdaDataSource(name, iamRoleID)
-                )
+                if(!ctx.getResource(dataSourceID)){
+                    ctx.setResource(
+                        dataSourceID,
+                        this.resources.makeLambdaDataSource(name, iamRoleID)
+                    )
+                    ctx.setResource(
+                        iamRoleID,
+                        this.resources.makeInvokeLambdaIAMRole(name, iamRoleID + '-${env}')
+                    )
+                }
             })
+
+    public field = (
+        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        field: FieldDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext
+    ): void => {
+        const resolverID = ResolverResourceIDs.ResolverResourceID(toUpper(parent.name.value), toUpper(field.name.value))
+        const lambdaDataSourceID = this.lambdaDataSourceID(field.name.value)
+        ctx.setResource(
+            resolverID,
+            this.resources.makeResolver(lambdaDataSourceID, parent.name.value, field.name.value)
+        )
+    }
 }
