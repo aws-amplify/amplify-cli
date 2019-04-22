@@ -37,7 +37,7 @@ const builtInScalarMap = {
 
 const INFLECTOR_BLACK_LIST = ['delta'];
 
-Inflector.inflections('en', function(inflect: any) {
+(Inflector as any).inflections('en', function(inflect: any) {
   INFLECTOR_BLACK_LIST.forEach(w => {
     inflect.uncountable(w, w);
   });
