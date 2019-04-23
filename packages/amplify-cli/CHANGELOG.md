@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.3...@aws-amplify/cli@1.6.4-beta.0) (2019-04-23)
+
+
+### Bug Fixes
+
+* **cli:** check BOM in json read ([#1293](https://github.com/aws-amplify/amplify-cli/issues/1293)) ([adf7ab7](https://github.com/aws-amplify/amplify-cli/commit/adf7ab7)), closes [#1280](https://github.com/aws-amplify/amplify-cli/issues/1280)
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.2...@aws-amplify/cli@1.6.3) (2019-04-16)
 
 **Note:** Version bump only for package @aws-amplify/cli

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.1...amplify-frontend-android@1.5.2-beta.0) (2019-04-23)
+
+
+### Bug Fixes
+
+* **cli:** check BOM in json read ([#1293](https://github.com/aws-amplify/amplify-cli/issues/1293)) ([adf7ab7](https://github.com/aws-amplify/amplify-cli/commit/adf7ab7)), closes [#1280](https://github.com/aws-amplify/amplify-cli/issues/1280)
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.4.0...amplify-frontend-android@1.5.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-frontend-android
