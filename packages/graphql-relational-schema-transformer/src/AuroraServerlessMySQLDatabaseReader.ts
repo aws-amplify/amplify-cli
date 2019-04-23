@@ -20,9 +20,9 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         this.auroraClient = auroraClient
     }
 
-    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
+    constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws:any) {
         this.auroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn,
-             dbClusterOrInstanceArn, database)
+             dbClusterOrInstanceArn, database, aws)
         this.dbRegion = dbRegion
         this.awsSecretStoreArn = awsSecretStoreArn
         this.dbClusterOrInstanceArn = dbClusterOrInstanceArn
