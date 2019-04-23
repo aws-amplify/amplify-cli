@@ -20,8 +20,6 @@ async function postPushCallback(context, graphQLConfig) {
   const schema = await downloadIntrospectionSchema(context, api.id, schemaLocation);
 
   const newProject = graphQLConfig.gqlConfig;
-  newProject.amplifyExtension.graphQLApiId = api.id;
-  newProject.endpoint = api.endpoint;
   newProject.schema = schema;
 
   config.addProject(newProject);

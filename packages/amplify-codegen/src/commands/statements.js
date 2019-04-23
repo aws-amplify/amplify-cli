@@ -5,13 +5,14 @@ const statementsGen = require('amplify-graphql-docs-generator').default;
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
+  const apis = getAppSyncAPIDetails(context);
   const { projectPath } = context.amplify.getEnvInfo();
-  if (!projects.length) {
+  if (!projects.length || !apis.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
@@ -24,7 +25,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
       await downloadIntrospectionSchemaWithProgress(
         context,
-        cfg.amplifyExtension.graphQLApiId,
+        apis[0].id,
         schemaPath,
         cfg.amplifyExtension.region,
       );
