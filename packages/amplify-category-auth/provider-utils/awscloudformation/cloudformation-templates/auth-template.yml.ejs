@@ -12,6 +12,17 @@ Parameters:
   unauthRoleArn:
     Type: String
 
+
+  <% if (props.dependsOn && props.dependsOn.length > 0) { %>
+  <% for(var i=0; i < props.dependsOn.length; i++) { %>
+  <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+  <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>: 
+    Type: String
+    Default: <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>
+  <% } %>
+  <% } %>
+  <% } %>
+
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
   <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
   <%=Object.keys(props)[i]%>:
@@ -80,6 +91,33 @@ Resources:
           Required: true
           Mutable: true
         <% } %>
+      <%if (props.triggerCapabilities) { %>
+      LambdaConfig:
+        <%if (props.CreateAuthChallenge) { %>
+          CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
+        <% } %>
+        <%if (props.CustomMessage) { %>
+          CustomMessage: !Ref function<%=props.resourceName%>PCustomMessageArn
+        <% } %>
+        <%if (props.DefineAuthChallenge) { %>
+          DefineAuthChallenge: !Ref function<%=props.resourceName%>DefineAuthChallengeArn
+        <% } %>
+        <%if (props.PostAuthentication) { %>
+          PostAuthentication: !Ref function<%=props.resourceName%>PostAuthenticationArn
+        <% } %>
+        <%if (props.PostConfirmation) { %>
+          PostConfirmation: !Ref function<%=props.resourceName%>PostConfirmationArn
+        <% } %>
+        <%if (props.PreAuthentication) { %>
+          PreAuthentication: !Ref function<%=props.resourceName%>PreAuthenticationArn
+        <% } %>
+        <%if (props.PreSignUp) { %>
+          PreSignUp: !Ref function<%=props.resourceName%>PreSignUpArn
+        <% } %>
+        <%if (props.VerifyAuthChallengeResponse) { %>
+          VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
+        <% } %>
+      <% } %>
       <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes
       <% } %>

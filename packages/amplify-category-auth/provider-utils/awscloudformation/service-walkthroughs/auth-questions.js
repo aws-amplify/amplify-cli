@@ -162,16 +162,36 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
+  // if user is doing manual flow, go into manual lambda flow
+  if (coreAnswers.authSelections !== 'identityPoolOnly' && coreAnswers.useDefault === 'manual') {
+    const manualTriggers = await lambdaFlow(context, coreAnswers);
+    if (manualTriggers) {
+      coreAnswers.triggerCapabilities.push(...manualTriggers);
+    }
+  }
+
+  if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
+    coreAnswers.triggerCapabilities = Object.assign(...coreAnswers.triggerCapabilities);
+    const lambdas = await context.amplify.createTrigger('amplify-category-auth', coreAnswers.triggerCapabilities, context, coreAnswers.resourceName);
+
+    coreAnswers = Object.assign(coreAnswers, lambdas);
+    coreAnswers.triggerCapabilities = true;
+
+    coreAnswers.dependsOn = [];
+    Object.values(lambdas).forEach((l) => {
+      coreAnswers.dependsOn.push({
+        category: 'function',
+        resourceName: l,
+        attributes: ['Name', 'Arn'],
+      });
+    });
+  }
+
   // formatting data for user pool providers / hosted UI
   if (coreAnswers.authProvidersUserPool) {
     /* eslint-disable */
     coreAnswers = Object.assign(coreAnswers, userPoolProviders(coreAnswers.authProvidersUserPool, coreAnswers, context.updatingAuth));
     /* eslint-enable */
-  }
-
-  if (coreAnswers.authSelections !== 'identityPoolOnly') {
-    const triggers = await lambdaFlow(context);
-    coreAnswers = Object.assign(coreAnswers, triggers);
   }
 
   // formatting oAuthMetaData
@@ -372,34 +392,9 @@ function filterInput(input, updateFlow) {
 /*
   Adding lambda triggers
 */
-async function lambdaFlow(context) {
-  const trigger = await context.amplify.triggerFlow('cognito');
-  if (trigger && trigger.length > 0) {
-    for (let t = 0; t < trigger.length; t += 1) {
-      let add;
-      try {
-        ({ add } = require('amplify-category-function'));
-      } catch (e) {
-        throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-      }
-      context.pendingCognitoTrigger = {
-        functionName: 'exampleTrigger',
-        resourceName: 'exampleTrigger',
-        triggerResource: 'cognito',
-        triggerCategory: trigger[t].name,
-        functionTemplate: trigger[t].template,
-      };
-      add(context, 'awscloudformation', 'Lambda')
-        .then(() => {
-          context.print.success('Succesfully added the Lambda function locally');
-        });
-    }
-  }
-  const triggerKeyValues = {};
-  trigger.forEach((t) => {
-    triggerKeyValues[t.name] = t.template;
-  });
-  return triggerKeyValues;
+async function lambdaFlow(context, answers) {
+  const triggers = await context.amplify.triggerFlow('cognito', 'amplify-category-auth', answers);
+  return triggers;
 }
 
 module.exports = {

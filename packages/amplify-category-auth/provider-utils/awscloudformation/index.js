@@ -164,7 +164,12 @@ async function addResource(context, category, service) {
         ENV_SPECIFIC_PARAMS,
       );
     })
-    .then(() => props.resourceName);
+    .then(() => {
+      if (props.dependsOn) {
+        context.amplify.auth = { dependsOn: props.dependsOn };
+      }
+      return props.resourceName;
+    });
 }
 
 async function updateResource(context, category, serviceResult) {

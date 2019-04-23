@@ -459,6 +459,33 @@ const oAuthScopes = [
   },
 ];
 
+const capabilities = [
+  {
+    name: 'MFA w/ Captcha',
+    value: { DefineAuthChallenge: 'captcha' },
+  },
+  // {
+  //   name: 'Device tracking/registration',
+  //   value: 'deviceTracking',
+  // },
+  // {
+  //   name: 'User sign-up email filtering (whitelists/blacklists)',
+  //   value: 'emailFiltering',
+  // },
+  // {
+  //   name: 'Show Legal Notice',
+  //   value: 'showLegalNotice',
+  // },
+  // {
+  //   name: 'Add Created User to Group',
+  //   value: 'addUserToGroup',
+  // },
+  // {
+  //   name: 'Send email instead of code',
+  //   value: 'emailInsteadOfCode',
+  // },
+];
+
 const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
@@ -485,6 +512,7 @@ const getAllMaps = ((edit) => {
     authorizeScopes,
     attributeProviderMap,
     updateFlowMap,
+    capabilities,
   };
 });
 
@@ -508,4 +536,5 @@ module.exports = {
   messages,
   attributeProviderMap,
   updateFlowMap,
+  capabilities,
 };

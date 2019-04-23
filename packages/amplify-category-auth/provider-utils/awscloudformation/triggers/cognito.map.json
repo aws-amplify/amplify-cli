@@ -1,0 +1,34 @@
+{
+  "CreateAuthChallenge": {
+    "name": "Create Auth Challenge",
+    "description": "This trigger is invoked after 'Define Auth Challenge' if a custom challenge has been specified as part of the 'Define Auth Challenge' trigger."
+  },
+  "CustomMessage": {
+    "name": "Custom Message",
+    "description": "This trigger is invoked before a verification or MFA message is sent, allowing you to customize the message dynamically. Note that static custom messages can be edited on the Verifications panel."
+  },
+  "DefineAuthChallenge": {
+    "name": "Define Auth Challenge",
+    "description": "This trigger is invoked to initiate the custom authentication flow."
+  },
+  "PostAuthentication": {
+    "name": "Post Authentication",
+    "description": "This trigger is invoked after a user is authenticated, allowing you to add custom logic, for example for analytics."
+  },
+  "PostConfirmation": {
+    "name": "Post Confirmation",
+    "description": "This trigger is invoked after a user is confirmed, allowing you to send custom messages or to add custom logic, for example for analytics."
+  },
+  "PreAuthentication": {
+    "name": "Pre Authentication",
+    "description": "This trigger is invoked when a user submits their information to be authenticated, allowing you to perform custom validations to accept or deny the sign in request."
+  },
+  "PreSignup": {
+    "name": "Pre Sign-up",
+    "description": "This trigger is invoked when a user submits their information to sign up, allowing you to perform custom validation to accept or deny the sign up request."
+  },
+  "VerifyAuthChallengeResponse": {
+    "name": "Pre Token Generation",
+    "description": "This trigger is invoked before the token generation, allowing you to customize the claims in the identity token."
+  }
+}

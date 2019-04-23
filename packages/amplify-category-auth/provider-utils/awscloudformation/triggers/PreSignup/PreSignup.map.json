@@ -2,5 +2,9 @@
   "autoconfirm": {
     "name": "Auto confirm all users",
     "description": "This template confirms all users and sets the user's email and phone_number attributes to verified if the attribute is present. Also, if aliasing is enabled, aliases will be created for phone_number and email when auto-verify is set."
+  },
+  "autoconfirm-domain": {
+    "name": "Auto confirm all users from registered domain",
+    "description": "This template auto-confirms users from a registered domain."
   }
 }

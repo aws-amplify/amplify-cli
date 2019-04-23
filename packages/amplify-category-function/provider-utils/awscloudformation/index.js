@@ -27,17 +27,17 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     copyJobs.push(...[
       {
         dir: pluginDir,
-        template: `function-template-dir/triggers/${options.triggerResource}/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-index.js`,
+        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-index.js`,
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
       },
       {
         dir: pluginDir,
-        template: `function-template-dir/triggers/${options.triggerResource}/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-event.json`,
+        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-event.json`,
         target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
       },
       {
         dir: pluginDir,
-        template: 'function-template-dir/triggers/package.json.ejs',
+        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/package.json.ejs`,
         target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
       },
     ]);
