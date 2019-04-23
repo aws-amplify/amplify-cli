@@ -1,4 +1,6 @@
+/* eslint-disable */
 const aws = require('aws-sdk');
+
 const ses = new aws.SES();
 
 exports.handler = (event, context, callback) => {
