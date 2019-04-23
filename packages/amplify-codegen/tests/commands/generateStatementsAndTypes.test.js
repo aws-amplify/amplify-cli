@@ -9,6 +9,7 @@ const path = require('path');
 const {
   downloadIntrospectionSchemaWithProgress,
   isAppSyncApiPendingPush,
+  getAppSyncAPIDetails,
 } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
@@ -40,11 +41,15 @@ const MOCK_PROJECT = {
   amplifyExtension: {
     generatedFileName: MOCK_GENERATED_FILE_NAME,
     codeGenTarget: MOCK_TARGET,
-    graphQLApiId: MOCK_API_ID,
     docsFilePath: MOCK_STATEMENTS_PATH,
     region: MOCK_REGION,
   },
 };
+const MOCK_APIS = [
+  {
+    id: MOCK_API_ID,
+  },
+];
 
 describe('command - generateStatementsAndTypes', () => {
   beforeEach(() => {
@@ -54,6 +59,7 @@ describe('command - generateStatementsAndTypes', () => {
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
     MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
+    getAppSyncAPIDetails.mockReturnValue(MOCK_APIS);
   });
 
   it('should generate statements and types', async () => {
