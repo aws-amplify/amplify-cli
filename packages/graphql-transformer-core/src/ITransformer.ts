@@ -1,60 +1,26 @@
-import TransformerContext from './TransformerContext'
-import ITransformer from './ITransformer'
 import {
-    DirectiveDefinitionNode,
-    parse,
     DirectiveNode,
     ObjectTypeDefinitionNode,
     InterfaceTypeDefinitionNode,
     FieldDefinitionNode,
     UnionTypeDefinitionNode,
-    Kind,
     EnumTypeDefinitionNode,
     ScalarTypeDefinitionNode,
     InputObjectTypeDefinitionNode,
     InputValueDefinitionNode,
     EnumValueDefinitionNode,
-    TypeDefinitionNode,
-    DefinitionNode,
-    DocumentNode
+    DirectiveDefinitionNode,
+    TypeDefinitionNode
 } from 'graphql'
-import { InvalidTransformerError } from './errors'
+import TransformerContext from './TransformerContext'
 
-/**
- * A GraphQLTransformer takes a context object, processes it, and
- * returns a new context. The transformer is responsible for returning
- * a context that fully describes the infrastructure requirements
- * for its stage of the transformation.
- */
-export default class Transformer implements ITransformer {
+export default interface ITransformer {
 
-    public name: string
+    name: string
 
-    public directive: DirectiveDefinitionNode
+    directive: DirectiveDefinitionNode
 
-    public typeDefinitions: TypeDefinitionNode[]
-
-    /**
-     * Each transformer has a name.
-     *
-     * Each transformer defines a set of directives that it knows how to translate.
-     */
-    constructor(
-        name: string,
-        document: DocumentNode
-    ) {
-        this.name = name
-        const directives = document.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[]
-        const extraDefs = document.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[]
-        if (directives.length !== 1) {
-            throw new InvalidTransformerError('Transformers must specify exactly one directive definition.')
-        }
-        this.directive = directives[0]
-
-        // Transformers can define extra shapes that can be used by the directive
-        // and validated. TODO: Validation.
-        this.typeDefinitions = extraDefs
-    }
+    typeDefinitions: TypeDefinitionNode[]
 
     /**
      * An initializer that is called once at the beginning of a transformation.

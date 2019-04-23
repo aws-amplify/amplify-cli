@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
@@ -82,7 +82,7 @@ export class ModelAuthTransformer extends Transformer {
     constructor(config?: ModelAuthTransformerConfig) {
         super(
             'ModelAuthTransformer',
-            `
+            gql`
             directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
             input AuthRule {
                 # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
@@ -413,7 +413,7 @@ Static group authorization should perform as expected.`
                     operationRules.delete.push(rule)
                 }
             } else {
-                // If operations is not provided, either use the default behavior or deprecated 
+                // If operations is not provided, either use the default behavior or deprecated
                 // behavior from the queries/mutations arguments for backwards compatibility.
 
                 // Handle default or deprecated query use case

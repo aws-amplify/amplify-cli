@@ -10,6 +10,7 @@ import { DeploymentResources } from './DeploymentResources'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
+import ITransformer from './ITransformer'
 import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors'
 import { validateModelSchema } from './validation'
 import { TransformFormatter } from './TransformFormatter';
@@ -161,7 +162,7 @@ type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
  * is emitted.
  */
 export interface GraphQLTransformOptions {
-    transformers: Transformer[],
+    transformers: ITransformer[],
     // Override the formatter's stack mapping. This is useful when handling
     // migrations as all the input/export/ref/getatt changes will be made
     // automatically.
@@ -170,7 +171,7 @@ export interface GraphQLTransformOptions {
 export type StackMappingOption = { [regexStr: string]: string };
 export default class GraphQLTransform {
 
-    private transformers: Transformer[]
+    private transformers: ITransformer[]
     private stackMappingOverrides: StackMappingOption;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
