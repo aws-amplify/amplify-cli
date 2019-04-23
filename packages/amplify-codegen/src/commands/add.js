@@ -80,13 +80,11 @@ async function add(context, apiId = null) {
     excludes: answer.excludePattern,
     schema,
     amplifyExtension: {
-      graphQLApiId: apiDetails.id,
       codeGenTarget: answer.target || '',
       generatedFileName: answer.generatedFileName || '',
       docsFilePath: answer.docsFilePath,
       region,
     },
-    endpoint: apiDetails.endpoint,
   };
 
   if (answer.maxDepth) {

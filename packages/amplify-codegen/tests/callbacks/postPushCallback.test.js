@@ -66,10 +66,8 @@ describe('Callback - Post Push update AppSync API', () => {
       ...MOCK_GRAPHQL_CONFIG.gqlConfig,
       amplifyExtension: {
         ...MOCK_GRAPHQL_CONFIG.gqlConfig.amplifyExtension,
-        graphQLApiId: MOCK_API_ID,
       },
       schema: MOCK_SCHEMA_DOWNLOAD_PATH,
-      endpoint: MOCK_API_ENDPOINT,
     });
   });
 
