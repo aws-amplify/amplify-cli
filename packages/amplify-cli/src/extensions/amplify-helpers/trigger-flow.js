@@ -76,12 +76,7 @@ const choicesFromMetadata = (path, selection) => {
 
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
 
-  const options = configuredOptions.map((c) => {
-    return {
-      name: `${metaData[c].name}`,
-      value: c,
-    };
-  });
+  const options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
   options.unshift(new inquirer.Separator());
   options.unshift({ name: 'Learn More', value: 'learn' });
   return options;
@@ -109,7 +104,7 @@ const createTrigger = async (category, triggers, context, resourceName) => {
         triggerCategory: keys[t],
         functionTemplate: values[t],
       };
-      const res = await add(context, 'awscloudformation', 'Lambda');
+      await add(context, 'awscloudformation', 'Lambda');
       context.print.success('Succesfully added the Lambda function locally');
       triggerKeyValues[keys[t]] = `${resourceName}${keys[t]}`;
       // add(context, 'awscloudformation', 'Lambda')
