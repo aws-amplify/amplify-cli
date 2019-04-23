@@ -8,6 +8,7 @@ const { mergeTypes } = require('merge-graphql-schemas');
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
 const category = 'api';
+const providerName = 'awscloudformation';
 const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-datasources.json`));
 
 const rdsRegion = 'rdsRegion';
@@ -25,6 +26,7 @@ module.exports = {
     let resourceName;
     let datasource;
     let databaseName;
+    const AWS = await getAwsClient(context, 'list');
     return datasourceSelectionPrompt(context, servicesMetadata)
       .then((result) => {
         datasource = result.datasource; // eslint-disable-line prefer-destructuring
@@ -79,11 +81,12 @@ module.exports = {
 
         fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 
+
         /**
          * Load the MySqlRelationalDBReader
          */
         // eslint-disable-next-line max-len
-        const dbReader = new AuroraServerlessMySQLDatabaseReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName);
+        const dbReader = new AuroraServerlessMySQLDatabaseReader(answers.region, answers.secretStoreArn, answers.dbClusterArn, answers.databaseName, AWS);
 
 
         /**
@@ -191,4 +194,10 @@ function datasourceSelectionPrompt(context, supportedDatasources) {
 
   return inquirer.prompt(question)
     .then(answer => answer.datasource);
+}
+
+async function getAwsClient(context, action) {
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
+  return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
 }

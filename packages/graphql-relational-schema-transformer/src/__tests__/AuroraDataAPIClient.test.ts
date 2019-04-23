@@ -69,7 +69,10 @@ test('Test list tables', async () => {
          throw new Error('Incorrect SQL given.')
       })
    }))
-   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName)
+
+   const aws = require('aws-sdk')
+
+   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws)
    const mockRDS = new MockRDSClient()
    testClient.setRDSClient(mockRDS)
 
@@ -147,7 +150,9 @@ test('Test foreign key lookup', async() => {
          throw new Error('Incorrect SQL given.')
       })
    }))
-   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName)
+
+   const aws = require('aws-sdk')
+   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws)
    const mockRDS = new MockRDSClient()
    testClient.setRDSClient(mockRDS)
 
@@ -478,7 +483,9 @@ test('Test describe table', async() => {
          throw new Error('Incorrect SQL given.')
       })
    }))
-   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName)
+
+   const aws = require('aws-sdk')
+   const testClient = new AuroraDataAPIClient(region, secretStoreArn, clusterArn, databaseName, aws)
    const mockRDS = new MockRDSClient()
    testClient.setRDSClient(mockRDS)
 

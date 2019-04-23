@@ -1,10 +1,10 @@
 const inquirer = require('inquirer');
-const AWS = require('aws-sdk');
 const ora = require('ora');
 const { DataApiParams } = require('graphql-relational-schema-transformer');
 
 const spinner = ora('');
 const category = 'api';
+const providerName = 'awscloudformation';
 
 async function serviceWalkthrough(context, defaultValuesFilename, datasourceMetadata) {
   const amplifyMeta = context.amplify.getProjectMeta();
@@ -37,19 +37,21 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
   // Region Question
   const selectedRegion = await promptWalkthroughQuestion(inputs, 0, availableRegions);
 
+  const AWS = await getAwsClient(context, 'list');
+
   // Prepare the SDK with the region
   AWS.config.update({
     region: selectedRegion,
   });
 
   // RDS Cluster Question
-  const { selectedClusterArn, clusterResourceId } = await selectCluster(inputs);
+  const { selectedClusterArn, clusterResourceId } = await selectCluster(inputs, AWS);
 
   // Secret Store Question
-  const selectedSecretArn = await getSecretStoreArn(inputs, clusterResourceId);
+  const selectedSecretArn = await getSecretStoreArn(inputs, clusterResourceId, AWS);
 
   // Database Name Question
-  const selectedDatabase = await selectDatabase(inputs, selectedClusterArn, selectedSecretArn);
+  const selectedDatabase = await selectDatabase(inputs, selectedClusterArn, selectedSecretArn, AWS);
 
   return {
     region: selectedRegion,
@@ -64,7 +66,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
  *
  * @param {*} inputs
  */
-async function selectCluster(inputs) {
+async function selectCluster(inputs, AWS) {
   const RDS = new AWS.RDS();
 
   const describeDBClustersResult = await RDS.describeDBClusters().promise();
@@ -91,13 +93,25 @@ async function selectCluster(inputs) {
  * @param {*} inputs
  * @param {*} clusterResourceId
  */
-async function getSecretStoreArn(inputs, clusterResourceId) {
+async function getSecretStoreArn(inputs, clusterResourceId, AWS) {
   const SecretsManager = new AWS.SecretsManager();
+  const NextToken = 'NextToken';
+  let rawSecrets = [];
+  const params = {
+    MaxResults: 20,
+  };
 
-  const listSecretsResult = await SecretsManager.listSecrets().promise();
-  const rawSecrets = listSecretsResult.SecretList;
+  const listSecretsResult = await SecretsManager.listSecrets(params).promise();
+  rawSecrets = listSecretsResult.SecretList;
+  let token = listSecretsResult.NextToken;
+  while (token) {
+    params[NextToken] = token;
+    const tempSecretsResult = await SecretsManager.listSecrets(params).promise();
+    rawSecrets = [...rawSecrets, ...tempSecretsResult.SecretList];
+    token = tempSecretsResult.NextToken;
+  }
+
   const secrets = new Map();
-
   let selectedSecretArn;
 
   for (let i = 0; i < rawSecrets.length; i += 1) {
@@ -129,7 +143,7 @@ async function getSecretStoreArn(inputs, clusterResourceId) {
  * @param {*} clusterArn
  * @param {*} secretArn
  */
-async function selectDatabase(inputs, clusterArn, secretArn) {
+async function selectDatabase(inputs, clusterArn, secretArn, AWS) {
   // Database Name Question
   const DataApi = new AWS.RDSDataService();
   const params = new DataApiParams();
@@ -176,6 +190,12 @@ async function promptWalkthroughQuestion(inputs, questionNumber, choicesList) {
 
   const answer = await inquirer.prompt(question);
   return answer[inputs[questionNumber].key];
+}
+
+async function getAwsClient(context, action) {
+  const providerPlugins = context.amplify.getProviderPlugins(context);
+  const provider = require(providerPlugins[providerName]);
+  return await provider.getConfiguredAWSClient(context, 'aurora-serverless', action);
 }
 
 module.exports = {
