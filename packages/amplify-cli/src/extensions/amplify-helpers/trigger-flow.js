@@ -5,78 +5,109 @@ const { readdirSync, readFileSync, statSync } = require('fs');
 const { join } = require('path');
 
 const triggerFlow = async (resource, category) => {
+  // handle missing params
+  if (!resource) throw new Error('No resource provided to trigger question flow');
+  if (!category) throw new Error('No resource provided to trigger question flow');
+
+  // instantiate response array
+  const res = [];
+
+  // make sure resource is capitalized
+  const resourceName = `${resource.charAt(0).toUpperCase()}${resource.slice(1)}`;
+
+  // ask user if they want to manually configure triggers
   const wantTriggers = await inquirer.prompt({
     name: 'confirmation',
     type: 'confirm',
-    message: `Do you want to implement Lambda Triggers for ${resource}?`,
+    message: `Do you want to implement Lambda Triggers for ${resourceName}?`,
   });
 
+  // if user does not want to manually configure triggers, return null
   if (!wantTriggers.confirmation) {
     return null;
   }
 
-  const res = [];
-
-  if (!resource) throw new Error('No resource provided to trigger question flow');
-
+  // path to trigger directory in category
   const triggerPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/`;
 
+  // get available triggers
   const triggerOptions = choicesFromMetadata(triggerPath, resource);
+
+  // instantiate trigger question
   const triggerQuestion = {
     name: 'triggers',
     type: 'checkbox',
-    message: `Which triggers do you want to enable for ${resource}`,
+    message: `Which triggers do you want to enable for ${resourceName}`,
     choices: triggerOptions,
   };
 
-  let askTriggers = await inquirer.prompt(triggerQuestion);
+  // get trigger metadata
+  const triggerMeta = getMetadata(triggerPath, resource);
 
-  while (askTriggers.triggers.includes('learn')) {
-    let prefix = `\nThe following triggers are available in ${resource}\n`;
-    const metaData = getMetadata(triggerPath, resource);
-    Object.values(metaData).forEach((m) => {
-      prefix = prefix.concat('\n');
-      prefix = prefix.concat(`${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`);
-      prefix = prefix.concat('\n');
-    });
-    triggerQuestion.prefix = prefix;
-    askTriggers = await inquirer.prompt(triggerQuestion);
-  }
+  // ask triggers question via learn more loop
+  const askTriggers = await learnMoreLoop('triggers', resourceName, triggerMeta, triggerQuestion);
 
-  const learnIndex = askTriggers.triggers.indexOf('learn');
-  if (learnIndex !== -1) {
-    askTriggers.triggers.splice(learnIndex, 1);
-  }
-
+  // instantiate triggerObj
   const triggerObj = {};
 
+  // loop through triggers that user selected,
+  // and ask which templates they want using template metadata and learn more loop
   for (let i = 0; i < askTriggers.triggers.length; i++) {
     const optionsPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${askTriggers.triggers[i]}`;
 
     const templateOptions = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
+    const templateMeta = getMetadata(optionsPath, askTriggers.triggers[i]);
+    const readableTrigger = triggerMeta[askTriggers.triggers[i]].name;
 
-    const askTemplates = await inquirer.prompt({
-      name: 'template',
+    const templateQuestion = {
+      name: 'templates',
       type: 'list',
-      message: `Which templates do you want to use for ${resource}`,
+      message: `Which templates do you want to use for ${readableTrigger}`,
       choices: templateOptions,
-    });
-    triggerObj[`${askTriggers.triggers[i]}`] = askTemplates.template;
+    };
+    const askTemplates = await learnMoreLoop('templates', readableTrigger, templateMeta, templateQuestion);
+    triggerObj[`${askTriggers.triggers[i]}`] = askTemplates.templates;
     res.push(triggerObj);
   }
 
   return res;
 };
 
+// learn more question loop
+const learnMoreLoop = async (key, map, metaData, question) => {
+  let selections = await inquirer.prompt(question);
+
+  while (
+    // handle answers that are strings or arrays
+    (Array.isArray(selections[key]) && selections[key].includes('learn')) ||
+    selections[key] === 'learn'
+  ) {
+    let prefix;
+    if (metaData.URL) {
+      prefix = `\nAdditional information about the ${key} available for ${map} can be found here: ${chalkpipe(null, chalk.blue.underline)(metaData.URL)}\n`;
+      prefix = prefix.concat('\n');
+    } else {
+      prefix = `\nThe following ${key} are available in ${map}\n`;
+      Object.values(metaData).forEach((m) => {
+        prefix = prefix.concat('\n');
+        prefix = prefix.concat(`${chalkpipe(null, chalk.green)('\nName:')} ${m.name}${chalkpipe(null, chalk.green)('\nDescription:')} ${m.description}\n`);
+        prefix = prefix.concat('\n');
+      });
+    }
+    question.prefix = prefix;
+    selections = await inquirer.prompt(question);
+  }
+  return selections;
+};
+
+// extract question choices from metadata
 const choicesFromMetadata = (path, selection) => {
   const templates = readdirSync(path)
     .filter(f => statSync(join(path, f)).isDirectory());
-
   const metaData = getMetadata(path, selection);
-
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
-
   const options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
+  // add learn more w/ seperator
   options.unshift(new inquirer.Separator());
   options.unshift({ name: 'Learn More', value: 'learn' });
   return options;
@@ -84,6 +115,7 @@ const choicesFromMetadata = (path, selection) => {
 
 const getMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
 
+// create triggers via lambda category
 const createTrigger = async (category, triggers, context, resourceName) => {
   const triggerKeyValues = {};
   if (triggers) {
@@ -107,11 +139,6 @@ const createTrigger = async (category, triggers, context, resourceName) => {
       await add(context, 'awscloudformation', 'Lambda');
       context.print.success('Succesfully added the Lambda function locally');
       triggerKeyValues[keys[t]] = `${resourceName}${keys[t]}`;
-      // add(context, 'awscloudformation', 'Lambda')
-      //   .then(() => {
-      //     context.print.success('Succesfully added the Lambda function locally');
-      //     triggerKeyValues[keys[t]] = `${resourceName}-${keys[t]}`;
-      //   });
     }
   }
   return triggerKeyValues;

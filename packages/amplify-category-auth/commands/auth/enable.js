@@ -32,7 +32,7 @@ module.exports = {
         return providerController.addResource(context, category, result.service);
       })
       .then((resourceName) => {
-        if (context.amplify.auth.dependsOn) {
+        if (context.amplify.auth && context.amplify.auth.dependsOn) {
           options.dependsOn = context.amplify.auth.dependsOn;
         }
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
