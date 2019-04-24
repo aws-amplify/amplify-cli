@@ -47,9 +47,12 @@ beforeAll(async () => {
     type Query {
         echo(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
         echoEnv(msg: String!): Context @function(name: "e2e-tests-echo-\${env}-${BUILD_TIMESTAMP}")
+        duplicate(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
     }
     type Context {
         arguments: Arguments
+        typeName: String
+        fieldName: String
     }
     type Arguments {
         msg: String!
@@ -135,22 +138,46 @@ test('Test simple echo function', async () => {
             arguments {
                 msg
             }
+            typeName
+            fieldName
         }
     }`, {})
     console.log(JSON.stringify(response, null, 4));
     expect(response.data.echo.arguments.msg).toEqual("Hello")
+    expect(response.data.echo.typeName).toEqual("Query")
+    expect(response.data.echo.fieldName).toEqual("echo")
 })
 
-test('Test simple echo function', async () => {
+test('Test simple echoEnv function', async () => {
     const response = await GRAPHQL_CLIENT.query(`query {
         echoEnv(msg: "Hello") {
             arguments {
                 msg
             }
+            typeName
+            fieldName
         }
     }`, {})
     console.log(JSON.stringify(response, null, 4));
     expect(response.data.echoEnv.arguments.msg).toEqual("Hello")
+    expect(response.data.echoEnv.typeName).toEqual("Query")
+    expect(response.data.echoEnv.fieldName).toEqual("echoEnv")
+})
+
+test('Test simple duplicate function', async () => {
+    const response = await GRAPHQL_CLIENT.query(`query {
+        duplicate(msg: "Hello") {
+            arguments {
+                msg
+            }
+            typeName
+            fieldName
+        }
+    }`, {})
+    console.log(JSON.stringify(response, null, 4));
+    expect(response.data.duplicate.arguments.msg).toEqual("Hello")
+    expect(response.data.duplicate.typeName).toEqual("Query")
+    expect(response.data.duplicate.fieldName).toEqual("duplicate")
 })
 
 function wait(ms: number) {

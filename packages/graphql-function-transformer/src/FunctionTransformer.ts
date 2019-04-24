@@ -1,9 +1,10 @@
 import { 
     Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError
 } from 'graphql-transformer-core';
+import { obj, str, ref, printBlock, compoundExpression, qref } from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
-import { AppSync, IAM, Fn } from 'cloudform-types'
+import { AppSync, IAM, Fn, IntrinsicFunction } from 'cloudform-types'
 import { lambdaArnResource } from './lambdaArns';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
@@ -13,7 +14,7 @@ export default class FunctionTransformer extends Transformer {
     constructor() {
         super(
             'FunctionTransformer', 
-            gql`directive @function(name: String!, region: String!) on FIELD_DEFINITION`
+            gql`directive @function(name: String!, region: String) on FIELD_DEFINITION`
         )
     }
 
@@ -51,10 +52,15 @@ export default class FunctionTransformer extends Transformer {
         const typeName = parent.name.value;
         const fieldName = definition.name.value;
         const resolverKey = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
-        if (!ctx.getResource(resolverKey)) {
+        const resolver = ctx.getResource(resolverKey);
+        if (!resolver) {
             ctx.setResource(resolverKey, this.resolver(typeName, fieldName, name, region));
             ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, resolverKey);
         }
+        // Uncomment to enable pipeline function support.
+        // else if (resolver.Properties.Kind === 'PIPELINE') {
+        //     ctx.setResource(resolverKey, this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)))
+        // }
     };
 
     /**
@@ -124,12 +130,20 @@ export default class FunctionTransformer extends Transformer {
             Name: FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region),
             DataSourceName: FunctionResourceIDs.FunctionDataSourceID(name, region),
             FunctionVersion: "2018-05-29",
-            RequestMappingTemplate: `{
-                "version": "2018-05-29",
-                "operation": "Invoke",
-                "payload": $utils.toJson($ctx)
-            }`,
-            ResponseMappingTemplate: `$util.toJson($ctx.result)`
+            RequestMappingTemplate: printBlock(`Invoke AWS Lambda data source: ${FunctionResourceIDs.FunctionDataSourceID(name, region)}`)(obj({
+                version: str('2018-05-29'),
+                operation: str('Invoke'),
+                payload: obj({
+                    typeName: str('$ctx.stash.get("typeName")'),
+                    fieldName: str('$ctx.stash.get("fieldName")'),
+                    arguments: ref('util.toJson($ctx.arguments)'),
+                    identity: ref('util.toJson($ctx.identity)'),
+                    source: ref('util.toJson($ctx.source)'),
+                    request: ref('util.toJson($ctx.request)'),
+                    prev: ref('util.toJson($ctx.prev)'),
+                })
+            })),
+            ResponseMappingTemplate: '$util.toJson($ctx.result)'
         }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region))
     }
 
@@ -147,8 +161,25 @@ export default class FunctionTransformer extends Transformer {
                     Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region), "FunctionId")
                 ]
             },
-            RequestMappingTemplate: '{}',
+            RequestMappingTemplate: printBlock('Stash resolver specific context.')(compoundExpression([
+                qref(`$ctx.stash.put("typeName", "${type}")`),
+                qref(`$ctx.stash.put("fieldName", "${field}")`),
+                obj({})
+            ])),
             ResponseMappingTemplate: '$util.toJson($ctx.prev.result)'
         }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region))
+    }
+
+    appendFunctionToResolver(resolver: any, functionId: string) {
+        if (
+            resolver.Properties.PipelineConfig && 
+            resolver.Properties.PipelineConfig.Functions && 
+            Array.isArray(resolver.Properties.PipelineConfig.Functions)
+        ) {
+            resolver.Properties.PipelineConfig.Functions.push(
+                Fn.GetAtt(functionId, "FunctionId")
+            );
+        }
+        return resolver;
     }
 }
