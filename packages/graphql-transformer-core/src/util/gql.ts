@@ -5,6 +5,7 @@ export function gql(literals: TemplateStringsArray, ...placeholders: string[]) {
         interleaved.push(literals[i]);
         interleaved.push(placeholders[i]);
     }
-    interleaved.push(literals.length - 1);
-    return parse(interleaved.join(''));
+    interleaved.push(literals[literals.length - 1]);
+    const actualSchema = interleaved.join('');
+    return parse(actualSchema);
 }
