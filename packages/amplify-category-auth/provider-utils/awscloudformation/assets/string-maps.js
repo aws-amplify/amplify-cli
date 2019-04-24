@@ -123,7 +123,7 @@ const attributeProviderMap = {
   address: {
     facebook: {
       attr: 'address',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {},
     loginwithamazon: {},
@@ -156,7 +156,7 @@ const attributeProviderMap = {
   family_name: {
     facebook: {
       attr: 'last_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'family_name',
@@ -167,7 +167,7 @@ const attributeProviderMap = {
   gender: {
     facebook: {
       attr: 'gender',
-      scope: 'user_gender',
+      scope: 'public_profile',
     },
     google: {
       attr: 'genders',
@@ -178,7 +178,7 @@ const attributeProviderMap = {
   given_name: {
     facebook: {
       attr: 'given_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'given_name',
@@ -189,7 +189,7 @@ const attributeProviderMap = {
   locale: {
     facebook: {
       attr: 'location',
-      scope: 'user_location',
+      scope: 'public_profile',
     },
     google: {},
     loginwithamazon: {
@@ -200,7 +200,7 @@ const attributeProviderMap = {
   middle_name: {
     facebook: {
       attr: 'middle_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {},
     loginwithamazon: {},
@@ -208,7 +208,7 @@ const attributeProviderMap = {
   name: {
     facebook: {
       attr: 'name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'name',
@@ -235,7 +235,7 @@ const attributeProviderMap = {
   picture: {
     facebook: {
       attr: 'picture',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'picture',
@@ -266,7 +266,7 @@ const attributeProviderMap = {
   username: {
     facebook: {
       attr: 'id',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'sub',
@@ -276,6 +276,11 @@ const attributeProviderMap = {
       attr: 'user_id',
       scope: 'profile:user_id',
     },
+  },
+  updated_at: {
+    facebook: {},
+    google: {},
+    loginwithamazon: {},
   },
 };
 
