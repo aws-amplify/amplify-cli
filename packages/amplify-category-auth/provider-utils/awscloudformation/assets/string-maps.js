@@ -121,17 +121,14 @@ const authSelectionMap = [
 
 const attributeProviderMap = {
   address: {
-    facebook: {
-      attr: 'address',
-      scope: 'public_profile',
-    },
+    facebook: {},
     google: {},
     loginwithamazon: {},
   },
   birthdate: {
     facebook: {
       attr: 'birthday',
-      scope: 'user_birthday',
+      scope: 'public_profile',
     },
     google: {
       attr: 'birthdays',
@@ -187,10 +184,7 @@ const attributeProviderMap = {
     loginwithamazon: {},
   },
   locale: {
-    facebook: {
-      attr: 'location',
-      scope: 'public_profile',
-    },
+    facebook: {},
     google: {},
     loginwithamazon: {
       attr: 'postal_code',
@@ -278,7 +272,10 @@ const attributeProviderMap = {
     },
   },
   updated_at: {
-    facebook: {},
+    facebook: {
+      attr: 'updated_at',
+      scope: 'public_profile',
+    },
     google: {},
     loginwithamazon: {},
   },
