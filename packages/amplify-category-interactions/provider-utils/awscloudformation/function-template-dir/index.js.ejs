@@ -147,7 +147,7 @@ exports.handler = function(event, context) {
         <% } %>
     };
     
-    return checkAndCreateLexServiceRole()
+    checkAndCreateLexServiceRole()
     .then(()=>{ return getSlotTypes(newSlotTypeParams);})
     .then(()=>{ return putSlotTypes(newSlotTypeParams);})
     .then(()=>{ return getIntents(intentParams);})
