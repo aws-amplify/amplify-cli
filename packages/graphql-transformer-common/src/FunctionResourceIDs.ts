@@ -1,8 +1,9 @@
-import { graphqlName } from './util';
+import { simplifyName } from './util';
 
 export class FunctionResourceIDs {
+
     static FunctionDataSourceID(name: string, region?: string): string {
-        return `${graphqlName(name)}${graphqlName(region || '')}LambdaDataSource`
+        return `${simplifyName(name)}${simplifyName(region || '')}LambdaDataSource`
     }
 
     static FunctionIAMRoleID(name: string, region?: string): string {

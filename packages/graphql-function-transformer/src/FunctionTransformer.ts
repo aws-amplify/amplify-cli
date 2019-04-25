@@ -4,7 +4,7 @@ import {
 import { obj, str, ref, printBlock, compoundExpression, qref } from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
-import { AppSync, IAM, Fn, IntrinsicFunction } from 'cloudform-types'
+import { AppSync, IAM, Fn } from 'cloudform-types'
 import { lambdaArnResource } from './lambdaArns';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
@@ -56,11 +56,9 @@ export default class FunctionTransformer extends Transformer {
         if (!resolver) {
             ctx.setResource(resolverKey, this.resolver(typeName, fieldName, name, region));
             ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, resolverKey);
+        } else if (resolver.Properties.Kind === 'PIPELINE') {
+            ctx.setResource(resolverKey, this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)))
         }
-        // Uncomment to enable pipeline function support.
-        // else if (resolver.Properties.Kind === 'PIPELINE') {
-        //     ctx.setResource(resolverKey, this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)))
-        // }
     };
 
     /**
@@ -97,7 +95,7 @@ export default class FunctionTransformer extends Transformer {
                     Statement: [{
                         Effect: "Allow",
                         Action: [
-                            "lambda:invokefunction"
+                            "lambda:InvokeFunction"
                         ],
                         Resource: [lambdaArnResource(name, region)]
                     }]
@@ -171,6 +169,7 @@ export default class FunctionTransformer extends Transformer {
     }
 
     appendFunctionToResolver(resolver: any, functionId: string) {
+        console.log(`Appending function to pipeline.`);
         if (
             resolver.Properties.PipelineConfig && 
             resolver.Properties.PipelineConfig.Functions && 

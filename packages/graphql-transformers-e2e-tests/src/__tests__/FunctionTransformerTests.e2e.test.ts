@@ -25,7 +25,8 @@ const STACK_NAME = `FunctionTransformerTests-${BUILD_TIMESTAMP}`
 const BUCKET_NAME = `appsync-function-transformer-test-bucket-${BUILD_TIMESTAMP}`
 const LOCAL_FS_BUILD_DIR = '/tmp/function_transformer_tests/'
 const S3_ROOT_DIR_KEY = 'deployments'
-const TEST_FUNCTION_NAME = `e2e-tests-echo-dev-${BUILD_TIMESTAMP}`
+const ECHO_FUNCTION_NAME = `e2e-tests-echo-dev-${BUILD_TIMESTAMP}`
+const HELLO_FUNCTION_NAME = `e2e-tests-hello-${BUILD_TIMESTAMP}`
 const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_${BUILD_TIMESTAMP}`
 const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_${BUILD_TIMESTAMP}`
 let LAMBDA_EXECUTION_POLICY_ARN = '';
@@ -48,6 +49,12 @@ beforeAll(async () => {
         echo(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
         echoEnv(msg: String!): Context @function(name: "e2e-tests-echo-\${env}-${BUILD_TIMESTAMP}")
         duplicate(msg: String!): Context @function(name: "e2e-tests-echo-dev-${BUILD_TIMESTAMP}")
+        pipeline(msg: String!): String
+            @function(name: "${ECHO_FUNCTION_NAME}")
+            @function(name: "${HELLO_FUNCTION_NAME}")
+        pipelineReverse(msg: String!): Context
+            @function(name: "${HELLO_FUNCTION_NAME}")
+            @function(name: "${ECHO_FUNCTION_NAME}")
     }
     type Context {
         arguments: Arguments
@@ -69,7 +76,8 @@ beforeAll(async () => {
         LAMBDA_EXECUTION_POLICY_ARN = policy.Policy.Arn;
         await IAM_HELPER.attachLambdaExecutionPolicy(policy.Policy.Arn, role.Role.RoleName)
         await wait(10000);
-        await LAMBDA_HELPER.createFunction(TEST_FUNCTION_NAME, role.Role.Arn);
+        await LAMBDA_HELPER.createFunction(ECHO_FUNCTION_NAME, role.Role.Arn, 'echoFunction');
+        await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
     } catch (e) { console.warn(`Could not setup function: ${e}`) }
     const transformer = new GraphQLTransform({
         transformers: [
@@ -116,7 +124,10 @@ afterAll(async () => {
         await emptyBucket(BUCKET_NAME);
     } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
     try {
-        await LAMBDA_HELPER.deleteFunction(TEST_FUNCTION_NAME);
+        await LAMBDA_HELPER.deleteFunction(ECHO_FUNCTION_NAME);
+    } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
+    try {
+        await LAMBDA_HELPER.deleteFunction(HELLO_FUNCTION_NAME);
     } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
     try {
         await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME)
@@ -178,6 +189,30 @@ test('Test simple duplicate function', async () => {
     expect(response.data.duplicate.arguments.msg).toEqual("Hello")
     expect(response.data.duplicate.typeName).toEqual("Query")
     expect(response.data.duplicate.fieldName).toEqual("duplicate")
+})
+
+test('Test pipeline of @function(s)', async () => {
+    const response = await GRAPHQL_CLIENT.query(`query {
+        pipeline(msg: "IGNORED")
+    }`, {})
+    console.log(JSON.stringify(response, null, 4));
+    expect(response.data.pipeline).toEqual("Hello, world!")
+})
+
+test('Test pipelineReverse of @function(s)', async () => {
+    const response = await GRAPHQL_CLIENT.query(`query {
+        pipelineReverse(msg: "Hello") {
+            arguments {
+                msg
+            }
+            typeName
+            fieldName
+        }
+    }`, {})
+    console.log(JSON.stringify(response, null, 4));
+    expect(response.data.pipelineReverse.arguments.msg).toEqual("Hello")
+    expect(response.data.pipelineReverse.typeName).toEqual("Query")
+    expect(response.data.pipelineReverse.fieldName).toEqual("pipelineReverse")
 })
 
 function wait(ms: number) {
