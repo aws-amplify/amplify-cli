@@ -75,7 +75,7 @@ test('two @function directives for the same lambda should produce a single datas
     expect(out.stacks.FunctionDirectiveStack.Resources.QuerymagicResolver).toBeDefined()
 })
 
-test('two @function directives for the same field should throw SchemaValidationError', () => {
+test('two @function directives for the same field should be valid', () => {
     const validSchema = `
     type Query {
         echo(msg: String): String @function(name: "echofunction-\${env}") @function(name: "otherfunction")
