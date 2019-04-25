@@ -393,15 +393,23 @@ function writeDeploymentToDisk(deployment: DeploymentResources, directory: strin
 
     // Write resolvers to disk
     const resolverFileNames = Object.keys(deployment.resolvers);
-    const resolverRootPath = path.normalize(directory + `/resolvers`)
+    const resolverRootPath = resolverDirectoryPath(directory)
     for (const resolverFileName of resolverFileNames) {
         const fullResolverPath = path.normalize(resolverRootPath + '/' + resolverFileName);
         fs.writeFileSync(fullResolverPath, deployment.resolvers[resolverFileName]);
     }
 
+    // Write pipeline resolvers to disk
+    const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
+    const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory)
+    for (const functionFileName of pipelineFunctions) {
+        const fullTemplatePath = path.normalize(pipelineFunctionRootPath + '/' + functionFileName);
+        fs.writeFileSync(fullTemplatePath, deployment.pipelineFunctions[functionFileName]);
+    }
+
     // Write the stacks to disk
     const stackNames = Object.keys(deployment.stacks);
-    const stackRootPath = path.normalize(directory + `/stacks`)
+    const stackRootPath = stacksDirectoryPath(directory)
     for (const stackFileName of stackNames) {
         const fileNameParts = stackFileName.split('.');
         if (fileNameParts.length === 1) {
@@ -853,14 +861,30 @@ async function updateToIntermediateProject(projectDirectory: string, project: Am
 }
 
 function initStacksAndResolversDirectories(directory: string) {
-    const resolverRootPath = path.normalize(directory + `/resolvers`)
+    const resolverRootPath = resolverDirectoryPath(directory)
     if (!fs.existsSync(resolverRootPath)) {
         fs.mkdirSync(resolverRootPath);
     }
-    const stackRootPath = path.normalize(directory + `/stacks`)
+    const pipelineFunctionRootPath = pipelineFunctionDirectoryPath(directory);
+    if (!fs.existsSync(pipelineFunctionRootPath)) {
+        fs.mkdirSync(pipelineFunctionRootPath);
+    }
+    const stackRootPath = stacksDirectoryPath(directory)
     if (!fs.existsSync(stackRootPath)) {
         fs.mkdirSync(stackRootPath);
     }
+}
+
+function pipelineFunctionDirectoryPath(rootPath: string) {
+    return path.normalize(rootPath + `/pipelineFunctions`)
+}
+
+function resolverDirectoryPath(rootPath: string) {
+    return path.normalize(rootPath + `/resolvers`)
+}
+
+function stacksDirectoryPath(rootPath: string) {
+    return path.normalize(rootPath + `/stacks`)
 }
 
 const readDir = async (dir: string) => await promisify<string, string[]>(fs.readdir, dir)

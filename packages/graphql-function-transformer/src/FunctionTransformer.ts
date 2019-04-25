@@ -169,7 +169,6 @@ export default class FunctionTransformer extends Transformer {
     }
 
     appendFunctionToResolver(resolver: any, functionId: string) {
-        console.log(`Appending function to pipeline.`);
         if (
             resolver.Properties.PipelineConfig && 
             resolver.Properties.PipelineConfig.Functions && 

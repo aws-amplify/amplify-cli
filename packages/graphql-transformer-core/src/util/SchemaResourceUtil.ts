@@ -35,8 +35,7 @@ export class SchemaResourceUtil {
     }
 
     public updateResolverResource(resource: Resource) {
-        const props = { ...resource.Properties };
-        props.RequestMappingTemplateS3Location = Fn.Sub(
+        resource.Properties.RequestMappingTemplateS3Location = Fn.Sub(
             "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
             {
                 S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -49,7 +48,7 @@ export class SchemaResourceUtil {
                 ])
             }
         );
-        props.ResponseMappingTemplateS3Location = Fn.Sub(
+        resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
             "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
             {
                 S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
@@ -62,9 +61,39 @@ export class SchemaResourceUtil {
                 ])
             }
         );
-        delete props.RequestMappingTemplate;
-        delete props.ResponseMappingTemplate;
-        return new AppSync.Resolver(props as any);
+        delete resource.Properties.RequestMappingTemplate;
+        delete resource.Properties.ResponseMappingTemplate;
+        return resource;
+    }
+
+    public updateFunctionConfigurationResource(resource: Resource) {
+        resource.Properties.RequestMappingTemplateS3Location = Fn.Sub(
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/${ResolverFileName}",
+            {
+                S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                ResolverFileName: Fn.Join('.', [
+                    resource.Properties.Name,
+                    'req',
+                    'vtl',
+                ])
+            }
+        );
+        resource.Properties.ResponseMappingTemplateS3Location = Fn.Sub(
+            "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/pipelineFunctions/${ResolverFileName}",
+            {
+                S3DeploymentBucket: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentBucket),
+                S3DeploymentRootKey: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
+                ResolverFileName: Fn.Join('.', [
+                    resource.Properties.Name,
+                    'res',
+                    'vtl'
+                ])
+            }
+        );
+        delete resource.Properties.RequestMappingTemplate;
+        delete resource.Properties.ResponseMappingTemplate;
+        return resource;
     }
 
     public makeAppSyncSchema(schema?: string) {
