@@ -29,6 +29,7 @@ const { sharedQuestions } = require('./amplify-helpers/shared-questions.js');
 const { inputValidation } = require('./amplify-helpers/input-validation');
 const { copyBatch } = require('./amplify-helpers/copy-batch');
 const { listCategories } = require('./amplify-helpers/list-categories');
+const { readJsonFile } = require('./amplify-helpers/read-json-file');
 const pathManager = require('./amplify-helpers/path-manager');
 const { makeId } = require('./amplify-helpers/make-id');
 const { openEditor } = require('./amplify-helpers/open-editor');
@@ -95,6 +96,7 @@ module.exports = (context) => {
     pathManager,
     pressEnterToContinue,
     pushResources,
+    readJsonFile,
     removeEnvFromCloud,
     removeResource,
     sharedQuestions,

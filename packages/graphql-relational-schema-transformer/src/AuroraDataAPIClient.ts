@@ -13,8 +13,8 @@ export class AuroraDataAPIClient {
         this.RDS = rdsClient
     }
 
-    constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string) {
-        this.AWS = require('aws-sdk')
+    constructor(databaseRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws: any) {
+        this.AWS = aws
         this.AWS.config.update({
             region: databaseRegion
         })
