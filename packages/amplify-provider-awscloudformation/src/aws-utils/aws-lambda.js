@@ -1,13 +1,19 @@
 const aws = require('./aws.js');
+const configurationManager = require('../../lib/configuration-manager');
 
 class Lambda {
-  constructor(context) {
-    return aws.configureWithCreds(context)
-      .then((awsItem) => {
-        this.context = context;
-        this.lambda = new awsItem.Lambda();
-        return this;
-      });
+  constructor(context, options = {}) {
+    return (async () => {
+      let cred;
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
+      this.context = context;
+      this.lambda = new aws.Lambda({ ...cred, ...options });
+      return this;
+    })();
   }
 }
 

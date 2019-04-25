@@ -424,6 +424,11 @@ function persistLocalEnvConfig(context) {
 }
 
 function getCurrentConfig(context) {
+  const { envName } = context.amplify.getEnvInfo();
+  return getConfigForEnv(context, envName);
+}
+
+function getConfigForEnv(context, envName) {
   const projectConfigInfo = {
     configLevel: 'general',
     config: {},
@@ -433,7 +438,6 @@ function getCurrentConfig(context) {
 
   if (fs.existsSync(configInfoFilePath)) {
     try {
-      const { envName } = context.amplify.getEnvInfo();
       const configInfo = JSON.parse(fs.readFileSync(configInfoFilePath, 'utf8'))[envName];
 
       if (configInfo && configInfo.configLevel !== 'general') {
@@ -458,7 +462,6 @@ function getCurrentConfig(context) {
   }
   return projectConfigInfo;
 }
-
 function updateProjectConfig(context) {
   removeProjectConfig(context);
   persistLocalEnvConfig(context);
@@ -485,19 +488,24 @@ function removeProjectConfig(context) {
   }
 }
 
-async function loadConfiguration(context, awsClient) {
-  const projectConfigInfo = getCurrentConfig(context);
+async function loadConfiguration(context) {
+  const { envName } = context.amplify.getEnvInfo();
+  const config = await loadConfigurationForEnv(context, envName);
+  return config;
+}
+
+async function loadConfigurationForEnv(context, env) {
+  const projectConfigInfo = getConfigForEnv(context, env);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
+    let awsConfig;
     if (config.useProfile) {
-      const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
-      awsClient.config.update(awsConfig);
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
     } else {
-      awsClient.config.loadFromPath(config.awsConfigFilePath);
+      awsConfig = systemConfigManager.loadConfigFromPath(config.awsConfigFilePath);
     }
+    return awsConfig;
   }
-
-  return awsClient;
 }
 
 async function resetCache(context) {
@@ -617,4 +625,5 @@ module.exports = {
   loadConfiguration,
   resetCache,
   resolveRegion,
+  loadConfigurationForEnv,
 };

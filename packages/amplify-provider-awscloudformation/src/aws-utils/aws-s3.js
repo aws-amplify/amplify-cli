@@ -1,25 +1,33 @@
 const aws = require('./aws.js');
 const providerName = require('../../lib/constants').ProviderName;
+const configurationManager = require('../../lib/configuration-manager');
 
 class S3 {
-  constructor(context) {
-    return aws.configureWithCreds(context)
-      .then((awsItem) => {
-        this.context = context;
-        this.s3 = new awsItem.S3();
-        return this;
-      });
+  constructor(context, options = {}) {
+    return (async () => {
+      let cred = {};
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
+      this.context = context;
+      this.s3 = new aws.S3({ ...cred, ...options });
+      return this;
+    })();
   }
 
   uploadFile(s3Params) {
     const projectDetails = this.context.amplify.getProjectDetails();
     const { envName } = this.context.amplify.getEnvInfo();
-    const projectBucket = projectDetails.amplifyMeta.providers ?
-      projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName :
-      projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectBucket = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
-    return this.s3.putObject(s3Params).promise()
+    return this.s3
+      .putObject(s3Params)
+      .promise()
       .then(() => projectBucket);
   }
 
@@ -27,12 +35,14 @@ class S3 {
     const projectDetails = this.context.amplify.getProjectDetails();
     const { envName } = this.context.amplify.getEnvInfo();
 
-    const projectBucket = projectDetails.amplifyMeta.providers ?
-      projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName :
-      projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+    const projectBucket = projectDetails.amplifyMeta.providers
+      ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName
+      : projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
 
-    return this.s3.getObject(s3Params).promise()
+    return this.s3
+      .getObject(s3Params)
+      .promise()
       .then(result => result.Body);
   }
 
@@ -42,24 +52,27 @@ class S3 {
       Bucket: bucketName,
     };
 
-    return this.ifBucketExists(bucketName)
-      .then((result) => {
-        if (!result) {
-          this.context.print.warning('The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....');
-          this.context.print.warning(`Bucket name: ${bucketName}`);
+    return this.ifBucketExists(bucketName).then((result) => {
+      if (!result) {
+        this.context.print.warning('The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....');
+        this.context.print.warning(`Bucket name: ${bucketName}`);
 
-          return this.s3.createBucket(params).promise()
-            .then(() => this.s3.waitFor('bucketExists', params).promise())
-            .then(() => {
-              this.context.print.success('S3 bucket sucessfully created');
-              return bucketName;
-            });
-        }
-      });
+        return this.s3
+          .createBucket(params)
+          .promise()
+          .then(() => this.s3.waitFor('bucketExists', params).promise())
+          .then(() => {
+            this.context.print.success('S3 bucket sucessfully created');
+            return bucketName;
+          });
+      }
+    });
   }
 
   ifBucketExists(bucketName) {
-    return this.s3.listBuckets({}).promise()
+    return this.s3
+      .listBuckets({})
+      .promise()
       .then((result) => {
         const index = result.Buckets.findIndex(bucket => bucket.Name === bucketName);
         if (index !== -1) {
@@ -69,6 +82,5 @@ class S3 {
       });
   }
 }
-
 
 module.exports = S3;
