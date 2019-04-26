@@ -1,12 +1,11 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { flatten } = require('lodash');
 const { readdirSync, statSync, readFileSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { join } = require('path');
 
-const triggerFlow = async (context, resource, category, answers) => {
+const triggerFlow = async (context, resource, category) => {
   // handle missing params
   if (!resource) throw new Error('No resource provided to trigger question flow');
   if (!category) throw new Error('No resource provided to trigger question flow');
