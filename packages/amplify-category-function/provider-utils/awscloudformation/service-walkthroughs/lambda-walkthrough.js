@@ -106,7 +106,7 @@ async function getTableParameters(context, dynamoAnswers) {
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     parameters = {};
   }
@@ -207,10 +207,10 @@ async function askDynamoDBQuestions(context, inputs) {
   }
 }
 
-function migrate(projectPath, resourceName) {
+function migrate(context, projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
-  const oldCfn = JSON.parse(fs.readFileSync(cfnFilePath, 'utf8'));
+  const oldCfn = context.amplify.readJsonFile(cfnFilePath, 'utf8');
   const newCfn = {};
   Object.assign(newCfn, oldCfn);
 

@@ -6,6 +6,7 @@ const { hashElement } = require('folder-hash');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
 const _ = require('lodash');
+const { readJsonFile } = require('./read-json-file');
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -204,10 +205,10 @@ async function asyncForEach(array, callback) {
 
 async function getResourceStatus(category, resourceName, providerName) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
   const currentamplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
-  const currentamplifyMeta = JSON.parse(fs.readFileSync(currentamplifyMetaFilePath));
+  const currentamplifyMeta = readJsonFile(currentamplifyMetaFilePath);
 
   let resourcesToBeCreated = getResourcesToBeCreated(
     amplifyMeta,

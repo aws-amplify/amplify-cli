@@ -5,6 +5,7 @@ const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-pro
 const gitManager = require('../../extensions/amplify-helpers/git-manager');
 const { print } = require('gluegun/print');
 const { initializeEnv } = require('../initialize-env');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   const { projectPath } = context.exeInfo.localEnvInfo;
@@ -26,7 +27,7 @@ async function run(context) {
   let currentAmplifyMeta = {};
 
   if (fs.existsSync(currentAmplifyMetafilePath)) {
-    currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+    currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
   }
 
   const providerPlugins = getProviderPlugins(context);
@@ -101,7 +102,7 @@ function generateProviderInfoFile(context) {
   let teamProviderInfo = {};
   const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
   if (fs.existsSync(providerInfoFilePath)) {
-    teamProviderInfo = JSON.parse(fs.readFileSync(providerInfoFilePath));
+    teamProviderInfo = readJsonFile(providerInfoFilePath);
     Object.assign(teamProviderInfo, context.exeInfo.teamProviderInfo);
   } else {
     ({ teamProviderInfo } = context.exeInfo);

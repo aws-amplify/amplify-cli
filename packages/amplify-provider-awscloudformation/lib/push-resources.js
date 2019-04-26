@@ -242,7 +242,7 @@ function packageResources(context, resources) {
         const cfnFile = cfnFiles[0];
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
 
-        const cfnMeta = JSON.parse(fs.readFileSync(cfnFilePath));
+        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
         cfnMeta.Resources.LambdaFunction.Properties.Code = {
           S3Bucket: s3Bucket,
@@ -390,7 +390,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 /* eslint-disable */
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
 /* eslint-enable */
-  const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
+  const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
 
   const { amplifyMeta } = projectDetails;
 

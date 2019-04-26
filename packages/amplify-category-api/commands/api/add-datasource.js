@@ -49,7 +49,7 @@ module.exports = {
          */
         const currEnv = amplify.getEnvInfo().envName;
         const teamProviderInfoFilePath = amplify.pathManager.getProviderInfoFilePath();
-        const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath));
+        const teamProviderInfo = context.amplify.readJsonFile(teamProviderInfoFilePath);
 
         if (!teamProviderInfo[currEnv][categories]) {
           teamProviderInfo[currEnv][categories] = {};
@@ -75,7 +75,7 @@ module.exports = {
         fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 
         const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
-        const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+        const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
 
         backendConfig[category][resourceName][rdsInit] = true;
 

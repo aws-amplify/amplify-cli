@@ -1,26 +1,27 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
+const { readJsonFile } = require('./read-json-file');
 
 function getProjectDetails() {
   const projectConfigFilePath = pathManager.getProjectConfigFilePath();
-  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  const projectConfig = readJsonFile(projectConfigFilePath);
 
   let amplifyMeta = {};
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   if (fs.existsSync(amplifyMetaFilePath)) {
-    amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+    amplifyMeta = readJsonFile(amplifyMetaFilePath);
   }
 
   let localEnvInfo = {};
-  const envFilepath = pathManager.getLocalEnvFilePath();
-  if (fs.existsSync(envFilepath)) {
-    localEnvInfo = JSON.parse(fs.readFileSync(envFilepath));
+  const envFilePath = pathManager.getLocalEnvFilePath();
+  if (fs.existsSync(envFilePath)) {
+    localEnvInfo = readJsonFile(envFilePath);
   }
 
   let teamProviderInfo = {};
   const teamProviderFilePath = pathManager.getProviderInfoFilePath();
   if (fs.existsSync(teamProviderFilePath)) {
-    teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderFilePath));
+    teamProviderInfo = readJsonFile(teamProviderFilePath);
   }
 
   return {

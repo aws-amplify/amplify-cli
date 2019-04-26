@@ -139,7 +139,7 @@ async function transformGraphQLSchema(context, options) {
 
   if (!parameters && fs.existsSync(parametersFilePath)) {
     try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      parameters = context.amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }

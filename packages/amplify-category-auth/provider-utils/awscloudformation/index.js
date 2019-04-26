@@ -1,4 +1,3 @@
-const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
@@ -124,7 +123,7 @@ function saveResourceParameters(
 
 async function addResource(context, category, service) {
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const {
     cfnFilename,
     defaultValuesFilename,
@@ -170,7 +169,7 @@ async function addResource(context, category, service) {
 async function updateResource(context, category, serviceResult) {
   const { service, resourceName } = serviceResult;
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const {
     cfnFilename,
     defaultValuesFilename,
@@ -250,7 +249,7 @@ async function updateResource(context, category, serviceResult) {
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))
+  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
     .Cognito;
   const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = srvcMetaData;
 
@@ -333,7 +332,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+  const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
   const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 

@@ -4,14 +4,15 @@ const inquirer = require('inquirer');
 const { normalizeEditorCode, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
   if (fs.existsSync(projectConfigFilePath)) {
-    context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+    context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
   }
   const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-  context.exeInfo.localEnvInfo = JSON.parse(fs.readFileSync(envFilePath));
+  context.exeInfo.localEnvInfo = readJsonFile(envFilePath);
 
   const projectPath = process.cwd();
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });

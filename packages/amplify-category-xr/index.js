@@ -1,6 +1,5 @@
 const xrManager = require('./lib/xr-manager');
 const inquirer = require('inquirer');
-const fs = require('fs-extra');
 
 const SUMERIAN_SERVICE_NAME = 'Sumerian';
 const XR_CATEGORY_NAME = 'xr';
@@ -57,7 +56,7 @@ async function initEnv(context) {
     }
   }
 
-  const backendConfig = JSON.parse(fs.readFileSync(context.amplify.pathManager.getBackendConfigFilePath()));
+  const backendConfig = context.amplify.readJsonFile(context.amplify.pathManager.getBackendConfigFilePath());
   const xrResources = Object.keys(backendConfig.xr);
 
   if (xrResources.length > 0) {

@@ -151,7 +151,7 @@ function cacheRoleCredentials(context, roleArn, sessionName, credentials) {
   let cacheContents = {};
   const cacheFilePath = getCacheFilePath(context);
   if (fs.existsSync(cacheFilePath)) {
-    cacheContents = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+    cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
   }
   cacheContents[roleArn] = cacheContents[roleArn] || {};
   cacheContents[roleArn][sessionName] = credentials;
@@ -163,7 +163,7 @@ function getCachedRoleCredentials(context, roleArn, sessionName) {
   let roleCredentials;
   const cacheFilePath = getCacheFilePath(context);
   if (fs.existsSync(cacheFilePath)) {
-    const cacheContents = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+    const cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
     if (cacheContents[roleArn]) {
       roleCredentials = cacheContents[roleArn][sessionName];
       roleCredentials = validateCachedCredentials(roleCredentials) ? roleCredentials : undefined;
@@ -203,7 +203,7 @@ async function resetCache(context, profileName) {
   const profileConfig = getProfileConfig(profileName);
   const cacheFilePath = getCacheFilePath(context);
   if (profileConfig && profileConfig.role_arn && fs.existsSync(cacheFilePath)) {
-    const cacheContents = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+    const cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
     if (cacheContents[profileConfig.role_arn]) {
       delete cacheContents[profileConfig.role_arn];
       const jsonString = JSON.stringify(cacheContents, null, 4);

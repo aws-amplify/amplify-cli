@@ -1,5 +1,4 @@
 const category = 'auth';
-const fs = require('fs');
 const _ = require('lodash');
 const uuid = require('uuid');
 const sequential = require('promise-sequential');
@@ -15,7 +14,7 @@ const {
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
-  const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
+  const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
 
   const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
@@ -55,7 +54,7 @@ async function add(context) {
 
 async function externalAuthEnable(context, externalCategory, resourceName, requirements) {
   const { amplify } = context;
-  const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
+  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
   const { cfnFilename, provider } = serviceMetadata.Cognito;
   const authExists =
     amplify.getProjectDetails().amplifyMeta.auth &&
@@ -165,9 +164,9 @@ async function checkRequirements(requirements, context) {
   let authParameters;
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
-    authParameters = JSON.parse(fs.readFileSync(`${amplify.pathManager.getBackendDirPath()}/auth/${
+    authParameters = context.amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${
       Object.keys(existingAuth)[0]
-    }/parameters.json`));
+    }/parameters.json`);
   } else {
     return { authEnabled: false };
   }
@@ -210,7 +209,7 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const supportedServices = JSON.parse(fs.readFileSync(`${__dirname}/provider-utils/supported-services.json`));
+  const supportedServices = context.amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
