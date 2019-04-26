@@ -35,12 +35,24 @@ const builtInScalarMap = {
   [GraphQLID.name]: 'GraphQLID'
 };
 
+const INFLECTOR_BLACK_LIST = ['delta'];
+
+(Inflector as any).inflections('en', function(inflect: any) {
+  INFLECTOR_BLACK_LIST.forEach(w => {
+    inflect.uncountable(w, w);
+  });
+});
+
 export class Helpers {
   constructor(public options: CompilerOptions) {}
 
   // Types
 
-  typeNameFromGraphQLType(type: GraphQLType, unmodifiedTypeName?: string, isOptional?: boolean): string {
+  typeNameFromGraphQLType(
+    type: GraphQLType,
+    unmodifiedTypeName?: string,
+    isOptional?: boolean
+  ): string {
     if (isNonNullType(type)) {
       return this.typeNameFromGraphQLType(type.ofType, unmodifiedTypeName, false);
     } else if (isOptional === undefined) {
@@ -64,7 +76,9 @@ export class Helpers {
       builtInScalarMap[type.name] ||
       (this.options.passthroughCustomScalars
         ? this.options.customScalarsPrefix + type.name
-        : getTypeForAWSScalar(type) ? getTypeForAWSScalar(type): GraphQLString.name)
+        : getTypeForAWSScalar(type)
+        ? getTypeForAWSScalar(type)
+        : GraphQLString.name)
     );
   }
 
@@ -167,13 +181,16 @@ export class Helpers {
   }
 
   propertyFromInputField(field: GraphQLInputField) {
-    return Object.assign({}, {
-      propertyName: camelCase(field.name),
-      typeName: this.typeNameFromGraphQLType(field.type),
-      isOptional: !(field.type instanceof GraphQLNonNull),
-      description: field.description || null,
-      name: field.name,
-    });
+    return Object.assign(
+      {},
+      {
+        propertyName: camelCase(field.name),
+        typeName: this.typeNameFromGraphQLType(field.type),
+        isOptional: !(field.type instanceof GraphQLNonNull),
+        description: field.description || null,
+        name: field.name
+      }
+    );
   }
 
   propertiesForSelectionSet(

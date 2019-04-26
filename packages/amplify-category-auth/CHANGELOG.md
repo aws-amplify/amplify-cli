@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.2...amplify-category-auth@1.5.3) (2019-04-25)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** uses public_profile for FB scopes ([c9af7b7](https://github.com/aws-amplify/amplify-cli/commit/c9af7b7)), closes [#1335](https://github.com/aws-amplify/amplify-cli/issues/1335)
+
+
+
+
+
 ## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.1...amplify-category-auth@1.5.2) (2019-04-16)
 
 
