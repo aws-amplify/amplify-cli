@@ -1,9 +1,7 @@
-jest.mock('promise-sequential');
 jest.mock('../lib/category-manager');
 
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
-const sequential = require('promise-sequential');
 
 const categoryManager = require('../lib/category-manager');
 
@@ -45,7 +43,6 @@ describe('index', () => {
         mockEnabledServices.length = 0; 
         mockAnswers.selectedServices.length = 0; 
         mockAnswers.selectedService = undefined; 
-        sequential.mockClear(); 
         categoryManager.runServiceAction.mockClear(); 
     });
 
@@ -57,7 +54,7 @@ describe('index', () => {
         mockAnswers.selectedServices.push(S3ANDCLOUDFRONT);
         mockirer(inquirer, mockAnswers); 
         await indexModule.add(mockContext); 
-        expect(sequential).toBeCalled(); 
+        expect(categoryManager.runServiceAction).toBeCalled(); 
     });
 
     test('add, only one disabled serivce', async () => {
@@ -75,13 +72,11 @@ describe('index', () => {
         mockEnabledServices.push(S3ANDCLOUDFRONT);
 
         await expect(indexModule.add(mockContext)).rejects.toThrow();  
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 
     test('add, no available service', async () => {
         await expect(indexModule.add(mockContext)).rejects.toThrow();
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 
@@ -93,7 +88,7 @@ describe('index', () => {
         mockAnswers.selectedServices.push(S3ANDCLOUDFRONT);
         mockirer(inquirer, mockAnswers); 
         await indexModule.configure(mockContext); 
-        expect(sequential).toBeCalled(); 
+        expect(categoryManager.runServiceAction).toBeCalled(); 
     });
 
     test('configure, only one enabled serivce', async () => {
@@ -110,13 +105,11 @@ describe('index', () => {
         mockAvailableServices.push(S3ANDCLOUDFRONT);
         
         await expect(indexModule.configure(mockContext)).rejects.toThrow();
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 
     test('configure, no available service', async () => {
         await expect(indexModule.configure(mockContext)).rejects.toThrow(); 
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 
@@ -176,13 +169,11 @@ describe('index', () => {
         mockDisabledServices.push(S3ANDCLOUDFRONT);
         
         await expect(indexModule.console(mockContext)).rejects.toThrow();
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 
     test('console, no available service', async () => {
         await expect(indexModule.console(mockContext)).rejects.toThrow();  
-        expect(sequential).not.toBeCalled(); 
         expect(categoryManager.runServiceAction).not.toBeCalled(); 
     });
 

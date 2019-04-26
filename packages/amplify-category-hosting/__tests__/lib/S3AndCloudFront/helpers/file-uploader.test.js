@@ -1,4 +1,3 @@
-jest.mock('promise-sequential'); 
 jest.mock('mime-types');
 jest.mock('../../../../lib/S3AndCloudFront/helpers/file-scanner', ()=>{
     return {
@@ -13,12 +12,8 @@ jest.mock('../../../../lib/S3AndCloudFront/helpers/file-scanner', ()=>{
 
 const fs = require('fs-extra');
 const mime = require('mime-types');
-const sequential = require('promise-sequential');
 
 const fileScanner = require('../../../../lib/S3AndCloudFront/helpers/file-scanner');
-
-const serviceName = 'S3AndCloudFront';
-const providerName = 'awscloudformation';
 
 const mockTemplate = require('../../../../__mocks__/mockTemplate');
 const mockParameters = require('../../../../__mocks__/mockParameters');
@@ -101,8 +96,7 @@ describe('cloudfront-manager', () => {
     });
 
     test('run', async () => {
-        await fileUploader.run(mockContext); 
+        await fileUploader.run(mockContext, 'mockDistributionFolder'); 
         expect(fileScanner.scan).toBeCalled(); 
-        expect(sequential).toBeCalled(); 
     });
 })
