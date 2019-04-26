@@ -145,6 +145,7 @@ const createTrigger = async (category, triggers, context, resourceName) => {
         triggerResource: 'cognito',
         cliCategory: category,
         triggerCategory: keys[t],
+        modules: triggers[keys[t]] ? triggers[keys[t]].join() : '',
       };
       await add(context, 'awscloudformation', 'Lambda');
       context.print.success('Succesfully added the Lambda function locally');

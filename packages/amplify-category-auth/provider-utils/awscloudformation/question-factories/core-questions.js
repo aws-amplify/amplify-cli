@@ -26,6 +26,18 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     default: (answers) => { // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
+        if (input.key === 'triggerCapabilities') {
+          const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
+          const capabilityDefaults = [];
+          for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
+            for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
+              const flatObj = {};
+              flatObj[Object.keys(currentTriggers)[i]] = [currentTriggers[Object.keys(currentTriggers)[i]][x]];
+              capabilityDefaults.push(JSON.stringify(flatObj));
+            }
+          }
+          return capabilityDefaults;
+        }
         return context.updatingAuth[input.key];
       }
       // if not editing or no previous value, get defaults (either w/ or w/out social provider flow)

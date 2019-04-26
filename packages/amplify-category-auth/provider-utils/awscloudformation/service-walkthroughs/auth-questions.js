@@ -158,10 +158,14 @@ async function serviceWalkthrough(
     const triggerObj = {};
     const triggers = coreAnswers.triggerCapabilities;
     for (let i = 0; i < triggers.length; i += 1) {
+      if (typeof triggers[i] === 'string') {
+        triggers[i] = JSON.parse(triggers[i]);
+      }
       if (!triggerObj[Object.keys(triggers[i])[0]]) {
-        triggerObj[Object.keys(triggers[i])[0]] = Object.values(triggers[i])[0];
+        triggerObj[Object.keys(triggers[i])[0]] = [...Object.values(triggers[i])[0]];
       } else {
-        triggerObj[Object.keys(triggers[i])[0]] = triggerObj[Object.keys(triggers[i])[0]].concat(Object.values(triggers[i])[0]);
+        triggerObj[Object.keys(triggers[i])[0]] = triggerObj[Object.keys(triggers[i])[0]]
+          .concat(Object.values(triggers[i])[0]);
       }
     }
     coreAnswers.triggerCapabilities = triggerObj;
