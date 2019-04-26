@@ -1,3 +1,4 @@
+jest.mock('inquirer'); 
 const inquirer = require('inquirer');
 
 const mockTemplate = require('../../../../__mocks__/mockTemplate');
@@ -35,12 +36,8 @@ describe('configure-CloudFront', ()=>{
         }
     }; 
 
-    beforeAll(()=>{
-        inquirer.prompt = jest.fn(); 
-    }); 
-
     beforeEach(()=>{
-        inquirer.prompt.mockClear(); 
+        jest.resetAllMocks();
     }); 
 
     test('configure: default values', async ()=>{
@@ -56,6 +53,15 @@ describe('configure-CloudFront', ()=>{
         }); 
         const result = await configureCloudFront.configure(mockContext); 
         expect(result).toEqual(mockContext); 
+        
+        expect(mockContext.exeInfo.template.Resources.OriginAccessIdentity).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Resources.CloudFrontDistribution).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Resources.PrivateBucketPolicy).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Outputs.CloudFrontDistributionID).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Outputs.CloudFrontDomainName).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Outputs.CloudFrontSecureURL).toBeDefined(); 
+        expect(mockContext.exeInfo.template.Resources.BucketPolicy).not.toBeDefined(); 
+        expect(mockContext.exeInfo.template.Resources.S3Bucket.Properties.AccessControl).not.toBeDefined(); 
     }); 
 
     test('configure: remove cloud front then add back', async ()=>{

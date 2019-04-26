@@ -1,3 +1,5 @@
+const mockAwsProviderModule = require('../../../../__mocks__/mockAwsProviderModule');
+
 const cloudFrontManager = require('../../../../lib/S3AndCloudFront/helpers/cloudfront-manager'); 
 
 describe('cloudfront-manager', () => {
@@ -61,15 +63,28 @@ describe('cloudfront-manager', () => {
         }
     }; 
 
-    beforeAll(() => {
+    const mockInvalidateMethod = jest.fn(()=>{
+        return {
+            promise: () => Promise.resolve({}),
+        };
     }); 
+    
+    class mockCloudFront {
+        constructor(){
+            this.createInvalidation = mockInvalidateMethod; 
+        }
+    }
 
-    beforeEach(() => {
-    });
+    mockAwsProviderModule.getConfiguredAWSClient = ()=>{
+        return {
+            CloudFront: mockCloudFront
+        };
+    }
 
     test('invalidateCloudFront', async () => {
         const result = await cloudFrontManager.invalidateCloudFront(mockContext); 
         expect(result).toBe(mockContext); 
+        expect(mockInvalidateMethod).toBeCalled(); 
         expect(mockContext.exeInfo.cftInvalidationData).toBeDefined(); 
     });
 })
