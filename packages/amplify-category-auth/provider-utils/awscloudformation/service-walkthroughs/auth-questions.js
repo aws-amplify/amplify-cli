@@ -18,24 +18,8 @@ async function serviceWalkthrough(
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
 
-  if (context.updatingAuth && context.updatingAuth.oAuthMetadata) {
-    parseOAuthMetaData(context.updatingAuth);
-  }
+  handleUpdates(context, coreAnswers);
 
-  if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
-    const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
-    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
-    /* eslint-disable */
-    const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
-    /* eslint-enable */
-    context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
-  }
-
-  if (context.updatingAuth &&
-    context.updatingAuth.authSelections === 'identityPoolOnly'
-  ) {
-    coreAnswers.authSelections = 'identityPoolAndUserPool';
-  }
   // QUESTION LOOP
   let j = 0;
   while (j < inputs.length) {
@@ -171,20 +155,30 @@ async function serviceWalkthrough(
   }
 
   if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
-    coreAnswers.triggerCapabilities = Object.assign(...coreAnswers.triggerCapabilities);
+    const triggerObj = {};
+    const triggers = coreAnswers.triggerCapabilities;
+    for (let i = 0; i < triggers.length; i += 1) {
+      if (!triggerObj[Object.keys(triggers[i])[0]]) {
+        triggerObj[Object.keys(triggers[i])[0]] = Object.values(triggers[i])[0];
+      } else {
+        triggerObj[Object.keys(triggers[i])[0]] = triggerObj[Object.keys(triggers[i])[0]].concat(Object.values(triggers[i])[0]);
+      }
+    }
+    coreAnswers.triggerCapabilities = triggerObj;
     const lambdas = await context.amplify.createTrigger('amplify-category-auth', coreAnswers.triggerCapabilities, context, coreAnswers.resourceName);
 
     coreAnswers = Object.assign(coreAnswers, lambdas);
-    coreAnswers.triggerCapabilities = true;
 
     coreAnswers.dependsOn = [];
     Object.values(lambdas).forEach((l) => {
       coreAnswers.dependsOn.push({
         category: 'function',
         resourceName: l,
-        attributes: ['Name', 'Arn'],
+        attributes: ['Arn'],
       });
     });
+
+    coreAnswers.triggerCapabilities = JSON.stringify(coreAnswers.triggerCapabilities);
   }
 
   // formatting data for user pool providers / hosted UI
@@ -390,10 +384,40 @@ function filterInput(input, updateFlow) {
 }
 
 /*
+  Handle updates
+*/
+function handleUpdates(context, coreAnswers) {
+  if (context.updatingAuth && context.updatingAuth.triggers) {
+    coreAnswers.triggers.push(...context.updatingAuth.triggers);
+  }
+
+  if (context.updatingAuth && context.updatingAuth.oAuthMetadata) {
+    parseOAuthMetaData(context.updatingAuth);
+  }
+
+  if (context.updatingAuth && context.updatingAuth.authProvidersUserPool) {
+    const { resourceName, authProvidersUserPool, hostedUIProviderMeta } = context.updatingAuth;
+    const { hostedUIProviderCreds } = context.amplify.loadEnvResourceParameters(context, 'auth', resourceName);
+    /* eslint-disable */
+    const oAuthCreds = parseOAuthCreds(authProvidersUserPool, hostedUIProviderMeta, hostedUIProviderCreds);
+    /* eslint-enable */
+    context.updatingAuth = Object.assign(context.updatingAuth, oAuthCreds);
+  }
+
+  if (context.updatingAuth &&
+    context.updatingAuth.authSelections === 'identityPoolOnly'
+  ) {
+    coreAnswers.authSelections = 'identityPoolAndUserPool';
+  }
+}
+
+
+/*
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  const triggers = await context.amplify.triggerFlow('cognito', 'amplify-category-auth', answers);
+  const triggers = await context.amplify
+    .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
   return triggers;
 }
 

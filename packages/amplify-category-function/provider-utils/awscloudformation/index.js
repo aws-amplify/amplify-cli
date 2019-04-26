@@ -27,17 +27,17 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     copyJobs.push(...[
       {
         dir: pluginDir,
-        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-index.js`,
+        template: 'function-template-dir/trigger-index.js',
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
       },
       {
         dir: pluginDir,
-        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/${options.triggerCategory}/${options.functionTemplate}/${options.functionTemplate}-event.json`,
+        template: 'function-template-dir/event.json',
         target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
       },
       {
         dir: pluginDir,
-        template: `../../../${options.cliCategory}/provider-utils/awscloudformation/triggers/package.json.ejs`,
+        template: 'function-template-dir/package.json.ejs',
         target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
       },
     ]);
@@ -145,9 +145,7 @@ async function addResource(context, category, service, options) {
 async function openEditor(context, category, options) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
-    if (options.triggerResource) {
-      context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
-    } else {
+    if (!options.triggerResource) {
       switch (options.functionTemplate) {
         case 'helloWorld':
           await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);

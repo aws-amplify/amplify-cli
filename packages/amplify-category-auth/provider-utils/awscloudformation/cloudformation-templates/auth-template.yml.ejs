@@ -91,7 +91,7 @@ Resources:
           Required: true
           Mutable: true
         <% } %>
-      <%if (props.triggerCapabilities || props.triggerCapabilities.length < 0) { %>
+      <%if (props.triggerCapabilities || props.triggerCapabilities.length > 0) { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
@@ -111,8 +111,8 @@ Resources:
         <%if (props.PreAuthentication) { %>
           PreAuthentication: !Ref function<%=props.resourceName%>PreAuthenticationArn
         <% } %>
-        <%if (props.PreSignUp) { %>
-          PreSignUp: !Ref function<%=props.resourceName%>PreSignUpArn
+        <%if (props.PreSignup) { %>
+          PreSignUp: !Ref function<%=props.resourceName%>PreSignupArn
         <% } %>
         <%if (props.VerifyAuthChallengeResponse) { %>
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn

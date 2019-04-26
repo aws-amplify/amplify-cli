@@ -462,10 +462,18 @@ const oAuthScopes = [
 const capabilities = [
   {
     name: 'MFA w/ Captcha',
-    value: { DefineAuthChallenge: 'captcha' },
+    value: { DefineAuthChallenge: ['captcha'] },
+  },
+  {
+    name: 'Show Legal Notice',
+    value: { PostAuthentication: ['show-notice'] },
+  },
+  {
+    name: 'Add User to Group',
+    value: { PostConfirmation: ['add-to-group'] },
   },
   // {
-  //   name: 'Device tracking/registration',
+  //   name: 'Device trackingf/registration',
   //   value: 'deviceTracking',
   // },
   // {

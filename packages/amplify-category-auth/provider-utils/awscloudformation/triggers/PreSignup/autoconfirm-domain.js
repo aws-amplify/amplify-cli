@@ -3,7 +3,7 @@ exports.handler = (event, context, callback) => {
   event.response.autoConfirmUser = false;
 
   // Split the email address so we can compare domains
-  const address = event.request.userAttributes.email.split('@')
+  const address = event.request.userAttributes.email.split('@');
 
   // This example uses a custom attribute "custom:domain"
   if (event.request.userAttributes && event.request.userAttributes['custom:domain']) {

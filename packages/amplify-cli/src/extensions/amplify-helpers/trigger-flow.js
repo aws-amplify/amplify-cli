@@ -1,10 +1,12 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { readdirSync, readFileSync, statSync } = require('fs');
+const { flatten } = require('lodash');
+const { readdirSync, statSync, readFileSync } = require('fs');
+const { copySync } = require('fs-extra');
 const { join } = require('path');
 
-const triggerFlow = async (resource, category) => {
+const triggerFlow = async (context, resource, category, answers) => {
   // handle missing params
   if (!resource) throw new Error('No resource provided to trigger question flow');
   if (!category) throw new Error('No resource provided to trigger question flow');
@@ -31,7 +33,7 @@ const triggerFlow = async (resource, category) => {
   const triggerPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/`;
 
   // get available triggers
-  const triggerOptions = choicesFromMetadata(triggerPath, resource);
+  const triggerOptions = choicesFromMetadata(triggerPath, resource, true);
 
   // instantiate trigger question
   const triggerQuestion = {
@@ -56,13 +58,14 @@ const triggerFlow = async (resource, category) => {
     const optionsPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${askTriggers.triggers[i]}`;
 
     const templateOptions = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
+    templateOptions.push({ name: 'Create your own module', value: 'custom' });
     const templateMeta = getMetadata(optionsPath, askTriggers.triggers[i]);
     const readableTrigger = triggerMeta[askTriggers.triggers[i]].name;
 
     const templateQuestion = {
       name: 'templates',
-      type: 'list',
-      message: `Which templates do you want to use for ${readableTrigger}`,
+      type: 'checkbox',
+      message: `What functionality do you want to use for ${readableTrigger}`,
       choices: templateOptions,
     };
     const askTemplates = await learnMoreLoop('templates', readableTrigger, templateMeta, templateQuestion);
@@ -79,8 +82,7 @@ const learnMoreLoop = async (key, map, metaData, question) => {
 
   while (
     // handle answers that are strings or arrays
-    (Array.isArray(selections[key]) && selections[key].includes('learn')) ||
-    selections[key] === 'learn'
+    (Array.isArray(selections[key]) && selections[key].includes('learn'))
   ) {
     let prefix;
     if (metaData.URL) {
@@ -101,9 +103,12 @@ const learnMoreLoop = async (key, map, metaData, question) => {
 };
 
 // extract question choices from metadata
-const choicesFromMetadata = (path, selection) => {
-  const templates = readdirSync(path)
-    .filter(f => statSync(join(path, f)).isDirectory());
+const choicesFromMetadata = (path, selection, isDir) => {
+  const templates = isDir ?
+    readdirSync(path)
+      .filter(f => statSync(join(path, f)).isDirectory()) :
+    readdirSync(path).map(t => t.substring(0, t.length - 3));
+
   const metaData = getMetadata(path, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
   const options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
@@ -115,8 +120,15 @@ const choicesFromMetadata = (path, selection) => {
 
 const getMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
 
+async function openEditor(context, path) {
+  if (await context.amplify.confirmPrompt.run('Do you want to edit your custom module now?')) {
+    await context.amplify.openEditor(context, path);
+  }
+}
+
 // create triggers via lambda category
 const createTrigger = async (category, triggers, context, resourceName) => {
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
   const triggerKeyValues = {};
   if (triggers) {
     const keys = Object.keys(triggers);
@@ -134,11 +146,21 @@ const createTrigger = async (category, triggers, context, resourceName) => {
         triggerResource: 'cognito',
         cliCategory: category,
         triggerCategory: keys[t],
-        functionTemplate: values[t],
       };
       await add(context, 'awscloudformation', 'Lambda');
       context.print.success('Succesfully added the Lambda function locally');
-      triggerKeyValues[keys[t]] = `${resourceName}${keys[t]}`;
+      const targetPath = `${targetDir}/function/${resourceName}${keys[t]}/src`;
+      for (let v = 0; v < values[t].length; v += 1) {
+        let source = '';
+        if (values[t][v] === 'custom') {
+          source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
+        } else {
+          source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${keys[t]}/${values[t][v]}.js`;
+        }
+        copySync(source, `${targetPath}/${values[t][v]}.js`);
+        await openEditor(context, targetPath);
+        triggerKeyValues[keys[t]] = `${resourceName}${keys[t]}`;
+      }
     }
   }
   return triggerKeyValues;
