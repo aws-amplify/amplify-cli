@@ -215,7 +215,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
     aws_appsync_region: projectRegion,
     aws_appsync_authenticationType: appsyncResource.output.securityType,
-    aws_appsync_apiKey: appsyncResource.output.securityType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+    aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput || undefined,
   };
 }
 
