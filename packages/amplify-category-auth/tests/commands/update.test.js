@@ -1,3 +1,4 @@
+const fs = require('fs');
 const update = require('../../commands/auth/update');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
@@ -10,6 +11,7 @@ describe('auth update: ', () => {
   const mockGetProjectDetails = jest.fn();
   const mockSelectionPrompt = jest.fn(() => Promise.reject(new Error()));
   const mockProjectPath = '/User/someone/Documents/Project/amplify-test';
+
   const mockPluginInstance = { loadResourceParameters: jest.fn() };
   const mockContext = {
     amplify: {
@@ -17,6 +19,7 @@ describe('auth update: ', () => {
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
       getPluginInstance: jest.fn().mockReturnValue(mockPluginInstance),
+      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
       pathManager: {
         getBackendDirPath: jest.fn(),
       },
