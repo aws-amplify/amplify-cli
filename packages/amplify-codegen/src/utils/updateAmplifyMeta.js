@@ -38,6 +38,7 @@ module.exports = async (context, apiDetails) => {
   if (!currentAmplifyMeta.api) {
     currentAmplifyMeta.api = {};
   }
+  currentAmplifyMeta.api[apiDetails.name] = appsyncMetadata;
   fs.write(currentAmplifyMetaFilePath, currentAmplifyMeta);
 
   await context.amplify.onCategoryOutputsChange(context);
