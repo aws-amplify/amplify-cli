@@ -5,7 +5,7 @@ import { Fn, Refs } from 'cloudform-types'
 import {
     DynamoDBMappingTemplate, str, print,
     ref, obj, set, nul,
-    ifElse, compoundExpression, bool, equals, iff, raw
+    ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block
 } from 'graphql-mapping-template'
 import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
@@ -124,8 +124,29 @@ export class ResourceFactory {
      * Create a resolver that queries an item in DynamoDB.
      * @param type
      */
-    public makeQueryConnectionResolver(type: string, field: string, relatedType: string, connectionAttribute: string, connectionName: string) {
+    public makeQueryConnectionResolver(
+        type: string, field: string, relatedType: string, 
+        connectionAttribute: string, connectionName: string, 
+        sortKeyInfo?: { fieldName: string, attributeType: 'S' | 'B' | 'N' }
+    ) {
         const defaultPageLimit = 10
+        const setup: Expression[] = [
+            set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+            set(ref('query'), obj({
+                'expression': str('#connectionAttribute = :connectionAttribute'),
+                'expressionNames': obj({
+                    '#connectionAttribute': str(connectionAttribute)
+                }),
+                'expressionValues': obj({
+                    ':connectionAttribute': obj({
+                        'S': str('$context.source.id')
+                    })
+                })
+            }))
+        ];
+        if (sortKeyInfo) {
+            setup.push(this.applyKeyConditionExpression(sortKeyInfo.fieldName, sortKeyInfo.attributeType, 'query'));
+        }
         return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
@@ -133,19 +154,9 @@ export class ResourceFactory {
             TypeName: type,
             RequestMappingTemplate: print(
                 compoundExpression([
-                    set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+                    ...setup,
                     DynamoDBMappingTemplate.query({
-                        query: obj({
-                            'expression': str('#connectionAttribute = :connectionAttribute'),
-                            'expressionNames': obj({
-                                '#connectionAttribute': str(connectionAttribute)
-                            }),
-                            'expressionValues': obj({
-                                ':connectionAttribute': obj({
-                                    'S': str('$context.source.id')
-                                })
-                            })
-                        }),
+                        query: raw('$util.toJson($query)'),
                         scanIndexForward: ifElse(
                             ref('context.args.sortDirection'),
                             ifElse(
@@ -177,5 +188,84 @@ export class ResourceFactory {
                 ])
             )
         }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }
+
+    /**
+     * Key conditions materialize as instances of ModelXKeyConditionInput passed via $ctx.args.
+     * If the arguments with the given sortKey name exists, create a DynamoDB expression that
+     * implements its logic. Possible operators: eq, le, lt, ge, gt, beginsWith, and between.
+     * @param argName The name of the argument containing the sort key condition object.
+     */
+    private applyKeyConditionExpression(argName: string, attributeType: 'S' | 'N' | 'B' = 'S', queryExprReference: string = 'query') {
+        return block("Applying Key Condition", [
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.beginsWith)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND begins_with(#${argName}, :${argName})"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.beginsWith" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.between)`),
+                compoundExpression([
+                    iff(
+                        raw(`$ctx.args.${argName}.between.size() != 2`),
+                        raw(`$util.error("Argument ${argName}.between expects exactly 2 elements.")`)
+                    ),
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} BETWEEN :${argName}0 AND :${argName}1"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}0", { "${attributeType}": "$ctx.args.${argName}.between[0]" })`),
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}1", { "${attributeType}": "$ctx.args.${argName}.between[1]" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.eq)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} = :${argName}"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.eq" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.lt)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} < :${argName}"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.lt" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.le)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} <= :${argName}"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.le" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.gt)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} > :${argName}"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.gt" })`)
+                ])
+            ),
+            iff(
+                raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.ge)`),
+                compoundExpression([
+                    set(ref('query.expression'), raw(`"$${queryExprReference}.expression AND #${argName} >= :${argName}"`)),
+                    qref(`$${queryExprReference}.expressionNames.put("#${argName}", "${argName}")`),
+                    // TODO: Handle N & B.
+                    qref(`$${queryExprReference}.expressionValues.put(":${argName}", { "${attributeType}": "$ctx.args.${argName}.ge" })`)
+                ])
+            )
+        ]);
     }
 }

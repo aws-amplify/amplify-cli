@@ -43,7 +43,7 @@ export class DynamoDBMappingTemplate {
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
     public static query({ query, filter, scanIndexForward, limit, nextToken, index }: {
-        query: ObjectNode;
+        query: ObjectNode | Expression;
         scanIndexForward: Expression;
         filter: ObjectNode | Expression;
         limit: Expression;
