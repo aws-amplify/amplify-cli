@@ -17,6 +17,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
   const params = Object.assign({}, writeParams);
+  let force = false;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -25,9 +26,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   }];
 
   if (options.modules) {
-    delete params.resourceName;
-    delete params.functionName;
-    delete params.roleName;
+    force = true;
     copyJobs.push(...[
       {
         dir: pluginDir,
@@ -118,7 +117,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, false, params);
+  return context.amplify.copyBatch(context, copyJobs, options, force, params);
 }
 
 async function addResource(context, category, service, options, parameters) {

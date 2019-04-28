@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
+const { uniq } = require('lodash');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
 
@@ -146,13 +147,6 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
-  // if user is doing manual flow, go into manual lambda flow
-  if (coreAnswers.authSelections !== 'identityPoolOnly' && coreAnswers.useDefault === 'manual') {
-    const manualTriggers = await lambdaFlow(context, coreAnswers);
-    if (manualTriggers) {
-      coreAnswers.triggerCapabilities.push(...manualTriggers);
-    }
-  }
 
   if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
     const triggerObj = {};
@@ -169,10 +163,33 @@ async function serviceWalkthrough(
       }
     }
     coreAnswers.triggerCapabilities = triggerObj;
-    let parameters = coreAnswers;
-    if (context.updatingAuth) {
-      parameters = Object.assign(context.updatingAuth, parameters);
+
+    // if user is doing manual flow, go into manual lambda flow
+    if (coreAnswers.authSelections !== 'identityPoolOnly' && coreAnswers.useDefault === 'manual') {
+      if (context.updatingAuth && context.updatingAuth.triggerCapabilities) {
+        const previousTriggers = JSON.parse(context.updatingAuth.triggerCapabilities);
+        const previousKeys = Object.keys(previousTriggers);
+        const previousValues = Object.values(previousTriggers);
+        previousKeys.forEach((t, index) => {
+          if (coreAnswers.triggerCapabilities[t]) {
+            coreAnswers.triggerCapabilities[t] = uniq(coreAnswers.triggerCapabilities[t]
+              .concat(previousValues[index]));
+          } else {
+            coreAnswers.triggerCapabilities[t] = previousValues[index];
+          }
+        });
+      }
+
+      const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
+      if (manualTriggers) {
+        coreAnswers.triggerCapabilities = manualTriggers;
+      }
     }
+
+    const parameters = context.updatingAuth ?
+      Object.assign(context.updatingAuth, coreAnswers) :
+      coreAnswers;
+
     const lambdas = await context.amplify.createTrigger('amplify-category-auth', parameters, context);
 
     coreAnswers = Object.assign(coreAnswers, lambdas);
@@ -182,7 +199,7 @@ async function serviceWalkthrough(
       coreAnswers.dependsOn.push({
         category: 'function',
         resourceName: l,
-        attributes: ['Arn'],
+        attributes: ['Arn', 'Name'],
       });
     });
 

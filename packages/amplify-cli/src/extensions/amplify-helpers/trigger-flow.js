@@ -5,13 +5,10 @@ const { readdirSync, statSync, readFileSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { join } = require('path');
 
-const triggerFlow = async (context, resource, category, previousTriggers) => {
+const triggerFlow = async (context, resource, category, previousTriggers = {}) => {
   // handle missing params
   if (!resource) throw new Error('No resource provided to trigger question flow');
   if (!category) throw new Error('No resource provided to trigger question flow');
-
-  // instantiate response array
-  const res = [];
 
   // make sure resource is capitalized
   const resourceName = `${resource.charAt(0).toUpperCase()}${resource.slice(1)}`;
@@ -40,6 +37,7 @@ const triggerFlow = async (context, resource, category, previousTriggers) => {
     type: 'checkbox',
     message: `Which triggers do you want to enable for ${resourceName}`,
     choices: triggerOptions,
+    default: Object.keys(previousTriggers),
   };
 
   // get trigger metadata
@@ -66,13 +64,13 @@ const triggerFlow = async (context, resource, category, previousTriggers) => {
       type: 'checkbox',
       message: `What functionality do you want to use for ${readableTrigger}`,
       choices: templateOptions,
+      default: previousTriggers[askTriggers.triggers[i]],
     };
     const askTemplates = await learnMoreLoop('templates', readableTrigger, templateMeta, templateQuestion);
     triggerObj[`${askTriggers.triggers[i]}`] = askTemplates.templates;
-    res.push(triggerObj);
   }
 
-  return res;
+  return triggerObj;
 };
 
 // learn more question loop
@@ -127,8 +125,7 @@ async function openEditor(context, path) {
 
 // create triggers via lambda category
 const createTrigger = async (category, answers, context) => {
-  const { triggerCapabilities } = answers;
-  let { resourceName } = answers;
+  const { triggerCapabilities, resourceName } = answers;
   if (!triggerCapabilities || !resourceName) {
     throw Error('createTrigger function missing required parameters');
   }
@@ -146,7 +143,12 @@ const createTrigger = async (category, answers, context) => {
       }
       const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
       const functionName = `${resourceName}${keys[t]}`;
-      await add(context, 'awscloudformation', 'Lambda', { modules, resourceName: functionName, functionName });
+      await add(context, 'awscloudformation', 'Lambda', {
+        modules,
+        resourceName: functionName,
+        functionName,
+        roleName: functionName,
+      });
       context.print.success('Succesfully added the Lambda function locally');
       const targetPath = `${targetDir}/function/${functionName}/src`;
       for (let v = 0; v < values[t].length; v += 1) {

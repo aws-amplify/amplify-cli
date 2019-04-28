@@ -143,6 +143,88 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
+  <%if (props.triggerCapabilities || props.triggerCapabilities.length > 0) { %>
+  <%if (props.CreateAuthChallenge) { %>
+  UserPoolCreateAuthChallengeLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>CreateAuthChallengeName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.CustomMessage) { %>
+  UserPoolCustomMessageLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>CustomMessageName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.DefineAuthChallenge) { %>
+  UserPoolDefineAuthChallengeLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>DefineAuthChallengeName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.PostAuthentication) { %>
+  UserPoolPostAuthenticationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PostAuthenticationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.PostConfirmation) { %>
+  UserPoolPostConfirmationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PostConfirmationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <%if (props.PreAuthentication) { %>
+  UserPoolPreAuthenticationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreAuthenticationName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.PreSignup) { %>
+  UserPoolPreSignupLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreSignupName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %> 
+  <%if (props.VerifyAuthChallengeResponse) { %>
+  UserPoolVerifyAuthChallengeResponseLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>  
+  <% } %>
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference

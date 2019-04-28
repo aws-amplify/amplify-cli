@@ -1,4 +1,4 @@
-exports.handler = (event, context) => {
+exports.handler = (event, context, callback) => {
   if (event.request.session.length === 2 && event.request.challengeName === 'CUSTOM_CHALLENGE') {
     event.response.publicChallengeParameters = {};
     event.response.publicChallengeParameters.captchaUrl = 'url/123.jpg';
