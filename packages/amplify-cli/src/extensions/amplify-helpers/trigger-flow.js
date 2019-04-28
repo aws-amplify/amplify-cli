@@ -5,7 +5,7 @@ const { readdirSync, statSync, readFileSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { join } = require('path');
 
-const triggerFlow = async (context, resource, category) => {
+const triggerFlow = async (context, resource, category, previousTriggers) => {
   // handle missing params
   if (!resource) throw new Error('No resource provided to trigger question flow');
   if (!category) throw new Error('No resource provided to trigger question flow');
@@ -126,12 +126,17 @@ async function openEditor(context, path) {
 }
 
 // create triggers via lambda category
-const createTrigger = async (category, triggers, context, resourceName) => {
+const createTrigger = async (category, answers, context) => {
+  const { triggerCapabilities } = answers;
+  let { resourceName } = answers;
+  if (!triggerCapabilities || !resourceName) {
+    throw Error('createTrigger function missing required parameters');
+  }
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   const triggerKeyValues = {};
-  if (triggers) {
-    const keys = Object.keys(triggers);
-    const values = Object.values(triggers);
+  if (triggerCapabilities) {
+    const keys = Object.keys(triggerCapabilities);
+    const values = Object.values(triggerCapabilities);
     for (let t = 0; t < keys.length; t += 1) {
       let add;
       try {
@@ -139,17 +144,11 @@ const createTrigger = async (category, triggers, context, resourceName) => {
       } catch (e) {
         throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
       }
-      context.pendingCognitoTrigger = {
-        functionName: `${resourceName}${keys[t]}`,
-        resourceName: `${resourceName}${keys[t]}`,
-        triggerResource: 'cognito',
-        cliCategory: category,
-        triggerCategory: keys[t],
-        modules: triggers[keys[t]] ? triggers[keys[t]].join() : '',
-      };
-      await add(context, 'awscloudformation', 'Lambda');
+      const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
+      const functionName = `${resourceName}${keys[t]}`;
+      await add(context, 'awscloudformation', 'Lambda', { modules, resourceName: functionName, functionName });
       context.print.success('Succesfully added the Lambda function locally');
-      const targetPath = `${targetDir}/function/${resourceName}${keys[t]}/src`;
+      const targetPath = `${targetDir}/function/${functionName}/src`;
       for (let v = 0; v < values[t].length; v += 1) {
         let source = '';
         if (values[t][v] === 'custom') {
@@ -159,7 +158,7 @@ const createTrigger = async (category, triggers, context, resourceName) => {
         }
         copySync(source, `${targetPath}/${values[t][v]}.js`);
         await openEditor(context, targetPath);
-        triggerKeyValues[keys[t]] = `${resourceName}${keys[t]}`;
+        triggerKeyValues[keys[t]] = functionName;
       }
     }
   }

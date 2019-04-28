@@ -1,6 +1,6 @@
 const category = 'function';
 
-async function add(context, providerName, service) {
+async function add(context, providerName, service, parameters) {
   const options = {
     service,
     providerPlugin: providerName,
@@ -11,7 +11,7 @@ async function add(context, providerName, service) {
     context.print.error('Provider not confgiured for this category');
     return;
   }
-  return providerController.addResource(context, category, service, options);
+  return providerController.addResource(context, category, service, options, parameters);
 }
 
 async function console(context) {

@@ -12,10 +12,11 @@ async function serviceQuestions(context, defaultValuesFilename, serviceWalkthrou
 }
 
 
-function copyCfnTemplate(context, category, options, cfnFilename) {
+function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
+  const params = Object.assign({}, writeParams);
 
   const copyJobs = [{
     dir: pluginDir,
@@ -23,12 +24,16 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
   }];
 
-  if (options.triggerResource) {
+  if (options.modules) {
+    delete params.resourceName;
+    delete params.functionName;
+    delete params.roleName;
     copyJobs.push(...[
       {
         dir: pluginDir,
         template: 'function-template-dir/trigger-index.js',
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
+        paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
       },
       {
         dir: pluginDir,
@@ -113,15 +118,20 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options);
+  return context.amplify.copyBatch(context, copyJobs, options, false, params);
 }
 
-async function addResource(context, category, service, options) {
+async function addResource(context, category, service, options, parameters) {
   let answers;
   serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
   const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  let result;
 
-  const result = await serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename);
+  if (!parameters) {
+    result = await serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename);
+  } else {
+    result = { answers: parameters };
+  }
 
   if (result.answers) {
     ({ answers } = result);
@@ -130,7 +140,7 @@ async function addResource(context, category, service, options) {
     answers = result;
   }
 
-  copyCfnTemplate(context, category, answers, cfnFilename);
+  copyCfnTemplate(context, category, answers, cfnFilename, parameters);
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     answers.resourceName,

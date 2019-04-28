@@ -7,6 +7,14 @@
             "Default": "",
             "Description": "Comma-delimmited list of modules to be executed by a lambda trigger"
         },
+        "resourceName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "functionName": {
+            "Type": "String",
+            "Default": ""
+        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>

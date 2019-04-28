@@ -169,7 +169,11 @@ async function serviceWalkthrough(
       }
     }
     coreAnswers.triggerCapabilities = triggerObj;
-    const lambdas = await context.amplify.createTrigger('amplify-category-auth', coreAnswers.triggerCapabilities, context, coreAnswers.resourceName);
+    let parameters = coreAnswers;
+    if (context.updatingAuth) {
+      parameters = Object.assign(context.updatingAuth, parameters);
+    }
+    const lambdas = await context.amplify.createTrigger('amplify-category-auth', parameters, context);
 
     coreAnswers = Object.assign(coreAnswers, lambdas);
 
