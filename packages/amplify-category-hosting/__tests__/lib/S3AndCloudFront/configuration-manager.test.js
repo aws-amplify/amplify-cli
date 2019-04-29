@@ -70,18 +70,8 @@ describe('configuration-manager', () => {
         }
     }; 
 
-    beforeAll(() => {
-        inquirer.prompt = jest.fn(); 
-        configureWebsite.configure = jest.fn(); 
-        configurePublish.configure = jest.fn(); 
-        configureCloudFront.configure = jest.fn(); 
-    }); 
-
     beforeEach(() => {
-        inquirer.prompt.mockClear();
-        configureWebsite.configure.mockClear();
-        configureCloudFront.configure.mockClear();
-        configurePublish.configure.mockClear();
+        jest.resetAllMocks(); 
     });
 
     test('init', async () => {

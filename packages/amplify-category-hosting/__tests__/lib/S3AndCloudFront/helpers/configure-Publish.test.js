@@ -1,3 +1,4 @@
+jest.mock('inquirer');
 const fs = require('fs-extra'); 
 const path = require('path'); 
 const inquirer = require('inquirer');
@@ -37,7 +38,6 @@ describe('configure-Publish', ()=>{
     }; 
 
     beforeAll(()=>{
-        inquirer.prompt = jest.fn(); 
         fs.existsSync = jest.fn(()=>{return true;})
         fs.writeFileSync = jest.fn();
     }); 
