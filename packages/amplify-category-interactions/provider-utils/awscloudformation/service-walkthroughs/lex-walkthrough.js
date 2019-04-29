@@ -722,7 +722,7 @@ async function migrate(context, projectPath, resourceName) {
 
   let parameters;
   try {
-    parameters = context.amplify.readJsonFile(parametersFilePath);
+    parameters = amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;

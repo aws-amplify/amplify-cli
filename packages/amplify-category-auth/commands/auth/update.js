@@ -10,7 +10,7 @@ module.exports = {
   alias: ['update'],
   run: async (context) => {
     const { amplify } = context;
-    const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+    const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
     const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
 
     if (!Object.keys(existingAuth).length > 0) {

@@ -332,7 +332,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
+  const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
   const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 

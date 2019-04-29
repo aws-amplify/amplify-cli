@@ -142,7 +142,7 @@ async function openEditor(context, category, options) {
 
 async function invoke(context, category, service, resourceName) {
   const { amplify } = context;
-  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  serviceMetadata = amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { inputs } = serviceMetadata;
   const resourceQuestions = [
     {

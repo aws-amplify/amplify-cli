@@ -73,7 +73,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     try {
-      parameters = context.amplify.readJsonFile(parametersFilePath);
+      parameters = amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
