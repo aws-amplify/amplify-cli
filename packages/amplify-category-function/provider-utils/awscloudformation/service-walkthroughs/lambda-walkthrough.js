@@ -210,7 +210,7 @@ async function askDynamoDBQuestions(context, inputs) {
 function migrate(context, projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
-  const oldCfn = context.amplify.readJsonFile(cfnFilePath, 'utf8');
+  const oldCfn = context.amplify.readJsonFile(cfnFilePath);
   const newCfn = {};
   Object.assign(newCfn, oldCfn);
 

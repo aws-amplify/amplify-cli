@@ -293,7 +293,7 @@ function migrate(context, projectPath, resourceName) {
   // Change CFN file
 
   const cfnFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-  const oldCfn = context.amplify.readJsonFile(cfnFilePath, 'utf8');
+  const oldCfn = context.amplify.readJsonFile(cfnFilePath);
   const newCfn = {};
   Object.assign(newCfn, oldCfn);
 
