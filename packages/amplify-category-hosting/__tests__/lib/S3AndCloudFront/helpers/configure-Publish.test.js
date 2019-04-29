@@ -1,4 +1,5 @@
 const fs = require('fs-extra'); 
+const path = require('path'); 
 const inquirer = require('inquirer');
 
 const configurePublish = require('../../../../lib/S3AndCloudFront/helpers/configure-Publish'); 
@@ -16,9 +17,16 @@ describe('configure-Publish', ()=>{
         amplify: {
             pathManager: {
                 searchProjectRootPath: jest.fn(()=>{
-                    return 'mockProjectRootDirPath'; 
+                    return path.join(__dirname, '../../../../__mocks__/'); 
                 })
-            }
+            }, 
+            readJsonFile: jest.fn((jsonFilePath)=>{
+                let content = fs.readFileSync(jsonFilePath, 'utf8')
+                if (content.charCodeAt(0) === 0xFEFF) {
+                    content = content.slice(1);
+                }
+                return JSON.parse(content);
+            })
         },
         print: {
             info: jest.fn(),
@@ -53,8 +61,8 @@ describe('configure-Publish', ()=>{
         expect(mockContext.print.info).toBeCalled(); 
         expect(fs.writeFileSync).toBeCalled(); 
         expect(Array.isArray(result)).toBeTruthy(); 
-        expect(result.includes('mockPattern1')).toBeFalsy(); 
-        expect(result.includes('mockPattern2')).toBeTruthy(); 
+        expect(result).not.toContain('mockPattern1'); 
+        expect(result).toContain('mockPattern2'); 
     }); 
 
     test('configure, flow2', async ()=>{
@@ -68,13 +76,16 @@ describe('configure-Publish', ()=>{
         expect(mockContext.print.info).toBeCalled(); 
         expect(fs.writeFileSync).toBeCalled(); 
         expect(Array.isArray(result)).toBeTruthy(); 
-        expect(result.length).toEqual(0);
+        expect(result).toHaveLength(0);
     }); 
 
     test('getIgnore', async ()=>{
+        const actual = mockContext.amplify.readJsonFile(
+            path.join(__dirname, '../../../../__mocks__/amplifyPublishIgnore.json')
+        ); 
         const result = await configurePublish.getIgnore(mockContext); 
         expect(Array.isArray(result)).toBeTruthy(); 
-        expect(result.length).toEqual(0);
+        expect(result).toEqual(actual);
     }); 
 
     test('isIgnored', async ()=>{

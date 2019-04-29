@@ -21,10 +21,6 @@ describe('configure-Website', ()=>{
         })
     }); 
 
-    beforeEach(()=>{
-
-    }); 
-
     test('configure', async ()=>{
         const { WebsiteConfiguration } = mockContext.exeInfo.template.Resources.S3Bucket.Properties;
         const result = await configureWebsite.configure(mockContext); 

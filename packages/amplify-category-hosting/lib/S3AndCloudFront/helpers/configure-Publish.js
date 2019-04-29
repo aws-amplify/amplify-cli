@@ -128,7 +128,7 @@ function getIgnore(context) {
   const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
-      publishIgnore = require(publishIgnoreFilePath);
+      publishIgnore = context.amplify.readJsonFile(publishIgnoreFilePath);
     } catch (e) {
       publishIgnore = [];
     }
