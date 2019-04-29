@@ -1,11 +1,12 @@
 const fs = require('fs');
 const pathManager = require('./path-manager');
+const { readJsonFile } = require('./read-json-file');
 
 function getEnvInfo() {
-  const envFilepath = pathManager.getLocalEnvFilePath();
+  const envFilePath = pathManager.getLocalEnvFilePath();
   let envInfo = {};
-  if (fs.existsSync(envFilepath)) {
-    envInfo = JSON.parse(fs.readFileSync(envFilepath));
+  if (fs.existsSync(envFilePath)) {
+    envInfo = readJsonFile(envFilePath);
   }
 
   return envInfo;

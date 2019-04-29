@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 
@@ -18,7 +17,7 @@ const originErrorCodes = {
 
 async function configure(context) {
   const templateFilePath = path.join(__dirname, '../template.json');
-  const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
+  const originalTemplate = context.amplify.readJsonFile(templateFilePath);
   if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
     context.print.info('CloudFront is NOT in the current hosting');
     const answer = await inquirer.prompt({

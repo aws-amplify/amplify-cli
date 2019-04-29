@@ -73,7 +73,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     let parameters;
     try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      parameters = context.amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }

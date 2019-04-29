@@ -153,7 +153,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
       const parametersFilePath = path.join(resourceDirPath, parametersFileName);
       try {
-        parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+        parameters = context.amplify.readJsonFile(parametersFilePath);
       } catch (e) {
         parameters = {};
       }
@@ -722,7 +722,7 @@ async function migrate(context, projectPath, resourceName) {
 
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;

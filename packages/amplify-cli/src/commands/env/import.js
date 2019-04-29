@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 module.exports = {
   name: 'import',
@@ -47,7 +48,7 @@ module.exports = {
 
       let envAwsInfo = {};
       if (fs.existsSync(configInfoFilePath)) {
-        envAwsInfo = JSON.parse(fs.readFileSync(configInfoFilePath));
+        envAwsInfo = readJsonFile(configInfoFilePath);
       }
 
       envAwsInfo[envName] = awsInfo;

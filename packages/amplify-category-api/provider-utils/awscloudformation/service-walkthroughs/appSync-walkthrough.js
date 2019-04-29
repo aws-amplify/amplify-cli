@@ -261,7 +261,7 @@ async function updateWalkthrough(context) {
   let parameters = {};
 
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error('Parameters file not found');
     context.print.info(e.stack);
@@ -270,14 +270,14 @@ async function updateWalkthrough(context) {
   const authType = await askSecurityQuestions(context, parameters);
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
   amplifyMeta[category][resourceName].output.securityType = authType;
   let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
 
   backendConfig[category][resourceName].output.securityType = authType;
   jsonString = JSON.stringify(backendConfig, null, '\t');

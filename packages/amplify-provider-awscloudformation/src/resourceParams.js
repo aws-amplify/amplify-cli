@@ -40,9 +40,9 @@ function loadResourceParameters(context, category, resource) {
   const parametersBuildFilePath = path.join(resourceDirPath, 'build', 'parameters.json');
   const parametersFilePath = path.join(resourceDirPath, 'parameters.json');
   if (fs.existsSync(parametersBuildFilePath)) {
-    parameters = JSON.parse(fs.readFileSync(parametersBuildFilePath));
+    parameters = context.amplify.readJsonFile(parametersBuildFilePath);
   } else if (fs.existsSync(parametersFilePath)) {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   }
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
   return { ...parameters, ...envSpecificParams };

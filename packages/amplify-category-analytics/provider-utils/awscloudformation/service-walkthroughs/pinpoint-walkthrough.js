@@ -33,7 +33,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     inputs = inputs.filter(input => input.key !== 'resourceName');
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    const parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    const parameters = context.amplify.readJsonFile(parametersFilePath);
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
   }
@@ -178,7 +178,7 @@ function writeCfnFile(context, resourceDirPath, force = false) {
   const templateFilePath = path.join(resourceDirPath, templateFileName);
   if (!fs.existsSync(templateFilePath) || force) {
     const templateSourceFilePath = `${__dirname}/../cloudformation-templates/${templateFileName}`;
-    const templateSource = JSON.parse(fs.readFileSync(templateSourceFilePath));
+    const templateSource = context.amplify.readJsonFile(templateSourceFilePath);
     templateSource.Mappings = getTemplateMappings(context);
     const jsonString = JSON.stringify(templateSource, null, 4);
     fs.writeFileSync(templateFilePath, jsonString, 'utf8');
@@ -214,14 +214,14 @@ function migrate(context) {
   const { analytics = {} } = amplifyMeta;
   Object.keys(analytics).forEach((resourceName) => {
     const resourcePath = path.join(projectBackendDirPath, category, resourceName);
-    const cfn = JSON.parse(fs.readFileSync(path.join(resourcePath, 'pinpoint-cloudformation-template.json')));
+    const cfn = context.amplify.readJsonFile(path.join(resourcePath, 'pinpoint-cloudformation-template.json'));
     const updatedCfn = migrateCFN(cfn);
 
     fs.ensureDirSync(resourcePath);
     const templateFilePath = path.join(resourcePath, templateFileName);
     fs.writeFileSync(templateFilePath, JSON.stringify(updatedCfn, null, 4), 'utf8');
 
-    const parameters = JSON.parse(fs.readFileSync(path.join(resourcePath, 'parameters.json')));
+    const parameters = context.amplify.readJsonFile(path.join(resourcePath, 'parameters.json'));
     const updatedParams = migrateParams(context, parameters);
     const parametersFilePath = path.join(resourcePath, parametersFileName);
     fs.writeFileSync(parametersFilePath, JSON.stringify(updatedParams, null, 4), 'utf8');

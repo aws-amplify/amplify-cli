@@ -67,7 +67,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
   const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     parameters = {};
   }
@@ -578,7 +578,7 @@ async function migrate(context, projectPath, resourceName) {
   const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;

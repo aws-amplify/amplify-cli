@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 module.exports = {
   name: 'remove',
@@ -47,7 +48,7 @@ module.exports = {
       // Remove entry from aws-info
       const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
       const awsInfoFilePath = path.join(dotConfigDirPath, 'local-aws-info.json');
-      const awsInfo = JSON.parse(fs.readFileSync(awsInfoFilePath));
+      const awsInfo = readJsonFile(awsInfoFilePath);
       if (awsInfo[envName]) {
         delete awsInfo[envName];
         jsonString = JSON.stringify(awsInfo, null, '\t');

@@ -57,7 +57,7 @@ async function initEnv(context) {
    * configured an RDS datasource
    */
   const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = amplify.readJsonFile(backendConfigFilePath);
 
   let resourceName;
   const apis = Object.keys(backendConfig[category]);
@@ -90,7 +90,7 @@ async function initEnv(context) {
    */
   const currEnv = amplify.getEnvInfo().envName;
   const teamProviderInfoFilePath = amplify.pathManager.getProviderInfoFilePath();
-  const teamProviderInfo = JSON.parse(fs.readFileSync(teamProviderInfoFilePath));
+  const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
   if (teamProviderInfo[currEnv][categories]
     && teamProviderInfo[currEnv][categories][category]
     && teamProviderInfo[currEnv][categories][category][resourceName]

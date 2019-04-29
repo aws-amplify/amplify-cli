@@ -1,3 +1,4 @@
+const fs = require('fs');
 const add = require('../../commands/auth/enable');
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 
@@ -12,6 +13,7 @@ describe('auth enable: ', () => {
       executeProviderUtils: mockExecuteProviderUtils,
       getProjectDetails: mockGetProjectDetails,
       serviceSelectionPrompt: mockSelectionPrompt,
+      readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
     },
     print: {
       warning: jest.fn(),

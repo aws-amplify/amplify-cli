@@ -1,9 +1,10 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
+const { readJsonFile } = require('./read-json-file');
 
 function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = readJsonFile(backendConfigFilePath);
   if (!backendConfig[category]) {
     backendConfig[category] = {};
   }
@@ -17,7 +18,7 @@ function updateBackendConfigAfterResourceAdd(category, resourceName, options) {
 
 function updateBackendConfigDependsOn(category, resourceName, value) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = readJsonFile(backendConfigFilePath);
 
   if (!backendConfig[category]) {
     backendConfig[category] = {};
@@ -34,7 +35,7 @@ function updateBackendConfigDependsOn(category, resourceName, value) {
 
 function updateBackendConfigAfterResourceRemove(category, resourceName) {
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = readJsonFile(backendConfigFilePath);
 
   if (backendConfig[category][resourceName] !== undefined) {
     delete backendConfig[category][resourceName];
