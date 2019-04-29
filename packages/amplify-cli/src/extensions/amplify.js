@@ -38,7 +38,11 @@ const { updateProjectConfig } = require('./amplify-helpers/update-project-config
 const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2');
 const { onCategoryOutputsChange } = require('./amplify-helpers/on-category-outputs-change');
 const { getPluginInstance } = require('./amplify-helpers/get-plugin-instance');
-const { triggerFlow, createTrigger } = require('./amplify-helpers/trigger-flow');
+const {
+  triggerFlow,
+  createTrigger,
+  parseTriggerSelections,
+} = require('./amplify-helpers/trigger-flow');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -118,6 +122,7 @@ module.exports = (context) => {
     removeResourceParameters,
     triggerFlow,
     createTrigger,
+    parseTriggerSelections,
   };
 
   context.amplify = amplify;

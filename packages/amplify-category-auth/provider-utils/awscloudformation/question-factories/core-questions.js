@@ -32,7 +32,8 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
           for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
             for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
               const flatObj = {};
-              flatObj[Object.keys(currentTriggers)[i]] = [currentTriggers[Object.keys(currentTriggers)[i]][x]];
+              flatObj[Object.keys(currentTriggers)[i]] =
+              currentTriggers[Object.keys(currentTriggers)[i]][x];
               capabilityDefaults.push(JSON.stringify(flatObj));
             }
           }

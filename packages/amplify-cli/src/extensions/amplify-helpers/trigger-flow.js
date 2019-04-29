@@ -17,7 +17,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   const wantTriggers = await inquirer.prompt({
     name: 'confirmation',
     type: 'confirm',
-    message: `Do you want to implement Lambda Triggers for ${resourceName}?`,
+    message: `Do you want to configure Lambda Triggers for ${resourceName}?`,
   });
 
   // if user does not want to manually configure triggers, return null
@@ -117,54 +117,125 @@ const choicesFromMetadata = (path, selection, isDir) => {
 
 const getMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
 
-async function openEditor(context, path) {
-  if (await context.amplify.confirmPrompt.run('Do you want to edit your custom module now?')) {
-    await context.amplify.openEditor(context, path);
+async function openEditor(context, path, name) {
+  const filePath = `${path}/${name}.js`;
+  if (await context.amplify.confirmPrompt.run(`Do you want to edit your ${name} function now?`)) {
+    await context.amplify.openEditor(context, filePath);
   }
 }
 
 // create triggers via lambda category
-const createTrigger = async (category, answers, context) => {
+const createTrigger = async (category, answers, context, previousTriggers) => {
   const { triggerCapabilities, resourceName } = answers;
   if (!triggerCapabilities || !resourceName) {
     throw Error('createTrigger function missing required parameters');
   }
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-  const triggerKeyValues = {};
+  const keys = Object.keys(triggerCapabilities);
+  const values = Object.values(triggerCapabilities);
+
+  let triggerKeyValues = {};
   if (triggerCapabilities) {
-    const keys = Object.keys(triggerCapabilities);
-    const values = Object.values(triggerCapabilities);
     for (let t = 0; t < keys.length; t += 1) {
-      let add;
-      try {
-        ({ add } = require('amplify-category-function'));
-      } catch (e) {
-        throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-      }
-      const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
       const functionName = `${resourceName}${keys[t]}`;
-      await add(context, 'awscloudformation', 'Lambda', {
-        modules,
-        resourceName: functionName,
-        functionName,
-        roleName: functionName,
-      });
-      context.print.success('Succesfully added the Lambda function locally');
+      const targetDir = context.amplify.pathManager.getBackendDirPath();
       const targetPath = `${targetDir}/function/${functionName}/src`;
-      for (let v = 0; v < values[t].length; v += 1) {
-        let source = '';
-        if (values[t][v] === 'custom') {
-          source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
-        } else {
-          source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${keys[t]}/${values[t][v]}.js`;
+      if (previousTriggers && previousTriggers[keys[t]]) {
+        const updatedTrigger =
+          await updateTrigger(category, targetPath, context, keys[t], values[t], functionName);
+        triggerKeyValues = Object.assign(triggerKeyValues, updatedTrigger);
+      } else {
+        let add;
+        try {
+          ({ add } = require('amplify-category-function'));
+        } catch (e) {
+          throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
         }
-        copySync(source, `${targetPath}/${values[t][v]}.js`);
-        await openEditor(context, targetPath);
-        triggerKeyValues[keys[t]] = functionName;
+        const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
+        await add(context, 'awscloudformation', 'Lambda', {
+          modules,
+          resourceName: functionName,
+          functionName,
+          roleName: functionName,
+        });
+        context.print.success('Succesfully added the Lambda function locally');
+        for (let v = 0; v < values[t].length; v += 1) {
+          await copyFunctions(keys[t], values[t][v], category, context, targetPath);
+          triggerKeyValues[keys[t]] = functionName;
+        }
       }
     }
   }
+  // if (previousTriggers && Object.keys(previousTriggers).length > 0) {
+  //   const previousKeys = Object.keys(previousTriggers);
+  //   for (let y = 0; previousKeys.length > 0; y += 1) {
+  //     if (!keys || !keys.includes(previousKeys[y])) {
+  //       await deleteTrigger()
+  //     }
+  //   }
+  // }
   return triggerKeyValues;
 };
 
-module.exports = { triggerFlow, createTrigger };
+// const deleteTrigger = async (context) => {
+//   let remove;
+//   try {
+//     ({ remove } = require('amplify-category-function'));
+//   } catch (e) {
+//     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+//   }
+//   await remove(context);
+// };
+
+const updateTrigger = async (category, targetPath, context, key, values, functionName) => {
+  const updatedTrigger = {};
+  try {
+    for (let v = 0; v < values.length; v += 1) {
+      await copyFunctions(key, values[v], category, context, targetPath);
+    }
+    updatedTrigger[key] = functionName;
+    return updatedTrigger;
+  } catch (e) {
+    throw new Error('Unable to copy lambda functions');
+  }
+};
+
+const copyFunctions = async (key, value, category, context, targetPath) => {
+  let source = '';
+  if (value === 'custom') {
+    source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
+  } else {
+    source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
+  }
+  copySync(source, `${targetPath}/${value}.js`);
+  return await openEditor(context, targetPath, value);
+};
+
+const parseTriggerSelections = (triggers, previous) => {
+  const triggerObj = {};
+  const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : null;
+  const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
+  for (let i = 0; i < triggers.length; i += 1) {
+    if (typeof triggers[i] === 'string') {
+      triggers[i] = JSON.parse(triggers[i]);
+    }
+    const currentTrigger = Object.keys(triggers[i])[0];
+    const currentValue = Object.values(triggers[i])[0];
+    if (!triggerObj[currentTrigger]) {
+      triggerObj[currentTrigger] = [...Object.values(triggers[i])];
+    } else {
+      triggerObj[currentTrigger] = triggerObj[currentTrigger]
+        .concat(currentValue);
+    }
+    if (previousTriggers) {
+      triggerObj[currentTrigger] = triggerObj[currentTrigger]
+        .concat(...previousTriggers[currentTrigger]);
+    }
+  }
+  for (let x = 0; x < previousKeys.length; x += 1) {
+    triggerObj[previousKeys[x]] = previousTriggers[previousKeys[x]];
+  }
+  return triggerObj;
+};
+
+
+module.exports = { triggerFlow, createTrigger, parseTriggerSelections };
