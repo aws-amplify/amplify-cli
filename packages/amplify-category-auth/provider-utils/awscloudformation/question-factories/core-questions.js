@@ -186,14 +186,16 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
 }
 
 function triggerDefaults(context, input) {
-  const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
   const capabilityDefaults = [];
-  for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
-    for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
-      const flatObj = {};
-      flatObj[Object.keys(currentTriggers)[i]] =
-      flattenDeep([currentTriggers[Object.keys(currentTriggers)[i]][x]]);
-      capabilityDefaults.push(JSON.stringify(flatObj));
+  if (context.updatingAuth[input.key] && context.updatingAuth[input.key].length > 0) {
+    const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
+    for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
+      for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
+        const flatObj = {};
+        flatObj[Object.keys(currentTriggers)[i]] =
+        flattenDeep([currentTriggers[Object.keys(currentTriggers)[i]][x]]);
+        capabilityDefaults.push(JSON.stringify(flatObj));
+      }
     }
   }
   return capabilityDefaults;

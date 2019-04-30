@@ -462,14 +462,20 @@ const oAuthScopes = [
 const capabilities = [
   {
     name: 'MFA w/ Captcha',
+    trigger: 'DefineAuthChallenge',
+    modules: ['captcha'],
     value: JSON.stringify({ DefineAuthChallenge: ['captcha'] }),
   },
   {
     name: 'Show Legal Notice',
+    trigger: 'PostAuthentication',
+    modules: ['show-notice'],
     value: JSON.stringify({ PostAuthentication: ['show-notice'] }),
   },
   {
     name: 'Add User to Group',
+    trigger: 'PostConfirmation',
+    modules: ['add-to-group'],
     value: JSON.stringify({ PostConfirmation: ['add-to-group'] }),
   },
   // {

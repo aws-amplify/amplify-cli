@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { readdirSync, statSync, readFileSync } = require('fs');
 const { copySync } = require('fs-extra');
-const { flattenDeep } = require('lodash');
+const { flattenDeep, uniq } = require('lodash');
 const { join } = require('path');
 
 /**
@@ -146,29 +146,30 @@ const createTrigger = async (
   category,
   parentCategory,
   parentResource,
-  answers,
+  options,
   context,
   previousTriggers,
 ) => {
-  const { triggerCapabilities, resourceName } = answers;
-  if (!triggerCapabilities || !resourceName) {
-    throw Error('createTrigger function missing required parameters');
-  }
-  const keys = Object.keys(triggerCapabilities);
-  const values = Object.values(triggerCapabilities);
+  const { triggerCapabilities, resourceName, deleteAll } = options;
   const targetDir = context.amplify.pathManager.getBackendDirPath();
 
-  let triggerKeyValues = {};
-  if (previousTriggers && Object.keys(previousTriggers).length > 0) {
+  if (deleteAll) {
     const previousKeys = Object.keys(previousTriggers);
     for (let y = 0; y < previousKeys.length; y += 1) {
-      if (!keys || !keys.includes(previousKeys[y])) {
-        const functionName = `${resourceName}${previousKeys[y]}`;
-        const targetPath = `${targetDir}/function/${functionName}`;
-        await deleteTrigger(context, functionName, targetPath);
-      }
+      const functionName = `${resourceName}${previousKeys[y]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await deleteTrigger(context, functionName, targetPath);
     }
+    return {};
   }
+  if (!triggerCapabilities || !resourceName) {
+    return new Error('createTrigger function missing required parameters');
+  }
+  const keys = Object.keys(triggerCapabilities);
+  const previousKeys = Object.keys(previousTriggers);
+  const values = Object.values(triggerCapabilities);
+
+  let triggerKeyValues = {};
   if (triggerCapabilities) {
     for (let t = 0; t < keys.length; t += 1) {
       const functionName = `${resourceName}${keys[t]}`;
@@ -197,6 +198,13 @@ const createTrigger = async (
           triggerKeyValues[keys[t]] = functionName;
         }
       }
+    }
+  }
+  for (let p = 0; p < previousKeys.length; p += 1) {
+    if (!keys.includes(previousKeys[p])) {
+      const functionName = `${resourceName}${previousKeys[p]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await deleteTrigger(context, functionName, targetPath);
     }
   }
   return triggerKeyValues;
@@ -233,23 +241,24 @@ const updateTrigger = async (category, targetPath, context, key, values, functio
   }
 };
 
-const copyFunctions = async (key, values, category, context, targetPath) => {
-  for (let c = 0; c < values.length; c += 1) {
+const copyFunctions = async (key, value, category, context, targetPath) => {
+  const dirContents = readdirSync(targetPath);
+  if (!dirContents.includes(`${value}.js`)) {
     let source = '';
-    if (values[c] === 'custom') {
+    if (value === 'custom') {
       source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
     } else {
-      source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${values[c]}.js`;
+      source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
     }
-    copySync(source, `${targetPath}/${values[c]}.js`);
-    await openEditor(context, targetPath, values[c]);
+    copySync(source, `${targetPath}/${value}.js`);
+    await openEditor(context, targetPath, value);
   }
 };
 
 
 /**
  * @function
- * @param {array} triggers Currently triggers in CLI flow array of key/values
+ * @param {array} triggers Currently selected triggers in CLI flow array of key/values
  *    @example ["{"TriggerName2":["template2"]}"]
  * @param {string} previous Serialized object of previously selected trigger values
  *    @example "{\"TriggerName1\":[\"template1\"]}"
@@ -257,7 +266,7 @@ const copyFunctions = async (key, values, category, context, targetPath) => {
  */
 const parseTriggerSelections = (triggers, previous) => {
   const triggerObj = {};
-  const previousTriggers = previous ? JSON.parse(previous) : null;
+  const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : null;
   const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
   for (let i = 0; i < triggers.length; i += 1) {
     if (typeof triggers[i] === 'string') {
@@ -266,18 +275,20 @@ const parseTriggerSelections = (triggers, previous) => {
     const currentTrigger = Object.keys(triggers[i])[0];
     const currentValue = Object.values(triggers[i])[0];
     if (!triggerObj[currentTrigger]) {
-      triggerObj[currentTrigger] = [...Object.values(triggers[i])];
+      triggerObj[currentTrigger] = currentValue;
     } else {
-      triggerObj[currentTrigger] = triggerObj[currentTrigger]
-        .concat(currentValue);
+      triggerObj[currentTrigger] = uniq(triggerObj[currentTrigger]
+        .concat(currentValue));
     }
-    if (previousTriggers) {
-      triggerObj[currentTrigger] = triggerObj[currentTrigger]
-        .concat(...previousTriggers[currentTrigger]);
+    if (previousTriggers && previousTriggers[currentTrigger]) {
+      triggerObj[currentTrigger] = uniq(triggerObj[currentTrigger]
+        .concat(previousTriggers[currentTrigger]));
     }
   }
   for (let x = 0; x < previousKeys.length; x += 1) {
-    triggerObj[previousKeys[x]] = previousTriggers[previousKeys[x]];
+    if (!triggerObj[previousKeys[x]]) {
+      triggerObj[previousKeys[x]] = previousTriggers[previousKeys[x]];
+    }
   }
   return triggerObj;
 };

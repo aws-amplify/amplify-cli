@@ -2,5 +2,9 @@
   "email": {
     "name": "Post Confirmation Email",
     "description": "This template sends a confirmation email message to your user using Amazon SES."
+  },
+  "add-to-group": {
+    "name": "Add User To Group",
+    "description": "This template adds a user to a Cognito Userpool group after they have been confirmed."
   }
 }

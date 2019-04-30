@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
+const { sanitizePrevious, handleTriggers } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
 
@@ -146,20 +147,22 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
-  if (coreAnswers.authSelections !== 'identityPoolOnly' && coreAnswers.useDefault === 'manual') {
-    const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
-    if (manualTriggers) {
-      coreAnswers.triggerCapabilities = [];
-      Object.keys(manualTriggers).map((m) => {
-        const obj = {};
-        obj[m] = manualTriggers[m];
-        return coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
-      });
+  if (coreAnswers.authSelections !== 'identityPoolOnly') {
+    if (coreAnswers.useDefault === 'manual') {
+      const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
+      if (manualTriggers) {
+        coreAnswers.triggerCapabilities = [];
+        Object.keys(manualTriggers).map((m) => {
+          const obj = {};
+          obj[m] = manualTriggers[m];
+          return coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
+        });
+      }
     }
-  }
-
-  if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
-    coreAnswers.triggerCapabilities = JSON.stringify(await handleTriggers(context, coreAnswers));
+    const formTriggers = await handleTriggers(context, coreAnswers);
+    coreAnswers.triggerCapabilities = formTriggers ?
+      JSON.stringify(formTriggers) :
+      [];
   }
 
   // formatting data for user pool providers / hosted UI
@@ -393,41 +396,13 @@ function handleUpdates(context, coreAnswers) {
 }
 
 /*
-  Creating Lambda Triggers
-*/
-async function handleTriggers(context, coreAnswers) {
-  const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
-    context.updatingAuth && context.updatingAuth.triggerCapabilities :
-    null;
-  coreAnswers.triggerCapabilities = context.amplify
-    .parseTriggerSelections(coreAnswers.triggerCapabilities);
-
-  const resourceName = context.updatingAuth ?
-    context.updatingAuth.resourceName :
-    coreAnswers.resourceName;
-
-  const parameters = { resourceName, triggerCapabilities: coreAnswers.triggerCapabilities };
-
-  const lambdas = await context.amplify.createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
-  coreAnswers = Object.assign(coreAnswers, lambdas);
-  coreAnswers.dependsOn = [];
-  Object.values(lambdas).forEach((l) => {
-    coreAnswers.dependsOn.push({
-      category: 'function',
-      resourceName: l,
-      attributes: ['Arn', 'Name'],
-    });
-  });
-  return coreAnswers.triggerCapabilities;
-}
-
-/*
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
+  let previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
     context.updatingAuth.triggerCapabilities :
     null;
+  previousTriggers = await sanitizePrevious(context, answers, previousTriggers);
   const parsedTriggers = context.amplify
     .parseTriggerSelections(answers, previousTriggers);
   const triggers = await context.amplify
