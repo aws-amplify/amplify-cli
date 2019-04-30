@@ -213,7 +213,8 @@ export class HttpTransformer extends Transformer {
                         field.name.value,
                         queryBodyArgsArray
                             .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
-                            .map(a => a.name.value)
+                            .map(a => a.name.value),
+                        headers
                     )
                     ctx.setResource(postResourceID, postResolver)
                 }
@@ -228,7 +229,8 @@ export class HttpTransformer extends Transformer {
                         field.name.value,
                         queryBodyArgsArray
                             .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
-                            .map(a => a.name.value)
+                            .map(a => a.name.value),
+                        headers
                     )
                     ctx.setResource(putResourceID, putResolver)
                 }
@@ -236,7 +238,7 @@ export class HttpTransformer extends Transformer {
             case 'DELETE':
                 const deleteResourceID = ResolverResourceIDs.ResolverResourceID(parent.name.value, field.name.value)
                 if (!ctx.getResource(deleteResourceID)) {
-                    const deleteResolver = this.resources.makeDeleteResolver(baseURL, path, parent.name.value, field.name.value)
+                    const deleteResolver = this.resources.makeDeleteResolver(baseURL, path, parent.name.value, field.name.value, headers)
                     ctx.setResource(deleteResourceID, deleteResolver)
                 }
                 break;
@@ -250,7 +252,8 @@ export class HttpTransformer extends Transformer {
                         field.name.value,
                         queryBodyArgsArray
                             .filter(a => a.type.kind === Kind.NON_NULL_TYPE)
-                            .map(a => a.name.value)
+                            .map(a => a.name.value),
+                        headers
                     )
                     ctx.setResource(patchResourceID, patchResolver)
                 }

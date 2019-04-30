@@ -67,7 +67,6 @@ export class ResourceFactory {
      * @param type
      */
     public makeGetResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
-
         const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
 
         return new AppSync.Resolver({
@@ -116,8 +115,11 @@ export class ResourceFactory {
         path: string,
         type: string,
         field: string,
-        nonNullArgs: string[]
+        nonNullArgs: string[],
+        headers: HttpHeader[]
     ) {
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -129,6 +131,7 @@ export class ResourceFactory {
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("Content-Type", "application/json")'),
                     qref('$headers.put("accept-encoding", "application/json")'),
+                    ...parsedHeaders,
                     HttpMappingTemplate.postRequest({
                         resourcePath: path,
                         params: obj({
@@ -166,8 +169,11 @@ export class ResourceFactory {
         path: string,
         type: string,
         field: string,
-        nonNullArgs: string[]
+        nonNullArgs: string[],
+        headers: HttpHeader[]
     ) {
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -179,6 +185,7 @@ export class ResourceFactory {
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("Content-Type", "application/json")'),
                     qref('$headers.put("accept-encoding", "application/json")'),
+                    ...parsedHeaders,
                     HttpMappingTemplate.putRequest({
                         resourcePath: path,
                         params: obj({
@@ -207,7 +214,9 @@ export class ResourceFactory {
      * Create a resolver that makes a DELETE request.
      * @param type
      */
-    public makeDeleteResolver(baseURL: string, path: string, type: string, field: string) {
+    public makeDeleteResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -217,6 +226,7 @@ export class ResourceFactory {
                 compoundExpression([
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("accept-encoding", "application/json")'),
+                    ...parsedHeaders,
                     HttpMappingTemplate.deleteRequest({
                         resourcePath: path,
                         params: obj({
@@ -251,8 +261,11 @@ export class ResourceFactory {
         path: string,
         type: string,
         field: string,
-        nonNullArgs: string[]
+        nonNullArgs: string[],
+        headers: HttpHeader[]
     ) {
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -264,6 +277,7 @@ export class ResourceFactory {
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("Content-Type", "application/json")'),
                     qref('$headers.put("accept-encoding", "application/json")'),
+                    ...parsedHeaders,
                     HttpMappingTemplate.patchRequest({
                         resourcePath: path,
                         params: obj({
