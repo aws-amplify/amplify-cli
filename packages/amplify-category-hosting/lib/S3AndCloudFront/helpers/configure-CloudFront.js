@@ -40,6 +40,8 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
+      // Don't remove the following line,
+      // customer projects setup by the CLI prior to 2/22/2019 has this resource
       delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
     }
@@ -51,15 +53,16 @@ async function configure(context) {
       default: false,
     });
     if (answer.RemoveCloudFront) {
-      const { BucketPolicy, S3Bucket } = originalTemplate.Resources;
       delete context.exeInfo.template.Resources.OriginAccessIdentity;
       delete context.exeInfo.template.Resources.CloudFrontDistribution;
+      // Don't remove the following line,
+      // customer projects setup by the CLI prior to 2/22/2019 has this resource
+      delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.PrivateBucketPolicy;
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      context.exeInfo.template.Resources.BucketPolicy = BucketPolicy;
-      const { AccessControl } = S3Bucket.Properties;
+      const { AccessControl } = originalTemplate.Resources.S3Bucket.Properties;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
     }
   }
@@ -131,9 +134,7 @@ async function configureCustomErrorResponse(context, DistributionConfig) {
 
   switch (answer.action) {
     case 'list':
-      context.print.info();
-      context.print.info(DistributionConfig.CustomErrorResponses);
-      context.print.info();
+      listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'add':
       await addCER(context, DistributionConfig.CustomErrorResponses);
@@ -145,18 +146,22 @@ async function configureCustomErrorResponse(context, DistributionConfig) {
       await removeCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'remove all':
-      delete DistributionConfig.CustomErrorResponses;
+      DistributionConfig.CustomErrorResponses.length = 0;
       break;
     default:
-      context.print.info();
-      context.print.info(DistributionConfig.CustomErrorResponses);
-      context.print.info();
+      listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);
       break;
   }
 
   if (answer.action !== done) {
     await configureCustomErrorResponse(context, DistributionConfig);
   }
+}
+
+function listCustomErrorResponses(context, CustomErrorResponses) {
+  context.print.info('');
+  context.print.info(CustomErrorResponses);
+  context.print.info('');
 }
 
 async function addCER(context, CustomErrorResponses) {

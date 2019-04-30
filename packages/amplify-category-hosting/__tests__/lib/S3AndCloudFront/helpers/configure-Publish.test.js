@@ -21,13 +21,13 @@ describe('configure-Publish', ()=>{
                     return path.join(__dirname, '../../../../__mocks__/'); 
                 })
             }, 
-            readJsonFile: jest.fn((jsonFilePath)=>{
+            readJsonFile: (jsonFilePath)=>{
                 let content = fs.readFileSync(jsonFilePath, 'utf8')
                 if (content.charCodeAt(0) === 0xFEFF) {
                     content = content.slice(1);
                 }
                 return JSON.parse(content);
-            })
+            }
         },
         print: {
             info: jest.fn(),
