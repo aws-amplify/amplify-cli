@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const _ = require('lodash');
+const { uniq, flatten, flattenDeep } = require('lodash');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 
@@ -27,17 +27,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
         if (input.key === 'triggerCapabilities') {
-          const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
-          const capabilityDefaults = [];
-          for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
-            for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
-              const flatObj = {};
-              flatObj[Object.keys(currentTriggers)[i]] =
-              currentTriggers[Object.keys(currentTriggers)[i]][x];
-              capabilityDefaults.push(JSON.stringify(flatObj));
-            }
-          }
-          return capabilityDefaults;
+          return triggerDefaults(context, input);
         }
         return context.updatingAuth[input.key];
       }
@@ -101,7 +91,7 @@ function iteratorQuestion(input, question, context) {
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
   const sourceValues = Object
     .assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
-  const sourceArray = _.uniq(_.flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
+  const sourceArray = uniq(flatten(input.requiredOptions.map((i => sourceValues[i] || []))));
   const requiredOptions =
     getAllMaps()[input.map] ? getAllMaps()[input.map]
       .filter(x => sourceArray
@@ -193,6 +183,20 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     question = Object.assign({ choices: newChoices }, question);
   }
   return question;
+}
+
+function triggerDefaults(context, input) {
+  const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
+  const capabilityDefaults = [];
+  for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
+    for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
+      const flatObj = {};
+      flatObj[Object.keys(currentTriggers)[i]] =
+      flattenDeep([currentTriggers[Object.keys(currentTriggers)[i]][x]]);
+      capabilityDefaults.push(JSON.stringify(flatObj));
+    }
+  }
+  return capabilityDefaults;
 }
 
 module.exports = { parseInputs };

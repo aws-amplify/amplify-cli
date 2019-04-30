@@ -7,7 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const confirmPrompt = require('./amplify-helpers/confirm-prompt');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { constructExeInfo } = require('./amplify-helpers/construct-exeInfo');
-const { removeResource } = require('./amplify-helpers/remove-resource');
+const { removeResource, forceRemoveResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
 const { deleteProject } = require('./amplify-helpers/delete-project');
 const { removeEnvFromCloud } = require('./amplify-helpers/remove-env-from-cloud');
@@ -77,6 +77,7 @@ module.exports = (context) => {
     crudFlow,
     deleteProject,
     executeProviderUtils,
+    forceRemoveResource,
     getAllEnvs,
     getPlugin,
     getCategoryPlugins,

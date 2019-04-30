@@ -149,7 +149,12 @@ async function serviceWalkthrough(
   if (coreAnswers.authSelections !== 'identityPoolOnly' && coreAnswers.useDefault === 'manual') {
     const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
     if (manualTriggers) {
-      coreAnswers.manualTriggers = manualTriggers;
+      coreAnswers.triggerCapabilities = [];
+      Object.keys(manualTriggers).map((m) => {
+        const obj = {};
+        obj[m] = manualTriggers[m];
+        coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
+      });
     }
   }
 
@@ -387,25 +392,23 @@ function handleUpdates(context, coreAnswers) {
   }
 }
 
+/*
+  Creating Lambda Triggers
+*/
 async function handleTriggers(context, coreAnswers) {
   const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
     context.updatingAuth && context.updatingAuth.triggerCapabilities :
     null;
   coreAnswers.triggerCapabilities = context.amplify
-    .parseTriggerSelections(coreAnswers.triggerCapabilities, previousTriggers);
+    .parseTriggerSelections(coreAnswers.triggerCapabilities);
 
-  // if user is doing manual flow, go into manual lambda flow
-  if (coreAnswers.manualTriggers) {
-    coreAnswers.triggerCapabilities =
-      Object.assign(coreAnswers.triggerCapabilities, coreAnswers.manualTriggers);
-    delete coreAnswers.manualTriggers;
-  }
+  const resourceName = context.updatingAuth ?
+    context.updatingAuth.resourceName :
+    coreAnswers.resourceName;
 
-  const parameters = context.updatingAuth ?
-    Object.assign(context.updatingAuth, coreAnswers) :
-    coreAnswers;
+  const parameters = { resourceName, triggerCapabilities: coreAnswers.triggerCapabilities };
 
-  const lambdas = await context.amplify.createTrigger('amplify-category-auth', parameters, context, JSON.parse(previousTriggers));
+  const lambdas = await context.amplify.createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
   coreAnswers = Object.assign(coreAnswers, lambdas);
   coreAnswers.dependsOn = [];
   Object.values(lambdas).forEach((l) => {
@@ -418,13 +421,17 @@ async function handleTriggers(context, coreAnswers) {
   return coreAnswers.triggerCapabilities;
 }
 
-
 /*
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
+  const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
+    context.updatingAuth.triggerCapabilities :
+    null;
+  const parsedTriggers = context.amplify
+    .parseTriggerSelections(answers, previousTriggers);
   const triggers = await context.amplify
-    .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
+    .triggerFlow(context, 'cognito', 'amplify-category-auth', parsedTriggers);
   return triggers;
 }
 

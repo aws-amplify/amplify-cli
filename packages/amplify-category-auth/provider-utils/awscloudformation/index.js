@@ -251,7 +251,12 @@ async function updateResource(context, category, serviceResult) {
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
     })
-    .then(() => props.resourceName);
+    .then(() => {
+      if (props.dependsOn) {
+        context.amplify.auth = { dependsOn: props.dependsOn };
+      }
+      return props.resourceName;
+    });
 }
 
 async function updateConfigOnEnvInit(context, category, service) {

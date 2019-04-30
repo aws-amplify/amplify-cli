@@ -3,7 +3,18 @@ const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 const { readdirSync, statSync, readFileSync } = require('fs');
 const { copySync } = require('fs-extra');
+const { flattenDeep } = require('lodash');
 const { join } = require('path');
+
+/**
+ * @function triggerFlow
+ * @param {object} context CLI context
+ * @param {string} resource The provider (i.e. cognito)
+ * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @param {object} previousTriggers
+ * @param {object} Object with current key/value pairs for triggers and templates
+ * @returns {object} Object with current key/value pairs for triggers and templates
+ */
 
 const triggerFlow = async (context, resource, category, previousTriggers = {}) => {
   // handle missing params
@@ -64,12 +75,18 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
       type: 'checkbox',
       message: `What functionality do you want to use for ${readableTrigger}`,
       choices: templateOptions,
-      default: previousTriggers[askTriggers.triggers[i]],
+      default: flattenDeep(previousTriggers[askTriggers.triggers[i]]),
     };
     const askTemplates = await learnMoreLoop('templates', readableTrigger, templateMeta, templateQuestion);
     triggerObj[`${askTriggers.triggers[i]}`] = askTemplates.templates;
   }
 
+  const tempTriggerObj = Object.assign({}, triggerObj);
+  Object.values(tempTriggerObj).forEach((t, index) => {
+    if (!t || t.length < 1) {
+      delete triggerObj[Object.keys(triggerObj)[index]];
+    }
+  }, { triggerObj });
   return triggerObj;
 };
 
@@ -125,19 +142,36 @@ async function openEditor(context, path, name) {
 }
 
 // create triggers via lambda category
-const createTrigger = async (category, answers, context, previousTriggers) => {
+const createTrigger = async (
+  category,
+  parentCategory,
+  parentResource,
+  answers,
+  context,
+  previousTriggers,
+) => {
   const { triggerCapabilities, resourceName } = answers;
   if (!triggerCapabilities || !resourceName) {
     throw Error('createTrigger function missing required parameters');
   }
   const keys = Object.keys(triggerCapabilities);
   const values = Object.values(triggerCapabilities);
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
 
   let triggerKeyValues = {};
+  if (previousTriggers && Object.keys(previousTriggers).length > 0) {
+    const previousKeys = Object.keys(previousTriggers);
+    for (let y = 0; y < previousKeys.length; y += 1) {
+      if (!keys || !keys.includes(previousKeys[y])) {
+        const functionName = `${resourceName}${previousKeys[y]}`;
+        const targetPath = `${targetDir}/function/${functionName}`;
+        await deleteTrigger(context, functionName, targetPath);
+      }
+    }
+  }
   if (triggerCapabilities) {
     for (let t = 0; t < keys.length; t += 1) {
       const functionName = `${resourceName}${keys[t]}`;
-      const targetDir = context.amplify.pathManager.getBackendDirPath();
       const targetPath = `${targetDir}/function/${functionName}/src`;
       if (previousTriggers && previousTriggers[keys[t]]) {
         const updatedTrigger =
@@ -165,32 +199,32 @@ const createTrigger = async (category, answers, context, previousTriggers) => {
       }
     }
   }
-  // if (previousTriggers && Object.keys(previousTriggers).length > 0) {
-  //   const previousKeys = Object.keys(previousTriggers);
-  //   for (let y = 0; previousKeys.length > 0; y += 1) {
-  //     if (!keys || !keys.includes(previousKeys[y])) {
-  //       await deleteTrigger()
-  //     }
-  //   }
-  // }
   return triggerKeyValues;
 };
 
-// const deleteTrigger = async (context) => {
-//   let remove;
-//   try {
-//     ({ remove } = require('amplify-category-function'));
-//   } catch (e) {
-//     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-//   }
-//   await remove(context);
-// };
+const deleteTrigger = async (context, name, dir) => {
+  try {
+    await context.amplify.forceRemoveResource(context, 'function', name, dir);
+  } catch (e) {
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  }
+};
 
 const updateTrigger = async (category, targetPath, context, key, values, functionName) => {
   const updatedTrigger = {};
   try {
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);
+      context.amplify.updateamplifyMetaAfterResourceAdd(
+        'function',
+        functionName,
+        {
+          build: true,
+          dependsOn: undefined,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+      );
     }
     updatedTrigger[key] = functionName;
     return updatedTrigger;
@@ -199,20 +233,31 @@ const updateTrigger = async (category, targetPath, context, key, values, functio
   }
 };
 
-const copyFunctions = async (key, value, category, context, targetPath) => {
-  let source = '';
-  if (value === 'custom') {
-    source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
-  } else {
-    source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
+const copyFunctions = async (key, values, category, context, targetPath) => {
+  for (let c = 0; c < values.length; c += 1) {
+    let source = '';
+    if (values[c] === 'custom') {
+      source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
+    } else {
+      source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${values[c]}.js`;
+    }
+    copySync(source, `${targetPath}/${values[c]}.js`);
+    await openEditor(context, targetPath, values[c]);
   }
-  copySync(source, `${targetPath}/${value}.js`);
-  return await openEditor(context, targetPath, value);
 };
 
+
+/**
+ * @function
+ * @param {array} triggers Currently triggers in CLI flow array of key/values
+ *    @example ["{"TriggerName2":["template2"]}"]
+ * @param {string} previous Serialized object of previously selected trigger values
+ *    @example "{\"TriggerName1\":[\"template1\"]}"
+ * @return {object} Object with current and previous triggers, with concatenated values for unions
+ */
 const parseTriggerSelections = (triggers, previous) => {
   const triggerObj = {};
-  const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : null;
+  const previousTriggers = previous ? JSON.parse(previous) : null;
   const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
   for (let i = 0; i < triggers.length; i += 1) {
     if (typeof triggers[i] === 'string') {
