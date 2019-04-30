@@ -67,7 +67,7 @@ export class ResourceFactory {
      * @param type
      */
     public makeGetResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
-        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`))
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -118,7 +118,7 @@ export class ResourceFactory {
         nonNullArgs: string[],
         headers: HttpHeader[]
     ) {
-        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`))
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -172,7 +172,7 @@ export class ResourceFactory {
         nonNullArgs: string[],
         headers: HttpHeader[]
     ) {
-        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`))
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -215,7 +215,7 @@ export class ResourceFactory {
      * @param type
      */
     public makeDeleteResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
-        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`))
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -264,7 +264,7 @@ export class ResourceFactory {
         nonNullArgs: string[],
         headers: HttpHeader[]
     ) {
-        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}")`))
 
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),

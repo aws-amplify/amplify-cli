@@ -158,6 +158,10 @@ export class HttpTransformer extends Transformer {
 
         let headers : HttpHeader[] = getDirectiveArgument(directive)("headers")
 
+        if (!Array.isArray(headers)) {
+            headers = [];
+        }
+
         if (queryBodyArgsArray.length > 0) {
             // for GET requests, leave the nullability of the query parameters unchanged -
             // but for PUT, POST and PATCH, unwrap any non-nulls
