@@ -20,9 +20,15 @@ const HTTP_STACK_NAME = 'HttpStack'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
+export interface HttpHeader {
+    key: String,
+    value: String
+}
+
 interface HttpDirectiveArgs {
     method?: HttpMethod,
     url: String,
+    headers: HttpHeader[]
 }
 
 /**
@@ -43,7 +49,8 @@ export class HttpTransformer extends Transformer {
             `
             directive @http(
                 method: HttpMethod = GET,
-                url: String!
+                url: String!,
+                headers: [HttpHeader] = []
             ) on FIELD_DEFINITION
             enum HttpMethod {
                 GET
@@ -51,6 +58,10 @@ export class HttpTransformer extends Transformer {
                 PUT
                 DELETE
                 PATCH
+            }
+            input HttpHeader {
+                key: String,
+                value: String
             }
             `
         )
@@ -145,6 +156,8 @@ export class HttpTransformer extends Transformer {
             method = 'GET'
         }
 
+        let headers : HttpHeader[] = getDirectiveArgument(directive)("headers")
+
         if (queryBodyArgsArray.length > 0) {
             // for GET requests, leave the nullability of the query parameters unchanged -
             // but for PUT, POST and PATCH, unwrap any non-nulls
@@ -185,6 +198,7 @@ export class HttpTransformer extends Transformer {
                         path,
                         parent.name.value,
                         field.name.value,
+                        headers
                     )
                     ctx.setResource(getResourceID, getResolver)
                 }

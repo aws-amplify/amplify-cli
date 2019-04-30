@@ -10,7 +10,7 @@ import {
 import { InputValueDefinitionNode } from 'graphql'
 import { ResourceConstants, ModelResourceIDs, HttpResourceIDs, makeNonNullType } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
-
+import { HttpHeader } from './HttpTransformer';
 export class ResourceFactory {
 
     public makeParams() {
@@ -66,7 +66,10 @@ export class ResourceFactory {
      * is not 200
      * @param type
      */
-    public makeGetResolver(baseURL: string, path: string, type: string, field: string) {
+    public makeGetResolver(baseURL: string, path: string, type: string, field: string, headers: HttpHeader[]) {
+
+        const parsedHeaders = headers.map(header => qref(`$headers.put("${header.key}", "${header.value}}")`))
+
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
@@ -76,6 +79,8 @@ export class ResourceFactory {
                 compoundExpression([
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("accept-encoding", "application/json")'),
+                    qref('$headers.put("accept-encoding", "application/jsohtrsliuhltirn")'),
+                    ...parsedHeaders,
                     HttpMappingTemplate.getRequest({
                         resourcePath: path,
                         params: obj({
