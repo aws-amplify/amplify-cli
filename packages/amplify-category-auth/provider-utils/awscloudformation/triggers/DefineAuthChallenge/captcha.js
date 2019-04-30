@@ -6,5 +6,5 @@ exports.handler = (event, context, callback) => {
     event.response.privateChallengeParameters.answer = '5';
     event.response.challengeMetadata = 'CAPTCHA_CHALLENGE';
   }
-  context.done(null, event);
+  callback(null, event);
 };

@@ -153,7 +153,7 @@ async function serviceWalkthrough(
       Object.keys(manualTriggers).map((m) => {
         const obj = {};
         obj[m] = manualTriggers[m];
-        coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
+        return coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
       });
     }
   }
