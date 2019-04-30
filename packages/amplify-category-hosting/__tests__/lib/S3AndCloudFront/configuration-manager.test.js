@@ -78,8 +78,7 @@ describe('configuration-manager', () => {
         inquirer.prompt.mockResolvedValueOnce({HostingBucketName: 'mockHostingBucketName'}); 
         await configurationManager.init(mockContext); 
         expect(mockContext.exeInfo.parameters.bucketName).toBeDefined(); 
-        expect(configureWebsite.configure).toBeCalled(); 
-        expect(configureWebsite.configure.mock.calls[0][0]).toBe(mockContext); 
+        expect(configureWebsite.configure).toBeCalledWith(mockContext); 
     });
 
     test('configure', async () => {
@@ -88,11 +87,8 @@ describe('configuration-manager', () => {
         inquirer.prompt.mockResolvedValueOnce({section: 'Publish'}); 
         inquirer.prompt.mockResolvedValueOnce({section: 'exit'}); 
         await configurationManager.configure(mockContext); 
-        expect(configureWebsite.configure).toBeCalled(); 
-        expect(configureWebsite.configure.mock.calls[0][0]).toBe(mockContext); 
-        expect(configureCloudFront.configure).toBeCalled(); 
-        expect(configureCloudFront.configure.mock.calls[0][0]).toBe(mockContext); 
-        expect(configurePublish.configure).toBeCalled(); 
-        expect(configurePublish.configure.mock.calls[0][0]).toBe(mockContext); 
+        expect(configureWebsite.configure).toBeCalledWith(mockContext); 
+        expect(configureCloudFront.configure).toBeCalledWith(mockContext); 
+        expect(configurePublish.configure).toBeCalledWith(mockContext); 
     });
 })
