@@ -31,3 +31,29 @@ UserPool:
         application: !Join ['',[!Ref appName, '-', !Ref env]]</b>
 </pre> 
 
+## Custom attributes
+
+Open amplify/auth/USER_POOL_ID/USER_POOL_ID-cloudformation-template.yml
+
+Changes:
+<pre> 
+UserPool:
+  Type: AWS::Cognito::UserPool
+    Properties:
+    ...
+      Schema:
+        
+        -
+          Name: email
+          Required: true
+          Mutable: true
+          
+      <b>
+        -
+          AttributeDataType: "String"
+          Mutable: true
+          Name: attributeName
+          StringAttributeConstraints:
+            MaxLength: 256
+            MinLength: 1</b>
+</pre> 
