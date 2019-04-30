@@ -215,6 +215,16 @@ async function updateResource(context, category, serviceResult) {
           delete context.updatingAuth[safeDefaults[i]];
         }
       }
+      const lambdas = Object.keys(JSON.parse(result.triggerCapabilities));
+      const availableTriggers = Object.keys(context.amplify.getTriggerMetadata(
+        `${__dirname}/triggers`,
+        'cognito',
+      ));
+      availableTriggers.forEach((c) => {
+        if (!lambdas.includes(c)) {
+          delete context.updatingAuth[c];
+        }
+      });
       props = Object.assign(defaults, context.updatingAuth, result);
 
 

@@ -52,7 +52,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   };
 
   // get trigger metadata
-  const triggerMeta = getMetadata(triggerPath, resource);
+  const triggerMeta = getTriggerMetadata(triggerPath, resource);
 
   // ask triggers question via learn more loop
   const askTriggers = await learnMoreLoop('triggers', resourceName, triggerMeta, triggerQuestion);
@@ -67,7 +67,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
 
     const templateOptions = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
     templateOptions.push({ name: 'Create your own module', value: 'custom' });
-    const templateMeta = getMetadata(optionsPath, askTriggers.triggers[i]);
+    const templateMeta = getTriggerMetadata(optionsPath, askTriggers.triggers[i]);
     const readableTrigger = triggerMeta[askTriggers.triggers[i]].name;
 
     const templateQuestion = {
@@ -123,7 +123,7 @@ const choicesFromMetadata = (path, selection, isDir) => {
       .filter(f => statSync(join(path, f)).isDirectory()) :
     readdirSync(path).map(t => t.substring(0, t.length - 3));
 
-  const metaData = getMetadata(path, selection);
+  const metaData = getTriggerMetadata(path, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
   const options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
   // add learn more w/ seperator
@@ -132,7 +132,7 @@ const choicesFromMetadata = (path, selection, isDir) => {
   return options;
 };
 
-const getMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
+const getTriggerMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
 
 async function openEditor(context, path, name) {
   const filePath = `${path}/${name}.js`;
@@ -283,4 +283,9 @@ const parseTriggerSelections = (triggers, previous) => {
 };
 
 
-module.exports = { triggerFlow, createTrigger, parseTriggerSelections };
+module.exports = {
+  triggerFlow,
+  createTrigger,
+  parseTriggerSelections,
+  getTriggerMetadata,
+};
