@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.5...@aws-amplify/cli@1.6.6-beta.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
 ## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.4...@aws-amplify/cli@1.6.5) (2019-04-25)
 
 **Note:** Version bump only for package @aws-amplify/cli

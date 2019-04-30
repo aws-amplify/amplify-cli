@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.7.1...amplify-provider-awscloudformation@1.7.2-beta.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** append env name ([8d8e522](https://github.com/aws-amplify/amplify-cli/commit/8d8e522)), closes [#1340](https://github.com/aws-amplify/amplify-cli/issues/1340)
+
+
+
+
+
 ## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.7.0...amplify-provider-awscloudformation@1.7.1) (2019-04-25)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
