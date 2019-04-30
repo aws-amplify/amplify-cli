@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.4.2...amplify-codegen@1.5.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** make codegen multienv aware ([b146c77](https://github.com/aws-amplify/amplify-cli/commit/b146c77)), closes [#1243](https://github.com/aws-amplify/amplify-cli/issues/1243)
+
+
+### Features
+
+* Multiauth external api add ([#1329](https://github.com/aws-amplify/amplify-cli/issues/1329)) ([13d9fc3](https://github.com/aws-amplify/amplify-cli/commit/13d9fc3))
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.4.1...amplify-codegen@1.4.2) (2019-04-16)
 
 **Note:** Version bump only for package amplify-codegen

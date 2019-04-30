@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.9...amplify-graphql-types-generator@1.0.10) (2019-04-30)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** add inflection black list ([c09f183](https://github.com/aws-amplify/amplify-cli/commit/c09f183)), closes [#1328](https://github.com/aws-amplify/amplify-cli/issues/1328)
+
+
+
+
+
 ## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.8...amplify-graphql-types-generator@1.0.9) (2019-04-16)
 
 
