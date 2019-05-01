@@ -5,6 +5,15 @@
   },
   "add-to-group": {
     "name": "Add User To Group",
-    "description": "This template adds a user to a Cognito Userpool group after they have been confirmed."
+    "description": "This template adds a user to a Cognito Userpool group after they have been confirmed.",
+    "permissions": {
+      "actions": ["cognito-idp:AdminAddUserToGroup"],
+      "resources": [
+        {
+          "type": "UserPool",
+          "attribute": "Arn"
+        }
+      ]
+    }
   }
 }

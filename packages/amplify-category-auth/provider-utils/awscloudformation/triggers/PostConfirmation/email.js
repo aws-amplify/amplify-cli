@@ -4,8 +4,6 @@ const aws = require('aws-sdk');
 const ses = new aws.SES();
 
 exports.handler = (event, context, callback) => {
-  console.log(event);
-
   if (event.request.userAttributes.email) {
     sendEmail(event.request.userAttributes.email, `Congratulations ' +  ${event.userName}, you have been confirmed: `, (status) => {
       // Return to Amazon Cognito

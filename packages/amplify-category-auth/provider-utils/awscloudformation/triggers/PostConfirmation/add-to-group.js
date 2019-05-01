@@ -1,17 +1,18 @@
-exports.handler = (event, context) => {
-  const aws = require('aws-sdk');
+/* eslint-disable-line */ const aws = require('aws-sdk');
+
+exports.handler = (event, context, callback) => {
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
 
   const params = {
-    GroupName: 'yourGroup',
-    UserPoolId: 'yourUserPoolId',
-    Username: event.userName,
+    GroupName: 'TestGroup',
+    UserPoolId: 'us-west-2_WDMREigel',
+    Username: 'dnnoyes3',
   };
 
-  cognitoidentityserviceprovider.adminAddUserToGroup(params, (err) => {
-    if (err) console.log('Error');
-    else console.log('Success');
+  cognitoidentityserviceprovider.adminAddUserToGroup(params, (err, data) => {
+    if (err) {
+      callback(err);
+    }
+    callback(null, event);
   });
-
-  context.succeed(event);
 };
