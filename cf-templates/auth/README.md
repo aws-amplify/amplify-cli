@@ -3,7 +3,7 @@
 ## Tagging
 Go to the amplify directory in your project. 
 
-Open amplify/api/YOUR_FUNCTION/YOUR_FUNCTION-parameters.json
+Open amplify/auth/USER_POOL_ID/parameters.json
 
 Changes:
 <pre>

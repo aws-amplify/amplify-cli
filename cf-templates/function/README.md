@@ -3,40 +3,62 @@
 ## Tagging
 Go to the amplify directory in your project.
 
-Open amplify/api/YOUR_FUNCTION/YOUR_FUNCTION-cloudformation-template.json
+The function CloudFormation templates do not have generated parameter.json files at the moment. 
+But this does not stop you from creating one. 
+
+Create a parameter.json file in amplify/api/YOUR_FUNCTION/parameter.json
+
+Changes:
+<pre>
+{
+    "appName": "YOUR_PROJECT"
+}
+</pre>
+
+The Amplify CLI will use this file if it exists.
+ 
+then open amplify/api/YOUR_FUNCTION/YOUR_FUNCTION-cloudformation-template.json
 
 Changes:
 <pre> 
-"LambdaFunction": {
-    "Type": "AWS::Lambda::Function",
-    "Metadata": {
-        "aws:asset:path": "./src",
-        "aws:asset:property": "Code"
-    },
-    "Properties": {
+	"Parameters": {
     ...
-        <b>"Tags": [
-            {
-                "Key": "project",
-                "Value": "YOUR_FUNCTION"
+		<b>"appName": {
+			"Type": "String"
+		}</b>
+	},
+	...
+	"Resources": {
+        "LambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Metadata": {
+                "aws:asset:path": "./src",
+                "aws:asset:property": "Code"
             },
-            {
-                "Key": "application",
-                "Value": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "YOUR_FUNCTION",
-                            "-",
-                            {
-                                "Ref": "env"
-                            }
-                        ]
-                    ]
-                }
-            }
-        ]</b>
-    ...
-  }
-}
+            "Properties": {
+                ...
+                <b>"Tags": [
+                    {
+                        "Key": "project",
+                        "Value": { "Ref": "appName" }
+                    },
+                    {
+                        "Key": "application",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    { "Ref": "appName" },
+                                    "-",
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        }
+                    }
+                ]</b>
+            ...
+          }
+    }
 </pre> 
