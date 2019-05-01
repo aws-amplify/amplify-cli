@@ -9,7 +9,7 @@ exports.handler = (event, context, callback) => {
     Username: 'dnnoyes3',
   };
 
-  cognitoidentityserviceprovider.adminAddUserToGroup(params, (err, data) => {
+  cognitoidentityserviceprovider.adminAddUserToGroup(params, (err) => {
     if (err) {
       callback(err);
     }
