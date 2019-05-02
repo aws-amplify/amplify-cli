@@ -12,7 +12,6 @@ Parameters:
   unauthRoleArn:
     Type: String
 
-
   <% if (props.dependsOn && props.dependsOn.length > 0) { %>
   <% for(var i=0; i < props.dependsOn.length; i++) { %>
   <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
@@ -224,6 +223,26 @@ Resources:
       FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
       SourceArn: !GetAtt UserPool.Arn
   <% } %>  
+  # Updating lambda role with permissions to Cognito
+  <% if (props.permissions && props.permissions.length > 0) { %>
+  <% for(var i=0; i < props.permissions.length; i++) { %>
+  <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}${JSON.parse(props.permissions[i]).policyName}:`%>
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}${JSON.parse(props.permissions[i]).policyName}`%>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+            <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { %>
+              - <%=JSON.parse(props.permissions[i]).actions[x]%>
+            <% } %>
+            Resource: !GetAtt UserPool.Arn
+      Roles:
+        - !Join ['',[!Ref <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>, '-', !Ref env]]
+  <% } %>
+  <% } %>
   <% } %>
   UserPoolClientWeb:
   # Created provide application access to user pool

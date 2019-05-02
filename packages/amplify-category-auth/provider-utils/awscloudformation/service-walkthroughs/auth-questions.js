@@ -4,7 +4,6 @@ const chalkpipe = require('chalk-pipe');
 const { sanitizePrevious, handleTriggers } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
-
 async function serviceWalkthrough(
   context,
   defaultValuesFilename,
@@ -147,11 +146,15 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
+
+  // ask manual trigger flow question
   if (coreAnswers.authSelections !== 'identityPoolOnly') {
     if (coreAnswers.useDefault === 'manual') {
       const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
       if (manualTriggers) {
         coreAnswers.triggerCapabilities = [];
+        // since the trigger flow accepts all previously selected triggers and returns them,
+        // we rebuild the triggerCapability attribute
         Object.keys(manualTriggers).map((m) => {
           const obj = {};
           obj[m] = manualTriggers[m];
@@ -159,10 +162,14 @@ async function serviceWalkthrough(
         });
       }
     }
+
     const formTriggers = await handleTriggers(context, coreAnswers);
     coreAnswers.triggerCapabilities = formTriggers ?
       JSON.stringify(formTriggers) :
       [];
+
+    // determine permissions needed for each trigger module
+    coreAnswers.permissions = context.amplify.getTriggerPermissions(context, coreAnswers.triggerCapabilities, 'amplify-category-auth');
   }
 
   // formatting data for user pool providers / hosted UI

@@ -1,6 +1,16 @@
 const { getAllMaps } = require('../assets/string-maps');
 const { difference, pull } = require('lodash');
 
+
+/**
+ * @function triggerFlow
+ * @param {object} context CLI context
+ * @param {array} answers Array of stringified key values pairs of selected triggers
+ *  @example ["{"PostConfirmation":["add-to-group"]}"]
+ * @param {string} previous previousTriggers
+ * @returns {object} Object with current key/value pairs for triggers and templates
+ */
+
 const sanitizePrevious = async (context, answers, previous) => {
   if (!context || !answers) {
     context.print.error('context or answers not provided to sanitizePrevious method.');
@@ -17,7 +27,6 @@ const sanitizePrevious = async (context, answers, previous) => {
     {};
 
   const automaticOptions = getAllMaps().capabilities;
-  // const selectedKeys = Object.keys(selectedCapabilities);
 
   parsedKeys.forEach((p, i) => {
     automaticOptions.forEach((a) => {
@@ -45,23 +54,35 @@ async function handleTriggers(context, coreAnswers) {
     context.updatingAuth.triggerCapabilities &&
     context.updatingAuth.triggerCapabilities.length > 0 ?
     context.updatingAuth.triggerCapabilities :
-    '{}';
+    null;
 
   const resourceName = context.updatingAuth ?
     context.updatingAuth.resourceName :
     coreAnswers.resourceName;
 
-  if (!coreAnswers.triggerCapabilities || coreAnswers.triggerCapabilities.length < 1) {
+  // if all triggers have been removed from auth, we delete all previously created triggers
+  if (
+    !previousTriggers === null &&
+    (!coreAnswers.triggerCapabilities || coreAnswers.triggerCapabilities.length < 1)
+  ) {
     coreAnswers.dependsOn = [];
     await context.amplify.createTrigger('amplify-category-auth', 'auth', resourceName, { deleteAll: true, resourceName }, context, JSON.parse(previousTriggers));
     return null;
   }
 
+  const reducedTriggers = reduceAnswerArray(coreAnswers.triggerCapabilities);
+  const triggerEnvs = {};
+  Object.keys(reducedTriggers).forEach((r) => {
+    triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: reducedTriggers[r] }, 'amplify-category-auth');
+  });
+
   const parameters = {
     resourceName,
-    triggerCapabilities: reduceAnswerArray(coreAnswers.triggerCapabilities),
+    triggerEnvs,
+    triggerCapabilities: reducedTriggers,
   };
 
+  // create function resources and dependsOn block
   const lambdas = await context.amplify.createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
   coreAnswers = Object.assign(coreAnswers, lambdas);
   coreAnswers.dependsOn = [];
@@ -75,14 +96,20 @@ async function handleTriggers(context, coreAnswers) {
   return parameters.triggerCapabilities;
 }
 
+// since inquirer uses stringified key/value pairs as values for selected options,
+// we change this array of stringified objects into a single object.
 const reduceAnswerArray = (answers) => {
   const triggerObj = {};
   answers.forEach((t) => {
-    const parsed = JSON.parse(t);
+    const parsed = typeof t === 'string' ? JSON.parse(t) : t;
    /*eslint-disable-line*/ triggerObj[Object.keys(parsed)[0]] = Object.values(parsed)[0];
     return triggerObj;
   });
   return triggerObj;
 };
 
-module.exports = { sanitizePrevious, handleTriggers, reduceAnswerArray };
+module.exports = {
+  sanitizePrevious,
+  handleTriggers,
+  reduceAnswerArray,
+};

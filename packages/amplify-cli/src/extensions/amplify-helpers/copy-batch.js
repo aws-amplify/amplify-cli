@@ -19,16 +19,6 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
     confirm,
   } = prompt;
 
-  // deleting private keys from shared params before they are written to parameters.json
-  if (privateKeys && privateKeys.length > 0) {
-    // deleting private keys from shared params before they are written to parameters.json
-    privateKeys.forEach((e) => {
-      if (props[e]) {
-        delete props[e];
-      }
-    });
-  }
-
   // If the file exists
   const shouldGenerate = async (target) => {
     if (!filesystem.exists(target) || force) return true;
@@ -51,6 +41,16 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
         target: job.target,
         props,
       });
+
+      // deleting private keys from shared params before they are written to parameters.json
+      if (privateKeys && privateKeys.length > 0) {
+        // deleting private keys from shared params before they are written to parameters.json
+        privateKeys.forEach((e) => {
+          if (props[e]) {
+            delete props[e];
+          }
+        });
+      }
 
       if (writeParams && job.paramsFile) {
         const jsonString = JSON.stringify(props, null, 4);

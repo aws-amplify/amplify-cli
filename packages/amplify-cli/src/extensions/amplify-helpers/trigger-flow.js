@@ -11,8 +11,8 @@ const { join } = require('path');
  * @param {object} context CLI context
  * @param {string} resource The provider (i.e. cognito)
  * @param {string} category The CLI category (i.e. amplify-category-auth)
- * @param {object} previousTriggers
- * @param {object} Object with current key/value pairs for triggers and templates
+ * @param {object} previousTriggers Object representing already configured triggers
+ *  @example {"PostConfirmation":["add-to-group"]}
  * @returns {object} Object with current key/value pairs for triggers and templates
  */
 
@@ -90,7 +90,141 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   return triggerObj;
 };
 
-// learn more question loop
+/**
+ * @function createTrigger
+ * @param {string} category
+ * @param {string} parentCategory
+ * @param {string} parentResource
+ * @param {object} options
+ * @param {object} context The CLI Context
+ * @param {object} previousTriggers
+ * @returns {object} keys/value pairs of trigger: resource name
+ */
+const createTrigger = async (
+  category,
+  parentCategory,
+  parentResource,
+  options,
+  context,
+  previousTriggers,
+) => {
+  if (!options) {
+    return new Error('createTrigger function missing option parameter');
+  }
+  const {
+    triggerCapabilities,
+    resourceName,
+    deleteAll,
+    triggerEnvs,
+  } = options;
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+
+  // if deleteAll is true, we delete all resources and immediately return
+  if (deleteAll) {
+    const previousKeys = Object.keys(previousTriggers);
+    for (let y = 0; y < previousKeys.length; y += 1) {
+      const functionName = `${resourceName}${previousKeys[y]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await deleteTrigger(context, functionName, targetPath);
+    }
+    return {};
+  }
+
+  // handle missing parameters
+  if (!triggerCapabilities || !resourceName) {
+    return new Error('createTrigger function missing required parameters');
+  }
+
+  // creating array of trigger names
+  const keys = Object.keys(triggerCapabilities);
+
+  // creating array of previously configured trigger names
+  const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
+
+  // creating array of trigger values
+  const values = Object.values(triggerCapabilities);
+
+  let triggerKeyValues = {};
+  if (triggerCapabilities) {
+    for (let t = 0; t < keys.length; t += 1) {
+      const functionName = `${resourceName}${keys[t]}`;
+      const targetPath = `${targetDir}/function/${functionName}/src`;
+      if (previousTriggers && previousTriggers[keys[t]]) {
+        const updatedTrigger =
+          await updateTrigger(category, targetPath, context, keys[t], values[t], functionName);
+        triggerKeyValues = Object.assign(triggerKeyValues, updatedTrigger);
+      } else {
+        let add;
+        try {
+          ({ add } = require('amplify-category-function'));
+        } catch (e) {
+          throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+        }
+        const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
+        await add(context, 'awscloudformation', 'Lambda', {
+          modules,
+          resourceName: functionName,
+          functionName,
+          triggerEnvs: JSON.stringify(triggerEnvs[keys[t]]),
+          roleName: functionName,
+        });
+        context.print.success('Succesfully added the Lambda function locally');
+        for (let v = 0; v < values[t].length; v += 1) {
+          await copyFunctions(keys[t], values[t][v], category, context, targetPath);
+          triggerKeyValues[keys[t]] = functionName;
+        }
+      }
+    }
+  }
+
+  // loop through previous triggers to find those that are not in the current triggers, and delete
+  for (let p = 0; p < previousKeys.length; p += 1) {
+    if (!keys.includes(previousKeys[p])) {
+      const functionName = `${resourceName}${previousKeys[p]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await deleteTrigger(context, functionName, targetPath);
+    }
+  }
+  return triggerKeyValues;
+};
+
+/**
+ * @function getTriggerPermissions
+ * @param {object} context CLI context
+ * @param {string} triggers Serialized trigger object
+ * @param {string} category The CLI category (i.e. amplify-category-auth)
+ * @returns {array} Array of serialized permissions objects
+ * @example ["{
+ *    "policyName": "AddToGroup",
+ *    "trigger": "PostConfirmation",
+ *    "actions": ["cognito-idp:AdminAddUserToGroup"],
+ *    "resources": [
+ *      {
+ *        "type": "UserPool",
+ *        "attribute": "Arn"
+ *      }
+ *    ]
+ *  }"]
+ */
+const getTriggerPermissions = (context, triggers, category) => {
+  const permissions = [];
+  const parsedTriggers = JSON.parse(triggers);
+  const triggerKeys = Object.keys(parsedTriggers);
+  triggerKeys.forEach((k) => {
+    const meta = context.amplify.getTriggerMetadata(
+      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${k}`,
+      k,
+    );
+    parsedTriggers[k].forEach((t) => {
+      if (meta[t] && meta[t].permissions) {
+        permissions.push(JSON.stringify(meta[t].permissions));
+      }
+    });
+  });
+  return permissions;
+};
+
+
 const learnMoreLoop = async (key, map, metaData, question) => {
   let selections = await inquirer.prompt(question);
 
@@ -116,7 +250,6 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   return selections;
 };
 
-// extract question choices from metadata
 const choicesFromMetadata = (path, selection, isDir) => {
   const templates = isDir ?
     readdirSync(path)
@@ -140,75 +273,6 @@ async function openEditor(context, path, name) {
     await context.amplify.openEditor(context, filePath);
   }
 }
-
-// create triggers via lambda category
-const createTrigger = async (
-  category,
-  parentCategory,
-  parentResource,
-  options,
-  context,
-  previousTriggers,
-) => {
-  const { triggerCapabilities, resourceName, deleteAll } = options;
-  const targetDir = context.amplify.pathManager.getBackendDirPath();
-
-  if (deleteAll) {
-    const previousKeys = Object.keys(previousTriggers);
-    for (let y = 0; y < previousKeys.length; y += 1) {
-      const functionName = `${resourceName}${previousKeys[y]}`;
-      const targetPath = `${targetDir}/function/${functionName}`;
-      await deleteTrigger(context, functionName, targetPath);
-    }
-    return {};
-  }
-  if (!triggerCapabilities || !resourceName) {
-    return new Error('createTrigger function missing required parameters');
-  }
-  const keys = Object.keys(triggerCapabilities);
-  const previousKeys = Object.keys(previousTriggers);
-  const values = Object.values(triggerCapabilities);
-
-  let triggerKeyValues = {};
-  if (triggerCapabilities) {
-    for (let t = 0; t < keys.length; t += 1) {
-      const functionName = `${resourceName}${keys[t]}`;
-      const targetPath = `${targetDir}/function/${functionName}/src`;
-      if (previousTriggers && previousTriggers[keys[t]]) {
-        const updatedTrigger =
-          await updateTrigger(category, targetPath, context, keys[t], values[t], functionName);
-        triggerKeyValues = Object.assign(triggerKeyValues, updatedTrigger);
-      } else {
-        let add;
-        try {
-          ({ add } = require('amplify-category-function'));
-        } catch (e) {
-          throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-        }
-        const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
-        await add(context, 'awscloudformation', 'Lambda', {
-          modules,
-          resourceName: functionName,
-          functionName,
-          roleName: functionName,
-        });
-        context.print.success('Succesfully added the Lambda function locally');
-        for (let v = 0; v < values[t].length; v += 1) {
-          await copyFunctions(keys[t], values[t][v], category, context, targetPath);
-          triggerKeyValues[keys[t]] = functionName;
-        }
-      }
-    }
-  }
-  for (let p = 0; p < previousKeys.length; p += 1) {
-    if (!keys.includes(previousKeys[p])) {
-      const functionName = `${resourceName}${previousKeys[p]}`;
-      const targetPath = `${targetDir}/function/${functionName}`;
-      await deleteTrigger(context, functionName, targetPath);
-    }
-  }
-  return triggerKeyValues;
-};
 
 const deleteTrigger = async (context, name, dir) => {
   try {
@@ -259,9 +323,9 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
 /**
  * @function
  * @param {array} triggers Currently selected triggers in CLI flow array of key/values
- *    @example ["{"TriggerName2":["template2"]}"]
+ * @example ["{"TriggerName2":["template2"]}"]
  * @param {string} previous Serialized object of previously selected trigger values
- *    @example "{\"TriggerName1\":[\"template1\"]}"
+ * @example "{\"TriggerName1\":[\"template1\"]}"
  * @return {object} Object with current and previous triggers, with concatenated values for unions
  */
 const parseTriggerSelections = (triggers, previous) => {
@@ -294,9 +358,29 @@ const parseTriggerSelections = (triggers, previous) => {
 };
 
 
+const getTriggerEnvVariables = (context, trigger, category) => {
+  let env = [];
+  const meta = context.amplify.getTriggerMetadata(
+    `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${trigger.key}`,
+    trigger.key,
+  );
+  if (trigger.modules) {
+    for (let x = 0; x < trigger.modules.length; x++) {
+      if (meta[trigger.modules[x]] && meta[trigger.modules[x]].env) {
+        env = env.concat(meta[trigger.modules[x]].env);
+      }
+    }
+    return env;
+  }
+
+  return [];
+};
+
 module.exports = {
   triggerFlow,
   createTrigger,
   parseTriggerSelections,
   getTriggerMetadata,
+  getTriggerPermissions,
+  getTriggerEnvVariables,
 };
