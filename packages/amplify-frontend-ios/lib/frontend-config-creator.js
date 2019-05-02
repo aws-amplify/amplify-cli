@@ -267,6 +267,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
           appsyncResource.output.securityType === 'API_KEY'
             ? appsyncResource.output.GraphQLAPIKeyOutput
             : undefined,
+        ClientDatabasePrefix: `${appsyncResource.resourceName}_${appsyncResource.output.securityType}`,
       },
     },
   };
@@ -278,6 +279,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       Region: appsyncResource.output.region || projectRegion,
       AuthMode: authType,
       ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+      ClientDatabasePrefix: apiName,
     };
     result.AppSync[apiName] = config;
   });
