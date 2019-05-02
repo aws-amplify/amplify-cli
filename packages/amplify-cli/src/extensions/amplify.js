@@ -76,6 +76,8 @@ const {
   removeResourceParameters,
 } = require('./amplify-helpers/envResourceParams');
 
+const transformersManager = require('./amplify-helpers/graphql-transformers-manager')
+
 module.exports = (context) => {
   const amplify = {
     buildResources,
@@ -142,6 +144,7 @@ module.exports = (context) => {
     getTriggerPermissions,
     getTriggerEnvVariables,
     getTriggerEnvInputs,
+    transformersManager
   };
 
   context.amplify = amplify;
