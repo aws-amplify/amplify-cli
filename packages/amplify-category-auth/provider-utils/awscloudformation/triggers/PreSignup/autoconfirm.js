@@ -1,4 +1,4 @@
-exports.handler = (event, context, callback) => {
+exports.handler = async (event, context, callback) => {
   // Confirm the user
   event.response.autoConfirmUser = true;
 

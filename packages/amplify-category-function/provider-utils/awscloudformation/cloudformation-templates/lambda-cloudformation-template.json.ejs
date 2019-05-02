@@ -2,6 +2,7 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
+        <% if (props.modules) { %>
         "modules": {
             "Type": "String",
             "Default": "",
@@ -24,6 +25,15 @@
             "Type": "String",
             "Default": ""
         },
+        "parentResource": {
+            "Type": "String",
+            "Default": ""
+        },
+        "parentStack": {
+			"Type": "String",
+			"Default": ""
+		},
+        <% } %>
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -83,18 +93,14 @@
                     },
                     "MODULES": {
                         "Ref": "modules"
-                    },
-                    <% if (props.triggerEnvs) { %>
+                    }
+                    <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
+                    ,
                     <% for (let i = 0; i < JSON.parse(props.triggerEnvs).length; i++) { %>
                     "<%=`${JSON.parse(props.triggerEnvs)[i].key}`%>":
-                    <% if (JSON.parse(props.triggerEnvs)[i].type === 'pseudo') { %>
                     {
                         "Ref": "<%=JSON.parse(props.triggerEnvs)[i].value%>"
                     }
-                    <% } %>
-                    <% if (JSON.parse(props.triggerEnvs)[i].type === 'prop') { %>
-                    "<%= props[`${JSON.parse(props.triggerEnvs)[i].value}`]%>"
-                    <% } %>
                     <%if( i < JSON.parse(props.triggerEnvs).length -1 ){%>,<%}%>
                     <% } %>
                     <% } %>

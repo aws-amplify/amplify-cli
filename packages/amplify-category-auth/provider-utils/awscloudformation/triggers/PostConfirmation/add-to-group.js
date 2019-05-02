@@ -2,11 +2,10 @@
 
 exports.handler = (event, context, callback) => {
   const cognitoidentityserviceprovider = new aws.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
-
   const params = {
-    GroupName: 'TestGroup',
-    UserPoolId: 'us-west-2_WDMREigel',
-    Username: 'dnnoyes3',
+    GroupName: 'testgroup',
+    UserPoolId: event.userPoolId,
+    Username: event.userName,
   };
 
   cognitoidentityserviceprovider.adminAddUserToGroup(params, (err) => {

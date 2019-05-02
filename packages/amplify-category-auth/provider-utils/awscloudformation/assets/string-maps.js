@@ -467,6 +467,12 @@ const capabilities = [
     value: JSON.stringify({ DefineAuthChallenge: ['captcha'] }),
   },
   {
+    name: 'Auto-Confirm User',
+    trigger: 'PreSignup',
+    modules: ['autoconfirm'],
+    value: JSON.stringify({ PreSignup: ['autoconfirm'] }),
+  },
+  {
     name: 'Show Legal Notice',
     trigger: 'PostAuthentication',
     modules: ['show-notice'],
@@ -489,10 +495,6 @@ const capabilities = [
   // {
   //   name: 'Show Legal Notice',
   //   value: 'showLegalNotice',
-  // },
-  // {
-  //   name: 'Add Created User to Group',
-  //   value: 'addUserToGroup',
   // },
   // {
   //   name: 'Send email instead of code',

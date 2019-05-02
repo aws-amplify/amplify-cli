@@ -6,27 +6,15 @@
   "add-to-group": {
     "name": "Add User To Group",
     "description": "This template adds a user to a Cognito Userpool group after they have been confirmed.",
-    "permissions": {
-      "policyName": "AddToGroup",
-      "trigger": "PostConfirmation",
-      "actions": ["cognito-idp:AdminAddUserToGroup"],
-      "resources": [
-        {
-          "type": "UserPool",
-          "attribute": "Arn"
+    "permissions": [
+      {
+        "policyName": "AddToGroupCognito",
+        "trigger": "PostConfirmation",
+        "actions": ["cognito-idp:AdminAddUserToGroup"],
+        "resource": {
+          "paramType": "!GetAtt",
+          "keys": ["UserPool", "Arn"]
         }
-      ]
-    },
-    "env": [
-      {
-        "key": "RESOURCENAME",
-        "type": "prop",
-        "value": "resourceName"
-      },
-      {
-        "key": "PARENTSTACK",
-        "type": "pseudo",
-        "value": "AWS::StackId"
       }
     ]
   }

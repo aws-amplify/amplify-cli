@@ -116,6 +116,7 @@ const createTrigger = async (
     resourceName,
     deleteAll,
     triggerEnvs,
+    parentStack,
   } = options;
   const targetDir = context.amplify.pathManager.getBackendDirPath();
 
@@ -131,7 +132,7 @@ const createTrigger = async (
   }
 
   // handle missing parameters
-  if (!triggerCapabilities || !resourceName) {
+  if (!triggerCapabilities || !resourceName || !parentStack) {
     return new Error('createTrigger function missing required parameters');
   }
 
@@ -163,8 +164,10 @@ const createTrigger = async (
         const modules = triggerCapabilities[keys[t]] ? triggerCapabilities[keys[t]].join() : '';
         await add(context, 'awscloudformation', 'Lambda', {
           modules,
+          parentResource: resourceName,
           resourceName: functionName,
           functionName,
+          parentStack,
           triggerEnvs: JSON.stringify(triggerEnvs[keys[t]]),
           roleName: functionName,
         });
@@ -207,7 +210,7 @@ const createTrigger = async (
  *  }"]
  */
 const getTriggerPermissions = (context, triggers, category) => {
-  const permissions = [];
+  let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
   triggerKeys.forEach((k) => {
@@ -217,10 +220,11 @@ const getTriggerPermissions = (context, triggers, category) => {
     );
     parsedTriggers[k].forEach((t) => {
       if (meta[t] && meta[t].permissions) {
-        permissions.push(JSON.stringify(meta[t].permissions));
+        permissions = permissions.concat(meta[t].permissions);
       }
     });
   });
+  permissions = permissions.map(i => JSON.stringify(i));
   return permissions;
 };
 

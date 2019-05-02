@@ -11,7 +11,7 @@ Parameters:
     Type: String
   unauthRoleArn:
     Type: String
-
+  
   <% if (props.dependsOn && props.dependsOn.length > 0) { %>
   <% for(var i=0; i < props.dependsOn.length; i++) { %>
   <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
@@ -34,6 +34,10 @@ Parameters:
   <% if (typeof Object.values(props)[i] === 'number') { %>
   <%=Object.keys(props)[i]%>:
     Type: Number
+  <% } -%>
+  <% if (Object.keys(props)[i] === 'parentStack') { %>
+  <%=Object.keys(props)[i]%>:
+    Type: String
   <% } -%>
   <% if (Array.isArray(Object.values(props)[i])) { %>
   <%=Object.keys(props)[i]%>:
@@ -238,9 +242,17 @@ Resources:
             <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { %>
               - <%=JSON.parse(props.permissions[i]).actions[x]%>
             <% } %>
-            Resource: !GetAtt UserPool.Arn
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!GetAtt') { %>
+            Resource: !GetAtt
+            <% for(let z = 0; z < JSON.parse(props.permissions[i]).resource.keys.length; z++) { %>
+              - <%= JSON.parse(props.permissions[i]).resource.keys[z] %>
+            <% } %>
+            <% } %>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Ref') { %>
+            Resource: !Ref <%=JSON.parse(props.permissions[i]).resource.keys %>
+            <% } %>
       Roles:
-        - !Join ['',[!Ref <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>, '-', !Ref env]]
+        - !Join ['',["<%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>", '-', !Ref env]]
   <% } %>
   <% } %>
   <% } %>

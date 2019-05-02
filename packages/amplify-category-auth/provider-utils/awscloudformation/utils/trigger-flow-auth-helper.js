@@ -79,6 +79,7 @@ async function handleTriggers(context, coreAnswers) {
   const parameters = {
     resourceName,
     triggerEnvs,
+    parentStack: { Ref: 'AWS::StackId' },
     triggerCapabilities: reducedTriggers,
   };
 

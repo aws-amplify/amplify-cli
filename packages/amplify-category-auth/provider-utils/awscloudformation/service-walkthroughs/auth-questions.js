@@ -168,6 +168,10 @@ async function serviceWalkthrough(
       JSON.stringify(formTriggers) :
       [];
 
+    if (formTriggers) {
+      coreAnswers.parentStack = { Ref: 'AWS::StackId' };
+    }
+
     // determine permissions needed for each trigger module
     coreAnswers.permissions = context.amplify.getTriggerPermissions(context, coreAnswers.triggerCapabilities, 'amplify-category-auth');
   }
