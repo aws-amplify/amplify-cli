@@ -39,8 +39,8 @@ module.exports = {
       },
       {
         name: 'configure-transformers',
-        description: 'Configure graphql transformers for this project'
-      }
+        description: 'Configure graphql transformers for this project',
+      },
     ];
 
     context.amplify.showHelp(header, commands);

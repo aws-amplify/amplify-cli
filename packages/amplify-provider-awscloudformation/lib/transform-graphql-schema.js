@@ -291,8 +291,9 @@ async function transformGraphQLSchema(context, options) {
   if (directiveMap.directives.includes('searchable')) {
     transformerList.push(new SearchableModelTransformer());
   }
-  
-  const customTransformersInfo = await context.amplify.transformersManager.loadCustomTransformers(context, category);
+
+  const customTransformersInfo =
+    await context.amplify.transformersManager.loadCustomTransformers(context, category);
   const customTransformers = customTransformersInfo
     .filter(transformer => transformer.enabled)
     .map((transformer) => {
@@ -301,8 +302,8 @@ async function transformGraphQLSchema(context, options) {
       const customTransformer = CustomTransformer.call({});
       return customTransformer;
     });
-  
-  if(customTransformers.length > 0){
+
+  if (customTransformers.length > 0) {
     transformerList.push(...customTransformers);
   }
 
