@@ -31,10 +31,6 @@ const builtInTransformers = builtInTransformerNames.map(name => ({
   path: path.normalize(path.join(...relativeAWSCloudFormationComponents, name))
 }));
 
-// const backEndDir = context.amplify.pathManager.getBackendDirPath();
-// const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
-// /Users/hurden/Developer/lean/code/ballcaststats/amplify/backend/api/ballcaststats/transform.conf.json
-
 async function transformConfPath(context, category){
   const {
     resourcesToBeCreated,
@@ -60,6 +56,7 @@ async function transformConfPath(context, category){
 async function loadCustomTransformersConfig(context, category){
   const transformerConfigPath = await transformConfPath(context, category)
   if(!transformerConfigPath){
+    context.print.warning("Could not determine transformer config path. Have you enabled AppSync GraphQL API?")
     return null
   }
 
@@ -67,6 +64,8 @@ async function loadCustomTransformersConfig(context, category){
     const transformerConfig = JSON.parse(fs.readFileSync(transformerConfigPath));
     return transformerConfig
   } catch(error){
+    context.print.error("Tranformer config parsing failure")
+    context.print.error(error)
     return null
   }
 }
@@ -91,31 +90,34 @@ async function saveCustomTransformers(context, category, transformers){
     fs.writeFileSync(transformerConfigPath, JSON.stringify(toSave, null, 2))
     return transformerConfigPath
   } catch(error){
-    context.print.warning('Failed to save transformer config')
+    context.print.error('Failed to save transformer config')
     return null
   }
 }
 
-function isValidTransformerModule(modulePath){
+function isValidTransformerModule(context, modulePath){
   try {
     let transformer = require(modulePath);
     // FIXME: this is hacky, as I am not able to use instanceOf with tsc's emitted es5 Transformer 
     return transformer.default.__proto__.constructor === Transformer.constructor
   } catch {
+    context.print.warning(`Module ${modulePath} does not export a valid Transformer subclass`)
     return false
   }
 }
 
-function packageMetadata(packagePath){
+function packageMetadata(context, packagePath){
   let meta;
   try {
     meta = JSON.parse(fs.readFileSync(path.join(packagePath, 'package.json')));
   } catch (error) {
+    context.print.warning(`Unable to parse package.json at ${packagePath}`)
     return null
   }
 
   const entry = meta.main
   if(!entry){
+    context.print.warning(`package.json at ${packagePath} does not define an entry module`)
     return null
   }
 
@@ -141,7 +143,7 @@ async function loadEnabledTransformers(context, category){
   ]
   .map(transformer => ({
     transformer,
-    packageMetadata: transformer.path ? packageMetadata(transformer.path) : null
+    packageMetadata: transformer.path ? packageMetadata(context, transformer.path) : null
   }))
   .filter(({packageMetadata}) => {
     // warn unable to read metadata for package
@@ -154,13 +156,13 @@ async function loadEnabledTransformers(context, category){
 }
 
 /** expects node_modules directory */
-function scan(directory){
+function scan(context, directory){
   return fs.readdirSync(directory)
     .filter(subdir => subdir.match(/graphql-([\w\d_\-]+)-transformer/))
     .map(subdir => {
       const packagePath = path.join(directory, subdir);
-      const meta = packageMetadata(packagePath);
-      return meta && isValidTransformerModule(meta.modulePath) ? meta : null
+      const meta = packageMetadata(context, packagePath);
+      return meta && isValidTransformerModule(context, meta.modulePath) ? meta : null
     })
     .filter(transformerInfo => transformerInfo)
     .map(transformerInfo => ({
@@ -177,7 +179,7 @@ async function scanNodeModules(context, category){
   const projectNodeModulesDirPath = path.join(context.amplify.pathManager.searchProjectRootPath(), 'node_modules');
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
   return [amplifyProviderCloudFormationPath, amplifyCLIPackagesPath, projectNodeModulesDirPath, globalNodeModulesDirPath]
-    .map(directory => scan(directory))
+    .map(directory => scan(context, directory))
     .reduce((target, transformers) => [...target, ...transformers], [])
     .filter(transformer => 
       !existingTransformer.find(existing => 
@@ -193,6 +195,7 @@ module.exports = {
   builtInTransformerNames,
   builtInTransformers,
   loadEnabledTransformers,
+  loadCustomTransformers,
   scanNodeModules,
   saveCustomTransformers
 }

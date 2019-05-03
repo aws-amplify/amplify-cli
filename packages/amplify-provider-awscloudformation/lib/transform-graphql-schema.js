@@ -291,6 +291,20 @@ async function transformGraphQLSchema(context, options) {
   if (directiveMap.directives.includes('searchable')) {
     transformerList.push(new SearchableModelTransformer());
   }
+  
+  const customTransformersInfo = await context.amplify.transformersManager.loadCustomTransformers(context, category);
+  const customTransformers = customTransformersInfo
+    .filter(transformer => transformer.enabled)
+    .map((transformer) => {
+      const imported = require(transformer.modulePath);
+      const CustomTransformer = imported.default;
+      const customTransformer = CustomTransformer.call({});
+      return customTransformer;
+    });
+  
+  if(customTransformers.length > 0){
+    transformerList.push(...customTransformers);
+  }
 
   const buildConfig = {
     projectDirectory: options.dryrun ? false : resourceDir,

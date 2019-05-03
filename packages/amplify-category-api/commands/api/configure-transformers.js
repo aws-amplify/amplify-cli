@@ -38,7 +38,7 @@ module.exports = {
           context, category, customTransformers, 
           'Modify transformers selection',
           customTransformers.filter(transformer => transformer.enabled),
-          true)
+          false)
 
       case ScanForNewTransformers:
         context.print.info('Scanning...');
@@ -62,7 +62,7 @@ module.exports = {
             ? selectAndSaveTransformers(context, category, transformers, 'Select the transformers you want to add')
             : false
           )
-          .then(success => context.print.info(success ? "Transformers added successfully" : ""))
+          .then(success => context.print.info(success ? "Transformer selection saved successfully" : ""))
 
       default:
         return
