@@ -438,8 +438,6 @@ function getConfigForEnv(context, envName) {
 
   if (fs.existsSync(configInfoFilePath)) {
     try {
-
-      const { envName } = context.amplify.getEnvInfo();
       const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8')[envName];
 
       if (configInfo && configInfo.configLevel !== 'general') {
