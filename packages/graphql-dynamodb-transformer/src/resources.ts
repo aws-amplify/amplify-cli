@@ -115,6 +115,16 @@ export class ResourceFactory {
         }
     }
 
+    public makeTableNameOutput(resourceId: string): Output {
+        return {
+            Description: "Your DynamoDB table name.",
+            Value: Fn.Ref(resourceId),
+            Export: {
+                Name: Fn.Join(':', [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", resourceId, "Name"])
+            }
+        }
+    }
+
     /**
      * Create a DynamoDB table for a specific type.
      */
