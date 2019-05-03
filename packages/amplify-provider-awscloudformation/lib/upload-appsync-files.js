@@ -21,10 +21,11 @@ function getProjectBucket(context) {
  * contents of the build/ directory to S3.
  * @param {*} context
  * @param {*} resourcesToUpdate
- * @param {*} defaultParams
+ * @param {*} allResources
+ * @param {*} options
  */
 async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
-  const apiResources = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
+  const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
   const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
   const { defaultParams, useDeprecatedParameters } = options;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -84,10 +85,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
   };
 
-  // new Date().getTime().toString();
   // There can only be one appsync resource
-  if (apiResources.length > 0) {
-    const resource = apiResources[0];
+  if (allApiResourceToUpdate.length > 0) {
+    const resource = allApiResourceToUpdate[0];
     const { category, resourceName } = resource;
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const resourceBuildDir = path.normalize(path.join(resourceDir, 'build'));
@@ -115,7 +115,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
   } else if (allApiResources.length > 0) {
     // We need to update the parameters file even when we are not deploying the API
     // category to fix a bug around deployments on CI/CD platforms. Basically if a
-    // build has not run on this machine before and we are updating a non-api cateogry,
+    // build has not run on this machine before and we are updating a non-api category,
     // the params will not have the S3DeploymentRootKey parameter and will fail.
     // This block uses the consistent hash to fill params so the push
     // succeeds when the api category has not been built on this machine.
