@@ -37,7 +37,7 @@ async function run(context, category, resourceName) {
       handleMigration: opts =>
         updateStackForAPIMigration(context, 'api', resourceName, opts),
     }))
-    .then(() => uploadAppSyncFiles(context, resources))
+    .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
     .then(() => {
@@ -111,7 +111,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
   resources = allResources.filter(resource => resource.service === 'AppSync');
 
   return packageResources(context, resources)
-    .then(() => uploadAppSyncFiles(context, resources, {
+    .then(() => uploadAppSyncFiles(context, resources, allResources, {
       useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
