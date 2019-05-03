@@ -379,13 +379,16 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.addEnum(modelSortDirection)
             }
 
-            this.generateFilterAndKeyConditionInputs(ctx, returnType)
+            this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo)
         } else {
             throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`)
         }
     }
 
-    private generateFilterAndKeyConditionInputs(ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): void {
+    private generateFilterAndKeyConditionInputs(
+        ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        sortKeyInfo?: { fieldName: string, typeName: string }
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -400,10 +403,16 @@ export class ModelConnectionTransformer extends Transformer {
         }
 
         // Create sort key condition inputs for valid sort key types
-        const sortKeyConditionInputs = makeScalarKeyConditionInputs()
-        for (const keyCondition of sortKeyConditionInputs) {
-            if (!this.typeExist(keyCondition.name.value, ctx)) {
-                ctx.addInput(keyCondition)
+        // We only create the KeyConditionInput if it is being used.
+        if (sortKeyInfo) {
+            const sortKeyConditionInputs = makeScalarKeyConditionInputs()
+            for (const keyCondition of sortKeyConditionInputs) {
+                if (
+                    keyCondition.name.value === ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName) &&
+                    !this.typeExist(keyCondition.name.value, ctx)
+                ) {
+                    ctx.addInput(keyCondition)
+                }
             }
         }
     }
