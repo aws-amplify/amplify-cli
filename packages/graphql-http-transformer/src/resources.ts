@@ -78,7 +78,6 @@ export class ResourceFactory {
                 compoundExpression([
                     set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
                     qref('$headers.put("accept-encoding", "application/json")'),
-                    qref('$headers.put("accept-encoding", "application/jsohtrsliuhltirn")'),
                     ...parsedHeaders,
                     HttpMappingTemplate.getRequest({
                         resourcePath: path,
