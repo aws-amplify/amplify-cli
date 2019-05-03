@@ -48,10 +48,6 @@ const userPoolDefaults = projectName => ({
   defaultPasswordPolicy: booleanOptions.find(b => b.value === false).value,
   passwordPolicyMinLength: 8,
   passwordPolicyCharacters: [
-    'Requires Lowercase',
-    'Requires Uppercase',
-    'Requires Numbers',
-    'Requires Symbols',
   ],
   requiredAttributes: ['email'],
   userpoolClientName: `${projectName}_app_client`,
