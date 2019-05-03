@@ -47,7 +47,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 
 async function addResource(context, category, service, options) {
   await authHelper.ensureAuth(context);
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -92,7 +92,7 @@ async function addResource(context, category, service, options) {
 }
 
 function updateResource(context, category, service) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -120,7 +120,7 @@ function updateResource(context, category, service) {
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = require(serviceWalkthroughSrc);

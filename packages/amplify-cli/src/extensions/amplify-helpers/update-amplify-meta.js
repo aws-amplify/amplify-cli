@@ -7,9 +7,10 @@ const {
   updateBackendConfigAfterResourceAdd,
   updateBackendConfigDependsOn,
 } = require('./update-backend-config');
+const { readJsonFile } = require('./read-json-file');
 
 function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timeStamp) {
-  const amplifyMeta = JSON.parse(fs.readFileSync(filePath));
+  const amplifyMeta = readJsonFile(filePath);
 
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
@@ -71,7 +72,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
@@ -88,7 +89,7 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
 function updateProvideramplifyMeta(providerName, options) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
 
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (!amplifyMeta.providers) {
     amplifyMeta.providers = {};
     amplifyMeta.providers[providerName] = {};
@@ -125,7 +126,7 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
 
 async function updateamplifyMetaAfterPush(resources) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
   const currentTimestamp = new Date();
   let sourceDir;
@@ -162,7 +163,7 @@ function getHashForResourceDir(dirPath) {
 
 function updateamplifyMetaAfterBuild(resource) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   const currentTimestamp = new Date();
   /*eslint-disable */
   amplifyMeta[resource.category][resource.resourceName].lastBuildTimeStamp = currentTimestamp;
@@ -174,7 +175,7 @@ function updateamplifyMetaAfterBuild(resource) {
 
 function updateAmplifyMetaAfterPackage(resource, zipFilename) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   const currentTimestamp = new Date();
   /*eslint-disable */
   amplifyMeta[resource.category][resource.resourceName].lastPackageTimeStamp = currentTimestamp;
@@ -188,7 +189,7 @@ function updateAmplifyMetaAfterPackage(resource, zipFilename) {
 
 function updateamplifyMetaAfterResourceDelete(category, resourceName) {
   const amplifyMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
   const resourceDir = path.normalize(path.join(
     pathManager.getCurrentCloudBackendDirPath(),

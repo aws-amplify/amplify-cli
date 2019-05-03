@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const ora = require('ora');
+const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 const spinner = ora('');
 
@@ -12,14 +13,14 @@ async function initializeEnv(context, currentAmplifyMeta) {
     const { projectPath } = context.exeInfo.localEnvInfo;
     const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
     const amplifyMeta = {};
-    amplifyMeta.providers = JSON.parse(fs.readFileSync(providerInfoFilePath))[currentEnv];
+    amplifyMeta.providers = readJsonFile(providerInfoFilePath)[currentEnv];
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
       const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
 
       if (fs.existsSync(currentAmplifyMetafilePath)) {
-        currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+        currentAmplifyMeta = readJsonFile(currentAmplifyMetafilePath);
       }
     }
 
@@ -89,7 +90,7 @@ function populateAmplifyMeta(context, amplifyMeta) {
 
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
 
-  const backendResourceInfo = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendResourceInfo = readJsonFile(backendConfigFilePath);
 
   Object.assign(amplifyMeta, backendResourceInfo);
 

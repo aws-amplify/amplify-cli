@@ -2,6 +2,7 @@ const fs = require('fs');
 const sequential = require('promise-sequential');
 const { initializeEnv } = require('../../lib/initialize-env');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 module.exports = {
   name: 'checkout',
@@ -19,7 +20,7 @@ module.exports = {
     // Set the current env to the environment name provided
 
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-    const localEnvInfo = JSON.parse(fs.readFileSync(localEnvFilePath));
+    const localEnvInfo = readJsonFile(localEnvFilePath);
     localEnvInfo.envName = envName;
     const jsonString = JSON.stringify(localEnvInfo, null, 4);
     fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');

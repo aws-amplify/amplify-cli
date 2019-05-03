@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.2...amplify-frontend-android@1.6.0) (2019-04-30)
+
+
+### Features
+
+* Multiauth external api add ([#1329](https://github.com/aws-amplify/amplify-cli/issues/1329)) ([13d9fc3](https://github.com/aws-amplify/amplify-cli/commit/13d9fc3))
+
+
+
+
+
 ## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.1...amplify-frontend-android@1.5.2) (2019-04-24)
 
 

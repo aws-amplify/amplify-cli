@@ -6,10 +6,11 @@ const {
   updateBackendConfigAfterResourceRemove,
 } = require('./update-backend-config');
 const { removeResourceParameters } = require('./envResourceParams');
+const { readJsonFile } = require('./read-json-file');
 
 function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');

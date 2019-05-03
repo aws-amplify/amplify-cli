@@ -6,20 +6,23 @@ const generateTypes = require('./types');
 const generateStatements = require('./statements');
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
+
   const { projectPath } = context.amplify.getEnvInfo();
-  if (!projects.length) {
+  const apis = getAppSyncAPIDetails(context);
+  if (!projects.length || !apis.length) {
     throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   }
+
   if (forceDownloadSchema) {
     const downloadPromises = projects.map(async cfg =>
       downloadIntrospectionSchemaWithProgress(
         context,
-        cfg.amplifyExtension.graphQLApiId,
+        apis[0].id,
         join(projectPath, cfg.schema),
         cfg.amplifyExtension.region,
       ),

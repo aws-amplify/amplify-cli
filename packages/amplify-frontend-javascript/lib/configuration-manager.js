@@ -6,7 +6,7 @@ const constants = require('./constants');
 
 async function init(context) {
   normalizeInputParams(context);
-  const framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
+  const framework = guessFramework(context, context.exeInfo.localEnvInfo.projectPath);
   const config = frameworkConfigMapping[framework];
   context.exeInfo.projectConfig[constants.Label] = {
     framework,
@@ -135,12 +135,12 @@ async function confirmFrameworkConfiguration(context) {
   }
 }
 
-function guessFramework(projectPath) {
+function guessFramework(context, projectPath) {
   let frameWork = 'none';
   try {
     const packageJsonFilePath = path.join(projectPath, 'package.json');
     if (fs.existsSync(packageJsonFilePath)) {
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonFilePath, 'utf8'));
+      const packageJson = context.amplify.readJsonFile(packageJsonFilePath, 'utf8');
       if (packageJson && packageJson.dependencies) {
         if (packageJson.dependencies.react) {
           frameWork = 'react';

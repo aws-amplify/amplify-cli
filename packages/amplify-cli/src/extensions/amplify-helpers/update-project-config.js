@@ -1,11 +1,12 @@
 const fs = require('fs-extra');
 const pathManager = require('./path-manager');
+const { readJsonFile } = require('./read-json-file');
 
 function updateProjectConfig(projectPath, label, data) {
   let projectConfig;
   const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
   if (fs.existsSync(projectConfigFilePath)) {
-    projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+    projectConfig = readJsonFile(projectConfigFilePath);
   } else {
     projectConfig = {};
   }

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.5...amplify-category-api@1.5.6) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
 ## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.4...amplify-category-api@1.5.5) (2019-04-25)
 
 **Note:** Version bump only for package amplify-category-api

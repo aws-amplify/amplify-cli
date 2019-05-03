@@ -240,16 +240,32 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
-  return {
+  const result = {
     AppSync: {
       Default: {
         ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
-        Region: projectRegion,
+        Region: appsyncResource.output.region || projectRegion,
         AuthMode: appsyncResource.output.securityType,
-        ApiKey: appsyncResource.output.securityType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+        ApiKey:
+          appsyncResource.output.securityType === 'API_KEY'
+            ? appsyncResource.output.GraphQLAPIKeyOutput
+            : undefined,
       },
     },
   };
+  const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
+  additionalAuths.forEach((authType) => {
+    const apiName = `${appsyncResource.resourceName}_${authType}`;
+    const config = {
+      ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
+      Region: appsyncResource.output.region || projectRegion,
+      AuthMode: authType,
+      ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+    };
+    result.AppSync[apiName] = config;
+  });
+
+  return result;
 }
 
 function getLexConfig(lexResources) {

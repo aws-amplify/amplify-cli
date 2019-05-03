@@ -73,7 +73,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     try {
-      parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+      parameters = amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
@@ -287,13 +287,13 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-function migrate(projectPath, resourceName) {
+function migrate(context, projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
 
   // Change CFN file
 
   const cfnFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
-  const oldCfn = JSON.parse(fs.readFileSync(cfnFilePath, 'utf8'));
+  const oldCfn = context.amplify.readJsonFile(cfnFilePath);
   const newCfn = {};
   Object.assign(newCfn, oldCfn);
 
@@ -349,7 +349,7 @@ function migrate(projectPath, resourceName) {
 
   // Change Parameters file
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-  const oldParameters = JSON.parse(fs.readFileSync(parametersFilePath, 'utf8'));
+  const oldParameters = context.amplify.readJsonFile(parametersFilePath, 'utf8');
   const newParameters = {};
   Object.assign(newParameters, oldParameters);
 

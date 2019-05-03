@@ -16,16 +16,12 @@ async function getAppSyncAPIInfo(context, apiId, region) {
 
     let apiKeys;
 
-    if (graphqlApi.authenticationType === 'API_KEY') {
-      apiKeys = await amplify.executeProviderUtils(
-        context,
-        'awscloudformation',
-        'getAppSyncApiKeys',
-        {
-          apiId,
-          region,
-        },
-      );
+    const additionalAuthenticationProviders = (graphqlApi.additionalAuthenticationProviders || [])
+      .map(provider => provider.authenticationType)
+      .filter(t => !!t);
+
+    if ([...additionalAuthenticationProviders, graphqlApi.authenticationType].includes('API_KEY')) {
+      apiKeys = await getAPIKeys(context, apiId, region);
     }
 
     return {
@@ -33,7 +29,9 @@ async function getAppSyncAPIInfo(context, apiId, region) {
       endpoint: graphqlApi.uris.GRAPHQL,
       name: graphqlApi.name,
       securityType: graphqlApi.authenticationType,
+      additionalAuthenticationProviders,
       apiKeys,
+      region, // region override for externally added API
     };
   } catch (e) {
     if (e.code === 'NotFoundException') {
@@ -41,6 +39,21 @@ async function getAppSyncAPIInfo(context, apiId, region) {
     }
     throw e;
   }
+}
+
+async function getAPIKeys(context, apiId, region) {
+  const { amplify } = context;
+  const result = await amplify.executeProviderUtils(
+    context,
+    'awscloudformation',
+    'getAppSyncApiKeys',
+    {
+      apiId,
+      region,
+    },
+  );
+  const { apiKeys = [] } = result;
+  return apiKeys;
 }
 
 module.exports = getAppSyncAPIInfo;
