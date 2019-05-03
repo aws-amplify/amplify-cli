@@ -158,7 +158,7 @@ export class HttpTransformer extends Transformer {
 
         let headers : HttpHeader[] = getDirectiveArgument(directive)("headers")
 
-        if (!Array.isArray(headers)) {
+        if (!headers || !Array.isArray(headers)) {
             headers = [];
         }
 
