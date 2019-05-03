@@ -112,7 +112,8 @@ class CloudFormation {
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map((event) => {
         const err = [];
-        const resourceName = event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
+        const resourceName =
+          event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
         err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
         err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
@@ -128,7 +129,6 @@ class CloudFormation {
   readStackEvents(stackName) {
     this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME);
   }
-
 
   pollStack(stackName) {
     return this.getStackEvents(stackName)
@@ -410,14 +410,34 @@ function showEvents(events) {
 
   if (events.length > 0) {
     console.log('\n');
-    console.log(columnify(events, {
-      columns: [
-        'ResourceStatus',
-        'LogicalResourceId',
-        'ResourceType',
-        'Timestamp',
-        'ResourceStatusReason',
-      ],
+    const COLUMNS = [
+      'ResourceStatus',
+      'LogicalResourceId',
+      'ResourceType',
+      'Timestamp',
+      'ResourceStatusReason',
+    ];
+
+    const e = events.map((ev) => {
+      const res = {};
+      const { ResourceStatus: resourceStatus } = ev;
+
+      let colorFn = chalk.default;
+      if (CNF_ERROR_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.red;
+      } else if (CFN_SUCCESS_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.green;
+      }
+
+      COLUMNS.forEach((col) => {
+        if (ev[col]) {
+          res[col] = colorFn(ev[col]);
+        }
+      });
+      return res;
+    });
+    console.log(columnify(e, {
+      columns: COLUMNS,
       showHeaders: false,
     }));
   }
@@ -465,7 +485,8 @@ function getStatusToErrorMsg(status) {
 }
 
 function getCFNConsoleLink(event, cfn) {
-  if (event.ResourceStatus === 'CREATE_FAILED') { // Stacks get deleted and don't have perm link
+  if (event.ResourceStatus === 'CREATE_FAILED') {
+    // Stacks get deleted and don't have perm link
     return null;
   }
   const arn = event.StackId;
