@@ -424,6 +424,11 @@ function persistLocalEnvConfig(context) {
 }
 
 function getCurrentConfig(context) {
+  const { envName } = context.amplify.getEnvInfo();
+  return getConfigForEnv(context, envName);
+}
+
+function getConfigForEnv(context, envName) {
   const projectConfigInfo = {
     configLevel: 'general',
     config: {},
@@ -433,7 +438,6 @@ function getCurrentConfig(context) {
 
   if (fs.existsSync(configInfoFilePath)) {
     try {
-      const { envName } = context.amplify.getEnvInfo();
       const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8')[envName];
 
       if (configInfo && configInfo.configLevel !== 'general') {
@@ -458,7 +462,6 @@ function getCurrentConfig(context) {
   }
   return projectConfigInfo;
 }
-
 function updateProjectConfig(context) {
   removeProjectConfig(context);
   persistLocalEnvConfig(context);
@@ -485,19 +488,33 @@ function removeProjectConfig(context) {
   }
 }
 
-async function loadConfiguration(context, awsClient) {
-  const projectConfigInfo = getCurrentConfig(context);
-  if (projectConfigInfo.configLevel === 'project') {
-    const { config } = projectConfigInfo;
-    if (config.useProfile) {
-      const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
-      awsClient.config.update(awsConfig);
-    } else {
-      awsClient.config.loadFromPath(config.awsConfigFilePath);
+async function loadConfiguration(context) {
+  const { envName } = context.amplify.getEnvInfo();
+  const config = await loadConfigurationForEnv(context, envName);
+  return config;
+}
+function loadConfigFromPath(context, profilePath) {
+  if (fs.existsSync(profilePath)) {
+    const config = context.amplify.readJsonFile(profilePath);
+    if (config.accessKeyId && config.secretAccessKey && config.region) {
+      return config;
     }
   }
+  throw Error(`Invalid config ${profilePath}`);
+}
 
-  return awsClient;
+async function loadConfigurationForEnv(context, env) {
+  const projectConfigInfo = getConfigForEnv(context, env);
+  if (projectConfigInfo.configLevel === 'project') {
+    const { config } = projectConfigInfo;
+    let awsConfig;
+    if (config.useProfile) {
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
+    } else {
+      awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
+    }
+    return awsConfig;
+  }
 }
 
 async function resetCache(context) {
@@ -617,4 +634,5 @@ module.exports = {
   loadConfiguration,
   resetCache,
   resolveRegion,
+  loadConfigurationForEnv,
 };

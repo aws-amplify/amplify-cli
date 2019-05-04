@@ -47,7 +47,7 @@ function setProfile(awsConfig, profileName) {
     }
   });
   if (!isConfigSet) {
-    const keyName = (profileName === 'default') ? 'default' : `profile ${profileName}`;
+    const keyName = profileName === 'default' ? 'default' : `profile ${profileName}`;
     config[keyName] = {
       region: awsConfig.region,
     };
@@ -62,8 +62,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     if (!isRoleSourceProfile && profileConfig.role_arn) {
-      const roleCredentials =
-        await getRoleCredentials(context, profileName, profileConfig);
+      const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
       awsConfig = {
@@ -89,11 +88,9 @@ async function getRoleCredentials(context, profileName, profileConfig) {
   let roleCredentials = getCachedRoleCredentials(context, profileConfig.role_arn, roleSessionName);
 
   if (!roleCredentials) {
-    if (profileConfig.source_profile) {
-      const sourceProfileAwsConfig =
-        await getProfiledAwsConfig(context, profileConfig.source_profile, true);
-      aws.config.update(sourceProfileAwsConfig);
-    }
+    const sourceProfileAwsConfig = profileConfig.source_profile
+      ? await getProfiledAwsConfig(context, profileConfig.source_profile, true)
+      : {};
     let mfaTokenCode;
     if (profileConfig.mfa_serial) {
       context.print.info(`Profile ${profileName} is configured to assume role`);
@@ -103,15 +100,17 @@ async function getRoleCredentials(context, profileName, profileConfig) {
       mfaTokenCode = await getMfaTokenCode();
     }
 
-    const sts = new aws.STS();
-    const roleData = await sts.assumeRole({
-      RoleArn: profileConfig.role_arn,
-      RoleSessionName: roleSessionName,
-      DurationSeconds: profileConfig.duration_seconds,
-      ExternalId: profileConfig.external_id,
-      SerialNumber: profileConfig.mfa_serial,
-      TokenCode: mfaTokenCode,
-    }).promise();
+    const sts = new aws.STS(sourceProfileAwsConfig);
+    const roleData = await sts
+      .assumeRole({
+        RoleArn: profileConfig.role_arn,
+        RoleSessionName: roleSessionName,
+        DurationSeconds: profileConfig.duration_seconds,
+        ExternalId: profileConfig.external_id,
+        SerialNumber: profileConfig.mfa_serial,
+        TokenCode: mfaTokenCode,
+      })
+      .promise();
 
     roleCredentials = {
       accessKeyId: roleData.Credentials.AccessKeyId,
@@ -132,7 +131,7 @@ async function getMfaTokenCode() {
     name: 'tokenCode',
     message: 'Enter the MFA token code:',
     validate: (value) => {
-      let isValid = (value.length === 6);
+      let isValid = value.length === 6;
       if (!isValid) {
         return 'Must have length equal to 6';
       }
@@ -176,7 +175,8 @@ function validateCachedCredentials(roleCredentials) {
   let isValid = false;
 
   if (roleCredentials) {
-    isValid = !isCredentialsExpired(roleCredentials) &&
+    isValid =
+      !isCredentialsExpired(roleCredentials) &&
       roleCredentials.accessKeyId &&
       roleCredentials.secretAccessKey &&
       roleCredentials.sessionToken;
@@ -192,7 +192,7 @@ function isCredentialsExpired(roleCredentials) {
     const TOTAL_MILLISECONDS_IN_ONE_MINUTE = 1000 * 60;
     const now = new Date();
     const expirationDate = new Date(roleCredentials.expiration);
-    isExpired = (expirationDate - now) < TOTAL_MILLISECONDS_IN_ONE_MINUTE;
+    isExpired = expirationDate - now < TOTAL_MILLISECONDS_IN_ONE_MINUTE;
   }
 
   return isExpired;
@@ -222,8 +222,10 @@ async function resetCache(context, profileName) {
 }
 
 function getCacheFilePath(context) {
-  const sharedConfigDirPath =
-    path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+  const sharedConfigDirPath = path.join(
+    context.amplify.pathManager.getHomeDotAmplifyDirPath(),
+    constants.Label,
+  );
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 }

@@ -12,7 +12,6 @@ const systemConfigManager = require('./system-config-manager');
 async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || (context.exeInfo.isNewEnv)) {
-    const awscfn = await getConfiguredAwsCfnClient(context);
     const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
     const timeStamp = `${moment().format('YYYYMMDDHHmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
@@ -42,7 +41,8 @@ async function run(context) {
 
     const spinner = ora();
     spinner.start('Initializing project in the cloud...');
-    return new Cloudformation(context, awscfn, 'init')
+    const awsConfig = await getConfiguredAwsCfnClient(context);
+    return new Cloudformation(context, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
       .then((waitData) => {
         processStackCreationData(context, waitData);
@@ -58,21 +58,18 @@ async function run(context) {
 
 async function getConfiguredAwsCfnClient(context) {
   const { awsConfigInfo } = context.exeInfo;
-  process.env.AWS_SDK_LOAD_CONFIG = true;
-  const aws = require('aws-sdk');
-  let awsconfig;
+  let awsConfig;
   if (awsConfigInfo.config.useProfile) {
-    awsconfig =
+    awsConfig =
       await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
   } else {
-    awsconfig = {
+    awsConfig = {
       accessKeyId: awsConfigInfo.config.accessKeyId,
       secretAccessKey: awsConfigInfo.config.secretAccessKey,
       region: awsConfigInfo.config.region,
     };
   }
-  aws.config.update(awsconfig);
-  return aws;
+  return awsConfig;
 }
 
 function processStackCreationData(context, stackDescriptiondata) {
