@@ -493,6 +493,15 @@ async function loadConfiguration(context) {
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }
+function loadConfigFromPath(context, profilePath) {
+  if (fs.existsSync(profilePath)) {
+    const config = context.amplify.readJsonFile(profilePath);
+    if (config.accessKeyId && config.secretAccessKey && config.region) {
+      return config;
+    }
+  }
+  throw Error(`Invalid config ${profilePath}`);
+}
 
 async function loadConfigurationForEnv(context, env) {
   const projectConfigInfo = getConfigForEnv(context, env);
@@ -502,7 +511,7 @@ async function loadConfigurationForEnv(context, env) {
     if (config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
     } else {
-      awsConfig = systemConfigManager.loadConfigFromPath(config.awsConfigFilePath);
+      awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
     }
     return awsConfig;
   }

@@ -244,16 +244,6 @@ function getProfileConfig(profileName) {
   return normalizeKeys(profileConfig);
 }
 
-function loadConfigFromPath(profilePath) {
-  if (fs.existsSync(profilePath)) {
-    const config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'));
-    if (config.AccessKeyId && config.secretAccessKey && config.region) {
-      return config;
-    }
-  }
-  throw Error(`Invalid config ${configFilePath}`);
-}
-
 function getProfileCredentials(profileName) {
   let profileCredentials;
   if (fs.existsSync(credentialsFilePath)) {
@@ -312,6 +302,5 @@ module.exports = {
   getProfiledAwsConfig,
   getProfileRegion,
   getNamedProfiles,
-  loadConfigFromPath,
   resetCache,
 };
