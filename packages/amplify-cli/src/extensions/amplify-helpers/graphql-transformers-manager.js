@@ -179,17 +179,12 @@ function scan(context, directory) {
 
 async function scanNodeModules(context, category) {
   const existingTransformer = await loadEnabledTransformers(context, category);
-  // scan amplify-provider-awscloudformation
-  const providerPath = path.normalize(path.join(...relativeAWSCloudFormationComponents));
-  const amplifyCLIPackagesPath = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
   const projectNodeModulesDirPath = path.join(
     context.amplify.pathManager.searchProjectRootPath(),
     'node_modules',
   );
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();
   return [
-    providerPath,
-    amplifyCLIPackagesPath,
     projectNodeModulesDirPath,
     globalNodeModulesDirPath,
   ]
@@ -202,7 +197,9 @@ async function scanNodeModules(context, category) {
         //    as we can switch between custom transformers with different versions
         (builtInTransformerNames.includes(existing.name)
           ? existing.name === transformer.name
-          : existing.name === transformer.name && existing.version === transformer.version)));
+          : existing.name === transformer.name
+            && existing.version === transformer.version
+            && existing.author === transformer.author)));
 }
 
 module.exports = {
