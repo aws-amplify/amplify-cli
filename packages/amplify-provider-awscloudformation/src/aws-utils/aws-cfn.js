@@ -414,14 +414,34 @@ function showEvents(events) {
 
   if (events.length > 0) {
     console.log('\n');
-    console.log(columnify(events, {
-      columns: [
-        'ResourceStatus',
-        'LogicalResourceId',
-        'ResourceType',
-        'Timestamp',
-        'ResourceStatusReason',
-      ],
+    const COLUMNS = [
+      'ResourceStatus',
+      'LogicalResourceId',
+      'ResourceType',
+      'Timestamp',
+      'ResourceStatusReason',
+    ];
+
+    const e = events.map((ev) => {
+      const res = {};
+      const { ResourceStatus: resourceStatus } = ev;
+
+      let colorFn = chalk.default;
+      if (CNF_ERROR_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.red;
+      } else if (CFN_SUCCESS_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.green;
+      }
+
+      COLUMNS.forEach((col) => {
+        if (ev[col]) {
+          res[col] = colorFn(ev[col]);
+        }
+      });
+      return res;
+    });
+    console.log(columnify(e, {
+      columns: COLUMNS,
       showHeaders: false,
     }));
   }
