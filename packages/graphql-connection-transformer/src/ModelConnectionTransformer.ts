@@ -10,13 +10,14 @@ import {
     makeModelConnectionType,
     makeModelConnectionField,
     makeScalarFilterInputs,
+    makeScalarKeyConditionInputs,
     makeModelXFilterInputObject,
     makeModelSortDirectionEnumObject,
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
     isScalar, STANDARD_SCALARS,
-    toCamelCase, isNonNullType
+    toCamelCase, isNonNullType, attributeTypeFromScalar
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
@@ -151,6 +152,18 @@ export class ModelConnectionTransformer extends Transformer {
             }
         }
 
+        // This grabs the definition of the sort field when it lives on the foreign model.
+        // We use this to configure key condition arguments for the resolver on the many side of the @connection.
+        const foreignAssociatedSortField = associatedSortFieldName &&
+            relatedType.fields.find((f: FieldDefinitionNode) => f.name.value === associatedSortFieldName);
+        const sortKeyInfo = foreignAssociatedSortField ?
+            {
+                fieldName: foreignAssociatedSortField.name.value,
+                attributeType: attributeTypeFromScalar(foreignAssociatedSortField.type),
+                typeName: getBaseType(foreignAssociatedSortField.type)
+            } :
+            undefined;
+
         // Relationship Cardinalities:
         // 1. [] to []
         // 2. [] to {}
@@ -177,11 +190,13 @@ export class ModelConnectionTransformer extends Transformer {
                 fieldName,
                 relatedTypeName,
                 connectionAttributeName,
-                connectionName
+                connectionName,
+                // If there is a sort field for this connection query then use
+                sortKeyInfo
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 
-            this.extendTypeWithConnection(ctx, parent, field, relatedType)
+            this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo)
         } else if (!leftConnectionIsList && rightConnectionIsList) {
             // 3. {} to [] when the association exists.
             // Store foreign key on this table and wire up a GetItem resolver.
@@ -253,11 +268,12 @@ export class ModelConnectionTransformer extends Transformer {
                 fieldName,
                 relatedTypeName,
                 connectionAttributeName,
-                connectionName
+                connectionName,
+                sortKeyInfo
             )
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver)
 
-            this.extendTypeWithConnection(ctx, parent, field, relatedType)
+            this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo)
 
             // Update the create & update input objects for the related type
             const createInputName = ModelResourceIDs.ModelCreateInputObjectName(relatedTypeName)
@@ -329,7 +345,8 @@ export class ModelConnectionTransformer extends Transformer {
         ctx: TransformerContext,
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         field: FieldDefinitionNode,
-        returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
+        returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        sortKeyInfo?: { fieldName: string, typeName: string }
     ) {
         this.generateModelXConnectionType(ctx, returnType)
 
@@ -344,7 +361,7 @@ export class ModelConnectionTransformer extends Transformer {
             const newFields = type.fields.map(
                 (f: FieldDefinitionNode) => {
                     if (f.name.value === field.name.value) {
-                        const updated = makeModelConnectionField(field.name.value, returnType.name.value)
+                        const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo)
                         updated.directives = f.directives
                         return updated
                     }
@@ -362,13 +379,16 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.addEnum(modelSortDirection)
             }
 
-            this.generateFilterInputs(ctx, returnType)
+            this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo)
         } else {
             throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`)
         }
     }
 
-    private generateFilterInputs(ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): void {
+    private generateFilterAndKeyConditionInputs(
+        ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        sortKeyInfo?: { fieldName: string, typeName: string }
+    ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {
             if (!this.typeExist(filter.name.value, ctx)) {
@@ -380,6 +400,20 @@ export class ModelConnectionTransformer extends Transformer {
         const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
+        }
+
+        // Create sort key condition inputs for valid sort key types
+        // We only create the KeyConditionInput if it is being used.
+        if (sortKeyInfo) {
+            const sortKeyConditionInputs = makeScalarKeyConditionInputs()
+            for (const keyCondition of sortKeyConditionInputs) {
+                if (
+                    keyCondition.name.value === ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName) &&
+                    !this.typeExist(keyCondition.name.value, ctx)
+                ) {
+                    ctx.addInput(keyCondition)
+                }
+            }
         }
     }
 }
