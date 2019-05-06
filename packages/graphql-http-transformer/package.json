@@ -1,6 +1,6 @@
 {
   "name": "graphql-http-transformer",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "An AppSync model transform for HTTP resolvers.",
   "main": "lib/index.js",
   "scripts": {
