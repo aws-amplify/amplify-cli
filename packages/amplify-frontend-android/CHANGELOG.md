@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.6.0...amplify-frontend-android@1.6.1-beta.0) (2019-05-06)
+
+
+### Features
+
+* add ClientDatabasePrefi to support mixed auth ([#1382](https://github.com/aws-amplify/amplify-cli/issues/1382)) ([8f03a37](https://github.com/aws-amplify/amplify-cli/commit/8f03a37))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.2...amplify-frontend-android@1.6.0) (2019-04-30)
 
 

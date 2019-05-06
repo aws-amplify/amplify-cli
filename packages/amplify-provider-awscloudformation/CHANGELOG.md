@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.8.0...amplify-provider-awscloudformation@1.8.1-beta.0) (2019-05-06)
+
+
+### Bug Fixes
+
+* **1342:** api push error on CI/CD platforms. ([#1383](https://github.com/aws-amplify/amplify-cli/issues/1383)) ([e0eff65](https://github.com/aws-amplify/amplify-cli/commit/e0eff65)), closes [#1342](https://github.com/aws-amplify/amplify-cli/issues/1342) [#1342](https://github.com/aws-amplify/amplify-cli/issues/1342)
+* **amplify-provider-awscloudformation:** support multiprofile delete ([#1353](https://github.com/aws-amplify/amplify-cli/issues/1353)) ([404f1c3](https://github.com/aws-amplify/amplify-cli/commit/404f1c3)), closes [#978](https://github.com/aws-amplify/amplify-cli/issues/978)
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.7.1...amplify-provider-awscloudformation@1.8.0) (2019-04-30)
 
 
