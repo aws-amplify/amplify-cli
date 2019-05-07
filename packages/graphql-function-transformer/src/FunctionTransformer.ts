@@ -1,7 +1,7 @@
 import { 
     Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError
 } from 'graphql-transformer-core';
-import { obj, str, ref, printBlock, compoundExpression, qref } from 'graphql-mapping-template';
+import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import { ResolverResourceIDs, FunctionResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
 import { AppSync, IAM, Fn } from 'cloudform-types'
@@ -141,7 +141,10 @@ export default class FunctionTransformer extends Transformer {
                     prev: ref('util.toJson($ctx.prev)'),
                 })
             })),
-            ResponseMappingTemplate: '$util.toJson($ctx.result)'
+            ResponseMappingTemplate: printBlock('Handle error or return result')(compoundExpression([
+                iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
+                raw('$util.toJson($ctx.result)')
+            ]))
         }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region))
     }
 
