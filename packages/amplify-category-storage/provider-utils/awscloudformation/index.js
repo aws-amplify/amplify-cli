@@ -41,7 +41,7 @@ function migrateResource(context, projectPath, service, resourceName) {
     return;
   }
 
-  return migrate(projectPath, resourceName);
+  return migrate(context, projectPath, resourceName);
 }
 
 
