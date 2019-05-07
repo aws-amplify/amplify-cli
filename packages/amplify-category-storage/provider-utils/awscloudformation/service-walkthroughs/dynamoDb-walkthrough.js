@@ -389,7 +389,7 @@ function copyCfnTemplate(context, categoryName, resourceName, options) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
-function migrate(projectPath, resourceName) {
+function migrate(context, projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
 
