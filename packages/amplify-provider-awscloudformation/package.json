@@ -9,7 +9,7 @@
     "amplify-category-storage": "^1.6.4",
     "amplify-codegen": "^1.5.0",
     "archiver": "^2.1.1",
-    "aws-sdk": "^2.250.1",
+    "aws-sdk": "^2.451.0",
     "bottleneck": "2.16.2",
     "cfn-lint": "^1.7.2",
     "chalk": "^2.4.1",
