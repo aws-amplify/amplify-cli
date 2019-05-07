@@ -1,7 +1,8 @@
 import Table, { GlobalSecondaryIndex, KeySchema, Projection, ProvisionedThroughput, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table'
 import Resolver from 'cloudform-types/types/appSync/resolver'
 import Template from 'cloudform-types/types/template'
-import { Fn, Refs, AppSync } from 'cloudform-types'
+import { Fn, AppSync } from 'cloudform-types'
+import { Value } from 'cloudform-types/types/dataTypes'
 import {
     HttpMappingTemplate, str, print, printBlock, qref,
     ref, obj, set, nul,
@@ -34,9 +35,26 @@ export class ResourceFactory {
             Name: HttpResourceIDs.HttpDataSourceID(baseURL),
             Type: 'HTTP',
             HttpConfig: {
-                Endpoint: baseURL
+                Endpoint: this.replaceEnv(baseURL)
             }
         })
+    }
+
+    private referencesEnv(value: string): boolean {
+        return value.match(/(\${env})/) !== null;
+    }
+
+    private replaceEnv(value: string) : Value<string> {
+        if (!this.referencesEnv(value)) {
+            return value;
+        }
+
+        return Fn.Sub(
+            value,
+            {
+                env: Fn.Ref(ResourceConstants.PARAMETERS.Env)
+            }
+        );
     }
 
     private makeVtlStringArray(inputArray: string[]) {
@@ -74,19 +92,21 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
             FieldName: field,
             TypeName: type,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.put("accept-encoding", "application/json")'),
-                    ...parsedHeaders,
-                    HttpMappingTemplate.getRequest({
-                        resourcePath: path,
-                        params: obj({
-                            query: ref('util.toJson($ctx.args.query)'),
-                            headers: ref('util.toJson($headers)')
-                        })
-                    }),
-                ])
+            RequestMappingTemplate: this.replaceEnv(
+                print(
+                    compoundExpression([
+                        set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                        qref('$headers.put("accept-encoding", "application/json")'),
+                        ...parsedHeaders,
+                        HttpMappingTemplate.getRequest({
+                            resourcePath: path,
+                            params: obj({
+                                query: ref('util.toJson($ctx.args.query)'),
+                                headers: ref('util.toJson($headers)')
+                            })
+                        }),
+                    ])
+                )
             ),
             ResponseMappingTemplate: print(
                 ifElse(
@@ -124,22 +144,24 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
             FieldName: field,
             TypeName: type,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
-                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.put("Content-Type", "application/json")'),
-                    qref('$headers.put("accept-encoding", "application/json")'),
-                    ...parsedHeaders,
-                    HttpMappingTemplate.postRequest({
-                        resourcePath: path,
-                        params: obj({
-                            body: ref('util.toJson($ctx.args.body)'),
-                            query: ref('util.toJson($ctx.args.query)'),
-                            headers: ref('util.toJson($headers)')
-                        })
-                    }),
-                ])
+            RequestMappingTemplate: this.replaceEnv(
+                print(
+                    compoundExpression([
+                        nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
+                        set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                        qref('$headers.put("Content-Type", "application/json")'),
+                        qref('$headers.put("accept-encoding", "application/json")'),
+                        ...parsedHeaders,
+                        HttpMappingTemplate.postRequest({
+                            resourcePath: path,
+                            params: obj({
+                                body: ref('util.toJson($ctx.args.body)'),
+                                query: ref('util.toJson($ctx.args.query)'),
+                                headers: ref('util.toJson($headers)')
+                            })
+                        }),
+                    ])
+                )
             ),
             ResponseMappingTemplate: print(
                 ifElse(
@@ -178,22 +200,24 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
             FieldName: field,
             TypeName: type,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
-                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.put("Content-Type", "application/json")'),
-                    qref('$headers.put("accept-encoding", "application/json")'),
-                    ...parsedHeaders,
-                    HttpMappingTemplate.putRequest({
-                        resourcePath: path,
-                        params: obj({
-                            body: ref('util.toJson($ctx.args.body)'),
-                            query: ref('util.toJson($ctx.args.query)'),
-                            headers: ref('util.toJson($headers)')
-                        })
-                    }),
-                ])
+            RequestMappingTemplate: this.replaceEnv(
+                print(
+                    compoundExpression([
+                        nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
+                        set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                        qref('$headers.put("Content-Type", "application/json")'),
+                        qref('$headers.put("accept-encoding", "application/json")'),
+                        ...parsedHeaders,
+                        HttpMappingTemplate.putRequest({
+                            resourcePath: path,
+                            params: obj({
+                                body: ref('util.toJson($ctx.args.body)'),
+                                query: ref('util.toJson($ctx.args.query)'),
+                                headers: ref('util.toJson($headers)')
+                            })
+                        }),
+                    ])
+                )
             ),
             ResponseMappingTemplate: print(
                 ifElse(
@@ -221,18 +245,20 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
             FieldName: field,
             TypeName: type,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.put("accept-encoding", "application/json")'),
-                    ...parsedHeaders,
-                    HttpMappingTemplate.deleteRequest({
-                        resourcePath: path,
-                        params: obj({
-                            headers: ref('util.toJson($headers)')
-                        })
-                    }),
-                ])
+            RequestMappingTemplate: this.replaceEnv(
+                print(
+                    compoundExpression([
+                        set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                        qref('$headers.put("accept-encoding", "application/json")'),
+                        ...parsedHeaders,
+                        HttpMappingTemplate.deleteRequest({
+                            resourcePath: path,
+                            params: obj({
+                                headers: ref('util.toJson($headers)')
+                            })
+                        }),
+                    ])
+                )
             ),
             ResponseMappingTemplate: print(
                 ifElse(
@@ -270,22 +296,24 @@ export class ResourceFactory {
             DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
             FieldName: field,
             TypeName: type,
-            RequestMappingTemplate: print(
-                compoundExpression([
-                    nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
-                    set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
-                    qref('$headers.put("Content-Type", "application/json")'),
-                    qref('$headers.put("accept-encoding", "application/json")'),
-                    ...parsedHeaders,
-                    HttpMappingTemplate.patchRequest({
-                        resourcePath: path,
-                        params: obj({
-                            body: ref('util.toJson($ctx.args.body)'),
-                            query: ref('util.toJson($ctx.args.query)'),
-                            headers: ref('util.toJson($headers)')
-                        })
-                    }),
-                ])
+            RequestMappingTemplate: this.replaceEnv(
+                print(
+                    compoundExpression([
+                        nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
+                        set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
+                        qref('$headers.put("Content-Type", "application/json")'),
+                        qref('$headers.put("accept-encoding", "application/json")'),
+                        ...parsedHeaders,
+                        HttpMappingTemplate.patchRequest({
+                            resourcePath: path,
+                            params: obj({
+                                body: ref('util.toJson($ctx.args.body)'),
+                                query: ref('util.toJson($ctx.args.query)'),
+                                headers: ref('util.toJson($headers)')
+                            })
+                        }),
+                    ])
+                )
             ),
             ResponseMappingTemplate: print(
                 ifElse(
