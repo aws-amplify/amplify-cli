@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.6.0...amplify-frontend-ios@1.7.1-beta.0) (2019-05-07)
+
+
+### Features
+
+* add ClientDatabasePrefi to support mixed auth ([#1382](https://github.com/aws-amplify/amplify-cli/issues/1382)) ([8f03a37](https://github.com/aws-amplify/amplify-cli/commit/8f03a37))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.6.0...amplify-frontend-ios@1.7.0) (2019-05-06)
 
 
