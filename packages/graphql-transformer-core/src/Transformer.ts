@@ -41,11 +41,12 @@ export default class Transformer implements ITransformer {
      */
     constructor(
         name: string,
-        document: DocumentNode
+        document: DocumentNode | string
     ) {
+        const doc = typeof document === 'string' ? parse(document) : document;
         this.name = name
-        const directives = document.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[]
-        const extraDefs = document.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[]
+        const directives = doc.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[]
+        const extraDefs = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[]
         if (directives.length !== 1) {
             throw new InvalidTransformerError('Transformers must specify exactly one directive definition.')
         }
