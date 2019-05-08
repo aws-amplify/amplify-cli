@@ -41,7 +41,7 @@ export class HttpTransformer extends Transformer {
 
     resources: ResourceFactory
 
-    static urlRegex = /(http(s)?:\/\/)|www\.|(\/.*)/g
+    static urlRegex = /(http(s)?:\/\/)|(\/.*)/g
 
     constructor() {
         super(
@@ -92,7 +92,7 @@ export class HttpTransformer extends Transformer {
                 throw new TransformerContractError(`@http directive at location ${value.loc.start} ` +
                     `requires a url parameter that begins with http:// or https://.`)
             }
-            // extract just the base url, without "www" or path information
+            // extract just the base url with protocol
             const baseURL = url.replace(HttpTransformer.urlRegex, '$1')
             const dataSourceID = HttpResourceIDs.HttpDataSourceID(baseURL)
             // only create one DataSource per base URL
