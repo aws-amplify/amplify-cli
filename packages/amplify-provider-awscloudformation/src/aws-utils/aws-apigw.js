@@ -1,17 +1,11 @@
 const aws = require('./aws.js');
-const configurationManager = require('../../lib/configuration-manager');
 
 class APIGateway {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // nothing
-      }
+      await aws.loadConfig(context);
       this.context = context;
-      this.apigw = new aws.APIGateway({ ...cred, ...options });
+      this.apigw = new aws.APIGateway(options);
       return this;
     })();
   }

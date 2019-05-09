@@ -1,9 +1,7 @@
 const Cloudformation = require('../src/aws-utils/aws-cfn');
-const { loadConfigurationForEnv } = require('./configuration-manager');
 
 async function run(context, envName) {
-  const credentials = await loadConfigurationForEnv(context, envName);
-  const cfn = await new Cloudformation(context, null, credentials);
+  const cfn = await new Cloudformation(context, { envName });
   await cfn.deleteResourceStack(envName);
 }
 

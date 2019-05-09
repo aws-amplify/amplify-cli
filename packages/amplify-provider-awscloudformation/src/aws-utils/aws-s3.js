@@ -1,18 +1,12 @@
 const aws = require('./aws.js');
 const providerName = require('../../lib/constants').ProviderName;
-const configurationManager = require('../../lib/configuration-manager');
 
 class S3 {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // ignore missing config
-      }
+      await aws.loadConfig(context);
       this.context = context;
-      this.s3 = new aws.S3({ ...cred, ...options });
+      this.s3 = new aws.S3(options);
       return this;
     })();
   }

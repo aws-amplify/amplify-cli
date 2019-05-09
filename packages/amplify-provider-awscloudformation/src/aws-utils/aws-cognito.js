@@ -1,17 +1,11 @@
 const aws = require('./aws.js');
-const configurationManager = require('../../lib/configuration-manager');
 
 class Cognito {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // could not load cred
-      }
+      await aws.loadConfig(context);
       this.context = context;
-      this.cognito = new aws.CognitoIdentityServiceProvider({ ...cred, ...options });
+      this.cognito = new aws.CognitoIdentityServiceProvider(options);
       return this;
     })();
   }

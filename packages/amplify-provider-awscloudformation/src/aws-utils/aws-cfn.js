@@ -9,7 +9,6 @@ const aws = require('./aws.js');
 const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
-const configurationManager = require('../../lib/configuration-manager');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -23,7 +22,7 @@ const CFN_SUCCESS_STATUS = [
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 class CloudFormation {
-  constructor(context, userAgentAction, options = {}) {
+  constructor(context, configInfo, userAgentAction, options = {}) {
     return (async () => {
       let userAgentParam;
       if (userAgentAction) {
@@ -33,18 +32,21 @@ class CloudFormation {
       this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
-      let cred;
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // no credential. New project
+
+      if (configInfo) {
+        if (!configInfo.skipLoading) {
+          await aws.loadConfig(context, configInfo.envName);
+        }
+      } else {
+        await aws.loadConfig(context);
       }
+
       const userAgentOption = {};
       if (userAgentAction) {
         userAgentOption.customUserAgent = userAgentParam;
       }
 
-      this.cfn = new aws.CloudFormation({ ...cred, ...options, ...userAgentOption });
+      this.cfn = new aws.CloudFormation({ options, ...userAgentOption });
       this.context = context;
       return this;
     })();

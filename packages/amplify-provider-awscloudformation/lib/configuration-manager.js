@@ -488,32 +488,17 @@ function removeProjectConfig(context) {
   }
 }
 
-async function loadConfiguration(context) {
-  const { envName } = context.amplify.getEnvInfo();
-  const config = await loadConfigurationForEnv(context, envName);
-  return config;
-}
-function loadConfigFromPath(context, profilePath) {
-  if (fs.existsSync(profilePath)) {
-    const config = context.amplify.readJsonFile(profilePath);
-    if (config.accessKeyId && config.secretAccessKey && config.region) {
-      return config;
-    }
-  }
-  throw Error(`Invalid config ${profilePath}`);
-}
-
-async function loadConfigurationForEnv(context, env) {
-  const projectConfigInfo = getConfigForEnv(context, env);
+async function loadConfiguration(context, aws, envName) {
+  envName = envName || context.amplify.getEnvInfo().envName;
+  const projectConfigInfo = getConfigForEnv(context, envName);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
-    let awsConfig;
     if (config.useProfile) {
-      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
+      const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
+      aws.config.update(awsConfig);
     } else {
-      awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
+      aws.config.loadFromPath(context, config.awsConfigFilePath);
     }
-    return awsConfig;
   }
 }
 
@@ -634,5 +619,4 @@ module.exports = {
   loadConfiguration,
   resetCache,
   resolveRegion,
-  loadConfigurationForEnv,
 };

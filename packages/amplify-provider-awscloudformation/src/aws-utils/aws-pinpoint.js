@@ -1,4 +1,4 @@
-const aws = require('aws-sdk');
+const aws = require('./aws.js');
 const configurationManager = require('../../lib/configuration-manager');
 const { formUserAgentParam } = require('./user-agent');
 
@@ -25,20 +25,15 @@ const serviceRegionMap = {
 };
 
 async function getConfiguredPinpointClient(context, category, action, options = {}) {
-  let cred = {};
-  try {
-    cred = await configurationManager.loadConfiguration(context);
-  } catch (e) {
-    // ignore missing config
-  }
+  await aws.loadConfig(context);
   category = category || 'missing';
   action = action || 'missing';
   const userAgentAction = `${category}:${action[0]}`;
   const defaultOptions = {
-    region: mapServiceRegion(cred.region || configurationManager.resolveRegion()),
+    region: mapServiceRegion(aws.config.region || configurationManager.resolveRegion()),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
-  return new aws.Pinpoint({ ...cred, ...defaultOptions, ...options });
+  return new aws.Pinpoint({ ...defaultOptions, ...options });
 }
 
 function mapServiceRegion(region) {
