@@ -10,7 +10,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
   const amplifyMeta = context.amplify.getProjectMeta();
 
   // Verify that an API exists in the project before proceeding.
-  if (Object.keys(amplifyMeta[category]).length === 0) {
+  if (amplifyMeta == null || amplifyMeta[category] == null || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.');
     process.exit(0);
   }
