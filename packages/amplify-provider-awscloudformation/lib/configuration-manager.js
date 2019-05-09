@@ -497,7 +497,7 @@ async function loadConfiguration(context, aws, envName) {
       const awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
       aws.config.update(awsConfig);
     } else {
-      aws.config.loadFromPath(context, config.awsConfigFilePath);
+      aws.config.loadFromPath(config.awsConfigFilePath);
     }
   }
 }
