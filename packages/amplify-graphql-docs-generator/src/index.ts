@@ -24,8 +24,8 @@ const FILE_EXTENSION_MAP = {
 }
 
 function generate(
-  schema: { data: IntrospectionQuery; __schema: IntrospectionQuery },
-  options: { language: string; maxDepth: number }
+  schema: { data?: IntrospectionQuery; __schema?: IntrospectionQuery },
+  options: { language?: string; maxDepth?: number }
 ): string {
   const language = options.language || 'graphql'
   if (!schema.data && !schema.__schema) {
