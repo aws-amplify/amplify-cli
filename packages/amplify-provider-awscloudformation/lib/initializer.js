@@ -41,7 +41,7 @@ async function run(context) {
 
     const spinner = ora();
     spinner.start('Initializing project in the cloud...');
-    const awsConfig = await getConfiguredAwsCfnClient(context);
+    const awsConfig = await getAWSConfig(context);
     return new Cloudformation(context, { skipLoading: true }, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
       .then((waitData) => {
@@ -56,7 +56,7 @@ async function run(context) {
   }
 }
 
-async function getConfiguredAwsCfnClient(context) {
+async function getAWSConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   let awsConfig;
   if (awsConfigInfo.config.useProfile) {
