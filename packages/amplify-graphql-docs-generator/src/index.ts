@@ -24,14 +24,11 @@ const FILE_EXTENSION_MAP = {
 }
 
 function generate(
-  schemaPath: string,
-  outputPath: string,
-  options: { separateFiles: boolean; language: string; maxDepth: number }
-): void {
+  schema: { data: IntrospectionQuery; __schema: IntrospectionQuery },
+  options: { language: string; maxDepth: number }
+): string {
   const language = options.language || 'graphql'
-  const schemaContent = fs.readFileSync(schemaPath, 'utf8').trim()
-  const schemaData = JSON.parse(schemaContent)
-  if (!schemaData.data && !schemaData.__schema) {
+  if (!schema.data && !schema.__schema) {
     // tslint:disable-line
     throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
   }
@@ -39,39 +36,23 @@ function generate(
     throw new Error(`Language ${language} not supported`)
   }
 
-  const schema: IntrospectionQuery = schemaData.data || schemaData
+  // @ts-ignore
+  const schemaIntrospection: IntrospectionQuery = schema.data || schema
   const maxDepth = options.maxDepth || 3
   const useExternalFragmentForS3Object = options.language === 'graphql'
-  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth, {
+  const gqlOperations: GQLAllOperations = generateAllOps(schemaIntrospection, maxDepth, {
     useExternalFragmentForS3Object: useExternalFragmentForS3Object,
   })
   registerPartials()
   registerHelpers()
 
-  const fileExtension = FILE_EXTENSION_MAP[language]
-  if (options.separateFiles) {
-    ['queries', 'mutations', 'subscriptions'].forEach((op) => {
-      const ops = gqlOperations[op]
-      if (ops.length) {
-        const gql = render({ operations: gqlOperations[op], fragments: [] }, language)
-        fs.writeFileSync(path.resolve(path.join(outputPath, `${op}.${fileExtension}`)), gql)
-      }
-    })
-
-    if (gqlOperations.fragments.length) {
-      const gql = render({ operations: [], fragments: gqlOperations.fragments }, language)
-      fs.writeFileSync(path.resolve(path.join(outputPath, `fragments.${fileExtension}`)), gql)
-    }
-  } else {
-    const ops = [
-      ...gqlOperations.queries,
-      ...gqlOperations.mutations,
-      ...gqlOperations.subscriptions,
-    ]
-    if (ops.length) {
-      const gql = render({ operations: ops, fragments: gqlOperations.fragments }, language)
-      fs.writeFileSync(path.resolve(outputPath), gql)
-    }
+  const ops = [
+    ...gqlOperations.queries,
+    ...gqlOperations.mutations,
+    ...gqlOperations.subscriptions,
+  ]
+  if (ops.length) {
+    return render({ operations: ops, fragments: gqlOperations.fragments }, language)
   }
 }
 

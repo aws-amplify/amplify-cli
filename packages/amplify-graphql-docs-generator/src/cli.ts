@@ -2,7 +2,7 @@ import * as yargs from 'yargs'
 import * as path from 'path'
 
 import { logError } from './logger'
-import generateAllOps from './index'
+import generateAndSave from './cliFileHandler'
 
 // / Make sure unhandled errors in async code are propagated correctly
 process.on('unhandledRejection', error => {
@@ -17,7 +17,7 @@ function handleError(error: Error) {
 }
 
 export function run(argv: Array<String>): void {
-  // tslint:disable 
+  // tslint:disable
   yargs
     .command(
       '$0',
@@ -54,7 +54,11 @@ export function run(argv: Array<String>): void {
         }
       },
       async argv => {
-          generateAllOps(argv.schema, argv.output, { separateFiles: argv.separateFiles, language: argv.language, maxDepth: argv.maxDepth })
+        generateAndSave(argv.schema, argv.output, {
+          separateFiles: argv.separateFiles,
+          language: argv.language,
+          maxDepth: argv.maxDepth,
+        })
       }
     )
     .help()
