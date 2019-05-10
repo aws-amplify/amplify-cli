@@ -4,11 +4,12 @@ import {
 import GraphQLTransform from '../GraphQLTransform'
 import TransformerContext from '../TransformerContext'
 import Transformer from '../Transformer'
+import { getDirectiveArguments, gql } from '../util'
 
 class ValidObjectTransformer extends Transformer {
     constructor() {
         super(
-            'ValidObjectTransformer', 'directive @ObjectDirective on OBJECT')
+            'ValidObjectTransformer', gql`directive @ObjectDirective on OBJECT`)
     }
 
     public object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => {
@@ -18,7 +19,7 @@ class ValidObjectTransformer extends Transformer {
 
 class InvalidObjectTransformer extends Transformer {
     constructor() {
-        super('InvalidObjectTransformer', 'directive @ObjectDirective on OBJECT')
+        super('InvalidObjectTransformer', gql`directive @ObjectDirective on OBJECT`)
     }
 }
 
@@ -65,7 +66,7 @@ class PingTransformer extends Transformer {
     constructor() {
         super(
             'ValidObjectTransformer',
-            `
+            gql`
             directive @ping(config: PingConfig) on OBJECT
             input PingConfig {
                 url: String!
@@ -100,7 +101,7 @@ test('Test graphql transformer returns correct number of arguments from directiv
     const transformer = new ValidObjectTransformer()
     const doc = parse(validSchema)
     const def = doc.definitions[0] as ObjectTypeDefinitionNode
-    const map: any = transformer.getDirectiveArgumentMap(def.directives[0])
+    const map: any = getDirectiveArguments(def.directives[0])
     expect(map).not.toBeNull()
     expect(Object.keys(map)).toEqual(expect.arrayContaining(['mutations', 'queries']))
 })
