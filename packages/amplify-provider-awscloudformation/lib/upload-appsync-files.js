@@ -1,4 +1,5 @@
 const fs = require('fs');
+const fsext = require('fs-extra')
 const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
@@ -81,7 +82,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     }
 
     const jsonString = JSON.stringify(currentParameters, null, 4);
-    const parametersOutputFilePath = path.join(backEndDir, category, resourceName, 'build', PARAM_FILE_NAME);
+    const buildDirectoryPath = path.join(backEndDir, category, resourceName, 'build');
+    const parametersOutputFilePath = path.join(buildDirectoryPath, PARAM_FILE_NAME);
+    fsext.ensureDirSync(buildDirectoryPath);
     fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
   };
 
