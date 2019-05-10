@@ -1,6 +1,6 @@
 {
   "name": "graphql-function-transformer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Implements the @function directive.",
   "main": "lib/index.js",
   "author": "Michael Paris",
