@@ -93,10 +93,15 @@ test('two @function directives for the same field should be valid', () => {
     expect(resolverResource.Properties.FieldName).toEqual("echo")
     expect(resolverResource.Properties.TypeName).toEqual("Query")
     expect(resolverResource.Properties.PipelineConfig.Functions.length).toEqual(2)
+    const otherFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.OtherfunctionLambdaDataSourceRole;
+    expect(otherFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:otherfunction');
+    const echoFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.EchofunctionLambdaDataSourceRole;
+    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}');
+    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][1].env.Ref).toEqual('env');
 })
 
 test('@function directive applied to Object should throw SchemaValidationError', () => {
-    const validSchema = `
+    const invalidSchema = `
     type Query @function(name: "echofunction-\${env}") {
         echo(msg: String): String @function(name: "echofunction-\${env}")
     }
@@ -108,7 +113,7 @@ test('@function directive applied to Object should throw SchemaValidationError',
         ]
     })  
     try { 
-        transformer.transform(validSchema)
+        transformer.transform(invalidSchema)
         fail("SchemaValidationError is expected to be thrown")
     } catch (error) {
         expect(error.name).toEqual("SchemaValidationError")
