@@ -4,7 +4,9 @@ const configurationManager = require('../../lib/configuration-manager');
 
 aws.configureWithCreds = async (context) => {
   const config = await configurationManager.loadConfiguration(context, aws);
-  aws.config.update(config);
+  if (config) {
+    aws.config.update(config);
+  }
   return aws;
 };
 
