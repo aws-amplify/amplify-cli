@@ -129,6 +129,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const typeName = def.name.value
         const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName)
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
+        const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName)
         ctx.setResource(
             tableLogicalID,
             this.resources.makeModelTable(typeName, undefined, undefined)
@@ -138,8 +139,12 @@ export class DynamoDBModelTransformer extends Transformer {
             this.resources.makeIAMRole(typeName)
         )
         ctx.setResource(
-            ModelResourceIDs.ModelTableDataSourceID(typeName),
+            dataSourceRoleLogicalID,
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
+        )
+        ctx.setOutput(
+            `GetAtt${dataSourceRoleLogicalID}Name`,
+            this.resources.makeDataSourceOutput(dataSourceRoleLogicalID)
         )
         ctx.setOutput(
             `GetAtt${tableLogicalID}Name`,
