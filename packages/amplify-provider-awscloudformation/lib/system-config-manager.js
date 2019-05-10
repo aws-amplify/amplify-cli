@@ -79,7 +79,6 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   } else {
     throw new Error(`Profile configuration is missing for: ${profileName}`);
   }
-
   return awsConfig;
 }
 

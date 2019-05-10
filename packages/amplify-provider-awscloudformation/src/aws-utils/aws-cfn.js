@@ -34,7 +34,9 @@ class CloudFormation {
       this.stackEvents = [];
 
       if (configInfo) {
-        if (!configInfo.skipLoading) {
+        if (configInfo.awsConfig) {
+          aws.config.update(configInfo.awsConfig);
+        } else {
           await aws.loadConfig(context, configInfo.envName);
         }
       } else {
