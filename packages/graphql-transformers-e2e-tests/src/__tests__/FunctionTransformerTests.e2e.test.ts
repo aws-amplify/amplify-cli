@@ -104,41 +104,41 @@ beforeAll(async () => {
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
 });
 
-// afterAll(async () => {
-//     try {
-//         console.log('Deleting stack ' + STACK_NAME)
-//         await cf.deleteStack(STACK_NAME)
-//         await cf.waitForStack(STACK_NAME)
-//         console.log('Successfully deleted stack ' + STACK_NAME)
-//     } catch (e) {
-//         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-//             // The stack was deleted. This is good.
-//             expect(true).toEqual(true)
-//             console.log('Successfully deleted stack ' + STACK_NAME)
-//         } else {
-//             console.error(e)
-//             expect(true).toEqual(false)
-//         }
-//     }
-//     try {
-//         await emptyBucket(BUCKET_NAME);
-//     } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
-//     try {
-//         await LAMBDA_HELPER.deleteFunction(ECHO_FUNCTION_NAME);
-//     } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
-//     try {
-//         await LAMBDA_HELPER.deleteFunction(HELLO_FUNCTION_NAME);
-//     } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
-//     try {
-//         await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME)
-//     } catch (e) { console.warn(`Error during policy dissociation: ${e}`)}
-//     try {
-//         await IAM_HELPER.deleteRole(LAMBDA_EXECUTION_ROLE_NAME);
-//     } catch (e) { console.warn(`Error during role cleanup: ${e}`)}
-//     try {
-//         await IAM_HELPER.deletePolicy(LAMBDA_EXECUTION_POLICY_ARN);
-//     } catch (e) { console.warn(`Error during policy cleanup: ${e}`)}
-// })
+afterAll(async () => {
+    try {
+        console.log('Deleting stack ' + STACK_NAME)
+        await cf.deleteStack(STACK_NAME)
+        await cf.waitForStack(STACK_NAME)
+        console.log('Successfully deleted stack ' + STACK_NAME)
+    } catch (e) {
+        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+            // The stack was deleted. This is good.
+            expect(true).toEqual(true)
+            console.log('Successfully deleted stack ' + STACK_NAME)
+        } else {
+            console.error(e)
+            expect(true).toEqual(false)
+        }
+    }
+    try {
+        await emptyBucket(BUCKET_NAME);
+    } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
+    try {
+        await LAMBDA_HELPER.deleteFunction(ECHO_FUNCTION_NAME);
+    } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
+    try {
+        await LAMBDA_HELPER.deleteFunction(HELLO_FUNCTION_NAME);
+    } catch (e) { console.warn(`Error during function cleanup: ${e}`)}
+    try {
+        await IAM_HELPER.detachLambdaExecutionPolicy(LAMBDA_EXECUTION_POLICY_ARN, LAMBDA_EXECUTION_ROLE_NAME)
+    } catch (e) { console.warn(`Error during policy dissociation: ${e}`)}
+    try {
+        await IAM_HELPER.deleteRole(LAMBDA_EXECUTION_ROLE_NAME);
+    } catch (e) { console.warn(`Error during role cleanup: ${e}`)}
+    try {
+        await IAM_HELPER.deletePolicy(LAMBDA_EXECUTION_POLICY_ARN);
+    } catch (e) { console.warn(`Error during policy cleanup: ${e}`)}
+})
 
 /**
  * Test queries below
