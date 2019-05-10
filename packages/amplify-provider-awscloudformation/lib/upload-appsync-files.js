@@ -1,5 +1,5 @@
 const fs = require('fs');
-const fsext = require('fs-extra')
+const fsext = require('fs-extra');
 const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
