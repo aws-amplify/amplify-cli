@@ -30,7 +30,7 @@
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
-    "graphql-transformer-common": "^3.6.1",
+    "graphql-transformer-common": "3.6.1",
     "js-yaml": "^3.12.1"
   },
   "jest": {
