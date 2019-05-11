@@ -122,12 +122,16 @@ export class TransformFormatter {
         ctx.mergeParameters(resolverParams.Parameters);
         const templateResources: { [key: string]: Resource } = ctx.template.Resources
         let resolverMap = {}
+        let pipelineFunctionMap = {}
         let functionsMap = {}
         for (const resourceName of Object.keys(templateResources)) {
             const resource: Resource = templateResources[resourceName]
             if (resource.Type === 'AWS::AppSync::Resolver') {
                 const resourceResolverMap = this.replaceResolverRecord(resourceName, ctx)
                 resolverMap = { ...resolverMap, ...resourceResolverMap }
+            } else if (resource.Type === 'AWS::AppSync::FunctionConfiguration') {
+                const functionConfigMap = this.replaceFunctionConfigurationRecord(resourceName, ctx)
+                pipelineFunctionMap = { ...pipelineFunctionMap, ...functionConfigMap }
             } else if (resource.Type === 'AWS::Lambda::Function') {
                 // TODO: We only use the one function for now. Generalize this.
                 functionsMap = {
@@ -140,6 +144,7 @@ export class TransformFormatter {
         return {
             resolvers: resolverMap,
             functions: functionsMap,
+            pipelineFunctions: pipelineFunctionMap,
             schema
         }
     }
@@ -163,6 +168,28 @@ export class TransformFormatter {
             const respFileName = `${respType}.${respFieldName}.res.vtl`
 
             const updatedResolverResource = this.schemaResourceUtil.updateResolverResource(resolverResource)
+            ctx.setResource(resourceName, updatedResolverResource)
+            return {
+                [reqFileName]: requestMappingTemplate,
+                [respFileName]: responseMappingTemplate
+            }
+        }
+        return {}
+    }
+
+    private replaceFunctionConfigurationRecord(resourceName: string, ctx: TransformerContext): ResolverMap {
+        const functionConfiguration = ctx.template.Resources[resourceName]
+
+        const requestMappingTemplate = functionConfiguration.Properties.RequestMappingTemplate
+        const responseMappingTemplate = functionConfiguration.Properties.ResponseMappingTemplate
+        // If the templates are not strings. aka they use CF intrinsic functions don't rewrite.
+        if (
+            typeof requestMappingTemplate === 'string' &&
+            typeof responseMappingTemplate === 'string'
+        ) {
+            const reqFileName = `${functionConfiguration.Properties.Name}.req.vtl`
+            const respFileName = `${functionConfiguration.Properties.Name}.res.vtl`
+            const updatedResolverResource = this.schemaResourceUtil.updateFunctionConfigurationResource(functionConfiguration)
             ctx.setResource(resourceName, updatedResolverResource)
             return {
                 [reqFileName]: requestMappingTemplate,

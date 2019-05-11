@@ -1,13 +1,13 @@
-import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, getDirectiveArguments, gql } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
-    makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
-    makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObjects
+    makeModelXFilterInputObject, makeModelSortDirectionEnumObject, makeModelConnectionType,
+    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray,
+    makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
@@ -61,7 +61,7 @@ export class DynamoDBModelTransformer extends Transformer {
     constructor() {
         super(
             'DynamoDBModelTransformer',
-            `
+            gql`
             directive @model(
                 queries: ModelQueryMap,
                 mutations: ModelMutationMap,
@@ -167,7 +167,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const mutationFields = [];
         // Get any name overrides provided by the user. If an empty map it provided
         // then we do not generate those fields.
-        const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         // Configure mutations based on *mutations* argument
         let shouldMakeCreate = true;
@@ -253,7 +253,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ) => {
         const typeName = def.name.value
         const queryFields = []
-        const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         // Configure queries based on *queries* argument
         let shouldMakeGet = true;
@@ -339,7 +339,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const typeName = def.name.value
         const subscriptionFields = []
 
-        const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         const subscriptionsArgument = directiveArguments.subscriptions
         const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName))

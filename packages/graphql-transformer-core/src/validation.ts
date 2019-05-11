@@ -29,9 +29,6 @@ import { FieldsOnCorrectType } from 'graphql/validation/rules/FieldsOnCorrectTyp
 // Spec Section: "Directives Are Defined"
 import { KnownDirectives } from 'graphql/validation/rules/KnownDirectives';
 
-// Spec Section: "Directives Are Unique Per Location"
-import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
-
 // Spec Section: "Argument Names"
 import { KnownArgumentNames } from 'graphql/validation/rules/KnownArgumentNames';
 
@@ -50,6 +47,8 @@ import { OverlappingFieldsCanBeMerged } from 'graphql/validation/rules/Overlappi
 // Spec Section: "Input Object Field Uniqueness"
 import { UniqueInputFieldNames } from 'graphql/validation/rules/UniqueInputFieldNames';
 
+import { ProvidedNonNullArguments } from 'graphql/validation/rules/ProvidedNonNullArguments';
+
 /**
  * This set includes all validation rules defined by the GraphQL spec.
  *
@@ -64,13 +63,13 @@ export const specifiedRules = [
     ScalarLeafs,
     FieldsOnCorrectType,
     KnownDirectives,
-    UniqueDirectivesPerLocation,
     KnownArgumentNames,
     UniqueArgumentNames,
     ValuesOfCorrectType,
     VariablesInAllowedPosition,
     OverlappingFieldsCanBeMerged,
     UniqueInputFieldNames,
+    ProvidedNonNullArguments
 ];
 
 const EXTRA_SCALARS_DOCUMENT = parse(`

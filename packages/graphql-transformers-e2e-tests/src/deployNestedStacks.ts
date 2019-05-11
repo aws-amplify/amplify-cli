@@ -98,6 +98,18 @@ function writeDeploymentToDisk(deployment: DeploymentResources, directory: strin
         const zipContents = fs.readFileSync(deployment.functions[functionName])
         fs.writeFileSync(fullFunctionPath, zipContents);
     }
+
+    // Write any pipeline functions to disk
+    const pipelineFunctions = Object.keys(deployment.pipelineFunctions);
+    const pipelineFunctionsPath = path.normalize(directory + `/pipelineFunctions`)
+    if (!fs.existsSync(pipelineFunctionsPath)) {
+        fs.mkdirSync(pipelineFunctionsPath);
+    }
+    for (const pipelineFunctionName of pipelineFunctions) {
+        const fullFunctionPath = path.normalize(pipelineFunctionsPath + '/' + pipelineFunctionName);
+        fs.writeFileSync(fullFunctionPath, deployment.pipelineFunctions[pipelineFunctionName]);
+    }
+
     const rootStack = deployment.rootStack;
     const rootStackPath = path.normalize(directory + `/rootStack.json`);
     fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));

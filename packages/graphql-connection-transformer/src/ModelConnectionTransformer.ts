@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql } from 'graphql-transformer-core'
 import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
@@ -58,7 +58,7 @@ export class ModelConnectionTransformer extends Transformer {
     constructor() {
         super(
             'ModelConnectionTransformer',
-            `directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
+            gql`directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }

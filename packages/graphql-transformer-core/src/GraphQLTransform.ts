@@ -10,6 +10,7 @@ import { DeploymentResources } from './DeploymentResources'
 import TransformerContext from './TransformerContext'
 import blankTemplate from './util/blankTemplate'
 import Transformer from './Transformer'
+import ITransformer from './ITransformer'
 import { InvalidTransformerError, UnknownDirectiveError, SchemaValidationError } from './errors'
 import { validateModelSchema } from './validation'
 import { TransformFormatter } from './TransformFormatter';
@@ -22,15 +23,21 @@ function makeSeenTransformationKey(
     directive: DirectiveNode,
     type: TypeDefinitionNode,
     field?: FieldDefinitionNode | InputValueDefinitionNode | EnumValueDefinitionNode,
-    arg?: InputValueDefinitionNode
+    arg?: InputValueDefinitionNode,
+    index?: number
 ): string {
+    let key = '';
     if (directive && type && field && arg) {
-        return `${type.name.value}.${field.name.value}.${arg.name.value}@${directive.name.value}`
+        key = `${type.name.value}.${field.name.value}.${arg.name.value}@${directive.name.value}`
     } if (directive && type && field) {
-        return `${type.name.value}.${field.name.value}@${directive.name.value}`
+        key = `${type.name.value}.${field.name.value}@${directive.name.value}`
     } else {
-        return `${type.name.value}@${directive.name.value}`
+        key = `${type.name.value}@${directive.name.value}`
     }
+    if (index !== undefined) {
+        key += `[${index}]`;
+    }
+    return key;
 }
 
 /**
@@ -161,7 +168,7 @@ type TypeDefinitionOrExtension = TypeDefinitionNode | TypeExtensionNode;
  * is emitted.
  */
 export interface GraphQLTransformOptions {
-    transformers: Transformer[],
+    transformers: ITransformer[],
     // Override the formatter's stack mapping. This is useful when handling
     // migrations as all the input/export/ref/getatt changes will be made
     // automatically.
@@ -170,7 +177,7 @@ export interface GraphQLTransformOptions {
 export type StackMappingOption = { [regexStr: string]: string };
 export default class GraphQLTransform {
 
-    private transformers: Transformer[]
+    private transformers: ITransformer[]
     private stackMappingOverrides: StackMappingOption;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -283,6 +290,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -291,7 +299,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.object)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.object(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -300,6 +308,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'object()' method`)
                 }
             }
+            index++;
         }
         for (const field of def.fields) {
             this.transformField(transformer, def, field, validDirectiveNameMap, context)
@@ -313,6 +322,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -321,7 +331,7 @@ export default class GraphQLTransform {
             }
             if (matchFieldDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.field)) {
-                    const transformKey = makeSeenTransformationKey(dir, parent, def)
+                    const transformKey = makeSeenTransformationKey(dir, parent, def, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.field(parent, def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -330,6 +340,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'field()' method`)
                 }
             }
+            index++;
         }
         for (const arg of def.arguments) {
             this.transformArgument(transformer, parent, def, arg, validDirectiveNameMap, context)
@@ -344,6 +355,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of arg.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -352,7 +364,7 @@ export default class GraphQLTransform {
             }
             if (matchArgumentDirective(transformer.directive, dir, arg)) {
                 if (isFunction(transformer.argument)) {
-                    const transformKey = makeSeenTransformationKey(dir, parent, field, arg)
+                    const transformKey = makeSeenTransformationKey(dir, parent, field, arg, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.argument(arg, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -361,6 +373,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'argument()' method`)
                 }
             }
+            index++;
         }
     }
 
@@ -369,6 +382,7 @@ export default class GraphQLTransform {
         def: InterfaceTypeDefinitionNode,
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -377,7 +391,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.interface)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.interface(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -386,6 +400,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'interface()' method`)
                 }
             }
+            index++;
         }
         for (const field of def.fields) {
             this.transformField(transformer, def, field, validDirectiveNameMap, context)
@@ -398,6 +413,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -406,7 +422,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.scalar)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.scalar(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -415,6 +431,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'scalar()' method`)
                 }
             }
+            index++;
         }
     }
 
@@ -424,6 +441,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -432,7 +450,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.union)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.union(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -441,6 +459,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'union()' method`)
                 }
             }
+            index++;
         }
     }
 
@@ -450,6 +469,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -458,7 +478,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.enum)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.enum(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -467,6 +487,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enum()' method`)
                 }
             }
+            index++;
         }
         for (const value of def.values) {
             this.transformEnumValue(transformer, def, value, validDirectiveNameMap, context)
@@ -480,6 +501,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -488,7 +510,7 @@ export default class GraphQLTransform {
             }
             if (matchEnumValueDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.enumValue)) {
-                    const transformKey = makeSeenTransformationKey(dir, enm, def)
+                    const transformKey = makeSeenTransformationKey(dir, enm, def, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.enumValue(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -497,6 +519,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'enumValue()' method`)
                 }
             }
+            index++;
         }
     }
 
@@ -506,6 +529,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -514,7 +538,7 @@ export default class GraphQLTransform {
             }
             if (matchDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.input)) {
-                    const transformKey = makeSeenTransformationKey(dir, def)
+                    const transformKey = makeSeenTransformationKey(dir, def, undefined, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.input(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -523,6 +547,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'input()' method`)
                 }
             }
+            index++;
         }
         for (const field of def.fields) {
             this.transformInputField(transformer, def, field, validDirectiveNameMap, context)
@@ -536,6 +561,7 @@ export default class GraphQLTransform {
         validDirectiveNameMap: { [k: string]: boolean },
         context: TransformerContext
     ) {
+        let index = 0;
         for (const dir of def.directives) {
             if (!validDirectiveNameMap[dir.name.value]) {
                 throw new UnknownDirectiveError(
@@ -544,7 +570,7 @@ export default class GraphQLTransform {
             }
             if (matchInputFieldDirective(transformer.directive, dir, def)) {
                 if (isFunction(transformer.inputValue)) {
-                    const transformKey = makeSeenTransformationKey(dir, input, def)
+                    const transformKey = makeSeenTransformationKey(dir, input, def, undefined, index)
                     if (!this.seenTransformations[transformKey]) {
                         transformer.inputValue(def, dir, context)
                         this.seenTransformations[transformKey] = true
@@ -553,6 +579,7 @@ export default class GraphQLTransform {
                     throw new InvalidTransformerError(`The transformer '${transformer.name}' must implement the 'inputValue()' method`)
                 }
             }
+            index++;
         }
     }
 }
