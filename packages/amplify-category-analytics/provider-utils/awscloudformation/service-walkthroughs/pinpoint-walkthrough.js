@@ -145,10 +145,11 @@ function checkIfNotificationsCategoryExists(context) {
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
     Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === serviceName) {
+      if (categoryResources[resource].service === serviceName &&
+        categoryResources[resource].output.Id) {
         pinpointApp = {};
         pinpointApp.appId = categoryResources[resource].output.Id;
-        pinpointApp.appName = categoryResources[resource].output.Name;
+        pinpointApp.appName = resource;
       }
     });
   }
