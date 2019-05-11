@@ -135,12 +135,16 @@ function scanCategoryMetaForPinpoint(categoryMeta, options) {
         };
         result.Name = serviceMeta.output.Name || serviceMeta.output.appName;
         result.Region = serviceMeta.output.Region;
+
         if (options && options.isRegulatingResourceName) {
           const regulatedResourceName = generateResourceName(result.Name, options.envName);
-          categoryMeta[regulatedResourceName] = serviceMeta;
-          delete categoryMeta[resourceName];
           options.regulatedResourceName = regulatedResourceName;
+          if (resourceName !== regulatedResourceName) {
+            categoryMeta[regulatedResourceName] = serviceMeta;
+            delete categoryMeta[resourceName];
+          }
         }
+
         break;
       }
     }
