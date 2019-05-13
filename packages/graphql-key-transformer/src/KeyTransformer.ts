@@ -4,7 +4,8 @@ import {
 import { obj, str, ref, printBlock, compoundExpression, qref, raw, iff } from 'graphql-mapping-template';
 import { ResolverResourceIDs, ResourceConstants, isNonNullType, toCamelCase, attributeTypeFromScalar, ModelResourceIDs } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode } from 'graphql';
-import { AppSync, IAM, Fn, DynamoDB } from 'cloudform-types'
+import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
+import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 const FUNCTION_DIRECTIVE_STACK = 'FunctionDirectiveStack';
 
@@ -128,6 +129,55 @@ export default class FunctionTransformer extends Transformer {
      * Add a LSI or GSI to the table as defined by a @key.
      */
     appendSecondaryIndex = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+        const args: KeyArguments = getDirectiveArguments(directive);
+        const ks = keySchema(args);
+        const attrDefs = attributeDefinitions(args, definition);
+        const tableLogicalID = ModelResourceIDs.ModelTableResourceID(definition.name.value);
+        const tableResource = ctx.getResource(tableLogicalID);
+        const primaryKeyDirective = getPrimaryKey(definition);
+        const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
+        if (!tableResource) {
+            throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
+        } else {
+            const baseIndexProperties = {
+                IndexName: args.name,
+                KeySchema: ks,
+                Projection: new Projection({
+                    ProjectionType: 'ALL'
+                })
+            };
+            if (primaryPartitionKeyName === ks[0].AttributeName) {
+                // This is an LSI.
+                // Add the new secondary index and update the table's attribute definitions.
+                tableResource.Properties.LocalSecondaryIndexes = append(
+                    tableResource.Properties.LocalSecondaryIndexes,
+                    new LocalSecondaryIndex(baseIndexProperties)
+                )
+            } else {
+                // This is a GSI.
+                // Add the new secondary index and update the table's attribute definitions.
+                tableResource.Properties.GlobalSecondaryIndexes = append(
+                    tableResource.Properties.GlobalSecondaryIndexes,
+                    new GlobalSecondaryIndex({
+                        ...baseIndexProperties,
+                        ProvisionedThroughput: Fn.If(
+                            ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling,
+                            Refs.NoValue,
+                            {
+                                ReadCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS),
+                                WriteCapacityUnits: Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS)
+                            }
+                        ) as any,
+                    })
+                )
+            }
+            const existingAttrDefSet = new Set(tableResource.Properties.AttributeDefinitions.map(ad => ad.AttributeName));
+            for (const attr of attrDefs) {
+                if (!existingAttrDefSet.has(attr.AttributeName)) {
+                    tableResource.Properties.AttributeDefinitions.push(attr);
+                }
+            }
+        }
     }
 }
 
@@ -165,5 +215,20 @@ function attributeDefinitions(args: KeyArguments, def: ObjectTypeDefinitionNode)
     } else {
         const fieldName = args.fields[0];
         return [{ AttributeName: fieldName, AttributeType: attributeTypeFromScalar(fieldMap.get(fieldName).type) }];
+    }
+}
+
+function append<T>(maybeList: T[] | undefined, item: T) {
+    if (maybeList) {
+        return [...maybeList, item];
+    }
+    return [item];
+}
+
+function getPrimaryKey(obj: ObjectTypeDefinitionNode): DirectiveNode | undefined {
+    for (const directive of obj.directives) {
+        if (directive.name.value === 'key' && !getDirectiveArguments(directive).name) {
+            return directive;
+        }
     }
 }
