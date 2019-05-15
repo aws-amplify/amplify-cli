@@ -460,4 +460,35 @@ function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
-module.exports = { addWalkthrough, updateWalkthrough, migrate };
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  let actions = new Set();
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.add('dynamodb:PutItem');
+        break;
+      case 'update': actions.add('dynamodb:UpdateItem');
+        break;
+      case 'read': actions.add('dynamodb:GetItem'); actions.add('dynamodb:BatchGetItem');
+        break;
+      case 'delete': actions.add('dynamodb:DeleteItem');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  actions = Array.from(actions);
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [{ Ref: `${category}${resourceName}Arn` }],
+  };
+  const attributes = ['Name', 'Arn'];
+
+  return { policy, attributes };
+}
+
+module.exports = {
+  addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+};

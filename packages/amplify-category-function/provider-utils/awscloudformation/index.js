@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 
+const categoryName = 'function';
+
 let serviceMetadata;
 
 async function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
@@ -97,6 +99,16 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   return context.amplify.copyBatch(context, copyJobs, options);
 }
 
+function createParametersFile(context, parameters, resourceName) {
+  const parametersFileName = 'function-parameters.json';
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, resourceName);
+  fs.ensureDirSync(resourceDirPath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const jsonString = JSON.stringify(parameters, null, 4);
+  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+}
+
 async function addResource(context, category, service, options) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
@@ -112,11 +124,48 @@ async function addResource(context, category, service, options) {
   }
 
   copyCfnTemplate(context, category, answers, cfnFilename);
+  if (answers.parameters) {
+    createParametersFile(context, answers.parameters, answers.resourceName);
+  }
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     answers.resourceName,
     options,
   );
+
+  await openEditor(context, category, answers);
+
+  return answers.resourceName;
+}
+
+async function updateResource(context, category, service) {
+  let answers;
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { updateWalkthrough } = require(serviceWalkthroughSrc);
+
+  const result = await updateWalkthrough(context);
+
+  if (result.answers) {
+    ({ answers } = result);
+  } else {
+    answers = result;
+  }
+
+  if (answers.parameters) {
+    createParametersFile(context, answers.parameters, answers.resourceName);
+  }
+
+  if (result.dependsOn) {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(
+      category,
+      answers.resourceName,
+      'dependsOn',
+      result.dependsOn,
+    );
+  }
 
   await openEditor(context, category, answers);
 
@@ -213,5 +262,21 @@ function migrateResource(context, projectPath, service, resourceName) {
   return migrate(context, projectPath, resourceName);
 }
 
+function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
-module.exports = { addResource, invoke, migrateResource };
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return;
+  }
+
+  return getIAMPolicies(resourceName, crudOptions);
+}
+
+
+module.exports = {
+  addResource, updateResource, invoke, migrateResource, getPermissionPolicies,
+};

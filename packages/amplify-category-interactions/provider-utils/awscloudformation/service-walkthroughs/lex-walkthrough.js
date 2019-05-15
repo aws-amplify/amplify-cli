@@ -761,4 +761,55 @@ async function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
 }
 
-module.exports = { addWalkthrough, updateWalkthrough, migrate };
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push(
+        'lex:Create*',
+        'lex:Post*',
+      );
+        break;
+      case 'update': actions.push('lex:Put*');
+        break;
+      case 'read': actions.push('lex:Get*');
+        break;
+      case 'delete': actions.push('lex:Delete*');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:lex:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':bot:',
+            {
+              Ref: `${category}${resourceName}BotName`,
+            },
+            ':*',
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['BotName'];
+
+  return { policy, attributes };
+}
+
+module.exports = {
+  addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+};

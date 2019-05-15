@@ -4,6 +4,8 @@ const sequential = require('promise-sequential');
 const constants = require('./constants');
 const supportedServices = require('./supported-services');
 
+const category = 'hosting';
+
 function getAvailableServices(context) {
   const availableServices = [];
   const projectConfig = context.amplify.getProjectConfig();
@@ -74,8 +76,54 @@ async function migrate(context) {
   await sequential(migrationTasks);
 }
 
+
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  let actions = new Set();
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.add('s3:PutObject');
+        break;
+      case 'update': actions.add('s3:PutObject');
+        break;
+      case 'read': actions.add('s3:GetObject'); actions.add('s3:ListBucket');
+        break;
+      case 'delete': actions.add('s3:DeleteObject');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  actions = Array.from(actions);
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:s3:::',
+            {
+              Ref: `${category}${resourceName}HostingBucketName`,
+            },
+            '/*',
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['HostingBucketName'];
+
+  return { policy, attributes };
+}
+
+
 module.exports = {
   getCategoryStatus,
   runServiceAction,
   migrate,
+  getIAMPolicies,
 };

@@ -1,3 +1,4 @@
+const fs = require('fs-extra');
 
 function addResource(context, category, service, options) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
@@ -44,5 +45,21 @@ function migrateResource(context, projectPath, service, resourceName) {
   return migrate(context, projectPath, resourceName);
 }
 
+function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
 
-module.exports = { addResource, updateResource, migrateResource };
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return;
+  }
+
+  return getIAMPolicies(resourceName, crudOptions);
+}
+
+
+module.exports = {
+  addResource, updateResource, migrateResource, getPermissionPolicies,
+};
