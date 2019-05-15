@@ -514,9 +514,9 @@ async function loadConfigurationForEnv(context, env) {
       awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
     }
     return awsConfig;
-  } else {
-    return {};
   }
+
+  return {};
 }
 
 async function resetCache(context) {
