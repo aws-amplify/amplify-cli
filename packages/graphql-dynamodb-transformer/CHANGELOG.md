@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.6.0...graphql-dynamodb-transformer@3.6.1-beta.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** always output datasource name ([#1182](https://github.com/aws-amplify/amplify-cli/issues/1182)) ([a58e1ac](https://github.com/aws-amplify/amplify-cli/commit/a58e1ac))
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.4.2...graphql-dynamodb-transformer@3.6.0) (2019-05-07)
 
 
