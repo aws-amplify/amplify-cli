@@ -1,0 +1,20 @@
+baf097ecb335fc9e3149e4291b789151
+/* istanbul ignore next */var cov_2pooadqj9f = function () {var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/generateDocs.js',hash = '1a3065b8666e5dee29e05af26827cab994c0d28b',Function = function () {}.constructor,global = new Function('return this')(),gcv = '__coverage__',coverageData = { path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/generateDocs.js', statementMap: { '0': { start: { line: 1, column: 17 }, end: { line: 1, column: 36 } }, '1': { start: { line: 3, column: 18 }, end: { line: 3, column: 44 } }, '2': { start: { line: 6, column: 17 }, end: { line: 13, column: 4 } }, '3': { start: { line: 15, column: 2 }, end: { line: 15, column: 42 } }, '4': { start: { line: 18, column: 0 }, end: { line: 18, column: 33 } } }, fnMap: { '0': { name: 'askGenerateDocs', decl: { start: { line: 5, column: 15 }, end: { line: 5, column: 30 } }, loc: { start: { line: 5, column: 33 }, end: { line: 16, column: 1 } }, line: 5 } }, branchMap: {}, s: { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0 }, f: { '0': 0 }, b: {}, _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c' },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();const inquirer = /* istanbul ignore next */(cov_2pooadqj9f.s[0]++, require('inquirer'));
+
+const constants = /* istanbul ignore next */(cov_2pooadqj9f.s[1]++, require('../../constants'));
+
+async function askGenerateDocs() {/* istanbul ignore next */cov_2pooadqj9f.f[0]++;
+  const answer = /* istanbul ignore next */(cov_2pooadqj9f.s[2]++, await inquirer.prompt([
+  {
+    name: 'confirmGenerateOperations',
+    message: constants.PROMPT_MSG_GENERATE_OPS,
+    type: 'confirm',
+    default: true }])); /* istanbul ignore next */cov_2pooadqj9f.s[3]++;
+
+
+
+  return answer.confirmGenerateOperations;
+} /* istanbul ignore next */cov_2pooadqj9f.s[4]++;
+
+module.exports = askGenerateDocs;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdlbmVyYXRlRG9jcy5qcyJdLCJuYW1lcyI6WyJpbnF1aXJlciIsInJlcXVpcmUiLCJjb25zdGFudHMiLCJhc2tHZW5lcmF0ZURvY3MiLCJhbnN3ZXIiLCJwcm9tcHQiLCJuYW1lIiwibWVzc2FnZSIsIlBST01QVF9NU0dfR0VORVJBVEVfT1BTIiwidHlwZSIsImRlZmF1bHQiLCJjb25maXJtR2VuZXJhdGVPcGVyYXRpb25zIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6IncwQ0FBQSxNQUFNQSw2REFBV0MsUUFBUSxVQUFSLENBQVgsQ0FBTjs7QUFFQSxNQUFNQyw4REFBWUQsUUFBUSxpQkFBUixDQUFaLENBQU47O0FBRUEsZUFBZUUsZUFBZixHQUFpQztBQUMvQixRQUFNQywyREFBUyxNQUFNSixTQUFTSyxNQUFULENBQWdCO0FBQ25DO0FBQ0VDLFVBQU0sMkJBRFI7QUFFRUMsYUFBU0wsVUFBVU0sdUJBRnJCO0FBR0VDLFVBQU0sU0FIUjtBQUlFQyxhQUFTLElBSlgsRUFEbUMsQ0FBaEIsQ0FBZixDQUFOLENBRCtCOzs7O0FBVS9CLFNBQU9OLE9BQU9PLHlCQUFkO0FBQ0QsQzs7QUFFREMsT0FBT0MsT0FBUCxHQUFpQlYsZUFBakIiLCJmaWxlIjoiZ2VuZXJhdGVEb2NzLmpzIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgaW5xdWlyZXIgPSByZXF1aXJlKCdpbnF1aXJlcicpO1xuXG5jb25zdCBjb25zdGFudHMgPSByZXF1aXJlKCcuLi8uLi9jb25zdGFudHMnKTtcblxuYXN5bmMgZnVuY3Rpb24gYXNrR2VuZXJhdGVEb2NzKCkge1xuICBjb25zdCBhbnN3ZXIgPSBhd2FpdCBpbnF1aXJlci5wcm9tcHQoW1xuICAgIHtcbiAgICAgIG5hbWU6ICdjb25maXJtR2VuZXJhdGVPcGVyYXRpb25zJyxcbiAgICAgIG1lc3NhZ2U6IGNvbnN0YW50cy5QUk9NUFRfTVNHX0dFTkVSQVRFX09QUyxcbiAgICAgIHR5cGU6ICdjb25maXJtJyxcbiAgICAgIGRlZmF1bHQ6IHRydWUsXG4gICAgfSxcbiAgXSk7XG5cbiAgcmV0dXJuIGFuc3dlci5jb25maXJtR2VuZXJhdGVPcGVyYXRpb25zO1xufVxuXG5tb2R1bGUuZXhwb3J0cyA9IGFza0dlbmVyYXRlRG9jcztcbiJdfQ==

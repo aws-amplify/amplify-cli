@@ -1,0 +1,20 @@
+c8a52dc5137cf97013b50a0347efbf6c
+/* istanbul ignore next */var cov_s4ei7l69c = function () {var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/generateCode.js',hash = '203c45c437de743f936d854b90e9617364ffe8b3',Function = function () {}.constructor,global = new Function('return this')(),gcv = '__coverage__',coverageData = { path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/generateCode.js', statementMap: { '0': { start: { line: 1, column: 17 }, end: { line: 1, column: 36 } }, '1': { start: { line: 3, column: 18 }, end: { line: 3, column: 44 } }, '2': { start: { line: 6, column: 17 }, end: { line: 13, column: 4 } }, '3': { start: { line: 15, column: 2 }, end: { line: 15, column: 36 } }, '4': { start: { line: 18, column: 0 }, end: { line: 18, column: 33 } } }, fnMap: { '0': { name: 'askGenerateCode', decl: { start: { line: 5, column: 15 }, end: { line: 5, column: 30 } }, loc: { start: { line: 5, column: 33 }, end: { line: 16, column: 1 } }, line: 5 } }, branchMap: {}, s: { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0 }, f: { '0': 0 }, b: {}, _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c' },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();const inquirer = /* istanbul ignore next */(cov_s4ei7l69c.s[0]++, require('inquirer'));
+
+const constants = /* istanbul ignore next */(cov_s4ei7l69c.s[1]++, require('../../constants'));
+
+async function askGenerateCode() {/* istanbul ignore next */cov_s4ei7l69c.f[0]++;
+  const answer = /* istanbul ignore next */(cov_s4ei7l69c.s[2]++, await inquirer.prompt([
+  {
+    name: 'confirmGenerateCode',
+    message: constants.PROMPT_MSG_GENERATE_CODE,
+    type: 'confirm',
+    default: true }])); /* istanbul ignore next */cov_s4ei7l69c.s[3]++;
+
+
+
+  return answer.confirmGenerateCode;
+} /* istanbul ignore next */cov_s4ei7l69c.s[4]++;
+
+module.exports = askGenerateCode;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdlbmVyYXRlQ29kZS5qcyJdLCJuYW1lcyI6WyJpbnF1aXJlciIsInJlcXVpcmUiLCJjb25zdGFudHMiLCJhc2tHZW5lcmF0ZUNvZGUiLCJhbnN3ZXIiLCJwcm9tcHQiLCJuYW1lIiwibWVzc2FnZSIsIlBST01QVF9NU0dfR0VORVJBVEVfQ09ERSIsInR5cGUiLCJkZWZhdWx0IiwiY29uZmlybUdlbmVyYXRlQ29kZSIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiJ1MENBQUEsTUFBTUEsNERBQVdDLFFBQVEsVUFBUixDQUFYLENBQU47O0FBRUEsTUFBTUMsNkRBQVlELFFBQVEsaUJBQVIsQ0FBWixDQUFOOztBQUVBLGVBQWVFLGVBQWYsR0FBaUM7QUFDL0IsUUFBTUMsMERBQVMsTUFBTUosU0FBU0ssTUFBVCxDQUFnQjtBQUNuQztBQUNFQyxVQUFNLHFCQURSO0FBRUVDLGFBQVNMLFVBQVVNLHdCQUZyQjtBQUdFQyxVQUFNLFNBSFI7QUFJRUMsYUFBUyxJQUpYLEVBRG1DLENBQWhCLENBQWYsQ0FBTixDQUQrQjs7OztBQVUvQixTQUFPTixPQUFPTyxtQkFBZDtBQUNELEM7O0FBRURDLE9BQU9DLE9BQVAsR0FBaUJWLGVBQWpCIiwiZmlsZSI6ImdlbmVyYXRlQ29kZS5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IGlucXVpcmVyID0gcmVxdWlyZSgnaW5xdWlyZXInKTtcblxuY29uc3QgY29uc3RhbnRzID0gcmVxdWlyZSgnLi4vLi4vY29uc3RhbnRzJyk7XG5cbmFzeW5jIGZ1bmN0aW9uIGFza0dlbmVyYXRlQ29kZSgpIHtcbiAgY29uc3QgYW5zd2VyID0gYXdhaXQgaW5xdWlyZXIucHJvbXB0KFtcbiAgICB7XG4gICAgICBuYW1lOiAnY29uZmlybUdlbmVyYXRlQ29kZScsXG4gICAgICBtZXNzYWdlOiBjb25zdGFudHMuUFJPTVBUX01TR19HRU5FUkFURV9DT0RFLFxuICAgICAgdHlwZTogJ2NvbmZpcm0nLFxuICAgICAgZGVmYXVsdDogdHJ1ZSxcbiAgICB9LFxuICBdKTtcblxuICByZXR1cm4gYW5zd2VyLmNvbmZpcm1HZW5lcmF0ZUNvZGU7XG59XG5cbm1vZHVsZS5leHBvcnRzID0gYXNrR2VuZXJhdGVDb2RlO1xuIl19

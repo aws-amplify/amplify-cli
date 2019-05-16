@@ -1,0 +1,20 @@
+f85882a18d91c632cd3f5a81f1b3d9b3
+/* istanbul ignore next */var cov_28o0qb8k04 = function () {var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/changeRegion.js',hash = '4cbb8a0dafbac56ae3fc81b96bc2d3a7e3bfca8b',Function = function () {}.constructor,global = new Function('return this')(),gcv = '__coverage__',coverageData = { path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/changeRegion.js', statementMap: { '0': { start: { line: 1, column: 17 }, end: { line: 1, column: 36 } }, '1': { start: { line: 3, column: 18 }, end: { line: 3, column: 44 } }, '2': { start: { line: 6, column: 17 }, end: { line: 13, column: 4 } }, '3': { start: { line: 15, column: 2 }, end: { line: 15, column: 29 } }, '4': { start: { line: 18, column: 0 }, end: { line: 18, column: 39 } } }, fnMap: { '0': { name: 'askShouldChangeRegion', decl: { start: { line: 5, column: 15 }, end: { line: 5, column: 36 } }, loc: { start: { line: 5, column: 39 }, end: { line: 16, column: 1 } }, line: 5 } }, branchMap: {}, s: { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0 }, f: { '0': 0 }, b: {}, _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c' },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();const inquirer = /* istanbul ignore next */(cov_28o0qb8k04.s[0]++, require('inquirer'));
+
+const constants = /* istanbul ignore next */(cov_28o0qb8k04.s[1]++, require('../../constants'));
+
+async function askShouldChangeRegion() {/* istanbul ignore next */cov_28o0qb8k04.f[0]++;
+  const answer = /* istanbul ignore next */(cov_28o0qb8k04.s[2]++, await inquirer.prompt([
+  {
+    name: 'changeRegion',
+    message: constants.PROMPT_MSG_CHANGE_REGION,
+    type: 'confirm',
+    default: true }])); /* istanbul ignore next */cov_28o0qb8k04.s[3]++;
+
+
+
+  return answer.changeRegion;
+} /* istanbul ignore next */cov_28o0qb8k04.s[4]++;
+
+module.exports = askShouldChangeRegion;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYW5nZVJlZ2lvbi5qcyJdLCJuYW1lcyI6WyJpbnF1aXJlciIsInJlcXVpcmUiLCJjb25zdGFudHMiLCJhc2tTaG91bGRDaGFuZ2VSZWdpb24iLCJhbnN3ZXIiLCJwcm9tcHQiLCJuYW1lIiwibWVzc2FnZSIsIlBST01QVF9NU0dfQ0hBTkdFX1JFR0lPTiIsInR5cGUiLCJkZWZhdWx0IiwiY2hhbmdlUmVnaW9uIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6IjgwQ0FBQSxNQUFNQSw2REFBV0MsUUFBUSxVQUFSLENBQVgsQ0FBTjs7QUFFQSxNQUFNQyw4REFBWUQsUUFBUSxpQkFBUixDQUFaLENBQU47O0FBRUEsZUFBZUUscUJBQWYsR0FBdUM7QUFDckMsUUFBTUMsMkRBQVMsTUFBTUosU0FBU0ssTUFBVCxDQUFnQjtBQUNuQztBQUNFQyxVQUFNLGNBRFI7QUFFRUMsYUFBU0wsVUFBVU0sd0JBRnJCO0FBR0VDLFVBQU0sU0FIUjtBQUlFQyxhQUFTLElBSlgsRUFEbUMsQ0FBaEIsQ0FBZixDQUFOLENBRHFDOzs7O0FBVXJDLFNBQU9OLE9BQU9PLFlBQWQ7QUFDRCxDOztBQUVEQyxPQUFPQyxPQUFQLEdBQWlCVixxQkFBakIiLCJmaWxlIjoiY2hhbmdlUmVnaW9uLmpzIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgaW5xdWlyZXIgPSByZXF1aXJlKCdpbnF1aXJlcicpO1xuXG5jb25zdCBjb25zdGFudHMgPSByZXF1aXJlKCcuLi8uLi9jb25zdGFudHMnKTtcblxuYXN5bmMgZnVuY3Rpb24gYXNrU2hvdWxkQ2hhbmdlUmVnaW9uKCkge1xuICBjb25zdCBhbnN3ZXIgPSBhd2FpdCBpbnF1aXJlci5wcm9tcHQoW1xuICAgIHtcbiAgICAgIG5hbWU6ICdjaGFuZ2VSZWdpb24nLFxuICAgICAgbWVzc2FnZTogY29uc3RhbnRzLlBST01QVF9NU0dfQ0hBTkdFX1JFR0lPTixcbiAgICAgIHR5cGU6ICdjb25maXJtJyxcbiAgICAgIGRlZmF1bHQ6IHRydWUsXG4gICAgfSxcbiAgXSk7XG5cbiAgcmV0dXJuIGFuc3dlci5jaGFuZ2VSZWdpb247XG59XG5cbm1vZHVsZS5leHBvcnRzID0gYXNrU2hvdWxkQ2hhbmdlUmVnaW9uO1xuIl19

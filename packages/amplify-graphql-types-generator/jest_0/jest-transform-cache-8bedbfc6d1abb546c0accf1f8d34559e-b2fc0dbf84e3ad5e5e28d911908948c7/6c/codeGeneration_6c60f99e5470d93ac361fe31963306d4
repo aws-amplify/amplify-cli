@@ -1,0 +1,231 @@
+be2b0438200d1fdcb127928054e24032
+'use strict';require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-types-generator/src/flow-modern/__tests__/codeGeneration.ts", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst graphql_1 = require(\"graphql\");\nconst loading_1 = require(\"../../loading\");\nconst schema = loading_1.loadSchema(require.resolve('../../../test/fixtures/starwars/schema.json'));\nconst compiler_1 = require(\"../../compiler\");\nconst codeGeneration_1 = require(\"../codeGeneration\");\nfunction compile(source, options = {\n    mergeInFieldsFromFragmentSpreads: true,\n    addTypename: true\n}) {\n    const document = graphql_1.parse(source);\n    return compiler_1.compileToIR(schema, document, options);\n}\ndescribe('Flow codeGeneration', () => {\n    test('multiple files', () => {\n        const context = compile(`\n      query HeroName($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          id\n        }\n      }\n\n      query SomeOther($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          ...someFragment\n        }\n      }\n\n      fragment someFragment on Character {\n        appearsIn\n      }\n\n      mutation ReviewMovie($episode: Episode, $review: ReviewInput) {\n        createReview(episode: $episode, review: $review) {\n          stars\n          commentary\n        }\n      }\n    `);\n        context.operations[\"HeroName\"].filePath = '/some/file/ComponentA.js';\n        context.operations[\"SomeOther\"].filePath = '/some/file/ComponentB.js';\n        context.fragments['someFragment'].filePath = '/some/file/ComponentB.js';\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toBeInstanceOf(Object);\n        Object.keys(output)\n            .forEach((filePath) => {\n            expect(filePath).toMatchSnapshot();\n            expect(output[filePath]).toMatchSnapshot();\n        });\n    });\n    test('simple hero query', () => {\n        const context = compile(`\n      query HeroName($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          id\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('simple mutation', () => {\n        const context = compile(`\n      mutation ReviewMovie($episode: Episode, $review: ReviewInput) {\n        createReview(episode: $episode, review: $review) {\n          stars\n          commentary\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('simple fragment', () => {\n        const context = compile(`\n      fragment SimpleFragment on Character{\n        name\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('fragment with fragment spreads', () => {\n        const context = compile(`\n      fragment simpleFragment on Character {\n        name\n      }\n\n      fragment anotherFragment on Character {\n        id\n        ...simpleFragment\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('fragment with fragment spreads with inline fragment', () => {\n        const context = compile(`\n      fragment simpleFragment on Character {\n        name\n      }\n\n      fragment anotherFragment on Character {\n        id\n        ...simpleFragment\n\n        ... on Human {\n          appearsIn\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('query with fragment spreads', () => {\n        const context = compile(`\n      fragment simpleFragment on Character {\n        name\n      }\n\n      query HeroFragment($episode: Episode) {\n        hero(episode: $episode) {\n          ...simpleFragment\n          id\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('inline fragment', () => {\n        const context = compile(`\n      query HeroInlineFragment($episode: Episode) {\n        hero(episode: $episode) {\n          ... on Character {\n            name\n          }\n          id\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('inline fragment on type conditions', () => {\n        const context = compile(`\n      query HeroName($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          id\n\n          ... on Human {\n            homePlanet\n            friends {\n              name\n            }\n          }\n\n          ... on Droid {\n            appearsIn\n          }\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('inline fragment on type conditions with differing inner fields', () => {\n        const context = compile(`\n      query HeroName($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          id\n\n          ... on Human {\n            homePlanet\n            friends {\n              name\n            }\n          }\n\n          ... on Droid {\n            appearsIn\n            friends {\n              id\n            }\n          }\n        }\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n    test('fragment spreads with inline fragments', () => {\n        const context = compile(`\n      query HeroName($episode: Episode) {\n        hero(episode: $episode) {\n          name\n          id\n          ...humanFragment\n          ...droidFragment\n        }\n      }\n\n      fragment humanFragment on Human {\n        homePlanet\n        friends {\n          ... on Human {\n            name\n          }\n\n          ... on Droid {\n            id\n          }\n        }\n      }\n\n      fragment droidFragment on Droid {\n        appearsIn\n      }\n    `);\n        const output = codeGeneration_1.generateSource(context);\n        expect(output).toMatchSnapshot();\n    });\n});\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29kZUdlbmVyYXRpb24uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJjb2RlR2VuZXJhdGlvbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLHFDQUFnQztBQUVoQywyQ0FBMkM7QUFDM0MsTUFBTSxNQUFNLEdBQUcsb0JBQVUsQ0FBQyxPQUFPLENBQUMsT0FBTyxDQUFDLDZDQUE2QyxDQUFDLENBQUMsQ0FBQztBQUUxRiw2Q0FJd0I7QUFFeEIsc0RBQW1EO0FBRW5ELGlCQUNFLE1BQWMsRUFDZCxVQUEyQjtJQUN6QixnQ0FBZ0MsRUFBRSxJQUFJO0lBQ3RDLFdBQVcsRUFBRSxJQUFJO0NBQ2xCO0lBRUQsTUFBTSxRQUFRLEdBQUcsZUFBSyxDQUFDLE1BQU0sQ0FBQyxDQUFDO0lBQy9CLE9BQU8sc0JBQVcsQ0FBQyxNQUFNLEVBQUUsUUFBUSxFQUFFLE9BQU8sQ0FBQyxDQUFDO0FBQ2hELENBQUM7QUFFRCxRQUFRLENBQUMscUJBQXFCLEVBQUUsR0FBRyxFQUFFO0lBQ25DLElBQUksQ0FBQyxnQkFBZ0IsRUFBRSxHQUFHLEVBQUU7UUFDMUIsTUFBTSxPQUFPLEdBQUcsT0FBTyxDQUFDOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0tBeUJ2QixDQUFDLENBQUM7UUFDSCxPQUFPLENBQUMsVUFBVSxDQUFDLFVBQVUsQ0FBQyxDQUFDLFFBQVEsR0FBRywwQkFBMEIsQ0FBQztRQUNyRSxPQUFPLENBQUMsVUFBVSxDQUFDLFdBQVcsQ0FBQyxDQUFDLFFBQVEsR0FBRywwQkFBMEIsQ0FBQztRQUN0RSxPQUFPLENBQUMsU0FBUyxDQUFDLGNBQWMsQ0FBQyxDQUFDLFFBQVEsR0FBRywwQkFBMEIsQ0FBQztRQUN4RSxNQUFNLE1BQU0sR0FBRywrQkFBYyxDQUFDLE9BQU8sQ0FBQyxDQUFDO1FBQ3ZDLE1BQU0sQ0FBQyxNQUFNLENBQUMsQ0FBQyxjQUFjLENBQUMsTUFBTSxDQUFDLENBQUM7UUFDdEMsTUFBTSxDQUFDLElBQUksQ0FBQyxNQUFNLENB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QWUsRUFBRSxDQUFDO0lBQ25DLENBQUMsQ0FBQyxDQUFDO0lBRUgsSUFBSSxDQUFDLGdFQUFnRSxFQUFFLEdBQUcsRUFBRTtRQUMxRSxNQUFNLE9BQU8sR0FBRyxPQUFPLENBQUM7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztLQXFCdkIsQ0FBQyxDQUFDO1FBRUgsTUFBTSxNQUFNLEdBQUcsK0JBQWMsQ0FBQyxPQUFPLENBQUMsQ0FBQztRQUN2QyxNQUFNLENBQUMsTUFBTSxDQUFDLENBQUMsZUFBZSxFQUFFLENBQUM7SUFDbkMsQ0FBQyxDQUFDLENBQUM7SUFFSCxJQUFJLENBQUMsd0NBQXdDLEVBQUUsR0FBRyxFQUFFO1FBQ2xELE1BQU0sT0FBTyxHQUFHLE9BQU8sQ0FBQzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7S0EwQnZCLENBQUMsQ0FBQztRQUNILE1BQU0sTUFBTSxHQUFHLCtCQUFjLENBQUMsT0FBTyxDQUFDLENBQUM7UUFDdkMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFDLGVBQWUsRUFBRSxDQUFDO0lBQ25DLENBQUMsQ0FBQyxDQUFDO0FBQ0wsQ0FBQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwYXJzZSB9IGZyb20gJ2dyYXBocWwnO1xuXG5pbXBvcnQgeyBsb2FkU2NoZW1hIH0gZnJvbSAnLi4vLi4vbG9hZGluZyc7XG5jb25zdCBzY2hlbWEgPSBsb2FkU2NoZW1hKHJlcXVpcmUucmVzb2x2ZSgnLi4vLi4vLi4vdGVzdC9maXh0dXJlcy9zdGFyd2Fycy9zY2hlbWEuanNvbicpKTtcblxuaW1wb3J0IHtcbiAgY29tcGlsZVRvSVIsXG4gIENvbXBpbGVyT3B0aW9ucyxcbiAgQ29tcGlsZXJDb250ZXh0LFxufSBmcm9tICcuLi8uLi9jb21waWxlcic7XG5cbmltcG9ydCB7IGdlbmVyYXRlU291cmNlIH0gZnJvbSAnLi4vY29kZUdlbmVyYXRpb24nO1xuXG5mdW5jdGlvbiBjb21waWxlKFxuICBzb3VyY2U6IHN0cmluZyxcbiAgb3B0aW9uczogQ29tcGlsZXJPcHRpb25zID0ge1xuICAgIG1lcmdlSW5GaWVsZHNGcm9tRnJhZ21lbnRTcHJlYWRzOiB0cnVlLFxuICAgIGFkZFR5cGVuYW1lOiB0cnVlXG4gIH1cbik6IENvbXBpbGVyQ29udGV4dCB7XG4gIGNvbnN0IGRvY3VtZW50ID0gcGFyc2Uoc291cmNlKTtcbiAgcmV0dXJuIGNvbXBpbGVUb0lSKHNjaGVtYSwgZG9jdW1lbnQsIG9wdGlvbnMpO1xufVxuXG5kZXNjcmliZSgnRmxvdyBjb2RlR2VuZXJhdGlvbicsICgpID0+IHtcbiAgdGVzdCgnbXVsdGlwbGUgZmlsZXMnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgcXVlcnkgSGVyb05hbWUoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICBpZFxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIHF1ZXJ5IFNvbWVPdGhlcigkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgbmFtZVxuICAgICAgICAgIC4uLnNvbWVGcmFnbWVudFxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIGZyYWdtZW50IHNvbWVGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBhcHBlYXJzSW5cbiAgICAgIH1cblxuICAgICAgbXV0YXRpb24gUmV2aWV3TW92aWUoJGVwaXNvZGU6IEVwaXNvZGUsICRyZXZpZXc6IFJldmlld0lucHV0KSB7XG4gICAgICAgIGNyZWF0ZVJldmlldyhlcGlzb2RlOiAkZXBpc29kZSwgcmV2aWV3OiAkcmV2aWV3KSB7XG4gICAgICAgICAgc3RhcnNcbiAgICAgICAgICBjb21tZW50YXJ5XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcbiAgICBjb250ZXh0Lm9wZXJhdGlvbnNbXCJIZXJvTmFtZVwiXS5maWxlUGF0aCA9ICcvc29tZS9maWxlL0NvbXBvbmVudEEuanMnO1xuICAgIGNvbnRleHQub3BlcmF0aW9uc1tcIlNvbWVPdGhlclwiXS5maWxlUGF0aCA9ICcvc29tZS9maWxlL0NvbXBvbmVudEIuanMnO1xuICAgIGNvbnRleHQuZnJhZ21lbnRzWydzb21lRnJhZ21lbnQnXS5maWxlUGF0aCA9ICcvc29tZS9maWxlL0NvbXBvbmVudEIuanMnO1xuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvQmVJbnN0YW5jZU9mKE9iamVjdCk7XG4gICAgT2JqZWN0LmtleXMob3V0cHV0KVxuICAgICAgLmZvckVhY2goKGZpbGVQYXRoKSA9PiB7XG4gICAgICAgIGV4cGVjdChmaWxlUGF0aCkudG9NYXRjaFNuYXBzaG90KCk7XG4gICAgICAgIGV4cGVjdChvdXRwdXRbZmlsZVBhdGhdKS50b01hdGNoU25hcHNob3QoKTtcbiAgICAgIH0pO1xuICB9KTtcblxuICB0ZXN0KCdzaW1wbGUgaGVybyBxdWVyeScsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBxdWVyeSBIZXJvTmFtZSgkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgbmFtZVxuICAgICAgICAgIGlkXG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcblxuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcblxuICB0ZXN0KCdzaW1wbGUgbXV0YXRpb24nLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgbXV0YXRpb24gUmV2aWV3TW92aWUoJGVwaXNvZGU6IEVwaXNvZGUsICRyZXZpZXc6IFJldmlld0lucHV0KSB7XG4gICAgICAgIGNyZWF0ZVJldmlldyhlcGlzb2RlOiAkZXBpc29kZSwgcmV2aWV3OiAkcmV2aWV3KSB7XG4gICAgICAgICAgc3RhcnNcbiAgICAgICAgICBjb21tZW50YXJ5XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcblxuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcblxuICB0ZXN0KCdzaW1wbGUgZnJhZ21lbnQnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgZnJhZ21lbnQgU2ltcGxlRnJhZ21lbnQgb24gQ2hhcmFjdGVye1xuICAgICAgICBuYW1lXG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnZnJhZ21lbnQgd2l0aCBmcmFnbWVudCBzcHJlYWRzJywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIGZyYWdtZW50IHNpbXBsZUZyYWdtZW50IG9uIENoYXJhY3RlciB7XG4gICAgICAgIG5hbWVcbiAgICAgIH1cblxuICAgICAgZnJhZ21lbnQgYW5vdGhlckZyYWdtZW50IG9uIENoYXJhY3RlciB7XG4gICAgICAgIGlkXG4gICAgICAgIC4uLnNpbXBsZUZyYWdtZW50XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnZnJhZ21lbnQgd2l0aCBmcmFnbWVudCBzcHJlYWRzIHdpdGggaW5saW5lIGZyYWdtZW50JywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIGZyYWdtZW50IHNpbXBsZUZyYWdtZW50IG9uIENoYXJhY3RlciB7XG4gICAgICAgIG5hbWVcbiAgICAgIH1cblxuICAgICAgZnJhZ21lbnQgYW5vdGhlckZyYWdtZW50IG9uIENoYXJhY3RlciB7XG4gICAgICAgIGlkXG4gICAgICAgIC4uLnNpbXBsZUZyYWdtZW50XG5cbiAgICAgICAgLi4uIG9uIEh1bWFuIHtcbiAgICAgICAgICBhcHBlYXJzSW5cbiAgICAgICAgfVxuICAgICAgfVxuICAgIGApO1xuXG4gICAgY29uc3Qgb3V0cHV0ID0gZ2VuZXJhdGVTb3VyY2UoY29udGV4dCk7XG4gICAgZXhwZWN0KG91dHB1dCkudG9NYXRjaFNuYXBzaG90KCk7XG4gIH0pO1xuXG4gIHRlc3QoJ3F1ZXJ5IHdpdGggZnJhZ21lbnQgc3ByZWFkcycsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBmcmFnbWVudCBzaW1wbGVGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBuYW1lXG4gICAgICB9XG5cbiAgICAgIHF1ZXJ5IEhlcm9GcmFnbWVudCgkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgLi4uc2ltcGxlRnJhZ21lbnRcbiAgICAgICAgICBpZFxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnaW5saW5lIGZyYWdtZW50JywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIHF1ZXJ5IEhlcm9JbmxpbmVGcmFnbWVudCgkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgLi4uIG9uIENoYXJhY3RlciB7XG4gICAgICAgICAgICBuYW1lXG4gICAgICAgICAgfVxuICAgICAgICAgIGlkXG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcblxuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KVxuXG4gIHRlc3QoJ2lubGluZSBmcmFnbWVudCBvbiB0eXBlIGNvbmRpdGlvbnMnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgcXVlcnkgSGVyb05hbWUoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICBpZFxuXG4gICAgICAgICAgLi4uIG9uIEh1bWFuIHtcbiAgICAgICAgICAgIGhvbWVQbGFuZXRcbiAgICAgICAgICAgIGZyaWVuZHMge1xuICAgICAgICAgICAgICBuYW1lXG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuXG4gICAgICAgICAgLi4uIG9uIERyb2lkIHtcbiAgICAgICAgICAgIGFwcGVhcnNJblxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIGApO1xuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcblxuICB0ZXN0KCdpbmxpbmUgZnJhZ21lbnQgb24gdHlwZSBjb25kaXRpb25zIHdpdGggZGlmZmVyaW5nIGlubmVyIGZpZWxkcycsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBxdWVyeSBIZXJvTmFtZSgkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgbmFtZVxuICAgICAgICAgIGlkXG5cbiAgICAgICAgICAuLi4gb24gSHVtYW4ge1xuICAgICAgICAgICAgaG9tZVBsYW5ldFxuICAgICAgICAgICAgZnJpZW5kcyB7XG4gICAgICAgICAgICAgIG5hbWVcbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG5cbiAgICAgICAgICAuLi4gb24gRHJvaWQge1xuICAgICAgICAgICAgYXBwZWFyc0luXG4gICAgICAgICAgICBmcmllbmRzIHtcbiAgICAgICAgICAgICAgaWRcbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcblxuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcblxuICB0ZXN0KCdmcmFnbWVudCBzcHJlYWRzIHdpdGggaW5saW5lIGZyYWdtZW50cycsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBxdWVyeSBIZXJvTmFtZSgkZXBpc29kZTogRXBpc29kZSkge1xuICAgICAgICBoZXJvKGVwaXNvZGU6ICRlcGlzb2RlKSB7XG4gICAgICAgICAgbmFtZVxuICAgICAgICAgIGlkXG4gICAgICAgICAgLi4uaHVtYW5GcmFnbWVudFxuICAgICAgICAgIC4uLmRyb2lkRnJhZ21lbnRcbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICBmcmFnbWVudCBodW1hbkZyYWdtZW50IG9uIEh1bWFuIHtcbiAgICAgICAgaG9tZVBsYW5ldFxuICAgICAgICBmcmllbmRzIHtcbiAgICAgICAgICAuLi4gb24gSHVtYW4ge1xuICAgICAgICAgICAgbmFtZVxuICAgICAgICAgIH1cblxuICAgICAgICAgIC4uLiBvbiBEcm9pZCB7XG4gICAgICAgICAgICBpZFxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICBmcmFnbWVudCBkcm9pZEZyYWdtZW50IG9uIERyb2lkIHtcbiAgICAgICAgYXBwZWFyc0luXG4gICAgICB9XG4gICAgYCk7XG4gICAgY29uc3Qgb3V0cHV0ID0gZ2VuZXJhdGVTb3VyY2UoY29udGV4dCk7XG4gICAgZXhwZWN0KG91dHB1dCkudG9NYXRjaFNuYXBzaG90KCk7XG4gIH0pO1xufSk7XG4iXX0=");"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const graphql_1 = require("graphql");
+const loading_1 = require("../../loading");
+const schema = loading_1.loadSchema(require.resolve('../../../test/fixtures/starwars/schema.json'));
+const compiler_1 = require("../../compiler");
+const codeGeneration_1 = require("../codeGeneration");
+function compile(source, options = {
+  mergeInFieldsFromFragmentSpreads: true,
+  addTypename: true })
+{
+  const document = graphql_1.parse(source);
+  return compiler_1.compileToIR(schema, document, options);
+}
+describe('Flow codeGeneration', () => {
+  test('multiple files', () => {
+    const context = compile(`
+      query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          id
+        }
+      }
+
+      query SomeOther($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          ...someFragment
+        }
+      }
+
+      fragment someFragment on Character {
+        appearsIn
+      }
+
+      mutation ReviewMovie($episode: Episode, $review: ReviewInput) {
+        createReview(episode: $episode, review: $review) {
+          stars
+          commentary
+        }
+      }
+    `);
+    context.operations["HeroName"].filePath = '/some/file/ComponentA.js';
+    context.operations["SomeOther"].filePath = '/some/file/ComponentB.js';
+    context.fragments['someFragment'].filePath = '/some/file/ComponentB.js';
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toBeInstanceOf(Object);
+    Object.keys(output).
+    forEach(filePath => {
+      expect(filePath).toMatchSnapshot();
+      expect(output[filePath]).toMatchSnapshot();
+    });
+  });
+  test('simple hero query', () => {
+    const context = compile(`
+      query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          id
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('simple mutation', () => {
+    const context = compile(`
+      mutation ReviewMovie($episode: Episode, $review: ReviewInput) {
+        createReview(episode: $episode, review: $review) {
+          stars
+          commentary
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('simple fragment', () => {
+    const context = compile(`
+      fragment SimpleFragment on Character{
+        name
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('fragment with fragment spreads', () => {
+    const context = compile(`
+      fragment simpleFragment on Character {
+        name
+      }
+
+      fragment anotherFragment on Character {
+        id
+        ...simpleFragment
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('fragment with fragment spreads with inline fragment', () => {
+    const context = compile(`
+      fragment simpleFragment on Character {
+        name
+      }
+
+      fragment anotherFragment on Character {
+        id
+        ...simpleFragment
+
+        ... on Human {
+          appearsIn
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('query with fragment spreads', () => {
+    const context = compile(`
+      fragment simpleFragment on Character {
+        name
+      }
+
+      query HeroFragment($episode: Episode) {
+        hero(episode: $episode) {
+          ...simpleFragment
+          id
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('inline fragment', () => {
+    const context = compile(`
+      query HeroInlineFragment($episode: Episode) {
+        hero(episode: $episode) {
+          ... on Character {
+            name
+          }
+          id
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('inline fragment on type conditions', () => {
+    const context = compile(`
+      query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          id
+
+          ... on Human {
+            homePlanet
+            friends {
+              name
+            }
+          }
+
+          ... on Droid {
+            appearsIn
+          }
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('inline fragment on type conditions with differing inner fields', () => {
+    const context = compile(`
+      query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          id
+
+          ... on Human {
+            homePlanet
+            friends {
+              name
+            }
+          }
+
+          ... on Droid {
+            appearsIn
+            friends {
+              id
+            }
+          }
+        }
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+  test('fragment spreads with inline fragments', () => {
+    const context = compile(`
+      query HeroName($episode: Episode) {
+        hero(episode: $episode) {
+          name
+          id
+          ...humanFragment
+          ...droidFragment
+        }
+      }
+
+      fragment humanFragment on Human {
+        homePlanet
+        friends {
+          ... on Human {
+            name
+          }
+
+          ... on Droid {
+            id
+          }
+        }
+      }
+
+      fragment droidFragment on Droid {
+        appearsIn
+      }
+    `);
+    const output = codeGeneration_1.generateSource(context);
+    expect(output).toMatchSnapshot();
+  });
+});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,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LEVBQXdCLE1BQUs7QUFDM0IsVUFBTSxVQUFVLFFBQVE7Ozs7Ozs7OztLQUFSLENBQWhCO0FBV0EsVUFBTSxTQUFTLGlCQUFBLGNBQUEsQ0FBZSxPQUFmLENBQWY7QUFDQSxXQUFPLE1BQVAsRUFBZSxlQUFmO0FBQ0QsR0FkRDtBQWdCQSxPQUFLLG9DQUFMLEVBQTJDLE1BQUs7QUFDOUMsVUFBTSxVQUFVLFFBQVE7Ozs7Ozs7Ozs7Ozs7Ozs7OztLQUFSLENBQWhCO0FBbUJBLFVBQU0sU0FBUyxpQkFBQSxjQUFBLENBQWUsT0FBZixDQUFmO0FBQ0EsV0FBTyxNQUFQLEVBQWUsZUFBZjtBQUNELEdBdEJEO0FBd0JBLE9BQUssZ0VBQUwsRUFBdUUsTUFBSztBQUMxRSxVQUFNLFVBQVUsUUFBUTs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0tBQVIsQ0FBaEI7QUF1QkEsVUFBTSxTQUFTLGlCQUFBLGNBQUEsQ0FBZSxPQUFmLENBQWY7QUFDQSxXQUFPLE1BQVAsRUFBZSxlQUFmO0FBQ0QsR0ExQkQ7QUE0QkEsT0FBSyx3Q0FBTCxFQUErQyxNQUFLO0FBQ2xELFVBQU0sVUFBVSxRQUFROzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztLQUFSLENBQWhCO0FBMkJBLFVBQU0sU0FBUyxpQkFBQSxjQUFBLENBQWUsT0FBZixDQUFmO0FBQ0EsV0FBTyxNQUFQLEVBQWUsZUFBZjtBQUNELEdBOUJEO0FBK0JELENBeE9EIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgcGFyc2UgfSBmcm9tICdncmFwaHFsJztcblxuaW1wb3J0IHsgbG9hZFNjaGVtYSB9IGZyb20gJy4uLy4uL2xvYWRpbmcnO1xuY29uc3Qgc2NoZW1hID0gbG9hZFNjaGVtYShyZXF1aXJlLnJlc29sdmUoJy4uLy4uLy4uL3Rlc3QvZml4dHVyZXMvc3RhcndhcnMvc2NoZW1hLmpzb24nKSk7XG5cbmltcG9ydCB7XG4gIGNvbXBpbGVUb0lSLFxuICBDb21waWxlck9wdGlvbnMsXG4gIENvbXBpbGVyQ29udGV4dCxcbn0gZnJvbSAnLi4vLi4vY29tcGlsZXInO1xuXG5pbXBvcnQgeyBnZW5lcmF0ZVNvdXJjZSB9IGZyb20gJy4uL2NvZGVHZW5lcmF0aW9uJztcblxuZnVuY3Rpb24gY29tcGlsZShcbiAgc291cmNlOiBzdHJpbmcsXG4gIG9wdGlvbnM6IENvbXBpbGVyT3B0aW9ucyA9IHtcbiAgICBtZXJnZUluRmllbGRzRnJvbUZyYWdtZW50U3ByZWFkczogdHJ1ZSxcbiAgICBhZGRUeXBlbmFtZTogdHJ1ZVxuICB9XG4pOiBDb21waWxlckNvbnRleHQge1xuICBjb25zdCBkb2N1bWVudCA9IHBhcnNlKHNvdXJjZSk7XG4gIHJldHVybiBjb21waWxlVG9JUihzY2hlbWEsIGRvY3VtZW50LCBvcHRpb25zKTtcbn1cblxuZGVzY3JpYmUoJ0Zsb3cgY29kZUdlbmVyYXRpb24nLCAoKSA9PiB7XG4gIHRlc3QoJ211bHRpcGxlIGZpbGVzJywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIHF1ZXJ5IEhlcm9OYW1lKCRlcGlzb2RlOiBFcGlzb2RlKSB7XG4gICAgICAgIGhlcm8oZXBpc29kZTogJGVwaXNvZGUpIHtcbiAgICAgICAgICBuYW1lXG4gICAgICAgICAgaWRcbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICBxdWVyeSBTb21lT3RoZXIoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICAuLi5zb21lRnJhZ21lbnRcbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICBmcmFnbWVudCBzb21lRnJhZ21lbnQgb24gQ2hhcmFjdGVyIHtcbiAgICAgICAgYXBwZWFyc0luXG4gICAgICB9XG5cbiAgICAgIG11dGF0aW9uIFJldmlld01vdmllKCRlcGlzb2RlOiBFcGlzb2RlLCAkcmV2aWV3OiBSZXZpZXdJbnB1dCkge1xuICAgICAgICBjcmVhdGVSZXZpZXcoZXBpc29kZTogJGVwaXNvZGUsIHJldmlldzogJHJldmlldykge1xuICAgICAgICAgIHN0YXJzXG4gICAgICAgICAgY29tbWVudGFyeVxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG4gICAgY29udGV4dC5vcGVyYXRpb25zW1wiSGVyb05hbWVcIl0uZmlsZVBhdGggPSAnL3NvbWUvZmlsZS9Db21wb25lbnRBLmpzJztcbiAgICBjb250ZXh0Lm9wZXJhdGlvbnNbXCJTb21lT3RoZXJcIl0uZmlsZVBhdGggPSAnL3NvbWUvZmlsZS9Db21wb25lbnRCLmpzJztcbiAgICBjb250ZXh0LmZyYWdtZW50c1snc29tZUZyYWdtZW50J10uZmlsZVBhdGggPSAnL3NvbWUvZmlsZS9Db21wb25lbnRCLmpzJztcbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b0JlSW5zdGFuY2VPZihPYmplY3QpO1xuICAgIE9iamVjdC5rZXlzKG91dHB1dClcbiAgICAgIC5mb3JFYWNoKChmaWxlUGF0aCkgPT4ge1xuICAgICAgICBleHBlY3QoZmlsZVBhdGgpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICAgICAgICBleHBlY3Qob3V0cHV0W2ZpbGVQYXRoXSkudG9NYXRjaFNuYXBzaG90KCk7XG4gICAgICB9KTtcbiAgfSk7XG5cbiAgdGVzdCgnc2ltcGxlIGhlcm8gcXVlcnknLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgcXVlcnkgSGVyb05hbWUoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICBpZFxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnc2ltcGxlIG11dGF0aW9uJywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIG11dGF0aW9uIFJldmlld01vdmllKCRlcGlzb2RlOiBFcGlzb2RlLCAkcmV2aWV3OiBSZXZpZXdJbnB1dCkge1xuICAgICAgICBjcmVhdGVSZXZpZXcoZXBpc29kZTogJGVwaXNvZGUsIHJldmlldzogJHJldmlldykge1xuICAgICAgICAgIHN0YXJzXG4gICAgICAgICAgY29tbWVudGFyeVxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnc2ltcGxlIGZyYWdtZW50JywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIGZyYWdtZW50IFNpbXBsZUZyYWdtZW50IG9uIENoYXJhY3RlcntcbiAgICAgICAgbmFtZVxuICAgICAgfVxuICAgIGApO1xuXG4gICAgY29uc3Qgb3V0cHV0ID0gZ2VuZXJhdGVTb3VyY2UoY29udGV4dCk7XG4gICAgZXhwZWN0KG91dHB1dCkudG9NYXRjaFNuYXBzaG90KCk7XG4gIH0pO1xuXG4gIHRlc3QoJ2ZyYWdtZW50IHdpdGggZnJhZ21lbnQgc3ByZWFkcycsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBmcmFnbWVudCBzaW1wbGVGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBuYW1lXG4gICAgICB9XG5cbiAgICAgIGZyYWdtZW50IGFub3RoZXJGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBpZFxuICAgICAgICAuLi5zaW1wbGVGcmFnbWVudFxuICAgICAgfVxuICAgIGApO1xuXG4gICAgY29uc3Qgb3V0cHV0ID0gZ2VuZXJhdGVTb3VyY2UoY29udGV4dCk7XG4gICAgZXhwZWN0KG91dHB1dCkudG9NYXRjaFNuYXBzaG90KCk7XG4gIH0pO1xuXG4gIHRlc3QoJ2ZyYWdtZW50IHdpdGggZnJhZ21lbnQgc3ByZWFkcyB3aXRoIGlubGluZSBmcmFnbWVudCcsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBmcmFnbWVudCBzaW1wbGVGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBuYW1lXG4gICAgICB9XG5cbiAgICAgIGZyYWdtZW50IGFub3RoZXJGcmFnbWVudCBvbiBDaGFyYWN0ZXIge1xuICAgICAgICBpZFxuICAgICAgICAuLi5zaW1wbGVGcmFnbWVudFxuXG4gICAgICAgIC4uLiBvbiBIdW1hbiB7XG4gICAgICAgICAgYXBwZWFyc0luXG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcblxuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcblxuICB0ZXN0KCdxdWVyeSB3aXRoIGZyYWdtZW50IHNwcmVhZHMnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgZnJhZ21lbnQgc2ltcGxlRnJhZ21lbnQgb24gQ2hhcmFjdGVyIHtcbiAgICAgICAgbmFtZVxuICAgICAgfVxuXG4gICAgICBxdWVyeSBIZXJvRnJhZ21lbnQoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIC4uLnNpbXBsZUZyYWdtZW50XG4gICAgICAgICAgaWRcbiAgICAgICAgfVxuICAgICAgfVxuICAgIGApO1xuXG4gICAgY29uc3Qgb3V0cHV0ID0gZ2VuZXJhdGVTb3VyY2UoY29udGV4dCk7XG4gICAgZXhwZWN0KG91dHB1dCkudG9NYXRjaFNuYXBzaG90KCk7XG4gIH0pO1xuXG4gIHRlc3QoJ2lubGluZSBmcmFnbWVudCcsICgpID0+IHtcbiAgICBjb25zdCBjb250ZXh0ID0gY29tcGlsZShgXG4gICAgICBxdWVyeSBIZXJvSW5saW5lRnJhZ21lbnQoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIC4uLiBvbiBDaGFyYWN0ZXIge1xuICAgICAgICAgICAgbmFtZVxuICAgICAgICAgIH1cbiAgICAgICAgICBpZFxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSlcblxuICB0ZXN0KCdpbmxpbmUgZnJhZ21lbnQgb24gdHlwZSBjb25kaXRpb25zJywgKCkgPT4ge1xuICAgIGNvbnN0IGNvbnRleHQgPSBjb21waWxlKGBcbiAgICAgIHF1ZXJ5IEhlcm9OYW1lKCRlcGlzb2RlOiBFcGlzb2RlKSB7XG4gICAgICAgIGhlcm8oZXBpc29kZTogJGVwaXNvZGUpIHtcbiAgICAgICAgICBuYW1lXG4gICAgICAgICAgaWRcblxuICAgICAgICAgIC4uLiBvbiBIdW1hbiB7XG4gICAgICAgICAgICBob21lUGxhbmV0XG4gICAgICAgICAgICBmcmllbmRzIHtcbiAgICAgICAgICAgICAgbmFtZVxuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cblxuICAgICAgICAgIC4uLiBvbiBEcm9pZCB7XG4gICAgICAgICAgICBhcHBlYXJzSW5cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICBgKTtcbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnaW5saW5lIGZyYWdtZW50IG9uIHR5cGUgY29uZGl0aW9ucyB3aXRoIGRpZmZlcmluZyBpbm5lciBmaWVsZHMnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgcXVlcnkgSGVyb05hbWUoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICBpZFxuXG4gICAgICAgICAgLi4uIG9uIEh1bWFuIHtcbiAgICAgICAgICAgIGhvbWVQbGFuZXRcbiAgICAgICAgICAgIGZyaWVuZHMge1xuICAgICAgICAgICAgICBuYW1lXG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuXG4gICAgICAgICAgLi4uIG9uIERyb2lkIHtcbiAgICAgICAgICAgIGFwcGVhcnNJblxuICAgICAgICAgICAgZnJpZW5kcyB7XG4gICAgICAgICAgICAgIGlkXG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgYCk7XG5cbiAgICBjb25zdCBvdXRwdXQgPSBnZW5lcmF0ZVNvdXJjZShjb250ZXh0KTtcbiAgICBleHBlY3Qob3V0cHV0KS50b01hdGNoU25hcHNob3QoKTtcbiAgfSk7XG5cbiAgdGVzdCgnZnJhZ21lbnQgc3ByZWFkcyB3aXRoIGlubGluZSBmcmFnbWVudHMnLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGV4dCA9IGNvbXBpbGUoYFxuICAgICAgcXVlcnkgSGVyb05hbWUoJGVwaXNvZGU6IEVwaXNvZGUpIHtcbiAgICAgICAgaGVybyhlcGlzb2RlOiAkZXBpc29kZSkge1xuICAgICAgICAgIG5hbWVcbiAgICAgICAgICBpZFxuICAgICAgICAgIC4uLmh1bWFuRnJhZ21lbnRcbiAgICAgICAgICAuLi5kcm9pZEZyYWdtZW50XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgZnJhZ21lbnQgaHVtYW5GcmFnbWVudCBvbiBIdW1hbiB7XG4gICAgICAgIGhvbWVQbGFuZXRcbiAgICAgICAgZnJpZW5kcyB7XG4gICAgICAgICAgLi4uIG9uIEh1bWFuIHtcbiAgICAgICAgICAgIG5hbWVcbiAgICAgICAgICB9XG5cbiAgICAgICAgICAuLi4gb24gRHJvaWQge1xuICAgICAgICAgICAgaWRcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgZnJhZ21lbnQgZHJvaWRGcmFnbWVudCBvbiBEcm9pZCB7XG4gICAgICAgIGFwcGVhcnNJblxuICAgICAgfVxuICAgIGApO1xuICAgIGNvbnN0IG91dHB1dCA9IGdlbmVyYXRlU291cmNlKGNvbnRleHQpO1xuICAgIGV4cGVjdChvdXRwdXQpLnRvTWF0Y2hTbmFwc2hvdCgpO1xuICB9KTtcbn0pO1xuIl0sInNvdXJjZVJvb3QiOiIifQ==

@@ -1,0 +1,87 @@
+f234186443e02d50d2e4b262d6ad23e9
+'use strict';require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-types-generator/src/swift/s3Wrapper.ts", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.s3WrapperCode = `\n\nextension S3Object: AWSS3ObjectProtocol {\n  public func getBucketName() -> String {\n      return bucket\n  }\n\n  public func getKeyName() -> String {\n      return key\n  }\n\n  public func getRegion() -> String {\n      return region\n  }\n}\n\nextension S3ObjectInput: AWSS3ObjectProtocol, AWSS3InputObjectProtocol {\n  public func getLocalSourceFileURL() -> URL? {\n      return URL(string: self.localUri)\n  }\n\n  public func getMimeType() -> String {\n      return self.mimeType\n  }\n\n  public func getBucketName() -> String {\n      return self.bucket\n  }\n\n  public func getKeyName() -> String {\n      return self.key\n  }\n\n  public func getRegion() -> String {\n      return self.region\n  }\n\n}\n\nimport AWSS3\nextension AWSS3PreSignedURLBuilder: AWSS3ObjectPresignedURLGenerator  {\n  public func getPresignedURL(s3Object: AWSS3ObjectProtocol) -> URL? {\n      let request = AWSS3GetPreSignedURLRequest()\n      request.bucket = s3Object.getBucketName()\n      request.key = s3Object.getKeyName()\n      var url : URL?\n      self.getPreSignedURL(request).continueWith { (task) -> Any? in\n          url = task.result as URL?\n          }.waitUntilFinished()\n      return url\n  }\n}\n\nextension AWSS3TransferUtility: AWSS3ObjectManager {\n\n  public func download(s3Object: AWSS3ObjectProtocol, toURL: URL, completion: @escaping ((Bool, Error?) -> Void)) {\n\n      let completionBlock: AWSS3TransferUtilityDownloadCompletionHandlerBlock = { task, url, data, error  -> Void in\n          if let _ = error {\n              completion(false, error)\n          } else {\n              completion(true, nil)\n          }\n      }\n      let _ = self.download(to: toURL, bucket: s3Object.getBucketName(), key: s3Object.getKeyName(), expression: nil, completionHandler: completionBlock)\n  }\n\n  public func upload(s3Object: AWSS3ObjectProtocol & AWSS3InputObjectProtocol, completion: @escaping ((_ success: Bool, _ error: Error?) -> Void)) {\n      let completionBlock : AWSS3TransferUtilityUploadCompletionHandlerBlock = { task, error  -> Void in\n          if let _ = error {\n              completion(false, error)\n          } else {\n              completion(true, nil)\n          }\n      }\n      let _ = self.uploadFile(s3Object.getLocalSourceFileURL()!, bucket: s3Object.getBucketName(), key: s3Object.getKeyName(), contentType: s3Object.getMimeType(), expression: nil, completionHandler: completionBlock).continueWith { (task) -> Any? in\n          if let err = task.error {\n              completion(false, err)\n          }\n          return nil\n      }\n  }\n}`;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiczNXcmFwcGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiczNXcmFwcGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQ2EsUUFBQSxhQUFhLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7RUFrRjNCLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvLyBCbGFuayBsaW5lcyBhdCB0aGUgYmVnaW5uaW5nIGFyZSBpbnRlbnRpb25hbFxuZXhwb3J0IGNvbnN0IHMzV3JhcHBlckNvZGUgPSBgXG5cbmV4dGVuc2lvbiBTM09iamVjdDogQVdTUzNPYmplY3RQcm90b2NvbCB7XG4gIHB1YmxpYyBmdW5jIGdldEJ1Y2tldE5hbWUoKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIGJ1Y2tldFxuICB9XG5cbiAgcHVibGljIGZ1bmMgZ2V0S2V5TmFtZSgpIC0+IFN0cmluZyB7XG4gICAgICByZXR1cm4ga2V5XG4gIH1cblxuICBwdWJsaWMgZnVuYyBnZXRSZWdpb24oKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIHJlZ2lvblxuICB9XG59XG5cbmV4dGVuc2lvbiBTM09iamVjdElucHV0OiBBV1NTM09iamVjdFByb3RvY29sLCBBV1NTM0lucHV0T2JqZWN0UHJvdG9jb2wge1xuICBwdWJsaWMgZnVuYyBnZXRMb2NhbFNvdXJjZUZpbGVVUkwoKSAtPiBVUkw/IHtcbiAgICAgIHJldHVybiBVUkwoc3RyaW5nOiBzZWxmLmxvY2FsVXJpKVxuICB9XG5cbiAgcHVibGljIGZ1bmMgZ2V0TWltZVR5cGUoKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIHNlbGYubWltZVR5cGVcbiAgfVxuXG4gIHB1YmxpYyBmdW5jIGdldEJ1Y2tldE5hbWUoKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIHNlbGYuYnVja2V0XG4gIH1cblxuICBwdWJsaWMgZnVuYyBnZXRLZXlOYW1lKCkgLT4gU3RyaW5nIHtcbiAgICAgIHJldHVybiBzZWxmLmtleVxuICB9XG5cbiAgcHVibGljIGZ1bmMgZ2V0UmVnaW9uKCkgLT4gU3RyaW5nIHtcbiAgICAgIHJldHVybiBzZWxmLnJlZ2lvblxuICB9XG5cbn1cblxuaW1wb3J0IEFXU1MzXG5leHRlbnNpb24gQVdTUzNQcmVTaWduZWRVUkxCdWlsZGVyOiBBV1NTM09iamVjdFByZXNpZ25lZFVSTEdlbmVyYXRvciAge1xuICBwdWJsaWMgZnVuYyBnZXRQcmVzaWduZWRVUkwoczNPYmplY3Q6IEFXU1MzT2JqZWN0UHJvdG9jb2wpIC0+IFVSTD8ge1xuICAgICAgbGV0IHJlcXVlc3QgPSBBV1NTM0dldFByZVNpZ25lZFVSTFJlcXVlc3QoKVxuICAgICAgcmVxdWVzdC5idWNrZXQgPSBzM09iamVjdC5nZXRCdWNrZXROYW1lKClcbiAgICAgIHJlcXVlc3Qua2V5ID0gczNPYmplY3QuZ2V0S2V5TmFtZSgpXG4gICAgICB2YXIgdXJsIDogVVJMP1xuICAgICAgc2VsZi5nZXRQcmVTaWduZWRVUkwocmVxdWVzdCkuY29udGludWVXaXRoIHsgKHRhc2spIC0+IEFueT8gaW5cbiAgICAgICAgICB1cmwgPSB0YXNrLnJlc3VsdCBhcyBVUkw/XG4gICAgICAgICAgfS53YWl0VW50aWxGaW5pc2hlZCgpXG4gICAgICByZXR1cm4gdXJsXG4gIH1cbn1cblxuZXh0ZW5zaW9uIEFXU1MzVHJhbnNmZXJVdGlsaXR5OiBBV1NTM09iamVjdE1hbmFnZXIge1xuXG4gIHB1YmxpYyBmdW5jIGRvd25sb2FkKHMzT2JqZWN0OiBBV1NTM09iamVjdFByb3RvY29sLCB0b1VSTDogVVJMLCBjb21wbGV0aW9uOiBAZXNjYXBpbmcgKChCb29sLCBFcnJvcj8pIC0+IFZvaWQpKSB7XG5cbiAgICAgIGxldCBjb21wbGV0aW9uQmxvY2s6IEFXU1MzVHJhbnNmZXJVdGlsaXR5RG93bmxvYWRDb21wbGV0aW9uSGFuZGxlckJsb2NrID0geyB0YXNrLCB1cmwsIGRhdGEsIGVycm9yICAtPiBWb2lkIGluXG4gICAgICAgICAgaWYgbGV0IF8gPSBlcnJvciB7XG4gICAgICAgICAgICAgIGNvbXBsZXRpb24oZmFsc2UsIGVycm9yKVxuICAgICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgICAgIGNvbXBsZXRpb24odHJ1ZSwgbmlsKVxuICAgICAgICAgIH1cbiAgICAgIH1cbiAgICAgIGxldCBfID0gc2VsZi5kb3dubG9hZCh0bzogdG9VUkwsIGJ1Y2tldDogczNPYmplY3QuZ2V0QnVja2V0TmFtZSgpLCBrZXk6IHMzT2JqZWN0LmdldEtleU5hbWUoKSwgZXhwcmVzc2lvbjogbmlsLCBjb21wbGV0aW9uSGFuZGxlcjogY29tcGxldGlvbkJsb2NrKVxuICB9XG5cbiAgcHVibGljIGZ1bmMgdXBsb2FkKHMzT2JqZWN0OiBBV1NTM09iamVjdFByb3RvY29sICYgQVdTUzNJbnB1dE9iamVjdFByb3RvY29sLCBjb21wbGV0aW9uOiBAZXNjYXBpbmcgKChfIHN1Y2Nlc3M6IEJvb2wsIF8gZXJyb3I6IEVycm9yPykgLT4gVm9pZCkpIHtcbiAgICAgIGxldCBjb21wbGV0aW9uQmxvY2sgOiBBV1NTM1RyYW5zZmVyVXRpbGl0eVVwbG9hZENvbXBsZXRpb25IYW5kbGVyQmxvY2sgPSB7IHRhc2ssIGVycm9yICAtPiBWb2lkIGluXG4gICAgICAgICAgaWYgbGV0IF8gPSBlcnJvciB7XG4gICAgICAgICAgICAgIGNvbXBsZXRpb24oZmFsc2UsIGVycm9yKVxuICAgICAgICAgIH0gZWxzZSB7XG4gICAgICAgICAgICAgIGNvbXBsZXRpb24odHJ1ZSwgbmlsKVxuICAgICAgICAgIH1cbiAgICAgIH1cbiAgICAgIGxldCBfID0gc2VsZi51cGxvYWRGaWxlKHMzT2JqZWN0LmdldExvY2FsU291cmNlRmlsZVVSTCgpISwgYnVja2V0OiBzM09iamVjdC5nZXRCdWNrZXROYW1lKCksIGtleTogczNPYmplY3QuZ2V0S2V5TmFtZSgpLCBjb250ZW50VHlwZTogczNPYmplY3QuZ2V0TWltZVR5cGUoKSwgZXhwcmVzc2lvbjogbmlsLCBjb21wbGV0aW9uSGFuZGxlcjogY29tcGxldGlvbkJsb2NrKS5jb250aW51ZVdpdGggeyAodGFzaykgLT4gQW55PyBpblxuICAgICAgICAgIGlmIGxldCBlcnIgPSB0YXNrLmVycm9yIHtcbiAgICAgICAgICAgICAgY29tcGxldGlvbihmYWxzZSwgZXJyKVxuICAgICAgICAgIH1cbiAgICAgICAgICByZXR1cm4gbmlsXG4gICAgICB9XG4gIH1cbn1gO1xuIl19");"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.s3WrapperCode = `
+
+extension S3Object: AWSS3ObjectProtocol {
+  public func getBucketName() -> String {
+      return bucket
+  }
+
+  public func getKeyName() -> String {
+      return key
+  }
+
+  public func getRegion() -> String {
+      return region
+  }
+}
+
+extension S3ObjectInput: AWSS3ObjectProtocol, AWSS3InputObjectProtocol {
+  public func getLocalSourceFileURL() -> URL? {
+      return URL(string: self.localUri)
+  }
+
+  public func getMimeType() -> String {
+      return self.mimeType
+  }
+
+  public func getBucketName() -> String {
+      return self.bucket
+  }
+
+  public func getKeyName() -> String {
+      return self.key
+  }
+
+  public func getRegion() -> String {
+      return self.region
+  }
+
+}
+
+import AWSS3
+extension AWSS3PreSignedURLBuilder: AWSS3ObjectPresignedURLGenerator  {
+  public func getPresignedURL(s3Object: AWSS3ObjectProtocol) -> URL? {
+      let request = AWSS3GetPreSignedURLRequest()
+      request.bucket = s3Object.getBucketName()
+      request.key = s3Object.getKeyName()
+      var url : URL?
+      self.getPreSignedURL(request).continueWith { (task) -> Any? in
+          url = task.result as URL?
+          }.waitUntilFinished()
+      return url
+  }
+}
+
+extension AWSS3TransferUtility: AWSS3ObjectManager {
+
+  public func download(s3Object: AWSS3ObjectProtocol, toURL: URL, completion: @escaping ((Bool, Error?) -> Void)) {
+
+      let completionBlock: AWSS3TransferUtilityDownloadCompletionHandlerBlock = { task, url, data, error  -> Void in
+          if let _ = error {
+              completion(false, error)
+          } else {
+              completion(true, nil)
+          }
+      }
+      let _ = self.download(to: toURL, bucket: s3Object.getBucketName(), key: s3Object.getKeyName(), expression: nil, completionHandler: completionBlock)
+  }
+
+  public func upload(s3Object: AWSS3ObjectProtocol & AWSS3InputObjectProtocol, completion: @escaping ((_ success: Bool, _ error: Error?) -> Void)) {
+      let completionBlock : AWSS3TransferUtilityUploadCompletionHandlerBlock = { task, error  -> Void in
+          if let _ = error {
+              completion(false, error)
+          } else {
+              completion(true, nil)
+          }
+      }
+      let _ = self.uploadFile(s3Object.getLocalSourceFileURL()!, bucket: s3Object.getBucketName(), key: s3Object.getKeyName(), contentType: s3Object.getMimeType(), expression: nil, completionHandler: completionBlock).continueWith { (task) -> Any? in
+          if let err = task.error {
+              completion(false, err)
+          }
+          return nil
+      }
+  }
+}`;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInMzV3JhcHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUNhLFFBQUEsYUFBQSxHQUFnQjs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztFQUFoQiIsInNvdXJjZXNDb250ZW50IjpbIi8vIEJsYW5rIGxpbmVzIGF0IHRoZSBiZWdpbm5pbmcgYXJlIGludGVudGlvbmFsXG5leHBvcnQgY29uc3QgczNXcmFwcGVyQ29kZSA9IGBcblxuZXh0ZW5zaW9uIFMzT2JqZWN0OiBBV1NTM09iamVjdFByb3RvY29sIHtcbiAgcHVibGljIGZ1bmMgZ2V0QnVja2V0TmFtZSgpIC0+IFN0cmluZyB7XG4gICAgICByZXR1cm4gYnVja2V0XG4gIH1cblxuICBwdWJsaWMgZnVuYyBnZXRLZXlOYW1lKCkgLT4gU3RyaW5nIHtcbiAgICAgIHJldHVybiBrZXlcbiAgfVxuXG4gIHB1YmxpYyBmdW5jIGdldFJlZ2lvbigpIC0+IFN0cmluZyB7XG4gICAgICByZXR1cm4gcmVnaW9uXG4gIH1cbn1cblxuZXh0ZW5zaW9uIFMzT2JqZWN0SW5wdXQ6IEFXU1MzT2JqZWN0UHJvdG9jb2wsIEFXU1MzSW5wdXRPYmplY3RQcm90b2NvbCB7XG4gIHB1YmxpYyBmdW5jIGdldExvY2FsU291cmNlRmlsZVVSTCgpIC0+IFVSTD8ge1xuICAgICAgcmV0dXJuIFVSTChzdHJpbmc6IHNlbGYubG9jYWxVcmkpXG4gIH1cblxuICBwdWJsaWMgZnVuYyBnZXRNaW1lVHlwZSgpIC0+IFN0cmluZyB7XG4gICAgICByZXR1cm4gc2VsZi5taW1lVHlwZVxuICB9XG5cbiAgcHVibGljIGZ1bmMgZ2V0QnVja2V0TmFtZSgpIC0+IFN0cmluZyB7XG4gICAgICByZXR1cm4gc2VsZi5idWNrZXRcbiAgfVxuXG4gIHB1YmxpYyBmdW5jIGdldEtleU5hbWUoKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIHNlbGYua2V5XG4gIH1cblxuICBwdWJsaWMgZnVuYyBnZXRSZWdpb24oKSAtPiBTdHJpbmcge1xuICAgICAgcmV0dXJuIHNlbGYucmVnaW9uXG4gIH1cblxufVxuXG5pbXBvcnQgQVdTUzNcbmV4dGVuc2lvbiBBV1NTM1ByZVNpZ25lZFVSTEJ1aWxkZXI6IEFXU1MzT2JqZWN0UHJlc2lnbmVkVVJMR2VuZXJhdG9yICB7XG4gIHB1YmxpYyBmdW5jIGdldFByZXNpZ25lZFVSTChzM09iamVjdDogQVdTUzNPYmplY3RQcm90b2NvbCkgLT4gVVJMPyB7XG4gICAgICBsZXQgcmVxdWVzdCA9IEFXU1MzR2V0UHJlU2lnbmVkVVJMUmVxdWVzdCgpXG4gICAgICByZXF1ZXN0LmJ1Y2tldCA9IHMzT2JqZWN0LmdldEJ1Y2tldE5hbWUoKVxuICAgICAgcmVxdWVzdC5rZXkgPSBzM09iamVjdC5nZXRLZXlOYW1lKClcbiAgICAgIHZhciB1cmwgOiBVUkw/XG4gICAgICBzZWxmLmdldFByZVNpZ25lZFVSTChyZXF1ZXN0KS5jb250aW51ZVdpdGggeyAodGFzaykgLT4gQW55PyBpblxuICAgICAgICAgIHVybCA9IHRhc2sucmVzdWx0IGFzIFVSTD9cbiAgICAgICAgICB9LndhaXRVbnRpbEZpbmlzaGVkKClcbiAgICAgIHJldHVybiB1cmxcbiAgfVxufVxuXG5leHRlbnNpb24gQVdTUzNUcmFuc2ZlclV0aWxpdHk6IEFXU1MzT2JqZWN0TWFuYWdlciB7XG5cbiAgcHVibGljIGZ1bmMgZG93bmxvYWQoczNPYmplY3Q6IEFXU1MzT2JqZWN0UHJvdG9jb2wsIHRvVVJMOiBVUkwsIGNvbXBsZXRpb246IEBlc2NhcGluZyAoKEJvb2wsIEVycm9yPykgLT4gVm9pZCkpIHtcblxuICAgICAgbGV0IGNvbXBsZXRpb25CbG9jazogQVdTUzNUcmFuc2ZlclV0aWxpdHlEb3dubG9hZENvbXBsZXRpb25IYW5kbGVyQmxvY2sgPSB7IHRhc2ssIHVybCwgZGF0YSwgZXJyb3IgIC0+IFZvaWQgaW5cbiAgICAgICAgICBpZiBsZXQgXyA9IGVycm9yIHtcbiAgICAgICAgICAgICAgY29tcGxldGlvbihmYWxzZSwgZXJyb3IpXG4gICAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAgICAgY29tcGxldGlvbih0cnVlLCBuaWwpXG4gICAgICAgICAgfVxuICAgICAgfVxuICAgICAgbGV0IF8gPSBzZWxmLmRvd25sb2FkKHRvOiB0b1VSTCwgYnVja2V0OiBzM09iamVjdC5nZXRCdWNrZXROYW1lKCksIGtleTogczNPYmplY3QuZ2V0S2V5TmFtZSgpLCBleHByZXNzaW9uOiBuaWwsIGNvbXBsZXRpb25IYW5kbGVyOiBjb21wbGV0aW9uQmxvY2spXG4gIH1cblxuICBwdWJsaWMgZnVuYyB1cGxvYWQoczNPYmplY3Q6IEFXU1MzT2JqZWN0UHJvdG9jb2wgJiBBV1NTM0lucHV0T2JqZWN0UHJvdG9jb2wsIGNvbXBsZXRpb246IEBlc2NhcGluZyAoKF8gc3VjY2VzczogQm9vbCwgXyBlcnJvcjogRXJyb3I/KSAtPiBWb2lkKSkge1xuICAgICAgbGV0IGNvbXBsZXRpb25CbG9jayA6IEFXU1MzVHJhbnNmZXJVdGlsaXR5VXBsb2FkQ29tcGxldGlvbkhhbmRsZXJCbG9jayA9IHsgdGFzaywgZXJyb3IgIC0+IFZvaWQgaW5cbiAgICAgICAgICBpZiBsZXQgXyA9IGVycm9yIHtcbiAgICAgICAgICAgICAgY29tcGxldGlvbihmYWxzZSwgZXJyb3IpXG4gICAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAgICAgY29tcGxldGlvbih0cnVlLCBuaWwpXG4gICAgICAgICAgfVxuICAgICAgfVxuICAgICAgbGV0IF8gPSBzZWxmLnVwbG9hZEZpbGUoczNPYmplY3QuZ2V0TG9jYWxTb3VyY2VGaWxlVVJMKCkhLCBidWNrZXQ6IHMzT2JqZWN0LmdldEJ1Y2tldE5hbWUoKSwga2V5OiBzM09iamVjdC5nZXRLZXlOYW1lKCksIGNvbnRlbnRUeXBlOiBzM09iamVjdC5nZXRNaW1lVHlwZSgpLCBleHByZXNzaW9uOiBuaWwsIGNvbXBsZXRpb25IYW5kbGVyOiBjb21wbGV0aW9uQmxvY2spLmNvbnRpbnVlV2l0aCB7ICh0YXNrKSAtPiBBbnk/IGluXG4gICAgICAgICAgaWYgbGV0IGVyciA9IHRhc2suZXJyb3Ige1xuICAgICAgICAgICAgICBjb21wbGV0aW9uKGZhbHNlLCBlcnIpXG4gICAgICAgICAgfVxuICAgICAgICAgIHJldHVybiBuaWxcbiAgICAgIH1cbiAgfVxufWA7XG4iXSwic291cmNlUm9vdCI6IiJ9

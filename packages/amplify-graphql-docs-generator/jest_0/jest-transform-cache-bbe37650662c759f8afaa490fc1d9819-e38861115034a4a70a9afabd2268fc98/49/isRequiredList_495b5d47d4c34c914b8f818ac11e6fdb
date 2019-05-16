@@ -1,0 +1,21 @@
+c23a16b296b5ad119b2dc37f6cb570c6
+'use strict';
+require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isRequiredList.ts", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst graphql_1 = require(\"graphql\");\nfunction isRequired(typeObj) {\n    return graphql_1.isNonNullType(typeObj) && graphql_1.isListType(typeObj.ofType);\n}\nexports.default = isRequired;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaXNSZXF1aXJlZExpc3QuanMiLCJzb3VyY2VSb290IjoiL2MvVXNlcnMvU2FuZHJvL3JlcG8vYW1wbGlmeS1jbGkvcGFja2FnZXMvYW1wbGlmeS1ncmFwaHFsLWRvY3MtZ2VuZXJhdG9yL3NyYy8iLCJzb3VyY2VzIjpbImlzUmVxdWlyZWRMaXN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEscUNBQWdFO0FBQ2hFLG9CQUFtQyxPQUFvQjtJQUNyRCxPQUFPLHVCQUFhLENBQUMsT0FBTyxDQUFDLElBQUksb0JBQVUsQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLENBQUE7QUFDN0QsQ0FBQztBQUZELDZCQUVDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgR3JhcGhRTFR5cGUsIGlzTm9uTnVsbFR5cGUsIGlzTGlzdFR5cGUgfSBmcm9tICdncmFwaHFsJ1xuZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gaXNSZXF1aXJlZCh0eXBlT2JqOiBHcmFwaFFMVHlwZSk6IGJvb2xlYW4ge1xuICByZXR1cm4gaXNOb25OdWxsVHlwZSh0eXBlT2JqKSAmJiBpc0xpc3RUeXBlKHR5cGVPYmoub2ZUeXBlKVxufVxuIl19");"use strict"; /* istanbul ignore next */var cov_2l6vx6pegr = function () {
+    var path = "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isRequiredList.ts",
+        hash = "f9e2d7173740d145b76156ba3ee9cba339f32657",
+        Function = function () {}.constructor,
+        global = new Function('return this')(),
+        gcv = "__coverage__",
+        coverageData = { path: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isRequiredList.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 18 }, end: { line: 3, column: 36 } }, "2": { start: { line: 5, column: 4 }, end: { line: 5, column: 84 } }, "3": { start: { line: 7, column: 0 }, end: { line: 7, column: 29 } } }, fnMap: { "0": { name: "isRequired", decl: { start: { line: 4, column: 9 }, end: { line: 4, column: 19 } }, loc: { start: { line: 4, column: 29 }, end: { line: 6, column: 1 } }, line: 4 } }, branchMap: { "0": { loc: { start: { line: 5, column: 11 }, end: { line: 5, column: 83 } }, type: "binary-expr", locations: [{ start: { line: 5, column: 11 }, end: { line: 5, column: 43 } }, { start: { line: 5, column: 47 }, end: { line: 5, column: 83 } }], line: 5 } }, s: { "0": 0, "1": 0, "2": 0, "3": 0 }, f: { "0": 0 }, b: { "0": [0, 0] }, inputSourceMap: { version: 3, file: "isRequiredList.js", sourceRoot: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/", sources: ["isRequiredList.ts"], names: [], mappings: ";;AAAA,qCAAgE;AAChE,oBAAmC,OAAoB;IACrD,OAAO,uBAAa,CAAC,OAAO,CAAC,IAAI,oBAAU,CAAC,OAAO,CAAC,MAAM,CAAC,CAAA;AAC7D,CAAC;AAFD,6BAEC", sourcesContent: ["import { GraphQLType, isNonNullType, isListType } from 'graphql'\nexport default function isRequired(typeObj: GraphQLType): boolean {\n  return isNonNullType(typeObj) && isListType(typeObj.ofType)\n}\n"] }, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },
+        coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {
+        return coverage[path];
+    }coverageData.hash = hash;return coverage[path] = coverageData;
+}();cov_2l6vx6pegr.s[0]++;
+Object.defineProperty(exports, "__esModule", { value: true });
+const graphql_1 = ( /* istanbul ignore next */cov_2l6vx6pegr.s[1]++, require("graphql"));
+function isRequired(typeObj) {
+    /* istanbul ignore next */cov_2l6vx6pegr.f[0]++;cov_2l6vx6pegr.s[2]++;
+    return (/* istanbul ignore next */(cov_2l6vx6pegr.b[0][0]++, graphql_1.isNonNullType(typeObj)) && ( /* istanbul ignore next */cov_2l6vx6pegr.b[0][1]++, graphql_1.isListType(typeObj.ofType))
+    );
+} /* istanbul ignore next */cov_2l6vx6pegr.s[3]++;
+exports.default = isRequired;

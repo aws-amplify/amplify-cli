@@ -1,0 +1,25 @@
+b83084e54134bb93d4c5983caefe5bdf
+const getOutputFileName = require('../../src/utils/getOutputFileName');
+
+describe('getOutputFileName', () => {
+  it('should return the file name with by adding extension based on the language target', () => {
+    expect(getOutputFileName('Foo', 'typescript')).toEqual('Foo.ts');
+  });
+
+  it('should not add extension if the file extension is already present', () => {
+    expect(getOutputFileName('Foo.swift', 'swift')).toEqual('Foo.swift');
+  });
+
+  it('should add .service.ts extension when the target is angular', () => {
+    expect(getOutputFileName('Foo', 'angular')).toEqual('Foo.service.ts');
+  });
+
+  it('should return api.service.ts when input name is missing and target is angular', () => {
+    expect(getOutputFileName(null, 'angular')).toEqual('src/app/api.service.ts');
+  });
+
+  it('should not add any extension if the code generation target is unknown', () => {
+    expect(getOutputFileName('Foo', 'bar')).toEqual('Foo');
+  });
+});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImdldE91dHB1dEZpbGVOYW1lLnRlc3QuanMiXSwibmFtZXMiOlsiZ2V0T3V0cHV0RmlsZU5hbWUiLCJyZXF1aXJlIiwiZGVzY3JpYmUiLCJpdCIsImV4cGVjdCIsInRvRXF1YWwiXSwibWFwcGluZ3MiOiJBQUFBLE1BQU1BLG9CQUFvQkMsUUFBUSxtQ0FBUixDQUExQjs7QUFFQUMsU0FBUyxtQkFBVCxFQUE4QixNQUFNO0FBQ2xDQyxLQUFHLG1GQUFILEVBQXdGLE1BQU07QUFDNUZDLFdBQU9KLGtCQUFrQixLQUFsQixFQUF5QixZQUF6QixDQUFQLEVBQStDSyxPQUEvQyxDQUF1RCxRQUF2RDtBQUNELEdBRkQ7O0FBSUFGLEtBQUcsbUVBQUgsRUFBd0UsTUFBTTtBQUM1RUMsV0FBT0osa0JBQWtCLFdBQWxCLEVBQStCLE9BQS9CLENBQVAsRUFBZ0RLLE9BQWhELENBQXdELFdBQXhEO0FBQ0QsR0FGRDs7QUFJQUYsS0FBRyw2REFBSCxFQUFrRSxNQUFNO0FBQ3RFQyxXQUFPSixrQkFBa0IsS0FBbEIsRUFBeUIsU0FBekIsQ0FBUCxFQUE0Q0ssT0FBNUMsQ0FBb0QsZ0JBQXBEO0FBQ0QsR0FGRDs7QUFJQUYsS0FBRywrRUFBSCxFQUFvRixNQUFNO0FBQ3hGQyxXQUFPSixrQkFBa0IsSUFBbEIsRUFBd0IsU0FBeEIsQ0FBUCxFQUEyQ0ssT0FBM0MsQ0FBbUQsd0JBQW5EO0FBQ0QsR0FGRDs7QUFJQUYsS0FBRyx1RUFBSCxFQUE0RSxNQUFNO0FBQ2hGQyxXQUFPSixrQkFBa0IsS0FBbEIsRUFBeUIsS0FBekIsQ0FBUCxFQUF3Q0ssT0FBeEMsQ0FBZ0QsS0FBaEQ7QUFDRCxHQUZEO0FBR0QsQ0FwQkQiLCJmaWxlIjoiZ2V0T3V0cHV0RmlsZU5hbWUudGVzdC5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IGdldE91dHB1dEZpbGVOYW1lID0gcmVxdWlyZSgnLi4vLi4vc3JjL3V0aWxzL2dldE91dHB1dEZpbGVOYW1lJyk7XG5cbmRlc2NyaWJlKCdnZXRPdXRwdXRGaWxlTmFtZScsICgpID0+IHtcbiAgaXQoJ3Nob3VsZCByZXR1cm4gdGhlIGZpbGUgbmFtZSB3aXRoIGJ5IGFkZGluZyBleHRlbnNpb24gYmFzZWQgb24gdGhlIGxhbmd1YWdlIHRhcmdldCcsICgpID0+IHtcbiAgICBleHBlY3QoZ2V0T3V0cHV0RmlsZU5hbWUoJ0ZvbycsICd0eXBlc2NyaXB0JykpLnRvRXF1YWwoJ0Zvby50cycpO1xuICB9KTtcblxuICBpdCgnc2hvdWxkIG5vdCBhZGQgZXh0ZW5zaW9uIGlmIHRoZSBmaWxlIGV4dGVuc2lvbiBpcyBhbHJlYWR5IHByZXNlbnQnLCAoKSA9PiB7XG4gICAgZXhwZWN0KGdldE91dHB1dEZpbGVOYW1lKCdGb28uc3dpZnQnLCAnc3dpZnQnKSkudG9FcXVhbCgnRm9vLnN3aWZ0Jyk7XG4gIH0pO1xuXG4gIGl0KCdzaG91bGQgYWRkIC5zZXJ2aWNlLnRzIGV4dGVuc2lvbiB3aGVuIHRoZSB0YXJnZXQgaXMgYW5ndWxhcicsICgpID0+IHtcbiAgICBleHBlY3QoZ2V0T3V0cHV0RmlsZU5hbWUoJ0ZvbycsICdhbmd1bGFyJykpLnRvRXF1YWwoJ0Zvby5zZXJ2aWNlLnRzJyk7XG4gIH0pO1xuXG4gIGl0KCdzaG91bGQgcmV0dXJuIGFwaS5zZXJ2aWNlLnRzIHdoZW4gaW5wdXQgbmFtZSBpcyBtaXNzaW5nIGFuZCB0YXJnZXQgaXMgYW5ndWxhcicsICgpID0+IHtcbiAgICBleHBlY3QoZ2V0T3V0cHV0RmlsZU5hbWUobnVsbCwgJ2FuZ3VsYXInKSkudG9FcXVhbCgnc3JjL2FwcC9hcGkuc2VydmljZS50cycpO1xuICB9KTtcblxuICBpdCgnc2hvdWxkIG5vdCBhZGQgYW55IGV4dGVuc2lvbiBpZiB0aGUgY29kZSBnZW5lcmF0aW9uIHRhcmdldCBpcyB1bmtub3duJywgKCkgPT4ge1xuICAgIGV4cGVjdChnZXRPdXRwdXRGaWxlTmFtZSgnRm9vJywgJ2JhcicpKS50b0VxdWFsKCdGb28nKTtcbiAgfSk7XG59KTtcbiJdfQ==

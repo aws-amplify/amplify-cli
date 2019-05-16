@@ -1,0 +1,6 @@
+ca8f8f67c1bd1d9e7c75fcd9969bf58a
+'use strict';require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-types-generator/src/polyfills.js", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nrequire(\"core-js/fn/object/values\");\nrequire(\"core-js/fn/object/entries\");\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9seWZpbGxzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsicG9seWZpbGxzLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsb0NBQWtDO0FBQ2xDLHFDQUFtQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAnY29yZS1qcy9mbi9vYmplY3QvdmFsdWVzJztcbmltcG9ydCAnY29yZS1qcy9mbi9vYmplY3QvZW50cmllcyc7XG4iXX0=");"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("core-js/fn/object/values");
+require("core-js/fn/object/entries");
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBvbHlmaWxscy5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLFFBQUEsMEJBQUE7QUFDQSxRQUFBLDJCQUFBIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICdjb3JlLWpzL2ZuL29iamVjdC92YWx1ZXMnO1xuaW1wb3J0ICdjb3JlLWpzL2ZuL29iamVjdC9lbnRyaWVzJztcbiJdLCJzb3VyY2VSb290IjoiIn0=

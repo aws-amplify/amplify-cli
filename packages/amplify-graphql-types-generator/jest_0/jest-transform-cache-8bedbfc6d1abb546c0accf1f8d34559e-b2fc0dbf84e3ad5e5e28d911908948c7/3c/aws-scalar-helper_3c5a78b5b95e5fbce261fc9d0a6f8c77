@@ -1,0 +1,19 @@
+eddbf4332bfe956b8d331ff904c82554
+'use strict';require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-types-generator/src/swift/aws-scalar-helper.ts", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.awsScalarMap = {\n    AWSDate: 'String',\n    AWSTime: 'String',\n    AWSDateTime: 'String',\n    AWSTimestamp: 'Int',\n    AWSEmail: 'String',\n    AWSJSON: 'String',\n    AWSURL: 'String',\n    AWSPhone: 'String',\n    AWSIPAddress: 'String',\n};\nfunction getTypeForAWSScalar(type) {\n    return exports.awsScalarMap[type.name];\n}\nexports.getTypeForAWSScalar = getTypeForAWSScalar;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXdzLXNjYWxhci1oZWxwZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhd3Mtc2NhbGFyLWhlbHBlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQVFhLFFBQUEsWUFBWSxHQUFvQjtJQUN6QyxPQUFPLEVBQUUsUUFBUTtJQUNqQixPQUFPLEVBQUUsUUFBUTtJQUNqQixXQUFXLEVBQUUsUUFBUTtJQUNyQixZQUFZLEVBQUUsS0FBSztJQUNuQixRQUFRLEVBQUUsUUFBUTtJQUNsQixPQUFPLEVBQUUsUUFBUTtJQUNqQixNQUFNLEVBQUUsUUFBUTtJQUNoQixRQUFRLEVBQUUsUUFBUTtJQUNsQixZQUFZLEVBQUUsUUFBUTtDQUN6QixDQUFDO0FBRUYsNkJBQW9DLElBQXVCO0lBQ3ZELE9BQU8sb0JBQVksQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUM7QUFDbkMsQ0FBQztBQUZELGtEQUVDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtcbiAgICBHcmFwaFFMU2NhbGFyVHlwZSxcbiAgfSBmcm9tICdncmFwaHFsJztcblxuaW50ZXJmYWNlIElOYW1lVG9WYWx1ZU1hcCB7XG4gICAgW2tleTogc3RyaW5nXTogYW55O1xufVxuXG5leHBvcnQgY29uc3QgYXdzU2NhbGFyTWFwOiBJTmFtZVRvVmFsdWVNYXAgPSB7XG4gICAgQVdTRGF0ZTogJ1N0cmluZycsXG4gICAgQVdTVGltZTogJ1N0cmluZycsXG4gICAgQVdTRGF0ZVRpbWU6ICdTdHJpbmcnLFxuICAgIEFXU1RpbWVzdGFtcDogJ0ludCcsXG4gICAgQVdTRW1haWw6ICdTdHJpbmcnLFxuICAgIEFXU0pTT046ICdTdHJpbmcnLFxuICAgIEFXU1VSTDogJ1N0cmluZycsXG4gICAgQVdTUGhvbmU6ICdTdHJpbmcnLFxuICAgIEFXU0lQQWRkcmVzczogJ1N0cmluZycsXG59O1xuXG5leHBvcnQgZnVuY3Rpb24gZ2V0VHlwZUZvckFXU1NjYWxhcih0eXBlOiBHcmFwaFFMU2NhbGFyVHlwZSk6IHN0cmluZyB7XG4gICAgcmV0dXJuIGF3c1NjYWxhck1hcFt0eXBlLm5hbWVdO1xufSJdfQ==");"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.awsScalarMap = {
+    AWSDate: 'String',
+    AWSTime: 'String',
+    AWSDateTime: 'String',
+    AWSTimestamp: 'Int',
+    AWSEmail: 'String',
+    AWSJSON: 'String',
+    AWSURL: 'String',
+    AWSPhone: 'String',
+    AWSIPAddress: 'String' };
+
+function getTypeForAWSScalar(type) {
+    return exports.awsScalarMap[type.name];
+}
+exports.getTypeForAWSScalar = getTypeForAWSScalar;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImF3cy1zY2FsYXItaGVscGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBUWEsUUFBQSxZQUFBLEdBQWdDO0FBQ3pDLGFBQVMsUUFEZ0M7QUFFekMsYUFBUyxRQUZnQztBQUd6QyxpQkFBYSxRQUg0QjtBQUl6QyxrQkFBYyxLQUoyQjtBQUt6QyxjQUFVLFFBTCtCO0FBTXpDLGFBQVMsUUFOZ0M7QUFPekMsWUFBUSxRQVBpQztBQVF6QyxjQUFVLFFBUitCO0FBU3pDLGtCQUFjLFFBVDJCLEVBQWhDOztBQVliLFNBQUEsbUJBQUEsQ0FBb0MsSUFBcEMsRUFBMkQ7QUFDdkQsV0FBTyxRQUFBLFlBQUEsQ0FBYSxLQUFLLElBQWxCLENBQVA7QUFDSDtBQUZELFFBQUEsbUJBQUEsR0FBQSxtQkFBQSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7XG4gICAgR3JhcGhRTFNjYWxhclR5cGUsXG4gIH0gZnJvbSAnZ3JhcGhxbCc7XG5cbmludGVyZmFjZSBJTmFtZVRvVmFsdWVNYXAge1xuICAgIFtrZXk6IHN0cmluZ106IGFueTtcbn1cblxuZXhwb3J0IGNvbnN0IGF3c1NjYWxhck1hcDogSU5hbWVUb1ZhbHVlTWFwID0ge1xuICAgIEFXU0RhdGU6ICdTdHJpbmcnLFxuICAgIEFXU1RpbWU6ICdTdHJpbmcnLFxuICAgIEFXU0RhdGVUaW1lOiAnU3RyaW5nJyxcbiAgICBBV1NUaW1lc3RhbXA6ICdJbnQnLFxuICAgIEFXU0VtYWlsOiAnU3RyaW5nJyxcbiAgICBBV1NKU09OOiAnU3RyaW5nJyxcbiAgICBBV1NVUkw6ICdTdHJpbmcnLFxuICAgIEFXU1Bob25lOiAnU3RyaW5nJyxcbiAgICBBV1NJUEFkZHJlc3M6ICdTdHJpbmcnLFxufTtcblxuZXhwb3J0IGZ1bmN0aW9uIGdldFR5cGVGb3JBV1NTY2FsYXIodHlwZTogR3JhcGhRTFNjYWxhclR5cGUpOiBzdHJpbmcge1xuICAgIHJldHVybiBhd3NTY2FsYXJNYXBbdHlwZS5uYW1lXTtcbn0iXSwic291cmNlUm9vdCI6IiJ9

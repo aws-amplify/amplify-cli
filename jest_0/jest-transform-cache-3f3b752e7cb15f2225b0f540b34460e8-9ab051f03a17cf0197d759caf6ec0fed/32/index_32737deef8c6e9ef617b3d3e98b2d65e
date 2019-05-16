@@ -1,0 +1,15 @@
+6e56c6552906090587e88842f86afccb
+/* istanbul ignore next */var cov_168r1d4vdd = function () {var path = "/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/errors/index.js",hash = "6ae6ae1324ace2218880120ea6153c79b86bf37e",Function = function () {}.constructor,global = new Function('return this')(),gcv = "__coverage__",coverageData = { path: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/errors/index.js", statementMap: { "0": { start: { line: 8, column: 0 }, end: { line: 14, column: 2 } } }, fnMap: {}, branchMap: {}, s: { "0": 0 }, f: {}, b: {}, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();class AmplifyCodeGenNotSupportedError extends /* istanbul ignore next */(Error) {}
+
+class AmplifyCodeGenNoAppSyncAPIAvailableError extends /* istanbul ignore next */(Error) {}
+class AmplifyCodeGenNoProjectAvailableError extends /* istanbul ignore next */(Error) {}
+
+class AmplifyCodeGenAPINotFoundError extends /* istanbul ignore next */(Error) {}
+class AmplifyCodeGenAPIPendingPush extends /* istanbul ignore next */(Error) {} /* istanbul ignore next */cov_168r1d4vdd.s[0]++;
+module.exports = {
+  AmplifyCodeGenNotSupportedError,
+  AmplifyCodeGenNoAppSyncAPIAvailableError,
+  AmplifyCodeGenNoProjectAvailableError,
+  AmplifyCodeGenAPINotFoundError,
+  AmplifyCodeGenAPIPendingPush };
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbIkFtcGxpZnlDb2RlR2VuTm90U3VwcG9ydGVkRXJyb3IiLCJFcnJvciIsIkFtcGxpZnlDb2RlR2VuTm9BcHBTeW5jQVBJQXZhaWxhYmxlRXJyb3IiLCJBbXBsaWZ5Q29kZUdlbk5vUHJvamVjdEF2YWlsYWJsZUVycm9yIiwiQW1wbGlmeUNvZGVHZW5BUElOb3RGb3VuZEVycm9yIiwiQW1wbGlmeUNvZGVHZW5BUElQZW5kaW5nUHVzaCIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiIyeEJBQUEsTUFBTUEsK0JBQU4sb0NBQThDQyxLQUE5QyxFQUFvRDs7QUFFcEQsTUFBTUMsd0NBQU4sb0NBQXVERCxLQUF2RCxFQUE2RDtBQUM3RCxNQUFNRSxxQ0FBTixvQ0FBb0RGLEtBQXBELEVBQTBEOztBQUUxRCxNQUFNRyw4QkFBTixvQ0FBNkNILEtBQTdDLEVBQW1EO0FBQ25ELE1BQU1JLDRCQUFOLG9DQUEyQ0osS0FBM0MsRUFBaUQsRTtBQUNqREssT0FBT0MsT0FBUCxHQUFpQjtBQUNmUCxpQ0FEZTtBQUVmRSwwQ0FGZTtBQUdmQyx1Q0FIZTtBQUlmQyxnQ0FKZTtBQUtmQyw4QkFMZSxFQUFqQiIsImZpbGUiOiJpbmRleC5qcyIsInNvdXJjZXNDb250ZW50IjpbImNsYXNzIEFtcGxpZnlDb2RlR2VuTm90U3VwcG9ydGVkRXJyb3IgZXh0ZW5kcyBFcnJvciB7fVxuXG5jbGFzcyBBbXBsaWZ5Q29kZUdlbk5vQXBwU3luY0FQSUF2YWlsYWJsZUVycm9yIGV4dGVuZHMgRXJyb3Ige31cbmNsYXNzIEFtcGxpZnlDb2RlR2VuTm9Qcm9qZWN0QXZhaWxhYmxlRXJyb3IgZXh0ZW5kcyBFcnJvciB7fVxuXG5jbGFzcyBBbXBsaWZ5Q29kZUdlbkFQSU5vdEZvdW5kRXJyb3IgZXh0ZW5kcyBFcnJvciB7fVxuY2xhc3MgQW1wbGlmeUNvZGVHZW5BUElQZW5kaW5nUHVzaCBleHRlbmRzIEVycm9yIHt9XG5tb2R1bGUuZXhwb3J0cyA9IHtcbiAgQW1wbGlmeUNvZGVHZW5Ob3RTdXBwb3J0ZWRFcnJvcixcbiAgQW1wbGlmeUNvZGVHZW5Ob0FwcFN5bmNBUElBdmFpbGFibGVFcnJvcixcbiAgQW1wbGlmeUNvZGVHZW5Ob1Byb2plY3RBdmFpbGFibGVFcnJvcixcbiAgQW1wbGlmeUNvZGVHZW5BUElOb3RGb3VuZEVycm9yLFxuICBBbXBsaWZ5Q29kZUdlbkFQSVBlbmRpbmdQdXNoLFxufTtcbiJdfQ==

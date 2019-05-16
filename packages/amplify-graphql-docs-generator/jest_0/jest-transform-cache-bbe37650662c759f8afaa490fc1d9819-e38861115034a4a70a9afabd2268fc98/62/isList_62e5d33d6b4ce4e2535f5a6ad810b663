@@ -1,0 +1,26 @@
+08a4bea870462f07e118d4d32d950c1a
+'use strict';
+require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isList.ts", "\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst graphql_1 = require(\"graphql\");\nfunction isList(typeObj) {\n    if (graphql_1.isNonNullType(typeObj)) {\n        return isList(typeObj.ofType);\n    }\n    return graphql_1.isListType(typeObj);\n}\nexports.default = isList;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaXNMaXN0LmpzIiwic291cmNlUm9vdCI6Ii9jL1VzZXJzL1NhbmRyby9yZXBvL2FtcGxpZnktY2xpL3BhY2thZ2VzL2FtcGxpZnktZ3JhcGhxbC1kb2NzLWdlbmVyYXRvci9zcmMvIiwic291cmNlcyI6WyJpc0xpc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxxQ0FBaUU7QUFFakUsZ0JBQStCLE9BQW9CO0lBQ2pELElBQUksdUJBQWEsQ0FBQyxPQUFPLENBQUMsRUFBRTtRQUMxQixPQUFPLE1BQU0sQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLENBQUM7S0FDL0I7SUFDRCxPQUFPLG9CQUFVLENBQUMsT0FBTyxDQUFDLENBQUM7QUFDN0IsQ0FBQztBQUxELHlCQUtDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgR3JhcGhRTFR5cGUsIGlzTm9uTnVsbFR5cGUsIGlzTGlzdFR5cGUgfSBmcm9tIFwiZ3JhcGhxbFwiO1xuXG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBpc0xpc3QodHlwZU9iajogR3JhcGhRTFR5cGUpOiBib29sZWFuIHtcbiAgaWYgKGlzTm9uTnVsbFR5cGUodHlwZU9iaikpIHtcbiAgICByZXR1cm4gaXNMaXN0KHR5cGVPYmoub2ZUeXBlKTtcbiAgfVxuICByZXR1cm4gaXNMaXN0VHlwZSh0eXBlT2JqKTtcbn1cbiJdfQ==");"use strict"; /* istanbul ignore next */var cov_tmgl06rx8 = function () {
+    var path = "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isList.ts",
+        hash = "993558084d98b8163f21717fe0d815b6a5e4bf96",
+        Function = function () {}.constructor,
+        global = new Function('return this')(),
+        gcv = "__coverage__",
+        coverageData = { path: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/utils/isList.ts", statementMap: { "0": { start: { line: 2, column: 0 }, end: { line: 2, column: 62 } }, "1": { start: { line: 3, column: 18 }, end: { line: 3, column: 36 } }, "2": { start: { line: 5, column: 4 }, end: { line: 7, column: 5 } }, "3": { start: { line: 6, column: 8 }, end: { line: 6, column: 38 } }, "4": { start: { line: 8, column: 4 }, end: { line: 8, column: 41 } }, "5": { start: { line: 10, column: 0 }, end: { line: 10, column: 25 } } }, fnMap: { "0": { name: "isList", decl: { start: { line: 4, column: 9 }, end: { line: 4, column: 15 } }, loc: { start: { line: 4, column: 25 }, end: { line: 9, column: 1 } }, line: 4 } }, branchMap: { "0": { loc: { start: { line: 5, column: 4 }, end: { line: 7, column: 5 } }, type: "if", locations: [{ start: { line: 5, column: 4 }, end: { line: 7, column: 5 } }, { start: { line: 5, column: 4 }, end: { line: 7, column: 5 } }], line: 5 } }, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, f: { "0": 0 }, b: { "0": [0, 0] }, inputSourceMap: { version: 3, file: "isList.js", sourceRoot: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/", sources: ["isList.ts"], names: [], mappings: ";;AAAA,qCAAiE;AAEjE,gBAA+B,OAAoB;IACjD,IAAI,uBAAa,CAAC,OAAO,CAAC,EAAE;QAC1B,OAAO,MAAM,CAAC,OAAO,CAAC,MAAM,CAAC,CAAC;KAC/B;IACD,OAAO,oBAAU,CAAC,OAAO,CAAC,CAAC;AAC7B,CAAC;AALD,yBAKC", sourcesContent: ["import { GraphQLType, isNonNullType, isListType } from \"graphql\";\n\nexport default function isList(typeObj: GraphQLType): boolean {\n  if (isNonNullType(typeObj)) {\n    return isList(typeObj.ofType);\n  }\n  return isListType(typeObj);\n}\n"] }, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },
+        coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {
+        return coverage[path];
+    }coverageData.hash = hash;return coverage[path] = coverageData;
+}();cov_tmgl06rx8.s[0]++;
+Object.defineProperty(exports, "__esModule", { value: true });
+const graphql_1 = ( /* istanbul ignore next */cov_tmgl06rx8.s[1]++, require("graphql"));
+function isList(typeObj) {
+    /* istanbul ignore next */cov_tmgl06rx8.f[0]++;cov_tmgl06rx8.s[2]++;
+    if (graphql_1.isNonNullType(typeObj)) {
+        /* istanbul ignore next */cov_tmgl06rx8.b[0][0]++;cov_tmgl06rx8.s[3]++;
+        return isList(typeObj.ofType);
+    } else /* istanbul ignore next */{
+            cov_tmgl06rx8.b[0][1]++;
+        }cov_tmgl06rx8.s[4]++;
+    return graphql_1.isListType(typeObj);
+} /* istanbul ignore next */cov_tmgl06rx8.s[5]++;
+exports.default = isList;

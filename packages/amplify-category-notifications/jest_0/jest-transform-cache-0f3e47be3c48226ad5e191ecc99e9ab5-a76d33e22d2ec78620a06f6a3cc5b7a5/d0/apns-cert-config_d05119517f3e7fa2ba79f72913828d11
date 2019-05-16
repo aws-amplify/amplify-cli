@@ -1,0 +1,243 @@
+b18fb57ead294332b1118d3f895c3405
+/* istanbul ignore next */var cov_2ar6taprrg = function () {
+  var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/apns-cert-config.js',
+      hash = '7e47998b3bcc595c160de56d141aa9021b8bfba2',
+      Function = function () {}.constructor,
+      global = new Function('return this')(),
+      gcv = '__coverage__',
+      coverageData = {
+    path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/apns-cert-config.js',
+    statementMap: {
+      '0': {
+        start: {
+          line: 1,
+          column: 17
+        },
+        end: {
+          line: 1,
+          column: 36
+        }
+      },
+      '1': {
+        start: {
+          line: 2,
+          column: 19
+        },
+        end: {
+          line: 2,
+          column: 42
+        }
+      },
+      '2': {
+        start: {
+          line: 3,
+          column: 25
+        },
+        end: {
+          line: 3,
+          column: 54
+        }
+      },
+      '3': {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 25,
+          column: 3
+        }
+      },
+      '4': {
+        start: {
+          line: 8,
+          column: 4
+        },
+        end: {
+          line: 8,
+          column: 59
+        }
+      },
+      '5': {
+        start: {
+          line: 10,
+          column: 22
+        },
+        end: {
+          line: 22,
+          column: 5
+        }
+      },
+      '6': {
+        start: {
+          line: 23,
+          column: 20
+        },
+        end: {
+          line: 23,
+          column: 52
+        }
+      },
+      '7': {
+        start: {
+          line: 24,
+          column: 4
+        },
+        end: {
+          line: 24,
+          column: 54
+        }
+      },
+      '8': {
+        start: {
+          line: 27,
+          column: 2
+        },
+        end: {
+          line: 27,
+          column: 27
+        }
+      },
+      '9': {
+        start: {
+          line: 30,
+          column: 0
+        },
+        end: {
+          line: 32,
+          column: 2
+        }
+      }
+    },
+    fnMap: {
+      '0': {
+        name: 'run',
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 18
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 33
+          },
+          end: {
+            line: 28,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {
+      '0': {
+        loc: {
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 25,
+            column: 3
+          }
+        },
+        type: 'if',
+        locations: [{
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 25,
+            column: 3
+          }
+        }, {
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 25,
+            column: 3
+          }
+        }],
+        line: 7
+      }
+    },
+    s: {
+      '0': 0,
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+      '6': 0,
+      '7': 0,
+      '8': 0,
+      '9': 0
+    },
+    f: {
+      '0': 0
+    },
+    b: {
+      '0': [0, 0]
+    },
+    _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c'
+  },
+      coverage = global[gcv] || (global[gcv] = {});
+
+  if (coverage[path] && coverage[path].hash === hash) {
+    return coverage[path];
+  }
+
+  coverageData.hash = hash;
+  return coverage[path] = coverageData;
+}();
+
+const inquirer = /* istanbul ignore next */(cov_2ar6taprrg.s[0]++, require('inquirer'));
+const p12decoder = /* istanbul ignore next */(cov_2ar6taprrg.s[1]++, require('./p12decoder'));
+const validateFilePath = /* istanbul ignore next */(cov_2ar6taprrg.s[2]++, require('./validateFilepath'));
+
+async function run(channelInput) {
+  /* istanbul ignore next */cov_2ar6taprrg.f[0]++;
+
+  let certificateConfig;
+  /* istanbul ignore next */cov_2ar6taprrg.s[3]++;
+  if (channelInput) {
+    /* istanbul ignore next */cov_2ar6taprrg.b[0][0]++;
+    cov_2ar6taprrg.s[4]++;
+
+    certificateConfig = await p12decoder.run(channelInput);
+  } else {
+    /* istanbul ignore next */cov_2ar6taprrg.b[0][1]++;
+
+    const questions = /* istanbul ignore next */(cov_2ar6taprrg.s[5]++, [{
+      name: 'P12FilePath',
+      type: 'input',
+      message: 'The certificate file path (.p12): ',
+      validate: validateFilePath
+    }, {
+      name: 'P12FilePassword',
+      type: 'input',
+      message: 'The certificate password (if any): '
+    }]);
+    const answers = /* istanbul ignore next */(cov_2ar6taprrg.s[6]++, await inquirer.prompt(questions));
+    /* istanbul ignore next */cov_2ar6taprrg.s[7]++;
+    certificateConfig = await p12decoder.run(answers);
+  }
+
+  /* istanbul ignore next */cov_2ar6taprrg.s[8]++;
+  return certificateConfig;
+}
+
+/* istanbul ignore next */cov_2ar6taprrg.s[9]++;
+module.exports = {
+  run
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwbnMtY2VydC1jb25maWcuanMiXSwibmFtZXMiOlsiaW5xdWlyZXIiLCJyZXF1aXJlIiwicDEyZGVjb2RlciIsInZhbGlkYXRlRmlsZVBhdGgiLCJydW4iLCJjaGFubmVsSW5wdXQiLCJjZXJ0aWZpY2F0ZUNvbmZpZyIsInF1ZXN0aW9ucyIsIm5hbWUiLCJ0eXBlIiwibWVzc2FnZSIsInZhbGlkYXRlIiwiYW5zd2VycyIsInByb21wdCIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLE1BQU1BLDZEQUFXQyxRQUFRLFVBQVIsQ0FBWCxDQUFOO0FBQ0EsTUFBTUMsK0RBQWFELFFBQVEsY0FBUixDQUFiLENBQU47QUFDQSxNQUFNRSxxRUFBbUJGLFFBQVEsb0JBQVIsQ0FBbkIsQ0FBTjs7QUFFQSxlQUFlRyxHQUFmLENBQW1CQyxZQUFuQixFQUFpQztBQUFBOztBQUMvQixNQUFJQyxpQkFBSjtBQUQrQjtBQUUvQixNQUFJRCxZQUFKLEVBQWtCO0FBQUE7QUFBQTs7QUFDaEJDLHdCQUFvQixNQUFNSixXQUFXRSxHQUFYLENBQWVDLFlBQWYsQ0FBMUI7QUFDRCxHQUZELE1BRU87QUFBQTs7QUFDTCxVQUFNRSw4REFBWSxDQUNoQjtBQUNFQyxZQUFNLGFBRFI7QUFFRUMsWUFBTSxPQUZSO0FBR0VDLGVBQVMsb0NBSFg7QUFJRUMsZ0JBQVVSO0FBSlosS0FEZ0IsRUFPaEI7QUFDRUssWUFBTSxpQkFEUjtBQUVFQyxZQUFNLE9BRlI7QUFHRUMsZUFBUztBQUhYLEtBUGdCLENBQVosQ0FBTjtBQWFBLFVBQU1FLDREQUFVLE1BQU1aLFNBQVNhLE1BQVQsQ0FBZ0JOLFNBQWhCLENBQWhCLENBQU47QUFkSztBQWVMRCx3QkFBb0IsTUFBTUosV0FBV0UsR0FBWCxDQUFlUSxPQUFmLENBQTFCO0FBQ0Q7O0FBcEI4QjtBQXNCL0IsU0FBT04saUJBQVA7QUFDRDs7O0FBRURRLE9BQU9DLE9BQVAsR0FBaUI7QUFDZlg7QUFEZSxDQUFqQiIsImZpbGUiOiJhcG5zLWNlcnQtY29uZmlnLmpzIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgaW5xdWlyZXIgPSByZXF1aXJlKCdpbnF1aXJlcicpO1xuY29uc3QgcDEyZGVjb2RlciA9IHJlcXVpcmUoJy4vcDEyZGVjb2RlcicpO1xuY29uc3QgdmFsaWRhdGVGaWxlUGF0aCA9IHJlcXVpcmUoJy4vdmFsaWRhdGVGaWxlcGF0aCcpO1xuXG5hc3luYyBmdW5jdGlvbiBydW4oY2hhbm5lbElucHV0KSB7XG4gIGxldCBjZXJ0aWZpY2F0ZUNvbmZpZztcbiAgaWYgKGNoYW5uZWxJbnB1dCkge1xuICAgIGNlcnRpZmljYXRlQ29uZmlnID0gYXdhaXQgcDEyZGVjb2Rlci5ydW4oY2hhbm5lbElucHV0KTtcbiAgfSBlbHNlIHtcbiAgICBjb25zdCBxdWVzdGlvbnMgPSBbXG4gICAgICB7XG4gICAgICAgIG5hbWU6ICdQMTJGaWxlUGF0aCcsXG4gICAgICAgIHR5cGU6ICdpbnB1dCcsXG4gICAgICAgIG1lc3NhZ2U6ICdUaGUgY2VydGlmaWNhdGUgZmlsZSBwYXRoICgucDEyKTogJyxcbiAgICAgICAgdmFsaWRhdGU6IHZhbGlkYXRlRmlsZVBhdGgsXG4gICAgICB9LFxuICAgICAge1xuICAgICAgICBuYW1lOiAnUDEyRmlsZVBhc3N3b3JkJyxcbiAgICAgICAgdHlwZTogJ2lucHV0JyxcbiAgICAgICAgbWVzc2FnZTogJ1RoZSBjZXJ0aWZpY2F0ZSBwYXNzd29yZCAoaWYgYW55KTogJyxcbiAgICAgIH0sXG4gICAgXTtcbiAgICBjb25zdCBhbnN3ZXJzID0gYXdhaXQgaW5xdWlyZXIucHJvbXB0KHF1ZXN0aW9ucyk7XG4gICAgY2VydGlmaWNhdGVDb25maWcgPSBhd2FpdCBwMTJkZWNvZGVyLnJ1bihhbnN3ZXJzKTtcbiAgfVxuXG4gIHJldHVybiBjZXJ0aWZpY2F0ZUNvbmZpZztcbn1cblxubW9kdWxlLmV4cG9ydHMgPSB7XG4gIHJ1bixcbn07XG4iXX0=

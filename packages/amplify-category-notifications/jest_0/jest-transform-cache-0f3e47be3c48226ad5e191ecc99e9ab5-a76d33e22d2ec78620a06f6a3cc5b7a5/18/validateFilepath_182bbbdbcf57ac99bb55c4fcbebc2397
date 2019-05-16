@@ -1,0 +1,213 @@
+8ecfe303094d3095cb9041fe85d48612
+/* istanbul ignore next */var cov_2jajvox5jw = function () {
+  var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/validateFilepath.js',
+      hash = '0ae4834607f925f0ce979ab1339c60911729683f',
+      Function = function () {}.constructor,
+      global = new Function('return this')(),
+      gcv = '__coverage__',
+      coverageData = {
+    path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/validateFilepath.js',
+    statementMap: {
+      '0': {
+        start: {
+          line: 1,
+          column: 11
+        },
+        end: {
+          line: 1,
+          column: 30
+        }
+      },
+      '1': {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 9,
+          column: 2
+        }
+      },
+      '2': {
+        start: {
+          line: 4,
+          column: 15
+        },
+        end: {
+          line: 4,
+          column: 20
+        }
+      },
+      '3': {
+        start: {
+          line: 5,
+          column: 2
+        },
+        end: {
+          line: 7,
+          column: 3
+        }
+      },
+      '4': {
+        start: {
+          line: 6,
+          column: 4
+        },
+        end: {
+          line: 6,
+          column: 37
+        }
+      },
+      '5': {
+        start: {
+          line: 8,
+          column: 2
+        },
+        end: {
+          line: 8,
+          column: 45
+        }
+      }
+    },
+    fnMap: {
+      '0': {
+        name: '(anonymous_0)',
+        decl: {
+          start: {
+            line: 3,
+            column: 17
+          },
+          end: {
+            line: 3,
+            column: 18
+          }
+        },
+        loc: {
+          start: {
+            line: 3,
+            column: 31
+          },
+          end: {
+            line: 9,
+            column: 1
+          }
+        },
+        line: 3
+      }
+    },
+    branchMap: {
+      '0': {
+        loc: {
+          start: {
+            line: 5,
+            column: 2
+          },
+          end: {
+            line: 7,
+            column: 3
+          }
+        },
+        type: 'if',
+        locations: [{
+          start: {
+            line: 5,
+            column: 2
+          },
+          end: {
+            line: 7,
+            column: 3
+          }
+        }, {
+          start: {
+            line: 5,
+            column: 2
+          },
+          end: {
+            line: 7,
+            column: 3
+          }
+        }],
+        line: 5
+      },
+      '1': {
+        loc: {
+          start: {
+            line: 8,
+            column: 9
+          },
+          end: {
+            line: 8,
+            column: 44
+          }
+        },
+        type: 'binary-expr',
+        locations: [{
+          start: {
+            line: 8,
+            column: 9
+          },
+          end: {
+            line: 8,
+            column: 15
+          }
+        }, {
+          start: {
+            line: 8,
+            column: 19
+          },
+          end: {
+            line: 8,
+            column: 44
+          }
+        }],
+        line: 8
+      }
+    },
+    s: {
+      '0': 0,
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0
+    },
+    f: {
+      '0': 0
+    },
+    b: {
+      '0': [0, 0],
+      '1': [0, 0]
+    },
+    _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c'
+  },
+      coverage = global[gcv] || (global[gcv] = {});
+
+  if (coverage[path] && coverage[path].hash === hash) {
+    return coverage[path];
+  }
+
+  coverageData.hash = hash;
+  return coverage[path] = coverageData;
+}();
+
+const fs = /* istanbul ignore next */(cov_2jajvox5jw.s[0]++, require('fs-extra'));
+
+/* istanbul ignore next */cov_2jajvox5jw.s[1]++;
+module.exports = filepath => {
+  /* istanbul ignore next */cov_2jajvox5jw.f[0]++;
+
+  let result = /* istanbul ignore next */(cov_2jajvox5jw.s[2]++, false);
+  /* istanbul ignore next */cov_2jajvox5jw.s[3]++;
+  if (filepath) {
+    /* istanbul ignore next */cov_2jajvox5jw.b[0][0]++;
+    cov_2jajvox5jw.s[4]++;
+
+    result = fs.existsSync(filepath);
+  } else /* istanbul ignore next */{
+    cov_2jajvox5jw.b[0][1]++;
+  }
+  cov_2jajvox5jw.s[5]++;
+  return (/* istanbul ignore next */(cov_2jajvox5jw.b[1][0]++, result) || /* istanbul ignore next */(cov_2jajvox5jw.b[1][1]++, 'file path must be valid')
+  );
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInZhbGlkYXRlRmlsZXBhdGguanMiXSwibmFtZXMiOlsiZnMiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsImZpbGVwYXRoIiwicmVzdWx0IiwiZXhpc3RzU3luYyJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQSxNQUFNQSx1REFBS0MsUUFBUSxVQUFSLENBQUwsQ0FBTjs7O0FBRUFDLE9BQU9DLE9BQVAsR0FBa0JDLFFBQUQsSUFBYztBQUFBOztBQUM3QixNQUFJQywyREFBUyxLQUFULENBQUo7QUFENkI7QUFFN0IsTUFBSUQsUUFBSixFQUFjO0FBQUE7QUFBQTs7QUFDWkMsYUFBU0wsR0FBR00sVUFBSCxDQUFjRixRQUFkLENBQVQ7QUFDRCxHQUZEO0FBQUE7QUFBQTtBQUY2QjtBQUs3QixTQUFPLHNIQUFVLHlCQUFWO0FBQVA7QUFDRCxDQU5EIiwiZmlsZSI6InZhbGlkYXRlRmlsZXBhdGguanMiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBmcyA9IHJlcXVpcmUoJ2ZzLWV4dHJhJyk7XG5cbm1vZHVsZS5leHBvcnRzID0gKGZpbGVwYXRoKSA9PiB7XG4gIGxldCByZXN1bHQgPSBmYWxzZTtcbiAgaWYgKGZpbGVwYXRoKSB7XG4gICAgcmVzdWx0ID0gZnMuZXhpc3RzU3luYyhmaWxlcGF0aCk7XG4gIH1cbiAgcmV0dXJuIHJlc3VsdCB8fCAnZmlsZSBwYXRoIG11c3QgYmUgdmFsaWQnO1xufTtcbiJdfQ==

@@ -1,0 +1,20 @@
+c01baa592ed33ba0868b49f5dd00bfc3
+/* istanbul ignore next */var cov_2eu9ba33ua = function () {var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/updateCode.js',hash = 'e68d19aa9c8bbcc66516dd58876f354fa2f1acea',Function = function () {}.constructor,global = new Function('return this')(),gcv = '__coverage__',coverageData = { path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-codegen/src/walkthrough/questions/updateCode.js', statementMap: { '0': { start: { line: 1, column: 17 }, end: { line: 1, column: 36 } }, '1': { start: { line: 3, column: 18 }, end: { line: 3, column: 44 } }, '2': { start: { line: 6, column: 17 }, end: { line: 13, column: 4 } }, '3': { start: { line: 15, column: 2 }, end: { line: 15, column: 34 } }, '4': { start: { line: 18, column: 0 }, end: { line: 18, column: 31 } } }, fnMap: { '0': { name: 'askUpdateCode', decl: { start: { line: 5, column: 15 }, end: { line: 5, column: 28 } }, loc: { start: { line: 5, column: 31 }, end: { line: 16, column: 1 } }, line: 5 } }, branchMap: {}, s: { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0 }, f: { '0': 0 }, b: {}, _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c' },coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {return coverage[path];}coverageData.hash = hash;return coverage[path] = coverageData;}();const inquirer = /* istanbul ignore next */(cov_2eu9ba33ua.s[0]++, require('inquirer'));
+
+const constants = /* istanbul ignore next */(cov_2eu9ba33ua.s[1]++, require('../../constants'));
+
+async function askUpdateCode() {/* istanbul ignore next */cov_2eu9ba33ua.f[0]++;
+  const answer = /* istanbul ignore next */(cov_2eu9ba33ua.s[2]++, await inquirer.prompt([
+  {
+    name: 'confirmUpdateCode',
+    message: constants.PROMPT_MSG_UPDATE_CODE,
+    type: 'confirm',
+    default: true }])); /* istanbul ignore next */cov_2eu9ba33ua.s[3]++;
+
+
+
+  return answer.confirmUpdateCode;
+} /* istanbul ignore next */cov_2eu9ba33ua.s[4]++;
+
+module.exports = askUpdateCode;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInVwZGF0ZUNvZGUuanMiXSwibmFtZXMiOlsiaW5xdWlyZXIiLCJyZXF1aXJlIiwiY29uc3RhbnRzIiwiYXNrVXBkYXRlQ29kZSIsImFuc3dlciIsInByb21wdCIsIm5hbWUiLCJtZXNzYWdlIiwiUFJPTVBUX01TR19VUERBVEVfQ09ERSIsInR5cGUiLCJkZWZhdWx0IiwiY29uZmlybVVwZGF0ZUNvZGUiLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiazBDQUFBLE1BQU1BLDZEQUFXQyxRQUFRLFVBQVIsQ0FBWCxDQUFOOztBQUVBLE1BQU1DLDhEQUFZRCxRQUFRLGlCQUFSLENBQVosQ0FBTjs7QUFFQSxlQUFlRSxhQUFmLEdBQStCO0FBQzdCLFFBQU1DLDJEQUFTLE1BQU1KLFNBQVNLLE1BQVQsQ0FBZ0I7QUFDbkM7QUFDRUMsVUFBTSxtQkFEUjtBQUVFQyxhQUFTTCxVQUFVTSxzQkFGckI7QUFHRUMsVUFBTSxTQUhSO0FBSUVDLGFBQVMsSUFKWCxFQURtQyxDQUFoQixDQUFmLENBQU4sQ0FENkI7Ozs7QUFVN0IsU0FBT04sT0FBT08saUJBQWQ7QUFDRCxDOztBQUVEQyxPQUFPQyxPQUFQLEdBQWlCVixhQUFqQiIsImZpbGUiOiJ1cGRhdGVDb2RlLmpzIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgaW5xdWlyZXIgPSByZXF1aXJlKCdpbnF1aXJlcicpO1xuXG5jb25zdCBjb25zdGFudHMgPSByZXF1aXJlKCcuLi8uLi9jb25zdGFudHMnKTtcblxuYXN5bmMgZnVuY3Rpb24gYXNrVXBkYXRlQ29kZSgpIHtcbiAgY29uc3QgYW5zd2VyID0gYXdhaXQgaW5xdWlyZXIucHJvbXB0KFtcbiAgICB7XG4gICAgICBuYW1lOiAnY29uZmlybVVwZGF0ZUNvZGUnLFxuICAgICAgbWVzc2FnZTogY29uc3RhbnRzLlBST01QVF9NU0dfVVBEQVRFX0NPREUsXG4gICAgICB0eXBlOiAnY29uZmlybScsXG4gICAgICBkZWZhdWx0OiB0cnVlLFxuICAgIH0sXG4gIF0pO1xuXG4gIHJldHVybiBhbnN3ZXIuY29uZmlybVVwZGF0ZUNvZGU7XG59XG5cbm1vZHVsZS5leHBvcnRzID0gYXNrVXBkYXRlQ29kZTtcbiJdfQ==

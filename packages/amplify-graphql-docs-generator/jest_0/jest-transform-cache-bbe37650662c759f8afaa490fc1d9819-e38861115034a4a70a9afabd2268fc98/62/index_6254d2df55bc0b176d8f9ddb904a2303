@@ -1,0 +1,31 @@
+a492a3b4af7bc89fee4e6887aad2bc12
+'use strict';
+require('ts-jest').install("/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/index.ts", "\"use strict\";\nfunction __export(m) {\n    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];\n}\nObject.defineProperty(exports, \"__esModule\", { value: true });\n__export(require(\"./types\"));\nconst generate_1 = require(\"./generate\");\nvar generateAllOperations_1 = require(\"./generateAllOperations\");\nexports.generateMutations = generateAllOperations_1.generateMutations;\nexports.generateSubscriptions = generateAllOperations_1.generateSubscriptions;\nexports.generateQueries = generateAllOperations_1.generateQueries;\nexports.default = generate_1.default;\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiL2MvVXNlcnMvU2FuZHJvL3JlcG8vYW1wbGlmeS1jbGkvcGFja2FnZXMvYW1wbGlmeS1ncmFwaHFsLWRvY3MtZ2VuZXJhdG9yL3NyYy8iLCJzb3VyY2VzIjpbImluZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7O0FBRUEsNkJBQXVCO0FBQ3ZCLHlDQUFpQztBQUNqQyxpRUFBbUc7QUFBMUYsb0RBQUEsaUJBQWlCLENBQUE7QUFBRSx3REFBQSxxQkFBcUIsQ0FBQTtBQUFFLGtEQUFBLGVBQWUsQ0FBQTtBQUNsRSxrQkFBZSxrQkFBUSxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgdHlwZXMgZnJvbSAnLi90eXBlcydcblxuZXhwb3J0ICogZnJvbSAnLi90eXBlcydcbmltcG9ydCBnZW5lcmF0ZSBmcm9tICcuL2dlbmVyYXRlJ1xuZXhwb3J0IHsgZ2VuZXJhdGVNdXRhdGlvbnMsIGdlbmVyYXRlU3Vic2NyaXB0aW9ucywgZ2VuZXJhdGVRdWVyaWVzIH0gZnJvbSAnLi9nZW5lcmF0ZUFsbE9wZXJhdGlvbnMnXG5leHBvcnQgZGVmYXVsdCBnZW5lcmF0ZVxuIl19");"use strict"; /* istanbul ignore next */var cov_ges785gl = function () {
+    var path = "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/index.ts",
+        hash = "246a70d14693f7f7a012a8f42fd7ca245930af75",
+        Function = function () {}.constructor,
+        global = new Function('return this')(),
+        gcv = "__coverage__",
+        coverageData = { path: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/generator/index.ts", statementMap: { "0": { start: { line: 3, column: 4 }, end: { line: 3, column: 71 } }, "1": { start: { line: 3, column: 21 }, end: { line: 3, column: 71 } }, "2": { start: { line: 3, column: 53 }, end: { line: 3, column: 71 } }, "3": { start: { line: 5, column: 0 }, end: { line: 5, column: 62 } }, "4": { start: { line: 6, column: 0 }, end: { line: 6, column: 29 } }, "5": { start: { line: 7, column: 19 }, end: { line: 7, column: 40 } }, "6": { start: { line: 8, column: 30 }, end: { line: 8, column: 64 } }, "7": { start: { line: 9, column: 0 }, end: { line: 9, column: 70 } }, "8": { start: { line: 10, column: 0 }, end: { line: 10, column: 78 } }, "9": { start: { line: 11, column: 0 }, end: { line: 11, column: 66 } }, "10": { start: { line: 12, column: 0 }, end: { line: 12, column: 37 } } }, fnMap: { "0": { name: "__export", decl: { start: { line: 2, column: 9 }, end: { line: 2, column: 17 } }, loc: { start: { line: 2, column: 21 }, end: { line: 4, column: 1 } }, line: 2 } }, branchMap: { "0": { loc: { start: { line: 3, column: 21 }, end: { line: 3, column: 71 } }, type: "if", locations: [{ start: { line: 3, column: 21 }, end: { line: 3, column: 71 } }, { start: { line: 3, column: 21 }, end: { line: 3, column: 71 } }], line: 3 } }, s: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0 }, f: { "0": 0 }, b: { "0": [0, 0] }, inputSourceMap: { version: 3, file: "index.js", sourceRoot: "/c/Users/Sandro/repo/amplify-cli/packages/amplify-graphql-docs-generator/src/", sources: ["index.ts"], names: [], mappings: ";;;;;AAEA,6BAAuB;AACvB,yCAAiC;AACjC,iEAAmG;AAA1F,oDAAA,iBAAiB,CAAA;AAAE,wDAAA,qBAAqB,CAAA;AAAE,kDAAA,eAAe,CAAA;AAClE,kBAAe,kBAAQ,CAAA", sourcesContent: ["import * as types from './types'\n\nexport * from './types'\nimport generate from './generate'\nexport { generateMutations, generateSubscriptions, generateQueries } from './generateAllOperations'\nexport default generate\n"] }, _coverageSchema: "332fd63041d2c1bcb487cc26dd0d5f7d97098a6c" },
+        coverage = global[gcv] || (global[gcv] = {});if (coverage[path] && coverage[path].hash === hash) {
+        return coverage[path];
+    }coverageData.hash = hash;return coverage[path] = coverageData;
+}();
+function __export(m) {
+    /* istanbul ignore next */cov_ges785gl.f[0]++;cov_ges785gl.s[0]++;
+    for (var p in m) {
+        /* istanbul ignore next */cov_ges785gl.s[1]++;if (!exports.hasOwnProperty(p)) {
+            /* istanbul ignore next */cov_ges785gl.b[0][0]++;cov_ges785gl.s[2]++;exports[p] = m[p];
+        } else /* istanbul ignore next */{
+                cov_ges785gl.b[0][1]++;
+            }
+    }
+} /* istanbul ignore next */cov_ges785gl.s[3]++;
+Object.defineProperty(exports, "__esModule", { value: true }); /* istanbul ignore next */cov_ges785gl.s[4]++;
+__export(require("./types"));
+const generate_1 = ( /* istanbul ignore next */cov_ges785gl.s[5]++, require("./generate"));
+var generateAllOperations_1 = ( /* istanbul ignore next */cov_ges785gl.s[6]++, require("./generateAllOperations")); /* istanbul ignore next */cov_ges785gl.s[7]++;
+exports.generateMutations = generateAllOperations_1.generateMutations; /* istanbul ignore next */cov_ges785gl.s[8]++;
+exports.generateSubscriptions = generateAllOperations_1.generateSubscriptions; /* istanbul ignore next */cov_ges785gl.s[9]++;
+exports.generateQueries = generateAllOperations_1.generateQueries; /* istanbul ignore next */cov_ges785gl.s[10]++;
+exports.default = generate_1.default;

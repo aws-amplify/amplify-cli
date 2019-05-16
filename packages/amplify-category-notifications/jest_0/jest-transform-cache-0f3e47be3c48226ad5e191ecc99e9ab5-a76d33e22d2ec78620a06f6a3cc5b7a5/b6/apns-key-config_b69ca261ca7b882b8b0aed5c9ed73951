@@ -1,0 +1,266 @@
+1c2516fd36351edae11ce01b110fd786
+/* istanbul ignore next */var cov_ktrbln36l = function () {
+  var path = '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/apns-key-config.js',
+      hash = '25f2964e18c2326245fcbf5985beb71bd12d7344',
+      Function = function () {}.constructor,
+      global = new Function('return this')(),
+      gcv = '__coverage__',
+      coverageData = {
+    path: '/c/Users/Sandro/repo/amplify-cli/packages/amplify-category-notifications/lib/apns-key-config.js',
+    statementMap: {
+      '0': {
+        start: {
+          line: 1,
+          column: 17
+        },
+        end: {
+          line: 1,
+          column: 36
+        }
+      },
+      '1': {
+        start: {
+          line: 2,
+          column: 18
+        },
+        end: {
+          line: 2,
+          column: 40
+        }
+      },
+      '2': {
+        start: {
+          line: 3,
+          column: 25
+        },
+        end: {
+          line: 3,
+          column: 54
+        }
+      },
+      '3': {
+        start: {
+          line: 7,
+          column: 2
+        },
+        end: {
+          line: 34,
+          column: 3
+        }
+      },
+      '4': {
+        start: {
+          line: 8,
+          column: 4
+        },
+        end: {
+          line: 8,
+          column: 29
+        }
+      },
+      '5': {
+        start: {
+          line: 10,
+          column: 22
+        },
+        end: {
+          line: 32,
+          column: 5
+        }
+      },
+      '6': {
+        start: {
+          line: 33,
+          column: 4
+        },
+        end: {
+          line: 33,
+          column: 49
+        }
+      },
+      '7': {
+        start: {
+          line: 36,
+          column: 2
+        },
+        end: {
+          line: 36,
+          column: 65
+        }
+      },
+      '8': {
+        start: {
+          line: 37,
+          column: 2
+        },
+        end: {
+          line: 37,
+          column: 30
+        }
+      },
+      '9': {
+        start: {
+          line: 39,
+          column: 2
+        },
+        end: {
+          line: 39,
+          column: 19
+        }
+      },
+      '10': {
+        start: {
+          line: 42,
+          column: 0
+        },
+        end: {
+          line: 44,
+          column: 2
+        }
+      }
+    },
+    fnMap: {
+      '0': {
+        name: 'run',
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 18
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 33
+          },
+          end: {
+            line: 40,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {
+      '0': {
+        loc: {
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 34,
+            column: 3
+          }
+        },
+        type: 'if',
+        locations: [{
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 34,
+            column: 3
+          }
+        }, {
+          start: {
+            line: 7,
+            column: 2
+          },
+          end: {
+            line: 34,
+            column: 3
+          }
+        }],
+        line: 7
+      }
+    },
+    s: {
+      '0': 0,
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+      '6': 0,
+      '7': 0,
+      '8': 0,
+      '9': 0,
+      '10': 0
+    },
+    f: {
+      '0': 0
+    },
+    b: {
+      '0': [0, 0]
+    },
+    _coverageSchema: '332fd63041d2c1bcb487cc26dd0d5f7d97098a6c'
+  },
+      coverage = global[gcv] || (global[gcv] = {});
+
+  if (coverage[path] && coverage[path].hash === hash) {
+    return coverage[path];
+  }
+
+  coverageData.hash = hash;
+  return coverage[path] = coverageData;
+}();
+
+const inquirer = /* istanbul ignore next */(cov_ktrbln36l.s[0]++, require('inquirer'));
+const p8decoder = /* istanbul ignore next */(cov_ktrbln36l.s[1]++, require('./p8decoder'));
+const validateFilePath = /* istanbul ignore next */(cov_ktrbln36l.s[2]++, require('./validateFilepath'));
+
+async function run(channelInput) {
+  /* istanbul ignore next */cov_ktrbln36l.f[0]++;
+
+  let keyConfig;
+  /* istanbul ignore next */cov_ktrbln36l.s[3]++;
+  if (channelInput) {
+    /* istanbul ignore next */cov_ktrbln36l.b[0][0]++;
+    cov_ktrbln36l.s[4]++;
+
+    keyConfig = channelInput;
+  } else {
+    /* istanbul ignore next */cov_ktrbln36l.b[0][1]++;
+
+    const questions = /* istanbul ignore next */(cov_ktrbln36l.s[5]++, [{
+      name: 'BundleId',
+      type: 'input',
+      message: 'The bundle id used for APNs Tokens: '
+    }, {
+      name: 'TeamId',
+      type: 'input',
+      message: 'The team id used for APNs Tokens: '
+    }, {
+      name: 'TokenKeyId',
+      type: 'input',
+      message: 'The key id used for APNs Tokens: '
+    }, {
+      name: 'P8FilePath',
+      type: 'input',
+      message: 'The key file path (.p8): ',
+      validate: validateFilePath
+    }]);
+    /* istanbul ignore next */cov_ktrbln36l.s[6]++;
+    keyConfig = await inquirer.prompt(questions);
+  }
+
+  /* istanbul ignore next */cov_ktrbln36l.s[7]++;
+  keyConfig.TokenKey = await p8decoder.run(keyConfig.P8FilePath);
+  /* istanbul ignore next */cov_ktrbln36l.s[8]++;
+  delete keyConfig.P8FilePath;
+
+  /* istanbul ignore next */cov_ktrbln36l.s[9]++;
+  return keyConfig;
+}
+
+/* istanbul ignore next */cov_ktrbln36l.s[10]++;
+module.exports = {
+  run
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwbnMta2V5LWNvbmZpZy5qcyJdLCJuYW1lcyI6WyJpbnF1aXJlciIsInJlcXVpcmUiLCJwOGRlY29kZXIiLCJ2YWxpZGF0ZUZpbGVQYXRoIiwicnVuIiwiY2hhbm5lbElucHV0Iiwia2V5Q29uZmlnIiwicXVlc3Rpb25zIiwibmFtZSIsInR5cGUiLCJtZXNzYWdlIiwidmFsaWRhdGUiLCJwcm9tcHQiLCJUb2tlbktleSIsIlA4RmlsZVBhdGgiLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLE1BQU1BLDREQUFXQyxRQUFRLFVBQVIsQ0FBWCxDQUFOO0FBQ0EsTUFBTUMsNkRBQVlELFFBQVEsYUFBUixDQUFaLENBQU47QUFDQSxNQUFNRSxvRUFBbUJGLFFBQVEsb0JBQVIsQ0FBbkIsQ0FBTjs7QUFFQSxlQUFlRyxHQUFmLENBQW1CQyxZQUFuQixFQUFpQztBQUFBOztBQUMvQixNQUFJQyxTQUFKO0FBRCtCO0FBRS9CLE1BQUlELFlBQUosRUFBa0I7QUFBQTtBQUFBOztBQUNoQkMsZ0JBQVlELFlBQVo7QUFDRCxHQUZELE1BRU87QUFBQTs7QUFDTCxVQUFNRSw2REFBWSxDQUNoQjtBQUNFQyxZQUFNLFVBRFI7QUFFRUMsWUFBTSxPQUZSO0FBR0VDLGVBQVM7QUFIWCxLQURnQixFQU1oQjtBQUNFRixZQUFNLFFBRFI7QUFFRUMsWUFBTSxPQUZSO0FBR0VDLGVBQVM7QUFIWCxLQU5nQixFQVdoQjtBQUNFRixZQUFNLFlBRFI7QUFFRUMsWUFBTSxPQUZSO0FBR0VDLGVBQVM7QUFIWCxLQVhnQixFQWdCaEI7QUFDRUYsWUFBTSxZQURSO0FBRUVDLFlBQU0sT0FGUjtBQUdFQyxlQUFTLDJCQUhYO0FBSUVDLGdCQUFVUjtBQUpaLEtBaEJnQixDQUFaLENBQU47QUFESztBQXdCTEcsZ0JBQVksTUFBTU4sU0FBU1ksTUFBVCxDQUFnQkwsU0FBaEIsQ0FBbEI7QUFDRDs7QUE3QjhCO0FBK0IvQkQsWUFBVU8sUUFBVixHQUFxQixNQUFNWCxVQUFVRSxHQUFWLENBQWNFLFVBQVVRLFVBQXhCLENBQTNCO0FBL0IrQjtBQWdDL0IsU0FBT1IsVUFBVVEsVUFBakI7O0FBaEMrQjtBQWtDL0IsU0FBT1IsU0FBUDtBQUNEOzs7QUFFRFMsT0FBT0MsT0FBUCxHQUFpQjtBQUNmWjtBQURlLENBQWpCIiwiZmlsZSI6ImFwbnMta2V5LWNvbmZpZy5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IGlucXVpcmVyID0gcmVxdWlyZSgnaW5xdWlyZXInKTtcbmNvbnN0IHA4ZGVjb2RlciA9IHJlcXVpcmUoJy4vcDhkZWNvZGVyJyk7XG5jb25zdCB2YWxpZGF0ZUZpbGVQYXRoID0gcmVxdWlyZSgnLi92YWxpZGF0ZUZpbGVwYXRoJyk7XG5cbmFzeW5jIGZ1bmN0aW9uIHJ1bihjaGFubmVsSW5wdXQpIHtcbiAgbGV0IGtleUNvbmZpZztcbiAgaWYgKGNoYW5uZWxJbnB1dCkge1xuICAgIGtleUNvbmZpZyA9IGNoYW5uZWxJbnB1dDtcbiAgfSBlbHNlIHtcbiAgICBjb25zdCBxdWVzdGlvbnMgPSBbXG4gICAgICB7XG4gICAgICAgIG5hbWU6ICdCdW5kbGVJZCcsXG4gICAgICAgIHR5cGU6ICdpbnB1dCcsXG4gICAgICAgIG1lc3NhZ2U6ICdUaGUgYnVuZGxlIGlkIHVzZWQgZm9yIEFQTnMgVG9rZW5zOiAnLFxuICAgICAgfSxcbiAgICAgIHtcbiAgICAgICAgbmFtZTogJ1RlYW1JZCcsXG4gICAgICAgIHR5cGU6ICdpbnB1dCcsXG4gICAgICAgIG1lc3NhZ2U6ICdUaGUgdGVhbSBpZCB1c2VkIGZvciBBUE5zIFRva2VuczogJyxcbiAgICAgIH0sXG4gICAgICB7XG4gICAgICAgIG5hbWU6ICdUb2tlbktleUlkJyxcbiAgICAgICAgdHlwZTogJ2lucHV0JyxcbiAgICAgICAgbWVzc2FnZTogJ1RoZSBrZXkgaWQgdXNlZCBmb3IgQVBOcyBUb2tlbnM6ICcsXG4gICAgICB9LFxuICAgICAge1xuICAgICAgICBuYW1lOiAnUDhGaWxlUGF0aCcsXG4gICAgICAgIHR5cGU6ICdpbnB1dCcsXG4gICAgICAgIG1lc3NhZ2U6ICdUaGUga2V5IGZpbGUgcGF0aCAoLnA4KTogJyxcbiAgICAgICAgdmFsaWRhdGU6IHZhbGlkYXRlRmlsZVBhdGgsXG4gICAgICB9LFxuICAgIF07XG4gICAga2V5Q29uZmlnID0gYXdhaXQgaW5xdWlyZXIucHJvbXB0KHF1ZXN0aW9ucyk7XG4gIH1cblxuICBrZXlDb25maWcuVG9rZW5LZXkgPSBhd2FpdCBwOGRlY29kZXIucnVuKGtleUNvbmZpZy5QOEZpbGVQYXRoKTtcbiAgZGVsZXRlIGtleUNvbmZpZy5QOEZpbGVQYXRoO1xuXG4gIHJldHVybiBrZXlDb25maWc7XG59XG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBydW4sXG59O1xuIl19
