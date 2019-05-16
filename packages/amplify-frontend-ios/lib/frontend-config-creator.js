@@ -192,24 +192,24 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     scope = oAuthMetadata.AllowedOAuthScopes;
     redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
     redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
+    const oauth = {
+      WebDomain: domain,
+      AppClientId: cognitoResource.output.AppClientID,
+      AppClientSecret: cognitoResource.output.AppClientSecret,
+      SignInRedirectURI: redirectSignIn,
+      SignOutRedirectURI: redirectSignOut,
+      Scopes: scope,
+    };
+
+    Object.assign(cognitoConfig, {
+      Auth: {
+        Default: {
+          OAuth: oauth,
+        },
+      },
+    });
   }
 
-  const oauth = {
-    WebDomain: domain,
-    AppClientId: cognitoResource.output.AppClientID,
-    AppClientSecret: cognitoResource.output.AppClientSecret,
-    SignInRedirectURI: redirectSignIn,
-    SignOutRedirectURI: redirectSignOut,
-    Scopes: scope,
-  };
-
-  Object.assign(cognitoConfig, {
-    Auth: {
-      Default: {
-        OAuth: oauth,
-      },
-    },
-  });
 
   return cognitoConfig;
 }
