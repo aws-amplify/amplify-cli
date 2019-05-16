@@ -501,7 +501,7 @@ function getCognitoOutput(amplifyMeta) {
 
 async function openUserPoolConsole(context, region, userPoolId) {
   const userPoolConsoleUrl =
-    `https://console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}`;
+    `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await opn(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
@@ -509,7 +509,7 @@ async function openUserPoolConsole(context, region, userPoolId) {
 
 async function openIdentityPoolConsole(context, region, identityPoolId) {
   const identityPoolConsoleUrl =
-    `https://console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
+    `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await opn(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
