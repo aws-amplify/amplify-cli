@@ -8,6 +8,7 @@ const ModelConnectionTransformer = require('graphql-connection-transformer').def
 const SearchableModelTransformer = require('graphql-elasticsearch-transformer').default;
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const FunctionTransformer = require('graphql-function-transformer').default;
+const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
@@ -213,6 +214,7 @@ async function transformGraphQLSchema(context, options) {
     new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
+    new KeyTransformer()
   ];
 
   if (usedDirectives.includes('searchable')) {

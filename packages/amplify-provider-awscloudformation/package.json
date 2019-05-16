@@ -23,6 +23,7 @@
     "graphql-dynamodb-transformer": "^3.6.0",
     "graphql-elasticsearch-transformer": "^3.5.4",
     "graphql-function-transformer": "^1.0.0",
+    "graphql-key-transformer": "^1.0.0",
     "graphql-transformer-common": "^3.6.1",
     "graphql-transformer-core": "^3.6.1",
     "graphql-versioned-transformer": "^3.4.4",

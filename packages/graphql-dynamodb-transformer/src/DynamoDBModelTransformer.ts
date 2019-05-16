@@ -6,14 +6,14 @@ import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
     makeModelXFilterInputObject, makeModelSortDirectionEnumObject, makeModelConnectionType,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray,
+    makeScalarFilterInputs, makeSubscriptionField, getNonModelObjectArray,
     makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
     makeNonNullType
 } from 'graphql-transformer-common'
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
+import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common'
 
 interface QueryNameMap {
     get?: string;
@@ -308,7 +308,7 @@ export class DynamoDBModelTransformer extends Transformer {
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
-            queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
+            queryFields.push(makeConnectionField(listResolver.Properties.FieldName, def.name.value))
         }
         this.generateFilterInputs(ctx, def)
 

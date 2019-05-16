@@ -3,7 +3,7 @@ import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
     ref, obj, set, nul,
-    ifElse, compoundExpression, qref, bool, equals, iff, raw, comment
+    ifElse, compoundExpression, qref, bool, equals, iff, raw, comment, forEach, list
 } from 'graphql-mapping-template'
 import { ResourceConstants, plurality, graphqlName, toUpper, ModelResourceIDs } from 'graphql-transformer-common'
 
@@ -307,9 +307,14 @@ export class ResourceFactory {
                     qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
                     qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
-                        key: obj({
-                            id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`)
-                        }),
+                        key: ifElse(
+                            ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                            raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                            obj({
+                                id: raw(`$util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))`)
+                            }),
+                            true
+                        ),
                         attributeValues: ref('util.dynamodb.toMapValuesJson($context.args.input)'),
                         condition: obj({
                             expression: str(`attribute_not_exists(#id)`),
@@ -339,16 +344,43 @@ export class ResourceFactory {
                         raw(`$${ResourceConstants.SNIPPETS.AuthCondition} && $${ResourceConstants.SNIPPETS.AuthCondition}.expression != ""`),
                         compoundExpression([
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
-                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
-                            qref('$condition.expressionNames.put("#id", "id")')
+                            ifElse(
+                                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                ]),
+                                compoundExpression([
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
+                                    qref('$condition.expressionNames.put("#id", "id")')
+                                ])
+                            )
                         ]),
-                        set(ref('condition'), obj({
-                            expression: str("attribute_exists(#id)"),
-                            expressionNames: obj({
-                                "#id": str("id")
-                            }),
-                            expressionValues: obj({}),
-                        }))
+                        ifElse(
+                            ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                            compoundExpression([
+                                set(ref('condition'), obj({
+                                    expression: str(""),
+                                    expressionNames: obj({}),
+                                    expressionValues: obj({}),
+                                })),
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
+                                    ifElse(
+                                        raw('$velocityCount == 1'),
+                                        qref('$condition.put("expression", "attribute_exists(#$entry.key)")'),
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                    ),
+                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                ])
+                            ]),
+                            set(ref('condition'), obj({
+                                expression: str("attribute_exists(#id)"),
+                                expressionNames: obj({
+                                    "#id": str("id")
+                                }),
+                                expressionValues: obj({}),
+                            }))
+                        )
                     ),
                     comment('Automatically set the updatedAt timestamp.'),
                     qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
@@ -364,10 +396,16 @@ export class ResourceFactory {
                         ])
                     ),
                     DynamoDBMappingTemplate.updateItem({
-                        key: obj({
-                            id: obj({ S: str('$context.args.input.id') })
-                        }),
-                        condition: ref('util.toJson($condition)')
+                        key: ifElse(
+                            ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                            raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                            obj({
+                                id: obj({ S: str('$context.args.input.id') })
+                            }),
+                            true
+                        ),
+                        condition: ref('util.toJson($condition)'),
+                        objectKeyVariable: ResourceConstants.SNIPPETS.ModelObjectKey
                     })
                 ])
             ),
@@ -390,9 +428,14 @@ export class ResourceFactory {
             TypeName: queryTypeName,
             RequestMappingTemplate: print(
                 DynamoDBMappingTemplate.getItem({
-                    key: obj({
-                        id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)')
-                    })
+                    key: ifElse(
+                        ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                        raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                        obj({
+                            id: ref('util.dynamodb.toDynamoDBJson($ctx.args.id)')
+                        }),
+                        true
+                    )
                 })
             ),
             ResponseMappingTemplate: print(
@@ -517,15 +560,41 @@ export class ResourceFactory {
                         ref(ResourceConstants.SNIPPETS.AuthCondition),
                         compoundExpression([
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
-                            qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
-                            qref('$condition.expressionNames.put("#id", "id")')
+                            ifElse(
+                                ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                ]),
+                                compoundExpression([
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
+                                    qref('$condition.expressionNames.put("#id", "id")')
+                                ])
+                            )
                         ]),
-                        set(ref('condition'), obj({
-                            expression: str("attribute_exists(#id)"),
-                            expressionNames: obj({
-                                "#id": str("id")
-                            })
-                        }))
+                        ifElse(
+                            ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                            compoundExpression([
+                                set(ref('condition'), obj({
+                                    expression: str(""),
+                                    expressionNames: obj({}),
+                                })),
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
+                                    ifElse(
+                                        raw('$velocityCount == 1'),
+                                        qref('$condition.put("expression", "attribute_exists(#$entry.key)")'),
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                    ),
+                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                ])
+                            ]),
+                            set(ref('condition'), obj({
+                                expression: str("attribute_exists(#id)"),
+                                expressionNames: obj({
+                                    "#id": str("id")
+                                })
+                            }))
+                        )
                     ),
                     iff(
                         ref(ResourceConstants.SNIPPETS.VersionedCondition),
@@ -539,9 +608,14 @@ export class ResourceFactory {
                         ])
                     ),
                     DynamoDBMappingTemplate.deleteItem({
-                        key: obj({
-                            id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)')
-                        }),
+                        key: ifElse(
+                            ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+                            raw(`$util.toJson(\$${ResourceConstants.SNIPPETS.ModelObjectKey})`),
+                            obj({
+                                id: ref('util.dynamodb.toDynamoDBJson($ctx.args.input.id)')
+                            }),
+                            true
+                        ),
                         condition: ref('util.toJson($condition)')
                     })
                 ])

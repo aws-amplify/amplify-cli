@@ -3,11 +3,28 @@ import {
     InputObjectTypeDefinitionNode, Kind, InputValueDefinitionNode,
     DefinitionNode
 } from 'graphql';
+import { isNonNullType } from 'graphql-transformer-common';
 
 export function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     for (const fieldName of fields) {
         const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
         expect(foundField).toBeDefined()
+    }
+}
+
+export function expectNonNullFields(type: ObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+        expect(isNonNullType(foundField.type)).toBeTruthy();
+    }
+}
+
+export function expectNullableFields(type: ObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+        expect(isNonNullType(foundField.type)).toBeFalsy();
     }
 }
 

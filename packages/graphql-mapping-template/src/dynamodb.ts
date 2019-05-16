@@ -11,7 +11,7 @@ export class DynamoDBMappingTemplate {
      * @param keys A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
     public static putItem({ key, attributeValues, condition }: {
-        key: ObjectNode,
+        key: ObjectNode | Expression,
         attributeValues: Expression,
         condition?: ObjectNode
     }): ObjectNode {
@@ -29,7 +29,7 @@ export class DynamoDBMappingTemplate {
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
     public static getItem({ key }: {
-        key: ObjectNode
+        key: ObjectNode | Expression
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
@@ -85,7 +85,7 @@ export class DynamoDBMappingTemplate {
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
     public static deleteItem({ key, condition }: {
-        key: ObjectNode,
+        key: ObjectNode | Expression,
         condition: ObjectNode | ReferenceNode
     }): ObjectNode {
         return obj({
@@ -100,11 +100,12 @@ export class DynamoDBMappingTemplate {
      * Create an update item resolver template.
      * @param key
      */
-    public static updateItem({ key, condition }: {
-        key: ObjectNode,
-        condition: ObjectNode | ReferenceNode
+    public static updateItem({ key, condition, objectKeyVariable }: {
+        key: ObjectNode | Expression,
+        condition: ObjectNode | ReferenceNode,
+        objectKeyVariable: string
     }): CompoundExpressionNode {
-        const keyNames = key.attributes.map((attr: [string, Expression]) => attr[0])
+        // const keyFields = key.attributes.map((attr: [string, Expression]) => attr[0])
         // Auto timestamp
         // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
         return compoundExpression([
@@ -113,9 +114,19 @@ export class DynamoDBMappingTemplate {
             set(ref('expSet'), obj({})),
             set(ref('expAdd'), obj({})),
             set(ref('expRemove'), list([])),
+            ifElse(
+                ref(objectKeyVariable),
+                compoundExpression([
+                    set(ref('keyFields'), list([])),
+                    forEach(ref('entry'), ref(`${objectKeyVariable}.entrySet()`),[
+                        qref('$keyFields.add("$entry.key")')
+                    ]),
+                ]),
+                set(ref('keyFields'), list([str('id')])),
+            ),
             forEach(
                 ref('entry'),
-                ref(`util.map.copyAndRemoveAllKeys($context.args.input, [${keyNames.map(k => `"${k}"`).join(', ')}]).entrySet()`),
+                ref(`util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet()`),
                 [
                     ifElse(
                         ref('util.isNull($entry.value)'),
