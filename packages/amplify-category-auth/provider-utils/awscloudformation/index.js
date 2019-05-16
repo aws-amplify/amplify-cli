@@ -131,7 +131,9 @@ async function addResource(context, category, service) {
     serviceWalkthroughFilename,
     provider,
   } = serviceMetadata;
-  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  const disallowedChars = /[^A-Za-z0-9]+/g;
+  projectName = projectName.replace(disallowedChars, '');
 
   return serviceQuestions(
     context,
