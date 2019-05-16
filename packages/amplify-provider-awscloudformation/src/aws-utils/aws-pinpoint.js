@@ -26,6 +26,8 @@ const serviceRegionMap = {
 
 async function getConfiguredPinpointClient(context, category, action, options = {}) {
   let cred = {};
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
   try {
     cred = await configurationManager.loadConfiguration(context);
   } catch (e) {
@@ -38,6 +40,15 @@ async function getConfiguredPinpointClient(context, category, action, options = 
     region: mapServiceRegion(cred.region || configurationManager.resolveRegion()),
     customUserAgent: formUserAgentParam(context, userAgentAction),
   };
+
+  if (httpProxy) {
+    aws.config.update({
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+      },
+    });
+  }
+
   return new aws.Pinpoint({ ...cred, ...defaultOptions, ...options });
 }
 

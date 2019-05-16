@@ -8,6 +8,7 @@ const S3 = require('../src/aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const systemConfigManager = require('./system-config-manager');
+const proxyAgent = require('proxy-agent');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -58,6 +59,8 @@ async function run(context) {
 
 async function getConfiguredAwsCfnClient(context) {
   const { awsConfigInfo } = context.exeInfo;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
   let awsConfig;
   if (awsConfigInfo.config.useProfile) {
     awsConfig =
@@ -69,6 +72,13 @@ async function getConfiguredAwsCfnClient(context) {
       region: awsConfigInfo.config.region,
     };
   }
+
+  if (httpProxy) {
+    awsConfig = {
+      ...awsConfig, agent: proxyAgent(httpProxy),
+    }
+  }
+
   return awsConfig;
 }
 

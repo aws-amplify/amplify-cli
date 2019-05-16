@@ -59,6 +59,7 @@ function setProfile(awsConfig, profileName) {
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   let awsConfig;
+  const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     if (!isRoleSourceProfile && profileConfig.role_arn) {
@@ -78,6 +79,12 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
     }
   } else {
     throw new Error(`Profile configuration is missing for: ${profileName}`);
+  }
+
+  if (httpProxy) {
+    awsConfig = {
+      ...awsConfig, agent: proxyAgent(httpProxy),
+    }
   }
 
   return awsConfig;
