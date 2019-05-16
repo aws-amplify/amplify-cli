@@ -91,6 +91,7 @@ export class ResourceConstants {
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
         VersionedCondition: "versionedCondition",
+        ModelObjectKey: "modelObjectKey",
         IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",
         IsLocalDynamicGroupAuthorizedVariable: "isLocalDynamicGroupAuthorized",
         IsStaticGroupAuthorizedVariable: "isStaticGroupAuthorized",

@@ -9,6 +9,7 @@ const SearchableModelTransformer = require('graphql-elasticsearch-transformer').
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const FunctionTransformer = require('graphql-function-transformer').default;
 const HTTPTransformer = require('graphql-http-transformer').default;
+const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
@@ -214,7 +215,11 @@ async function transformGraphQLSchema(context, options) {
     new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
+<<<<<<< HEAD
     new HTTPTransformer(),
+=======
+    new KeyTransformer()
+>>>>>>> Adding support for create, update, delete, & get with updated index structures. Still need to update list as well as implement the new query resolver using existing parts. The last change is to handle the partial key update scenario in update operations.
   ];
 
   if (usedDirectives.includes('searchable')) {
