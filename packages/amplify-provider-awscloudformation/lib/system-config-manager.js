@@ -5,6 +5,8 @@ const ini = require('ini');
 const os = require('os');
 const inquirer = require('inquirer');
 const constants = require('./constants');
+const proxyAgent = require('proxy-agent');
+
 
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
