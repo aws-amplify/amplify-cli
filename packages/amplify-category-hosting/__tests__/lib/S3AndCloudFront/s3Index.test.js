@@ -85,7 +85,8 @@ describe('s3IndexModule', () => {
             updateamplifyMetaAfterResourceAdd: jest.fn(),
             getProjectMeta: jest.fn(()=>{
                 return mockAmplifyMeta; 
-            })
+            }),
+            readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
         },
         print: {
             info: jest.fn(),
