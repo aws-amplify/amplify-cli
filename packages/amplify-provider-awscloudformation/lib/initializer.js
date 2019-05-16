@@ -76,7 +76,7 @@ async function getConfiguredAwsCfnClient(context) {
   if (httpProxy) {
     awsConfig = {
       ...awsConfig, agent: proxyAgent(httpProxy),
-    }
+    };
   }
 
   return awsConfig;
