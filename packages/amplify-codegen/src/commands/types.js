@@ -48,6 +48,7 @@ async function generateTypes(context, forceDownloadSchema) {
       codeGenSpinner.start();
       generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
         addTypename: true,
+        complexObjectSupport: 'auto',
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);
     });

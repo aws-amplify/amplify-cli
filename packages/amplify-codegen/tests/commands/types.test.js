@@ -83,7 +83,7 @@ describe('command - types', () => {
       '',
       MOCK_TARGET,
       '',
-      { addTypename: true },
+      { addTypename: true, complexObjectSupport: 'auto' },
     );
   });
 
