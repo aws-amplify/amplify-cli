@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-xr",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "main": "index.js",
   "description": "amplify-cli xr plugin",
   "dependencies": {
-    "amplify-category-auth": "1.5.4",
+    "amplify-category-auth": "1.5.5",
     "chalk": "^2.4.1",
     "fs-extra": "^7.0.0",
     "fuzzy": "^0.1.3",

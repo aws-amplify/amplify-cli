@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.4...amplify-category-auth@1.5.5) (2019-05-17)
+
+
+### Bug Fixes
+
+* fixes [#1471](https://github.com/aws-amplify/amplify-cli/issues/1471) ([52b26cb](https://github.com/aws-amplify/amplify-cli/commit/52b26cb))
+
+
+
+
+
 ## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.3...amplify-category-auth@1.5.4) (2019-04-30)
 
 
