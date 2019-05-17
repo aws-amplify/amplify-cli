@@ -66,17 +66,23 @@ export class DynamoDBMappingTemplate {
      * Create a list item resolver template.
      * @param key A list of strings pointing to the key value locations. E.G. ctx.args.x (note no $)
      */
-    public static listItem({ filter, limit, nextToken }: {
+    public static listItem({ filter, limit, nextToken, scanIndexForward, query, index }: {
         filter: ObjectNode | Expression,
         limit: Expression,
-        nextToken?: Expression
+        nextToken?: Expression,
+        scanIndexForward?: Expression;
+        query?: ObjectNode | Expression,
+        index?: StringNode,
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
             operation: str('Scan'),
             filter,
             limit,
-            nextToken
+            nextToken,
+            query,
+            index,
+            scanIndexForward,
         })
     }
 

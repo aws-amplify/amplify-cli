@@ -81,26 +81,26 @@ beforeAll(async () => {
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
 });
 
-afterAll(async () => {
-    try {
-        console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
-        console.log('Successfully deleted stack ' + STACK_NAME)
-    } catch (e) {
-        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-            // The stack was deleted. This is good.
-            expect(true).toEqual(true)
-            console.log('Successfully deleted stack ' + STACK_NAME)
-        } else {
-            console.error(e)
-            expect(true).toEqual(false)
-        }
-    }
-    try {
-        await emptyBucket(BUCKET_NAME);
-    } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
-})
+// afterAll(async () => {
+//     try {
+//         console.log('Deleting stack ' + STACK_NAME)
+//         await cf.deleteStack(STACK_NAME)
+//         await cf.waitForStack(STACK_NAME)
+//         console.log('Successfully deleted stack ' + STACK_NAME)
+//     } catch (e) {
+//         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+//             // The stack was deleted. This is good.
+//             expect(true).toEqual(true)
+//             console.log('Successfully deleted stack ' + STACK_NAME)
+//         } else {
+//             console.error(e)
+//             expect(true).toEqual(false)
+//         }
+//     }
+//     try {
+//         await emptyBucket(BUCKET_NAME);
+//     } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
+// })
 
 /**
  * Test queries below
@@ -134,8 +134,8 @@ test('Test deleteX with a two part primary key.', async () => {
 test('Test getX with a three part primary key', async () => {
     const item1 = await createItem('1', 'PENDING', 'item1');
     const getItem1 = await getItem('1', 'PENDING', item1.data.createItem.createdAt);
-    expect(getItem1.data.createItem.orderId).toEqual('1');
-    expect(getItem1.data.createItem.status).toEqual('PENDING');
+    expect(getItem1.data.getItem.orderId).toEqual('1');
+    expect(getItem1.data.getItem.status).toEqual('PENDING');
 })
 
 test('Test updateX with a three part primary key.', async () => {
@@ -156,6 +156,41 @@ test('Test deleteX with a three part primary key.', async () => {
     expect(delItem3.data.deleteItem.name).toEqual('item3');
     getItem3 = await getItem('3', 'IN_TRANSIT', item3.data.createItem.createdAt);
     expect(getItem3.data.getItem).toBeNull();
+})
+
+test('Test listX with three part primary key.', async () => {
+    const hashKey = 'TEST_LIST_ID';
+    await createItem(hashKey, 'IN_TRANSIT', 'list1', '2018-01-01T00:01:01.000Z');
+    await createItem(hashKey, 'PENDING', 'list2', '2018-06-01T00:01:01.000Z');
+    await createItem(hashKey, 'PENDING', 'item3', '2018-09-01T00:01:01.000Z');
+    let items = await listItem(undefined);
+    expect(items.data.listItems.items.length).toBeGreaterThan(0);
+    items = await listItem(hashKey);
+    expect(items.data.listItems.items).toHaveLength(3)
+    items = await listItem(hashKey, 'PENDING');
+    expect(items.data.listItems.items).toHaveLength(2)
+    items = await listItem(hashKey, 'IN_TRANSIT');
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, 'PENDING', { beginsWith: '2018-09' });
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, 'PENDING', { eq: '2018-09-01T00:01:01.000Z' });
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, 'PENDING', { between: ['2018-08-01', '2018-10-01'] });
+    expect(items.data.listItems.items).toHaveLength(1)
+    // items = await listItem(hashKey, 'PENDING', { gt: '2018-08-01' });
+    // expect(items.data.listItems.items).toHaveLength(1)
+    // items = await listItem(hashKey, 'PENDING', { ge: '2018-09-01' });
+    // expect(items.data.listItems.items).toHaveLength(1)
+    // items = await listItem(hashKey, 'PENDING', { lt: '2018-07-01' });
+    // expect(items.data.listItems.items).toHaveLength(1)
+    // items = await listItem(hashKey, 'PENDING', { le: '2018-06-01' });
+    // expect(items.data.listItems.items).toHaveLength(1)
+    // items = await listItem(hashKey, undefined, { le: '2018-09-01' });
+    expect(items.data.listItems).toBeNull()
+    expect(items.errors.length).toBeGreaterThan(0);
+    items = await listItem(undefined, 'PENDING', { le: '2018-09-01' });
+    expect(items.data.listItems).toBeNull()
+    expect(items.errors.length).toBeGreaterThan(0);
 })
 
 async function createOrder(customerEmail: string, orderId: string) {
@@ -212,7 +247,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
     return result;
 }
 
-async function createItem(orderId: string, status: string, name: string) {
+async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
     const result = await GRAPHQL_CLIENT.query(`mutation CreateItem($input: CreateItemInput!) {
         createItem(input: $input) {
             orderId
@@ -221,7 +256,7 @@ async function createItem(orderId: string, status: string, name: string) {
             name
         }
     }`, {
-        input: { status, orderId, name, createdAt: new Date().toISOString() }
+        input: { status, orderId, name, createdAt }
     });
     console.log(JSON.stringify(result, null, 4));
     return result;
@@ -269,4 +304,31 @@ async function getItem(orderId: string, status: string, createdAt: string) {
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
+
+interface StringKeyConditionInput {
+    eq?: string,
+    gt?: string,
+    ge?: string,
+    lt?: string,
+    le?: string,
+    between?: string[],
+    beginsWith?: string,
+}
+
+async function listItem(orderId?: string, status?: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+    const result = await GRAPHQL_CLIENT.query(`query ListItems($orderId: ID, $status: Status, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+        listItems(orderId: $orderId, status: $status, createdAt: $createdAt, limit: $limit, nextToken: $nextToken) {
+            items {
+                orderId
+                status
+                createdAt
+                name
+            }
+            nextToken
+        }
+    }`, { orderId, status, createdAt, limit, nextToken });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
 
