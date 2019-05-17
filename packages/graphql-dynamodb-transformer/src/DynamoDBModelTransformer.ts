@@ -143,6 +143,11 @@ export class DynamoDBModelTransformer extends Transformer {
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
         ctx.setOutput(
+            // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
+            `GetAtt${ModelResourceIDs.ModelTableStreamArn(typeName)}`,
+            this.resources.makeTableStreamArnOutput(tableLogicalID)
+        )
+        ctx.setOutput(
             `GetAtt${dataSourceRoleLogicalID}Name`,
             this.resources.makeDataSourceOutput(dataSourceRoleLogicalID)
         )

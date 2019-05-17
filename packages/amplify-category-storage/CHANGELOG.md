@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.6.4...amplify-category-storage@1.6.5) (2019-05-17)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** pass context to DDB migration helper ([#1392](https://github.com/aws-amplify/amplify-cli/issues/1392)) ([dbec705](https://github.com/aws-amplify/amplify-cli/commit/dbec705)), closes [#1384](https://github.com/aws-amplify/amplify-cli/issues/1384)
+
+
+
+
+
 ## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.6.3...amplify-category-storage@1.6.4) (2019-04-30)
 
 

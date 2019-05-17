@@ -165,7 +165,12 @@ export class ResourceFactory {
         return new Lambda.EventSourceMapping({
             BatchSize: 1,
             Enabled: true,
-            EventSourceArn: Fn.GetAtt(ModelResourceIDs.ModelTableResourceID(typeName), 'StreamArn'),
+            EventSourceArn: Fn.ImportValue(
+                Fn.Join(
+                    ':',
+                    [Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId), "GetAtt", ModelResourceIDs.ModelTableResourceID(typeName), "StreamArn"]
+                )
+            ),
             FunctionName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchStreamingLambdaFunctionLogicalID, 'Arn'),
             StartingPosition: 'LATEST'
         }).dependsOn([
