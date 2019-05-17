@@ -7,7 +7,7 @@ import {
     attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition, 
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
-    makeField, makeScalarKeyConditionForType
+    makeField, makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, InputObjectDefinitionNode, TypeNode, Kind } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
@@ -79,7 +79,9 @@ export default class FunctionTransformer extends Transformer {
                 getResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive) + '\n' + getResolver.Properties.RequestMappingTemplate
             }
             const listResolver = ctx.getResource(ResolverResourceIDs.DynamoDBListResolverResourceID(definition.name.value));
-            if (listResolver) {}
+            if (listResolver) {
+                listResolver.Properties.RequestMappingTemplate = this.setQuerySnippet(definition, directive, ctx) + '\n' + listResolver.Properties.RequestMappingTemplate
+            }
             const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(definition.name.value));
             if (createResolver) {
                 createResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive, true) + '\n' + createResolver.Properties.RequestMappingTemplate
@@ -217,6 +219,19 @@ export default class FunctionTransformer extends Transformer {
             cmds.push(ensureCompositeKey(directiveArgs));
         }
         return printBlock(`Set the primary @key`)(compoundExpression(cmds));
+    }
+
+    private setQuerySnippet = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+        const args: KeyArguments = getDirectiveArguments(directive);
+        const keys = args.fields;
+        const keyTypes = keys.map(k => {
+            const field = definition.fields.find(f => f.name.value === k);
+            return attributeTypeFromType(field.type, ctx);
+        })
+        return printBlock(`Set query expression for @key`)(compoundExpression([
+            set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
+            applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)
+        ]))
     }
 
     /**

@@ -92,6 +92,8 @@ export class ResourceConstants {
         AuthCondition: "authCondition",
         VersionedCondition: "versionedCondition",
         ModelObjectKey: "modelObjectKey",
+        ModelQueryExpression: "modelQueryExpression",
+        ModelQueryIndex: "modelQueryIndex",
         IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",
         IsLocalDynamicGroupAuthorizedVariable: "isLocalDynamicGroupAuthorized",
         IsStaticGroupAuthorizedVariable: "isStaticGroupAuthorized",

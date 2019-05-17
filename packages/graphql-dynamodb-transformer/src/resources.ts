@@ -512,7 +512,7 @@ export class ResourceFactory {
     public makeListResolver(type: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('list' + plurality(toUpper(type)))
         const defaultPageLimit = 10
-
+        const requestVariable = 'ListRequest';
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
             DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -521,19 +521,36 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
-                    DynamoDBMappingTemplate.listItem({
-                        filter: ifElse(
-                            ref('context.args.filter'),
-                            ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
-                            nul()
-                        ),
-                        limit: ref('limit'),
-                        nextToken: ifElse(
-                            ref('context.args.nextToken'),
-                            str('$context.args.nextToken'),
-                            nul()
+                    set(
+                        ref(requestVariable),
+                        obj({
+                            version: str('2017-02-28'),
+                            limit: ref('limit')
+                        })
+                    ),
+                    iff(
+                        ref('context.args.nextToken'),
+                        set(
+                            ref(`${requestVariable}.nextToken`),
+                            str('$context.args.nextToken')
                         )
-                    })
+                    ),
+                    iff(
+                        ref('context.args.filter'),
+                        set(
+                            ref(`${requestVariable}.filter`),
+                            ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')
+                        ),
+                    ),
+                    ifElse(
+                        raw(`!$util.isNull($${ResourceConstants.SNIPPETS.ModelQueryExpression}) && !$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.ModelQueryExpression}.expression)`),
+                        compoundExpression([
+                            qref(`$${requestVariable}.put("operation", "Query")`),
+                            qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`)
+                        ]),
+                        qref(`$${requestVariable}.put("operation", "Scan")`)
+                    ),
+                    raw(`$util.toJson($${requestVariable})`)
                 ])
             ),
             ResponseMappingTemplate: print(
