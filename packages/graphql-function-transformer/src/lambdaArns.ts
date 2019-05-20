@@ -6,9 +6,16 @@ export function lambdaArnResource(name: string, region?: string) {
     if (referencesEnv(name)) {
         substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env)
     }
-    return Fn.Sub(
-        lambdaArnKey(name, region),
-        substitutions
+    return Fn.If(
+        ResourceConstants.CONDITIONS.HasEnvironmentParameter,
+        Fn.Sub(
+            lambdaArnKey(name, region),
+            substitutions
+        ),
+        Fn.Sub(
+            lambdaArnKey(removeEnvReference(name), region),
+            {}
+        ),
     )
 }
 
@@ -20,4 +27,8 @@ export function lambdaArnKey(name: string, region?: string) {
 
 function referencesEnv(value: string) {
     return value.match(/(\${env})/) !== null;
+}
+
+function removeEnvReference(value: string) {
+    return value.replace(/(-\${env})/, '');
 }
