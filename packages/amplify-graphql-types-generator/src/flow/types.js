@@ -27,6 +27,10 @@ const builtInScalarMap = {
   [GraphQLID.name]: 'string',
 }
 
+const appSyncScalars = {
+  AWSTimestamp: 'number',
+};
+
 export function typeNameFromGraphQLType(context, type, bareTypeName, nullable = true) {
   if (type instanceof GraphQLNonNull) {
     return typeNameFromGraphQLType(context, type.ofType, bareTypeName, false)
@@ -36,7 +40,7 @@ export function typeNameFromGraphQLType(context, type, bareTypeName, nullable = 
   if (type instanceof GraphQLList) {
     typeName = `Array< ${typeNameFromGraphQLType(context, type.ofType, bareTypeName)} >`;
   } else if (type instanceof GraphQLScalarType) {
-    typeName = builtInScalarMap[type.name] || (context.passthroughCustomScalars ? context.customScalarsPrefix + type.name : 'any');
+    typeName = builtInScalarMap[type.name] || appSyncScalars[type.name] || (context.passthroughCustomScalars ? context.customScalarsPrefix + type.name : 'any');
   } else {
     typeName = bareTypeName || type.name;
   }
