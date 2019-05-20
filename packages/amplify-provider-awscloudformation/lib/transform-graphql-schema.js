@@ -214,7 +214,7 @@ async function transformGraphQLSchema(context, options) {
     new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
-    new KeyTransformer()
+    new KeyTransformer(),
   ];
 
   if (usedDirectives.includes('searchable')) {

@@ -303,8 +303,8 @@ export class ResourceFactory {
             TypeName: mutationTypeName,
             RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
                 compoundExpression([
-                    qref('$context.args.input.put("createdAt", $util.time.nowISO8601())'),
-                    qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref('$context.args.input.put("createdAt", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601()))'),
+                    qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
                     qref(`$context.args.input.put("__typename", "${type}")`),
                     DynamoDBMappingTemplate.putItem({
                         key: ifElse(
@@ -383,7 +383,7 @@ export class ResourceFactory {
                         )
                     ),
                     comment('Automatically set the updatedAt timestamp.'),
-                    qref('$context.args.input.put("updatedAt", $util.time.nowISO8601())'),
+                    qref('$context.args.input.put("updatedAt", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601()))'),
                     qref(`$context.args.input.put("__typename", "${type}")`),
                     comment('Update condition if type is @versioned'),
                     iff(
