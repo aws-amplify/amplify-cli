@@ -7,7 +7,7 @@ DynamoDB is a distributed hash table that can execute efficient range queries on
 
 1. Secondary Indexes - Create new data structures to store information in a different way to enable new access patterns. Incurs extra cost.
 1. Composite Keys - Store two logical fields in a single field such that more than two logical fields can be used in a range query.
-2. Index overloading - Store more than 1 logical entity in a single index. Different logical entities may contains entirely different types of data. Allows a single index to power more than 1 access pattern.
+2. Index overloading - Store more than 1 logical entity in a single index. Different logical entities may contains entirely different types of data. Allows a single index to power more than 1 access patterns for one or more logical entities.
 
 The `@key` directive, in addition to allowing you to define custom primary index structures, helps with parts 1 and 2 above. The `@key` directive does not automatically overload indexes although this may be a possibility going forward. 
 
