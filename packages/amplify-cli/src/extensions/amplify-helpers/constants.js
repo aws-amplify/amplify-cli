@@ -7,7 +7,7 @@ module.exports = {
   PluginConfigFileName: 'plugin-config.json',
   ProjectConfigFileName: 'project-config.json',
   amplifyMetaFileName: 'amplify-meta.json',
-  BrandName: 'AWS Amplify',
+  BrandName: 'Amplify Framework',
   CliName: 'amplify',
   DateTimeFormatString: 'YYYY-MM-DD-HH-mm-ss',
   DateTimeFormatStringCompact: 'YYYYMMDDHHmmss',
