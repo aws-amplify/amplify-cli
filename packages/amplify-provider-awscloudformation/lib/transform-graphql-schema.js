@@ -215,11 +215,8 @@ async function transformGraphQLSchema(context, options) {
     new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
-<<<<<<< HEAD
     new HTTPTransformer(),
-=======
-    new KeyTransformer()
->>>>>>> Adding support for create, update, delete, & get with updated index structures. Still need to update list as well as implement the new query resolver using existing parts. The last change is to handle the partial key update scenario in update operations.
+    new KeyTransformer(),
   ];
 
   if (usedDirectives.includes('searchable')) {

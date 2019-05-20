@@ -1,13 +1,17 @@
 import { 
     Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError, InvalidDirectiveError
 } from 'graphql-transformer-core';
-import { obj, str, ref, printBlock, compoundExpression, newline, raw, qref, set, Expression } from 'graphql-mapping-template';
+import { 
+    obj, str, ref, printBlock, compoundExpression, newline, raw, qref, set, Expression, print,
+    ifElse, iff, block
+} from 'graphql-mapping-template';
 import { 
     ResolverResourceIDs, ResourceConstants, isNonNullType,
     attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition, 
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
-    makeField, makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey
+    makeField, makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
+    graphqlName, plurality, toUpper
 } from 'graphql-transformer-common';
 import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, InputObjectDefinitionNode, TypeNode, Kind } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
@@ -73,6 +77,7 @@ export default class FunctionTransformer extends Transformer {
      * Update the get, list, create, update, and delete resolvers with updated key information.
      */
     private updateResolvers = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
+        const directiveArgs: KeyArguments = getDirectiveArguments(directive);
         if (this.isPrimaryKey(directive)) {
             const getResolver = ctx.getResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(definition.name.value));
             if (getResolver) {
@@ -80,7 +85,7 @@ export default class FunctionTransformer extends Transformer {
             }
             const listResolver = ctx.getResource(ResolverResourceIDs.DynamoDBListResolverResourceID(definition.name.value));
             if (listResolver) {
-                listResolver.Properties.RequestMappingTemplate = this.setQuerySnippet(definition, directive, ctx) + '\n' + listResolver.Properties.RequestMappingTemplate
+                listResolver.Properties.RequestMappingTemplate = print(setQuerySnippet(definition, directive, ctx)) + '\n' + listResolver.Properties.RequestMappingTemplate
             }
             const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(definition.name.value));
             if (createResolver) {
@@ -94,6 +99,12 @@ export default class FunctionTransformer extends Transformer {
             if (deleteResolver) {
                 deleteResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive, true) + '\n' + deleteResolver.Properties.RequestMappingTemplate
             }
+        } else if (directiveArgs.name && directiveArgs.queryField) {
+            const queryTypeName = ctx.getQueryTypeName();
+            const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
+            const queryResolver = makeQueryResolver(definition, directive, ctx);
+            ctx.addToStackMapping(definition.name.value, `^${queryResolverId}$`);
+            ctx.setResource(queryResolverId, queryResolver);
         }
     }
 
@@ -219,19 +230,6 @@ export default class FunctionTransformer extends Transformer {
             cmds.push(ensureCompositeKey(directiveArgs));
         }
         return printBlock(`Set the primary @key`)(compoundExpression(cmds));
-    }
-
-    private setQuerySnippet = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
-        const args: KeyArguments = getDirectiveArguments(directive);
-        const keys = args.fields;
-        const keyTypes = keys.map(k => {
-            const field = definition.fields.find(f => f.name.value === k);
-            return attributeTypeFromType(field.type, ctx);
-        })
-        return printBlock(`Set query expression for @key`)(compoundExpression([
-            set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
-            applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)
-        ]))
     }
 
     /**
@@ -558,4 +556,69 @@ function ensureCompositeKey(args: KeyArguments) {
 
 function condenseRangeKey(fields: string[]) {
     return fields.join('#');
+}
+
+function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+    const type = definition.name.value;
+    const directiveArgs: KeyArguments = getDirectiveArguments(directive);
+    const index = directiveArgs.name;
+    const fieldName = directiveArgs.queryField;
+    const queryTypeName = ctx.getQueryTypeName();
+    const defaultPageLimit = 10
+    const requestVariable = 'QueryRequest';
+    return new AppSync.Resolver({
+        ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+        DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
+        FieldName: fieldName,
+        TypeName: queryTypeName,
+        RequestMappingTemplate: print(
+            compoundExpression([
+                setQuerySnippet(definition, directive, ctx),
+                set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+                set(
+                    ref(requestVariable),
+                    obj({
+                        version: str('2017-02-28'),
+                        operation: str('Query'),
+                        limit: ref('limit'),
+                        query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
+                        index: str(index)
+                    })
+                ),
+                iff(
+                    ref('context.args.nextToken'),
+                    set(
+                        ref(`${requestVariable}.nextToken`),
+                        str('$context.args.nextToken')
+                    ),
+                    true
+                ),
+                iff(
+                    ref('context.args.filter'),
+                    set(
+                        ref(`${requestVariable}.filter`),
+                        ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')
+                    ),
+                    true
+                ),
+                raw(`$util.toJson($${requestVariable})`)
+            ])
+        ),
+        ResponseMappingTemplate: print(
+            raw('$util.toJson($ctx.result)')
+        )
+    })
+}
+
+function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+    const args: KeyArguments = getDirectiveArguments(directive);
+    const keys = args.fields;
+    const keyTypes = keys.map(k => {
+        const field = definition.fields.find(f => f.name.value === k);
+        return attributeTypeFromType(field.type, ctx);
+    })
+    return block(`Set query expression for @key`, [
+        set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
+        applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)
+    ])
 }

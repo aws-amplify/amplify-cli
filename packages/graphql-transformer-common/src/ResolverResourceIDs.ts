@@ -1,4 +1,4 @@
-import { graphqlName } from "./util";
+import { graphqlName, toUpper } from "./util";
 
 export class ResolverResourceIDs {
     static DynamoDBCreateResolverResourceID(typeName: string): string {
@@ -9,9 +9,6 @@ export class ResolverResourceIDs {
     }
     static DynamoDBDeleteResolverResourceID(typeName: string): string {
         return `Delete${typeName}Resolver`
-    }
-    static DynamoDBQueryResolverResourceID(typeName: string): string {
-        return `Query${typeName}Resolver`
     }
     static DynamoDBGetResolverResourceID(typeName: string): string {
         return `Get${typeName}Resolver`

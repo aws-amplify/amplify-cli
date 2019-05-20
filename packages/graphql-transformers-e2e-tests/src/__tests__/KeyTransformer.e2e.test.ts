@@ -43,14 +43,17 @@ beforeAll(async () => {
         email: String!
         username: String
     }
-    type Item @model @key(fields: ["orderId", "status", "createdAt"]) {
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+    {
         orderId: ID!
         status: Status!
         createdAt: AWSDateTime!
         name: String!
     }
     enum Status {
-        DELIVERED IN_TRANSIT PENDING
+        DELIVERED IN_TRANSIT PENDING UNKNOWN
     }
     `
     try {
@@ -186,10 +189,39 @@ test('Test listX with three part primary key.', async () => {
     // items = await listItem(hashKey, 'PENDING', { le: '2018-06-01' });
     // expect(items.data.listItems.items).toHaveLength(1)
     // items = await listItem(hashKey, undefined, { le: '2018-09-01' });
-    expect(items.data.listItems).toBeNull()
-    expect(items.errors.length).toBeGreaterThan(0);
+    // expect(items.data.listItems).toBeNull()
+    // expect(items.errors.length).toBeGreaterThan(0);
     items = await listItem(undefined, 'PENDING', { le: '2018-09-01' });
     expect(items.data.listItems).toBeNull()
+    expect(items.errors.length).toBeGreaterThan(0);
+})
+
+test('Test query with three part secondary key.', async () => {
+    const hashKey = 'UNKNOWN';
+    await createItem('order1', 'UNKNOWN', 'list1', '2018-01-01T00:01:01.000Z');
+    await createItem('order2', 'UNKNOWN', 'list2', '2018-06-01T00:01:01.000Z');
+    await createItem('order3', 'UNKNOWN', 'item3', '2018-09-01T00:01:01.000Z');
+    let items = await itemsByStatus(undefined);
+    expect(items.data.itemsByStatus).toBeNull();
+    expect(items.errors.length).toBeGreaterThan(0);
+    items = await itemsByStatus(hashKey);
+    expect(items.data.itemsByStatus.items).toHaveLength(3)
+    items = await itemsByStatus(hashKey, { beginsWith: '2018-09' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { eq: '2018-09-01T00:01:01.000Z' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { between: ['2018-08-01', '2018-10-01'] });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { gt: '2018-08-01' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { ge: '2018-09-01' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { lt: '2018-07-01' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(hashKey, { le: '2018-06-01' });
+    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    items = await itemsByStatus(undefined, { le: '2018-09-01' });
+    expect(items.data.itemsByStatus).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
 })
 
@@ -330,5 +362,23 @@ async function listItem(orderId?: string, status?: string, createdAt?: StringKey
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
+
+async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+    const result = await GRAPHQL_CLIENT.query(`query ListByStatus($status: Status!, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+        itemsByStatus(status: $status, createdAt: $createdAt, limit: $limit, nextToken: $nextToken) {
+            items {
+                orderId
+                status
+                createdAt
+                name
+            }
+            nextToken
+        }
+    }`, { status, createdAt, limit, nextToken });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+
 
 
