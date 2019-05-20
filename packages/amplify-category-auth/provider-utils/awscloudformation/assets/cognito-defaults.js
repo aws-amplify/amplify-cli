@@ -28,42 +28,45 @@ const roles = {
 };
 
 const generalDefaults = projectName => ({
-  resourceName: `${projectName}_${sharedId}`,
+  resourceName: `${projectName}${sharedId}`,
   authSelections: 'identityPoolAndUserPool',
   ...roles,
 });
 
-const userPoolDefaults = projectName => ({
-  userPoolName: `${projectName}_userpool_${sharedId}`,
-  autoVerifiedAttributes: ['email'],
-  mfaConfiguration: 'OFF',
-  mfaTypes: ['SMS Text Message'],
-  roleName: `${projectName}_sns-role`,
-  roleExternalId: `${projectName}_role_external_id`,
-  policyName: `${projectName}-sns-policy`,
-  smsAuthenticationMessage: 'Your authentication code is {####}',
-  smsVerificationMessage: 'Your verification code is {####}',
-  emailVerificationSubject: 'Your verification code',
-  emailVerificationMessage: 'Your verification code is {####}',
-  defaultPasswordPolicy: booleanOptions.find(b => b.value === false).value,
-  passwordPolicyMinLength: 8,
-  passwordPolicyCharacters: [
-  ],
-  requiredAttributes: ['email'],
-  userpoolClientName: `${projectName}_app_client`,
-  userpoolClientGenerateSecret: true,
-  userpoolClientRefreshTokenValidity: 30,
-  userpoolClientWriteAttributes: ['email'],
-  userpoolClientReadAttributes: ['email'],
-  mfaLambdaRole: `${projectName}_totp_lambda_role`,
-  mfaLambdaLogPolicy: `${projectName}_totp_lambda_log_policy`,
-  mfaPassRolePolicy: `${projectName}_totp_pass_role_policy`,
-  mfaLambdaIAMPolicy: `${projectName}_totp_lambda_iam_policy`,
-  userpoolClientLambdaRole: `${projectName}_userpoolclient_lambda_role`,
-  userpoolClientLogPolicy: `${projectName}_userpoolclient_lambda_log_policy`,
-  userpoolClientLambdaPolicy: `${projectName}_userpoolclient_lambda_iam_policy`,
-  userpoolClientSetAttributes: false,
-});
+const userPoolDefaults = (projectName) => {
+  const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
+  return ({
+    userPoolName: `${projectName}_userpool_${sharedId}`,
+    autoVerifiedAttributes: ['email'],
+    mfaConfiguration: 'OFF',
+    mfaTypes: ['SMS Text Message'],
+    roleName: `${projectNameTruncated}_sns-role`,
+    roleExternalId: `${projectNameTruncated}_role_external_id`,
+    policyName: `${projectNameTruncated}-sns-policy`,
+    smsAuthenticationMessage: 'Your authentication code is {####}',
+    smsVerificationMessage: 'Your verification code is {####}',
+    emailVerificationSubject: 'Your verification code',
+    emailVerificationMessage: 'Your verification code is {####}',
+    defaultPasswordPolicy: booleanOptions.find(b => b.value === false).value,
+    passwordPolicyMinLength: 8,
+    passwordPolicyCharacters: [
+    ],
+    requiredAttributes: ['email'],
+    userpoolClientName: `${projectNameTruncated}_app_client`,
+    userpoolClientGenerateSecret: true,
+    userpoolClientRefreshTokenValidity: 30,
+    userpoolClientWriteAttributes: ['email'],
+    userpoolClientReadAttributes: ['email'],
+    mfaLambdaRole: `${projectNameTruncated}_totp_lambda_role`,
+    mfaLambdaLogPolicy: `${projectNameTruncated}_totp_lambda_log_policy`,
+    mfaPassRolePolicy: `${projectNameTruncated}_totp_pass_role_policy`,
+    mfaLambdaIAMPolicy: `${projectNameTruncated}_totp_lambda_iam_policy`,
+    userpoolClientLambdaRole: `${projectNameTruncated}_userpoolclient_lambda_role`,
+    userpoolClientLogPolicy: `${projectNameTruncated}_userpoolclient_lambda_log_policy`,
+    userpoolClientLambdaPolicy: `${projectNameTruncated}_userpoolclient_lambda_iam_policy`,
+    userpoolClientSetAttributes: false,
+  });
+};
 
 const withSocialDefaults = projectName => ({
   hostedUI: true,
@@ -72,16 +75,18 @@ const withSocialDefaults = projectName => ({
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
-const identityPoolDefaults = projectName => ({
-  identityPoolName: `${projectName}_identitypool_${sharedId}`,
-  allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-  lambdaLogPolicy: `${projectName}_lambda_log_policy`,
-  openIdLambdaRoleName: `${projectName}_openid_lambda_role`,
-  openIdRolePolicy: `${projectName}_openid_pass_role_policy`,
-  openIdLambdaIAMPolicy: `${projectName}_openid_lambda_iam_policy`,
-  openIdLogPolicy: `${projectName}_openid_lambda_log_policy`,
-
-});
+const identityPoolDefaults = (projectName) => {
+  const projectNameTruncated = `${projectName.substring(0, 6)}_${sharedId}`;
+  return ({
+    identityPoolName: `${projectName}_identitypool_${sharedId}`,
+    allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
+    lambdaLogPolicy: `${projectNameTruncated}_lambda_log_policy`,
+    openIdLambdaRoleName: `${projectNameTruncated}_openid_lambda_role`,
+    openIdRolePolicy: `${projectNameTruncated}_openid_pass_role_policy`,
+    openIdLambdaIAMPolicy: `${projectNameTruncated}_openid_lambda_iam_policy`,
+    openIdLogPolicy: `${projectNameTruncated}_openid_lambda_log_policy`,
+  });
+};
 
 const identityAndUserPoolDefaults = projectName => ({
   // replace dashes with underscores for id pool regex constraint
