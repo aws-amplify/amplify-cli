@@ -9,14 +9,30 @@ DynamoDB is a distributed hash table that can execute efficient range queries on
 1. Composite Keys - Store two logical fields in a single field such that more than two logical fields can be used in a range query.
 2. Index overloading - Store more than 1 logical entity in a single index. Different logical entities may contains entirely different types of data. Allows a single index to power more than 1 access patterns for one or more logical entities.
 
-The `@key` directive, in addition to allowing you to define custom primary index structures, helps with parts 1 and 2 above. The `@key` directive does not automatically overload indexes although this may be a possibility going forward. 
+The `@key` directive, in addition to allowing you to define custom primary index structures, helps with parts 1 and 2 above. The `@key` directive does not automatically overload indexes although this may be a possibility going forward. This is the definition of `@key`:
+
+```graphql
+# @param name - When provided specifies the name of the secondary index. There may be one @key without a 'name' per @model type.
+# @param fields (required) - Specifies the logical fields that should be included in the index's key structure.
+# @param queryField - When provided specifies the name of the top level query field that should be created to query the secondary index.
+#                     Primary @keys are not allowed to have a queryField because the listX query is already being updated to work with the primary key.
+directive @key(name: String, fields: [String!]!, queryField: String) on OBJECT
+```
 
 For example, let's say we are building some kind of e-commerce application and need to facilitate these access patterns.
 
-1. Get orders by customer by date.
+1. Get orders by customer by createdAt.
 2. Get customers by email.
-3. Get items by order by status by date.
-4. Get items by status by date.
+3. Get items by order by status by createdAt.
+4. Get items by status by createdAt.
+
+When thinking about your access patterns, it is useful to lay them out using the same "by X by Y" structure I have here. 
+Once you have them laid out like this you can translate them directily into a `@key` by including the "X" and "Y" values as `fields`.
+For example to **Get orders by customer by date**, I would create a `@key`:
+
+```graphql
+@key(fields: ["customerEmail", "createdAt"])
+```
 
 We can use the `@key` directive to quickly create an API & data model for this application.
 
