@@ -26,8 +26,8 @@ const LOCAL_FS_BUILD_DIR = '/tmp/none_env_function_transformer_tests/'
 const S3_ROOT_DIR_KEY = 'deployments'
 // Note: there is no env in the name.
 const ECHO_FUNCTION_NAME = `e2e-tests-echo-${BUILD_TIMESTAMP}`
-const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_${BUILD_TIMESTAMP}`
-const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_${BUILD_TIMESTAMP}`
+const LAMBDA_EXECUTION_ROLE_NAME = `amplify_e2e_tests_lambda_basic_none_${BUILD_TIMESTAMP}`
+const LAMBDA_EXECUTION_POLICY_NAME = `amplify_e2e_tests_lambda_basic_access_none_${BUILD_TIMESTAMP}`
 let LAMBDA_EXECUTION_POLICY_ARN = '';
 
 let GRAPHQL_CLIENT = undefined;
