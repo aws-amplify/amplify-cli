@@ -69,12 +69,12 @@ export default class FunctionTransformer extends Transformer {
             RoleName: Fn.If(
                 ResourceConstants.CONDITIONS.HasEnvironmentParameter,
                 Fn.Join('-', [
-                    FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 28), // max of 64. 64-10-26-28 = 0
+                    FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 26), // max of 64. 64-10-26-28 = 0
                     Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
                     Fn.Ref(ResourceConstants.PARAMETERS.Env) // 10
                 ]),
                 Fn.Join('-', [
-                    FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 38), // max of 64. 64-26-38 = 0
+                    FunctionResourceIDs.FunctionIAMRoleID(name, region).slice(0, 37), // max of 64. 64-26-38 = 0
                     Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
                 ])
             ),
@@ -83,7 +83,7 @@ export default class FunctionTransformer extends Transformer {
                 Statement: [{
                     Effect: "Allow",
                     Principal: {
-                        "Service": "appsync.amazonaws.com"
+                        Service: "appsync.amazonaws.com"
                     },
                     Action: "sts:AssumeRole"
                 }]
@@ -97,7 +97,7 @@ export default class FunctionTransformer extends Transformer {
                         Action: [
                             "lambda:InvokeFunction"
                         ],
-                        Resource: [lambdaArnResource(name, region)]
+                        Resource: lambdaArnResource(name, region)
                     }]
                 }
             }]
