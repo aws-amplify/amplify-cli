@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.5.5...graphql-elasticsearch-transformer@3.5.6-beta.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** use Fn::GetAtt for StreamArn ([#1494](https://github.com/aws-amplify/amplify-cli/issues/1494)) ([8c80462](https://github.com/aws-amplify/amplify-cli/commit/8c80462)), closes [/github.com/aws-amplify/amplify-cli/commit/df1712b00427792bcce34adf7027698afd8e6841#diff-22e2a5351fb3f897025bc1e45811acb5R168](https://github.com//github.com/aws-amplify/amplify-cli/commit/df1712b00427792bcce34adf7027698afd8e6841/issues/diff-22e2a5351fb3f897025bc1e45811acb5R168)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** always output stream arn ([df1712b](https://github.com/aws-amplify/amplify-cli/commit/df1712b)), closes [#980](https://github.com/aws-amplify/amplify-cli/issues/980)
+
+
+
+
+
 ## [3.5.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.5.4...graphql-elasticsearch-transformer@3.5.5) (2019-05-17)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

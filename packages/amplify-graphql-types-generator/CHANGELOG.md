@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.11-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.10...amplify-graphql-types-generator@1.0.11-beta.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** set AWSTimestamp to number type ([#1483](https://github.com/aws-amplify/amplify-cli/issues/1483)) ([86fb2f1](https://github.com/aws-amplify/amplify-cli/commit/86fb2f1)), closes [#1348](https://github.com/aws-amplify/amplify-cli/issues/1348)
+
+
+
+
+
 ## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.9...amplify-graphql-types-generator@1.0.10) (2019-04-30)
 
 
