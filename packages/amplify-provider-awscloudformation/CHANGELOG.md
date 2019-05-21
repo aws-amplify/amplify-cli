@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.9.1...amplify-provider-awscloudformation@1.10.0) (2019-05-21)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add http default transformer ([#1410](https://github.com/aws-amplify/amplify-cli/issues/1410)) ([41cd9d0](https://github.com/aws-amplify/amplify-cli/commit/41cd9d0))
+
+
+
+
+
 ## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.9.0...amplify-provider-awscloudformation@1.9.1) (2019-05-17)
 
 

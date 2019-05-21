@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.5.1...amplify-codegen@1.5.2) (2019-05-21)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** auto detect S3Object in swift codegen ([#1482](https://github.com/aws-amplify/amplify-cli/issues/1482)) ([ea2de2d](https://github.com/aws-amplify/amplify-cli/commit/ea2de2d)), closes [#1468](https://github.com/aws-amplify/amplify-cli/issues/1468)
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@1.5.0...amplify-codegen@1.5.1) (2019-05-17)
 
 **Note:** Version bump only for package amplify-codegen
