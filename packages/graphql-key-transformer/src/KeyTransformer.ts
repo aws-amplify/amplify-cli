@@ -168,7 +168,7 @@ export default class FunctionTransformer extends Transformer {
                 const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
                 // The last value passed via fields in @key(field: [...]) get a full KeyConditionInput
                 // while all others simply get an equality check of the same type as their base type.
-                const keyArgument = i === args.fields.length - 1 ?
+                const keyArgument = i === args.fields.length - 1 && args.fields.length !== 1 ?
                     makeInputValueDefinition(keyAttributeName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(keyField.type)))) :
                     makeInputValueDefinition(keyAttributeName, makeNamedType(getBaseType(keyField.type)));
                 listArguments.unshift(keyArgument)
@@ -186,7 +186,7 @@ export default class FunctionTransformer extends Transformer {
                 const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
                 // The last value passed via fields in @key(field: [...]) get a full KeyConditionInput
                 // while all others simply get an equality check of the same type as their base type.
-                const keyArgument = i === args.fields.length - 1 ?
+                const keyArgument = i === args.fields.length - 1 && args.fields.length !== 1 ?
                     makeInputValueDefinition(keyAttributeName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(keyField.type)))) :
                     makeInputValueDefinition(keyAttributeName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
                 return keyArgument;
