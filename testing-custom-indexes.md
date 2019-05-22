@@ -44,7 +44,7 @@ cd amplify-cli
 git checkout feature/@key
 ```
 
-2. Run `amplify setup-dev` from the repo's root directory.
+2. Run `npm run setup-dev` from the repo's root directory.
 
 3. Create a new directory somewhere else and init the amplify project.
 
