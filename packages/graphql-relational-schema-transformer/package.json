@@ -4,6 +4,7 @@
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "main": "lib/index.js",
   "scripts": {
+    "test-ci": "jest --ci --coverage",
     "test": "jest --coverage",
     "build": "tsc",
     "clean": "rm -rf ./lib"
@@ -30,8 +31,8 @@
     "@types/mysql": "^2.15.5",
     "aws-sdk": "^2.391.0",
     "cloudform": "^3.5.0",
-    "jest": "23.1.0",
-    "ts-jest": "22.4.6",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
     "typescript": "^3.2.1"
   },
   "jest": {
