@@ -155,7 +155,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
         context.print.error(`Provider not configured for ${category}: ${resourceName}`);
       }
     } catch (e) {
-      context.print.warning(`Could not run migration for ${category}: ${resourceName}`);
+      context.print.warning(`Could not get policies for ${category}: ${resourceName}`);
       throw e;
     }
   });
