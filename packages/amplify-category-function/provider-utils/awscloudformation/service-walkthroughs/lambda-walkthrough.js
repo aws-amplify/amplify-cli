@@ -336,11 +336,12 @@ async function askExecRolePermissionsQuestions(
   const resourceProperties = [];
   const resourcePropertiesJSON = {};
   const categoryMapping = {};
+  const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   resources.forEach((resource) => {
     const { category, resourceName, attributes } = resource;
     attributes.forEach((attribute) => {
       const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
-      const varName = `${category.toLowerCase()}_${resourceName.toLowerCase()}_${attribute.toLowerCase()}`;
+      const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
       const refName = `${category}${resourceName}${attribute}`;
 
       resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
@@ -378,7 +379,7 @@ async function askExecRolePermissionsQuestions(
   });
 
   context.print.info(terminalOutput);
-  topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */\n`;
+  topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */`;
 
   return { topLevelComment };
 }
