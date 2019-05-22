@@ -40,13 +40,14 @@ export default class RelationalDBResolverGenerator {
         let resources = {}
         this.resolverFilePath = resolverFilePath
         this.typePrimaryKeyMap.forEach((value: string, key: string) => {
+            const resourceName = key.replace(/[^A-Za-z0-9]/g, '')
             resources = {
                 ...resources,
-                ...{[key + 'CreateResolver']: this.makeCreateRelationalResolver(key)},
-                ...{[key + 'GetResolver']: this.makeGetRelationalResolver(key)},
-                ...{[key + 'UpdateResolver']: this.makeUpdateRelationalResolver(key)},
-                ...{[key + 'DeleteResolver']: this.makeDeleteRelationalResolver(key)},
-                ...{[key + 'ListResolver']: this.makeListRelationalResolver(key)},
+                ...{[resourceName + 'CreateResolver']: this.makeCreateRelationalResolver(key)},
+                ...{[resourceName + 'GetResolver']: this.makeGetRelationalResolver(key)},
+                ...{[resourceName + 'UpdateResolver']: this.makeUpdateRelationalResolver(key)},
+                ...{[resourceName + 'DeleteResolver']: this.makeDeleteRelationalResolver(key)},
+                ...{[resourceName + 'ListResolver']: this.makeListRelationalResolver(key)},
             }
             // TODO: Add Guesstimate Query Resolvers
         })
@@ -153,7 +154,7 @@ export default class RelationalDBResolverGenerator {
 
         fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
         fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
-        
+
         let resolver = new AppSync.Resolver ({
             ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),
             DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.RelationalDatabaseDataSource, 'Name'),
@@ -239,7 +240,7 @@ export default class RelationalDBResolverGenerator {
                     [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
                     [resolverFileName]: resFileName
                 }
-            ) 
+            )
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
         return resolver
     }
@@ -291,7 +292,7 @@ export default class RelationalDBResolverGenerator {
                     [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
                     [resolverFileName]: resFileName
                 }
-            ) 
+            )
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver
@@ -341,7 +342,7 @@ export default class RelationalDBResolverGenerator {
                     [ResourceConstants.PARAMETERS.S3DeploymentRootKey]: Fn.Ref(ResourceConstants.PARAMETERS.S3DeploymentRootKey),
                     [resolverFileName]: resFileName
                 }
-            ) 
+            )
         }).dependsOn([ResourceConstants.RESOURCES.RelationalDatabaseDataSource])
 
         return resolver

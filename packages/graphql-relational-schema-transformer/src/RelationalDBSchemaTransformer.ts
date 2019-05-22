@@ -4,6 +4,7 @@ import { getNamedType, getOperationFieldDefinition, getNonNullType, getInputValu
     getTypeDefinition, getFieldDefinition, getDirectiveNode, getOperationTypeDefinition } from './RelationalDBSchemaTransformerUtils'
 import {RelationalDBParsingException} from './RelationalDBParsingException'
 import { IRelationalDBReader } from './IRelationalDBReader';
+import { toUpper } from 'graphql-transformer-common'
 
 /**
  * This class is used to transition all of the columns and key metadata from a table for use
@@ -69,7 +70,7 @@ export class RelationalDBSchemaTransformer {
     }
 
     public introspectDatabaseSchema = async (): Promise<TemplateContext> => {
-        
+
 
         // Get all of the tables within the provided db
         let tableNames = null
@@ -123,7 +124,7 @@ export class RelationalDBSchemaTransformer {
         types.push(this.getSubscriptions(typeContexts))
         types.push(this.getSchemaType())
 
-        let context =  this.dbReader.hydrateTemplateContext(new TemplateContext({kind: Kind.DOCUMENT, 
+        let context =  this.dbReader.hydrateTemplateContext(new TemplateContext({kind: Kind.DOCUMENT,
             definitions: types}, pkeyMap, stringFieldMap, intFieldMap))
 
          return context
@@ -157,19 +158,19 @@ export class RelationalDBSchemaTransformer {
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
             fields.push(
-                getOperationFieldDefinition(`delete${type.name.value}`,
+                getOperationFieldDefinition(`delete${toUpper(type.name.value)}`,
                     [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                         typeContext.tableKeyField)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`create${type.name.value}`,
+                getOperationFieldDefinition(`create${toUpper(type.name.value)}`,
                     [getInputValueDefinition(getNonNullType(getNamedType(`Create${type.name.value}Input`)),
                         `create${type.name.value}Input`)],
                     getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`update${type.name.value}`,
+                getOperationFieldDefinition(`update${toUpper(type.name.value)}`,
                     [getInputValueDefinition(getNonNullType(getNamedType(`Update${type.name.value}Input`)),
                         `update${type.name.value}Input`)],
                     getNamedType(`${type.name.value}`), null)
@@ -190,9 +191,9 @@ export class RelationalDBSchemaTransformer {
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
             fields.push(
-                getOperationFieldDefinition(`onCreate${type.name.value}`, [],
+                getOperationFieldDefinition(`onCreate${toUpper(type.name.value)}`, [],
                     getNamedType(`${type.name.value}`),
-                    [getDirectiveNode(`create${type.name.value}`)])
+                    [getDirectiveNode(`create${toUpper(type.name.value)}`)])
             )
         }
         return getTypeDefinition(fields, 'Subscription')
@@ -210,13 +211,13 @@ export class RelationalDBSchemaTransformer {
         for (const typeContext of types) {
             const type = typeContext.tableTypeDefinition
             fields.push(
-                getOperationFieldDefinition(`get${type.name.value}`,
+                getOperationFieldDefinition(`get${toUpper(type.name.value)}`,
                 [getInputValueDefinition(getNonNullType(getNamedType(typeContext.tableKeyFieldType)),
                     typeContext.tableKeyField)],
                 getNamedType(`${type.name.value}`), null)
             )
             fields.push(
-                getOperationFieldDefinition(`list${type.name.value}s`,
+                getOperationFieldDefinition(`list${toUpper(type.name.value)}s`,
                 [],
                 getNamedType(`[${type.name.value}]`), null)
             )
