@@ -163,7 +163,7 @@ async function updateWalkthrough(context) {
     });
     cfnContent.Parameters = dependsOnParams;
 
-    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, Region: { Ref: 'AWS::Region' } });
+    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
 
     if (!cfnContent.Resources.AmplifyResourcesPolicy) {
       cfnContent.Resources.AmplifyResourcesPolicy = {
@@ -197,7 +197,7 @@ async function updateWalkthrough(context) {
     // Update top level comment in app.js or index.js file
 
     const updateTopLevelComment = (filePath) => {
-      const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s.]+Amplify Params - DO NOT EDIT \*\//;
+      const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s._=]+Amplify Params - DO NOT EDIT \*\//;
       let fileContents = fs.readFileSync(filePath).toString();
       const commentMatches = fileContents.match(commentRegex);
       if (!commentMatches || commentMatches.length === 0) {
@@ -339,12 +339,16 @@ async function askExecRolePermissionsQuestions(
   resources.forEach((resource) => {
     const { category, resourceName, attributes } = resource;
     attributes.forEach((attribute) => {
-      resourceProperties.push(`"${category}${resourceName}${attribute}": {"Ref": "${category}${resourceName}${attribute}"}`);
-      resourcePropertiesJSON[`${category}${resourceName}${attribute}`] = { Ref: `${category}${resourceName}${attribute}` };
+      const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
+      const varName = `${category.toLowerCase()}_${resourceName.toLowerCase()}_${attribute.toLowerCase()}`;
+      const refName = `${category}${resourceName}${attribute}`;
+
+      resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
+      resourcePropertiesJSON[`${envName}`] = { Ref: `${category}${resourceName}${attribute}` };
       if (!categoryMapping[category]) {
         categoryMapping[category] = [];
       }
-      categoryMapping[category].push(`${category}${resourceName}${attribute}`);
+      categoryMapping[category].push({ envName, varName });
     });
     if (!allDefaultValues.dependsOn) {
       allDefaultValues.dependsOn = [];
@@ -362,18 +366,15 @@ async function askExecRolePermissionsQuestions(
   context.print.info('');
   let topLevelComment = '/* Amplify Params - DO NOT EDIT\n';
   let terminalOutput = 'You can access the following resource attributes as environment variables from your Lambda function\n';
-  terminalOutput += 'Current Environment\n------------\nprocess.env.ENV\n';
-  terminalOutput += 'Region\n------------\nprocess.env.Region\n';
+  terminalOutput += 'var environment = process.env.ENV\n';
+  terminalOutput += 'var region = process.env.REGION\n';
 
   Object.keys(categoryMapping).forEach((category) => {
     if (categoryMapping[category].length > 0) {
-      terminalOutput += `${category}\n`;
-      terminalOutput += '------------\n';
-      categoryMapping[category].forEach((resourceAttribute) => {
-        terminalOutput += `process.env.${resourceAttribute}\n`;
+      categoryMapping[category].forEach((args) => {
+        terminalOutput += `var ${args.varName} = process.env.${args.envName}\n`;
       });
     }
-    terminalOutput += '\n';
   });
 
   context.print.info(terminalOutput);
