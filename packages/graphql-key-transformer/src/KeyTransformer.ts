@@ -71,6 +71,7 @@ export default class FunctionTransformer extends Transformer {
      */
     private updateSchema = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         this.updateQueryFields(definition, directive, ctx);
+        this.updateInputObjects(definition, directive, ctx);
     }
 
     /**
@@ -133,7 +134,6 @@ export default class FunctionTransformer extends Transformer {
         this.updateGetField(definition, directive, ctx);
         this.updateListField(definition, directive, ctx);
         this.ensureQueryField(definition, directive, ctx);
-        this.updateInputObjects(definition, directive, ctx);
     }
 
     // If the get field exists, update its arguments with primary key information.
