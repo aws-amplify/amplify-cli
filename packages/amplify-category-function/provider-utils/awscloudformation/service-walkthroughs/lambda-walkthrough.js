@@ -85,11 +85,16 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     allDefaultValues.dependsOn = dependsOn;
   }
 
-
-  if (await context.amplify.confirmPrompt.run('Do you want to access resources created in your Amplify Project from your Lambda function?')) {
-    await askExecRolePermissionsQuestions(context, allDefaultValues, parameters);
+  let topLevelComment;
+  if (await context.amplify.confirmPrompt.run('Do you want to access other resources created in this project from your Lambda function?')) {
+    ({ topLevelComment } = await askExecRolePermissionsQuestions(
+      context,
+      allDefaultValues,
+      parameters,
+    ));
   }
   allDefaultValues.parameters = parameters;
+  allDefaultValues.topLevelComment = topLevelComment;
   ({ dependsOn } = allDefaultValues);
   return { answers: allDefaultValues, dependsOn };
 }
@@ -138,8 +143,12 @@ async function updateWalkthrough(context) {
     currentDefaults.categoryPermissionMap = currentParameters.permissions;
   }
 
-  if (await context.amplify.confirmPrompt.run('Do you want to update permissions for access resources created in your Amplify Project from your Lambda function?')) {
-    await askExecRolePermissionsQuestions(context, answers, newParams, currentDefaults);
+  if (await context.amplify.confirmPrompt.run('Do you want to update permissions granted to this Lambda function to perform on other resources in your project?')) {
+    const { topLevelComment } = await askExecRolePermissionsQuestions(
+      context,
+      answers, newParams,
+      currentDefaults,
+    );
 
     const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
@@ -154,7 +163,7 @@ async function updateWalkthrough(context) {
     });
     cfnContent.Parameters = dependsOnParams;
 
-    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' } });
+    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, Region: { Ref: 'AWS::Region' } });
 
     if (!cfnContent.Resources.AmplifyResourcesPolicy) {
       cfnContent.Resources.AmplifyResourcesPolicy = {
@@ -185,6 +194,27 @@ async function updateWalkthrough(context) {
     }
     cfnContent.Resources.LambdaFunction.Properties.Environment.Variables =
       answers.resourcePropertiesJSON;
+    // Update top level comment in app.js or index.js file
+
+    const updateTopLevelComment = (filePath) => {
+      const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s.]+Amplify Params - DO NOT EDIT \*\//;
+      let fileContents = fs.readFileSync(filePath).toString();
+      const commentMatches = fileContents.match(commentRegex);
+      if (!commentMatches || commentMatches.length === 0) {
+        fileContents = topLevelComment + fileContents;
+      } else {
+        fileContents = fileContents.replace(commentRegex, topLevelComment);
+      }
+      fs.writeFileSync(filePath, fileContents);
+    };
+    const appJSFilePath = path.join(resourceDirPath, 'src', 'app.js');
+    const indexJSFilePath = path.join(resourceDirPath, 'src', 'index.js');
+    if (fs.existsSync(appJSFilePath)) {
+      updateTopLevelComment(appJSFilePath);
+    } else if (fs.existsSync(indexJSFilePath)) {
+      updateTopLevelComment(indexJSFilePath);
+    }
+
     fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
     answers.parameters = newParams;
     ({ dependsOn } = answers);
@@ -251,7 +281,8 @@ async function askExecRolePermissionsQuestions(
             return true;
           },
           default: () => {
-            if (currentDefaults && currentDefaults.categoryPermissionMap[category]) {
+            if (currentDefaults && currentDefaults.categoryPermissionMap &&
+             currentDefaults.categoryPermissionMap[category]) {
               return Object.keys(currentDefaults.categoryPermissionMap[category]);
             }
           },
@@ -329,17 +360,26 @@ async function askExecRolePermissionsQuestions(
   allDefaultValues.resourcePropertiesJSON = resourcePropertiesJSON;
 
   context.print.info('');
-  context.print.info('You can access the following resource attributes as variables from your Lambda function');
+  let topLevelComment = '/* Amplify Params - DO NOT EDIT\n';
+  let terminalOutput = 'You can access the following resource attributes as environment variables from your Lambda function\n';
+  terminalOutput += 'Current Environment\n------------\nprocess.env.ENV\n';
+  terminalOutput += 'Region\n------------\nprocess.env.Region\n';
+
   Object.keys(categoryMapping).forEach((category) => {
     if (categoryMapping[category].length > 0) {
-      context.print.info(category);
-      context.print.info('------------');
+      terminalOutput += `${category}\n`;
+      terminalOutput += '------------\n';
       categoryMapping[category].forEach((resourceAttribute) => {
-        context.print.info(`process.env.${resourceAttribute}`);
+        terminalOutput += `process.env.${resourceAttribute}\n`;
       });
     }
-    context.print.info('');
+    terminalOutput += '\n';
   });
+
+  context.print.info(terminalOutput);
+  topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */\n`;
+
+  return { topLevelComment };
 }
 
 async function getTableParameters(context, dynamoAnswers) {

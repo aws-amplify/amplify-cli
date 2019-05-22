@@ -462,23 +462,22 @@ function migrate(context, projectPath, resourceName) {
 
 function getIAMPolicies(resourceName, crudOptions) {
   let policy = {};
-  let actions = new Set();
+  const actions = [];
 
   crudOptions.forEach((crudOption) => {
     switch (crudOption) {
-      case 'create': actions.add('dynamodb:PutItem');
+      case 'create': actions.push('dynamodb:Put*', 'dynamodb:Create*', 'dynamodb:BatchWriteItem');
         break;
-      case 'update': actions.add('dynamodb:UpdateItem');
+      case 'update': actions.push('dynamodb:Update*', 'dynamodb:RestoreTable*');
         break;
-      case 'read': actions.add('dynamodb:GetItem'); actions.add('dynamodb:BatchGetItem');
+      case 'read': actions.push('dynamodb:Get*', 'dynamodb:BatchGetItem', 'dynamodb:List*', 'dynamodb:Describe*', 'dynamodb:Scan', 'dynamodb:Query');
         break;
-      case 'delete': actions.add('dynamodb:DeleteItem');
+      case 'delete': actions.push('dynamodb:Delete*');
         break;
       default: console.log(`${crudOption} not supported`);
     }
   });
 
-  actions = Array.from(actions);
   policy = {
     Effect: 'Allow',
     Action: actions,

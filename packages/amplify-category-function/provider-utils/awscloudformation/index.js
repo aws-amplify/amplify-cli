@@ -30,7 +30,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       copyJobs.push(...[
         {
           dir: pluginDir,
-          template: 'function-template-dir/index.js',
+          template: 'function-template-dir/index.js.ejs',
           target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
         },
         {
