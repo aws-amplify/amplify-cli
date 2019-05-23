@@ -152,8 +152,8 @@ export default class FunctionTransformer extends Transformer {
             })
             getField = { ...getField, arguments: getArguments };
             query = { ...query, fields: query.fields.map(field => field.name.value === getField.name.value ? getField : field)}
+            ctx.putType(query);
         }
-        ctx.putType(query);
     }
 
     // If the list field exists, update its arguments with primary key information.
@@ -162,7 +162,8 @@ export default class FunctionTransformer extends Transformer {
         const listResolverResource = ctx.getResource(listResourceID);
         if (listResolverResource && this.isPrimaryKey(directive)) {
             // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
-            const listField: FieldDefinitionNode = ctx.getQuery().fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
+            let query = ctx.getQuery();
+            let listField: FieldDefinitionNode = query.fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
             let listArguments = listField.arguments;
             const args: KeyArguments = getDirectiveArguments(directive);
             for (let i = args.fields.length-1; i >= 0; i--) {
@@ -175,7 +176,9 @@ export default class FunctionTransformer extends Transformer {
                     makeInputValueDefinition(keyAttributeName, makeNamedType(getBaseType(keyField.type)));
                 listArguments = [keyArgument, ...listArguments];
             }
-            listField.arguments = listArguments;
+            listField = { ...listField, arguments: listArguments };
+            query = { ...query, fields: query.fields.map(field => field.name.value === listField.name.value ? listField : field)}
+            ctx.putType(query);
         }
     }
 
@@ -206,15 +209,15 @@ export default class FunctionTransformer extends Transformer {
     private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         if (this.isPrimaryKey(directive)) {
             const directiveArgs: KeyArguments = getDirectiveArguments(directive);            
-            const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value));
+            const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (createInput) {
                 ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
             }
-            const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value));
+            const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (updateInput) {
                 ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
             }
-            const deleteInput = ctx.getType(ModelResourceIDs.ModelDeleteInputObjectName(definition.name.value));
+            const deleteInput = ctx.getType(ModelResourceIDs.ModelDeleteInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (deleteInput) {
                 ctx.putType(replaceDeleteInput(definition, deleteInput, directiveArgs.fields));
             }
