@@ -10,10 +10,12 @@ import {
     attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition, 
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
-    makeField, makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
-    graphqlName, plurality, toUpper
+    makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey
 } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, InputObjectTypeDefinitionNode, TypeNode, Kind } from 'graphql';
+import { 
+    ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, 
+    InputObjectTypeDefinitionNode, TypeNode, Kind, InputValueDefinitionNode
+} from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
@@ -462,28 +464,28 @@ function getPrimaryKey(obj: ObjectTypeDefinitionNode): DirectiveNode | undefined
     }
 }
 
-function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string[]): FieldDefinitionNode[] {
+function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string[]): InputValueDefinitionNode[] {
     return keyFields.map(keyFieldName => {
         const keyField: FieldDefinitionNode = definition.fields.find(field => field.name.value === keyFieldName);
-        return makeField(keyFieldName, [], makeNonNullType(makeNamedType(getBaseType(keyField.type))));
+        return makeInputValueDefinition(keyFieldName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
     })
 }
 
 // Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
+function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]): InputObjectTypeDefinitionNode {
     return {
         ...input,
         fields: input.fields.reduce((acc, f) => {
             // If the field is a key, make it non-null.
             if (keyFields.find(k => k === f.name.value)) {
-                return [...acc, makeField(f.name.value, [], makeNonNullType(makeNamedType(getBaseType(f.type))))];
+                return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
             } else {
                 // If the field is not a key, use whatever the model type defines.
                 const existingField = definition.fields.find(field => field.name.value === f.name.value);
                 if (existingField && isNonNullType(existingField.type)) {
-                    return [...acc, makeField(f.name.value, [], makeNonNullType(makeNamedType(getBaseType(f.type))))];
+                    return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
                 } else if (existingField) {
-                    return [...acc, makeField(f.name.value, [], makeNamedType(getBaseType(f.type)))];
+                    return [...acc, makeInputValueDefinition(f.name.value, makeNamedType(getBaseType(f.type)))];
                 }
             }
             return acc;
@@ -492,15 +494,15 @@ function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputOb
 };
 
 // Key fields are non-nullable, non-key fields are not non-nullable.
-function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
+function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]): InputObjectTypeDefinitionNode {
     return {
         ...input,
         fields: input.fields.map(
             f => {
                 if (keyFields.find(k => k === f.name.value)) {
-                    return makeField(f.name.value, [], makeNonNullType(makeNamedType(getBaseType(f.type))));
+                    return makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))));
                 } else {
-                    return makeField(f.name.value, [], makeNamedType(getBaseType(f.type)));
+                    return makeInputValueDefinition(f.name.value, makeNamedType(getBaseType(f.type)));
                 }
             }
         )
@@ -508,7 +510,7 @@ function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputOb
 };
 
 // Key fields are non-nullable, non-key fields are not non-nullable.
-function replaceDeleteInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
+function replaceDeleteInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]): InputObjectTypeDefinitionNode {
     return {
         ...input,
         fields: primaryIdFields(definition, keyFields)
