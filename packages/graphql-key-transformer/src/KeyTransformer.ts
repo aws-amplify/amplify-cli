@@ -13,7 +13,7 @@ import {
     makeField, makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
     graphqlName, plurality, toUpper
 } from 'graphql-transformer-common';
-import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, InputObjectDefinitionNode, TypeNode, Kind } from 'graphql';
+import { ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, InputObjectTypeDefinitionNode, TypeNode, Kind } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
@@ -143,15 +143,17 @@ export default class FunctionTransformer extends Transformer {
         const getResolverResource = ctx.getResource(getResourceID);
         if (getResolverResource && this.isPrimaryKey(directive)) {
             // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
-            const getField: FieldDefinitionNode = query.fields.find(field => field.name.value === getResolverResource.Properties.FieldName) as FieldDefinitionNode;
+            let getField: FieldDefinitionNode = query.fields.find(field => field.name.value === getResolverResource.Properties.FieldName) as FieldDefinitionNode;
             const args: KeyArguments = getDirectiveArguments(directive);
             const getArguments = args.fields.map(keyAttributeName => {
                 const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
                 const keyArgument = makeInputValueDefinition(keyAttributeName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
                 return keyArgument;
             })
-            getField.arguments = getArguments;
+            getField = { ...getField, arguments: getArguments };
+            query = { ...query, fields: query.fields.map(field => field.name.value === getField.name.value ? getField : field)}
         }
+        ctx.putType(query);
     }
 
     // If the list field exists, update its arguments with primary key information.
@@ -161,7 +163,7 @@ export default class FunctionTransformer extends Transformer {
         if (listResolverResource && this.isPrimaryKey(directive)) {
             // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
             const listField: FieldDefinitionNode = ctx.getQuery().fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
-            const listArguments = listField.arguments;
+            let listArguments = listField.arguments;
             const args: KeyArguments = getDirectiveArguments(directive);
             for (let i = args.fields.length-1; i >= 0; i--) {
                 const keyAttributeName = args.fields[i];
@@ -171,7 +173,7 @@ export default class FunctionTransformer extends Transformer {
                 const keyArgument = i === args.fields.length - 1 && args.fields.length !== 1 ?
                     makeInputValueDefinition(keyAttributeName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(keyField.type)))) :
                     makeInputValueDefinition(keyAttributeName, makeNamedType(getBaseType(keyField.type)));
-                listArguments.unshift(keyArgument)
+                listArguments = [keyArgument, ...listArguments];
             }
             listField.arguments = listArguments;
         }
@@ -465,7 +467,7 @@ function primaryIdFields(definition: ObjectTypeDefinitionNode, keyFields: string
 }
 
 // Key fields are non-nullable, non-key fields follow what their @model declaration makes.
-function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputObjectDefinitionNode, keyFields: string[]) {
+function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
     return {
         ...input,
         fields: input.fields.reduce((acc, f) => {
@@ -487,7 +489,7 @@ function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputOb
 };
 
 // Key fields are non-nullable, non-key fields are not non-nullable.
-function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputObjectDefinitionNode, keyFields: string[]) {
+function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
     return {
         ...input,
         fields: input.fields.map(
@@ -503,7 +505,7 @@ function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputOb
 };
 
 // Key fields are non-nullable, non-key fields are not non-nullable.
-function replaceDeleteInput(definition: ObjectTypeDefinitionNode, input: InputObjectDefinitionNode, keyFields: string[]) {
+function replaceDeleteInput(definition: ObjectTypeDefinitionNode, input: InputObjectTypeDefinitionNode, keyFields: string[]) {
     return {
         ...input,
         fields: primaryIdFields(definition, keyFields)
