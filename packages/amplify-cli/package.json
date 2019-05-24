@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "1.4.6",
-    "amplify-category-api": "1.5.9",
+    "amplify-category-api": "1.5.10",
     "amplify-category-auth": "1.5.6",
     "amplify-category-function": "1.4.6",
     "amplify-category-hosting": "1.1.2",
