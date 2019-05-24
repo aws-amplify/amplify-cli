@@ -128,6 +128,11 @@ test('Test custom root query, mutation, and subscriptions.', () => {
 
         authedField: String
             @aws_auth(cognito_groups: ["Bloggers", "Readers"])
+            @aws_api_key
+            @aws_iam
+            @aws_oidc
+            @aws_cognito_user_pools
+            @aws_cognito_user_pools(cognito_groups: ["Bloggers", "Readers"])
     }
     type Mutation2 {
         additionalMutationField: String
@@ -154,8 +159,23 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     const queryType = getObjectType(parsed, 'Query2');
     expectFields(queryType, ['getPost', 'listPosts', 'additionalQueryField', 'authedField'])
     const authedField = queryType.fields.find(f => f.name.value === 'authedField')
-    expect(authedField.directives.length).toEqual(1)
+    expect(authedField.directives.length).toEqual(6)
     expect(authedField.directives[0].name.value).toEqual('aws_auth')
+    expect(authedField.directives[0].arguments.length).toEqual(1)
+    expect(authedField.directives[0].arguments[0].name.value).toEqual("cognito_groups")
+    expect(authedField.directives[0].arguments[0].value.values.length).toEqual(2)
+    expect(authedField.directives[0].arguments[0].value.values[0].value).toEqual("Bloggers")
+    expect(authedField.directives[0].arguments[0].value.values[1].value).toEqual("Readers")
+    expect(authedField.directives[1].name.value).toEqual('aws_api_key')
+    expect(authedField.directives[2].name.value).toEqual('aws_iam')
+    expect(authedField.directives[3].name.value).toEqual('aws_oidc')
+    expect(authedField.directives[4].name.value).toEqual('aws_cognito_user_pools')
+    expect(authedField.directives[5].name.value).toEqual('aws_cognito_user_pools')
+    expect(authedField.directives[5].arguments.length).toEqual(1)
+    expect(authedField.directives[5].arguments[0].name.value).toEqual("cognito_groups")
+    expect(authedField.directives[5].arguments[0].value.values.length).toEqual(2)
+    expect(authedField.directives[5].arguments[0].value.values[0].value).toEqual("Bloggers")
+    expect(authedField.directives[5].arguments[0].value.values[1].value).toEqual("Readers")
     const mutationType = getObjectType(parsed, 'Mutation2');
     expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
     const subscriptionType = getObjectType(parsed, 'Subscription2');

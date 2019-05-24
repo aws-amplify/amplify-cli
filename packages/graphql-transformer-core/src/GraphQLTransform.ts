@@ -206,7 +206,8 @@ export default class GraphQLTransform {
         const context = new TransformerContext(schema)
         const validDirectiveNameMap = this.transformers.reduce(
             (acc: any, t: Transformer) => ({ ...acc, [t.directive.name.value]: true }),
-            { aws_subscribe: true, aws_auth: true, deprecated: true }
+            { aws_subscribe: true, aws_auth: true, aws_api_key: true, aws_iam: true, 
+                aws_oidc: true, aws_cognito_user_pools: true, deprecated: true }
         )
         let allModelDefinitions = [...context.inputDocument.definitions]
         for (const transformer of this.transformers) {
