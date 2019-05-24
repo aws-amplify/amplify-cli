@@ -33,15 +33,15 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## [End] Throw if unauthorized **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.time.nowISO8601()))
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.time.nowISO8601()))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
-  \\"key\\": {
-      \\"id\\":     $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": {
       \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -132,19 +132,42 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
-  $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-  $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
 #else
-  #set( $condition = {
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
   },
   \\"expressionValues\\": {}
 } )
+  #end
 #end
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.time.nowISO8601()))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
@@ -157,7 +180,15 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, [\\"id\\"]).entrySet() )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
   #if( $util.isNull($entry.value) )
     #set( $discard = $expRemove.add(\\"#$entry.key\\") )
     $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
@@ -206,11 +237,11 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": {
-      \\"id\\": {
-          \\"S\\": \\"$context.args.input.id\\"
-    }
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
   \\"update\\": $util.toJson($update),
   \\"condition\\": $util.toJson($condition)
 }"
@@ -295,15 +326,37 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 
 #if( $authCondition )
   #set( $condition = $authCondition )
-  $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-  $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
 #else
-  #set( $condition = {
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
   }
 } )
+  #end
 #end
 #if( $versionedCondition )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
@@ -315,9 +368,9 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"DeleteItem\\",
-  \\"key\\": {
-      \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
   \\"condition\\": $util.toJson($condition)
 }"
 `;
@@ -355,15 +408,15 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## [End] Throw if unauthorized **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
-$util.qr($context.args.input.put(\\"createdAt\\", $util.time.nowISO8601()))
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.time.nowISO8601()))
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"PutItem\\",
-  \\"key\\": {
-      \\"id\\":     $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
   \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
   \\"condition\\": {
       \\"expression\\": \\"attribute_not_exists(#id)\\",
@@ -454,19 +507,42 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
-  $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-  $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
 #else
-  #set( $condition = {
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
   },
   \\"expressionValues\\": {}
 } )
+  #end
 #end
 ## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.time.nowISO8601()))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
@@ -479,7 +555,15 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 #set( $expSet = {} )
 #set( $expAdd = {} )
 #set( $expRemove = [] )
-#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, [\\"id\\"]).entrySet() )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
   #if( $util.isNull($entry.value) )
     #set( $discard = $expRemove.add(\\"#$entry.key\\") )
     $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
@@ -528,11 +612,11 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"UpdateItem\\",
-  \\"key\\": {
-      \\"id\\": {
-          \\"S\\": \\"$context.args.input.id\\"
-    }
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
   \\"update\\": $util.toJson($update),
   \\"condition\\": $util.toJson($condition)
 }"
@@ -617,15 +701,37 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 
 #if( $authCondition )
   #set( $condition = $authCondition )
-  $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
-  $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
 #else
-  #set( $condition = {
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
   }
 } )
+  #end
 #end
 #if( $versionedCondition )
   $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
@@ -637,9 +743,9 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 {
   \\"version\\": \\"2017-02-28\\",
   \\"operation\\": \\"DeleteItem\\",
-  \\"key\\": {
-      \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
-  },
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
   \\"condition\\": $util.toJson($condition)
 }"
 `;
