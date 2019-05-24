@@ -1,7 +1,8 @@
-import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode } from 'graphql';
-import { makeListType, makeNamedType, getBaseType } from './definition';
+import { InputObjectTypeDefinitionNode, InputValueDefinitionNode, Kind, TypeNode, FieldDefinitionNode } from 'graphql';
+import { makeListType, makeNamedType, getBaseType, makeInputValueDefinition, DEFAULT_SCALARS, makeInputObjectDefinition } from './definition';
 import { ModelResourceIDs } from './ModelResourceIDs';
-import { compoundExpression, block, iff, raw, set, ref, qref, obj, str, printBlock, list, forEach, Expression, newline, ReferenceNode } from 'graphql-mapping-template';
+import { compoundExpression, block, iff, raw, set, ref, qref, obj, str, printBlock, list, forEach, Expression, newline, ReferenceNode, ifElse } from 'graphql-mapping-template';
+import { toCamelCase } from './util';
 
 // Key conditions
 const STRING_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between', 'beginsWith']
@@ -23,7 +24,7 @@ function getScalarKeyConditions(type: string): string[] {
             throw 'Valid types are String, ID, Int, Float, Boolean'
     }
 }
-export function makeModelStringKeyConditionInputObject(type: string): InputObjectTypeDefinitionNode {
+export function makeModelScalarKeyConditionInputObject(type: string): InputObjectTypeDefinitionNode {
     const name = ModelResourceIDs.ModelKeyConditionInputTypeName(type)
     const conditions = getScalarKeyConditions(type)
     const fields: InputValueDefinitionNode[] = conditions
@@ -33,21 +34,13 @@ export function makeModelStringKeyConditionInputObject(type: string): InputObjec
             type: condition === 'between' ? makeListType(makeNamedType(type)) : makeNamedType(type),
             directives: []
         }))
-    return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-            kind: 'Name',
-            value: name
-        },
-        fields,
-        directives: []
-    }
+    return makeInputObjectDefinition(name, fields);
 }
 
-const STRING_KEY_CONDITION = makeModelStringKeyConditionInputObject('String');
-const ID_KEY_CONDITION = makeModelStringKeyConditionInputObject('ID');
-const INT_KEY_CONDITION = makeModelStringKeyConditionInputObject('Int');
-const FLOAT_KEY_CONDITION = makeModelStringKeyConditionInputObject('Float');
+const STRING_KEY_CONDITION = makeModelScalarKeyConditionInputObject('String');
+const ID_KEY_CONDITION = makeModelScalarKeyConditionInputObject('ID');
+const INT_KEY_CONDITION = makeModelScalarKeyConditionInputObject('Int');
+const FLOAT_KEY_CONDITION = makeModelScalarKeyConditionInputObject('Float');
 const SCALAR_KEY_CONDITIONS = [STRING_KEY_CONDITION, ID_KEY_CONDITION, INT_KEY_CONDITION, FLOAT_KEY_CONDITION];
 export function makeScalarKeyConditionInputs(): InputObjectTypeDefinitionNode[] {
     return SCALAR_KEY_CONDITIONS;
@@ -59,6 +52,52 @@ export function makeScalarKeyConditionForType(type: TypeNode): InputObjectTypeDe
             return key;
         }
     }
+}
+
+/**
+ * Given a list of key fields, create a composite key input type for the sort key condition.
+ * Given, 
+ * type User @model @key(fields: ["a", "b", "c"]) { a: String, b: String, c: String }
+ * a composite key will be formed over "a" and "b". This will output:
+ * input UserPrimaryCompositeKeyConditionInput {
+ *   beginsWith: UserPrimaryCompositeKeyInput,
+ *   between: [UserPrimaryCompositeKeyInput],
+ *   eq, le, lt, gt, ge: UserPrimaryCompositeKeyInput
+ * }
+ * input UserPrimaryCompositeKeyInput {
+ *   b: String
+ *   c: String
+ * }
+ */
+export function makeCompositeKeyConditionInputForKey(modelName: string, keyName: string, fields: FieldDefinitionNode[]): InputObjectTypeDefinitionNode {
+    const name = ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(modelName, keyName)
+    const conditions = STRING_KEY_CONDITIONS;
+    const inputValues: InputValueDefinitionNode[] = conditions
+        .map((condition: string) => {
+            // Between takes a list of comosite key nodes.
+            const typeNode = condition === 'between' ?
+                makeListType(makeNamedType(ModelResourceIDs.ModelCompositeKeyInputTypeName(modelName, keyName))) :
+                makeNamedType(ModelResourceIDs.ModelCompositeKeyInputTypeName(modelName, keyName));
+            return makeInputValueDefinition(condition, typeNode);
+        });
+    return makeInputObjectDefinition(name, inputValues);
+}
+
+export function makeCompositeKeyInputForKey(modelName: string, keyName: string, fields: FieldDefinitionNode[]): InputObjectTypeDefinitionNode {
+    const inputValues = fields.map(
+        (field: FieldDefinitionNode, idx) => {
+            const baseTypeName = getBaseType(field.type);
+            const nameOverride = DEFAULT_SCALARS[baseTypeName]
+            let typeNode = null;
+            if (idx === fields.length -1 && nameOverride) {
+                typeNode = makeNamedType(nameOverride)
+            } else {
+                typeNode = makeNamedType(baseTypeName)
+            }
+            return makeInputValueDefinition(field.name.value, typeNode);
+        });
+    const inputName = ModelResourceIDs.ModelCompositeKeyInputTypeName(modelName, keyName);
+    return makeInputObjectDefinition(inputName, inputValues);
 }
 
 /**
@@ -85,10 +124,6 @@ export function  applyKeyConditionExpression(argName: string, attributeType: 'S'
        iff(
            raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.between)`),
            compoundExpression([
-               iff(
-                   raw(`$ctx.args.${argName}.between.size() != 2`),
-                   raw(`$util.error("Argument ${argName}.between expects exactly 2 elements.")`)
-               ),
                set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`)),
                qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
                // TODO: Handle N & B.
@@ -144,6 +179,158 @@ export function  applyKeyConditionExpression(argName: string, attributeType: 'S'
    ]);
 }
 
+/**
+* Key conditions materialize as instances of ModelXKeyConditionInput passed via $ctx.args.
+* If the arguments with the given sortKey name exists, create a DynamoDB expression that
+* implements its logic. Possible operators: eq, le, lt, ge, gt, beginsWith, and between.
+* @param argName The name of the argument containing the sort key condition object.
+* @param attributeType The type of the DynamoDB attribute in the table.
+* @param queryExprReference The name of the variable containing the query expression in the template.
+*/
+export function  applyCompositeKeyConditionExpression(keyNames: string[], queryExprReference: string = 'query', sortKeyArgumentName: string, sortKeyAttributeName: string) {
+    const accumulatorVar1 = 'sortKeyValue';
+    const accumulatorVar2 = 'sortKeyValue2';
+    const sep = ModelResourceIDs.ModelCompositeKeySeparator();
+    return block("Applying Key Condition", [
+        set(ref(accumulatorVar1), str("")),
+        set(ref(accumulatorVar2), str("")),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.beginsWith)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.beginsWith.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.beginsWith.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.beginsWith.${keyName}`)),
+                        true
+                        )
+                    ),
+                set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND begins_with(#sortKey, :sortKey)"`)),
+                qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+                // TODO: Handle N & B.
+                qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.between)`),
+           compoundExpression([
+                iff(
+                    raw(`$ctx.args.${sortKeyArgumentName}.between.size() != 2`),
+                    raw(`$util.error("Argument ${sortKeyArgumentName}.between expects exactly 2 elements.")`)
+                ),
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.between[0].${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.between[0].${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.between[0].${keyName}`)),
+                        true
+                    )),
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.between[1].${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar2), str(`$ctx.args.${sortKeyArgumentName}.between[1].${keyName}`)) :
+                            set(ref(accumulatorVar2), str(`$${accumulatorVar2}${sep}$ctx.args.${sortKeyArgumentName}.between[1].${keyName}`)),
+                        true
+                    )),
+                set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`)),
+                qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+                // TODO: Handle N & B.
+                qref(`$${queryExprReference}.expressionValues.put(":sortKey0", { "S": "$${accumulatorVar1}" })`),
+                qref(`$${queryExprReference}.expressionValues.put(":sortKey1", { "S": "$${accumulatorVar2}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.eq)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.eq.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.eq.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.eq.${keyName}`)),
+                        true
+                    )),
+               set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey = :sortKey"`)),
+               qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+               // TODO: Handle N & B.
+               qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.lt)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.lt.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.lt.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.lt.${keyName}`)),
+                        true
+                    )),
+               set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey < :sortKey"`)),
+               qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+               // TODO: Handle N & B.
+               qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.le)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.le.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.le.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.le.${keyName}`)),
+                        true
+                    )),
+               set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey <= :sortKey"`)),
+               qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+               // TODO: Handle N & B.
+               qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.gt)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.gt.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.gt.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.gt.${keyName}`)),
+                            true
+                    )),
+               set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey > :sortKey"`)),
+               qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+               // TODO: Handle N & B.
+               qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       iff(
+           raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.ge)`),
+           compoundExpression([
+                ...keyNames.map(
+                    (keyName, idx) => iff(
+                        raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}.ge.${keyName})`),
+                        idx === 0 ?
+                            set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.ge.${keyName}`)) :
+                            set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.ge.${keyName}`)),
+                        true
+                    )),
+               set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey >= :sortKey"`)),
+               qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
+               // TODO: Handle N & B.
+               qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`)
+           ])
+       ),
+       newline()
+   ]);
+}
+
 
 /**
 * Key conditions materialize as instances of ModelXKeyConditionInput passed via $ctx.args.
@@ -164,7 +351,7 @@ export function  applyKeyExpressionForCompositeKey(keys: string[], attributeType
         const sortKeys = keys.slice(1);
         const sortKeyTypes = attributeTypes.slice(1);
         return compoundExpression([
-            validateKeyArguments(keys),
+            validateCompositeKeyArguments(keys),
             setupHashKeyExpression(hashKeyName, hashKeyAttributeType, queryExprReference),
             applyCompositeSortKey(sortKeys, sortKeyTypes, queryExprReference)
         ]);
@@ -204,50 +391,12 @@ function applyCompositeSortKey(sortKeys: string[], sortKeyTypes: ('S'|'N'|'B')[]
     if (sortKeys.length === 0) {
         return newline();
     }
-    // const sortKeyValue = sortKeys.map(key => `$ctx.args.${key}`).join('#')
-    const sortKeyValueVariableName = 'sortKeyValue';
-    const exprs: Expression[] = [
-        set(ref(sortKeyValueVariableName), str(''))
-    ];
-    const sortKeyAttributeName = sortKeys.join('#');
-    for (let index = 0; index < sortKeys.length; index++) {
-        const key = sortKeys[index];
-        const keyType = sortKeyTypes[index];
-        if (index === sortKeys.length - 1) {
-            // If this is the last element in the sort key list then handle the full KeyCondition.
-            exprs.push(applyKeyConditionExpression(key, keyType, queryExprReference, sortKeyAttributeName, sortKeyValueVariableName));
-            // Handle the case where the last element (that contains the DynamoDB operation information) is left undefined.
-            // listX and queryX where the first n-1 values are provided should always be handled with a begins_with.
-            exprs.push(
-                iff(
-                    raw(`$util.isNull($ctx.args.${key}) && $sortKeyValue.length() > 0`),
-                    compoundExpression([
-                        set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND begins_with(#sortKey, :sortKey)"`)),
-                        qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
-                        // TODO: Handle N & B.
-                        qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${sortKeyValueVariableName}" })`)
-                    ])
-                )
-            );
-        } else if (index === 0) {
-            // If this is the first element then initialize the key value.
-            exprs.push(
-                iff(
-                    raw(`!$util.isNull($ctx.args.${key})`),
-                    set(ref('sortKeyValue'), str(`\${ctx.args.${key}}`))
-                )
-            )
-        } else {
-            // If this is an element in the middle of the list, concat the element.
-            exprs.push(
-                iff(
-                    raw(`!$util.isNull($ctx.args.${key})`),
-                    set(ref('sortKeyValue'), str(`\${sortKeyValue}#\${ctx.args.${key}}`))
-                )
-            )
-        }
-    }
-    return compoundExpression(exprs);
+    // E.g. status#date
+    const sortKeyAttributeName = ModelResourceIDs.ModelCompositeAttributeName(sortKeys);
+    const sortKeyArgumentName = ModelResourceIDs.ModelCompositeKeyArgumentName(sortKeys);
+    return compoundExpression([
+        applyCompositeKeyConditionExpression(sortKeys, queryExprReference, sortKeyArgumentName, sortKeyAttributeName)
+    ])
 }
 
 /**
@@ -272,6 +421,75 @@ function validateKeyArguments(keys: string[]) {
                 )
             )
         }
+        return block('Validate key arguments.', exprs);
+    } else {
+        return newline();
+    }
+}
+
+function invalidArgumentError(err: string) {
+    return raw(`$util.error("${err}", "InvalidArgumentsError")`);
+}
+
+function validateCompositeKeyArguments(keys: string[]) {
+    const sortKeys = keys.slice(1);
+    const hashKey = keys[0];
+    const sortKeyArgumentName = ModelResourceIDs.ModelCompositeKeyArgumentName(sortKeys);
+    const exprs: Expression[] = [
+        iff(
+            raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && $util.isNullOrBlank($ctx.args.${hashKey})`),
+            invalidArgumentError(`When providing argument '${sortKeyArgumentName}' you must also provide '${hashKey}'.`)
+        )
+    ];
+    if (sortKeys.length > 1) {
+        const loopOverKeys = (fn: (rKey: string, pKey: string) => Expression) => {
+            const exprs = [];
+            for (let index = sortKeys.length - 1; index > 0; index--) {
+                const rightKey = sortKeys[index];
+                const previousKey = sortKeys[index - 1];
+                exprs.push(fn(rightKey, previousKey))
+            }
+            return compoundExpression(exprs);
+        }
+        const validateBetween = () => compoundExpression([
+            iff(
+                raw(`$ctx.args.${sortKeyArgumentName}.between.size() != 2`),
+                invalidArgumentError(`Argument '${sortKeyArgumentName}.between' expects exactly two elements.`)
+            ),
+            loopOverKeys((rightKey: string, previousKey: string) => compoundExpression([
+                iff(
+                    raw(`!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${previousKey})`),
+                    invalidArgumentError(`When providing argument '${sortKeyArgumentName}.between[0].${rightKey}' you must also provide '${sortKeyArgumentName}.between[0].${previousKey}'.`)
+                ),
+                iff(
+                    raw(`!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${previousKey})`),
+                    invalidArgumentError(`When providing argument '${sortKeyArgumentName}.between[1].${rightKey}' you must also provide '${sortKeyArgumentName}.between[1].${previousKey}'.`)
+                )
+            ]))
+        ]);
+        const validateOtherOperation = () => loopOverKeys((rightKey: string, previousKey: string) => iff(
+            raw(`!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${previousKey})`),
+            invalidArgumentError(`When providing argument '${sortKeyArgumentName}.$operation.${rightKey}' you must also provide '${sortKeyArgumentName}.$operation.${previousKey}'.`)
+        ));
+        exprs.push(
+            iff(
+                raw(`!$util.isNull($ctx.args.${sortKeyArgumentName})`),
+                compoundExpression([
+                    set(ref('sortKeyArgumentOperations'), raw(`$ctx.args.${sortKeyArgumentName}.keySet()`)),
+                    iff(
+                        raw(`$sortKeyArgumentOperations.size() > 1`),
+                        invalidArgumentError(`Argument ${sortKeyArgumentName} must specify at most one key condition operation.`)
+                    ),
+                    forEach(ref('operation'), ref('sortKeyArgumentOperations'), [
+                        ifElse(
+                            raw(`$operation == "between"`),
+                            validateBetween(),
+                            validateOtherOperation()
+                        )
+                    ])
+                ])
+            )
+        )
         return block('Validate key arguments.', exprs);
     } else {
         return newline();

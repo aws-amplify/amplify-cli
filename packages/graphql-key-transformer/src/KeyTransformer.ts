@@ -10,7 +10,8 @@ import {
     attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition, 
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
-    makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey
+    makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
+    makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase
 } from 'graphql-transformer-common';
 import { 
     ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, 
@@ -113,7 +114,19 @@ export default class FunctionTransformer extends Transformer {
 
     private addKeyConditionInputs = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const args: KeyArguments = getDirectiveArguments(directive);
-        if (args.fields.length > 1) {
+        if (args.fields.length > 2) {
+            const compositeKeyFieldNames = args.fields.slice(1);
+            const compositeKeyFields = definition.fields.filter(field => Boolean(compositeKeyFieldNames.find(k => k === field.name.value)));
+            const keyName = args.name || 'Primary';
+            const keyConditionInput = makeCompositeKeyConditionInputForKey(definition.name.value, keyName, compositeKeyFields);
+            if (!ctx.getType(keyConditionInput.name.value)) {
+                ctx.addInput(keyConditionInput);
+            }
+            const compositeKeyInput = makeCompositeKeyInputForKey(definition.name.value, keyName, compositeKeyFields);
+            if (!ctx.getType(compositeKeyInput.name.value)) {
+                ctx.addInput(compositeKeyInput);
+            }
+        } else if (args.fields.length > 1) {
             const finalSortKeyFieldName = args.fields[args.fields.length-1];
             const finalSortKeyField = definition.fields.find(f => f.name.value === finalSortKeyFieldName);
             // All composite keys (length > 2) are casted to strings.
@@ -168,15 +181,14 @@ export default class FunctionTransformer extends Transformer {
             let listField: FieldDefinitionNode = query.fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
             let listArguments = listField.arguments;
             const args: KeyArguments = getDirectiveArguments(directive);
-            for (let i = args.fields.length-1; i >= 0; i--) {
-                const keyAttributeName = args.fields[i];
-                const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
-                // The last value passed via fields in @key(field: [...]) get a full KeyConditionInput
-                // while all others simply get an equality check of the same type as their base type.
-                const keyArgument = i === args.fields.length - 1 && args.fields.length !== 1 ?
-                    makeInputValueDefinition(keyAttributeName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(keyField.type)))) :
-                    makeInputValueDefinition(keyAttributeName, makeNamedType(getBaseType(keyField.type)));
-                listArguments = [keyArgument, ...listArguments];
+            if (args.fields.length > 2) {
+                listArguments = addCompositeSortKey(definition, args, listArguments);
+                listArguments = addHashField(definition, args, listArguments);
+            } else if (args.fields.length === 2) {
+                listArguments = addSimpleSortKey(definition, args, listArguments);
+                listArguments = addHashField(definition, args, listArguments);
+            } else {
+                listArguments = addHashField(definition, args, listArguments);
             }
             listField = { ...listField, arguments: listArguments };
             query = { ...query, fields: query.fields.map(field => field.name.value === listField.name.value ? listField : field)}
@@ -188,17 +200,18 @@ export default class FunctionTransformer extends Transformer {
     private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const args: KeyArguments = getDirectiveArguments(directive);
         if (args.queryField && !this.isPrimaryKey(directive)) {
-            let queryType = ctx.getQuery();
-            const queryArgs = args.fields.map((keyAttributeName, i) => {
-                const keyField = definition.fields.find(field => field.name.value === keyAttributeName);
-                // The last value passed via fields in @key(field: [...]) get a full KeyConditionInput
-                // while all others simply get an equality check of the same type as their base type.
-                const keyArgument = i === args.fields.length - 1 && args.fields.length !== 1 ?
-                    makeInputValueDefinition(keyAttributeName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(keyField.type)))) :
-                    makeInputValueDefinition(keyAttributeName, makeNonNullType(makeNamedType(getBaseType(keyField.type))));
-                return keyArgument;
-            })
-            const queryField = makeConnectionField(args.queryField, definition.name.value, queryArgs);
+            let queryType = ctx.getQuery();            
+            let queryArguments = [];
+            if (args.fields.length > 2) {
+                queryArguments = addCompositeSortKey(definition, args, queryArguments);
+                queryArguments = addHashField(definition, args, queryArguments);
+            } else if (args.fields.length === 2) {
+                queryArguments = addSimpleSortKey(definition, args, queryArguments);
+                queryArguments = addHashField(definition, args, queryArguments);
+            } else {
+                queryArguments = addHashField(definition, args, queryArguments);
+            }
+            const queryField = makeConnectionField(args.queryField, definition.name.value, queryArguments);
             queryType = {
                 ...queryType,
                 fields: [...queryType.fields, queryField]
@@ -562,7 +575,7 @@ function ensureCompositeKey(args: KeyArguments) {
 }
 
 function condenseRangeKey(fields: string[]) {
-    return fields.join('#');
+    return fields.join(ModelResourceIDs.ModelCompositeKeySeparator());
 }
 
 function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
@@ -628,4 +641,23 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
         set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
         applyKeyExpressionForCompositeKey(keys, keyTypes, ResourceConstants.SNIPPETS.ModelQueryExpression)
     ])
+}
+
+function addHashField(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+    let hashFieldName = args.fields[0];
+    const hashField = definition.fields.find(field => field.name.value === hashFieldName);
+    const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
+    return [hashKey, ...elems];
+}
+function addSimpleSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+    let sortKeyName = args.fields[1];
+    const sortField = definition.fields.find(field => field.name.value === sortKeyName);
+    const hashKey = makeInputValueDefinition(sortKeyName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(sortField.type))));
+    return [hashKey, ...elems];
+}
+function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+    let sortKeyNames = args.fields.slice(1);
+    const compositeSortKeyName = toCamelCase(sortKeyNames);
+    const hashKey = makeInputValueDefinition(compositeSortKeyName, makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, args.name || 'Primary')));
+    return [hashKey, ...elems];
 }

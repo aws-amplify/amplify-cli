@@ -1,4 +1,4 @@
-import { graphqlName, toUpper } from './util'
+import { graphqlName, toUpper, toCamelCase, simplifyName } from './util'
 import { DEFAULT_SCALARS } from './definition'
 
 export class ModelResourceIDs {
@@ -28,6 +28,21 @@ export class ModelResourceIDs {
             return `Model${nameOverride}KeyConditionInput`
         }
         return `Model${name}KeyConditionInput`
+    }
+    static ModelCompositeKeyArgumentName(keyFieldNames: string[]) {
+        return toCamelCase(keyFieldNames.map(n => graphqlName(n)));
+    }
+    static ModelCompositeKeySeparator() {
+        return '#';
+    }
+    static ModelCompositeAttributeName(keyFieldNames: string[]) {
+        return keyFieldNames.join(ModelResourceIDs.ModelCompositeKeySeparator());
+    }
+    static ModelCompositeKeyConditionInputTypeName(modelName: string, keyName: string): string {
+        return `Model${modelName}${keyName}CompositeKeyConditionInput`
+    }
+    static ModelCompositeKeyInputTypeName(modelName: string, keyName: string): string {
+        return `Model${modelName}${keyName}CompositeKeyInput`
     }
     static ModelFilterListInputTypeName(name: string): string {
         const nameOverride = DEFAULT_SCALARS[name]

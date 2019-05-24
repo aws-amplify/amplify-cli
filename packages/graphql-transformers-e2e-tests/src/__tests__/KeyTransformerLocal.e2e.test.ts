@@ -109,8 +109,60 @@ test('Test that a primary @key with 3 fields changes the hash and sort keys.', (
     expectArguments(getTestField, ['email', 'kind', 'date']);
 
     const listTestField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
-    expect(listTestField.arguments).toHaveLength(6);
-    expectArguments(listTestField, ['email', 'kind', 'date', 'filter', 'nextToken', 'limit']);
+    expect(listTestField.arguments).toHaveLength(5);
+    expectArguments(listTestField, ['email', 'kindDate', 'filter', 'nextToken', 'limit']);
+})
+
+test('Test that a secondary @key with 3 fields changes the hash and sort keys and adds a query fields correctly.', () => {
+    const validSchema = `
+    type Test @model @key(name: "GSI", fields: ["email", "kind", "date"], queryField: "listByEmailKindDate") {
+        email: String!
+        kind: Int!
+        date: AWSDateTime!
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new ModelTransformer(),
+            new KeyTransformer()
+        ]
+    });
+
+    const out = transformer.transform(validSchema);
+    console.log(out.schema);
+    let tableResource = out.stacks.Test.Resources.TestTable;
+    expect(tableResource).toBeDefined()
+    const hashKey = tableResource.Properties.KeySchema.find(o => o.KeyType === 'HASH');
+    const hashKeyAttr = tableResource.Properties.AttributeDefinitions.find(o => o.AttributeName === 'email');
+    expect(tableResource.Properties.AttributeDefinitions).toHaveLength(3);
+    expect(hashKey.AttributeName).toEqual('id');
+    expect(hashKeyAttr.AttributeType).toEqual('S');
+    // composite keys will always be strings.
+    
+    const gsi = tableResource.Properties.GlobalSecondaryIndexes.find(o => o.IndexName === 'GSI')
+    const gsiHashKey = gsi.KeySchema.find(o => o.KeyType === 'HASH');
+    const gsiHashKeyAttr = tableResource.Properties.AttributeDefinitions.find(o => o.AttributeName === 'email');
+    const gsiRangeKey = gsi.KeySchema.find(o => o.KeyType === 'RANGE');
+    const gsiRangeKeyAttr = tableResource.Properties.AttributeDefinitions.find(o => o.AttributeName === 'kind#date');
+    expect(gsiHashKey.AttributeName).toEqual('email');
+    expect(gsiRangeKey.AttributeName).toEqual('kind#date');
+    expect(gsiHashKeyAttr.AttributeType).toEqual('S');
+    expect(gsiRangeKeyAttr.AttributeType).toEqual('S');
+
+    const schema = parse(out.schema);
+    const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as ObjectTypeDefinitionNode;
+    const getTestField = queryType.fields.find(f => f.name && f.name.value === 'getTest') as FieldDefinitionNode;
+    expect(getTestField.arguments).toHaveLength(1);
+    expectArguments(getTestField, ['id']);
+
+    const queryField = queryType.fields.find(f => f.name && f.name.value === 'listByEmailKindDate') as FieldDefinitionNode;
+    expect(queryField.arguments).toHaveLength(5);
+    expectArguments(queryField, ['email', 'kindDate', 'filter', 'nextToken', 'limit']);
+
+    const listTestField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
+    expect(listTestField.arguments).toHaveLength(3);
+    expectArguments(listTestField, ['filter', 'nextToken', 'limit']);
 })
 
 test('Test that a secondary @key with a single field adds a GSI.', () => {

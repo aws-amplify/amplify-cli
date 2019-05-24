@@ -357,8 +357,8 @@ export class ResourceFactory {
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
-                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
-                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
                                 compoundExpression([
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
@@ -377,10 +377,10 @@ export class ResourceFactory {
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
                                     ifElse(
                                         raw('$velocityCount == 1'),
-                                        qref('$condition.put("expression", "attribute_exists(#$entry.key)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                        qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
-                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])
                             ]),
                             set(ref('condition'), obj({
@@ -590,8 +590,8 @@ export class ResourceFactory {
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
-                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
-                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                    qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
                                 compoundExpression([
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#id)")'),
@@ -609,10 +609,10 @@ export class ResourceFactory {
                                 forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
                                     ifElse(
                                         raw('$velocityCount == 1'),
-                                        qref('$condition.put("expression", "attribute_exists(#$entry.key)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#$entry.key)")'),
+                                        qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
-                                    qref('$condition.expressionNames.put("#$entry.key", "$entry.key")')
+                                    qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])
                             ]),
                             set(ref('condition'), obj({

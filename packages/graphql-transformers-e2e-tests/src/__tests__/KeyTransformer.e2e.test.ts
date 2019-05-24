@@ -88,7 +88,7 @@ afterAll(async () => {
     try {
         console.log('Deleting stack ' + STACK_NAME)
         await cf.deleteStack(STACK_NAME)
-        await cf.waitForStack(STACK_NAME)
+        // await cf.waitForStack(STACK_NAME)
         console.log('Successfully deleted stack ' + STACK_NAME)
     } catch (e) {
         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
@@ -170,30 +170,24 @@ test('Test listX with three part primary key.', async () => {
     expect(items.data.listItems.items.length).toBeGreaterThan(0);
     items = await listItem(hashKey);
     expect(items.data.listItems.items).toHaveLength(3)
-    items = await listItem(hashKey, 'PENDING');
+    items = await listItem(hashKey, { beginsWith: { status: 'PENDING' } });
     expect(items.data.listItems.items).toHaveLength(2)
-    items = await listItem(hashKey, 'IN_TRANSIT');
+    items = await listItem(hashKey, { beginsWith: { status: 'IN_TRANSIT' } });
     expect(items.data.listItems.items).toHaveLength(1)
-    items = await listItem(hashKey, 'PENDING', { beginsWith: '2018-09' });
+    items = await listItem(hashKey, { beginsWith: { status: 'PENDING', createdAt: '2018-09' } });
     expect(items.data.listItems.items).toHaveLength(1)
-    items = await listItem(hashKey, 'PENDING', { eq: '2018-09-01T00:01:01.000Z' });
+    items = await listItem(hashKey, { eq: { status: 'PENDING', createdAt: '2018-09-01T00:01:01.000Z' } });
     expect(items.data.listItems.items).toHaveLength(1)
-    items = await listItem(hashKey, 'PENDING', { between: ['2018-08-01', '2018-10-01'] });
+    items = await listItem(hashKey, { between: [{ status: 'PENDING', createdAt: '2018-08-01' }, { status: 'PENDING', createdAt: '2018-10-01' }] });
     expect(items.data.listItems.items).toHaveLength(1)
-    // items = await listItem(hashKey, 'PENDING', { gt: '2018-08-01' });
-    // expect(items.data.listItems.items).toHaveLength(1)
-    // items = await listItem(hashKey, 'PENDING', { ge: '2018-09-01' });
-    // expect(items.data.listItems.items).toHaveLength(1)
-    // items = await listItem(hashKey, 'PENDING', { lt: '2018-07-01' });
-    // expect(items.data.listItems.items).toHaveLength(1)
-    // items = await listItem(hashKey, 'PENDING', { le: '2018-06-01' });
-    // expect(items.data.listItems.items).toHaveLength(1)
-    // items = await listItem(hashKey, undefined, { le: '2018-09-01' });
-    // expect(items.data.listItems).toBeNull()
-    // expect(items.errors.length).toBeGreaterThan(0);
-    items = await listItem(undefined, 'PENDING', { le: '2018-09-01' });
-    expect(items.data.listItems).toBeNull()
-    expect(items.errors.length).toBeGreaterThan(0);
+    items = await listItem(hashKey, { gt: { status: 'PENDING', createdAt: '2018-08-1'}});
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, { ge: { status: 'PENDING', createdAt: '2018-09-01T00:01:01.000Z'}});
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, { lt: { status: 'IN_TRANSIT', createdAt: '2018-01-02'}});
+    expect(items.data.listItems.items).toHaveLength(1)
+    items = await listItem(hashKey, { le: { status: 'IN_TRANSIT', createdAt: '2018-01-01T00:01:01.000Z'}});
+    expect(items.data.listItems.items).toHaveLength(1)
 })
 
 test('Test query with three part secondary key.', async () => {
@@ -202,7 +196,7 @@ test('Test query with three part secondary key.', async () => {
     await createItem('order2', 'UNKNOWN', 'list2', '2018-06-01T00:01:01.000Z');
     await createItem('order3', 'UNKNOWN', 'item3', '2018-09-01T00:01:01.000Z');
     let items = await itemsByStatus(undefined);
-    expect(items.data.itemsByStatus).toBeNull();
+    expect(items.data).toBeNull();
     expect(items.errors.length).toBeGreaterThan(0);
     items = await itemsByStatus(hashKey);
     expect(items.data.itemsByStatus.items).toHaveLength(3)
@@ -217,11 +211,11 @@ test('Test query with three part secondary key.', async () => {
     items = await itemsByStatus(hashKey, { ge: '2018-09-01' });
     expect(items.data.itemsByStatus.items).toHaveLength(1)
     items = await itemsByStatus(hashKey, { lt: '2018-07-01' });
-    expect(items.data.itemsByStatus.items).toHaveLength(1)
+    expect(items.data.itemsByStatus.items).toHaveLength(2)
     items = await itemsByStatus(hashKey, { le: '2018-06-01' });
     expect(items.data.itemsByStatus.items).toHaveLength(1)
     items = await itemsByStatus(undefined, { le: '2018-09-01' });
-    expect(items.data.itemsByStatus).toBeNull()
+    expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
 })
 
@@ -280,6 +274,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
 }
 
 async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
+    const input = { status, orderId, name, createdAt };
     const result = await GRAPHQL_CLIENT.query(`mutation CreateItem($input: CreateItemInput!) {
         createItem(input: $input) {
             orderId
@@ -288,13 +283,15 @@ async function createItem(orderId: string, status: string, name: string, created
             name
         }
     }`, {
-        input: { status, orderId, name, createdAt }
+        input
     });
+    console.log(`Running create: ${JSON.stringify(input)}`);
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
 
 async function updateItem(orderId: string, status: string, createdAt: string, name: string) {
+    const input = { status, orderId, createdAt, name };
     const result = await GRAPHQL_CLIENT.query(`mutation UpdateItem($input: UpdateItemInput!) {
         updateItem(input: $input) {
             orderId
@@ -303,13 +300,15 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
             name
         }
     }`, {
-        input: { status, orderId, createdAt, name }
+        input
     });
+    console.log(`Running create: ${JSON.stringify(input)}`);
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
 
 async function deleteItem(orderId: string, status: string, createdAt: string) {
+    const input = { orderId, status, createdAt };
     const result = await GRAPHQL_CLIENT.query(`mutation DeleteItem($input: DeleteItemInput!) {
         deleteItem(input: $input) {
             orderId
@@ -318,14 +317,15 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
             name
         }
     }`, {
-        input: { orderId, status, createdAt }
+        input
     });
+    console.log(`Running delete: ${JSON.stringify(input)}`);
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
 
 async function getItem(orderId: string, status: string, createdAt: string) {
-    const result = await GRAPHQL_CLIENT.query(`query GetItem($orderId: ID!, status: Status!, $createdAt: String!) {
+    const result = await GRAPHQL_CLIENT.query(`query GetItem($orderId: ID!, $status: Status!, $createdAt: AWSDateTime!) {
         getItem(orderId: $orderId, status: $status, createdAt: $createdAt) {
             orderId
             status
@@ -347,9 +347,22 @@ interface StringKeyConditionInput {
     beginsWith?: string,
 }
 
-async function listItem(orderId?: string, status?: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
-    const result = await GRAPHQL_CLIENT.query(`query ListItems($orderId: ID, $status: Status, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
-        listItems(orderId: $orderId, status: $status, createdAt: $createdAt, limit: $limit, nextToken: $nextToken) {
+interface ItemCompositeKeyConditionInput {
+    eq?: ItemCompositeKeyInput,
+    gt?: ItemCompositeKeyInput,
+    ge?: ItemCompositeKeyInput,
+    lt?: ItemCompositeKeyInput,
+    le?: ItemCompositeKeyInput,
+    between?: ItemCompositeKeyInput[],
+    beginsWith?: ItemCompositeKeyInput,
+}
+interface ItemCompositeKeyInput {
+    status?: string,
+    createdAt?: string
+}
+async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyConditionInput, limit?: number, nextToken?: string) {
+    const result = await GRAPHQL_CLIENT.query(`query ListItems($orderId: ID, $statusCreatedAt: ModelItemPrimaryCompositeKeyConditionInput, $limit: Int, $nextToken: String) {
+        listItems(orderId: $orderId, statusCreatedAt: $statusCreatedAt, limit: $limit, nextToken: $nextToken) {
             items {
                 orderId
                 status
@@ -358,7 +371,7 @@ async function listItem(orderId?: string, status?: string, createdAt?: StringKey
             }
             nextToken
         }
-    }`, { orderId, status, createdAt, limit, nextToken });
+    }`, { orderId, statusCreatedAt, limit, nextToken });
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
