@@ -179,7 +179,7 @@ export default class FunctionTransformer extends Transformer {
             // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
             let query = ctx.getQuery();
             let listField: FieldDefinitionNode = query.fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
-            let listArguments = listField.arguments;
+            let listArguments: InputValueDefinitionNode[] = listField.arguments;
             const args: KeyArguments = getDirectiveArguments(directive);
             if (args.fields.length > 2) {
                 listArguments = addCompositeSortKey(definition, args, listArguments);
@@ -643,19 +643,19 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
     ])
 }
 
-function addHashField(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+function addHashField(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
     let hashFieldName = args.fields[0];
     const hashField = definition.fields.find(field => field.name.value === hashFieldName);
     const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
     return [hashKey, ...elems];
 }
-function addSimpleSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+function addSimpleSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
     let sortKeyName = args.fields[1];
     const sortField = definition.fields.find(field => field.name.value === sortKeyName);
     const hashKey = makeInputValueDefinition(sortKeyName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(sortField.type))));
     return [hashKey, ...elems];
 }
-function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]) {
+function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
     let sortKeyNames = args.fields.slice(1);
     const compositeSortKeyName = toCamelCase(sortKeyNames);
     const hashKey = makeInputValueDefinition(compositeSortKeyName, makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, args.name || 'Primary')));
