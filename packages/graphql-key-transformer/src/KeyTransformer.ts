@@ -179,7 +179,7 @@ export default class FunctionTransformer extends Transformer {
             // By default takes a single argument named 'id'. Replace it with the updated primary key structure.
             let query = ctx.getQuery();
             let listField: FieldDefinitionNode = query.fields.find(field => field.name.value === listResolverResource.Properties.FieldName) as FieldDefinitionNode;
-            let listArguments: InputValueDefinitionNode[] = listField.arguments;
+            let listArguments: InputValueDefinitionNode[] = [ ...listField.arguments ];
             const args: KeyArguments = getDirectiveArguments(directive);
             if (args.fields.length > 2) {
                 listArguments = addCompositeSortKey(definition, args, listArguments);
