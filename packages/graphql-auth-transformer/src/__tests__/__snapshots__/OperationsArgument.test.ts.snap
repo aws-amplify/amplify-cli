@@ -189,13 +189,18 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   #set( $keyFields = [\\"id\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entry.key\\") )
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
   #else
-    $util.qr($expSet.put(\\"#$entry.key\\", \\":$entry.key\\"))
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entry.key\\", $util.dynamodb.toDynamoDB($entry.value)))
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #set( $expression = \\"\\" )
@@ -564,13 +569,18 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
   #set( $keyFields = [\\"id\\"] )
 #end
 #foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
-  #if( $util.isNull($entry.value) )
-    #set( $discard = $expRemove.add(\\"#$entry.key\\") )
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
   #else
-    $util.qr($expSet.put(\\"#$entry.key\\", \\":$entry.key\\"))
-    $util.qr($expNames.put(\\"#$entry.key\\", \\"$entry.key\\"))
-    $util.qr($expValues.put(\\":$entry.key\\", $util.dynamodb.toDynamoDB($entry.value)))
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
   #end
 #end
 #set( $expression = \\"\\" )
