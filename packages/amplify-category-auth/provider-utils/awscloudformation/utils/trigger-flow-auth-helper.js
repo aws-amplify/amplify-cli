@@ -1,6 +1,82 @@
 const { getAllMaps } = require('../assets/string-maps');
 const { difference, pull } = require('lodash');
 
+/**
+ * @function createTrigger
+ * @param {string} category
+ * @param {string} parentCategory
+ * @param {string} parentResource
+ * @param {object} options
+ * @param {object} context The CLI Context
+ * @param {object} previousTriggers
+ * @returns {object} keys/value pairs of trigger: resource name
+ */
+const createTrigger = async (
+  category,
+  parentCategory,
+  parentResource,
+  options,
+  context,
+  previousTriggers,
+) => {
+  if (!options) {
+    return new Error('createTrigger function missing option parameter');
+  }
+  const {
+    triggerCapabilities,
+    resourceName,
+    deleteAll,
+    triggerEnvs,
+    parentStack,
+  } = options;
+  const targetDir = context.amplify.pathManager.getBackendDirPath();
+
+  // if deleteAll is true, we delete all resources and immediately return
+  if (deleteAll) {
+    await context.amplify.deleteAllTriggers(previousTriggers, resourceName, targetDir, context);
+    return {};
+  }
+
+  // handle missing parameters
+  if (!triggerCapabilities || !resourceName || !parentStack) {
+    return new Error('createTrigger function missing required parameters');
+  }
+
+  // creating array of trigger names
+  const keys = Object.keys(triggerCapabilities);
+
+  // creating array of previously configured trigger names
+  const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
+
+  // creating array of trigger values
+  const values = Object.values(triggerCapabilities);
+
+  let triggerKeyValues = {};
+
+  if (triggerCapabilities) {
+    for (let t = 0; t < keys.length; t += 1) {
+      const functionName = `${resourceName}${keys[t]}`;
+      const targetPath = `${targetDir}/function/${functionName}/src`;
+      if (previousTriggers && previousTriggers[keys[t]]) {
+        const updatedLambda = await context.amplify.updateTrigger(category, targetPath, context, keys[t], values[t], functionName);
+        triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
+      } else {
+        const newLambda = await context.amplify.addTrigger(keys[t], values[t], context, functionName, triggerEnvs, category, parentStack, targetPath);
+        triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
+      }
+    }
+  }
+
+  // loop through previous triggers to find those that are not in the current triggers, and delete
+  for (let p = 0; p < previousKeys.length; p += 1) {
+    if (!keys.includes(previousKeys[p])) {
+      const functionName = `${resourceName}${previousKeys[p]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await context.amplify.deleteTrigger(context, functionName, targetPath);
+    }
+  }
+  return triggerKeyValues;
+};
 
 /**
  * @function triggerFlow
@@ -66,7 +142,7 @@ async function handleTriggers(context, coreAnswers) {
     (!coreAnswers.triggerCapabilities || coreAnswers.triggerCapabilities.length < 1)
   ) {
     coreAnswers.dependsOn = [];
-    await context.amplify.createTrigger('amplify-category-auth', 'auth', resourceName, { deleteAll: true, resourceName }, context, JSON.parse(previousTriggers));
+    await createTrigger('amplify-category-auth', 'auth', resourceName, { deleteAll: true, resourceName }, context, JSON.parse(previousTriggers));
     return null;
   }
 
@@ -84,7 +160,7 @@ async function handleTriggers(context, coreAnswers) {
   };
 
   // create function resources and dependsOn block
-  const lambdas = await context.amplify.createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
+  const lambdas = await createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
   coreAnswers = Object.assign(coreAnswers, lambdas);
   coreAnswers.dependsOn = [];
   Object.values(lambdas).forEach((l) => {
@@ -94,6 +170,8 @@ async function handleTriggers(context, coreAnswers) {
       attributes: ['Arn', 'Name'],
     });
   });
+
+
   return parameters.triggerCapabilities;
 }
 

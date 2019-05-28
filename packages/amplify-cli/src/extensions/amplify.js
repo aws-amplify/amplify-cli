@@ -40,7 +40,10 @@ const { onCategoryOutputsChange } = require('./amplify-helpers/on-category-outpu
 const { getPluginInstance } = require('./amplify-helpers/get-plugin-instance');
 const {
   triggerFlow,
-  createTrigger,
+  addTrigger,
+  updateTrigger,
+  deleteTrigger,
+  deleteAllTriggers,
   parseTriggerSelections,
   getTriggerMetadata,
   getTriggerPermissions,
@@ -125,7 +128,10 @@ module.exports = (context) => {
     saveEnvResourceParameters,
     removeResourceParameters,
     triggerFlow,
-    createTrigger,
+    addTrigger,
+    updateTrigger,
+    deleteTrigger,
+    deleteAllTriggers,
     parseTriggerSelections,
     getTriggerMetadata,
     getTriggerPermissions,
