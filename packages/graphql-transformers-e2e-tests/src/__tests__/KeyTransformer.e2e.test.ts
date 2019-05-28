@@ -55,6 +55,15 @@ beforeAll(async () => {
     enum Status {
         DELIVERED IN_TRANSIT PENDING UNKNOWN
     }
+    type ShippingUpdate @model
+        @key(name: "ByOrderItemStatus", fields: ["orderId", "itemId", "status"], queryField: "shippingUpdates")
+    {
+        id: ID!
+        orderId: ID
+        itemId: ID
+        status: Status
+        name: String
+    }
     `
     try {
         await awsS3Client.createBucket({Bucket: BUCKET_NAME}).promise()
@@ -84,26 +93,26 @@ beforeAll(async () => {
     GRAPHQL_CLIENT = new GraphQLClient(endpoint, { 'x-api-key': apiKey })
 });
 
-afterAll(async () => {
-    try {
-        console.log('Deleting stack ' + STACK_NAME)
-        await cf.deleteStack(STACK_NAME)
-        // await cf.waitForStack(STACK_NAME)
-        console.log('Successfully deleted stack ' + STACK_NAME)
-    } catch (e) {
-        if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-            // The stack was deleted. This is good.
-            expect(true).toEqual(true)
-            console.log('Successfully deleted stack ' + STACK_NAME)
-        } else {
-            console.error(e)
-            expect(true).toEqual(false)
-        }
-    }
-    try {
-        await emptyBucket(BUCKET_NAME);
-    } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
-})
+// afterAll(async () => {
+//     try {
+//         console.log('Deleting stack ' + STACK_NAME)
+//         await cf.deleteStack(STACK_NAME)
+//         // await cf.waitForStack(STACK_NAME)
+//         console.log('Successfully deleted stack ' + STACK_NAME)
+//     } catch (e) {
+//         if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
+//             // The stack was deleted. This is good.
+//             expect(true).toEqual(true)
+//             console.log('Successfully deleted stack ' + STACK_NAME)
+//         } else {
+//             console.error(e)
+//             expect(true).toEqual(false)
+//         }
+//     }
+//     try {
+//         await emptyBucket(BUCKET_NAME);
+//     } catch (e) { console.warn(`Error during bucket cleanup: ${e}`)}
+// })
 
 /**
  * Test queries below
@@ -217,6 +226,24 @@ test('Test query with three part secondary key.', async () => {
     items = await itemsByStatus(undefined, { le: '2018-09-01' });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
+})
+
+test('Test update mutation validation with three part secondary key.', async () => {
+    await createShippingUpdate('order1', 'item1', 'PENDING', 'name1');
+    const items = await getShippingUpdates('order1');
+    expect(items.data.shippingUpdates.items).toHaveLength(1);
+    const item = items.data.shippingUpdates.items[0];
+    expect(item.name).toEqual('name1')
+    const updateResponseMissingLastSortKey = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', name: 'name2'});
+    expect(updateResponseMissingLastSortKey.data.updateShippingUpdate).toBeNull();
+    expect(updateResponseMissingLastSortKey.errors).toHaveLength(1);
+    const updateResponseMissingFirstSortKey = await updateShippingUpdate({ id: item.id, orderId: 'order1', status: 'PENDING', name: 'name3'});
+    expect(updateResponseMissingFirstSortKey.data.updateShippingUpdate).toBeNull();
+    expect(updateResponseMissingFirstSortKey.errors).toHaveLength(1);
+    const updateResponseMissingAllSortKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', name: 'testing'});
+    expect(updateResponseMissingAllSortKeys.data.updateShippingUpdate.name).toEqual('testing')
+    const updateResponseMissingNoKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'testing2' });
+    expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2')
 })
 
 async function createOrder(customerEmail: string, orderId: string) {
@@ -392,6 +419,60 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
     return result;
 }
 
+async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
+    const input = { status, orderId, itemId, name };
+    const result = await GRAPHQL_CLIENT.query(`mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
+        createShippingUpdate(input: $input) {
+            orderId
+            status
+            itemId
+            name
+            id
+        }
+    }`, {
+        input
+    });
+    console.log(`Running create: ${JSON.stringify(input)}`);
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
 
+interface UpdateShippingInput {
+    id: string, orderId?: string, status?: string, itemId?: string, name?: string
+}
+async function updateShippingUpdate(input: UpdateShippingInput) {
+    // const input = { id, status, orderId, itemId, name };
+    const result = await GRAPHQL_CLIENT.query(`mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
+        updateShippingUpdate(input: $input) {
+            orderId
+            status
+            itemId
+            name
+            id
+        }
+    }`, {
+        input
+    });
+    console.log(`Running update: ${JSON.stringify(input)}`);
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function getShippingUpdates(orderId: string) {
+    const result = await GRAPHQL_CLIENT.query(`query GetShippingUpdates($orderId: ID!) {
+        shippingUpdates(orderId: $orderId) {
+            items {
+                id
+                orderId
+                status
+                itemId
+                name
+            }
+            nextToken
+        }
+    }`, { orderId });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
 
 

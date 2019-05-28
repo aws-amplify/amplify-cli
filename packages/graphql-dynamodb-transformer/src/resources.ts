@@ -415,7 +415,8 @@ export class ResourceFactory {
                             true
                         ),
                         condition: ref('util.toJson($condition)'),
-                        objectKeyVariable: ResourceConstants.SNIPPETS.ModelObjectKey
+                        objectKeyVariable: ResourceConstants.SNIPPETS.ModelObjectKey,
+                        nameOverrideMap: ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap
                     })
                 ])
             ),

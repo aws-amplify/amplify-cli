@@ -106,14 +106,21 @@ export class DynamoDBMappingTemplate {
      * Create an update item resolver template.
      * @param key
      */
-    public static updateItem({ key, condition, objectKeyVariable }: {
+    public static updateItem({ key, condition, objectKeyVariable, nameOverrideMap }: {
         key: ObjectNode | Expression,
         condition: ObjectNode | ReferenceNode,
-        objectKeyVariable: string
+        objectKeyVariable: string,
+        nameOverrideMap?: string
     }): CompoundExpressionNode {
         // const keyFields = key.attributes.map((attr: [string, Expression]) => attr[0])
         // Auto timestamp
         // qref('$input.put("updatedAt", "$util.time.nowISO8601()")'),
+        const entryKeyAttributeNameVar = 'entryKeyAttributeName';
+        const handleRename = (keyVar: string) => ifElse(
+            raw(`!$util.isNull($${nameOverrideMap}) && $${nameOverrideMap}.containsKey("${keyVar}")`),
+            set(ref(entryKeyAttributeNameVar), raw(`$${nameOverrideMap}.get("${keyVar}")`)),
+            set(ref(entryKeyAttributeNameVar), raw(keyVar)),
+        );
         return compoundExpression([
             set(ref('expNames'), obj({})),
             set(ref('expValues'), obj({})),
@@ -134,16 +141,17 @@ export class DynamoDBMappingTemplate {
                 ref('entry'),
                 ref(`util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet()`),
                 [
+                    handleRename('$entry.key'),
                     ifElse(
                         ref('util.isNull($entry.value)'),
                         compoundExpression([
-                            set(ref('discard'), ref('expRemove.add("#$entry.key")')),
-                            qref('$expNames.put("#$entry.key", "$entry.key")')
+                            set(ref('discard'), ref(`expRemove.add("#$${entryKeyAttributeNameVar}")`)),
+                            qref(`$expNames.put("#$${entryKeyAttributeNameVar}", "$entry.key")`)
                         ]),
                         compoundExpression([
-                            qref('$expSet.put("#$entry.key", ":$entry.key")'),
-                            qref('$expNames.put("#$entry.key", "$entry.key")'),
-                            qref('$expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value))')
+                            qref(`$expSet.put("#$${entryKeyAttributeNameVar}", ":$${entryKeyAttributeNameVar}")`),
+                            qref(`$expNames.put("#$${entryKeyAttributeNameVar}", "$entry.key")`),
+                            qref(`$expValues.put(":$${entryKeyAttributeNameVar}", $util.dynamodb.toDynamoDB($entry.value))`)
                         ])
                     )
                 ]

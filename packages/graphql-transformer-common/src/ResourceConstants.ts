@@ -92,6 +92,7 @@ export class ResourceConstants {
         AuthCondition: "authCondition",
         VersionedCondition: "versionedCondition",
         ModelObjectKey: "modelObjectKey",
+        DynamoDBNameOverrideMap: "dynamodbNameOverrideMap",
         ModelQueryExpression: "modelQueryExpression",
         ModelQueryIndex: "modelQueryIndex",
         IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",

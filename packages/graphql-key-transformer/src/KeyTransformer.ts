@@ -3,7 +3,7 @@ import {
 } from 'graphql-transformer-core';
 import { 
     obj, str, ref, printBlock, compoundExpression, newline, raw, qref, set, Expression, print,
-    ifElse, iff, block
+    ifElse, iff, block, bool, forEach, list
 } from 'graphql-mapping-template';
 import { 
     ResolverResourceIDs, ResourceConstants, isNonNullType,
@@ -11,7 +11,7 @@ import {
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
     makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
-    makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase
+    makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase, graphqlName
 } from 'graphql-transformer-common';
 import { 
     ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, 
@@ -82,34 +82,77 @@ export default class FunctionTransformer extends Transformer {
      */
     private updateResolvers = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const directiveArgs: KeyArguments = getDirectiveArguments(directive);
+        const getResolver = ctx.getResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(definition.name.value));
+        const listResolver = ctx.getResource(ResolverResourceIDs.DynamoDBListResolverResourceID(definition.name.value));
+        const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(definition.name.value));
+        const updateResolver = ctx.getResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(definition.name.value));
+        const deleteResolver = ctx.getResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(definition.name.value));
         if (this.isPrimaryKey(directive)) {
-            const getResolver = ctx.getResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(definition.name.value));
+            // When looking at a primary key we update the primary paths for writing/reading data.
+            // and ensure any composite sort keys for the primary index.
             if (getResolver) {
-                getResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive) + '\n' + getResolver.Properties.RequestMappingTemplate
+                getResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    this.setKeySnippet(directive), 
+                    getResolver.Properties.RequestMappingTemplate
+                ]);
             }
-            const listResolver = ctx.getResource(ResolverResourceIDs.DynamoDBListResolverResourceID(definition.name.value));
             if (listResolver) {
-                listResolver.Properties.RequestMappingTemplate = print(setQuerySnippet(definition, directive, ctx)) + '\n' + listResolver.Properties.RequestMappingTemplate
+                listResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    print(setQuerySnippet(definition, directive, ctx)),
+                    listResolver.Properties.RequestMappingTemplate
+                ]);
             }
-            const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(definition.name.value));
             if (createResolver) {
-                createResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive, true) + '\n' + createResolver.Properties.RequestMappingTemplate
+                createResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    this.setKeySnippet(directive, true),
+                    ensureCompositeKeySnippet(directive),
+                    createResolver.Properties.RequestMappingTemplate
+                ]);
             }
-            const updateResolver = ctx.getResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(definition.name.value));
             if (updateResolver) {
-                updateResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive, true) + '\n' + updateResolver.Properties.RequestMappingTemplate
+                updateResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    this.setKeySnippet(directive, true), 
+                    ensureCompositeKeySnippet(directive),
+                    updateResolver.Properties.RequestMappingTemplate
+                ]);
             }
-            const deleteResolver = ctx.getResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(definition.name.value));
             if (deleteResolver) {
-                deleteResolver.Properties.RequestMappingTemplate = this.setKeySnippet(directive, true) + '\n' + deleteResolver.Properties.RequestMappingTemplate
+                deleteResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    this.setKeySnippet(directive, true), 
+                    ensureCompositeKeySnippet(directive),
+                    deleteResolver.Properties.RequestMappingTemplate
+                ]);
             }
-        } else if (directiveArgs.name && directiveArgs.queryField) {
-            const queryTypeName = ctx.getQueryTypeName();
-            const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
-            const queryResolver = makeQueryResolver(definition, directive, ctx);
-            ctx.addToStackMapping(definition.name.value, `^${queryResolverId}$`);
-            ctx.setResource(queryResolverId, queryResolver);
-        }
+        } else {
+            // When looking at a secondary key we need to ensure any composite sort key values
+            // and validate update operations to protect the integrity of composite sort keys.
+            if (createResolver) {
+                createResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    ensureCompositeKeySnippet(directive),
+                    createResolver.Properties.RequestMappingTemplate
+                ]);
+            }
+            if (updateResolver) {
+                updateResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    this.validateKeyUpdateArgumentsSnippet(directive),
+                    ensureCompositeKeySnippet(directive),
+                    updateResolver.Properties.RequestMappingTemplate
+                ]);
+            }
+            if (deleteResolver) {
+                deleteResolver.Properties.RequestMappingTemplate = joinSnippets([
+                    ensureCompositeKeySnippet(directive),
+                    deleteResolver.Properties.RequestMappingTemplate
+                ]);
+            }
+            if (directiveArgs.queryField) {
+                const queryTypeName = ctx.getQueryTypeName();
+                const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
+                const queryResolver = makeQueryResolver(definition, directive, ctx);
+                ctx.addToStackMapping(definition.name.value, `^${queryResolverId}$`);
+                ctx.setResource(queryResolverId, queryResolver);
+            }
+        } 
     }
 
     private addKeyConditionInputs = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
@@ -223,6 +266,7 @@ export default class FunctionTransformer extends Transformer {
     // Update the create, update, and delete input objects to account for any changes to the primary key.
     private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         if (this.isPrimaryKey(directive)) {
+            console.log(`Updating input structures for key: ${JSON.stringify(getDirectiveArguments(directive))}`);
             const directiveArgs: KeyArguments = getDirectiveArguments(directive);            
             const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (createInput) {
@@ -246,10 +290,36 @@ export default class FunctionTransformer extends Transformer {
             ref(ResourceConstants.SNIPPETS.ModelObjectKey),
             modelObjectKey(directiveArgs, isMutation)
         )];
-        if (isMutation) {
-            cmds.push(ensureCompositeKey(directiveArgs));
-        }
         return printBlock(`Set the primary @key`)(compoundExpression(cmds));
+    }
+
+    // When issuing an update mutation that changes one part of a composite sort key,
+    // you must supply the entire key so that the underlying composite key can be resaved
+    // in the update operation. We only need to update for composite sort keys on secondary indexes.
+    private validateKeyUpdateArgumentsSnippet = (directive: DirectiveNode): string => {
+        const directiveArgs: KeyArguments = getDirectiveArguments(directive);
+        if (!this.isPrimaryKey(directive) && directiveArgs.fields.length > 2) {
+            const sortKeyFields = directiveArgs.fields.slice(1);
+            return printBlock(`Validate update mutation for @key '${directiveArgs.name}'`)(compoundExpression([
+                set(ref('hasSeenSomeKeyArg'), bool(false)),
+                set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
+                forEach(ref('keyFieldName'), ref('keyFieldNames'), [
+                    iff(
+                        raw(`$ctx.args.input.containsKey("$keyFieldName")`),
+                        set(ref('hasSeenSomeKeyArg'), bool(true)),
+                        true
+                    )
+                ]),
+                forEach(ref('keyFieldName'), ref('keyFieldNames'), [
+                    iff(
+                        raw(`$hasSeenSomeKeyArg && !$ctx.args.input.containsKey("$keyFieldName")`),
+                        raw(`$util.error("When updating any part of the composite sort key for @key '${directiveArgs.name}',` +
+                        ` you must provide all fields for the key. Missing key: '$keyFieldName'.")`)
+                    )
+                ])
+            ]));
+        }
+        return '';
     }
 
     /**
@@ -297,10 +367,10 @@ export default class FunctionTransformer extends Transformer {
             } else {
                 const existingField = fieldMap.get(fieldName);
                 const ddbKeyType = attributeTypeFromType(existingField.type, ctx);
-                if (!isNonNullType(existingField.type)) {
+                if (this.isPrimaryKey(directive) && !isNonNullType(existingField.type)) {
                     throw new InvalidDirectiveError(`The primary @key on type '${definition.name.value}' must reference non-null fields.`);
                 } else if (ddbKeyType !== 'S' && ddbKeyType !== 'N' && ddbKeyType !== 'B') {
-                    throw new InvalidDirectiveError(`The primary @key on type '${definition.name.value}' cannot reference non-scalar field ${fieldName}.`);
+                    throw new InvalidDirectiveError(`A @key on type '${definition.name.value}' cannot reference non-scalar field ${fieldName}.`);
                 }
             }
         }
@@ -561,17 +631,28 @@ function modelObjectKey(args: KeyArguments, isMutation: boolean) {
     throw new InvalidDirectiveError('@key directives must include at least one field.');
 }
 
-function ensureCompositeKey(args: KeyArguments) {
+function ensureCompositeKeySnippet(dir: DirectiveNode): string {
+    const args: KeyArguments = getDirectiveArguments(dir);
     const argsPrefix = 'ctx.args.input';
     if (args.fields.length > 2) {
         const rangeKeyFields = args.fields.slice(1);
         const condensedSortKey = condenseRangeKey(rangeKeyFields);
+        const dynamoDBFriendlySortKeyName = toCamelCase(rangeKeyFields.map(f => graphqlName(f)));
         const condensedSortKeyValue = condenseRangeKey(
             rangeKeyFields.map(keyField => `\${${argsPrefix}.${keyField}}`)
         );
-        return qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`);
+        return print(compoundExpression([
+            ifElse(
+                raw(`$util.isNull($${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap})`),
+                set(ref(ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap), obj({
+                    [condensedSortKey]: str(dynamoDBFriendlySortKeyName)
+                })),
+                qref(`$${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put("${condensedSortKey}", "${dynamoDBFriendlySortKeyName}")`)
+            ),
+            qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`)
+        ]));
     }
-    return newline();
+    return '';
 }
 
 function condenseRangeKey(fields: string[]) {
@@ -660,4 +741,7 @@ function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArgu
     const compositeSortKeyName = toCamelCase(sortKeyNames);
     const hashKey = makeInputValueDefinition(compositeSortKeyName, makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(definition.name.value, args.name || 'Primary')));
     return [hashKey, ...elems];
+}
+function joinSnippets(lines: string[]): string {
+    return lines.join('\n');
 }
