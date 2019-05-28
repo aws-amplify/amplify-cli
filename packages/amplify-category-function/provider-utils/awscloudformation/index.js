@@ -123,15 +123,16 @@ async function addResource(context, category, service, options) {
     answers = result;
   }
 
-  copyCfnTemplate(context, category, answers, cfnFilename);
-  if (answers.parameters) {
-    createParametersFile(context, answers.parameters, answers.resourceName);
-  }
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     answers.resourceName,
     options,
   );
+
+  copyCfnTemplate(context, category, answers, cfnFilename);
+  if (answers.parameters) {
+    createParametersFile(context, answers.parameters, answers.resourceName);
+  }
 
   await openEditor(context, category, answers);
 
@@ -154,10 +155,6 @@ async function updateResource(context, category, service) {
     answers = result;
   }
 
-  if (answers.parameters) {
-    createParametersFile(context, answers.parameters, answers.resourceName);
-  }
-
   if (result.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate(
       category,
@@ -166,6 +163,11 @@ async function updateResource(context, category, service) {
       result.dependsOn,
     );
   }
+
+  if (answers.parameters) {
+    createParametersFile(context, answers.parameters, answers.resourceName);
+  }
+
 
   await openEditor(context, category, answers);
 
