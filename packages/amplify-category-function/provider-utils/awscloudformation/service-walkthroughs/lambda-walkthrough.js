@@ -243,7 +243,7 @@ async function askExecRolePermissionsQuestions(
     choices: categories,
     default: (currentDefaults ? currentDefaults.categories : undefined),
   };
-
+  const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   const categoryPermissionAnswer = await inquirer.prompt([categoryPermissionQuestion]);
   const selectedCategories = categoryPermissionAnswer.categories;
   let categoryPolicies = [];
@@ -262,34 +262,41 @@ async function askExecRolePermissionsQuestions(
       continue;
     }
 
+
     try {
       const { getPermissionPolicies } = require(categoryPlugins[category]);
       if (!getPermissionPolicies) {
         context.print.warning(`Policies cannot be added for ${category}`);
         continue;
       } else {
-        const resourceQuestion = {
-          type: 'checkbox',
-          name: 'resources',
-          message: `Select the resources for ${category} category`,
-          choices: resourcesList,
-          validate: (value) => {
-            if (value.length === 0) {
-              return 'You must select at least resource';
-            }
+        let selectedResources = [];
 
-            return true;
-          },
-          default: () => {
-            if (currentDefaults && currentDefaults.categoryPermissionMap &&
-             currentDefaults.categoryPermissionMap[category]) {
-              return Object.keys(currentDefaults.categoryPermissionMap[category]);
-            }
-          },
-        };
+        if (resourcesList.length === 1) {
+          context.print.info(`${capitalizeFirstLetter(category)} category has a resource called ${resourcesList[0]}`);
+          selectedResources = [resourcesList[0]];
+        } else {
+          const resourceQuestion = {
+            type: 'checkbox',
+            name: 'resources',
+            message: `${capitalizeFirstLetter(category)} has ${resourcesList.length} resources in this project. Select the one you would like your Lambda to access`,
+            choices: resourcesList,
+            validate: (value) => {
+              if (value.length === 0) {
+                return 'You must select at least resource';
+              }
+              return true;
+            },
+            default: () => {
+              if (currentDefaults && currentDefaults.categoryPermissionMap &&
+               currentDefaults.categoryPermissionMap[category]) {
+                return Object.keys(currentDefaults.categoryPermissionMap[category]);
+              }
+            },
+          };
 
-        const resourceAnswer = await inquirer.prompt([resourceQuestion]);
-        const selectedResources = resourceAnswer.resources;
+          const resourceAnswer = await inquirer.prompt([resourceQuestion]);
+          selectedResources = resourceAnswer.resources;
+        }
 
         for (let j = 0; j < selectedResources.length; j += 1) {
           const resourceName = selectedResources[j];
@@ -336,7 +343,6 @@ async function askExecRolePermissionsQuestions(
   const resourceProperties = [];
   const resourcePropertiesJSON = {};
   const categoryMapping = {};
-  const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
   resources.forEach((resource) => {
     const { category, resourceName, attributes } = resource;
     attributes.forEach((attribute) => {
