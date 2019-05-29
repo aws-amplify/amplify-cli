@@ -78,14 +78,6 @@ const createTrigger = async (
   return triggerKeyValues;
 };
 
-/**
- * @function triggerFlow
- * @param {object} context CLI context
- * @param {array} answers Array of stringified key values pairs of selected triggers
- *  @example ["{"PostConfirmation":["add-to-group"]}"]
- * @param {string} previous previousTriggers
- * @returns {object} Object with current key/value pairs for triggers and templates
- */
 
 const sanitizePrevious = async (context, answers, previous) => {
   if (!context || !answers) {
