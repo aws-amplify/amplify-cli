@@ -660,7 +660,7 @@
 				"validation": {
 					"operator": "regex",
 					"value": "^(?!([a-z0-9]{0,1})(?!((?!aws)(?!amazon).)*$))(?:[a-z0-9\\-]{0,61}[a-z0-9])?$",
-					"onErrorMsg": "The value must be a valid domain name format.  A valid format consists of lowercase alphanumeric characters."
+					"onErrorMsg": "The value must be a valid domain name format.  A valid format consists of lowercase alphanumeric characters or hyphens (but not at the beginning or end of the string). The domain cannot use the reserved words 'aws' or 'amazon'."
 				}
 			},
 			{
