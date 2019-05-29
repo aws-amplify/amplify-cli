@@ -375,7 +375,52 @@ async function migrate(context) {
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
 }
 
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
+        break;
+      case 'update': actions.push('appsync:Update*');
+        break;
+      case 'read': actions.push('appsync:Get*', 'appsync:List*');
+        break;
+      case 'delete': actions.push('appsync:Delete*');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:appsync:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':apis/',
+            {
+              Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['GraphQLAPIIdOutput'];
+
+  return { policy, attributes };
+}
+
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, openConsole, migrate,
+  serviceWalkthrough, updateWalkthrough, openConsole, migrate, getIAMPolicies,
 };

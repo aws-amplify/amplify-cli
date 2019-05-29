@@ -70,7 +70,26 @@ async function initEnv(context) {
   }
 }
 
+async function getPermissionPolicies(context, resourceOpsMapping) {
+  const permissionPolicies = [];
+  const resourceAttributes = [];
+
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+    const { policy, attributes } = xrManager.getIAMPolicies(
+      context,
+      resourceName,
+      resourceOpsMapping[resourceName],
+    );
+    permissionPolicies.push(policy);
+    resourceAttributes.push({ resourceName, attributes, category: XR_CATEGORY_NAME });
+  });
+
+  return { permissionPolicies, resourceAttributes };
+}
+
+
 module.exports = {
   console,
   initEnv,
+  getPermissionPolicies,
 };

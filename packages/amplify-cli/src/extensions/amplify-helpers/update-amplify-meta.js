@@ -73,6 +73,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  if (options.dependsOn) {
+    checkForCyclicDependencies(category, resourceName, options.dependsOn);
+  }
+
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
@@ -110,7 +114,9 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   // let amplifyCloudMetaFilePath = pathManager.getCurentAmplifyMetaFilePath();
   const currentTimestamp = new Date();
-
+  if (attribute === 'dependsOn') {
+    checkForCyclicDependencies(category, resourceName, value);
+  }
   updateAwsMetaFile(
     amplifyMetaFilePath,
     category,
@@ -204,6 +210,34 @@ function updateamplifyMetaAfterResourceDelete(category, resourceName) {
   const jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
   filesystem.remove(resourceDir);
+}
+
+function checkForCyclicDependencies(category, resourceName, dependsOn) {
+  const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
+  let cyclicDependency = false;
+
+  if (dependsOn) {
+    dependsOn.forEach((resource) => {
+      if (resource.category === category && resource.resourceName === resourceName) {
+        cyclicDependency = true;
+      }
+      const dependsOnResourceDependency =
+        amplifyMeta[resource.category][resource.resourceName].dependsOn;
+      if (dependsOnResourceDependency) {
+        dependsOnResourceDependency.forEach((dependsOnResource) => {
+          if (dependsOnResource.category === category &&
+            dependsOnResource.resourceName === resourceName) {
+            cyclicDependency = true;
+          }
+        });
+      }
+    });
+  }
+
+  if (cyclicDependency === true) {
+    throw new Error(`Cannot add ${resourceName} due to a cyclic dependency`);
+  }
 }
 
 

@@ -517,6 +517,21 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
   context.print.success(identityPoolConsoleUrl);
 }
 
+function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
+
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return;
+  }
+
+  return getIAMPolicies(resourceName, crudOptions);
+}
+
+
 module.exports = {
   addResource,
   updateResource,
@@ -526,4 +541,5 @@ module.exports = {
   copyCfnTemplate,
   migrate,
   console,
+  getPermissionPolicies,
 };
