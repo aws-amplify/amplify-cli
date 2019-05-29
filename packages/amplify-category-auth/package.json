@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "1.5.6",
+  "version": "1.5.7-beta.0",
   "description": "amplify-cli authentication plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -16,8 +16,8 @@
     "chalk": "^2.4.1",
     "chalk-pipe": "^1.2.0",
     "eslint": "^4.19.1",
-    "inquirer": "^6.0.0",
     "fs-extra": "^7.0.0",
+    "inquirer": "^6.0.0",
     "jest": "^23.5.0",
     "lodash": "^4.17.10",
     "opn": "^5.3.0",

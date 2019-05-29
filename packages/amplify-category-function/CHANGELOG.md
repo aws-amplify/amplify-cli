@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.6...amplify-category-function@1.4.7-beta.0) (2019-05-29)
+
+
+### Bug Fixes
+
+* stringify region in function Cloudformation file ([#1536](https://github.com/aws-amplify/amplify-cli/issues/1536)) ([cb6f438](https://github.com/aws-amplify/amplify-cli/commit/cb6f438))
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
 ## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.5...amplify-category-function@1.4.6) (2019-05-21)
 
 **Note:** Version bump only for package amplify-category-function
