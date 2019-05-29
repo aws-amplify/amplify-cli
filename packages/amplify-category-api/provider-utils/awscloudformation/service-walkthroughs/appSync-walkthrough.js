@@ -381,7 +381,7 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   crudOptions.forEach((crudOption) => {
     switch (crudOption) {
-      case 'create': actions.push('appsync:Create*', 'appsync:StartSchemaCreation');
+      case 'create': actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
         break;
       case 'update': actions.push('appsync:Update*');
         break;
