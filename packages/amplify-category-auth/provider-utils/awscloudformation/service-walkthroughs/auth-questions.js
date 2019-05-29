@@ -4,12 +4,9 @@ const chalkpipe = require('chalk-pipe');
 const { sanitizePrevious, handleTriggers } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
-<<<<<<< HEAD
-=======
 const category = 'auth';
 
 
->>>>>>> master
 async function serviceWalkthrough(
   context,
   defaultValuesFilename,

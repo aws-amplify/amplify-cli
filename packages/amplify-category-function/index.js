@@ -14,6 +14,15 @@ async function add(context, providerName, service, parameters) {
   return providerController.addResource(context, category, service, options, parameters);
 }
 
+async function update(context, providerName, service) {
+  const providerController = require(`./provider-utils/${providerName}/index`);
+  if (!providerController) {
+    context.print.error('Provider not confgiured for this category');
+    return;
+  }
+  return providerController.updateResource(context, category, service);
+}
+
 async function console(context) {
   context.print.info(`to be implemented: ${category} console`);
 }
@@ -79,6 +88,7 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 
 module.exports = {
   add,
+  update,
   console,
   migrate,
   getPermissionPolicies,

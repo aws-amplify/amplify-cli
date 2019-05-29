@@ -193,7 +193,6 @@ const addTrigger = async (
   } catch (e) {
     throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
   }
-  // const modules = trigger[key] ? trigger[key].join() : '';
 
   await add(context, 'awscloudformation', 'Lambda', {
     modules: values,
@@ -214,6 +213,52 @@ const addTrigger = async (
   return result;
 };
 
+const updateTrigger = async (
+  modules,
+  key,
+  values,
+  context,
+  resourceName,
+  triggerEnvs,
+  targetPath,
+  category,
+) => {
+  const updatedTrigger = {};
+  let update;
+  try {
+    ({ update } = require('amplify-category-function'));
+  } catch (e) {
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  }
+  try {
+    await update(context, 'awscloudformation', 'Lambda', {
+      modules: values,
+      parentResource: resourceName,
+      resourceName,
+      functionName: resourceName,
+      triggerEnvs: JSON.stringify(triggerEnvs[key]),
+      roleName: resourceName,
+    });
+    context.print.success('Succesfully added the Lambda function locally');
+    for (let v = 0; v < values.length; v += 1) {
+      await copyFunctions(key, values[v], category, context, targetPath);
+      context.amplify.updateamplifyMetaAfterResourceAdd(
+        'function',
+        resourceName,
+        {
+          build: true,
+          dependsOn: undefined,
+          providerPlugin: 'awscloudformation',
+          service: 'Lambda',
+        },
+      );
+    }
+    return updatedTrigger;
+  } catch (e) {
+    throw new Error('Unable to copy lambda functions');
+  }
+};
+
 const deleteTrigger = async (context, name, dir) => {
   try {
     await context.amplify.forceRemoveResource(context, 'function', name, dir);
@@ -228,29 +273,6 @@ const deleteAllTriggers = async (triggers, resourceName, dir, context) => {
     const functionName = `${resourceName}${previousKeys[y]}`;
     const targetPath = `${dir}/function/${functionName}`;
     await deleteTrigger(context, functionName, targetPath);
-  }
-};
-
-const updateTrigger = async (category, targetPath, context, key, values, functionName) => {
-  const updatedTrigger = {};
-  try {
-    for (let v = 0; v < values.length; v += 1) {
-      await copyFunctions(key, values[v], category, context, targetPath);
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        'function',
-        functionName,
-        {
-          build: true,
-          dependsOn: undefined,
-          providerPlugin: 'awscloudformation',
-          service: 'Lambda',
-        },
-      );
-    }
-    updatedTrigger[key] = functionName;
-    return updatedTrigger;
-  } catch (e) {
-    throw new Error('Unable to copy lambda functions');
   }
 };
 
