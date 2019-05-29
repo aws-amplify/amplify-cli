@@ -24,7 +24,7 @@ test('FunctionTransformer should add a datasource, IAM role and a resolver resou
     let datasourceResource = out.stacks.FunctionDirectiveStack.Resources.EchofunctionLambdaDataSource
     expect(datasourceResource).toBeDefined()
     expect(
-        datasourceResource.Properties.LambdaConfig.LambdaFunctionArn['Fn::Sub'][0],
+        datasourceResource.Properties.LambdaConfig.LambdaFunctionArn['Fn::If'][1]['Fn::Sub'][0],
     ).toEqual(expectedLambdaArn)
 
     // IAM role
@@ -40,7 +40,7 @@ test('FunctionTransformer should add a datasource, IAM role and a resolver resou
         iamRoleResource.Properties.Policies[0].PolicyDocument.Statement[0].Action[0]
     ).toEqual('lambda:InvokeFunction')
     expect(
-        iamRoleResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]['Fn::Sub'][0]
+        iamRoleResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]['Fn::Sub'][0]
     ).toEqual(expectedLambdaArn)
     
     // Resolver
@@ -94,10 +94,10 @@ test('two @function directives for the same field should be valid', () => {
     expect(resolverResource.Properties.TypeName).toEqual("Query")
     expect(resolverResource.Properties.PipelineConfig.Functions.length).toEqual(2)
     const otherFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.OtherfunctionLambdaDataSourceRole;
-    expect(otherFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:otherfunction');
+    expect(otherFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:otherfunction');
     const echoFunctionIamResource = out.stacks.FunctionDirectiveStack.Resources.EchofunctionLambdaDataSourceRole;
-    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}');
-    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource[0]["Fn::Sub"][1].env.Ref).toEqual('env');
+    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]["Fn::Sub"][0]).toEqual('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:echofunction-${env}');
+    expect(echoFunctionIamResource.Properties.Policies[0].PolicyDocument.Statement[0].Resource['Fn::If'][1]["Fn::Sub"][1].env.Ref).toEqual('env');
 })
 
 test('@function directive applied to Object should throw SchemaValidationError', () => {

@@ -91,6 +91,10 @@ export class ResourceConstants {
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
         VersionedCondition: "versionedCondition",
+        ModelObjectKey: "modelObjectKey",
+        DynamoDBNameOverrideMap: "dynamodbNameOverrideMap",
+        ModelQueryExpression: "modelQueryExpression",
+        ModelQueryIndex: "modelQueryIndex",
         IsDynamicGroupAuthorizedVariable: "isDynamicGroupAuthorized",
         IsLocalDynamicGroupAuthorizedVariable: "isLocalDynamicGroupAuthorized",
         IsStaticGroupAuthorizedVariable: "isStaticGroupAuthorized",

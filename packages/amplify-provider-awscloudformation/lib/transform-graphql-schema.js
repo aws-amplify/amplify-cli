@@ -9,6 +9,7 @@ const SearchableModelTransformer = require('graphql-elasticsearch-transformer').
 const VersionedModelTransformer = require('graphql-versioned-transformer').default;
 const FunctionTransformer = require('graphql-function-transformer').default;
 const HTTPTransformer = require('graphql-http-transformer').default;
+const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
@@ -211,10 +212,13 @@ async function transformGraphQLSchema(context, options) {
   const transformerList = [
     new DynamoDBModelTransformer(getModelConfig(project)),
     new ModelConnectionTransformer(),
-    new ModelAuthTransformer({ authMode }),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
     new HTTPTransformer(),
+    new KeyTransformer(),
+    // TODO: Build dependency mechanism into transformers. Auth runs last
+    // so any resolvers that need to be protected will already be created.
+    new ModelAuthTransformer({ authMode }),
   ];
 
   if (usedDirectives.includes('searchable')) {
