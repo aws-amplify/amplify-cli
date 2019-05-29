@@ -1,5 +1,3 @@
-const fs = require('fs-extra');
-
 function addResource(context, category, service) {
   const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -11,7 +9,7 @@ function addResource(context, category, service) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);

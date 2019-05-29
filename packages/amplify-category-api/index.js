@@ -135,7 +135,7 @@ async function initEnv(context) {
 
 async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies = [];
   const resourceAttributes = [];
 

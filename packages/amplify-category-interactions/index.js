@@ -1,5 +1,3 @@
-const fs = require('fs-extra');
-
 const category = 'interactions';
 
 async function migrate(context) {
@@ -33,7 +31,7 @@ async function migrate(context) {
 
 async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies = [];
   const resourceAttributes = [];
 

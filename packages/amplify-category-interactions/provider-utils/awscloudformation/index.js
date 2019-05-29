@@ -134,7 +134,7 @@ async function migrateResource(context, projectPath, service, resourceName) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);

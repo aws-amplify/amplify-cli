@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
-const fs = require('fs-extra');
 
 let serviceMetadata;
 
@@ -519,7 +518,7 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);

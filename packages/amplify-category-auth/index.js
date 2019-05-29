@@ -1,7 +1,6 @@
 const category = 'auth';
 const _ = require('lodash');
 const uuid = require('uuid');
-const fs = require('fs-extra');
 const sequential = require('promise-sequential');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const {
@@ -234,7 +233,7 @@ async function console(context) {
 
 async function getPermissionPolicies(context, resourceOpsMapping) {
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
   const permissionPolicies = [];
   const resourceAttributes = [];
 
