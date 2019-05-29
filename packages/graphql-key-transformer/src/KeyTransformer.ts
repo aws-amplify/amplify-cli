@@ -118,8 +118,7 @@ export default class FunctionTransformer extends Transformer {
             }
             if (deleteResolver) {
                 deleteResolver.Properties.RequestMappingTemplate = joinSnippets([
-                    this.setKeySnippet(directive, true), 
-                    ensureCompositeKeySnippet(directive),
+                    this.setKeySnippet(directive, true),
                     deleteResolver.Properties.RequestMappingTemplate
                 ]);
             }
@@ -169,13 +168,10 @@ export default class FunctionTransformer extends Transformer {
             if (!ctx.getType(compositeKeyInput.name.value)) {
                 ctx.addInput(compositeKeyInput);
             }
-        } else if (args.fields.length > 1) {
-            const finalSortKeyFieldName = args.fields[args.fields.length-1];
+        } else if (args.fields.length === 2) {
+            const finalSortKeyFieldName = args.fields[1];
             const finalSortKeyField = definition.fields.find(f => f.name.value === finalSortKeyFieldName);
-            // All composite keys (length > 2) are casted to strings.
-            const sortKeyConditionInput = args.fields.length > 2 ? 
-                makeScalarKeyConditionForType(makeNamedType('String')) :
-                makeScalarKeyConditionForType(finalSortKeyField.type);
+            const sortKeyConditionInput = makeScalarKeyConditionForType(finalSortKeyField.type);
             if (!ctx.getType(sortKeyConditionInput.name.value)) {
                 ctx.addInput(sortKeyConditionInput);
             }
