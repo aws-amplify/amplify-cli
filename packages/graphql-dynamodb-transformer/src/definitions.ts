@@ -525,29 +525,29 @@ export function makeSubscriptionField(fieldName: string, returnTypeName: string,
     )
 }
 
-export function makeModelScanField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
-    return makeField(
-        fieldName,
-        [
-            makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
-            makeInputValueDefinition('limit', makeNamedType('Int')),
-            makeInputValueDefinition('nextToken', makeNamedType('String'))
-        ],
-        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
-    )
+export interface SortKeyFieldInfo {
+    // The name of the sort key field.
+    fieldName: string;
+    // The GraphQL type of the sort key field.
+    typeName: string;
 }
-
-export function makeModelConnectionField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
+export function makeModelConnectionField(fieldName: string, returnTypeName: string, sortKeyInfo?: SortKeyFieldInfo): FieldDefinitionNode {
+    const args = [
+        makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
+        makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
+        makeInputValueDefinition('limit', makeNamedType('Int')),
+        makeInputValueDefinition('nextToken', makeNamedType('String'))
+    ];
+    if (sortKeyInfo) {
+        args.unshift(
+            makeInputValueDefinition(sortKeyInfo.fieldName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName)))
+        );
+    }
     return makeField(
         fieldName,
-        [
-            makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
-            makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')),
-            makeInputValueDefinition('limit', makeNamedType('Int')),
-            makeInputValueDefinition('nextToken', makeNamedType('String'))
-        ],
+        args,
         makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
-    )
+    );
 }
 
 export function makeScalarFilterInputs(): InputObjectTypeDefinitionNode[] {

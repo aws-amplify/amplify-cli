@@ -4,6 +4,7 @@ const { showResourceTable } = require('./resource-status');
 const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 const { initializeEnv } = require('../../lib/initialize-env');
 const { getProviderPlugins } = require('./get-provider-plugins');
+const { readJsonFile } = require('./read-json-file');
 
 async function pushResources(context, category, resourceName) {
   if (context.parameters.options.env) {
@@ -14,10 +15,10 @@ async function pushResources(context, category, resourceName) {
       context.exeInfo.forcePush = false;
       const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath();
       if (fs.existsSync(projectConfigFilePath)) {
-        context.exeInfo.projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+        context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
       }
       const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-      context.exeInfo.localEnvInfo = JSON.parse(fs.readFileSync(envFilePath));
+      context.exeInfo.localEnvInfo = readJsonFile(envFilePath);
 
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
@@ -46,13 +47,14 @@ async function pushResources(context, category, resourceName) {
   let continueToPush = context.exeInfo.inputParams.yes;
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt.run('Are you sure you want to continue?');
+    context.exeInfo.pushAborted = !continueToPush;
   }
 
   if (continueToPush) {
     try {
       // Get current-cloud-backend's amplify-meta
-      const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
-      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+      const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
+      const currentAmplifyMeta = readJsonFile(currentAmplifyMetaFilePath);
 
       await providersPush(context);
       await onCategoryOutputsChange(context, currentAmplifyMeta);

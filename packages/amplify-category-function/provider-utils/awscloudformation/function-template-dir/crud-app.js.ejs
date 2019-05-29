@@ -5,6 +5,9 @@ Licensed under the Apache License, Version 2.0 (the "License"). You may not use 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 */
+
+<%= props.topLevelComment %>
+
 const AWS = require('aws-sdk')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 var bodyParser = require('body-parser')
@@ -67,6 +70,7 @@ app.get(path + hashKeyPath, function(req, res) {
     try {
       condition[partitionKeyName]['AttributeValueList'] = [ convertUrlType(req.params[partitionKeyName], partitionKeyType) ];
     } catch(err) {
+      res.statusCode = 500;
       res.json({error: 'Wrong column type ' + err});
     }
   }
@@ -78,6 +82,7 @@ app.get(path + hashKeyPath, function(req, res) {
 
   dynamodb.query(queryParams, (err, data) => {
     if (err) {
+      res.statusCode = 500;
       res.json({error: 'Could not load items: ' + err});
     } else {
       res.json(data.Items);
@@ -98,6 +103,7 @@ app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     try {
       params[partitionKeyName] = convertUrlType(req.params[partitionKeyName], partitionKeyType);
     } catch(err) {
+      res.statusCode = 500;
       res.json({error: 'Wrong column type ' + err});
     }
   }
@@ -105,6 +111,7 @@ app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     try {
       params[sortKeyName] = convertUrlType(req.params[sortKeyName], sortKeyType);
     } catch(err) {
+      res.statusCode = 500;
       res.json({error: 'Wrong column type ' + err});
     }
   }
@@ -116,6 +123,7 @@ app.get(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
 
   dynamodb.get(getItemParams,(err, data) => {
     if(err) {
+      res.statusCode = 500;
       res.json({error: 'Could not load items: ' + err.message});
     } else {
       if (data.Item) {
@@ -144,6 +152,7 @@ app.put(path, function(req, res) {
   }
   dynamodb.put(putItemParams, (err, data) => {
     if(err) {
+      res.statusCode = 500;
       res.json({error: err, url: req.url, body: req.body});
     } else{
       res.json({success: 'put call succeed!', url: req.url, data: data})
@@ -167,6 +176,7 @@ app.post(path, function(req, res) {
   }
   dynamodb.put(putItemParams, (err, data) => {
     if(err) {
+      res.statusCode = 500;
       res.json({error: err, url: req.url, body: req.body});
     } else{
       res.json({success: 'post call succeed!', url: req.url, data: data})
@@ -187,6 +197,7 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
      try {
       params[partitionKeyName] = convertUrlType(req.params[partitionKeyName], partitionKeyType);
     } catch(err) {
+      res.statusCode = 500;
       res.json({error: 'Wrong column type ' + err});
     }
   }
@@ -194,6 +205,7 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
     try {
       params[sortKeyName] = convertUrlType(req.params[sortKeyName], sortKeyType);
     } catch(err) {
+      res.statusCode = 500;
       res.json({error: 'Wrong column type ' + err});
     }
   }
@@ -204,6 +216,7 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, function(req, res) {
   }
   dynamodb.delete(removeItemParams, (err, data)=> {
     if(err) {
+      res.statusCode = 500;
       res.json({error: err, url: req.url});
     } else {
       res.json({url: req.url, data: data});

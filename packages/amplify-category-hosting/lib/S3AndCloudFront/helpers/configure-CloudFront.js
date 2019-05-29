@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 
@@ -18,7 +17,7 @@ const originErrorCodes = {
 
 async function configure(context) {
   const templateFilePath = path.join(__dirname, '../template.json');
-  const originalTemplate = JSON.parse(fs.readFileSync(templateFilePath));
+  const originalTemplate = context.amplify.readJsonFile(templateFilePath);
   if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
     context.print.info('CloudFront is NOT in the current hosting');
     const answer = await inquirer.prompt({
@@ -40,6 +39,8 @@ async function configure(context) {
       context.exeInfo.template.Outputs.CloudFrontDistributionID = Outputs.CloudFrontDistributionID;
       context.exeInfo.template.Outputs.CloudFrontDomainName = Outputs.CloudFrontDomainName;
       context.exeInfo.template.Outputs.CloudFrontSecureURL = Outputs.CloudFrontSecureURL;
+      // Don't remove the following line,
+      // customer projects setup by the CLI prior to 2/22/2019 has this resource
       delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
     }
@@ -51,15 +52,16 @@ async function configure(context) {
       default: false,
     });
     if (answer.RemoveCloudFront) {
-      const { BucketPolicy, S3Bucket } = originalTemplate.Resources;
       delete context.exeInfo.template.Resources.OriginAccessIdentity;
       delete context.exeInfo.template.Resources.CloudFrontDistribution;
+      // Don't remove the following line,
+      // customer projects setup by the CLI prior to 2/22/2019 has this resource
+      delete context.exeInfo.template.Resources.BucketPolicy;
       delete context.exeInfo.template.Resources.PrivateBucketPolicy;
       delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-      context.exeInfo.template.Resources.BucketPolicy = BucketPolicy;
-      const { AccessControl } = S3Bucket.Properties;
+      const { AccessControl } = originalTemplate.Resources.S3Bucket.Properties;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
     }
   }
@@ -108,14 +110,14 @@ async function configure(context) {
     DistributionConfig.DefaultCacheBehavior.MinTTL = answers.DefaultCacheMinTTL;
 
     if (answers.ConfigCustomError) {
-      await configureCustomErrorResponse(DistributionConfig);
+      await configureCustomErrorResponse(context, DistributionConfig);
     }
   }
 
   return context;
 }
 
-async function configureCustomErrorResponse(DistributionConfig) {
+async function configureCustomErrorResponse(context, DistributionConfig) {
   if (!DistributionConfig.CustomErrorResponses) {
     DistributionConfig.CustomErrorResponses = [];
   }
@@ -131,36 +133,37 @@ async function configureCustomErrorResponse(DistributionConfig) {
 
   switch (answer.action) {
     case 'list':
-      console.log();
-      console.log(DistributionConfig.CustomErrorResponses);
-      console.log();
+      listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'add':
-      await addCER(DistributionConfig.CustomErrorResponses);
+      await addCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'edit':
-      await editCER(DistributionConfig.CustomErrorResponses);
+      await editCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'remove':
-      await removeCER(DistributionConfig.CustomErrorResponses);
+      await removeCER(context, DistributionConfig.CustomErrorResponses);
       break;
     case 'remove all':
-      delete DistributionConfig.CustomErrorResponses;
+      DistributionConfig.CustomErrorResponses.length = 0;
       break;
     default:
-      console.log();
-      console.log(DistributionConfig.CustomErrorResponses);
-      console.log();
+      listCustomErrorResponses(context, DistributionConfig.CustomErrorResponses);
       break;
   }
 
-  if (!answer.action === done) {
-    return configureCustomErrorResponse(DistributionConfig);
+  if (answer.action !== done) {
+    await configureCustomErrorResponse(context, DistributionConfig);
   }
-  return DistributionConfig;
 }
 
-async function addCER(CustomErrorResponses) {
+function listCustomErrorResponses(context, CustomErrorResponses) {
+  context.print.info('');
+  context.print.info(CustomErrorResponses);
+  context.print.info('');
+}
+
+async function addCER(context, CustomErrorResponses) {
   const unConfiguredCodes = getUnConfiguredErrorCodes(CustomErrorResponses);
   if (unConfiguredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -199,12 +202,12 @@ async function addCER(CustomErrorResponses) {
       ResponsePagePath: answers.ResponsePagePath,
     });
   } else {
-    console.log('All configurable error codes from the origin have been mapped.');
-    console.log('You can select to edit those custom error responses.');
+    context.print.info('All configurable error codes from the origin have been mapped.');
+    context.print.info('You can select to edit those custom error responses.');
   }
 }
 
-async function editCER(CustomErrorResponses) {
+async function editCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -243,12 +246,12 @@ async function editCER(CustomErrorResponses) {
     CustomErrorResponses[i].ResponseCode = parseInt(answers.ResponseCode, 10);
     CustomErrorResponses[i].ResponsePagePath = answers.ResponsePagePath;
   } else {
-    console.log('No configurable error code from the origin has been mapped.');
-    console.log('You can select to add custom error responses.');
+    context.print.info('No configurable error code from the origin has been mapped.');
+    context.print.info('You can select to add custom error responses.');
   }
 }
 
-async function removeCER(CustomErrorResponses) {
+async function removeCER(context, CustomErrorResponses) {
   const configuredCodes = getConfiguredErrorCodes(CustomErrorResponses);
   if (configuredCodes.length > 0) {
     const selection = await inquirer.prompt({
@@ -262,7 +265,7 @@ async function removeCER(CustomErrorResponses) {
     const i = getCerIndex(selection.ErrorCode, CustomErrorResponses);
     CustomErrorResponses.splice(i, 1);
   } else {
-    console.log('No configurable error code from the origin has been mapped.');
+    context.print.info('No configurable error code from the origin has been mapped.');
   }
 }
 
@@ -277,7 +280,7 @@ function getConfiguredErrorCodes(CustomErrorResponses) {
 function getCerIndex(errorCode, CustomErrorResponses) {
   let result = -1;
   for (let i = 0; i < CustomErrorResponses.length; i++) {
-    if (errorCode === CustomErrorResponses[i].ErrorCode.toString()) {
+    if (errorCode.toString() === CustomErrorResponses[i].ErrorCode.toString()) {
       result = i;
       break;
     }

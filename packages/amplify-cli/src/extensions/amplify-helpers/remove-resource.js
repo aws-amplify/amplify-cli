@@ -6,30 +6,12 @@ const {
   updateBackendConfigAfterResourceRemove,
 } = require('./update-backend-config');
 const { removeResourceParameters } = require('./envResourceParams');
+const { readJsonFile } = require('./read-json-file');
 
 
 async function forceRemoveResource(context, category, name, dir) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
-  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
-    context.print.error('No resources added for this category');
-    process.exit(1);
-    return;
-  }
-  if (!context || !category || !name || !dir) {
-    context.print.error('Unable to force removal of resource: missing parameters');
-    process.exit(1);
-    return;
-  }
-  context.print.info(`Removing resource ${name}...`);
-  let response;
-  try {
-    response = await deleteResourceFiles(context, category, name, dir, true);
-  } catch (e) {
-    context.print.error('Unable to force removal of resource: error deleting files');
-  }
-  return response;
-}
+  const amplifyMeta = readJsonFile(amplifyMetaFilePath);
 
 function removeResource(context, category) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();

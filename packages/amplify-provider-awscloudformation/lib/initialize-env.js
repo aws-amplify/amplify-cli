@@ -51,10 +51,10 @@ function run(context, providerMetadata) {
     .then(() => {
       // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta
       const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
-      const currentAmplifyMeta = JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+      const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetafilePath);
 
       const amplifyMetafilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-      const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetafilePath));
+      const amplifyMeta = context.amplify.readJsonFile(amplifyMetafilePath);
 
       // Copy providerMetadata for each resource - from what is there in the cloud
 

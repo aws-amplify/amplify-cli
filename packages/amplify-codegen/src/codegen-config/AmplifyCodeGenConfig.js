@@ -50,9 +50,7 @@ class AmplifyCodeGenConfig {
     if (project.amplifyExtension && Object.keys(project.amplifyExtension).length) {
       extensions.amplify = project.amplifyExtension;
     }
-    if (project.endpoint) {
-      extensions.endpoints = { prod: project.endpoint };
-    }
+
     if (Object.keys(extensions).length) {
       newProject.extensions = extensions;
     }

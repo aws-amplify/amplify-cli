@@ -37,7 +37,7 @@ async function run(context, category, resourceName) {
       handleMigration: opts =>
         updateStackForAPIMigration(context, 'api', resourceName, opts),
     }))
-    .then(() => uploadAppSyncFiles(context, resources))
+    .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
     .then(() => {
@@ -111,7 +111,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
   resources = allResources.filter(resource => resource.service === 'AppSync');
 
   return packageResources(context, resources)
-    .then(() => uploadAppSyncFiles(context, resources, {
+    .then(() => uploadAppSyncFiles(context, resources, allResources, {
       useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
@@ -242,7 +242,7 @@ function packageResources(context, resources) {
         const cfnFile = cfnFiles[0];
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
 
-        const cfnMeta = JSON.parse(fs.readFileSync(cfnFilePath));
+        const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
         cfnMeta.Resources.LambdaFunction.Properties.Code = {
           S3Bucket: s3Bucket,
@@ -328,14 +328,18 @@ function getCfnFiles(context, category, resourceName) {
    */
   if (fs.existsSync(resourceBuildDir) && fs.lstatSync(resourceBuildDir).isDirectory()) {
     const files = fs.readdirSync(resourceBuildDir);
-    const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+    const cfnFiles = files
+      .filter(file => file.indexOf('.') !== 0)
+      .filter(file => file.indexOf('template') !== -1);
     return {
       resourceDir: resourceBuildDir,
       cfnFiles,
     };
   }
   const files = fs.readdirSync(resourceDir);
-  const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+  const cfnFiles = files
+    .filter(file => file.indexOf('.') !== 0)
+    .filter(file => file.indexOf('template') !== -1);
   return {
     resourceDir,
     cfnFiles,
@@ -386,7 +390,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 /* eslint-disable */
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
 /* eslint-enable */
-  const nestedStack = JSON.parse(fs.readFileSync(`${__dirname}/rootStackTemplate.json`));
+  const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
 
   const { amplifyMeta } = projectDetails;
 

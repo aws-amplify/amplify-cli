@@ -261,7 +261,7 @@ async function updateWalkthrough(context) {
   let parameters = {};
 
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error('Parameters file not found');
     context.print.info(e.stack);
@@ -270,14 +270,14 @@ async function updateWalkthrough(context) {
   const authType = await askSecurityQuestions(context, parameters);
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+  const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
   amplifyMeta[category][resourceName].output.securityType = authType;
   let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = JSON.parse(fs.readFileSync(backendConfigFilePath));
+  const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
 
   backendConfig[category][resourceName].output.securityType = authType;
   jsonString = JSON.stringify(backendConfig, null, '\t');
@@ -375,7 +375,52 @@ async function migrate(context) {
   await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
 }
 
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
+        break;
+      case 'update': actions.push('appsync:Update*');
+        break;
+      case 'read': actions.push('appsync:Get*', 'appsync:List*');
+        break;
+      case 'delete': actions.push('appsync:Delete*');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:appsync:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':apis/',
+            {
+              Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['GraphQLAPIIdOutput'];
+
+  return { policy, attributes };
+}
+
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, openConsole, migrate,
+  serviceWalkthrough, updateWalkthrough, openConsole, migrate, getIAMPolicies,
 };

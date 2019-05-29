@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.10...amplify-graphql-types-generator@1.0.11) (2019-05-21)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** set AWSTimestamp to number type ([#1483](https://github.com/aws-amplify/amplify-cli/issues/1483)) ([86fb2f1](https://github.com/aws-amplify/amplify-cli/commit/86fb2f1)), closes [#1348](https://github.com/aws-amplify/amplify-cli/issues/1348)
+
+
+
+
+
+## [1.0.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.9...amplify-graphql-types-generator@1.0.10) (2019-04-30)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** add inflection black list ([c09f183](https://github.com/aws-amplify/amplify-cli/commit/c09f183)), closes [#1328](https://github.com/aws-amplify/amplify-cli/issues/1328)
+
+
+
+
+
+## [1.0.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.8...amplify-graphql-types-generator@1.0.9) (2019-04-16)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** angular service gen scalar support ([0299cf5](https://github.com/aws-amplify/amplify-cli/commit/0299cf5)), closes [#1121](https://github.com/aws-amplify/amplify-cli/issues/1121)
+
+
+
+
+
 ## [1.0.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.7...amplify-graphql-types-generator@1.0.8) (2019-03-05)
 
 

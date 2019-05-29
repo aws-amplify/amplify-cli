@@ -5,11 +5,15 @@ import {
     valueFromASTUntyped, ArgumentNode, DirectiveNode, EnumTypeDefinitionNode,
     ValueNode,
     ListValueNode,
-    ObjectValueNode
+    ObjectValueNode,
+    InputObjectTypeDefinitionNode
 } from 'graphql'
 import { access } from 'fs';
 
-export const STANDARD_SCALARS = {
+type ScalarMap = {
+    [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID'
+}
+export const STANDARD_SCALARS: ScalarMap = {
     String: 'String',
     Int: 'Int',
     Float: 'Float',
@@ -17,12 +21,12 @@ export const STANDARD_SCALARS = {
     ID: 'ID'
 };
 
-const OTHER_SCALARS = {
+const OTHER_SCALARS: ScalarMap = {
     BigInt: 'Int',
     Double: 'Float'
 };
 
-export const APPSYNC_DEFINED_SCALARS: { [k: string]: string } = {
+export const APPSYNC_DEFINED_SCALARS: ScalarMap = {
     AWSDate: 'String',
     AWSTime: 'String',
     AWSDateTime: 'String',
@@ -34,7 +38,7 @@ export const APPSYNC_DEFINED_SCALARS: { [k: string]: string } = {
     AWSIPAddress: 'String'
 };
 
-export const DEFAULT_SCALARS: { [k: string]: string } = {
+export const DEFAULT_SCALARS: ScalarMap = {
     ...STANDARD_SCALARS,
     ...OTHER_SCALARS,
     ...APPSYNC_DEFINED_SCALARS
@@ -51,6 +55,26 @@ export const NUMERIC_SCALARS: { [k: string]: boolean } = {
 export const MAP_SCALARS: { [k: string]: boolean } = {
     AWSJSON: true
 };
+
+export function attributeTypeFromScalar(scalar: TypeNode) {
+    const baseType = getBaseType(scalar);
+    const baseScalar = DEFAULT_SCALARS[baseType];
+    if (!baseScalar) {
+        throw new Error(`Expected scalar and got ${baseType}`);
+    }
+    switch (baseScalar) {
+        case 'String':
+        case 'ID':
+            return 'S';
+        case 'Int':
+        case 'Float':
+            return 'N';
+        case 'Boolean':
+            throw new Error(`Boolean values cannot be used as sort keys.`)
+        default:
+            throw new Error(`There is no valid DynamoDB attribute type for scalar ${baseType}`)
+    }
+}
 
 export function isScalar(type: TypeNode) {
     if (type.kind === Kind.NON_NULL_TYPE) {
@@ -178,6 +202,18 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
     return {
         ...object,
         fields: [...object.fields, ...fields]
+    }
+}
+
+export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
+    return {
+        kind: 'InputObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: inputs,
+        directives: []
     }
 }
 

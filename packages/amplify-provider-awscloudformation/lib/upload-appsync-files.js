@@ -1,4 +1,5 @@
 const fs = require('fs');
+const fsext = require('fs-extra');
 const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
@@ -20,28 +21,30 @@ function getProjectBucket(context) {
  * Updates build/parameters.json with new timestamps and then uploads the
  * contents of the build/ directory to S3.
  * @param {*} context
- * @param {*} resources
- * @param {*} defaultParams
+ * @param {*} resourcesToUpdate
+ * @param {*} allResources
+ * @param {*} options
  */
-async function uploadAppSyncFiles(context, resources, options = {}) {
-  resources = resources.filter(resource => resource.service === 'AppSync');
+async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
+  const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
+  const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
   const { defaultParams, useDeprecatedParameters } = options;
-  // new Date().getTime().toString();
-  // There can only be one appsync resource
-  if (resources.length > 0) {
-    const resource = resources[0];
-    const { category, resourceName } = resource;
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
-    const resourceBuildDir = path.normalize(path.join(backEndDir, category, resourceName, 'build'));
-    const projectBucket = getProjectBucket(context);
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const projectBucket = getProjectBucket(context);
+
+  const getDeploymentRootKey = async (resourceDir) => {
     let deploymentSubKey;
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
     } else {
-      deploymentSubKey = await hashDirectory(resourceBuildDir);
+      deploymentSubKey = await hashDirectory(resourceDir);
     }
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
+    return deploymentRootKey;
+  };
 
+  const writeUpdatedParametersJson = (resource, rootKey) => {
+    const { category, resourceName } = resource;
     // Read parameters.json, add timestamps, and write to build/parameters.json
     const parametersFilePath = path.join(backEndDir, category, resourceName, PARAM_FILE_NAME);
     const currentParameters = defaultParams || {};
@@ -57,7 +60,7 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
     if (!useDeprecatedParameters) {
       Object.assign(currentParameters, {
         S3DeploymentBucket: projectBucket,
-        S3DeploymentRootKey: deploymentRootKey,
+        S3DeploymentRootKey: rootKey,
       });
     }
 
@@ -79,8 +82,21 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
     }
 
     const jsonString = JSON.stringify(currentParameters, null, 4);
-    const parametersOutputFilePath = path.join(backEndDir, category, resourceName, 'build', PARAM_FILE_NAME);
+    const buildDirectoryPath = path.join(backEndDir, category, resourceName, 'build');
+    const parametersOutputFilePath = path.join(buildDirectoryPath, PARAM_FILE_NAME);
+    fsext.ensureDirSync(buildDirectoryPath);
     fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
+  };
+
+  // There can only be one appsync resource
+  if (allApiResourceToUpdate.length > 0) {
+    const resource = allApiResourceToUpdate[0];
+    const { category, resourceName } = resource;
+    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    const resourceBuildDir = path.normalize(path.join(resourceDir, 'build'));
+
+    const deploymentRootKey = await getDeploymentRootKey(resourceDir);
+    writeUpdatedParametersJson(resource, deploymentRootKey);
 
     // Upload build/* to S3.
     const s3Client = await new S3(context);
@@ -99,13 +115,31 @@ async function uploadAppSyncFiles(context, resources, options = {}) {
         });
       },
     });
+  } else if (allApiResources.length > 0) {
+    // We need to update the parameters file even when we are not deploying the API
+    // category to fix a bug around deployments on CI/CD platforms. Basically if a
+    // build has not run on this machine before and we are updating a non-api category,
+    // the params will not have the S3DeploymentRootKey parameter and will fail.
+    // This block uses the consistent hash to fill params so the push
+    // succeeds when the api category has not been built on this machine.
+    const resource = allApiResources[0];
+    const { category, resourceName } = resource;
+    const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+    const deploymentRootKey = await getDeploymentRootKey(resourceDir);
+    writeUpdatedParametersJson(resource, deploymentRootKey);
   }
 }
 
-// Hash a directory into a unique value.
+/**
+ * Hashes the project directory into a single value. The same project configuration
+ * should return the same hash.
+ */
 async function hashDirectory(directory) {
   const options = {
     encoding: 'hex',
+    folders: {
+      exclude: ['build'],
+    },
   };
 
   return hashElement(directory, options).then(result => (result.hash));

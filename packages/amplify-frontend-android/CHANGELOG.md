@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.0...amplify-frontend-android@1.8.1) (2019-05-17)
+
+
+### Bug Fixes
+
+* conditionally generation of oAuth config for iOS and Android [#1472](https://github.com/aws-amplify/amplify-cli/issues/1472) ([3767192](https://github.com/aws-amplify/amplify-cli/commit/3767192)), closes [#1470](https://github.com/aws-amplify/amplify-cli/issues/1470)
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.6.0...amplify-frontend-android@1.8.0) (2019-05-07)
+
+
+### Features
+
+* add ClientDatabasePrefi to support mixed auth ([#1382](https://github.com/aws-amplify/amplify-cli/issues/1382)) ([8f03a37](https://github.com/aws-amplify/amplify-cli/commit/8f03a37))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.6.0...amplify-frontend-android@1.7.0) (2019-05-06)
+
+
+### Features
+
+* add ClientDatabasePrefi to support mixed auth ([#1382](https://github.com/aws-amplify/amplify-cli/issues/1382)) ([8f03a37](https://github.com/aws-amplify/amplify-cli/commit/8f03a37))
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.2...amplify-frontend-android@1.6.0) (2019-04-30)
+
+
+### Features
+
+* Multiauth external api add ([#1329](https://github.com/aws-amplify/amplify-cli/issues/1329)) ([13d9fc3](https://github.com/aws-amplify/amplify-cli/commit/13d9fc3))
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.5.1...amplify-frontend-android@1.5.2) (2019-04-24)
+
+
+### Bug Fixes
+
+* **cli:** check BOM in json read ([#1293](https://github.com/aws-amplify/amplify-cli/issues/1293)) ([adf7ab7](https://github.com/aws-amplify/amplify-cli/commit/adf7ab7)), closes [#1280](https://github.com/aws-amplify/amplify-cli/issues/1280)
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.4.0...amplify-frontend-android@1.5.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-frontend-android

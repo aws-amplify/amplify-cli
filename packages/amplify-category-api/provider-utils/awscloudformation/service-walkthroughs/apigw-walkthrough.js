@@ -67,7 +67,7 @@ async function updateWalkthrough(context, defaultValuesFilename) {
   const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = context.amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     parameters = {};
   }
@@ -578,7 +578,7 @@ async function migrate(context, projectPath, resourceName) {
   const parametersFilePath = pathLib.join(resourceDirPath, parametersFileName);
   let parameters;
   try {
-    parameters = JSON.parse(fs.readFileSync(parametersFilePath));
+    parameters = amplify.readJsonFile(parametersFilePath);
   } catch (e) {
     context.print.error(`Error reading api-params.json file for ${resourceName} resource`);
     throw e;
@@ -637,4 +637,59 @@ function convertToCRUD(privacy) {
   return privacy;
 }
 
-module.exports = { serviceWalkthrough, updateWalkthrough, migrate };
+
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push(
+        'apigateway:POST',
+        'apigateway:PUT',
+      );
+        break;
+      case 'update': actions.push('apigateway:PATCH');
+        break;
+      case 'read': actions.push(
+        'apigateway:GET', 'apigateway:HEAD',
+        'apigateway:OPTIONS',
+      );
+        break;
+      case 'delete': actions.push('apigateway:DELETE');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            '::/restapis/',
+            {
+              Ref: `${category}${resourceName}ApiName`,
+            },
+            '/*',
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['ApiName'];
+
+  return { policy, attributes };
+}
+
+module.exports = {
+  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+};

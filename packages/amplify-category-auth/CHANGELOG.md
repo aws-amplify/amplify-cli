@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.5...amplify-category-auth@1.5.6) (2019-05-21)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add policy name char length limit ([#1492](https://github.com/aws-amplify/amplify-cli/issues/1492)) ([d6a8785](https://github.com/aws-amplify/amplify-cli/commit/d6a8785)), closes [#1199](https://github.com/aws-amplify/amplify-cli/issues/1199)
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.4...amplify-category-auth@1.5.5) (2019-05-17)
+
+
+### Bug Fixes
+
+* fixes [#1471](https://github.com/aws-amplify/amplify-cli/issues/1471) ([52b26cb](https://github.com/aws-amplify/amplify-cli/commit/52b26cb))
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.3...amplify-category-auth@1.5.4) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.2...amplify-category-auth@1.5.3) (2019-04-25)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** uses public_profile for FB scopes ([c9af7b7](https://github.com/aws-amplify/amplify-cli/commit/c9af7b7)), closes [#1335](https://github.com/aws-amplify/amplify-cli/issues/1335)
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.1...amplify-category-auth@1.5.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* fix [#1254](https://github.com/aws-amplify/amplify-cli/issues/1254) ([0962650](https://github.com/aws-amplify/amplify-cli/commit/0962650))
+* **amplify-category-auth:** fixes cloudformation template ([706de43](https://github.com/aws-amplify/amplify-cli/commit/706de43)), closes [#1247](https://github.com/aws-amplify/amplify-cli/issues/1247)
+* fix [#1264](https://github.com/aws-amplify/amplify-cli/issues/1264) ([d901daf](https://github.com/aws-amplify/amplify-cli/commit/d901daf))
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.4.0...amplify-category-auth@1.5.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-category-auth

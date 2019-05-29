@@ -1,19 +1,19 @@
-import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, getDirectiveArguments, gql } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, print
 } from 'graphql'
 import { ResourceFactory } from './resources'
 import {
     makeCreateInputObject, makeUpdateInputObject, makeDeleteInputObject,
-    makeModelScalarFilterInputObject, makeModelXFilterInputObject, makeModelSortDirectionEnumObject,
-    makeModelConnectionType, makeModelConnectionField,
-    makeScalarFilterInputs, makeModelScanField, makeSubscriptionField, getNonModelObjectArray, makeNonModelInputObject, makeEnumFilterInputObjects
+    makeModelXFilterInputObject, makeModelSortDirectionEnumObject, makeModelConnectionType,
+    makeScalarFilterInputs, makeSubscriptionField, getNonModelObjectArray,
+    makeNonModelInputObject, makeEnumFilterInputObjects
 } from './definitions'
 import {
     blankObject, makeField, makeInputValueDefinition, makeNamedType,
     makeNonNullType
 } from 'graphql-transformer-common'
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
+import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common'
 
 interface QueryNameMap {
     get?: string;
@@ -61,7 +61,7 @@ export class DynamoDBModelTransformer extends Transformer {
     constructor() {
         super(
             'DynamoDBModelTransformer',
-            `
+            gql`
             directive @model(
                 queries: ModelQueryMap,
                 mutations: ModelMutationMap,
@@ -101,10 +101,11 @@ export class DynamoDBModelTransformer extends Transformer {
                 ".*" + def.name.value + "Model",
                 ".*" + def.name.value + "DataSource",
                 ".*" + def.name.value + "IAMRole",
-                "^" + def.name.value + "Table",
                 // All resolvers except the search resolver.
                 "^[^S].*" + def.name.value + "Resolver",
-                "^" + def.name.value + ".+Resolver"
+                "^" + def.name.value + ".+Resolver",
+                def.name.value + "Table",
+                "^GetAtt" + def.name.value + "Table"
             ]
         )
 
@@ -128,6 +129,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const typeName = def.name.value
         const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName)
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
+        const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName)
         ctx.setResource(
             tableLogicalID,
             this.resources.makeModelTable(typeName, undefined, undefined)
@@ -137,8 +139,21 @@ export class DynamoDBModelTransformer extends Transformer {
             this.resources.makeIAMRole(typeName)
         )
         ctx.setResource(
-            ModelResourceIDs.ModelTableDataSourceID(typeName),
+            dataSourceRoleLogicalID,
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
+        )
+        ctx.setOutput(
+            // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
+            `GetAtt${ModelResourceIDs.ModelTableStreamArn(typeName)}`,
+            this.resources.makeTableStreamArnOutput(tableLogicalID)
+        )
+        ctx.setOutput(
+            `GetAtt${dataSourceRoleLogicalID}Name`,
+            this.resources.makeDataSourceOutput(dataSourceRoleLogicalID)
+        )
+        ctx.setOutput(
+            `GetAtt${tableLogicalID}Name`,
+            this.resources.makeTableNameOutput(tableLogicalID)
         )
 
         this.createQueries(def, directive, ctx)
@@ -157,7 +172,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const mutationFields = [];
         // Get any name overrides provided by the user. If an empty map it provided
         // then we do not generate those fields.
-        const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         // Configure mutations based on *mutations* argument
         let shouldMakeCreate = true;
@@ -243,7 +258,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ) => {
         const typeName = def.name.value
         const queryFields = []
-        const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         // Configure queries based on *queries* argument
         let shouldMakeGet = true;
@@ -298,7 +313,7 @@ export class DynamoDBModelTransformer extends Transformer {
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
             ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
 
-            queryFields.push(makeModelScanField(listResolver.Properties.FieldName, def.name.value))
+            queryFields.push(makeConnectionField(listResolver.Properties.FieldName, def.name.value))
         }
         this.generateFilterInputs(ctx, def)
 
@@ -329,7 +344,7 @@ export class DynamoDBModelTransformer extends Transformer {
         const typeName = def.name.value
         const subscriptionFields = []
 
-        const directiveArguments: ModelDirectiveArgs = this.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
 
         const subscriptionsArgument = directiveArguments.subscriptions
         const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName))

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const pathManager = require('./path-manager');
 const { getEnvInfo } = require('./get-env-info');
+const { readJsonFile } = require('./read-json-file');
 
 const CATEGORIES = 'categories';
 
@@ -22,7 +23,7 @@ function loadAllResourceParameters(context) {
     }
     const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath();
     if (fs.existsSync(teamProviderInfoFilePath)) {
-      return JSON.parse(fs.readFileSync(teamProviderInfoFilePath));
+      return readJsonFile(teamProviderInfoFilePath);
     }
   } catch (e) {
     return {};

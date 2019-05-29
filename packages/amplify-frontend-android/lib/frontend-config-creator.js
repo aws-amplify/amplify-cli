@@ -81,7 +81,7 @@ function getCurrentAWSConfig(context) {
   let awsConfig = {};
 
   if (fs.existsSync(targetFilePath)) {
-    awsConfig = JSON.parse(fs.readFileSync(targetFilePath));
+    awsConfig = amplify.readJsonFile(targetFilePath);
   }
   return awsConfig;
 }
@@ -174,24 +174,24 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     scope = oAuthMetadata.AllowedOAuthScopes;
     redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
     redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
+    const oauth = {
+      WebDomain: domain,
+      AppClientId: cognitoResource.output.AppClientID,
+      AppClientSecret: cognitoResource.output.AppClientSecret,
+      SignInRedirectURI: redirectSignIn,
+      SignOutRedirectURI: redirectSignOut,
+      Scopes: scope,
+    };
+
+    Object.assign(cognitoConfig, {
+      Auth: {
+        Default: {
+          OAuth: oauth,
+        },
+      },
+    });
   }
 
-  const oauth = {
-    WebDomain: domain,
-    AppClientId: cognitoResource.output.AppClientID,
-    AppClientSecret: cognitoResource.output.AppClientSecret,
-    SignInRedirectURI: redirectSignIn,
-    SignOutRedirectURI: redirectSignOut,
-    Scopes: scope,
-  };
-
-  Object.assign(cognitoConfig, {
-    Auth: {
-      Default: {
-        OAuth: oauth,
-      },
-    },
-  });
 
   return cognitoConfig;
 }
@@ -240,16 +240,34 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
-  return {
+  const result = {
     AppSync: {
       Default: {
         ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
-        Region: projectRegion,
+        Region: appsyncResource.output.region || projectRegion,
         AuthMode: appsyncResource.output.securityType,
-        ApiKey: appsyncResource.output.securityType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+        ApiKey:
+          appsyncResource.output.securityType === 'API_KEY'
+            ? appsyncResource.output.GraphQLAPIKeyOutput
+            : undefined,
+        ClientDatabasePrefix: `${appsyncResource.resourceName}_${appsyncResource.output.securityType}`,
       },
     },
   };
+  const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
+  additionalAuths.forEach((authType) => {
+    const apiName = `${appsyncResource.resourceName}_${authType}`;
+    const config = {
+      ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
+      Region: appsyncResource.output.region || projectRegion,
+      AuthMode: authType,
+      ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+      ClientDatabasePrefix: apiName,
+    };
+    result.AppSync[apiName] = config;
+  });
+
+  return result;
 }
 
 function getLexConfig(lexResources) {

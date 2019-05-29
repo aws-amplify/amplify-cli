@@ -87,6 +87,7 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
+      <%if (props.requiredAttributes && props.requiredAttributes.length > 0) { %>
       Schema: 
         <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
         -

@@ -1,0 +1,761 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson($context.result)"`;
+
+exports[`Test "create", "update", "delete" auth operations 2`] = `"$util.toJson($ctx.result)"`;
+
+exports[`Test "create", "update", "delete" auth operations 3`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+## No Dynamic Group Authorization Rules **
+
+
+## No Owner Authorization Rules **
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": {
+      \\"expression\\": \\"attribute_not_exists(#id)\\",
+      \\"expressionNames\\": {
+          \\"#id\\": \\"id\\"
+    }
+  }
+}
+## [End] Prepare DynamoDB PutItem Request. **"
+`;
+
+exports[`Test "create", "update", "delete" auth operations 4`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+#if( ! $isStaticGroupAuthorized )
+  ## No dynamic group authorization rules **
+
+
+  ## No owner authorization rules **
+
+
+  ## [Start] Collect Auth Condition **
+  #set( $authCondition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #set( $totalAuthExpression = \\"\\" )
+  ## Add dynamic group auth conditions if they exist **
+  #if( $groupAuthExpressions )
+    #foreach( $authExpr in $groupAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $groupAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+  #end
+  #if( $groupAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+  #end
+  ## Add owner auth conditions if they exist **
+  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+  #end
+  #if( $ownerAuthExpressions )
+    #foreach( $authExpr in $ownerAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $ownerAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+  #end
+  #if( $ownerAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+  #end
+  ## Set final expression if it has changed. **
+  #if( $totalAuthExpression != \\"\\" )
+    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+  #end
+  ## [End] Collect Auth Condition **
+#end
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test "create", "update", "delete" auth operations 5`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+#if( ! $isStaticGroupAuthorized )
+  ## No dynamic group authorization rules **
+
+
+  ## No owner authorization rules **
+
+
+  ## [Start] Collect Auth Condition **
+  #set( $authCondition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #set( $totalAuthExpression = \\"\\" )
+  ## Add dynamic group auth conditions if they exist **
+  #if( $groupAuthExpressions )
+    #foreach( $authExpr in $groupAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $groupAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+  #end
+  #if( $groupAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+  #end
+  ## Add owner auth conditions if they exist **
+  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+  #end
+  #if( $ownerAuthExpressions )
+    #foreach( $authExpr in $ownerAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $ownerAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+  #end
+  #if( $ownerAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+  #end
+  ## Set final expression if it has changed. **
+  #if( $totalAuthExpression != \\"\\" )
+    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+  #end
+  ## [End] Collect Auth Condition **
+#end
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+#if( $authCondition )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+  #end
+#end
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
+  #set( $condition.expressionValues = $expressionValues )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"DeleteItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test that operation overwrites queries in auth operations 1`] = `"$util.toJson($context.result)"`;
+
+exports[`Test that operation overwrites queries in auth operations 2`] = `"$util.toJson($ctx.result)"`;
+
+exports[`Test that operation overwrites queries in auth operations 3`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+## No Dynamic Group Authorization Rules **
+
+
+## No Owner Authorization Rules **
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": {
+      \\"expression\\": \\"attribute_not_exists(#id)\\",
+      \\"expressionNames\\": {
+          \\"#id\\": \\"id\\"
+    }
+  }
+}
+## [End] Prepare DynamoDB PutItem Request. **"
+`;
+
+exports[`Test that operation overwrites queries in auth operations 4`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+#if( ! $isStaticGroupAuthorized )
+  ## No dynamic group authorization rules **
+
+
+  ## No owner authorization rules **
+
+
+  ## [Start] Collect Auth Condition **
+  #set( $authCondition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #set( $totalAuthExpression = \\"\\" )
+  ## Add dynamic group auth conditions if they exist **
+  #if( $groupAuthExpressions )
+    #foreach( $authExpr in $groupAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $groupAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+  #end
+  #if( $groupAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+  #end
+  ## Add owner auth conditions if they exist **
+  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+  #end
+  #if( $ownerAuthExpressions )
+    #foreach( $authExpr in $ownerAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $ownerAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+  #end
+  #if( $ownerAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+  #end
+  ## Set final expression if it has changed. **
+  #if( $totalAuthExpression != \\"\\" )
+    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+  #end
+  ## [End] Collect Auth Condition **
+#end
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+#if( $authCondition && $authCondition.expression != \\"\\" )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  },
+  \\"expressionValues\\": {}
+} )
+  #end
+#end
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+## Update condition if type is @versioned **
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  $util.qr($condition.expressionValues.putAll($versionedCondition.expressionValues))
+#end
+#set( $expNames = {} )
+#set( $expValues = {} )
+#set( $expSet = {} )
+#set( $expAdd = {} )
+#set( $expRemove = [] )
+#if( $modelObjectKey )
+  #set( $keyFields = [] )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    $util.qr($keyFields.add(\\"$entry.key\\"))
+  #end
+#else
+  #set( $keyFields = [\\"id\\"] )
+#end
+#foreach( $entry in $util.map.copyAndRemoveAllKeys($context.args.input, $keyFields).entrySet() )
+  #if( !$util.isNull($dynamodbNameOverrideMap) && $dynamodbNameOverrideMap.containsKey(\\"$entry.key\\") )
+    #set( $entryKeyAttributeName = $dynamodbNameOverrideMap.get(\\"$entry.key\\") )
+  #else
+    #set( $entryKeyAttributeName = $entry.key )
+  #end
+  #if( $util.isNull($entry.value) )
+    #set( $discard = $expRemove.add(\\"#$entryKeyAttributeName\\") )
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+  #else
+    $util.qr($expSet.put(\\"#$entryKeyAttributeName\\", \\":$entryKeyAttributeName\\"))
+    $util.qr($expNames.put(\\"#$entryKeyAttributeName\\", \\"$entry.key\\"))
+    $util.qr($expValues.put(\\":$entryKeyAttributeName\\", $util.dynamodb.toDynamoDB($entry.value)))
+  #end
+#end
+#set( $expression = \\"\\" )
+#if( !$expSet.isEmpty() )
+  #set( $expression = \\"SET\\" )
+  #foreach( $entry in $expSet.entrySet() )
+    #set( $expression = \\"$expression $entry.key = $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expAdd.isEmpty() )
+  #set( $expression = \\"$expression ADD\\" )
+  #foreach( $entry in $expAdd.entrySet() )
+    #set( $expression = \\"$expression $entry.key $entry.value\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#if( !$expRemove.isEmpty() )
+  #set( $expression = \\"$expression REMOVE\\" )
+  #foreach( $entry in $expRemove )
+    #set( $expression = \\"$expression $entry\\" )
+    #if( $foreach.hasNext() )
+      #set( $expression = \\"$expression,\\" )
+    #end
+  #end
+#end
+#set( $update = {} )
+$util.qr($update.put(\\"expression\\", \\"$expression\\"))
+#if( !$expNames.isEmpty() )
+  $util.qr($update.put(\\"expressionNames\\", $expNames))
+#end
+#if( !$expValues.isEmpty() )
+  $util.qr($update.put(\\"expressionValues\\", $expValues))
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"UpdateItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": {
+      \\"S\\": \\"$context.args.input.id\\"
+  }
+} #end,
+  \\"update\\": $util.toJson($update),
+  \\"condition\\": $util.toJson($condition)
+}"
+`;
+
+exports[`Test that operation overwrites queries in auth operations 5`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+#if( ! $isStaticGroupAuthorized )
+  ## No dynamic group authorization rules **
+
+
+  ## No owner authorization rules **
+
+
+  ## [Start] Collect Auth Condition **
+  #set( $authCondition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #set( $totalAuthExpression = \\"\\" )
+  ## Add dynamic group auth conditions if they exist **
+  #if( $groupAuthExpressions )
+    #foreach( $authExpr in $groupAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $groupAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+  #end
+  #if( $groupAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+  #end
+  ## Add owner auth conditions if they exist **
+  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+  #end
+  #if( $ownerAuthExpressions )
+    #foreach( $authExpr in $ownerAuthExpressions )
+      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+      #if( $foreach.hasNext )
+        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+      #end
+    #end
+  #end
+  #if( $ownerAuthExpressionNames )
+    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+  #end
+  #if( $ownerAuthExpressionValues )
+    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+  #end
+  ## Set final expression if it has changed. **
+  #if( $totalAuthExpression != \\"\\" )
+    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+  #end
+  ## [End] Collect Auth Condition **
+#end
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+#if( $authCondition )
+  #set( $condition = $authCondition )
+  #if( $modelObjectKey )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#id)\\"))
+    $util.qr($condition.expressionNames.put(\\"#id\\", \\"id\\"))
+  #end
+#else
+  #if( $modelObjectKey )
+    #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {}
+} )
+    #foreach( $entry in $modelObjectKey.entrySet() )
+      #if( $velocityCount == 1 )
+        $util.qr($condition.put(\\"expression\\", \\"attribute_exists(#keyCondition$velocityCount)\\"))
+      #else
+        $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_exists(#keyCondition$velocityCount)\\"))
+      #end
+      $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+    #end
+  #else
+    #set( $condition = {
+  \\"expression\\": \\"attribute_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+  #end
+#end
+#if( $versionedCondition )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $versionedCondition.expression\\"))
+  $util.qr($condition.expressionNames.putAll($versionedCondition.expressionNames))
+  #set( $expressionValues = $util.defaultIfNull($condition.expressionValues, {}) )
+  $util.qr($expressionValues.putAll($versionedCondition.expressionValues))
+  #set( $condition.expressionValues = $expressionValues )
+#end
+{
+  \\"version\\": \\"2017-02-28\\",
+  \\"operation\\": \\"DeleteItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"condition\\": $util.toJson($condition)
+}"
+`;

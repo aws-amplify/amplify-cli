@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.5...graphql-http-transformer@3.4.6) (2019-05-21)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [3.4.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.4...graphql-http-transformer@3.4.5) (2019-05-17)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [3.4.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.2...graphql-http-transformer@3.4.4) (2019-05-07)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [3.4.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.2...graphql-http-transformer@3.4.3) (2019-05-06)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.1...graphql-http-transformer@3.4.2) (2019-04-16)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.3.1...graphql-http-transformer@3.4.1) (2019-04-09)
 
 **Note:** Version bump only for package graphql-http-transformer

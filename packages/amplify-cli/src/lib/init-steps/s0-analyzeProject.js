@@ -5,6 +5,7 @@ const { normalizeEditorCode, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
+const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
 
 async function run(context) {
   context.print.warning('Note: It is recommended to run this command from the root of your app directory');
@@ -55,7 +56,7 @@ async function getProjectName(context) {
   const projectPath = process.cwd();
   if (!context.exeInfo.isNewProject) {
     const projectConfigFilePath = context.amplify.pathManager.getProjectConfigFilePath(projectPath);
-    ({ projectName } = JSON.parse(fs.readFileSync(projectConfigFilePath)));
+    ({ projectName } = readJsonFile(projectConfigFilePath));
     return projectName;
   }
 
@@ -183,7 +184,7 @@ function isNewEnv(context, envName) {
   const providerInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath(projectPath);
 
   if (fs.existsSync(providerInfoFilePath)) {
-    const envProviderInfo = JSON.parse(fs.readFileSync(providerInfoFilePath));
+    const envProviderInfo = readJsonFile(providerInfoFilePath);
     if (envProviderInfo[envName]) {
       newEnv = false;
     }
@@ -207,7 +208,7 @@ function getDefaultEditor(context) {
   const projectPath = process.cwd();
   const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(projectPath);
   if (fs.existsSync(localEnvFilePath)) {
-    ({ defaultEditor } = JSON.parse(fs.readFileSync(localEnvFilePath)));
+    ({ defaultEditor } = readJsonFile(localEnvFilePath));
   }
 
   return defaultEditor;

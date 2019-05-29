@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext } from "graphql-transformer-core";
+import { Transformer, TransformerContext, getDirectiveArguments, gql } from "graphql-transformer-core";
 import {
     DirectiveNode,
     ObjectTypeDefinitionNode
@@ -41,7 +41,7 @@ export class SearchableModelTransformer extends Transformer {
     constructor() {
         super(
             `SearchableModelTransformer`,
-            `
+            gql`
             directive @searchable(queries: SearchableQueryMap) on OBJECT
             input SearchableQueryMap { search: String }
             `
@@ -60,7 +60,9 @@ export class SearchableModelTransformer extends Transformer {
             '^ElasticsearchAccess.*',
             '^ElasticsearchStreaming.*',
             '^ElasticsearchDataSource$',
-            '^Searchable.*LambdaMapping$'
+            '^Searchable.*LambdaMapping$',
+            '^ElasticsearchDomainArn$',
+            '^ElasticsearchDomainEndpoint$'
         ])
     };
 
@@ -78,7 +80,7 @@ export class SearchableModelTransformer extends Transformer {
             STACK_NAME,
             "^Search" + def.name.value + "Resolver$"
         )
-        const directiveArguments: ModelDirectiveArgs = super.getDirectiveArgumentMap(directive)
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
         let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;
 

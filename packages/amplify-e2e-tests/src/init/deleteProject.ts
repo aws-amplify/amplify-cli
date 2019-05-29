@@ -28,7 +28,7 @@ export default function deleteProject(
               promises.push(s3.deleteObject({ Bucket: DeploymentBucketName, Key: item.Key }).promise());
             });
             await Promise.all(promises);
-            await s3.deleteBucket({ Bucket: DeploymentBucketName });
+            await s3.deleteBucket({ Bucket: DeploymentBucketName }).promise();
             resolve();
           } else {
             resolve();

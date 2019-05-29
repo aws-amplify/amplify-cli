@@ -3,6 +3,95 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.10...@aws-amplify/cli@1.6.11) (2019-05-24)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.9...@aws-amplify/cli@1.6.10) (2019-05-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.8...@aws-amplify/cli@1.6.9) (2019-05-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.6...@aws-amplify/cli@1.6.8) (2019-05-07)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.6...@aws-amplify/cli@1.6.7) (2019-05-06)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.5...@aws-amplify/cli@1.6.6) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.4...@aws-amplify/cli@1.6.5) (2019-04-25)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.3...@aws-amplify/cli@1.6.4) (2019-04-24)
+
+
+### Bug Fixes
+
+* **cli:** check BOM in json read ([#1293](https://github.com/aws-amplify/amplify-cli/issues/1293)) ([adf7ab7](https://github.com/aws-amplify/amplify-cli/commit/adf7ab7)), closes [#1280](https://github.com/aws-amplify/amplify-cli/issues/1280)
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.2...@aws-amplify/cli@1.6.3) (2019-04-16)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.1...@aws-amplify/cli@1.6.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **cli:** publish check user response ([f88e9b2](https://github.com/aws-amplify/amplify-cli/commit/f88e9b2)), closes [#965](https://github.com/aws-amplify/amplify-cli/issues/965)
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.5.1...@aws-amplify/cli@1.6.1) (2019-04-09)
 
 **Note:** Version bump only for package @aws-amplify/cli

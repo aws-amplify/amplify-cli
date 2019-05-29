@@ -29,9 +29,6 @@ import { FieldsOnCorrectType } from 'graphql/validation/rules/FieldsOnCorrectTyp
 // Spec Section: "Directives Are Defined"
 import { KnownDirectives } from 'graphql/validation/rules/KnownDirectives';
 
-// Spec Section: "Directives Are Unique Per Location"
-import { UniqueDirectivesPerLocation } from 'graphql/validation/rules/UniqueDirectivesPerLocation';
-
 // Spec Section: "Argument Names"
 import { KnownArgumentNames } from 'graphql/validation/rules/KnownArgumentNames';
 
@@ -50,6 +47,8 @@ import { OverlappingFieldsCanBeMerged } from 'graphql/validation/rules/Overlappi
 // Spec Section: "Input Object Field Uniqueness"
 import { UniqueInputFieldNames } from 'graphql/validation/rules/UniqueInputFieldNames';
 
+import { ProvidedNonNullArguments } from 'graphql/validation/rules/ProvidedNonNullArguments';
+
 /**
  * This set includes all validation rules defined by the GraphQL spec.
  *
@@ -64,13 +63,13 @@ export const specifiedRules = [
     ScalarLeafs,
     FieldsOnCorrectType,
     KnownDirectives,
-    UniqueDirectivesPerLocation,
     KnownArgumentNames,
     UniqueArgumentNames,
     ValuesOfCorrectType,
     VariablesInAllowedPosition,
     OverlappingFieldsCanBeMerged,
     UniqueInputFieldNames,
+    ProvidedNonNullArguments
 ];
 
 const EXTRA_SCALARS_DOCUMENT = parse(`
@@ -90,6 +89,9 @@ scalar Double
 const EXTRA_DIRECTIVES_DOCUMENT = parse(`
 directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
 directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
+
+# Allows transformer libraries to deprecate directive arguments.
+directive @deprecated(reason: String!) on INPUT_FIELD_DEFINITION | ENUM
 `)
 
 export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
@@ -113,15 +115,17 @@ export function validateModelSchema(doc: DocumentNode) {
     const fullDocument = {
         kind: Kind.DOCUMENT,
         definitions: [
+            ...EXTRA_DIRECTIVES_DOCUMENT.definitions,
             ...doc.definitions,
             ...EXTRA_SCALARS_DOCUMENT.definitions,
-            ...EXTRA_DIRECTIVES_DOCUMENT.definitions
         ]
     }
     const builder = astBuilder(fullDocument)
     const directives = fullDocument.definitions
         .filter(d => d.kind === Kind.DIRECTIVE_DEFINITION)
-        .map((d: DirectiveDefinitionNode) => builder.buildDirective(d))
+        .map((d: DirectiveDefinitionNode) => {
+            return builder.buildDirective(d)
+        })
     const types = fullDocument.definitions
         .filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION && d.kind !== Kind.SCHEMA_DEFINITION)
         .map((d: TypeDefinitionNode) => builder.buildType(d))

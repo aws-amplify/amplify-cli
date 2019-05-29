@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.5...amplify-category-function@1.4.6) (2019-05-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.4...amplify-category-function@1.4.5) (2019-05-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.3...amplify-category-function@1.4.4) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.2...amplify-category-function@1.4.3) (2019-04-25)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.1...amplify-category-function@1.4.2) (2019-04-16)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** add error status code ([a3aaaad](https://github.com/aws-amplify/amplify-cli/commit/a3aaaad)), closes [#1003](https://github.com/aws-amplify/amplify-cli/issues/1003)
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.3.1...amplify-category-function@1.4.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-category-function

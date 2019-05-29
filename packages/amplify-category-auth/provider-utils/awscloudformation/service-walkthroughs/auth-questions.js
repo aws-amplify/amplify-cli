@@ -4,6 +4,12 @@ const chalkpipe = require('chalk-pipe');
 const { sanitizePrevious, handleTriggers } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
+<<<<<<< HEAD
+=======
+const category = 'auth';
+
+
+>>>>>>> master
 async function serviceWalkthrough(
   context,
   defaultValuesFilename,
@@ -421,9 +427,142 @@ async function lambdaFlow(context, answers) {
   return triggers;
 }
 
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push(
+        'cognito-idp:ConfirmSignUp',
+        'cognito-idp:AdminCreateUser',
+        'cognito-idp:CreateUserImportJob',
+        'cognito-idp:AdminSetUserSettings',
+        'cognito-idp:AdminLinkProviderForUser',
+        'cognito-idp:CreateIdentityProvider',
+        'cognito-idp:AdminConfirmSignUp',
+        'cognito-idp:AdminDisableUser',
+        'cognito-idp:AdminRemoveUserFromGroup',
+        'cognito-idp:SetUserMFAPreference',
+        'cognito-idp:SetUICustomization',
+        'cognito-idp:SignUp',
+        'cognito-idp:VerifyUserAttribute',
+        'cognito-idp:SetRiskConfiguration',
+        'cognito-idp:StartUserImportJob',
+        'cognito-idp:AdminSetUserPassword',
+        'cognito-idp:AssociateSoftwareToken',
+        'cognito-idp:CreateResourceServer',
+        'cognito-idp:RespondToAuthChallenge',
+        'cognito-idp:CreateUserPoolClient',
+        'cognito-idp:AdminUserGlobalSignOut',
+        'cognito-idp:GlobalSignOut',
+        'cognito-idp:AddCustomAttributes',
+        'cognito-idp:CreateGroup',
+        'cognito-idp:CreateUserPool',
+        'cognito-idp:AdminForgetDevice',
+        'cognito-idp:AdminAddUserToGroup',
+        'cognito-idp:AdminRespondToAuthChallenge',
+        'cognito-idp:ForgetDevice',
+        'cognito-idp:CreateUserPoolDomain',
+        'cognito-idp:AdminEnableUser',
+        'cognito-idp:AdminUpdateDeviceStatus',
+        'cognito-idp:StopUserImportJob',
+        'cognito-idp:InitiateAuth',
+        'cognito-idp:AdminInitiateAuth',
+        'cognito-idp:AdminSetUserMFAPreference',
+        'cognito-idp:ConfirmForgotPassword',
+        'cognito-idp:SetUserSettings',
+        'cognito-idp:VerifySoftwareToken',
+        'cognito-idp:AdminDisableProviderForUser',
+        'cognito-idp:SetUserPoolMfaConfig',
+        'cognito-idp:ChangePassword',
+        'cognito-idp:ConfirmDevice',
+        'cognito-idp:AdminResetUserPassword',
+        'cognito-idp:ResendConfirmationCode',
+      );
+        break;
+      case 'update': actions.push(
+        'cognito-idp:ForgotPassword',
+        'cognito-idp:UpdateAuthEventFeedback',
+        'cognito-idp:UpdateResourceServer',
+        'cognito-idp:UpdateUserPoolClient',
+        'cognito-idp:AdminUpdateUserAttributes',
+        'cognito-idp:UpdateUserAttributes',
+        'cognito-idp:UpdateUserPoolDomain',
+        'cognito-idp:UpdateIdentityProvider',
+        'cognito-idp:UpdateGroup',
+        'cognito-idp:AdminUpdateAuthEventFeedback',
+        'cognito-idp:UpdateDeviceStatus',
+        'cognito-idp:UpdateUserPool',
+      );
+        break;
+      case 'read': actions.push(
+        'cognito-identity:Describe*',
+        'cognito-identity:Get*',
+        'cognito-identity:List*',
+        'cognito-idp:Describe*',
+        'cognito-idp:AdminGetDevice',
+        'cognito-idp:AdminGetUser',
+        'cognito-idp:AdminList*',
+        'cognito-idp:List*',
+        'cognito-sync:Describe*',
+        'cognito-sync:Get*',
+        'cognito-sync:List*',
+        'iam:ListOpenIdConnectProviders',
+        'iam:ListRoles',
+        'sns:ListPlatformApplications',
+      );
+        break;
+      case 'delete': actions.push(
+        'cognito-idp:DeleteUserPoolDomain',
+        'cognito-idp:DeleteResourceServer',
+        'cognito-idp:DeleteGroup',
+        'cognito-idp:AdminDeleteUserAttributes',
+        'cognito-idp:DeleteUserPoolClient',
+        'cognito-idp:DeleteUserAttributes',
+        'cognito-idp:DeleteUserPool',
+        'cognito-idp:AdminDeleteUser',
+        'cognito-idp:DeleteIdentityProvider',
+        'cognito-idp:DeleteUser',
+      );
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:cognito-idp::',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':userpool/',
+            {
+              Ref: `${category}${resourceName}UserPoolId`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['UserPoolId'];
+
+  return { policy, attributes };
+}
+
+
 module.exports = {
   serviceWalkthrough,
   userPoolProviders,
   parseOAuthCreds,
   structureoAuthMetaData,
+  getIAMPolicies,
 };

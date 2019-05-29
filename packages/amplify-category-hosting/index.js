@@ -2,6 +2,8 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const categoryManager = require('./lib/category-manager');
 
+const category = 'hosting';
+
 async function add(context) {
   const {
     availableServices,
@@ -108,10 +110,26 @@ async function migrate(context) {
   await categoryManager.migrate(context);
 }
 
+async function getPermissionPolicies(context, resourceOpsMapping) {
+  const permissionPolicies = [];
+  const resourceAttributes = [];
+
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+    const { policy, attributes } = categoryManager.getIAMPolicies(
+      resourceName,
+      resourceOpsMapping[resourceName],
+    );
+    permissionPolicies.push(policy);
+    resourceAttributes.push({ resourceName, attributes, category });
+  });
+  return { permissionPolicies, resourceAttributes };
+}
+
 module.exports = {
   add,
   configure,
   publish,
   console,
   migrate,
+  getPermissionPolicies,
 };

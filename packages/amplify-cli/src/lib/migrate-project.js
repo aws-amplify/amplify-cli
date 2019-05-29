@@ -5,6 +5,7 @@ const ora = require('ora');
 const { makeId } = require('../extensions/amplify-helpers/make-id');
 const constants = require('../extensions/amplify-helpers/constants');
 const gitManager = require('../extensions/amplify-helpers/git-manager');
+const { readJsonFile } = require('../extensions/amplify-helpers/read-json-file');
 
 const spinner = ora('');
 const { prompt } = require('gluegun/prompt');
@@ -39,7 +40,7 @@ async function migrateProject(context) {
   }
 
   const projectConfigFilePath = getProjectConfigFilePath(projectPath);
-  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
+  const projectConfig = readJsonFile(projectConfigFilePath);
   // First level check
   // New projects also don't have projectPaths
   if (!projectConfig.projectPath) {
@@ -183,7 +184,7 @@ function persistMigrationContext(migrationInfo) {
 
 function getAmplifyMeta(projectPath) {
   const amplifyMetafilePath = getAmplifyMetaFilePath(projectPath);
-  return JSON.parse(fs.readFileSync(amplifyMetafilePath));
+  return readJsonFile(amplifyMetafilePath);
 }
 
 function persistAmplifyMeta(amplifyMeta, projectPath) {
@@ -196,7 +197,7 @@ function persistAmplifyMeta(amplifyMeta, projectPath) {
 
 function getCurrentAmplifyMeta(projectPath) {
   const currentAmplifyMetafilePath = getCurentAmplifyMetaFilePath(projectPath);
-  return JSON.parse(fs.readFileSync(currentAmplifyMetafilePath));
+  return readJsonFile(currentAmplifyMetafilePath);
 }
 
 function persistCurrentAmplifyMeta(currentAmplifyMeta, projectPath) {
@@ -267,7 +268,7 @@ function generateLocalAwsInfo(projectPath) {
   const dotConfigDirPath = getDotConfigDirPath(projectPath);
   const awsInfoFilePath = path.join(dotConfigDirPath, 'aws-info.json');
   if (fs.existsSync(awsInfoFilePath)) {
-    const awsInfo = JSON.parse(fs.readFileSync(awsInfoFilePath));
+    const awsInfo = readJsonFile(awsInfoFilePath);
     awsInfo.configLevel = 'project'; // Old version didn't support "General" configuation
     newAwsInfo = { NONE: awsInfo };
     fs.removeSync(awsInfoFilePath);

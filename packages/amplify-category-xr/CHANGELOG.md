@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.6...amplify-category-xr@1.5.7) (2019-05-21)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.5...amplify-category-xr@1.5.6) (2019-05-17)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.4...amplify-category-xr@1.5.5) (2019-04-30)
+
+
+### Bug Fixes
+
+* update CLI to handle UTF8 BOM ([#1357](https://github.com/aws-amplify/amplify-cli/issues/1357)) ([b0afa07](https://github.com/aws-amplify/amplify-cli/commit/b0afa07)), closes [#1355](https://github.com/aws-amplify/amplify-cli/issues/1355) [#1122](https://github.com/aws-amplify/amplify-cli/issues/1122)
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.3...amplify-category-xr@1.5.4) (2019-04-25)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.2...amplify-category-xr@1.5.3) (2019-04-24)
+
+
+### Bug Fixes
+
+* use JSON parse instead of require in xr ([#1312](https://github.com/aws-amplify/amplify-cli/issues/1312)) ([5f0a4e9](https://github.com/aws-amplify/amplify-cli/commit/5f0a4e9))
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.5.1...amplify-category-xr@1.5.2) (2019-04-16)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@1.4.0...amplify-category-xr@1.5.1) (2019-04-09)
 
 **Note:** Version bump only for package amplify-category-xr

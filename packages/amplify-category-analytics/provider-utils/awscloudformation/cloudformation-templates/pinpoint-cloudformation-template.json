@@ -183,7 +183,7 @@
                                 "           }",
                                 "       };",
                                 "       const pinpoint = new aws.Pinpoint({ apiVersion: '2016-12-01', region: event.ResourceProperties.region });",
-                                "       return pinpoint.createApp(params).promise()",
+                                "       pinpoint.createApp(params).promise()",
                                 "           .then((res) => {",
                                 "               responseData = res.ApplicationResponse;",
                                 "               response.send(event, context, response.SUCCESS, responseData);",
@@ -200,7 +200,7 @@
                     }
                 },
                 "Handler": "index.handler",
-                "Runtime": "nodejs6.10",
+                "Runtime": "nodejs8.10",
                 "Timeout": "300",
                 "Role": {
                     "Fn::GetAtt": [

@@ -6,7 +6,11 @@ const jetpack = require('fs-jetpack');
 const loadConfig = require('../../src/codegen-config');
 const generateTypes = require('../../src/commands/types');
 const constants = require('../../src/constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require('../../src/utils');
+const {
+  downloadIntrospectionSchemaWithProgress,
+  getFrontEndHandler,
+  getAppSyncAPIDetails,
+} = require('../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -45,6 +49,11 @@ const MOCK_PROJECT = {
   },
 };
 sync.mockReturnValue(MOCK_QUERIES);
+const MOCK_APIS = [
+  {
+    id: MOCK_API_ID,
+  },
+];
 
 getFrontEndHandler.mockReturnValue('javascript');
 
@@ -57,6 +66,7 @@ describe('command - types', () => {
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
     MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
+    getAppSyncAPIDetails.mockReturnValue(MOCK_APIS);
   });
 
   it('should generate types', async () => {
@@ -73,7 +83,7 @@ describe('command - types', () => {
       '',
       MOCK_TARGET,
       '',
-      { addTypename: true },
+      { addTypename: true, complexObjectSupport: 'auto' },
     );
   });
 

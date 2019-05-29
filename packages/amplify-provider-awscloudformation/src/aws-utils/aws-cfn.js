@@ -9,6 +9,7 @@ const aws = require('./aws.js');
 const S3 = require('./aws-s3');
 const providerName = require('../../lib/constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
+const configurationManager = require('../../lib/configuration-manager');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -22,28 +23,31 @@ const CFN_SUCCESS_STATUS = [
 
 const CNF_ERROR_STATUS = ['CREATE_FAILED', 'DELETE_FAILED', 'UPDATE_FAILED'];
 class CloudFormation {
-  constructor(context, awsClientWithCreds, userAgentAction) {
-    const initializeAwsClient = awsClientWithCreds
-      ? Promise.resolve(awsClientWithCreds)
-      : aws.configureWithCreds(context);
-
-    let userAgentParam;
-    if (userAgentAction) {
-      userAgentParam = formUserAgentParam(context, userAgentAction);
-    }
-
-    this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
-    this.pollQueueStacks = [];
-    this.stackEvents = [];
-
-    return initializeAwsClient.then((awsItem) => {
+  constructor(context, userAgentAction, options = {}) {
+    return (async () => {
+      let userAgentParam;
       if (userAgentAction) {
-        awsItem.config.update({ customUserAgent: userAgentParam });
+        userAgentParam = formUserAgentParam(context, userAgentAction);
       }
-      this.cfn = new awsItem.CloudFormation();
+
+      this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
+      this.pollQueueStacks = [];
+      this.stackEvents = [];
+      let cred;
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // no credential. New project
+      }
+      const userAgentOption = {};
+      if (userAgentAction) {
+        userAgentOption.customUserAgent = userAgentParam;
+      }
+
+      this.cfn = new aws.CloudFormation({ ...cred, ...options, ...userAgentOption });
       this.context = context;
       return this;
-    });
+    })();
   }
 
   createResourceStack(cfnParentStackParams) {
@@ -112,7 +116,8 @@ class CloudFormation {
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map((event) => {
         const err = [];
-        const resourceName = event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
+        const resourceName =
+          event.PhysicalResourceId.replace(envRegExp, '') || event.LogicalResourceId;
         const cfnURL = getCFNConsoleLink(event, this.cfn);
         err.push(`${chalk.bold('Resource Name:')} ${resourceName} (${event.ResourceType})`);
         err.push(`${chalk.bold('Event Type:')} ${getStatusToErrorMsg(event.ResourceStatus)}`);
@@ -128,7 +133,6 @@ class CloudFormation {
   readStackEvents(stackName) {
     this.pollForEvents = setInterval(() => this.addToPollQueue(stackName, 3), CFN_POLL_TIME);
   }
-
 
   pollStack(stackName) {
     return this.getStackEvents(stackName)
@@ -410,14 +414,34 @@ function showEvents(events) {
 
   if (events.length > 0) {
     console.log('\n');
-    console.log(columnify(events, {
-      columns: [
-        'ResourceStatus',
-        'LogicalResourceId',
-        'ResourceType',
-        'Timestamp',
-        'ResourceStatusReason',
-      ],
+    const COLUMNS = [
+      'ResourceStatus',
+      'LogicalResourceId',
+      'ResourceType',
+      'Timestamp',
+      'ResourceStatusReason',
+    ];
+
+    const e = events.map((ev) => {
+      const res = {};
+      const { ResourceStatus: resourceStatus } = ev;
+
+      let colorFn = chalk.default;
+      if (CNF_ERROR_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.red;
+      } else if (CFN_SUCCESS_STATUS.includes(resourceStatus)) {
+        colorFn = chalk.green;
+      }
+
+      COLUMNS.forEach((col) => {
+        if (ev[col]) {
+          res[col] = colorFn(ev[col]);
+        }
+      });
+      return res;
+    });
+    console.log(columnify(e, {
+      columns: COLUMNS,
       showHeaders: false,
     }));
   }
@@ -465,7 +489,8 @@ function getStatusToErrorMsg(status) {
 }
 
 function getCFNConsoleLink(event, cfn) {
-  if (event.ResourceStatus === 'CREATE_FAILED') { // Stacks get deleted and don't have perm link
+  if (event.ResourceStatus === 'CREATE_FAILED') {
+    // Stacks get deleted and don't have perm link
     return null;
   }
   const arn = event.StackId;

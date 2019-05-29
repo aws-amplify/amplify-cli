@@ -1,6 +1,5 @@
 const xrManager = require('./lib/xr-manager');
 const inquirer = require('inquirer');
-const fs = require('fs-extra');
 
 const SUMERIAN_SERVICE_NAME = 'Sumerian';
 const XR_CATEGORY_NAME = 'xr';
@@ -57,7 +56,7 @@ async function initEnv(context) {
     }
   }
 
-  const backendConfig = JSON.parse(fs.readFileSync(context.amplify.pathManager.getBackendConfigFilePath()));
+  const backendConfig = context.amplify.readJsonFile(context.amplify.pathManager.getBackendConfigFilePath());
   const xrResources = Object.keys(backendConfig.xr);
 
   if (xrResources.length > 0) {
@@ -71,7 +70,26 @@ async function initEnv(context) {
   }
 }
 
+async function getPermissionPolicies(context, resourceOpsMapping) {
+  const permissionPolicies = [];
+  const resourceAttributes = [];
+
+  Object.keys(resourceOpsMapping).forEach((resourceName) => {
+    const { policy, attributes } = xrManager.getIAMPolicies(
+      context,
+      resourceName,
+      resourceOpsMapping[resourceName],
+    );
+    permissionPolicies.push(policy);
+    resourceAttributes.push({ resourceName, attributes, category: XR_CATEGORY_NAME });
+  });
+
+  return { permissionPolicies, resourceAttributes };
+}
+
+
 module.exports = {
   console,
   initEnv,
+  getPermissionPolicies,
 };

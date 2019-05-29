@@ -375,6 +375,39 @@ test('Test ModelConnectionTransformer with sortField fails if not specified in a
     expect(() => { transformer.transform(validSchema) }).toThrowError()
 });
 
+test('Test ModelConnectionTransformer with sortField creates a connection resolver with a sort key condition.', () => {
+    const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(name: "PostComments", sortField: "createdAt")
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+        post: Post @connection(name: "PostComments", sortField: "createdAt")
+        createdAt: AWSDateTime
+    }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined()
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy()
+    const schemaDoc = parse(out.schema)
+
+    // Post.comments field
+    const postType = getObjectType(schemaDoc, 'Post')
+    expectFields(postType, ['comments'])
+    const commentField = postType.fields.find(f => f.name.value === 'comments')
+    expect(commentField.arguments.length).toEqual(5)
+    expectArguments(commentField, ['createdAt', 'filter', 'limit', 'nextToken', 'sortDirection'])
+});
+
 test('Test ModelConnectionTransformer throws with invalid key fields', () => {
     const transformer = new GraphQLTransform({
         transformers: [

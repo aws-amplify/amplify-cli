@@ -121,17 +121,14 @@ const authSelectionMap = [
 
 const attributeProviderMap = {
   address: {
-    facebook: {
-      attr: 'address',
-      scope: 'default',
-    },
+    facebook: {},
     google: {},
     loginwithamazon: {},
   },
   birthdate: {
     facebook: {
       attr: 'birthday',
-      scope: 'user_birthday',
+      scope: 'public_profile',
     },
     google: {
       attr: 'birthdays',
@@ -156,7 +153,7 @@ const attributeProviderMap = {
   family_name: {
     facebook: {
       attr: 'last_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'family_name',
@@ -167,7 +164,7 @@ const attributeProviderMap = {
   gender: {
     facebook: {
       attr: 'gender',
-      scope: 'user_gender',
+      scope: 'public_profile',
     },
     google: {
       attr: 'genders',
@@ -178,7 +175,7 @@ const attributeProviderMap = {
   given_name: {
     facebook: {
       attr: 'given_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'given_name',
@@ -187,10 +184,7 @@ const attributeProviderMap = {
     loginwithamazon: {},
   },
   locale: {
-    facebook: {
-      attr: 'location',
-      scope: 'user_location',
-    },
+    facebook: {},
     google: {},
     loginwithamazon: {
       attr: 'postal_code',
@@ -200,7 +194,7 @@ const attributeProviderMap = {
   middle_name: {
     facebook: {
       attr: 'middle_name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {},
     loginwithamazon: {},
@@ -208,7 +202,7 @@ const attributeProviderMap = {
   name: {
     facebook: {
       attr: 'name',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'name',
@@ -235,7 +229,7 @@ const attributeProviderMap = {
   picture: {
     facebook: {
       attr: 'picture',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'picture',
@@ -266,7 +260,7 @@ const attributeProviderMap = {
   username: {
     facebook: {
       attr: 'id',
-      scope: 'default',
+      scope: 'public_profile',
     },
     google: {
       attr: 'sub',
@@ -276,6 +270,14 @@ const attributeProviderMap = {
       attr: 'user_id',
       scope: 'profile:user_id',
     },
+  },
+  updated_at: {
+    facebook: {
+      attr: 'updated_at',
+      scope: 'public_profile',
+    },
+    google: {},
+    loginwithamazon: {},
   },
 };
 
@@ -302,8 +304,8 @@ const coreAttributes = [
     name: 'Locale',
     value: 'locale',
   }, {
-    name: 'Middle Name',
-    value: 'middle_name',
+    name: 'Given Name',
+    value: 'given_name',
   },
   {
     name: 'Name',
@@ -432,7 +434,7 @@ const oAuthFlows = [
   },
   {
     name: 'Implicit grant',
-    value: 'token',
+    value: 'implicit',
   },
 ];
 

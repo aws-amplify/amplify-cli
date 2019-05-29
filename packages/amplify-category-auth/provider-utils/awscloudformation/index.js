@@ -1,4 +1,3 @@
-const fs = require('fs');
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
@@ -124,7 +123,7 @@ function saveResourceParameters(
 
 async function addResource(context, category, service) {
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const {
     cfnFilename,
     defaultValuesFilename,
@@ -132,7 +131,9 @@ async function addResource(context, category, service) {
     serviceWalkthroughFilename,
     provider,
   } = serviceMetadata;
-  const projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
+  const disallowedChars = /[^A-Za-z0-9]+/g;
+  projectName = projectName.replace(disallowedChars, '');
 
   return serviceQuestions(
     context,
@@ -175,7 +176,7 @@ async function addResource(context, category, service) {
 async function updateResource(context, category, serviceResult) {
   const { service, resourceName } = serviceResult;
   let props = {};
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const {
     cfnFilename,
     defaultValuesFilename,
@@ -273,7 +274,7 @@ async function updateResource(context, category, serviceResult) {
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))
+  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
     .Cognito;
   const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = srvcMetaData;
 
@@ -356,7 +357,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
+  const servicesMetadata = amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
   const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 
@@ -525,7 +526,7 @@ function getCognitoOutput(amplifyMeta) {
 
 async function openUserPoolConsole(context, region, userPoolId) {
   const userPoolConsoleUrl =
-    `https://console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}`;
+    `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
   await opn(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
@@ -533,11 +534,26 @@ async function openUserPoolConsole(context, region, userPoolId) {
 
 async function openIdentityPoolConsole(context, region, identityPoolId) {
   const identityPoolConsoleUrl =
-    `https://console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
+    `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
   await opn(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
 }
+
+function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
+
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return;
+  }
+
+  return getIAMPolicies(resourceName, crudOptions);
+}
+
 
 module.exports = {
   addResource,
@@ -548,4 +564,5 @@ module.exports = {
   copyCfnTemplate,
   migrate,
   console,
+  getPermissionPolicies,
 };

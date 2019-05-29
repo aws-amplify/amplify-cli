@@ -33,7 +33,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 
 
 function console(context, service) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { openConsole } = require(serviceWalkthroughSrc);
@@ -48,7 +48,7 @@ function console(context, service) {
 
 function addResource(context, category, service, options) {
   let answers;
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -99,10 +99,9 @@ function addResource(context, category, service, options) {
     });
 }
 
-
 async function updateResource(context, category, service) {
   let answers;
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   let { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -152,7 +151,7 @@ async function updateResource(context, category, service) {
 }
 
 async function migrateResource(context, projectPath, service, resourceName) {
-  serviceMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../supported-services.json`))[service];
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = require(serviceWalkthroughSrc);
@@ -165,6 +164,26 @@ async function migrateResource(context, projectPath, service, resourceName) {
   return await migrate(context, projectPath, resourceName);
 }
 
+function addDatasource(context, category, datasource) {
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-datasources.json`)[datasource];
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  return serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename);
+}
+
+function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const { serviceWalkthroughFilename } = serviceMetadata;
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
+  const { getIAMPolicies } = require(serviceWalkthroughSrc);
+
+  if (!getPermissionPolicies) {
+    context.print.info(`No policies found for ${resourceName}`);
+    return;
+  }
+
+  return getIAMPolicies(resourceName, crudOptions);
+}
+
 module.exports = {
-  addResource, updateResource, console, migrateResource,
+  addResource, updateResource, console, migrateResource, addDatasource, getPermissionPolicies,
 };

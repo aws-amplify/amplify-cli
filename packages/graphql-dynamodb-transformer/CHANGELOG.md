@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.6.1...graphql-dynamodb-transformer@3.7.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** backward compatibility ([de3e47c](https://github.com/aws-amplify/amplify-cli/commit/de3e47c))
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** add more specific mapping ([5dc2d3b](https://github.com/aws-amplify/amplify-cli/commit/5dc2d3b))
+* **graphql-dynamodb-transformer:** always output stream arn ([df1712b](https://github.com/aws-amplify/amplify-cli/commit/df1712b)), closes [#980](https://github.com/aws-amplify/amplify-cli/issues/980)
+
+
+
+
+
+## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.6.0...graphql-dynamodb-transformer@3.6.1) (2019-05-17)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** always output datasource name ([#1182](https://github.com/aws-amplify/amplify-cli/issues/1182)) ([a58e1ac](https://github.com/aws-amplify/amplify-cli/commit/a58e1ac))
+
+
+
+
+
+# [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.4.2...graphql-dynamodb-transformer@3.6.0) (2019-05-07)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** output table name ([#1215](https://github.com/aws-amplify/amplify-cli/issues/1215)) ([038b876](https://github.com/aws-amplify/amplify-cli/commit/038b876)), closes [#1145](https://github.com/aws-amplify/amplify-cli/issues/1145) [#1145](https://github.com/aws-amplify/amplify-cli/issues/1145)
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.4.2...graphql-dynamodb-transformer@3.5.0) (2019-05-06)
+
+
+### Features
+
+* **graphql-dynamodb-transformer:** output table name ([#1215](https://github.com/aws-amplify/amplify-cli/issues/1215)) ([038b876](https://github.com/aws-amplify/amplify-cli/commit/038b876)), closes [#1145](https://github.com/aws-amplify/amplify-cli/issues/1145) [#1145](https://github.com/aws-amplify/amplify-cli/issues/1145)
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.4.1...graphql-dynamodb-transformer@3.4.2) (2019-04-16)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [3.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.3.1...graphql-dynamodb-transformer@3.4.1) (2019-04-09)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

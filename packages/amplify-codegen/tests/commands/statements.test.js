@@ -5,7 +5,12 @@ const jetpack = require('fs-jetpack');
 const loadConfig = require('../../src/codegen-config');
 const generateStatements = require('../../src/commands/statements');
 const constants = require('../../src/constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require('../../src/utils');
+const {
+  downloadIntrospectionSchemaWithProgress,
+  getFrontEndHandler,
+  getAppSyncAPIDetails,
+} = require('../../src/utils');
+
 
 const MOCK_CONTEXT = {
   print: {
@@ -30,6 +35,11 @@ const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
 const MOCK_PROJECT_ROOT = 'MOCK_PROJECT_ROOT';
 
+const MOCK_APIS = [
+  {
+    id: MOCK_API_ID,
+  },
+];
 const MOCK_PROJECT = {
   includes: [MOCK_INCLUDE_PATH],
   schema: MOCK_SCHEMA,
@@ -53,6 +63,7 @@ describe('command - statements', () => {
       getProjects: jest.fn().mockReturnValue([MOCK_PROJECT]),
     });
     MOCK_CONTEXT.amplify.getEnvInfo.mockReturnValue({ projectPath: MOCK_PROJECT_ROOT });
+    getAppSyncAPIDetails.mockReturnValue(MOCK_APIS);
   });
 
   it('should generate statements', async () => {

@@ -6,15 +6,15 @@ const jetpack = require('fs-jetpack');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateTypes(context, forceDownloadSchema) {
   const frontend = getFrontEndHandler(context);
   if (frontend !== 'android') {
     const config = loadConfig(context);
     const projects = config.getProjects();
-
-    if (!projects.length) {
+    const apis = getAppSyncAPIDetails(context);
+    if (!projects.length || !apis.length) {
       context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
       return;
     }
@@ -39,7 +39,7 @@ async function generateTypes(context, forceDownloadSchema) {
       if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
-          cfg.amplifyExtension.graphQLApiId,
+          apis[0].id,
           schemaPath,
           cfg.amplifyExtension.region,
         );
@@ -48,6 +48,7 @@ async function generateTypes(context, forceDownloadSchema) {
       codeGenSpinner.start();
       generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
         addTypename: true,
+        complexObjectSupport: 'auto',
       });
       codeGenSpinner.succeed(`${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(path.resolve('.'), outputPath)}`);
     });
