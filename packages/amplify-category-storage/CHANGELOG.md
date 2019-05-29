@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.6.6...amplify-category-storage@1.7.0) (2019-05-29)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
 ## [1.6.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.6.5...amplify-category-storage@1.6.6) (2019-05-21)
 
 **Note:** Version bump only for package amplify-category-storage

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.10...amplify-category-api@1.6.0) (2019-05-29)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
 ## [1.5.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.9...amplify-category-api@1.5.10) (2019-05-24)
 
 **Note:** Version bump only for package amplify-category-api

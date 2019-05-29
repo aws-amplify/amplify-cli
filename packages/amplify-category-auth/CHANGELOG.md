@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.6...amplify-category-auth@1.6.0) (2019-05-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** match cognito token expiration date range ([eb4c9ee](https://github.com/aws-amplify/amplify-cli/commit/eb4c9ee)), closes [#1385](https://github.com/aws-amplify/amplify-cli/issues/1385)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
 ## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.5...amplify-category-auth@1.5.6) (2019-05-21)
 
 
