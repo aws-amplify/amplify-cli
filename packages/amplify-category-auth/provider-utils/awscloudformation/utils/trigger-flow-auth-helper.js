@@ -58,10 +58,28 @@ const createTrigger = async (
       const functionName = `${resourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
       if (previousTriggers && previousTriggers[keys[t]]) {
-        const updatedLambda = await context.amplify.updateTrigger(keys[t], values[t], context, functionName, triggerEnvs, category, parentStack, targetPath);
+        const updatedLambda = await context.amplify.updateTrigger(
+          keys[t],
+          values[t],
+          context,
+          functionName,
+          triggerEnvs,
+          category,
+          parentStack,
+          targetPath,
+        );
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
       } else {
-        const newLambda = await context.amplify.addTrigger(keys[t], values[t], context, functionName, triggerEnvs, category, parentStack, targetPath);
+        const newLambda = await context.amplify.addTrigger(
+          keys[t],
+          values[t],
+          context,
+          functionName,
+          triggerEnvs,
+          category,
+          parentStack,
+          targetPath,
+        );
         triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
       }
     }
