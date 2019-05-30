@@ -63,9 +63,11 @@ describe('cloudfront-manager', () => {
         }
     }; 
 
+    const mockcftInvalidationData = {}; 
+
     const mockInvalidateMethod = jest.fn(()=>{
         return {
-            promise: () => Promise.resolve({}),
+            promise: () => Promise.resolve(mockcftInvalidationData),
         };
     }); 
     
@@ -85,6 +87,6 @@ describe('cloudfront-manager', () => {
         const result = await cloudFrontManager.invalidateCloudFront(mockContext); 
         expect(result).toBe(mockContext); 
         expect(mockInvalidateMethod).toBeCalled(); 
-        expect(mockContext.exeInfo.cftInvalidationData).toBeDefined(); 
+        expect(mockContext.exeInfo.cftInvalidationData).toEqual(mockcftInvalidationData); 
     });
 })
