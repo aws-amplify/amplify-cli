@@ -31,7 +31,7 @@ async function invalidate(context) {
     };
 
     try {
-      const data = await cloudFront.createInvalidation(invalidateParams);
+      const data = await cloudFront.createInvalidation(invalidateParams).promise();
       context.print.info('CloudFront invalidation request sent successfuly.');
       context.print.info(chalk.green(CloudFrontSecureURL));
       context.exeInfo.cftInvalidationData = data;
