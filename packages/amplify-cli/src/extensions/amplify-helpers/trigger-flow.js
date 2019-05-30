@@ -255,7 +255,7 @@ const updateTrigger = async (
     }
     return updatedTrigger;
   } catch (e) {
-    throw new Error('Unable to copy lambda functions');
+    throw new Error('Unable to update lambda function');
   }
 };
 

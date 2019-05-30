@@ -95,6 +95,7 @@ Resources:
           Required: true
           Mutable: true
         <% } %>
+      <% } %>
       <%if (props.triggerCapabilities && props.triggerCapabilities !== "{}") { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
