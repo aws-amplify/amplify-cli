@@ -262,7 +262,6 @@ export default class FunctionTransformer extends Transformer {
     // Update the create, update, and delete input objects to account for any changes to the primary key.
     private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         if (this.isPrimaryKey(directive)) {
-            console.log(`Updating input structures for key: ${JSON.stringify(getDirectiveArguments(directive))}`);
             const directiveArgs: KeyArguments = getDirectiveArguments(directive);            
             const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (createInput) {
