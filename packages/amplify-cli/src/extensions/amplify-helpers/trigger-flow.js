@@ -1,7 +1,12 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { readdirSync, statSync, readFileSync, unlinkSync } = require('fs');
+const {
+  readdirSync,
+  statSync,
+  readFileSync,
+  unlinkSync,
+} = require('fs');
 const { copySync } = require('fs-extra');
 const { flattenDeep, uniq } = require('lodash');
 const { join } = require('path');
