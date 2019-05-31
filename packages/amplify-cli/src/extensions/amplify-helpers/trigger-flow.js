@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { readdirSync, statSync, readFileSync } = require('fs');
+const { readdirSync, statSync, readFileSync, unlinkSync } = require('fs');
 const { copySync } = require('fs-extra');
 const { flattenDeep, uniq } = require('lodash');
 const { join } = require('path');
@@ -214,14 +214,14 @@ const addTrigger = async (
 };
 
 const updateTrigger = async (
-  modules,
   key,
   values,
   context,
   resourceName,
   triggerEnvs,
-  targetPath,
   category,
+  parentStack,
+  targetPath,
 ) => {
   const updatedTrigger = {};
   let update;
@@ -236,6 +236,7 @@ const updateTrigger = async (
       parentResource: resourceName,
       resourceName,
       functionName: resourceName,
+      parentStack,
       triggerEnvs: JSON.stringify(triggerEnvs[key]),
       roleName: resourceName,
     });
@@ -253,9 +254,32 @@ const updateTrigger = async (
         },
       );
     }
+
+    await cleanFunctions(key, values, category, context, targetPath);
+
     return updatedTrigger;
   } catch (e) {
     throw new Error('Unable to update lambda function');
+  }
+};
+
+const deleteDeselectedTriggers = async (
+  currentTriggers,
+  previousTriggers,
+  resourceName,
+  targetDir,
+  context,
+) => {
+  const currentKeys = Object.keys(currentTriggers);
+  const previousKeys = Object.keys(previousTriggers);
+  // const newKeyValues = Object.assign(currentTriggers);
+
+  for (let p = 0; p < previousKeys.length; p += 1) {
+    if (!currentKeys.includes(previousKeys[p])) {
+      const functionName = `${resourceName}${previousKeys[p]}`;
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await context.amplify.deleteTrigger(context, functionName, targetPath);
+    }
   }
 };
 
@@ -281,7 +305,7 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
   if (!dirContents.includes(`${value}.js`)) {
     let source = '';
     if (value === 'custom') {
-      source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-module.js`;
+      source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-custom.js`;
     } else {
       source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
     }
@@ -290,6 +314,32 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
   }
 };
 
+const cleanFunctions = async (key, values, category, context, targetPath) => {
+  const meta = context.amplify.getTriggerMetadata(
+    `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}`,
+    key,
+  );
+  const dirContents = readdirSync(targetPath);
+  for (let x = 0; x < dirContents.length; x += 1) {
+    if (dirContents[x] !== 'custom.js') {
+      if (meta[`${dirContents[x]}.js`] && !values.includes(dirContents[x])) {
+        try {
+          unlinkSync(`${targetPath}/${dirContents[x]}`);
+        } catch (e) {
+          throw new Error('Failed to delete module');
+        }
+      }
+    }
+    if (dirContents[x] === 'custom.js' && !values.includes(dirContents[x])) {
+      try {
+        unlinkSync(`${targetPath}/${dirContents[x]}`);
+      } catch (e) {
+        throw new Error('Failed to delete module');
+      }
+    }
+  }
+  return null;
+};
 
 /**
  * @function
@@ -302,7 +352,6 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
 const parseTriggerSelections = (triggers, previous) => {
   const triggerObj = {};
   const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : null;
-  const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
   for (let i = 0; i < triggers.length; i += 1) {
     if (typeof triggers[i] === 'string') {
       triggers[i] = JSON.parse(triggers[i]);
@@ -318,11 +367,6 @@ const parseTriggerSelections = (triggers, previous) => {
     if (previousTriggers && previousTriggers[currentTrigger]) {
       triggerObj[currentTrigger] = uniq(triggerObj[currentTrigger]
         .concat(previousTriggers[currentTrigger]));
-    }
-  }
-  for (let x = 0; x < previousKeys.length; x += 1) {
-    if (!triggerObj[previousKeys[x]]) {
-      triggerObj[previousKeys[x]] = previousTriggers[previousKeys[x]];
     }
   }
   return triggerObj;
@@ -344,7 +388,7 @@ const getTriggerEnvVariables = (context, trigger, category) => {
     return env;
   }
 
-  return [];
+  return null;
 };
 
 module.exports = {
@@ -353,6 +397,7 @@ module.exports = {
   updateTrigger,
   deleteTrigger,
   deleteAllTriggers,
+  deleteDeselectedTriggers,
   parseTriggerSelections,
   getTriggerMetadata,
   getTriggerPermissions,

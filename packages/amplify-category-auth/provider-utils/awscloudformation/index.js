@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
+const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
+
 
 let serviceMetadata;
 
@@ -155,6 +157,8 @@ async function addResource(context, category, service) {
        * ensuring that manual entries override defaults */
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
+      await lambdaTriggers(props, context);
+
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(
         context,
@@ -216,21 +220,13 @@ async function updateResource(context, category, serviceResult) {
           delete context.updatingAuth[safeDefaults[i]];
         }
       }
-      let lambdas = [];
-      if (result.triggerCapabilities && result.triggerCapabilities.length > 0) {
-        lambdas = Object.keys(JSON.parse(result.triggerCapabilities));
-      }
-      const availableTriggers = Object.keys(context.amplify.getTriggerMetadata(
-        `${__dirname}/triggers`,
-        'cognito',
-      ));
-      availableTriggers.forEach((c) => {
-        if (!lambdas.includes(c)) {
-          delete context.updatingAuth[c];
-        }
-      });
+
       props = Object.assign(defaults, context.updatingAuth, result);
 
+      const providerPlugin = context.amplify.getPluginInstance(context, provider);
+      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggerCapabilities;
+
+      await lambdaTriggers(props, context, JSON.parse(previouslySaved));
 
       if (
         (!result.updateFlow && !result.thirdPartyAuth) ||
@@ -552,6 +548,22 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   }
 
   return getIAMPolicies(resourceName, crudOptions);
+}
+
+async function lambdaTriggers(coreAnswers, context, previouslySaved) {
+  if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
+    const formTriggers = await handleTriggers(context, coreAnswers, previouslySaved);
+    coreAnswers.triggerCapabilities = formTriggers ?
+      JSON.stringify(formTriggers) :
+      [];
+
+    if (formTriggers) {
+      coreAnswers.parentStack = { Ref: 'AWS::StackId' };
+    }
+
+    // determine permissions needed for each trigger module
+    coreAnswers.permissions = context.amplify.getTriggerPermissions(context, coreAnswers.triggerCapabilities, 'amplify-category-auth');
+  }
 }
 
 

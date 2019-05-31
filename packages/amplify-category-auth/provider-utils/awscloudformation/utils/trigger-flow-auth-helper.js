@@ -5,7 +5,7 @@ const { difference, pull } = require('lodash');
  * @function createTrigger
  * @param {string} category
  * @param {string} parentCategory
- * @param {string} parentResource
+ * @param {object} coreAnswers
  * @param {object} options
  * @param {object} context The CLI Context
  * @param {object} previousTriggers
@@ -14,7 +14,7 @@ const { difference, pull } = require('lodash');
 const createTrigger = async (
   category,
   parentCategory,
-  parentResource,
+  coreAnswers,
   options,
   context,
   previousTriggers,
@@ -45,9 +45,6 @@ const createTrigger = async (
   // creating array of trigger names
   const keys = Object.keys(triggerCapabilities);
 
-  // creating array of previously configured trigger names
-  const previousKeys = previousTriggers ? Object.keys(previousTriggers) : [];
-
   // creating array of trigger values
   const values = Object.values(triggerCapabilities);
 
@@ -67,6 +64,7 @@ const createTrigger = async (
           category,
           parentStack,
           targetPath,
+          previousTriggers,
         );
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
       } else {
@@ -85,14 +83,24 @@ const createTrigger = async (
     }
   }
 
-  // loop through previous triggers to find those that are not in the current triggers, and delete
-  for (let p = 0; p < previousKeys.length; p += 1) {
-    if (!keys.includes(previousKeys[p])) {
-      const functionName = `${resourceName}${previousKeys[p]}`;
-      const targetPath = `${targetDir}/function/${functionName}`;
-      await context.amplify.deleteTrigger(context, functionName, targetPath);
+  if (previousTriggers) {
+    await context.amplify.deleteDeselectedTriggers(
+      triggerCapabilities,
+      previousTriggers,
+      resourceName,
+      targetDir,
+      context,
+    );
+    const previousKeys = Object.keys(previousTriggers);
+
+    for (let i = 0; i < previousKeys.length; i += 1) {
+      if (!keys.includes(previousKeys[i])) {
+        delete coreAnswers[previousKeys[i]];
+        console.log('previousTriggers[i]', previousTriggers[i]);
+      }
     }
   }
+
   return triggerKeyValues;
 };
 
@@ -135,24 +143,18 @@ const sanitizePrevious = async (context, answers, previous) => {
 /*
   Creating Lambda Triggers
 */
-async function handleTriggers(context, coreAnswers) {
-  const previousTriggers = context.updatingAuth &&
-    context.updatingAuth.triggerCapabilities &&
-    context.updatingAuth.triggerCapabilities.length > 0 ?
-    context.updatingAuth.triggerCapabilities :
-    null;
-
+async function handleTriggers(context, coreAnswers, previouslySaved) {
   const resourceName = context.updatingAuth ?
     context.updatingAuth.resourceName :
     coreAnswers.resourceName;
 
   // if all triggers have been removed from auth, we delete all previously created triggers
   if (
-    !previousTriggers === null &&
+    !previouslySaved === null &&
     (!coreAnswers.triggerCapabilities || coreAnswers.triggerCapabilities.length < 1)
   ) {
     coreAnswers.dependsOn = [];
-    await createTrigger('amplify-category-auth', 'auth', resourceName, { deleteAll: true, resourceName }, context, JSON.parse(previousTriggers));
+    await createTrigger('amplify-category-auth', 'auth', coreAnswers, { deleteAll: true, resourceName }, context, previouslySaved);
     return null;
   }
 
@@ -170,9 +172,9 @@ async function handleTriggers(context, coreAnswers) {
   };
 
   // create function resources and dependsOn block
-  const lambdas = await createTrigger('amplify-category-auth', 'auth', coreAnswers.resourceName, parameters, context, JSON.parse(previousTriggers));
+  const lambdas = await createTrigger('amplify-category-auth', 'auth', coreAnswers, parameters, context, previouslySaved);
   coreAnswers = Object.assign(coreAnswers, lambdas);
-  coreAnswers.dependsOn = [];
+  coreAnswers.dependsOn = coreAnswers.dependsOn || [];
   Object.values(lambdas).forEach((l) => {
     coreAnswers.dependsOn.push({
       category: 'function',

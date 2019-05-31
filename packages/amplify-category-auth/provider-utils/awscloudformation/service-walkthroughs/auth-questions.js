@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { sanitizePrevious, handleTriggers } = require('../utils/trigger-flow-auth-helper');
+const { sanitizePrevious } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
 const category = 'auth';
@@ -165,18 +165,6 @@ async function serviceWalkthrough(
         });
       }
     }
-
-    const formTriggers = await handleTriggers(context, coreAnswers);
-    coreAnswers.triggerCapabilities = formTriggers ?
-      JSON.stringify(formTriggers) :
-      [];
-
-    if (formTriggers) {
-      coreAnswers.parentStack = { Ref: 'AWS::StackId' };
-    }
-
-    // determine permissions needed for each trigger module
-    coreAnswers.permissions = context.amplify.getTriggerPermissions(context, coreAnswers.triggerCapabilities, 'amplify-category-auth');
   }
 
   // formatting data for user pool providers / hosted UI

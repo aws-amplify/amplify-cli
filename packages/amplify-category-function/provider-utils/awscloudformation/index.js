@@ -53,8 +53,8 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
         copyJobs.push(...[
           {
             dir: pluginDir,
-            template: 'function-template-dir/index.js',
-            target: `${targetDir}/${category}/${options.resourceName}/src/index.js.ejs`,
+            template: 'function-template-dir/index.js.ejs',
+            target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
           },
           {
             dir: pluginDir,
@@ -167,15 +167,22 @@ async function addResource(context, category, service, options, parameters) {
   return answers.resourceName;
 }
 
-async function updateResource(context, category, service) {
+async function updateResource(context, category, service, parameters) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
-  const { serviceWalkthroughFilename } = serviceMetadata;
+  const { cfnFilename, serviceWalkthroughFilename } = serviceMetadata;
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
-  const result = await updateWalkthrough(context);
+  let result;
+
+  if (!parameters) {
+    result = await updateWalkthrough(context);
+  } else {
+    result = { answers: parameters };
+  }
+
 
   if (result.answers) {
     ({ answers } = result);
@@ -192,10 +199,7 @@ async function updateResource(context, category, service) {
     );
   }
 
-  if (answers.parameters) {
-    createParametersFile(context, answers.parameters, answers.resourceName);
-  }
-
+  copyCfnTemplate(context, category, answers, cfnFilename, parameters);
 
   await openEditor(context, category, answers);
 

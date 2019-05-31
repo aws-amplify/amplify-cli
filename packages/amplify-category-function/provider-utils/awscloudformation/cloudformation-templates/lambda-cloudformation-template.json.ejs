@@ -94,7 +94,10 @@
                     "MODULES": {
                         "Ref": "modules"
                     },
-                    "REGION": { "Ref": "AWS::Region"}<% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>}}
+                    "REGION": { 
+                        "Ref": "AWS::Region"
+                    }
+                    <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
                     <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
                     ,
                     <% for (let i = 0; i < JSON.parse(props.triggerEnvs).length; i++) { %>
