@@ -18,6 +18,10 @@ const defaultPrompMap = [
     value: 'defaultSocial',
   },
   {
+    name: 'Default configuration with Customized Events (Triggers)',
+    value: 'defaultTriggers',
+  },
+  {
     name: 'Manual configuration',
     value: 'manual',
   },
@@ -33,6 +37,11 @@ const updateFlowMap = [
   {
     name: 'Apply default configuration with Social Provider (Federation)',
     value: 'defaultSocial',
+    conditionKey: 'useDefault',
+  },
+  {
+    name: 'Default configuration with Customized Events (Triggers)',
+    value: 'defaultTriggers',
     conditionKey: 'useDefault',
   },
   {

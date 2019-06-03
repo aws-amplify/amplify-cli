@@ -3,7 +3,6 @@ const { uniq, flatten, flattenDeep } = require('lodash');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 
-
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) { // eslint-disable-line max-len
   const defaultValuesSrc = `${__dirname}/../assets/${defaultValuesFilename}`;
   const stringMapsSrc = `${__dirname}/../assets/${stringMapsFilename}`;

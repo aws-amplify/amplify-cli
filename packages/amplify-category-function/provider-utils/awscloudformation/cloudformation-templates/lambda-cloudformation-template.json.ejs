@@ -91,9 +91,11 @@
                     "ENV": {
                         "Ref": "env"
                     },
+                    <% if (props.modules) { %>
                     "MODULES": {
                         "Ref": "modules"
                     },
+                    <% } %>
                     "REGION": { 
                         "Ref": "AWS::Region"
                     }

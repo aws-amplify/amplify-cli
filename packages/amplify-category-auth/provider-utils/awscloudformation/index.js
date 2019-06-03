@@ -145,11 +145,16 @@ async function addResource(context, category, service) {
   )
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, generalDefaults, roles } = require(defaultValuesSrc);
+      const {
+        functionMap,
+        generalDefaults,
+        getAllDefaults,
+        roles,
+      } = require(defaultValuesSrc);
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
-      if (['default', 'defaultSocial'].includes(result.useDefault)) {
+      if (['default', 'defaultSocial', 'defaultTriggers'].includes(result.useDefault)) {
         result = Object.assign(generalDefaults(projectName), result);
       }
 
@@ -157,7 +162,7 @@ async function addResource(context, category, service) {
        * ensuring that manual entries override defaults */
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
-      await lambdaTriggers(props, context);
+      await lambdaTriggers(props, context, null, getAllDefaults);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(
@@ -215,7 +220,7 @@ async function updateResource(context, category, serviceResult) {
         }
       }
 
-      if (result.useDefault && ['default', 'defaultSocial'].includes(result.useDefault)) {
+      if (result.useDefault && ['default', 'defaultSocial', 'defaultTriggers'].includes(result.useDefault)) {
         for (let i = 0; i < safeDefaults.length; i += 1) {
           delete context.updatingAuth[safeDefaults[i]];
         }
@@ -550,20 +555,45 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-async function lambdaTriggers(coreAnswers, context, previouslySaved) {
+async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefaults) {
+  let triggerKeyValues = {};
   if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
-    const formTriggers = await handleTriggers(context, coreAnswers, previouslySaved);
-    coreAnswers.triggerCapabilities = formTriggers ?
-      JSON.stringify(formTriggers) :
+    triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
+    coreAnswers.triggerCapabilities = triggerKeyValues ?
+      JSON.stringify(triggerKeyValues) :
       [];
 
-    if (formTriggers) {
+    if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
+      if (triggerKeyValues.DefineAuthChallenge) {
+        if (triggerKeyValues.DefineAuthChallenge.includes('captcha') && (coreAnswers.mfaConfiguration === 'OFF' || !coreAnswers.mfaConfiguration)) {
+          const defaults = getAllDefaults(coreAnswers.resourceName);
+          coreAnswers.mfaConfiguration = 'ON';
+          if (!coreAnswers.mfaTypes || coreAnswers.mfaTypes.length < 1) {
+            coreAnswers.mfaTypes = defaults.mfaTypes;
+          }
+          if (!coreAnswers.smsAuthenticationMessage) {
+            coreAnswers.mfaTypes = defaults.smsAuthenticationMessage;
+          }
+          if (!coreAnswers.smsVerificationMessage) {
+            coreAnswers.mfaTypes = defaults.smsVerificationMessage;
+          }
+        }
+      }
     }
 
     // determine permissions needed for each trigger module
     coreAnswers.permissions = context.amplify.getTriggerPermissions(context, coreAnswers.triggerCapabilities, 'amplify-category-auth');
+  } else if (previouslySaved) {
+    const targetDir = context.amplify.pathManager.getBackendDirPath();
+    Object.keys(previouslySaved).forEach((p) => {
+      delete coreAnswers[p];
+    });
+    await context.amplify
+      .deleteAllTriggers(previouslySaved, coreAnswers.resourceName, targetDir, context);
   }
+  const dependsOnKeys = Object.keys(triggerKeyValues).map(i => `${coreAnswers.resourceName}${i}`);
+  coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 }
 
 

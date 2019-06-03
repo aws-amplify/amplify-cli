@@ -24,7 +24,7 @@ const { join } = require('path');
 const triggerFlow = async (context, resource, category, previousTriggers = {}) => {
   // handle missing params
   if (!resource) throw new Error('No resource provided to trigger question flow');
-  if (!category) throw new Error('No resource provided to trigger question flow');
+  if (!category) throw new Error('No category provided to trigger question flow');
 
   // make sure resource is capitalized
   const resourceName = `${resource.charAt(0).toUpperCase()}${resource.slice(1)}`;
@@ -335,7 +335,7 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
         }
       }
     }
-    if (dirContents[x] === 'custom.js' && !values.includes(dirContents[x])) {
+    if (dirContents[x] === 'custom.js' && !values.includes('custom')) {
       try {
         unlinkSync(`${targetPath}/${dirContents[x]}`);
       } catch (e) {
@@ -377,7 +377,6 @@ const parseTriggerSelections = (triggers, previous) => {
   return triggerObj;
 };
 
-
 const getTriggerEnvVariables = (context, trigger, category) => {
   let env = [];
   const meta = context.amplify.getTriggerMetadata(
@@ -396,6 +395,30 @@ const getTriggerEnvVariables = (context, trigger, category) => {
   return null;
 };
 
+const dependsOnBlock = (context, triggerKeys = [], provider) => {
+  if (!context) throw new Error('No context provided to dependsOnBlock');
+  if (!provider) throw new Error('No provider provided to dependsOnBlock');
+  const dependsOnArray = context.updatingAuth && context.updatingAuth.dependsOn ?
+    context.updatingAuth.dependsOn :
+    [];
+  triggerKeys.forEach((l) => {
+    if (!dependsOnArray.find(a => a.resourceName === l)) {
+      dependsOnArray.push({
+        category: 'function',
+        resourceName: l,
+        triggerProvider: provider,
+        attributes: ['Arn', 'Name'],
+      });
+    }
+  });
+  dependsOnArray.forEach((x, index) => {
+    if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
+      dependsOnArray.splice(dependsOnArray[index], 1);
+    }
+  });
+  return dependsOnArray;
+};
+
 module.exports = {
   triggerFlow,
   addTrigger,
@@ -403,6 +426,7 @@ module.exports = {
   deleteTrigger,
   deleteAllTriggers,
   deleteDeselectedTriggers,
+  dependsOnBlock,
   parseTriggerSelections,
   getTriggerMetadata,
   getTriggerPermissions,

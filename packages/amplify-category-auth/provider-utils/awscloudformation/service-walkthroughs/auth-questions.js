@@ -106,7 +106,7 @@ async function serviceWalkthrough(
         if the user selects a default or fully manual config option during an update,
         we set the useDefault value so that the appropriate questions are displayed
       */
-      if (['manual', 'defaultSocial', 'default'].includes(answer.updateFlow)) {
+      if (['manual', 'defaultSocial', 'defaultTriggers', 'default'].includes(answer.updateFlow)) {
         answer.useDefault = answer.updateFlow;
         if (answer.useDefault === 'defaultSocial') {
           coreAnswers.hostedUI = true;
@@ -115,7 +115,7 @@ async function serviceWalkthrough(
       }
       coreAnswers = { ...coreAnswers, ...answer };
       j += 1;
-    } else if (!context.updatingAuth && answer.useDefault && ['default', 'defaultSocial'].includes(answer.useDefault)) {
+    } else if (!context.updatingAuth && answer.useDefault && ['default', 'defaultSocial', 'defaultTriggers'].includes(answer.useDefault)) {
       // if the user selects defaultSocial, we set hostedUI to true to avoid reasking this question
       coreAnswers = { ...coreAnswers, ...answer };
       coreAnswers.authSelections = 'identityPoolAndUserPool';
