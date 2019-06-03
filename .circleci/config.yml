@@ -83,7 +83,7 @@ jobs:
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh
         - run: expect .circleci/aws_configure.exp
-        - run: amplify
+        - run: amplify-dev
         - run:
             name: "Clone auth test package"
             command: |
