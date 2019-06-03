@@ -12,7 +12,7 @@
     "lint-fix": "lerna run lint-fix",
     "clean": "rm -rf node_modules && lerna clean --yes",
     "production-build": "yarn && lerna run build",
-    "link-dev": "pushd packages/amplify-cli && ln -s $(pwd)/bin/amplify $(yarn global bin)/amplify-dev && popd",
+    "link-dev": "cd packages/amplify-cli && ln -s $(pwd)/bin/amplify $(yarn global bin)/amplify-dev && cd -",
     "rm-dev-link": "rm -f $(yarn global bin)/amplify-dev",
     "setup-dev": "yarn production-build && yarn rm-dev-link && yarn link-dev",
     "setup-dev-win": "lerna exec -- del /f package-lock.json && lerna bootstrap && cd packages/amplify-cli && del /f package-lock.json && npm link && cd ../.. && lerna run build",
