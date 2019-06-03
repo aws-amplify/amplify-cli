@@ -1,6 +1,6 @@
 import {
     ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, InputObjectTypeDefinitionNode
+    DefinitionNode, Kind, InputObjectTypeDefinitionNode, ListValueNode, ValueNode, StringValueNode
 } from 'graphql'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -163,9 +163,10 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     expect(authedField.directives[0].name.value).toEqual('aws_auth')
     expect(authedField.directives[0].arguments.length).toEqual(1)
     expect(authedField.directives[0].arguments[0].name.value).toEqual("cognito_groups")
-    expect(authedField.directives[0].arguments[0].value.values.length).toEqual(2)
-    expect(authedField.directives[0].arguments[0].value.values[0].value).toEqual("Bloggers")
-    expect(authedField.directives[0].arguments[0].value.values[1].value).toEqual("Readers")
+    const arg0 = <ListValueNode>authedField.directives[0].arguments[0].value
+    expect(arg0.values.length).toEqual(2)
+    expect((<StringValueNode>arg0.values[0]).value).toEqual("Bloggers")
+    expect((<StringValueNode>arg0.values[1]).value).toEqual("Readers")
     expect(authedField.directives[1].name.value).toEqual('aws_api_key')
     expect(authedField.directives[2].name.value).toEqual('aws_iam')
     expect(authedField.directives[3].name.value).toEqual('aws_oidc')
@@ -173,9 +174,10 @@ test('Test custom root query, mutation, and subscriptions.', () => {
     expect(authedField.directives[5].name.value).toEqual('aws_cognito_user_pools')
     expect(authedField.directives[5].arguments.length).toEqual(1)
     expect(authedField.directives[5].arguments[0].name.value).toEqual("cognito_groups")
-    expect(authedField.directives[5].arguments[0].value.values.length).toEqual(2)
-    expect(authedField.directives[5].arguments[0].value.values[0].value).toEqual("Bloggers")
-    expect(authedField.directives[5].arguments[0].value.values[1].value).toEqual("Readers")
+    const arg5 = <ListValueNode>authedField.directives[5].arguments[0].value
+    expect(arg5.values.length).toEqual(2)
+    expect((<StringValueNode>arg5.values[0]).value).toEqual("Bloggers")
+    expect((<StringValueNode>arg5.values[1]).value).toEqual("Readers")
     const mutationType = getObjectType(parsed, 'Mutation2');
     expectFields(mutationType, ['createPost', 'updatePost', 'deletePost', 'additionalMutationField'])
     const subscriptionType = getObjectType(parsed, 'Subscription2');
