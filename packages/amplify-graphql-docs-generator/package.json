@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/ejs": "^2.6.0",
     "@types/graphql": "^0.13.1",
-    "@types/handlebars": "4.0.39",
+    "@types/handlebars": "^4.1.0",
     "@types/jest": "23.3.1",
     "@types/node": "8.0.28",
     "@types/prettier": "^1.13.2",
@@ -42,7 +42,7 @@
     "commander": "^2.9.0",
     "fetch": "^1.1.0",
     "graphql": "^0.13.2",
-    "handlebars": "4.0.11",
+    "handlebars": "^4.1.2",
     "lodash": "^4.17.4",
     "node-fetch": "^1.6.3",
     "pascal-case": "^2.0.1",
