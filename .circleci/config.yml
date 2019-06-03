@@ -137,7 +137,7 @@ jobs:
             command: |
               cd ../aws-amplify-cypress-api
               pwd
-              yarn
+              yarn start
             background: true
         - run:
             name: "Run cypress tests for api"
