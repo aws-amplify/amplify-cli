@@ -193,7 +193,6 @@ workflows:
               only:
                 - master
                 - graphql_e2e_testing
-                - yarn_upgrade_test
           requires:
             - build
       - integration_test:
@@ -203,7 +202,6 @@ workflows:
                 - release
                 - master
                 - beta
-                - yarn_upgrade_test
           requires:
             - build
       - amplify_e2e_tests:
@@ -211,7 +209,6 @@ workflows:
             branches:
               only:
                 - master
-                - yarn_upgrade_test
           requires:
             - build
 
@@ -228,4 +225,3 @@ workflows:
                 - release
                 - master
                 - beta
-                - yarn_upgrade_test
