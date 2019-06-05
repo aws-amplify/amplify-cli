@@ -234,6 +234,15 @@ test('Test update mutation validation with three part secondary key.', async () 
     expect(items.data.shippingUpdates.items).toHaveLength(1);
     const item = items.data.shippingUpdates.items[0];
     expect(item.name).toEqual('name1')
+
+    const itemsWithFilter = await getShippingUpdatesWithNameFilter('order1', 'name1')
+    expect(itemsWithFilter.data.shippingUpdates.items).toHaveLength(1);
+    const itemWithFilter = itemsWithFilter.data.shippingUpdates.items[0];
+    expect(itemWithFilter.name).toEqual('name1')
+
+    const itemsWithUnknownFilter = await getShippingUpdatesWithNameFilter('order1', 'unknownname')
+    expect(itemsWithUnknownFilter.data.shippingUpdates.items).toHaveLength(0);
+
     const updateResponseMissingLastSortKey = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', name: 'name2'});
     expect(updateResponseMissingLastSortKey.data.updateShippingUpdate).toBeNull();
     expect(updateResponseMissingLastSortKey.errors).toHaveLength(1);
@@ -471,6 +480,23 @@ async function getShippingUpdates(orderId: string) {
             nextToken
         }
     }`, { orderId });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
+    const result = await GRAPHQL_CLIENT.query(`query GetShippingUpdates($orderId: ID!, $name: String) {
+        shippingUpdates(orderId: $orderId, filter: { name: { eq: $name }}) {
+            items {
+                id
+                orderId
+                status
+                itemId
+                name
+            }
+            nextToken
+        }
+    }`, { orderId, name });
     console.log(JSON.stringify(result, null, 4));
     return result;
 }

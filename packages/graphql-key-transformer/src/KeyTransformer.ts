@@ -693,7 +693,7 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
                     ref('context.args.filter'),
                     set(
                         ref(`${requestVariable}.filter`),
-                        ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)')
+                        ref('util.parseJson("$util.transform.toDynamoDBFilterExpression($ctx.args.filter)")')
                     ),
                     true
                 ),
