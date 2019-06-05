@@ -4,7 +4,7 @@
 
 <p>
   <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
-    <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
+    <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />
   </a>
   <a href="https://www.npmjs.com/package/@aws-amplify/cli">
     <img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />
@@ -16,7 +16,7 @@
 
 
 
-# AWS Amplify CLI 
+# AWS Amplify CLI
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
 
@@ -42,7 +42,7 @@ $ amplify configure
 
 ## Commands Summary
 
-The Amplify CLI supports the commands shown in the following table. 
+The Amplify CLI supports the commands shown in the following table.
 
 | Command              | Description |
 | --- | --- |
@@ -82,12 +82,12 @@ To set up your local dev environment, go to the `amplify-cli` directory and then
 `yarn config set workspaces-experimental true`<br>
 `npm run setup-dev`
 
-To test your category, do the following:<br> 
+To test your category, do the following:<br>
 `cd <your test front-end project>` <br>
-`amplify init` <br>
-`amplify <your category> <subcommand>`<br> 
+`amplify-dev init` <br>
+`amplify-dev <your category> <subcommand>`<br>
 
 Before pushing code or sending a pull request, do the following:
 - At the command line, run `npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
 - You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fix`
-- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step. 
+- If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step.

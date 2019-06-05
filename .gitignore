@@ -4,7 +4,6 @@ lerna-debug.log
 npm-debug.log
 coverage
 .nyc_output
-yarn.lock
 package-lock.json
 packages/amplify-cli/amplify/.config/
 .vscode
