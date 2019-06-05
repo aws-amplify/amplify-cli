@@ -13,7 +13,7 @@ function console(context) {
           `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
     opn(consoleUrl, { wait: false });
   } else {
-    context.print.error('Neither analytics nor notifications is anabled in the cloud.');
+    context.print.error('Neither analytics nor notifications is enabled in the cloud.');
   }
 }
 
