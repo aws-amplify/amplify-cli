@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.0...amplify-category-hosting@1.2.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **amplify-category-hosting:** fix CloudFront invalidation bug ([#1553](https://github.com/aws-amplify/amplify-cli/issues/1553)) ([2a5ef17](https://github.com/aws-amplify/amplify-cli/commit/2a5ef17)), closes [#1550](https://github.com/aws-amplify/amplify-cli/issues/1550)
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.1.2...amplify-category-hosting@1.2.0) (2019-05-29)
 
 

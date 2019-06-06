@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.0...graphql-transformers-e2e-tests@3.6.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** update filter to emit JSON for filter expression([#1580](https://github.com/aws-amplify/amplify-cli/issues/1580)) ([8c9a3cd](https://github.com/aws-amplify/amplify-cli/commit/8c9a3cd)), closes [#1554](https://github.com/aws-amplify/amplify-cli/issues/1554)
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.5.5...graphql-transformers-e2e-tests@3.6.0) (2019-05-29)
 
 
