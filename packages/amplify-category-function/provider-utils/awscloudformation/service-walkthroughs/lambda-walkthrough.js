@@ -313,7 +313,8 @@ async function askExecRolePermissionsQuestions(
               return true;
             },
             default: () => {
-              if (currentDefaults && currentDefaults.categoryPermissionMap[category]
+              if (currentDefaults && currentDefaults.categoryPermissionMap
+                && currentDefaults.categoryPermissionMap[category]
                 && currentDefaults.categoryPermissionMap[category][resourceName]) {
                 return currentDefaults.categoryPermissionMap[category][resourceName];
               }
