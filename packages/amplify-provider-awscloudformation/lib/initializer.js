@@ -42,7 +42,7 @@ async function run(context) {
 
     const spinner = ora();
     spinner.start('Initializing project in the cloud...');
-    const awsConfig = await getConfiguredAwsCfnClient(context);
+    const awsConfig = await getAwsConfig(context);
     return new Cloudformation(context, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
       .then((waitData) => {
@@ -57,20 +57,22 @@ async function run(context) {
   }
 }
 
-async function getConfiguredAwsCfnClient(context) {
+async function getAwsConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
   let awsConfig;
-  if (awsConfigInfo.config.useProfile) {
-    awsConfig =
-      await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-  } else {
-    awsConfig = {
-      accessKeyId: awsConfigInfo.config.accessKeyId,
-      secretAccessKey: awsConfigInfo.config.secretAccessKey,
-      region: awsConfigInfo.config.region,
-    };
+  if(awsConfigInfo.configLevel === 'project'){
+    if (awsConfigInfo.config.useProfile) {
+      awsConfig =
+        await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+    } else {
+      awsConfig = {
+        accessKeyId: awsConfigInfo.config.accessKeyId,
+        secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        region: awsConfigInfo.config.region,
+      };
+    }
   }
 
   if (httpProxy) {
