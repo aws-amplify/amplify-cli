@@ -156,9 +156,9 @@ async function updateWalkthrough(context) {
     const dependsOnParams = { env: { Type: 'String' } };
 
     Object.keys(answers.resourcePropertiesJSON).forEach((resourceProperty) => {
-      dependsOnParams[resourceProperty] = {
+      dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
         Type: 'String',
-        Default: resourceProperty,
+        Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
       };
     });
     cfnContent.Parameters = dependsOnParams;

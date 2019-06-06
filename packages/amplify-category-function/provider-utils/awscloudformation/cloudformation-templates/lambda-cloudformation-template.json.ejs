@@ -131,7 +131,7 @@
                     ]
                 }
             }
-        }<% if (props.categoryPolicies) { %>
+        }<% if (props.categoryPolicies && props.categoryPolicies.length > 0 ) { %>
         ,"AmplifyResourcesPolicy": {
             "DependsOn": ["LambdaExecutionRole"],
             "Type": "AWS::IAM::Policy",
