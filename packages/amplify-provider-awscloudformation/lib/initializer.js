@@ -77,8 +77,7 @@ async function getAwsConfig(context) {
 
   if (httpProxy) {
     awsConfig = {
-      ...awsConfig,
-      httpOptions: { agent: proxyAgent(httpProxy) },
+      ...awsConfig, agent: proxyAgent(httpProxy),
     };
   }
 
