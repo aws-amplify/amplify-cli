@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.0...amplify-category-analytics@1.5.1-beta.0) (2019-06-06)
+
+
+### Bug Fixes
+
+* spelling mistakes in cli output ([#1588](https://github.com/aws-amplify/amplify-cli/issues/1588)) ([787ac57](https://github.com/aws-amplify/amplify-cli/commit/787ac57))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.4.6...amplify-category-analytics@1.5.0) (2019-05-29)
 
 
