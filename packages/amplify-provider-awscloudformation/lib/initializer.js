@@ -62,7 +62,7 @@ async function getAwsConfig(context) {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
   let awsConfig;
-  if(awsConfigInfo.configLevel === 'project'){
+  if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
       awsConfig =
         await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
