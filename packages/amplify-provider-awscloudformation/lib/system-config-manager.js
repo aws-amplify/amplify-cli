@@ -85,7 +85,8 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
 
   if (httpProxy) {
     awsConfig = {
-      ...awsConfig, agent: proxyAgent(httpProxy),
+      ...awsConfig,
+      httpOptions: { agent: proxyAgent(httpProxy) },
     };
   }
 
