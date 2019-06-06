@@ -473,27 +473,57 @@ const oAuthScopes = [
 const capabilities = [
   {
     name: 'MFA w/ Captcha',
-    trigger: 'DefineAuthChallenge',
-    modules: ['captcha'],
-    value: JSON.stringify({ DefineAuthChallenge: ['captcha'] }),
+    key: 'mfaWithCaptcha',
+    triggers: {
+      DefineAuthChallenge: ['captcha'],
+      CreateAuthChallenge: ['captcha'],
+      VerifyAuthChallengeResponse: ['captcha'],
+    },
+    value: JSON.stringify({
+      DefineAuthChallenge: ['captcha'],
+      CreateAuthChallenge: ['captcha'],
+      VerifyAuthChallengeResponse: ['captcha'],
+    }),
   },
   {
     name: 'Auto-Confirm User',
-    trigger: 'PreSignup',
-    modules: ['autoconfirm'],
+    key: 'autoConfirmUser',
+    triggers: {
+      PreSignup: ['autoconfirm'],
+    },
     value: JSON.stringify({ PreSignup: ['autoconfirm'] }),
   },
   {
     name: 'Show Legal Notice',
-    trigger: 'PostAuthentication',
-    modules: ['show-notice'],
+    key: 'showLegalNotice',
+    triggers: {
+      PostAuthentication: ['show-notice'],
+    },
     value: JSON.stringify({ PostAuthentication: ['show-notice'] }),
   },
   {
     name: 'Add User to Group',
-    trigger: 'PostConfirmation',
-    modules: ['add-to-group'],
+    key: 'addUserToGroup',
+    triggers: {
+      PostConfirmation: ['add-to-group'],
+    },
     value: JSON.stringify({ PostConfirmation: ['add-to-group'] }),
+  },
+  {
+    name: 'Email Domain Filtering (blacklist)',
+    key: 'emailBlacklist',
+    triggers: {
+      PreSignup: ['email-filter-blacklist'],
+    },
+    value: JSON.stringify({ PreSignup: ['email-filter-blacklist'] }),
+  },
+  {
+    name: 'Email Domain Filtering (whitelist)',
+    key: 'emailWhitelist',
+    triggers: {
+      PreSignup: ['email-filter-whitelist'],
+    },
+    value: JSON.stringify({ PreSignup: ['email-filter-whitelist'] }),
   },
   // {
   //   name: 'Device trackingf/registration',

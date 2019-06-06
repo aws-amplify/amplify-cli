@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { sanitizePrevious } = require('../utils/trigger-flow-auth-helper');
+const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
 const { authProviders, attributeProviderMap } = require('../assets/string-maps');
 
 const category = 'auth';
@@ -47,6 +47,12 @@ async function serviceWalkthrough(
 
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
+
+    if (answer.triggerCapabilities && answer.triggerCapabilities.length > 0) {
+      coreAnswers.automaticTriggers = q.choices
+        .filter(c => answer.triggerCapabilities.includes(c.value))
+        .map(m => m.key);
+    }
 
     // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
@@ -401,12 +407,14 @@ function handleUpdates(context, coreAnswers) {
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  let previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
+  const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
     context.updatingAuth.triggerCapabilities :
     null;
-  previousTriggers = await sanitizePrevious(context, answers, previousTriggers);
-  const parsedTriggers = context.amplify
-    .parseTriggerSelections(answers, previousTriggers);
+  const previousAutoTriggers = context.updatingAuth && context.updatingAuth.automaticTriggers ?
+    context.updatingAuth.automaticTriggers :
+    null;
+  // previousTriggers = await sanitizePrevious(context, answers, previousTriggers);
+  const parsedTriggers = parseTriggerSelections(answers, previousTriggers, previousAutoTriggers);
   const triggers = await context.amplify
     .triggerFlow(context, 'cognito', 'amplify-category-auth', parsedTriggers);
   return triggers;

@@ -1,40 +1,118 @@
 const { getAllMaps } = require('../assets/string-maps');
-const { difference, pull } = require('lodash');
+const { uniq, difference } = require('lodash');
 
-const sanitizePrevious = async (context, answers, previous) => {
-  if (!context || !answers) {
-    context.print.error('context or answers not provided to sanitizePrevious method.');
-  }
-  if (!previous || previous.length < 1) {
-    return null;
-  }
-  const parsedPrevious = JSON.parse(previous) || {};
-  const parsedKeys = Object.keys(parsedPrevious);
-  const parsedValues = Object.values(parsedPrevious);
-
-  const parsedAnswers = answers && answers.length > 0 ?
-    reduceAnswerArray(answers) :
-    {};
-
+/**
+ * @function
+ * @param {array} triggers Currently selected triggers in CLI flow array of key/values
+ * @example ["{"TriggerName2":["template2"]}"]
+ * @param {string} previous Serialized object of previously selected trigger values
+ * @example "{\"TriggerName1\":[\"template1\"]}"
+ * @return {object} Object with current and previous triggers, with concatenated values for unions
+ */
+/* eslint-disable no-loop-func */
+const parseTriggerSelections = (triggers, previous, previousAuto) => {
+  const triggerObj = {};
   const automaticOptions = getAllMaps().capabilities;
+  const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : {};
+  const previousKeys = Object.keys(previousTriggers);
 
-  parsedKeys.forEach((p, i) => {
-    automaticOptions.forEach((a) => {
-      const modulesSelected = parsedAnswers[a] ? parsedAnswers[a] : [];
-      if (a.trigger === p && difference(a.modules, modulesSelected).length > 0) {
-        const remainder = pull(parsedValues[i], ...a.modules);
-        if (remainder && remainder.length > 0) {
-          parsedPrevious[a.trigger] = remainder;
+  for (let i = 0; i < triggers.length; i += 1) {
+    if (typeof triggers[i] === 'string') {
+      triggers[i] = JSON.parse(triggers[i]);
+    }
+    const currentTriggers = Object.keys(triggers[i]);
+    const currentValues = Object.values(triggers[i]);
+    currentTriggers.forEach((c, index) => {
+      if (!triggerObj[c]) {
+        triggerObj[c] = currentValues[index];
+      } else {
+        triggerObj[c] = uniq(triggerObj[c]
+          .concat(currentValues[index]));
+      }
+      if (previousTriggers && previousTriggers[c]) {
+        if (previousAuto && previousAuto.length > 0) {
+          previousAuto.forEach((a) => {
+            const automaticOption = automaticOptions.find(b => b.key === a);
+            if (automaticOption) {
+              Object.keys(automaticOption.triggers).forEach((e) => {
+                if (previousTriggers[c]) {
+                  const diff = difference(previousTriggers[e], automaticOption.triggers[e])
+                    .filter(d => automaticOption.triggers[e].includes(d));
+                  if (diff && diff.length > 0) {
+                    triggerObj[c] = uniq(triggerObj[c]
+                      .concat(previousTriggers[c]));
+                  }
+                }
+              });
+            }
+          });
         } else {
-          delete parsedPrevious[a];
+          triggerObj[c] = uniq(triggerObj[c]
+            .concat(previousTriggers[c]));
         }
       }
     });
-  });
-  previous = JSON.stringify(parsedPrevious);
-  return previous;
-};
+  }
 
+  if (previousAuto && previousAuto.length > 0) {
+    previousAuto.forEach((a) => {
+      const automaticOption = automaticOptions.find(b => b.key === a);
+      if (automaticOption) {
+        Object.keys(automaticOption.triggers).forEach((c) => {
+          if (previousTriggers[c]) {
+            const diff = difference(previousTriggers[c], automaticOption.triggers[c])
+              .filter(d => automaticOption.triggers[c].includes(d));
+            if (diff && diff.length > 0) {
+              triggerObj[c] = diff;
+            }
+          }
+        });
+      }
+    });
+  }
+
+  // looping through keys of previous triggers
+  previousKeys.forEach((p) => {
+    // if the trigger key is present in current trigger object
+    if (triggerObj[p]) {
+      // loop through modules in previous trigger
+      previousTriggers[p].forEach((q) => {
+        // check if module does not exist in current trigger object
+        if (triggerObj[p].indexOf(q) === -1) {
+          // check if module was an autotrigger that was removed - if not, push it
+          if (previousAuto && previousAuto.length > 0) {
+            const automaticOptionSet = automaticOptions.find(b => b.triggers[p] &&
+              previousAuto.includes(b.key));
+            if (!automaticOptionSet) {
+              triggerObj[p] = triggerObj[p].push(previousTriggers[p]);
+            }
+          }
+        }
+      });
+    } else {
+      const tempArray = [];
+      previousTriggers[p].forEach((i) => {
+        if (previousAuto && previousAuto.length > 0) {
+          const automaticOptionSet = automaticOptions.find(b => b.triggers[p] &&
+            previousAuto.includes(b.key));
+          if (!automaticOptionSet) {
+            tempArray.push(i);
+          } else if (!automaticOptionSet.triggers[p].includes(i)) {
+            tempArray.push(i);
+          }
+        } else {
+          tempArray.push(i);
+        }
+      });
+      if (tempArray.length > 0) {
+        triggerObj[p] = tempArray;
+      }
+    }
+  });
+
+  return triggerObj;
+};
+/* eslint-enable no-loop-func */
 
 /*
   Creating Lambda Triggers
@@ -133,6 +211,13 @@ const reduceAnswerArray = (answers) => {
   } else if (answers && answers.length > 0) {
     answers.forEach((t) => {
       const parsed = typeof t === 'string' ? JSON.parse(t) : t;
+      Object.keys(parsed).forEach((p, index) => {
+        if (triggerObj[p]) {
+          triggerObj[p] = triggerObj[p].concat(Object.values(parsed)[index]);
+        } else {
+          triggerObj[p] = Object.values(parsed)[index];
+        }
+      });
      /*eslint-disable-line*/ triggerObj[Object.keys(parsed)[0]] = Object.values(parsed)[0];
       return triggerObj;
     });
@@ -141,7 +226,8 @@ const reduceAnswerArray = (answers) => {
 };
 
 module.exports = {
-  sanitizePrevious,
+  // sanitizePrevious,
+  parseTriggerSelections,
   handleTriggers,
   reduceAnswerArray,
 };

@@ -26,7 +26,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
         if (input.key === 'triggerCapabilities') {
-          return triggerDefaults(context, input);
+          return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
         }
         return context.updatingAuth[input.key];
       }
@@ -184,17 +184,31 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
   return question;
 }
 
-function triggerDefaults(context, input) {
+function triggerDefaults(context, input, availableOptions) {
   const capabilityDefaults = [];
-  if (context.updatingAuth[input.key] && context.updatingAuth[input.key].length > 0) {
-    const currentTriggers = JSON.parse(context.updatingAuth[input.key]);
-    for (let i = 0; i < Object.keys(currentTriggers).length; i += 1) {
-      for (let x = 0; x < currentTriggers[Object.keys(currentTriggers)[i]].length; x += 1) {
-        const flatObj = {};
-        flatObj[Object.keys(currentTriggers)[i]] =
-        flattenDeep([currentTriggers[Object.keys(currentTriggers)[i]][x]]);
-        capabilityDefaults.push(JSON.stringify(flatObj));
+  if (context.updatingAuth[input.key].length > 0) {
+    const current = JSON.parse(context.updatingAuth[input.key]);
+    try {
+      if (current) {
+        availableOptions.forEach((a) => {
+          let match = true;
+          Object.keys(a.triggers).forEach((t, index) => {
+            if (current[t]) {
+              const test = Object.values(a.triggers)[index].every(c => current[t].includes(c));
+              if (!test) {
+                match = false;
+              }
+            } else {
+              match = false;
+            }
+          });
+          if (match) {
+            capabilityDefaults.push(a.value);
+          }
+        });
       }
+    } catch (e) {
+      throw new Error('Error parsing capability defaults');
     }
   }
   return capabilityDefaults;

@@ -96,7 +96,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.triggerCapabilities && props.triggerCapabilities !== "{}") { %>
+      <%if (props.triggerCapabilities) { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
@@ -148,7 +148,7 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-  <%if (props.triggerCapabilities || props.triggerCapabilities.length > 0) { %>
+  <%if (props.triggerCapabilities) { %>
   <%if (props.CreateAuthChallenge) { %>
   UserPoolCreateAuthChallengeLambdaInvokePermission: 
     Type: "AWS::Lambda::Permission"

@@ -8,7 +8,7 @@ const {
   unlinkSync,
 } = require('fs');
 const { copySync } = require('fs-extra');
-const { flattenDeep, uniq } = require('lodash');
+const { flattenDeep } = require('lodash');
 const { join } = require('path');
 
 /**
@@ -245,7 +245,7 @@ const updateTrigger = async (
       triggerEnvs: JSON.stringify(triggerEnvs[key]),
       roleName: resourceName,
     });
-    context.print.success('Succesfully added the Lambda function locally');
+    context.print.success('Succesfully updated the Lambda function locally');
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);
       context.amplify.updateamplifyMetaAfterResourceAdd(
@@ -327,7 +327,9 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
   const dirContents = readdirSync(targetPath);
   for (let x = 0; x < dirContents.length; x += 1) {
     if (dirContents[x] !== 'custom.js') {
-      if (meta[`${dirContents[x]}.js`] && !values.includes(dirContents[x])) {
+      // checking that a file is js module (with extension removed) and no longer a selected module
+      if (meta[`${dirContents[x].substring(0, dirContents[x].length - 3)}`] &&
+      !values.includes(`${dirContents[x].substring(0, dirContents[x].length - 3)}`)) {
         try {
           unlinkSync(`${targetPath}/${dirContents[x]}`);
         } catch (e) {
@@ -344,37 +346,6 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
     }
   }
   return null;
-};
-
-/**
- * @function
- * @param {array} triggers Currently selected triggers in CLI flow array of key/values
- * @example ["{"TriggerName2":["template2"]}"]
- * @param {string} previous Serialized object of previously selected trigger values
- * @example "{\"TriggerName1\":[\"template1\"]}"
- * @return {object} Object with current and previous triggers, with concatenated values for unions
- */
-const parseTriggerSelections = (triggers, previous) => {
-  const triggerObj = {};
-  const previousTriggers = previous && previous.length > 0 ? JSON.parse(previous) : null;
-  for (let i = 0; i < triggers.length; i += 1) {
-    if (typeof triggers[i] === 'string') {
-      triggers[i] = JSON.parse(triggers[i]);
-    }
-    const currentTrigger = Object.keys(triggers[i])[0];
-    const currentValue = Object.values(triggers[i])[0];
-    if (!triggerObj[currentTrigger]) {
-      triggerObj[currentTrigger] = currentValue;
-    } else {
-      triggerObj[currentTrigger] = uniq(triggerObj[currentTrigger]
-        .concat(currentValue));
-    }
-    if (previousTriggers && previousTriggers[currentTrigger]) {
-      triggerObj[currentTrigger] = uniq(triggerObj[currentTrigger]
-        .concat(previousTriggers[currentTrigger]));
-    }
-  }
-  return triggerObj;
 };
 
 const getTriggerEnvVariables = (context, trigger, category) => {
@@ -411,9 +382,11 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
       });
     }
   });
-  dependsOnArray.forEach((x, index) => {
+  const tempArray = Object.assign([], dependsOnArray);
+  tempArray.forEach((x) => {
     if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
-      dependsOnArray.splice(dependsOnArray[index], 1);
+      const index = dependsOnArray.findIndex(i => i.resourceName === x.resourceName);
+      dependsOnArray.splice(index, 1);
     }
   });
   return dependsOnArray;
@@ -427,7 +400,6 @@ module.exports = {
   deleteAllTriggers,
   deleteDeselectedTriggers,
   dependsOnBlock,
-  parseTriggerSelections,
   getTriggerMetadata,
   getTriggerPermissions,
   getTriggerEnvVariables,

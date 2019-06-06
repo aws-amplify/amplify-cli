@@ -6,5 +6,13 @@
   "autoconfirm-domain": {
     "name": "Auto confirm all users from registered domain",
     "description": "This template auto-confirms users from a registered domain."
+  },
+  "email-filter-whitelist": {
+    "name": "Sign-Up email filtering (whitelist)",
+    "description": "This template only allows signup with emails from specified domains."
+  },
+  "email-filter-blacklist": {
+    "name": "Sign-Up email filtering (blacklist)",
+    "description": "This template prevents signup with emails from specified domains."
   }
 }

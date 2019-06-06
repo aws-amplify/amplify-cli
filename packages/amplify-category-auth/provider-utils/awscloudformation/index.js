@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
-const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
 
 
 let serviceMetadata;
@@ -202,7 +201,7 @@ async function updateResource(context, category, serviceResult) {
   )
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap } = require(defaultValuesSrc);
+      const { functionMap, getAllDefaults } = require(defaultValuesSrc);
       const { authProviders } = require(`${__dirname}/assets/string-maps.js`);
 
       /* if user has used the default configuration,
@@ -229,9 +228,8 @@ async function updateResource(context, category, serviceResult) {
       props = Object.assign(defaults, context.updatingAuth, result);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
-      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggerCapabilities;
-
-      await lambdaTriggers(props, context, JSON.parse(previouslySaved));
+      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggerCapabilities || '{}';
+      await lambdaTriggers(props, context, JSON.parse(previouslySaved), getAllDefaults);
 
       if (
         (!result.updateFlow && !result.thirdPartyAuth) ||
@@ -556,12 +554,14 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
 }
 
 async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefaults) {
+  const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
+  const { getAllMaps } = require('./assets/string-maps');
   let triggerKeyValues = {};
   if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length > 0) {
     triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
     coreAnswers.triggerCapabilities = triggerKeyValues ?
       JSON.stringify(triggerKeyValues) :
-      [];
+      '{}';
 
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
@@ -592,6 +592,37 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
     await context.amplify
       .deleteAllTriggers(previouslySaved, coreAnswers.resourceName, targetDir, context);
   }
+  // remove unused coreAnswers.triggerCapabilities key
+  if (coreAnswers.triggerCapabilities && coreAnswers.triggerCapabilities.length === 0) {
+    delete coreAnswers.triggerCapabilities;
+  }
+
+  /*
+      check current answers to make sure the trigger and js modules
+      indicated by an automatic trigger are present,
+      as they could have been deselected in the manual trigger flow
+      if not present, splice the automaticTrigger array
+  */
+  if (coreAnswers.automaticTriggers && coreAnswers.automaticTriggers.length > 0) {
+    const tempArray = Object.assign([], coreAnswers.automaticTriggers);
+    const availableTriggers = getAllMaps(coreAnswers.resourceName).capabilities;
+    tempArray.forEach((a) => {
+      let satisfied = true;
+      const parsed = JSON.parse(coreAnswers.triggerCapabilities);
+      const metadata = availableTriggers.find(b => b.key === a);
+      Object.keys(metadata.triggers).forEach((m) => {
+        if (!parsed[m] || !metadata.triggers[m].every(t => parsed[m].includes(t))) {
+          satisfied = false;
+        }
+      }, satisfied);
+      if (!satisfied) {
+        const index = coreAnswers.automaticTriggers.indexOf(a);
+        coreAnswers.automaticTriggers.splice(index, 1);
+      }
+    });
+  }
+
+  // handle dependsOn data
   const dependsOnKeys = Object.keys(triggerKeyValues).map(i => `${coreAnswers.resourceName}${i}`);
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 }
