@@ -121,9 +121,27 @@
                             "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
                             <% if (props.database && props.database.Arn) { %>
-                                "<%= props.database.Arn %>"
+                                "<%= props.database.Arn %>",
+                                {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            "<%= props.database.Arn %>",
+                                            "index/*"
+                                        ]
+                                    ]
+                                }      
                             <% } else { %>
-                                { "Ref": "storage<%= props.database.resourceName %>Arn" }
+                                { "Ref": "storage<%= props.database.resourceName %>Arn" },
+                                {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            { "Ref": "storage<%= props.database.resourceName %>Arn" },
+                                            "index/*"
+                                        ]
+                                    ]
+                                }      
                             <% } %>
                             ]
                         }
