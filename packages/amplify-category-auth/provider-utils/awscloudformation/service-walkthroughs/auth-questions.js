@@ -479,7 +479,7 @@ function getIAMPolicies(resourceName, crudOptions) {
         'Fn::Join': [
           '',
           [
-            'arn:aws:cognito-idp::',
+            'arn:aws:cognito-idp:',
             { Ref: 'AWS::Region' },
             ':',
             { Ref: 'AWS::AccountId' },
