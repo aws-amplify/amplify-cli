@@ -91,7 +91,7 @@ directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
 directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
 
 # Allows transformer libraries to deprecate directive arguments.
-directive @deprecated(reason: String!) on INPUT_FIELD_DEFINITION | ENUM
+directive @deprecated(reason: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | ENUM | ENUM_VALUE
 `)
 
 export function astBuilder(doc: DocumentNode): ASTDefinitionBuilder {
