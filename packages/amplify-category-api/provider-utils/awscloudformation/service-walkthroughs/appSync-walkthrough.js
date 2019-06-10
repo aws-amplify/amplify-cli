@@ -416,7 +416,7 @@ function getIAMPolicies(resourceName, crudOptions) {
     ],
   };
 
-  const attributes = ['GraphQLAPIIdOutput'];
+  const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
 
   return { policy, attributes };
 }
