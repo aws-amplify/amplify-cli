@@ -22,19 +22,20 @@ async function generateTypes(context, forceDownloadSchema) {
     const { projectPath } = context.amplify.getEnvInfo();
 
     projects.forEach(async (cfg) => {
-      const excludes = cfg.excludes.map(pattern => `!${pattern}`);
+      const { generatedFileName } = cfg.amplifyExtension || {};
       const includeFiles = cfg.includes;
+      if (!generatedFileName || (generatedFileName === '') || (includeFiles.length === 0)) {
+        return;
+      }
+
+      const excludes = cfg.excludes.map(pattern => `!${pattern}`);
       const queries = glob.sync([...includeFiles, ...excludes], {
         cwd: projectPath,
         absolute: true,
       });
       const schemaPath = path.join(projectPath, cfg.schema);
-      const { generatedFileName } = cfg.amplifyExtension;
       const target = cfg.amplifyExtension.codeGenTarget;
 
-      if (!generatedFileName || generatedFileName === '') {
-        return;
-      }
       const outputPath = path.join(projectPath, generatedFileName);
       if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
