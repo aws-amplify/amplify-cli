@@ -18,7 +18,7 @@ Pull requests should generally be opened against **master**.
 
 Only include ***src*** files in your PR. Don't include any build files i.e. dist/ or lib/. These will be built upon publish to npm and when a release is created on GitHub.
 
-Before submmitting PR make sure to run `npm install` on the root of monorepo to ensure that commit lint and husky are installed.
+Before submitting PR make sure to run `npm install` on the root of monorepo to ensure that commit lint and husky are installed.
 
 Make sure you follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/) commit message structure. You can automatically generate conventional commit message by running `npm run commit` in the root of the amplify mono repo. This will run through series of question shown below
 ```
