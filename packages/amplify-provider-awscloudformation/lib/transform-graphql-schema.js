@@ -17,6 +17,7 @@ const {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
   writeTransformerConfiguration,
+  TRANSFORM_CONFIG_FILE_NAME
 } = TransformPackage;
 
 const category = 'api';
@@ -136,6 +137,22 @@ async function migrateProject(context, options) {
     await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
     context.print.error('API successfully reverted.');
     throw e;
+  }
+}
+
+function loadCustomTransformersConfig(transformerConfigPath, context, category) {
+  if (!transformerConfigPath) {
+    context.print.warning('Could not determine transformer config path. Have you enabled AppSync GraphQL API?');
+    return null;
+  }
+
+  try {
+    const transformerConfig = JSON.parse(fs.readFileSync(transformerConfigPath));
+    return transformerConfig;
+  } catch (error) {
+    context.print.error('Tranformer config parsing failure');
+    context.print.error(error);
+    return null;
   }
 }
 
@@ -292,16 +309,31 @@ async function transformGraphQLSchema(context, options) {
     transformerList.push(new SearchableModelTransformer());
   }
 
-  const customTransformersInfo =
-    await context.amplify.transformersManager.loadCustomTransformers(context, category);
-  const customTransformers = customTransformersInfo
-    .filter(transformer => transformer.enabled)
-    .map((transformer) => {
-      const imported = require(transformer.modulePath);
-      const CustomTransformer = imported.default;
-      const customTransformer = CustomTransformer.call({});
-      return customTransformer;
-    });
+  const projectNodeModulesDirPath = path.join(
+    context.amplify.pathManager.searchProjectRootPath(),
+    'node_modules',
+  );
+  
+  const transformerConfigPath = path.join(resourceDir, TRANSFORM_CONFIG_FILE_NAME);
+  const customTransformersConfig = loadCustomTransformersConfig(transformerConfigPath, context, category)
+  const customTransformers = 
+    (customTransformersConfig && customTransformersConfig.transformers 
+      ? customTransformersConfig.transformers 
+      : [])
+    .map(transformer => {
+      let fileUrlMatch = /^file:\/\/(.*)\s*$/m.exec(transformer);
+      let modulePath = fileUrlMatch ? fileUrlMatch[1] : transformer;
+      // handle 'cannot find module' 
+      try {
+        const imported = require(modulePath);
+        const CustomTransformer = imported.default;
+        return CustomTransformer.call({});
+      } catch (error){
+        context.print.error(error);
+        return null
+      }
+    })
+    .filter(customTransformer => customTransformer)
 
   if (customTransformers.length > 0) {
     transformerList.push(...customTransformers);

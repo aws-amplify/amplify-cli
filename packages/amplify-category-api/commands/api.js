@@ -37,10 +37,6 @@ module.exports = {
         name: 'add-graphql-datasource',
         description: 'Provisions the AppSync resources and its dependencies for the provided Aurora Serverless data source',
       },
-      {
-        name: 'configure-transformers',
-        description: 'Configure graphql transformers for this project',
-      },
     ];
 
     context.amplify.showHelp(header, commands);
