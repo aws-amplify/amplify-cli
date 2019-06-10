@@ -1,8 +1,10 @@
 import GraphQLTransform, { Transformer, InvalidDirectiveError } from 'graphql-transformer-core'
 import ModelTransformer from 'graphql-dynamodb-transformer';
 import KeyTransformer from 'graphql-key-transformer';
-import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { expectArguments, expectFields, expectNonNullFields, expectNullableFields } from '../testUtil';
+import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode,
+    Kind, InputObjectTypeDefinitionNode } from 'graphql';
+import { expectArguments, expectNonNullFields, expectNullableFields,
+    expectNonNullInputValues, expectNullableInputValues, expectInputValueToHandle  } from '../testUtil';
 
 test('Test that a primary @key with a single field changes the hash key.', () => {
     const validSchema = `
@@ -322,4 +324,67 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
     const listTestsField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
     expect(listTestsField.arguments).toHaveLength(5);
     expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit']);
+})
+
+test('Test that a primary @key with complex fields will update the input objects.', () => {
+    const validSchema = `
+    type Test @model @key(fields: ["email"]) {
+        email: String!
+        listInput: [String]
+        nonNullListInput: [String]!
+        nonNullListInputOfNonNullStrings: [String!]!
+    }
+    `;
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new ModelTransformer(),
+            new KeyTransformer()
+        ]
+    });
+
+    const out = transformer.transform(validSchema);
+    let tableResource = out.stacks.Test.Resources.TestTable;
+    expect(tableResource).toBeDefined()
+    expect(
+        tableResource.Properties.KeySchema[0].AttributeName,
+    ).toEqual('email');
+    expect(
+        tableResource.Properties.KeySchema[0].KeyType,
+    ).toEqual('HASH');
+    expect(
+        tableResource.Properties.AttributeDefinitions[0].AttributeType,
+    ).toEqual('S');
+    const schema = parse(out.schema);
+    const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as InputObjectTypeDefinitionNode;
+    const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as InputObjectTypeDefinitionNode;
+    const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as InputObjectTypeDefinitionNode;
+    expect(createInput).toBeDefined();
+    expectNonNullInputValues(createInput, ['email', 'nonNullListInput', 'nonNullListInputOfNonNullStrings']);
+    expectNullableInputValues(createInput, ['listInput']);
+    expectInputValueToHandle(createInput, (f: any) => {
+        if (f.name.value === 'nonNullListInputOfNonNullStrings') {
+            return f.type.kind === Kind.NON_NULL_TYPE && f.type.type.kind === Kind.LIST_TYPE && f.type.type.type.kind === Kind.NON_NULL_TYPE;
+        } else if (f.name.value === 'nonNullListInput') {
+            return f.type.kind === Kind.NON_NULL_TYPE && f.type.type.kind === Kind.LIST_TYPE;
+        } else if (f.name.value === 'listInput') {
+            return f.type.kind === Kind.LIST_TYPE;
+        }
+        return true;
+    });
+
+    expectNonNullInputValues(updateInput, ['email']);
+    expectNullableInputValues(updateInput, ['listInput', 'nonNullListInput', 'nonNullListInputOfNonNullStrings']);
+    expectInputValueToHandle(updateInput, (f: any) => {
+        if (f.name.value === 'nonNullListInputOfNonNullStrings') {
+            return f.type.kind === Kind.LIST_TYPE && f.type.type.kind === Kind.NON_NULL_TYPE;
+        } else if (f.name.value === 'nonNullListInput') {
+            return f.type.kind === Kind.LIST_TYPE;
+        } else if (f.name.value === 'listInput') {
+            return f.type.kind === Kind.LIST_TYPE;
+        }
+        return true;
+    });
+
+    expectNonNullInputValues(deleteInput, ['email']);
 })

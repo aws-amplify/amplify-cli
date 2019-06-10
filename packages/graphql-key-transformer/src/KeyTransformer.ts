@@ -7,7 +7,8 @@ import {
 } from 'graphql-mapping-template';
 import { 
     ResolverResourceIDs, ResourceConstants, isNonNullType,
-    attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition, 
+    attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition,
+    wrapNonNull, withNamedNodeNamed, 
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
     makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
@@ -557,16 +558,8 @@ function replaceCreateInput(definition: ObjectTypeDefinitionNode, input: InputOb
             // If the field is a key, make it non-null.
             if (keyFields.find(k => k === f.name.value)) {
                 return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-            } else {
-                // If the field is not a key, use whatever the model type defines.
-                const existingField = definition.fields.find(field => field.name.value === f.name.value);
-                if (existingField && isNonNullType(existingField.type)) {
-                    return [...acc, makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))))];
-                } else if (existingField) {
-                    return [...acc, makeInputValueDefinition(f.name.value, makeNamedType(getBaseType(f.type)))];
-                }
             }
-            return acc;
+            return [...acc, f];
         }, [])
     };
 };
@@ -578,9 +571,9 @@ function replaceUpdateInput(definition: ObjectTypeDefinitionNode, input: InputOb
         fields: input.fields.map(
             f => {
                 if (keyFields.find(k => k === f.name.value)) {
-                    return makeInputValueDefinition(f.name.value, makeNonNullType(makeNamedType(getBaseType(f.type))));
+                    return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
                 } else {
-                    return makeInputValueDefinition(f.name.value, makeNamedType(getBaseType(f.type)));
+                    return f;
                 }
             }
         )

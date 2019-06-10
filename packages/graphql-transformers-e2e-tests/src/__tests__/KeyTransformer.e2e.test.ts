@@ -41,6 +41,7 @@ beforeAll(async () => {
     }
     type Customer @model @key(fields: ["email"]) {
         email: String!
+        addresslist:  [String]
         username: String
     }
     type Item @model
@@ -254,6 +255,61 @@ test('Test update mutation validation with three part secondary key.', async () 
     const updateResponseMissingNoKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'testing2' });
     expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2')
 })
+
+test('Test Customer Create with list member and secondary key', async () => {
+    const createCustomer1 = await createCustomer("customer1@email.com", ["thing1", "thing2"], "customerusr1");
+    const getCustomer1 = await getCustomer("customer1@email.com");
+    expect(getCustomer1.data.getCustomer.addresslist).toEqual(["thing1", "thing2"]);
+    // const items = await onCreateCustomer
+})
+
+test('Test Customer Mutation with list member', async () => {
+    const updateCustomer1 = await updateCustomer("customer1@email.com", ["thing3", "thing4"], "new_customerusr1");
+    const getCustomer1 = await getCustomer("customer1@email.com");
+    expect(getCustomer1.data.getCustomer.addresslist).toEqual(["thing3", "thing4"]);
+})
+
+async function createCustomer(email: string, addresslist: string[], username: string) {
+    const result = await GRAPHQL_CLIENT.query(`mutation CreateCustomer($input: CreateCustomerInput!) {
+        createCustomer(input: $input) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        input: {email, addresslist, username}
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function updateCustomer(email: string, addresslist: string[], username: string) {
+    const result = await GRAPHQL_CLIENT.query(`mutation UpdateCustomer($input: UpdateCustomerInput!) {
+        updateCustomer(input: $input) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        input: {email, addresslist, username}
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function getCustomer(email: string) {
+    const result = await GRAPHQL_CLIENT.query(`query GetCustomer($email: String!) {
+        getCustomer(email: $email) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        email
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
 
 async function createOrder(customerEmail: string, orderId: string) {
     const result = await GRAPHQL_CLIENT.query(`mutation CreateOrder($input: CreateOrderInput!) {
@@ -500,5 +556,3 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
-
-
