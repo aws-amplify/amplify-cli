@@ -124,4 +124,18 @@ describe('command - types', () => {
     await generateTypes(MOCK_CONTEXT, false);
     expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   });
+
+  it('should not generate types when includePattern is empty', async () => {
+    MOCK_PROJECT.includes = [];
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+  });
+
+  it('should not generate type when generatedFileName is missing', async () => {
+    MOCK_PROJECT.amplifyExtension.generatedFileName = '';
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+  });
 });
