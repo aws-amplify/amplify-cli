@@ -409,6 +409,7 @@ function getIAMPolicies(resourceName, crudOptions) {
             {
               Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
             },
+            '/*',
           ],
         ],
       },
