@@ -23,7 +23,7 @@ Parameters:
   <% } %>
 
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
-  <% if (typeof Object.values(props)[i] === 'string' || Object.values(props)[i].value) { %>
+  <% if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) { %>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
@@ -96,13 +96,13 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.triggerCapabilities) { %>
+      <%if (props.authTriggers) { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
         <% } %>
         <%if (props.CustomMessage) { %>
-          CustomMessage: !Ref function<%=props.resourceName%>PCustomMessageArn
+          CustomMessage: !Ref function<%=props.resourceName%>CustomMessageArn
         <% } %>
         <%if (props.DefineAuthChallenge) { %>
           DefineAuthChallenge: !Ref function<%=props.resourceName%>DefineAuthChallengeArn
@@ -148,7 +148,7 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-  <%if (props.triggerCapabilities) { %>
+  <%if (props.authTriggers) { %>
   <%if (props.CreateAuthChallenge) { %>
   UserPoolCreateAuthChallengeLambdaInvokePermission: 
     Type: "AWS::Lambda::Permission"

@@ -25,7 +25,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
     default: (answers) => { // eslint-disable-line no-unused-vars
       // if the user is editing and there is a previous value, this is always the default
       if (context.updatingAuth && context.updatingAuth[input.key] !== undefined) {
-        if (input.key === 'triggerCapabilities') {
+        if (input.key === 'authTriggers') {
           return triggerDefaults(context, input, getAllMaps(context.updatingAuth)[input.map]);
         }
         return context.updatingAuth[input.key];
@@ -186,15 +186,15 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
 
 function triggerDefaults(context, input, availableOptions) {
   const capabilityDefaults = [];
-  if (context.updatingAuth[input.key].length > 0) {
+  if (context.updatingAuth.authTriggers) {
     const current = JSON.parse(context.updatingAuth[input.key]);
     try {
       if (current) {
         availableOptions.forEach((a) => {
           let match = true;
-          Object.keys(a.triggers).forEach((t, index) => {
+          Object.keys(a.triggers).forEach((t) => {
             if (current[t]) {
-              const test = Object.values(a.triggers)[index].every(c => current[t].includes(c));
+              const test = a.triggers[t].every(c => current[t].includes(c));
               if (!test) {
                 match = false;
               }

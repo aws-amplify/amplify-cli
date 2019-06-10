@@ -1,8 +1,9 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
-const { authProviders, attributeProviderMap } = require('../assets/string-maps');
+const { uniq, pullAll } = require('lodash');
+// const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
+const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
 
 const category = 'auth';
 
@@ -48,10 +49,31 @@ async function serviceWalkthrough(
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
 
-    if (answer.triggerCapabilities && answer.triggerCapabilities.length > 0) {
-      coreAnswers.automaticTriggers = q.choices
-        .filter(c => answer.triggerCapabilities.includes(c.value))
-        .map(m => m.key);
+    if (answer.authTriggers && answer.authTriggers.length > 0) {
+      const tempTriggers = context.updatingAuth && context.updatingAuth.authTriggers ?
+        JSON.parse(context.updatingAuth.authTriggers) :
+        {};
+      const selectionMetadata = capabilities;
+
+      /* eslint-disable no-loop-func */
+      selectionMetadata.forEach((s) => {
+        Object.keys(s.triggers).forEach((t) => {
+          if (!tempTriggers[t] && answer.authTriggers.includes(s.value)) {
+            tempTriggers[t] = s.triggers[t];
+          } else if (tempTriggers[t] && answer.authTriggers.includes(s.value)) {
+            tempTriggers[t] = uniq(tempTriggers[t].concat(s.triggers[t]));
+          } else if (tempTriggers[t] && !answer.authTriggers.includes(s.value)) {
+            const tempForDiff = Object.assign([], tempTriggers[t]);
+            const remainder = pullAll(tempForDiff, s.triggers[t]);
+            if (remainder && remainder.length > 0) {
+              tempTriggers[t] = remainder;
+            } else {
+              delete tempTriggers[t];
+            }
+          }
+        });
+      });
+      answer.authTriggers = tempTriggers;
     }
 
     // LEARN MORE BLOCK
@@ -159,17 +181,7 @@ async function serviceWalkthrough(
   // ask manual trigger flow question
   if (coreAnswers.authSelections !== 'identityPoolOnly') {
     if (coreAnswers.useDefault === 'manual') {
-      const manualTriggers = await lambdaFlow(context, coreAnswers.triggerCapabilities);
-      if (manualTriggers) {
-        coreAnswers.triggerCapabilities = [];
-        // since the trigger flow accepts all previously selected triggers and returns them,
-        // we rebuild the triggerCapability attribute
-        Object.keys(manualTriggers).map((m) => {
-          const obj = {};
-          obj[m] = manualTriggers[m];
-          return coreAnswers.triggerCapabilities.push(JSON.stringify(obj));
-        });
-      }
+      coreAnswers.authTriggers = await lambdaFlow(context, coreAnswers.authTriggers);
     }
   }
 
@@ -407,16 +419,16 @@ function handleUpdates(context, coreAnswers) {
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  const previousTriggers = context.updatingAuth && context.updatingAuth.triggerCapabilities ?
-    context.updatingAuth.triggerCapabilities :
-    null;
-  const previousAutoTriggers = context.updatingAuth && context.updatingAuth.automaticTriggers ?
-    context.updatingAuth.automaticTriggers :
-    null;
+  // const previousTriggers = context.updatingAuth && context.updatingAuth.authTriggers ?
+  //   context.updatingAuth.authTriggers :
+  //   null;
+  // const previousAutoTriggers = context.updatingAuth && context.updatingAuth.automaticTriggers ?
+  //   context.updatingAuth.automaticTriggers :
+  //   null;
   // previousTriggers = await sanitizePrevious(context, answers, previousTriggers);
-  const parsedTriggers = parseTriggerSelections(answers, previousTriggers, previousAutoTriggers);
+  // const parsedTriggers = parseTriggerSelections(answers, previousTriggers, previousAutoTriggers);
   const triggers = await context.amplify
-    .triggerFlow(context, 'cognito', 'amplify-category-auth', parsedTriggers);
+    .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
   return triggers;
 }
 

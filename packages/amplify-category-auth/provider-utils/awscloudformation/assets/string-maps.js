@@ -473,74 +473,55 @@ const oAuthScopes = [
 const capabilities = [
   {
     name: 'MFA w/ Captcha',
-    key: 'mfaWithCaptcha',
+    value: 'mfaWithCaptcha',
     triggers: {
       DefineAuthChallenge: ['captcha'],
       CreateAuthChallenge: ['captcha'],
       VerifyAuthChallengeResponse: ['captcha'],
     },
-    value: JSON.stringify({
-      DefineAuthChallenge: ['captcha'],
-      CreateAuthChallenge: ['captcha'],
-      VerifyAuthChallengeResponse: ['captcha'],
-    }),
   },
   {
     name: 'Auto-Confirm User',
-    key: 'autoConfirmUser',
+    value: 'autoConfirmUser',
     triggers: {
       PreSignup: ['autoconfirm'],
     },
-    value: JSON.stringify({ PreSignup: ['autoconfirm'] }),
+  },
+  {
+    name: 'Email Verification Link with Redirect',
+    value: 'confirmationRedirect',
+    triggers: {
+      CustomMessage: ['verification-link'],
+    },
   },
   {
     name: 'Show Legal Notice',
-    key: 'showLegalNotice',
+    value: 'showLegalNotice',
     triggers: {
       PostAuthentication: ['show-notice'],
     },
-    value: JSON.stringify({ PostAuthentication: ['show-notice'] }),
   },
   {
     name: 'Add User to Group',
-    key: 'addUserToGroup',
+    value: 'addUserToGroup',
     triggers: {
       PostConfirmation: ['add-to-group'],
     },
-    value: JSON.stringify({ PostConfirmation: ['add-to-group'] }),
   },
   {
     name: 'Email Domain Filtering (blacklist)',
-    key: 'emailBlacklist',
+    value: 'emailBlacklist',
     triggers: {
       PreSignup: ['email-filter-blacklist'],
     },
-    value: JSON.stringify({ PreSignup: ['email-filter-blacklist'] }),
   },
   {
     name: 'Email Domain Filtering (whitelist)',
-    key: 'emailWhitelist',
+    value: 'emailWhitelist',
     triggers: {
       PreSignup: ['email-filter-whitelist'],
     },
-    value: JSON.stringify({ PreSignup: ['email-filter-whitelist'] }),
   },
-  // {
-  //   name: 'Device trackingf/registration',
-  //   value: 'deviceTracking',
-  // },
-  // {
-  //   name: 'User sign-up email filtering (whitelists/blacklists)',
-  //   value: 'emailFiltering',
-  // },
-  // {
-  //   name: 'Show Legal Notice',
-  //   value: 'showLegalNotice',
-  // },
-  // {
-  //   name: 'Send email instead of code',
-  //   value: 'emailInsteadOfCode',
-  // },
 ];
 
 const disableOptionsOnEdit = () => {
