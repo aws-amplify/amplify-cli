@@ -1,3 +1,4 @@
+require = require('esm')(module); // eslint-disable-line no-global-assign
 const fs = require('fs-extra');
 const { build } = require('gluegun');
 const path = require('path');
