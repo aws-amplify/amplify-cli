@@ -13,9 +13,9 @@ module.exports = {
 
     if (context.parameters.options.json) {
       if (allEnvs[envName]) {
-        context.print.info(JSON.stringify(allEnvs[envName], null, 4));
+        context.print.fancy(JSON.stringify(allEnvs[envName], null, 4));
       } else {
-        context.print.error('No environment found with the corresponding name provided');
+        context.print.fancy(JSON.stringify({ error: `No environment found with name: '${envName}'` }, null, 4));
       }
       return;
     }
