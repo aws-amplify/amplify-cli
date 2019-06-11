@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "End to end functional tests for appsync supported transformers.",
   "main": "lib/index.js",
   "private": true,
@@ -38,7 +38,7 @@
     "graphql-dynamodb-transformer": "3.8.0",
     "graphql-elasticsearch-transformer": "3.6.1",
     "graphql-function-transformer": "1.1.0",
-    "graphql-key-transformer": "1.1.1",
+    "graphql-key-transformer": "1.1.2",
     "graphql-versioned-transformer": "3.4.7",
     "jest": "^23.1.0",
     "node-fetch": "^2.2.0",

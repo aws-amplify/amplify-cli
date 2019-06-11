@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.6.1...amplify-category-api@1.7.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* fixing the IAM policies for AppSync API ([#1634](https://github.com/aws-amplify/amplify-cli/issues/1634)) ([9fb2fa9](https://github.com/aws-amplify/amplify-cli/commit/9fb2fa9))
+
+
+### Features
+
+* add graphQLEndpoint as an env var to lambda functions ([#1641](https://github.com/aws-amplify/amplify-cli/issues/1641)) ([ae825a6](https://github.com/aws-amplify/amplify-cli/commit/ae825a6)), closes [#1620](https://github.com/aws-amplify/amplify-cli/issues/1620)
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.6.0...amplify-category-api@1.6.1) (2019-06-06)
 
 **Note:** Version bump only for package amplify-category-api

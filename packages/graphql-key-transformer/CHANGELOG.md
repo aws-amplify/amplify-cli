@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.1.1...graphql-key-transformer@1.1.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** 1587 bug fix ([3a04e19](https://github.com/aws-amplify/amplify-cli/commit/3a04e19)), closes [#1587](https://github.com/aws-amplify/amplify-cli/issues/1587)
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.1.0...graphql-key-transformer@1.1.1) (2019-06-06)
 
 

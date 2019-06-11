@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.1...graphql-transformers-e2e-tests@3.6.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** 1587 bug fix ([3a04e19](https://github.com/aws-amplify/amplify-cli/commit/3a04e19)), closes [#1587](https://github.com/aws-amplify/amplify-cli/issues/1587)
+
+
+
+
+
 ## [3.6.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.0...graphql-transformers-e2e-tests@3.6.1) (2019-06-06)
 
 
