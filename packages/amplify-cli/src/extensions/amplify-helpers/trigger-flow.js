@@ -139,6 +139,7 @@ const getTriggerPermissions = async (context, triggers, category) => {
             {},
           );
           if (allDefaultValues.categoryPolicies && allDefaultValues.categoryPolicies.length > 0) {
+            /* eslint-disable */
             const policies = allDefaultValues.categoryPolicies.map((p) => {
               return {
                 policyName: `Custom${index}Cognito`,
@@ -151,6 +152,7 @@ const getTriggerPermissions = async (context, triggers, category) => {
                 },
               };
             });
+            /* eslint-enable */
             permissions = permissions.concat(policies);
           }
           console.log('topLevelComment', topLevelComment);
