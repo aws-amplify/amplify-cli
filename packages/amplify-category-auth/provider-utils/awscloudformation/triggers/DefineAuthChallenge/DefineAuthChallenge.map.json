@@ -1,6 +1,0 @@
-{
-  "captcha": {
-    "name": "MFA w/ Captcha",
-    "description": "Forces your user to complete a Captcha as part of MFA process"
-  }
-}

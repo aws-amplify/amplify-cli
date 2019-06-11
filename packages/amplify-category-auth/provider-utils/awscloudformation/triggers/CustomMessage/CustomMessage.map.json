@@ -1,6 +1,0 @@
-{
-  "verification-link": {
-    "name": "Send Account Confirmation Link w/ Redirect",
-    "description": "This template sends a confirmation link to a user which provides a url utilizing S3 redirection."
-  }
-}

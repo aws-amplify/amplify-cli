@@ -190,17 +190,22 @@ const learnMoreLoop = async (key, map, metaData, question) => {
 };
 
 const choicesFromMetadata = (path, selection, isDir) => {
-  const templates = isDir ?
-    readdirSync(path)
-      .filter(f => statSync(join(path, f)).isDirectory()) :
-    readdirSync(path).map(t => t.substring(0, t.length - 3));
-
-  const metaData = getTriggerMetadata(path, selection);
-  const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
-  const options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
-  // add learn more w/ seperator
-  options.unshift(new inquirer.Separator());
-  options.unshift({ name: 'Learn More', value: 'learn' });
+  let templates;
+  let options = [];
+  try {
+    templates = isDir ?
+      readdirSync(path)
+        .filter(f => statSync(join(path, f)).isDirectory()) :
+      readdirSync(path).map(t => t.substring(0, t.length - 3));
+    const metaData = getTriggerMetadata(path, selection);
+    const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
+    options = configuredOptions.map(c => ({ name: `${metaData[c].name}`, value: c }));
+    // add learn more w/ seperator
+    options.unshift(new inquirer.Separator());
+    options.unshift({ name: 'Learn More', value: 'learn' });
+  } catch (e) {
+    throw new Error('No trigger directory for category');
+  }
   return options;
 };
 
