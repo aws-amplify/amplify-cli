@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.0...amplify-frontend-javascript@1.6.1-beta.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* **cli:** support es6 import/export ([#1635](https://github.com/aws-amplify/amplify-cli/issues/1635)) ([18d5409](https://github.com/aws-amplify/amplify-cli/commit/18d5409)), closes [#1623](https://github.com/aws-amplify/amplify-cli/issues/1623)
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.5.1...amplify-frontend-javascript@1.6.0) (2019-04-30)
 
 

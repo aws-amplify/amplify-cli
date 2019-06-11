@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.1...amplify-category-auth@1.6.2-beta.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** provide correct arn in permission policies ([#1610](https://github.com/aws-amplify/amplify-cli/issues/1610)) ([27fd157](https://github.com/aws-amplify/amplify-cli/commit/27fd157))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.0...amplify-category-auth@1.6.1) (2019-06-06)
 
 

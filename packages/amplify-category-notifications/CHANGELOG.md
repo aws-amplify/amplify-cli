@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.8...amplify-category-notifications@1.4.9-beta.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** remove env name ([#1440](https://github.com/aws-amplify/amplify-cli/issues/1440)) ([19ff63c](https://github.com/aws-amplify/amplify-cli/commit/19ff63c)), closes [#1372](https://github.com/aws-amplify/amplify-cli/issues/1372)
+
+
+
+
+
 ## [1.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.7...amplify-category-notifications@1.4.8) (2019-06-06)
 
 
