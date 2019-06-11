@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const { uniq, flatten, flattenDeep } = require('lodash');
+const { uniq, flatten } = require('lodash');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
 
