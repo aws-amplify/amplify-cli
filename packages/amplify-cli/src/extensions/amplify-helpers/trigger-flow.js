@@ -10,6 +10,7 @@ const {
 const { copySync } = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
+const { askExecRolePermissionsQuestions } = require('../../../../amplify-category-function/provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough');
 
 /**
  * @function triggerFlow
@@ -113,21 +114,51 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
  *    ]
  *  }"]
  */
-const getTriggerPermissions = (context, triggers, category) => {
+const getTriggerPermissions = async (context, triggers, category) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
-  triggerKeys.forEach((k) => {
+
+  for (let c = 0; c < triggerKeys.length; c += 1) {
+    const index = triggerKeys[c];
     const meta = context.amplify.getTriggerMetadata(
-      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${k}`,
-      k,
+      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${index}`,
+      index,
     );
-    // parsedTriggers[k].forEach((t) => {
-    if (meta[parsedTriggers[k]] && meta[parsedTriggers[k]].permissions) {
-      permissions = permissions.concat(meta[parsedTriggers[k]].permissions);
+
+    const moduleKeys = Object.keys(meta);
+
+    for (let v = 0; v < moduleKeys.length; v += 1) {
+      if (parsedTriggers[index].includes(moduleKeys[v]) && meta[moduleKeys[v]].permissions) {
+        permissions = permissions.concat(meta[moduleKeys[v]].permissions);
+      } else if (parsedTriggers[index].includes('custom')) {
+        if (await context.amplify.confirmPrompt.run(`You have configured a custom function for your ${index} trigger. Do you want to access other resources created in this project from your Lambda function?`)) {
+          const { topLevelComment, allDefaultValues } = await askExecRolePermissionsQuestions(
+            context,
+            {},
+            {},
+          );
+          if (allDefaultValues.categoryPolicies && allDefaultValues.categoryPolicies.length > 0) {
+            const policies = allDefaultValues.categoryPolicies.map((p) => {
+              return {
+                policyName: `Custom${index}Cognito`,
+                trigger: index,
+                effect: p.Effect,
+                actions: p.Action,
+                resource: {
+                  paramType: '!Join',
+                  keys: Object.values(p.Resource[0])[0][1],
+                },
+              };
+            });
+            permissions = permissions.concat(policies);
+          }
+          console.log('topLevelComment', topLevelComment);
+          console.log('allDefaultValues', allDefaultValues);
+        }
+      }
     }
-    // });
-  });
+  }
   permissions = permissions.map(i => JSON.stringify(i));
   return permissions;
 };

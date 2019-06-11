@@ -388,7 +388,7 @@ async function askExecRolePermissionsQuestions(
   context.print.info(terminalOutput);
   topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */`;
 
-  return { topLevelComment };
+  return { topLevelComment, allDefaultValues };
 }
 
 async function getTableParameters(context, dynamoAnswers) {
@@ -645,5 +645,5 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies, askExecRolePermissionsQuestions,
 };

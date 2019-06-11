@@ -10,6 +10,7 @@
       {
         "policyName": "AddToGroupCognito",
         "trigger": "PostConfirmation",
+        "effect": "Allow",
         "actions": ["cognito-idp:AdminAddUserToGroup"],
         "resource": {
           "paramType": "!GetAtt",

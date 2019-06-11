@@ -429,7 +429,7 @@ async function lambdaFlow(context, answers) {
   // const parsedTriggers = parseTriggerSelections(answers, previousTriggers, previousAutoTriggers);
   const triggers = await context.amplify
     .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
-  return triggers;
+  return triggers || answers;
 }
 
 function getIAMPolicies(resourceName, crudOptions) {
