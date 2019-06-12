@@ -80,12 +80,13 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options = {})
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
-  if (!amplifyMeta[category][resourceName]) {
-    amplifyMeta[category][resourceName] = {};
-    amplifyMeta[category][resourceName] = options;
-    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  if (amplifyMeta[category][resourceName]) {
+    throw new Error(`${resourceName} is present in amplify-meta.json`);
   }
+  amplifyMeta[category][resourceName] = {};
+  amplifyMeta[category][resourceName] = options;
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
