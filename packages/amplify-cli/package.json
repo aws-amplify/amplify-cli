@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "1.7.3-beta.0",
+  "version": "1.7.3-beta.1",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -25,7 +25,7 @@
     "amplify-category-auth": "1.6.2",
     "amplify-category-function": "1.5.2",
     "amplify-category-hosting": "1.2.1",
-    "amplify-category-interactions": "1.5.2",
+    "amplify-category-interactions": "1.5.3-beta.0",
     "amplify-category-notifications": "1.4.9",
     "amplify-category-storage": "1.7.2",
     "amplify-category-xr": "1.6.2",
