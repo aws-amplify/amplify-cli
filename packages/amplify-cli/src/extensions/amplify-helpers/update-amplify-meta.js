@@ -70,7 +70,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
-function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
+function updateamplifyMetaAfterResourceAdd(category, resourceName, options = {}) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (options.dependsOn) {
