@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.2...@aws-amplify/cli@1.7.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** call updateMetaAfterAdd only once ([#1653](https://github.com/aws-amplify/amplify-cli/issues/1653)) ([dc28758](https://github.com/aws-amplify/amplify-cli/commit/dc28758)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+* **cli:** add default value for options in updateAmplifyMeta ([#1648](https://github.com/aws-amplify/amplify-cli/issues/1648)) ([f9c87bb](https://github.com/aws-amplify/amplify-cli/commit/f9c87bb)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+
+
+
+
+
 ## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.1...@aws-amplify/cli@1.7.2) (2019-06-11)
 
 
