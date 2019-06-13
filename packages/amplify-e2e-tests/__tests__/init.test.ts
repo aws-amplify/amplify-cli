@@ -4,7 +4,8 @@ import {
   deleteProject,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initNewEnvWithProfile
+  initNewEnvWithProfile,
+  initHeadless
 } from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../src/utils';
 import { access } from 'fs';
@@ -99,5 +100,35 @@ describe('amplify init', () => {
     await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
     await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
     await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+  });
+  it('should init project in headless mode', async () => {
+    const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
+    if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
+      throw new Error(
+        'Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable'
+      );
+    }
+    await initHeadless(projRoot, {
+      amplify: {
+        envName: 'headless'
+      },
+      providers: {
+        configLevel: 'project',
+        useProfile: true,
+        profileName: 'amplifyinteg'
+      },
+      codegen: {
+        generateCode: false,
+        generateDocs: false
+      }
+    });
+
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket();
   });
 });

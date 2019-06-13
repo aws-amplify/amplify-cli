@@ -173,3 +173,50 @@ export function initNewEnvWithProfile(
       });
   });
 }
+
+export function initHeadless(
+  cwd: string,
+  settings: {
+    amplify: {
+      envName: string;
+    };
+    providers: {
+      configLevel: string;
+      useProfile: boolean;
+      profileName: string;
+    };
+    codegen: {
+      generateCode: boolean;
+      generateDocs: boolean;
+    };
+  },
+  verbose: Boolean = isCI() ? false : true
+) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(
+        getCLIPath(),
+        [
+          'init',
+          '--amplify',
+          JSON.stringify(settings.amplify),
+          '--providers',
+          JSON.stringify(settings.providers),
+          '--codegen',
+          JSON.stringify(settings.codegen),
+          '--yes'
+        ],
+        { cwd, stripColors: true, verbose }
+      )
+      .wait(
+        'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
+      )
+      .run(function(err: Error) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
