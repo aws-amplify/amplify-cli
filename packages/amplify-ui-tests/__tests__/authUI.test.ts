@@ -2,7 +2,7 @@ require('../src/aws-matchers/'); // custom matcher for assertion
 import {
   initProjectWithProfile,
   deleteProject,
-  amplifyPushAuth
+  amplifyPush
 } from '../src/init';
 
 import { createNewProjectDir, deleteProjectDir, getSampleRootPath, getProjectMeta, getUserPool } from '../src/utils';
@@ -28,8 +28,8 @@ describe('amplify your test', () => {
   it('<your test>', async () => {
     await initProjectWithProfile(projRoot, { name: '<project-name>' });
     // add resources that you want to test
-    await addAuthWithDefault(projRoot,{});
-    await amplifyPushAuth(projRoot); // Push it to the cloud
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPush(projRoot); // Push it to the cloud
 
 
     //test if auth has been created in the cloud

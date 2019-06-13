@@ -5,7 +5,7 @@ export {
   initNewEnvWithProfile
 } from './initProjectHelper';
 export {
-  amplifyPush, amplifyPushAuth
+  amplifyPushApi, amplifyPush
 } from './amplifyPush';
 export { getProjectMeta } from '../utils';
 export { default as deleteProject } from './deleteProject';

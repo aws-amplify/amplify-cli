@@ -1,7 +1,7 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-function amplifyPush(
+function amplifyPushApi(
   cwd: string,
   verbose: Boolean = isCI() ? false : true
 ) {
@@ -12,7 +12,8 @@ function amplifyPush(
       .sendline('y')
       .wait('Do you want to generate code for your newly created GraphQL API')
       .sendline('n')
-      .wait(/.*/)
+      //.wait(/.*/)
+      .sendEof()
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -23,7 +24,7 @@ function amplifyPush(
   });
 }
 
-function amplifyPushAuth(
+function amplifyPush(
   cwd: string,
   verbose: Boolean = isCI() ? false : true
 ) {
@@ -32,7 +33,8 @@ function amplifyPushAuth(
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
       .wait('Are you sure you want to continue?')
       .sendline('y')
-      .wait(/.*/)
+      //.wait(/.*/)
+      .sendEof()
       .run(function(err: Error) {
         if (!err) {
           resolve();
@@ -43,4 +45,4 @@ function amplifyPushAuth(
   });
 }
 
-export { amplifyPush, amplifyPushAuth };
+export { amplifyPushApi, amplifyPush };

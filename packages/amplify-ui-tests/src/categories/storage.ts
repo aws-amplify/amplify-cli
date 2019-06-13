@@ -10,10 +10,10 @@ export function addStorageWithDefault(
   ) {
     return new Promise((resolve, reject) => {
         nexpect
-          .spawn(getCLIPath(), ['add', 'storage', { cwd, stripColors: true, verbose}])
+          .spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true, verbose})
           .wait('Please select from one of the below mentioned services')
           .sendline('\r')
-          .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+          .wait('Please provide a friendly name for your resource that will be used to label')
           .sendline('\r')
           .wait('Please provide bucket name:')
           .sendline('\r')
