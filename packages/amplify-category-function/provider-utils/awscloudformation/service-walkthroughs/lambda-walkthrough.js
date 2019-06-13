@@ -100,7 +100,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   return { answers: allDefaultValues, dependsOn };
 }
 
-async function updateWalkthrough(context) {
+async function updateWalkthrough(context, lambdaToUpdate) {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources
     .filter(resource => resource.service === serviceName)
@@ -124,7 +124,9 @@ async function updateWalkthrough(context) {
   const currentDefaults = {};
   let dependsOn;
 
-  const resourceAnswer = await inquirer.prompt(resourceQuestion);
+  const resourceAnswer = !lambdaToUpdate ?
+    await inquirer.prompt(resourceQuestion) :
+    { resourceName: lambdaToUpdate };
   answers.resourceName = resourceAnswer.resourceName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -314,10 +316,16 @@ async function askExecRolePermissionsQuestions(
               return true;
             },
             default: () => {
-              if (currentDefaults && currentDefaults.categoryPermissionMap[category]
-                && currentDefaults.categoryPermissionMap[category][resourceName]) {
-                return currentDefaults.categoryPermissionMap[category][resourceName];
+              let result = [];
+              if (
+                currentDefaults &&
+                currentDefaults.categoryPermissionMap &&
+                currentDefaults.categoryPermissionMap[category] &&
+                currentDefaults.categoryPermissionMap[category][resourceName]
+              ) {
+                result = currentDefaults.categoryPermissionMap[category][resourceName];
               }
+              return result;
             },
           };
 
@@ -388,7 +396,7 @@ async function askExecRolePermissionsQuestions(
   context.print.info(terminalOutput);
   topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */`;
 
-  return { topLevelComment, allDefaultValues };
+  return { topLevelComment };
 }
 
 async function getTableParameters(context, dynamoAnswers) {

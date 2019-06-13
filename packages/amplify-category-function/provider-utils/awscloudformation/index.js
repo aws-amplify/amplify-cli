@@ -34,7 +34,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
         dir: pluginDir,
         template: 'function-template-dir/trigger-index.js',
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
+        paramsFile: `${targetDir}/${category}/${options.resourceName}/function-parameters.json`,
       },
       {
         dir: pluginDir,
@@ -167,7 +167,7 @@ async function addResource(context, category, service, options, parameters) {
   return answers.resourceName;
 }
 
-async function updateResource(context, category, service, parameters) {
+async function updateResource(context, category, service, parameters, resourceToUpdate) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -178,7 +178,7 @@ async function updateResource(context, category, service, parameters) {
   let result;
 
   if (!parameters) {
-    result = await updateWalkthrough(context);
+    result = await updateWalkthrough(context, resourceToUpdate);
   } else {
     result = { answers: parameters };
   }
@@ -197,6 +197,12 @@ async function updateResource(context, category, service, parameters) {
       'dependsOn',
       result.dependsOn,
     );
+  }
+
+  const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/function-parameters.json`);
+
+  if (previousParameters.modules) {
+    answers = Object.assign(answers, previousParameters);
   }
 
   copyCfnTemplate(context, category, answers, cfnFilename, parameters);

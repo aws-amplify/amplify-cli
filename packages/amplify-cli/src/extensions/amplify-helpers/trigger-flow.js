@@ -10,7 +10,7 @@ const {
 const { copySync } = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
-const { askExecRolePermissionsQuestions } = require('../../../../amplify-category-function/provider-utils/awscloudformation/service-walkthroughs/lambda-walkthrough');
+const { updateResource } = require('../../../../amplify-category-function/provider-utils/awscloudformation');
 
 /**
  * @function triggerFlow
@@ -114,7 +114,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
  *    ]
  *  }"]
  */
-const getTriggerPermissions = async (context, triggers, category) => {
+const getTriggerPermissions = async (context, triggers, category, resourceName) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
@@ -127,35 +127,11 @@ const getTriggerPermissions = async (context, triggers, category) => {
     );
 
     const moduleKeys = Object.keys(meta);
-
     for (let v = 0; v < moduleKeys.length; v += 1) {
       if (parsedTriggers[index].includes(moduleKeys[v]) && meta[moduleKeys[v]].permissions) {
         permissions = permissions.concat(meta[moduleKeys[v]].permissions);
       } else if (parsedTriggers[index].includes('custom')) {
-        if (await context.amplify.confirmPrompt.run(`You have configured a custom function for your ${index} trigger. Do you want to access other resources created in this project from your Lambda function?`)) {
-          const { topLevelComment, allDefaultValues } = await askExecRolePermissionsQuestions(
-            context,
-            {},
-            {},
-          );
-          if (allDefaultValues.categoryPolicies && allDefaultValues.categoryPolicies.length > 0) {
-            const policies = allDefaultValues.categoryPolicies.map((p) => {
-              return {
-                policyName: `Custom${index}Cognito`,
-                trigger: index,
-                effect: p.Effect,
-                actions: p.Action,
-                resource: {
-                  paramType: '!Join',
-                  keys: Object.values(p.Resource[0])[0][1],
-                },
-              };
-            });
-            permissions = permissions.concat(policies);
-          }
-          console.log('topLevelComment', topLevelComment);
-          console.log('allDefaultValues', allDefaultValues);
-        }
+        await updateResource(context, 'function', 'Lambda', null, `${resourceName}${triggerKeys[c]}`);
       }
     }
   }
@@ -275,7 +251,7 @@ const updateTrigger = async (
       parentStack,
       triggerEnvs: JSON.stringify(triggerEnvs[key]),
       roleName: resourceName,
-    });
+    }, resourceName);
     context.print.success('Succesfully updated the Lambda function locally');
     for (let v = 0; v < values.length; v += 1) {
       await copyFunctions(key, values[v], category, context, targetPath);

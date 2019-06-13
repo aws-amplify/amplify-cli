@@ -14,13 +14,19 @@ async function add(context, providerName, service, parameters) {
   return providerController.addResource(context, category, service, options, parameters);
 }
 
-async function update(context, providerName, service, parameters) {
+async function update(context, providerName, service, parameters, resourceToUpdate) {
   const providerController = require(`./provider-utils/${providerName}/index`);
   if (!providerController) {
     context.print.error('Provider not confgiured for this category');
     return;
   }
-  return providerController.updateResource(context, category, service, parameters);
+  return providerController.updateResource(
+    context,
+    category,
+    service,
+    parameters,
+    resourceToUpdate,
+  );
 }
 
 async function console(context) {

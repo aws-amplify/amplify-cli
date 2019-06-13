@@ -253,9 +253,7 @@ Resources:
             <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Ref') { %>
             Resource: !Ref <%=JSON.parse(props.permissions[i]).resource.keys %>
             <% } %>
-            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Join') { %>
-            Resource: !Join ['', [<%=JSON.parse(props.permissions[i]).resource.keys %>]
-            <% } %>
+
       Roles:
         - !Join ['',["<%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>", '-', !Ref env]]
   <% } %>
