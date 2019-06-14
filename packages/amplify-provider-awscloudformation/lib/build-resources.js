@@ -38,7 +38,12 @@ async function buildResource(context, resource) {
     !resource.distZipFilename ||
     isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)
   ) {
-    const { hash: folderHash } = await hashElement(resourceDir);
+    // generating hash, ignoring node_modules as this can take long time to hash
+    // the content inside node_modules change only when content of package-lock.json changes
+    const { hash: folderHash } = await hashElement(resourceDir, {
+      folders: { exclude: ['node_modules'] },
+    });
+
     zipFilename = `${resourceName}-${folderHash}-build.zip`;
 
     if (!fs.existsSync(distDir)) {
