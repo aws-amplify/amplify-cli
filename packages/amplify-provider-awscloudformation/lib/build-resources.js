@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
-const moment = require('moment');
 const archiver = require('archiver');
+const { hashElement } = require('folder-hash');
 
 async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
@@ -13,7 +13,7 @@ async function run(context, category, resourceName) {
   }
   return Promise.all(buildPromises);
 }
-function buildResource(context, resource) {
+async function buildResource(context, resource) {
   const { category, resourceName } = resource;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
@@ -38,13 +38,14 @@ function buildResource(context, resource) {
     !resource.distZipFilename ||
     isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)
   ) {
-    zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
+    const { hash: folderHash } = await hashElement(resourceDir);
+    zipFilename = `${resourceName}-${folderHash}-build.zip`;
 
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir);
     }
 
-    zipFilePath = path.normalize(path.join(distDir, zipFilename));
+    zipFilePath = path.normalize(path.join(distDir, 'latest-build.zip'));
     const output = fs.createWriteStream(zipFilePath);
 
     return new Promise((resolve, reject) => {
