@@ -324,8 +324,9 @@ async function transformGraphQLSchema(context, options) {
           const CustomTransformer = imported.default;
           return CustomTransformer.call({});
         } catch (error) {
-          context.print.error(error);
-          return null;
+          context.print.error(`Unable to import custom transformer module(${modulePath}).`);
+          context.print.error(`You may fix this error by editing transformers at ${transformerConfigPath}`);
+          throw error;
         }
       })
       .filter(customTransformer => customTransformer);
