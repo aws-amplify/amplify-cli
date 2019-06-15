@@ -1,7 +1,10 @@
 const inquirer = require('inquirer');
 const opn = require('opn');
 const _ = require('lodash');
-
+const {
+  existsSync,
+} = require('fs');
+const { copySync } = require('fs-extra');
 
 let serviceMetadata;
 
@@ -157,6 +160,8 @@ async function addResource(context, category, service) {
         result = Object.assign(generalDefaults(projectName), result);
       }
 
+      await verificationBucketName(result);
+
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
@@ -173,7 +178,8 @@ async function addResource(context, category, service) {
         ENV_SPECIFIC_PARAMS,
       );
     })
-    .then(() => {
+    .then(async () => {
+      await copyS3Assets(context, props);
       if (props.dependsOn) {
         context.amplify.auth = { dependsOn: props.dependsOn };
       }
@@ -225,6 +231,8 @@ async function updateResource(context, category, serviceResult) {
         }
       }
 
+      await verificationBucketName(result, context.updatingAuth);
+
       props = Object.assign(defaults, context.updatingAuth, result);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
@@ -264,7 +272,8 @@ async function updateResource(context, category, serviceResult) {
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
     })
-    .then(() => {
+    .then(async () => {
+      await copyS3Assets(context, props);
       if (props.dependsOn) {
         context.amplify.auth = { dependsOn: props.dependsOn };
       }
@@ -556,6 +565,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
 async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefaults) {
   const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
   let triggerKeyValues = {};
+
   if (coreAnswers.authTriggers) {
     triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
     coreAnswers.authTriggers = triggerKeyValues ?
@@ -601,6 +611,39 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 }
 
+async function copyS3Assets(context, props) {
+  const targetDir = `${context.amplify.pathManager.getBackendDirPath()}/auth/${props.resourceName}/assets`;
+
+  const triggers = props.authTriggers ? JSON.parse(props.authTriggers) : null;
+  const confirmationFileNeeded = props.authTriggers &&
+    triggers.CustomMessage &&
+    triggers.CustomMessage.includes('verification-link');
+  if (confirmationFileNeeded) {
+    if (!existsSync(targetDir)) {
+      const source = `${__dirname}/triggers/CustomMessage/assets`;
+      copySync(source, `${targetDir}`);
+    }
+  }
+}
+
+async function verificationBucketName(current, previous) {
+  if (
+    current.authTriggers &&
+    current.authTriggers.CustomMessage &&
+    current.authTriggers.CustomMessage.includes('verification-link')) {
+    const name = previous ? previous.resourceName : current.resourceName;
+    current.verificationBucketName = `${name.toLowerCase()}verificationbucket`;
+  } else if (
+    previous &&
+    previous.authTriggers &&
+    previous.authTriggers.CustomMessage &&
+    previous.authTriggers.CustomMessage.includes('verification-link') &&
+    previous.verificationBucketName &&
+    (!current.authTriggers || !current.authTriggers.CustomMessage || !current.authTriggers.CustomMessage.includes('verification-link'))
+  ) {
+    delete previous.updatingAuth.verificationBucketName;
+  }
+}
 
 module.exports = {
   addResource,

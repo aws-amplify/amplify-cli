@@ -19,12 +19,10 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     context.updatingAuth.resourceName :
     coreAnswers.resourceName;
 
-  // const triggers = reduceAnswerArray(coreAnswers.authTriggers);
 
   const triggers = coreAnswers.authTriggers;
 
   const triggerEnvs = {};
-  // Object.keys(triggers).forEach((r) => {
   Object.keys(triggers).forEach((r) => {
     triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'amplify-category-auth');
   });
@@ -98,20 +96,6 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
 
-
-  if (
-    coreAnswers.authTriggers &&
-    coreAnswers.authTriggers.CustomMessage &&
-    coreAnswers.authTriggers.CustomMessage.includes('verification-link')
-  ) {
-    const hostingExists = context.amplify.getProjectMeta().hosting;
-    if (hostingExists && Object.keys(hostingExists).length > 0) {
-      await redirectStaticSite(context, 'update');
-    } else {
-      await redirectStaticSite(context, 'create');
-    }
-  }
-
   return parameters.authTriggers;
 }
 
@@ -136,29 +120,6 @@ const reduceAnswerArray = (answers) => {
     });
   }
   return triggerObj;
-};
-
-const redirectStaticSite = async (context, operation) => {
-  const parameters = { foo: 'bar' };
-  if (operation === 'create') {
-    let add;
-    try {
-      ({ add } = require('../../../../amplify-category-hosting'));
-    } catch (e) {
-      throw new Error('Hosting plugin not installed in the CLI. You need to install it to use this feature.');
-    }
-    await add(context, parameters);
-    context.print.success('Succesfully updated the Hosting resource locally');
-  } else if (operation === 'update') {
-    let configure;
-    try {
-      ({ configure } = require('../../../../amplify-category-hosting'));
-    } catch (e) {
-      throw new Error('Hosting plugin not installed in the CLI. You need to install it to use this feature.');
-    }
-    await configure(context, parameters);
-    context.print.success('Succesfully updated the Hosting resource locally');
-  }
 };
 
 module.exports = {

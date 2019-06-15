@@ -11,12 +11,15 @@
     "clean": "rm -rf ./lib"
   },
   "dependencies": {
+    "aws-sdk": "^2.475.0",
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "^3.0.6",
     "graphql-transformer-common": "^3.6.1",
-    "graphql-transformer-core": "^3.6.1"
+    "graphql-transformer-core": "^3.6.1",
+    "mime-types": "^2.1.24",
+    "ora": "^3.4.0"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",

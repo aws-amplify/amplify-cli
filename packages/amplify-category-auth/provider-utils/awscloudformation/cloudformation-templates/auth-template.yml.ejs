@@ -11,6 +11,8 @@ Parameters:
     Type: String
   unauthRoleArn:
     Type: String
+
+  
   
   <% if (props.dependsOn && props.dependsOn.length > 0) { %>
   <% for(var i=0; i < props.dependsOn.length; i++) { %>
@@ -49,6 +51,27 @@ Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
 
 Resources:
+  <%if (props.verificationBucketName) { %>
+  CustomMessageConfirmationBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:  !If [ShouldNotCreateEnvResources, !Ref verificationBucketName, !Join ['',[!Ref verificationBucketName, '-', !Ref env]]]
+      AccessControl: "Private"
+      WebsiteConfiguration:
+        IndexDocument: "index.html"
+        ErrorDocument: "index.html"
+      CorsConfiguration:
+        CorsRules:
+          - 
+            AllowedHeaders:
+              - "Authorization" 
+              - "Content-Length"
+            AllowedMethods:
+              - "GET"
+            AllowedOrigins:
+              - "*"
+            MaxAge: 3000
+  <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole: 
@@ -243,6 +266,9 @@ Resources:
             Action:
             <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { %>
               - <%=JSON.parse(props.permissions[i]).actions[x]%>
+            <% } %>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === 'string') { %>
+            Resource: "<%=JSON.parse(props.permissions[i]).resource.keys %>"
             <% } %>
             <% if(JSON.parse(props.permissions[i]).resource.paramType === '!GetAtt') { %>
             Resource: !GetAtt

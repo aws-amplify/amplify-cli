@@ -27,11 +27,14 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
+    "aws-sdk": "^2.475.0",
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
     "graphql-transformer-common": "3.7.0",
-    "js-yaml": "^3.12.1"
+    "js-yaml": "^3.12.1",
+    "mime-types": "^2.1.24",
+    "ora": "^3.4.0"
   },
   "jest": {
     "transform": {

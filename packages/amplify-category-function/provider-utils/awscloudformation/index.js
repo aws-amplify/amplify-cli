@@ -34,7 +34,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
         dir: pluginDir,
         template: 'function-template-dir/trigger-index.js',
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
-        paramsFile: `${targetDir}/${category}/${options.resourceName}/function-parameters.json`,
+        paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
       },
       {
         dir: pluginDir,
@@ -199,7 +199,7 @@ async function updateResource(context, category, service, parameters, resourceTo
     );
   }
 
-  const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/function-parameters.json`);
+  const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`);
 
   if (previousParameters.modules) {
     answers = Object.assign(answers, previousParameters);
