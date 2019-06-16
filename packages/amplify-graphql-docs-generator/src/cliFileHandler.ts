@@ -8,9 +8,8 @@ function generateAndSave(
   outputPath: string,
   options: { separateFiles: boolean; language: string; maxDepth: number }
 ): void {
-  const schemaContent = fs.readFileSync(schemaPath, 'utf8').trim()
-  const schemaData = JSON.parse(schemaContent)
-  const gql = generate(schemaData, options)
+  const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'))
+  const gql = generate(schema.data, options)
   if (gql) {
     fs.writeFileSync(path.resolve(outputPath), gql)
   }

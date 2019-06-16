@@ -24,23 +24,20 @@ const FILE_EXTENSION_MAP = {
 }
 
 function generate(
-  schema: { data?: IntrospectionQuery; __schema?: IntrospectionQuery },
+  schema: IntrospectionQuery,
   options: { language?: string; maxDepth?: number }
 ): string {
   const language = options.language || 'graphql'
-  if (!schema.data && !schema.__schema) {
-    // tslint:disable-line
+  if (!schema.__schema) {
     throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
   }
   if (!Object.keys(FILE_EXTENSION_MAP).includes(language)) {
     throw new Error(`Language ${language} not supported`)
   }
 
-  // @ts-ignore
-  const schemaIntrospection: IntrospectionQuery = schema.data || schema
   const maxDepth = options.maxDepth || 3
   const useExternalFragmentForS3Object = options.language === 'graphql'
-  const gqlOperations: GQLAllOperations = generateAllOps(schemaIntrospection, maxDepth, {
+  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth, {
     useExternalFragmentForS3Object: useExternalFragmentForS3Object,
   })
   registerPartials()
