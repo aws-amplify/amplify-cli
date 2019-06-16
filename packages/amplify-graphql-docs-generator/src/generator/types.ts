@@ -70,6 +70,13 @@ export type GQLAllOperations = {
   fragments: Array<GQLTemplateFragment>
 }
 
+export type GQLAllOperationResults = {
+  queries?: string
+  mutations?: string
+  subscriptions?: string
+  fragments?: string
+}
+
 export type GQLDocsGenOptions = {
   useExternalFragmentForS3Object: boolean
 }

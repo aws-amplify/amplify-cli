@@ -12,10 +12,10 @@ import {
   IntrospectionQuery,
 } from 'graphql'
 
-import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator'
+import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment, GQLAllOperationResults } from './generator'
 
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, '../templates'))
-const FILE_EXTENSION_MAP = {
+export const FILE_EXTENSION_MAP = {
   javascript: 'js',
   graphql: 'graphql',
   flow: 'js',
@@ -25,8 +25,8 @@ const FILE_EXTENSION_MAP = {
 
 function generate(
   schema: IntrospectionQuery,
-  options: { language?: string; maxDepth?: number }
-): string {
+  options: { asSeparateOperations?: boolean, language?: string; maxDepth?: number }
+): string | GQLAllOperationResults {
   const language = options.language || 'graphql'
   if (!schema.__schema) {
     throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
@@ -43,13 +43,26 @@ function generate(
   registerPartials()
   registerHelpers()
 
-  const ops = [
-    ...gqlOperations.queries,
-    ...gqlOperations.mutations,
-    ...gqlOperations.subscriptions,
-  ]
-  if (ops.length) {
-    return render({ operations: ops, fragments: gqlOperations.fragments }, language)
+  if (options.asSeparateOperations) {
+    const results: GQLAllOperationResults = {}
+    Object.keys(gqlOperations).map(key => {
+      const ops = gqlOperations[key]
+      if (ops.length && key === 'fragments') {
+        results.fragments = render({ operations: [], fragments: gqlOperations.fragments }, language)
+      } else if (ops.length) {
+        results[key] = render({ operations: ops, fragments: [] }, language)
+      }
+    })
+    return results
+  } else {
+    const ops = [
+      ...gqlOperations.queries,
+      ...gqlOperations.mutations,
+      ...gqlOperations.subscriptions,
+    ]
+    if (ops.length) {
+      return render({ operations: ops, fragments: gqlOperations.fragments }, language)
+    }
   }
 }
 

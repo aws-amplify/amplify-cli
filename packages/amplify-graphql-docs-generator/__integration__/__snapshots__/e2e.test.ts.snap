@@ -1968,3 +1968,497 @@ export const reviewAdded = \`subscription ReviewAdded($episode: Episode) {
 \`;
 "
 `;
+
+exports[`end 2 end tests should generate statements in separate files 1`] = `
+"# this is an auto generated file. This will be overwritten
+mutation CreateReview($episode: Episode, $review: ReviewInput!) {
+  createReview(episode: $episode, review: $review) {
+    episode
+    stars
+    commentary
+  }
+}
+"
+`;
+
+exports[`end 2 end tests should generate statements in separate files 2`] = `
+"# this is an auto generated file. This will be overwritten
+query Hero($episode: Episode) {
+  hero(episode: $episode) {
+    id
+    name
+    friends {
+      id
+      name
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+      edges {
+        cursor
+      }
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+query Reviews($episode: Episode!) {
+  reviews(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+query Search($text: String) {
+  search(text: $text) {
+    ... on Human {
+      id
+      name
+      homePlanet
+      height
+      mass
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      id
+      name
+      friends {
+        id
+        name
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        friendsConnection {
+          totalCount
+        }
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+          starships {
+            id
+            name
+            length
+            coordinates
+          }
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+        edges {
+          cursor
+        }
+        friends {
+          id
+          name
+          appearsIn
+          ... on Human {
+            homePlanet
+            height
+            mass
+          }
+          ... on Droid {
+            primaryFunction
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+      appearsIn
+      primaryFunction
+    }
+    ... on Starship {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+query Character($id: ID!) {
+  character(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+      edges {
+        cursor
+      }
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+    appearsIn
+    ... on Human {
+      homePlanet
+      height
+      mass
+      starships {
+        id
+        name
+        length
+        coordinates
+      }
+    }
+    ... on Droid {
+      primaryFunction
+    }
+  }
+}
+query Droid($id: ID!) {
+  droid(id: $id) {
+    id
+    name
+    friends {
+      id
+      name
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+      edges {
+        cursor
+      }
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+    appearsIn
+    primaryFunction
+  }
+}
+query Human($id: ID!) {
+  human(id: $id) {
+    id
+    name
+    homePlanet
+    height
+    mass
+    friends {
+      id
+      name
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      friendsConnection {
+        totalCount
+      }
+      appearsIn
+      ... on Human {
+        homePlanet
+        height
+        mass
+        starships {
+          id
+          name
+          length
+          coordinates
+        }
+      }
+      ... on Droid {
+        primaryFunction
+      }
+    }
+    friendsConnection {
+      totalCount
+      edges {
+        cursor
+      }
+      friends {
+        id
+        name
+        appearsIn
+        ... on Human {
+          homePlanet
+          height
+          mass
+        }
+        ... on Droid {
+          primaryFunction
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+    appearsIn
+    starships {
+      id
+      name
+      length
+      coordinates
+    }
+  }
+}
+query Starship($id: ID!) {
+  starship(id: $id) {
+    id
+    name
+    length
+    coordinates
+  }
+}
+"
+`;
+
+exports[`end 2 end tests should generate statements in separate files 3`] = `
+"# this is an auto generated file. This will be overwritten
+subscription ReviewAdded($episode: Episode) {
+  reviewAdded(episode: $episode) {
+    episode
+    stars
+    commentary
+  }
+}
+"
+`;
