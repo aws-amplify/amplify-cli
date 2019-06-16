@@ -1,5 +1,5 @@
 #!/bin/sh -xv
 cd ../aws-amplify-cypress-api
-amplify add api
-amplify push
+amplify-dev add api
+amplify-dev push
 echo "executed all Amplify commands"

@@ -5,7 +5,8 @@ import {
     valueFromASTUntyped, ArgumentNode, DirectiveNode, EnumTypeDefinitionNode,
     ValueNode,
     ListValueNode,
-    ObjectValueNode
+    ObjectValueNode,
+    InputObjectTypeDefinitionNode
 } from 'graphql'
 import { access } from 'fs';
 
@@ -201,6 +202,18 @@ export function extensionWithFields(object: ObjectTypeExtensionNode, fields: Fie
     return {
         ...object,
         fields: [...object.fields, ...fields]
+    }
+}
+
+export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {
+    return {
+        kind: 'InputObjectTypeDefinition',
+        name: {
+            kind: 'Name',
+            value: name
+        },
+        fields: inputs,
+        directives: []
     }
 }
 

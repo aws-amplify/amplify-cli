@@ -1,4 +1,5 @@
 import TransformerContext from './TransformerContext'
+import ITransformer from './ITransformer'
 import {
     DirectiveDefinitionNode,
     parse,
@@ -15,28 +16,9 @@ import {
     EnumValueDefinitionNode,
     TypeDefinitionNode,
     DefinitionNode,
-    ArgumentNode,
-    valueFromASTUntyped,
     DocumentNode
 } from 'graphql'
 import { InvalidTransformerError } from './errors'
-
-function reduceTypeDefinitionNodes(
-    acc: { [name: string]: TypeDefinitionNode },
-    definition: DefinitionNode
-): { [name: string]: TypeDefinitionNode } {
-    switch (definition.kind) {
-        case 'ScalarTypeDefinition':
-        case 'ObjectTypeDefinition':
-        case 'InterfaceTypeDefinition':
-        case 'UnionTypeDefinition':
-        case 'EnumTypeDefinition':
-        case 'InputObjectTypeDefinition':
-            return { ...acc, [definition.name.value]: definition }
-        default:
-            return acc;
-    }
-}
 
 /**
  * A GraphQLTransformer takes a context object, processes it, and
@@ -44,7 +26,7 @@ function reduceTypeDefinitionNodes(
  * a context that fully describes the infrastructure requirements
  * for its stage of the transformation.
  */
-export default class Transformer {
+export default class Transformer implements ITransformer {
 
     public name: string
 
@@ -59,10 +41,10 @@ export default class Transformer {
      */
     constructor(
         name: string,
-        docString: string
+        document: DocumentNode | string
     ) {
+        const doc = typeof document === 'string' ? parse(document) : document;
         this.name = name
-        const doc = parse(docString)
         const directives = doc.definitions.filter(d => d.kind === Kind.DIRECTIVE_DEFINITION) as DirectiveDefinitionNode[]
         const extraDefs = doc.definitions.filter(d => d.kind !== Kind.DIRECTIVE_DEFINITION) as TypeDefinitionNode[]
         if (directives.length !== 1) {
@@ -152,28 +134,4 @@ export default class Transformer {
      * This method handles transforming directives on input value definitions.
      */
     inputValue?: (definition: InputValueDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void
-
-    /**
-     * Helper functions
-     */
-
-    /**
-     * Given a directive returns a plain JS map of its arguments
-     * @param arguments The list of argument nodes to reduce.
-     */
-    public getDirectiveArgumentMap(directive: DirectiveNode) {
-        return directive.arguments ? directive.arguments.reduce(
-            (acc: {}, arg: ArgumentNode) => ({
-                ...acc,
-                [arg.name.value]: valueFromASTUntyped(arg.value)
-            }),
-            {}
-        ) : []
-    }
-
-}
-
-
-function makeDirectiveDefinitions(directiveSpec: string) {
-    return parse(directiveSpec).definitions
 }

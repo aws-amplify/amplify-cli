@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.1...amplify-category-auth@1.6.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** provide correct arn in permission policies ([#1610](https://github.com/aws-amplify/amplify-cli/issues/1610)) ([27fd157](https://github.com/aws-amplify/amplify-cli/commit/27fd157))
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.0...amplify-category-auth@1.6.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fix domain reserved words ([#1544](https://github.com/aws-amplify/amplify-cli/issues/1544)) ([31d4a89](https://github.com/aws-amplify/amplify-cli/commit/31d4a89)), closes [#1513](https://github.com/aws-amplify/amplify-cli/issues/1513)
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.6...amplify-category-auth@1.6.0) (2019-05-29)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** match cognito token expiration date range ([eb4c9ee](https://github.com/aws-amplify/amplify-cli/commit/eb4c9ee)), closes [#1385](https://github.com/aws-amplify/amplify-cli/issues/1385)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.5...amplify-category-auth@1.5.6) (2019-05-21)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add policy name char length limit ([#1492](https://github.com/aws-amplify/amplify-cli/issues/1492)) ([d6a8785](https://github.com/aws-amplify/amplify-cli/commit/d6a8785)), closes [#1199](https://github.com/aws-amplify/amplify-cli/issues/1199)
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.4...amplify-category-auth@1.5.5) (2019-05-17)
+
+
+### Bug Fixes
+
+* fixes [#1471](https://github.com/aws-amplify/amplify-cli/issues/1471) ([52b26cb](https://github.com/aws-amplify/amplify-cli/commit/52b26cb))
+
+
+
+
+
 ## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.5.3...amplify-category-auth@1.5.4) (2019-04-30)
 
 

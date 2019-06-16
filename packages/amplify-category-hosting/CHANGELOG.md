@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.0...amplify-category-hosting@1.2.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **amplify-category-hosting:** fix CloudFront invalidation bug ([#1553](https://github.com/aws-amplify/amplify-cli/issues/1553)) ([2a5ef17](https://github.com/aws-amplify/amplify-cli/commit/2a5ef17)), closes [#1550](https://github.com/aws-amplify/amplify-cli/issues/1550)
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.1.2...amplify-category-hosting@1.2.0) (2019-05-29)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.1.1...amplify-category-hosting@1.1.2) (2019-05-17)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.1.0...amplify-category-hosting@1.1.1) (2019-04-30)
 
 

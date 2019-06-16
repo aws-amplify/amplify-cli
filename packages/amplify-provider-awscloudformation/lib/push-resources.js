@@ -231,7 +231,8 @@ function packageResources(context, resources) {
 
         const files = fs.readdirSync(resourceDir);
         // Fetch all the Cloudformation templates for the resource (can be json or yml)
-        const cfnFiles = files.filter(file => file.indexOf('template') !== -1);
+        const cfnFiles = files.filter(file =>
+          (file.indexOf('template') !== -1) && /\.(json|yaml|yml)$/.test(file));
 
         if (cfnFiles.length !== 1) {
           context.print.error('Only one CloudFormation template is allowed in the resource directory');

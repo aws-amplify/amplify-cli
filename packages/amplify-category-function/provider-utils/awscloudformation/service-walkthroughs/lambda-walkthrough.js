@@ -2,7 +2,9 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
 
-const category = 'function';
+const categoryName = 'function';
+const serviceName = 'Lambda';
+const functionParametersFileName = 'function-parameters.json';
 
 const parametersFileName = 'parameters.json';
 
@@ -12,7 +14,8 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = require(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const dependsOn = [];
+  let dependsOn = [];
+  const parameters = {};
   // Ask resource and Lambda function name
 
   const resourceQuestions = [
@@ -81,7 +84,311 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     }
     allDefaultValues.dependsOn = dependsOn;
   }
+
+  let topLevelComment;
+  if (await context.amplify.confirmPrompt.run('Do you want to access other resources created in this project from your Lambda function?')) {
+    ({ topLevelComment } = await askExecRolePermissionsQuestions(
+      context,
+      allDefaultValues,
+      parameters,
+    ));
+  }
+  allDefaultValues.parameters = parameters;
+  allDefaultValues.topLevelComment = topLevelComment;
+  ({ dependsOn } = allDefaultValues);
   return { answers: allDefaultValues, dependsOn };
+}
+
+async function updateWalkthrough(context) {
+  const { allResources } = await context.amplify.getResourceStatus();
+  const resources = allResources
+    .filter(resource => resource.service === serviceName)
+    .map(resource => resource.resourceName);
+
+  if (resources.length === 0) {
+    context.print.error('No Lambda Functions resource to update. Please use "amplify add function" command to create a new Function');
+    process.exit(0);
+    return;
+  }
+
+  const resourceQuestion = [{
+    name: 'resourceName',
+    message: 'Please select the Lambda Function you would want to update',
+    type: 'list',
+    choices: resources,
+  }];
+
+  const newParams = {};
+  const answers = {};
+  const currentDefaults = {};
+  let dependsOn;
+
+  const resourceAnswer = await inquirer.prompt(resourceQuestion);
+  answers.resourceName = resourceAnswer.resourceName;
+
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(
+    projectBackendDirPath, categoryName,
+    resourceAnswer.resourceName,
+  );
+  const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
+  let currentParameters;
+  try {
+    currentParameters = JSON.parse(fs.readFileSync(parametersFilePath));
+  } catch (e) {
+    currentParameters = {};
+  }
+  if (currentParameters.permissions) {
+    currentDefaults.categories = Object.keys(currentParameters.permissions);
+    currentDefaults.categoryPermissionMap = currentParameters.permissions;
+  }
+
+  if (await context.amplify.confirmPrompt.run('Do you want to update permissions granted to this Lambda function to perform on other resources in your project?')) {
+    const { topLevelComment } = await askExecRolePermissionsQuestions(
+      context,
+      answers, newParams,
+      currentDefaults,
+    );
+
+    const cfnFileName = `${resourceAnswer.resourceName}-cloudformation-template.json`;
+    const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+    const cfnContent = JSON.parse(fs.readFileSync(cfnFilePath));
+    const dependsOnParams = { env: { Type: 'String' } };
+
+    Object.keys(answers.resourcePropertiesJSON).forEach((resourceProperty) => {
+      dependsOnParams[answers.resourcePropertiesJSON[resourceProperty].Ref] = {
+        Type: 'String',
+        Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
+      };
+    });
+    cfnContent.Parameters = dependsOnParams;
+
+    Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
+
+    if (!cfnContent.Resources.AmplifyResourcesPolicy) {
+      cfnContent.Resources.AmplifyResourcesPolicy = {
+        DependsOn: [
+          'LambdaExecutionRole',
+        ],
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyName: 'amplify-lambda-execution-policy',
+          Roles: [
+            {
+              Ref: 'LambdaExecutionRole',
+            },
+          ],
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [],
+          },
+        },
+      };
+    }
+
+    if (answers.categoryPolicies.length === 0) {
+      delete cfnContent.Resources.AmplifyResourcesPolicy;
+    } else {
+      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement =
+      answers.categoryPolicies;
+    }
+    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables =
+      answers.resourcePropertiesJSON;
+    // Update top level comment in app.js or index.js file
+
+    const updateTopLevelComment = (filePath) => {
+      const commentRegex = /\/\* Amplify Params - DO NOT EDIT[a-zA-Z0-9\-\s._=]+Amplify Params - DO NOT EDIT \*\//;
+      let fileContents = fs.readFileSync(filePath).toString();
+      const commentMatches = fileContents.match(commentRegex);
+      if (!commentMatches || commentMatches.length === 0) {
+        fileContents = topLevelComment + fileContents;
+      } else {
+        fileContents = fileContents.replace(commentRegex, topLevelComment);
+      }
+      fs.writeFileSync(filePath, fileContents);
+    };
+    const appJSFilePath = path.join(resourceDirPath, 'src', 'app.js');
+    const indexJSFilePath = path.join(resourceDirPath, 'src', 'index.js');
+    if (fs.existsSync(appJSFilePath)) {
+      updateTopLevelComment(appJSFilePath);
+    } else if (fs.existsSync(indexJSFilePath)) {
+      updateTopLevelComment(indexJSFilePath);
+    }
+
+    fs.writeFileSync(cfnFilePath, JSON.stringify(cfnContent, null, 4));
+    answers.parameters = newParams;
+    ({ dependsOn } = answers);
+    if (!dependsOn) {
+      dependsOn = [];
+    }
+  }
+  return { answers, dependsOn };
+}
+
+async function askExecRolePermissionsQuestions(
+  context,
+  allDefaultValues,
+  parameters, currentDefaults,
+) {
+  const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+  const amplifyMeta = JSON.parse(fs.readFileSync(amplifyMetaFilePath));
+
+  let categories = Object.keys(amplifyMeta);
+  categories = categories.filter(category => category !== 'providers');
+
+  const categoryPermissionQuestion = {
+    type: 'checkbox',
+    name: 'categories',
+    message: 'Select the category',
+    choices: categories,
+    default: (currentDefaults ? currentDefaults.categories : undefined),
+  };
+  const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
+  const categoryPermissionAnswer = await inquirer.prompt([categoryPermissionQuestion]);
+  const selectedCategories = categoryPermissionAnswer.categories;
+  let categoryPolicies = [];
+  let resources = [];
+  const crudOptions = ['create', 'read', 'update', 'delete'];
+  parameters.permissions = {};
+
+  const categoryPlugins = context.amplify.getCategoryPlugins(context);
+  for (let i = 0; i < selectedCategories.length; i += 1) {
+    const category = selectedCategories[i];
+
+    const resourcesList = Object.keys(amplifyMeta[category]);
+
+    if (resourcesList.length === 0) {
+      context.print.warning(`No resources found for ${category}`);
+      continue;
+    }
+
+
+    try {
+      const { getPermissionPolicies } = require(categoryPlugins[category]);
+      if (!getPermissionPolicies) {
+        context.print.warning(`Policies cannot be added for ${category}`);
+        continue;
+      } else {
+        let selectedResources = [];
+
+        if (resourcesList.length === 1) {
+          context.print.info(`${capitalizeFirstLetter(category)} category has a resource called ${resourcesList[0]}`);
+          selectedResources = [resourcesList[0]];
+        } else {
+          const resourceQuestion = {
+            type: 'checkbox',
+            name: 'resources',
+            message: `${capitalizeFirstLetter(category)} has ${resourcesList.length} resources in this project. Select the one you would like your Lambda to access`,
+            choices: resourcesList,
+            validate: (value) => {
+              if (value.length === 0) {
+                return 'You must select at least resource';
+              }
+              return true;
+            },
+            default: () => {
+              if (currentDefaults && currentDefaults.categoryPermissionMap &&
+               currentDefaults.categoryPermissionMap[category]) {
+                return Object.keys(currentDefaults.categoryPermissionMap[category]);
+              }
+            },
+          };
+
+          const resourceAnswer = await inquirer.prompt([resourceQuestion]);
+          selectedResources = resourceAnswer.resources;
+        }
+
+        for (let j = 0; j < selectedResources.length; j += 1) {
+          const resourceName = selectedResources[j];
+          const crudPermissionQuestion = {
+            type: 'checkbox',
+            name: 'crudOptions',
+            message: `Select the operations you want to permit for ${resourceName}`,
+            choices: crudOptions,
+            validate: (value) => {
+              if (value.length === 0) {
+                return 'You must select at least one operation';
+              }
+
+              return true;
+            },
+            default: () => {
+              if (currentDefaults && currentDefaults.categoryPermissionMap
+                && currentDefaults.categoryPermissionMap[category]
+                && currentDefaults.categoryPermissionMap[category][resourceName]) {
+                return currentDefaults.categoryPermissionMap[category][resourceName];
+              }
+            },
+          };
+
+          const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);
+          if (!parameters.permissions[category]) {
+            parameters.permissions[category] = {};
+          }
+          parameters.permissions[category][resourceName] = crudPermissionAnswer.crudOptions;
+        }
+        if (selectedResources.length > 0) {
+          const { permissionPolicies, resourceAttributes } =
+          await getPermissionPolicies(context, parameters.permissions[category]);
+          categoryPolicies = categoryPolicies.concat(permissionPolicies);
+          resources = resources.concat(resourceAttributes);
+        }
+      }
+    } catch (e) {
+      context.print.warning(`Policies cannot be added for ${category}`);
+      context.print.info(e.stack);
+    }
+  }
+
+  allDefaultValues.categoryPolicies = categoryPolicies;
+  const resourceProperties = [];
+  const resourcePropertiesJSON = {};
+  const categoryMapping = {};
+  resources.forEach((resource) => {
+    const { category, resourceName, attributes } = resource;
+    attributes.forEach((attribute) => {
+      const envName = `${category.toUpperCase()}_${resourceName.toUpperCase()}_${attribute.toUpperCase()}`;
+      const varName = `${category}${capitalizeFirstLetter(resourceName)}${capitalizeFirstLetter(attribute)}`;
+      const refName = `${category}${resourceName}${attribute}`;
+
+      resourceProperties.push(`"${envName}": {"Ref": "${refName}"}`);
+      resourcePropertiesJSON[`${envName}`] = { Ref: `${category}${resourceName}${attribute}` };
+      if (!categoryMapping[category]) {
+        categoryMapping[category] = [];
+      }
+      categoryMapping[category].push({ envName, varName });
+    });
+    if (!allDefaultValues.dependsOn) {
+      allDefaultValues.dependsOn = [];
+    }
+    allDefaultValues.dependsOn.push({
+      category: resource.category,
+      resourceName: resource.resourceName,
+      attributes: resource.attributes,
+    });
+  });
+
+  allDefaultValues.resourceProperties = resourceProperties.join(',');
+  allDefaultValues.resourcePropertiesJSON = resourcePropertiesJSON;
+
+  context.print.info('');
+  let topLevelComment = '/* Amplify Params - DO NOT EDIT\n';
+  let terminalOutput = 'You can access the following resource attributes as environment variables from your Lambda function\n';
+  terminalOutput += 'var environment = process.env.ENV\n';
+  terminalOutput += 'var region = process.env.REGION\n';
+
+  Object.keys(categoryMapping).forEach((category) => {
+    if (categoryMapping[category].length > 0) {
+      categoryMapping[category].forEach((args) => {
+        terminalOutput += `var ${args.varName} = process.env.${args.envName}\n`;
+      });
+    }
+  });
+
+  context.print.info(terminalOutput);
+  topLevelComment += `${terminalOutput}\nAmplify Params - DO NOT EDIT */`;
+
+  return { topLevelComment };
 }
 
 async function getTableParameters(context, dynamoAnswers) {
@@ -208,7 +515,7 @@ async function askDynamoDBQuestions(context, inputs) {
 }
 
 function migrate(context, projectPath, resourceName) {
-  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
+  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', categoryName, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
   const oldCfn = context.amplify.readJsonFile(cfnFilePath);
   const newCfn = {};
@@ -286,4 +593,57 @@ function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
-module.exports = { serviceWalkthrough, migrate };
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push(
+        'lambda:Create*',
+        'lambda:Put*',
+        'lambda:Add*',
+      );
+        break;
+      case 'update': actions.push('lambda:Update*');
+        break;
+      case 'read': actions.push('lambda:Get*', 'lambda:List*', 'lambda:Invoke*');
+        break;
+      case 'delete': actions.push('lambda:Delete*', 'lambda:Remove*');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:lambda:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':function',
+            {
+              Ref: `${categoryName}${resourceName}Name`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['Name'];
+
+  return { policy, attributes };
+}
+
+module.exports = {
+  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+};

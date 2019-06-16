@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.0...amplify-frontend-android@1.8.1) (2019-05-17)
+
+
+### Bug Fixes
+
+* conditionally generation of oAuth config for iOS and Android [#1472](https://github.com/aws-amplify/amplify-cli/issues/1472) ([3767192](https://github.com/aws-amplify/amplify-cli/commit/3767192)), closes [#1470](https://github.com/aws-amplify/amplify-cli/issues/1470)
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.6.0...amplify-frontend-android@1.8.0) (2019-05-07)
 
 

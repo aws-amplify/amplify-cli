@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql } from 'graphql-transformer-core'
 import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
@@ -10,14 +10,15 @@ import {
     makeModelConnectionType,
     makeModelConnectionField,
     makeScalarFilterInputs,
-    makeScalarKeyConditionInputs,
     makeModelXFilterInputObject,
     makeModelSortDirectionEnumObject,
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
     isScalar, STANDARD_SCALARS,
-    toCamelCase, isNonNullType, attributeTypeFromScalar
+    toCamelCase, isNonNullType, attributeTypeFromScalar,
+    makeScalarKeyConditionInputs, makeScalarKeyConditionForType,
+    makeNamedType,
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
@@ -58,7 +59,7 @@ export class ModelConnectionTransformer extends Transformer {
     constructor() {
         super(
             'ModelConnectionTransformer',
-            `directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
+            gql`directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -405,14 +406,9 @@ export class ModelConnectionTransformer extends Transformer {
         // Create sort key condition inputs for valid sort key types
         // We only create the KeyConditionInput if it is being used.
         if (sortKeyInfo) {
-            const sortKeyConditionInputs = makeScalarKeyConditionInputs()
-            for (const keyCondition of sortKeyConditionInputs) {
-                if (
-                    keyCondition.name.value === ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName) &&
-                    !this.typeExist(keyCondition.name.value, ctx)
-                ) {
-                    ctx.addInput(keyCondition)
-                }
+            const sortKeyConditionInput = makeScalarKeyConditionForType(makeNamedType(sortKeyInfo.typeName))
+            if (!this.typeExist(sortKeyConditionInput.name.value, ctx)) {
+                ctx.addInput(sortKeyConditionInput);
             }
         }
     }

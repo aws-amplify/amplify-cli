@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.2...amplify-provider-awscloudformation@1.11.3) (2019-06-12)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.11.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.1...amplify-provider-awscloudformation@1.11.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.0...amplify-provider-awscloudformation@1.11.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** filter by template extensions ([#1596](https://github.com/aws-amplify/amplify-cli/issues/1596)) ([adbf95a](https://github.com/aws-amplify/amplify-cli/commit/adbf95a))
+* **amplify-provider-awscloudformation:** fix general configeLevel init ([#1602](https://github.com/aws-amplify/amplify-cli/issues/1602)) ([426acbf](https://github.com/aws-amplify/amplify-cli/commit/426acbf)), closes [#1388](https://github.com/aws-amplify/amplify-cli/issues/1388)
+* **amplify-provider-awscloudformation:** fix http proxy ([#1604](https://github.com/aws-amplify/amplify-cli/issues/1604)) ([16dc4b4](https://github.com/aws-amplify/amplify-cli/commit/16dc4b4)), closes [#495](https://github.com/aws-amplify/amplify-cli/issues/495)
+
+
+
+
+
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.10.0...amplify-provider-awscloudformation@1.11.0) (2019-05-29)
+
+
+### Features
+
+* feature/[@key](https://github.com/key) ([#1463](https://github.com/aws-amplify/amplify-cli/issues/1463)) ([00ed819](https://github.com/aws-amplify/amplify-cli/commit/00ed819))
+
+
+
+
+
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.9.1...amplify-provider-awscloudformation@1.10.0) (2019-05-21)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add http default transformer ([#1410](https://github.com/aws-amplify/amplify-cli/issues/1410)) ([41cd9d0](https://github.com/aws-amplify/amplify-cli/commit/41cd9d0))
+
+
+
+
+
+## [1.9.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.9.0...amplify-provider-awscloudformation@1.9.1) (2019-05-17)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** check creds before setting ([#1438](https://github.com/aws-amplify/amplify-cli/issues/1438)) ([0c2e2d1](https://github.com/aws-amplify/amplify-cli/commit/0c2e2d1)), closes [#1424](https://github.com/aws-amplify/amplify-cli/issues/1424)
+* **amplify-provider-awscloudformation:** ensure build directory exist ([#1435](https://github.com/aws-amplify/amplify-cli/issues/1435)) ([a82fa99](https://github.com/aws-amplify/amplify-cli/commit/a82fa99)), closes [#1430](https://github.com/aws-amplify/amplify-cli/issues/1430) [#1430](https://github.com/aws-amplify/amplify-cli/issues/1430)
+
+
+
+
+
 # [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.8.0...amplify-provider-awscloudformation@1.9.0) (2019-05-07)
 
 

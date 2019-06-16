@@ -12,7 +12,6 @@ function invalidateCloudFront(context) {
 }
 
 async function invalidate(context) {
-  let result = context;
   if (context.exeInfo.serviceMeta &&
     context.exeInfo.serviceMeta.output &&
     context.exeInfo.serviceMeta.output.CloudFrontDistributionID) {
@@ -30,22 +29,19 @@ async function invalidate(context) {
         CallerReference: Date.now().toString(),
       },
     };
-    result = new Promise((resolve, reject) => {
-      cloudFront.createInvalidation(invalidateParams, (err, data) => {
-        if (err) {
-          context.print.error('Error occured when invalidating the Amazon CloudFront distribution');
-          context.print.info(err);
-          reject(err);
-        } else {
-          context.print.info('CloudFront invalidation request sent successfuly.');
-          context.print.info(chalk.green(CloudFrontSecureURL));
-          context.exeInfo.cftInvalidationData = data;
-          resolve(context);
-        }
-      });
-    });
+
+    try {
+      const data = await cloudFront.createInvalidation(invalidateParams).promise();
+      context.print.info('CloudFront invalidation request sent successfuly.');
+      context.print.info(chalk.green(CloudFrontSecureURL));
+      context.exeInfo.cftInvalidationData = data;
+    } catch (err) {
+      context.print.error('Error occured when invalidating the Amazon CloudFront distribution');
+      context.print.info(err);
+      throw err;
+    }
   }
-  return result;
+  return context;
 }
 
 async function getCloudFrontClient(context, action) {

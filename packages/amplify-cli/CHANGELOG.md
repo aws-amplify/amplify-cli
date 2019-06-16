@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.2...@aws-amplify/cli@1.7.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** call updateMetaAfterAdd only once ([#1653](https://github.com/aws-amplify/amplify-cli/issues/1653)) ([dc28758](https://github.com/aws-amplify/amplify-cli/commit/dc28758)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+* **cli:** add default value for options in updateAmplifyMeta ([#1648](https://github.com/aws-amplify/amplify-cli/issues/1648)) ([f9c87bb](https://github.com/aws-amplify/amplify-cli/commit/f9c87bb)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+
+
+
+
+
+## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.1...@aws-amplify/cli@1.7.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-cli:** return valid JSON when using amplify env get --json ([#1622](https://github.com/aws-amplify/amplify-cli/issues/1622)) ([49f4339](https://github.com/aws-amplify/amplify-cli/commit/49f4339)), closes [#1616](https://github.com/aws-amplify/amplify-cli/issues/1616)
+* **cli:** support es6 import/export ([#1635](https://github.com/aws-amplify/amplify-cli/issues/1635)) ([18d5409](https://github.com/aws-amplify/amplify-cli/commit/18d5409)), closes [#1623](https://github.com/aws-amplify/amplify-cli/issues/1623)
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.0...@aws-amplify/cli@1.7.1) (2019-06-06)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.11...@aws-amplify/cli@1.7.0) (2019-05-29)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
+## [1.6.11](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.10...@aws-amplify/cli@1.6.11) (2019-05-24)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.9...@aws-amplify/cli@1.6.10) (2019-05-21)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.6.9](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.8...@aws-amplify/cli@1.6.9) (2019-05-17)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.6...@aws-amplify/cli@1.6.8) (2019-05-07)
 
 **Note:** Version bump only for package @aws-amplify/cli

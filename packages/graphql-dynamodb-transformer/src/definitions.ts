@@ -23,12 +23,6 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notCont
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'contains', 'notContains', 'between']
 const BOOLEAN_CONDITIONS = ['ne', 'eq']
 
-// Key conditions
-const STRING_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between', 'beginsWith']
-const ID_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between', 'beginsWith']
-const INT_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between']
-const FLOAT_KEY_CONDITIONS = ['eq', 'le', 'lt', 'ge', 'gt', 'between']
-
 export function getNonModelObjectArray(
     obj: ObjectTypeDefinitionNode,
     ctx: TransformerContext,
@@ -531,18 +525,6 @@ export function makeSubscriptionField(fieldName: string, returnTypeName: string,
     )
 }
 
-export function makeModelScanField(fieldName: string, returnTypeName: string): FieldDefinitionNode {
-    return makeField(
-        fieldName,
-        [
-            makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(returnTypeName))),
-            makeInputValueDefinition('limit', makeNamedType('Int')),
-            makeInputValueDefinition('nextToken', makeNamedType('String'))
-        ],
-        makeNamedType(ModelResourceIDs.ModelConnectionTypeName(returnTypeName))
-    )
-}
-
 export interface SortKeyFieldInfo {
     // The name of the sort key field.
     fieldName: string;
@@ -575,48 +557,5 @@ export function makeScalarFilterInputs(): InputObjectTypeDefinitionNode[] {
         makeModelScalarFilterInputObject('Int'),
         makeModelScalarFilterInputObject('Float'),
         makeModelScalarFilterInputObject('Boolean')
-    ];
-}
-
-function getScalarKeyConditions(type: string): string[] {
-    switch (type) {
-        case 'String':
-            return STRING_KEY_CONDITIONS
-        case 'ID':
-            return ID_KEY_CONDITIONS
-        case 'Int':
-            return INT_KEY_CONDITIONS
-        case 'Float':
-            return FLOAT_KEY_CONDITIONS
-        default:
-            throw 'Valid types are String, ID, Int, Float, Boolean'
-    }
-}
-export function makeModelStringKeyConditionInputObject(type: string): InputObjectTypeDefinitionNode {
-    const name = ModelResourceIDs.ModelKeyConditionInputTypeName(type)
-    const conditions = getScalarKeyConditions(type)
-    const fields: InputValueDefinitionNode[] = conditions
-        .map((condition: string) => ({
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: { kind: "Name" as "Name", value: condition },
-            type: condition === 'between' ? makeListType(makeNamedType(type)) : makeNamedType(type),
-            directives: []
-        }))
-    return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-            kind: 'Name',
-            value: name
-        },
-        fields,
-        directives: []
-    }
-}
-export function makeScalarKeyConditionInputs(): InputObjectTypeDefinitionNode[] {
-    return [
-        makeModelStringKeyConditionInputObject('String'),
-        makeModelStringKeyConditionInputObject('ID'),
-        makeModelStringKeyConditionInputObject('Int'),
-        makeModelStringKeyConditionInputObject('Float')
     ];
 }

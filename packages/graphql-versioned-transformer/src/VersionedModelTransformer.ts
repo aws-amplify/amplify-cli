@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError } from "graphql-transformer-core";
+import { Transformer, TransformerContext, InvalidDirectiveError, TransformerContractError, gql } from "graphql-transformer-core";
 import {
     valueFromASTUntyped,
     ArgumentNode,
@@ -24,7 +24,7 @@ export class VersionedModelTransformer extends Transformer {
         super(
             'VersionedModelTransformer',
             // TODO: Allow version attribute selection. Could be `@version on FIELD_DEFINITION`
-            'directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT'
+            gql`directive @versioned(versionField: String = "version", versionInput: String = "expectedVersion") on OBJECT`
         )
     }
 

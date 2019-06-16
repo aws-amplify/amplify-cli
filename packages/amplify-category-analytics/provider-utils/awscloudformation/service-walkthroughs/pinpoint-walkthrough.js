@@ -145,10 +145,11 @@ function checkIfNotificationsCategoryExists(context) {
   if (amplifyMeta.notifications) {
     const categoryResources = amplifyMeta.notifications;
     Object.keys(categoryResources).forEach((resource) => {
-      if (categoryResources[resource].service === serviceName) {
+      if (categoryResources[resource].service === serviceName &&
+        categoryResources[resource].output.Id) {
         pinpointApp = {};
         pinpointApp.appId = categoryResources[resource].output.Id;
-        pinpointApp.appName = categoryResources[resource].output.Name;
+        pinpointApp.appName = resource;
       }
     });
   }
@@ -343,4 +344,56 @@ function isRefNode(node, refName) {
   return false;
 }
 
-module.exports = { addWalkthrough, migrate };
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  const actions = [];
+
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.push(
+        'mobiletargeting:Put*',
+        'mobiletargeting:Create*',
+        'mobiletargeting:Send*',
+      );
+        break;
+      case 'update': actions.push('mobiletargeting:Update*');
+        break;
+      case 'read': actions.push('mobiletargeting:Get*', 'mobiletargeting:List*');
+        break;
+      case 'delete': actions.push('mobiletargeting:Delete*');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:mobiletargeting:',
+            {
+              Ref: `${category}${resourceName}Region`,
+            },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':apps/',
+            {
+              Ref: `${category}${resourceName}Id`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['Id', 'Region'];
+
+  return { policy, attributes };
+}
+
+
+module.exports = { addWalkthrough, migrate, getIAMPolicies };

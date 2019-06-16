@@ -6,6 +6,9 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
+
+<%= props.topLevelComment %>
+
 var express = require('express')
 var bodyParser = require('body-parser')
 var awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
@@ -52,7 +55,7 @@ app.post('<%= props.path %>/*', function(req, res) {
 });
 
 /****************************
-* Example post method *
+* Example put method *
 ****************************/
 
 app.put('<%= props.path %>', function(req, res) {

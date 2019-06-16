@@ -29,6 +29,8 @@ async function configure(context) {
 
   const jsonString = JSON.stringify(publishIgnore, null, 4);
   fs.writeFileSync(publishIgnoreFilePath, jsonString, 'utf8');
+
+  return publishIgnore;
 }
 
 function getPublishIgnoreFilePath(context) {
@@ -126,7 +128,7 @@ function getIgnore(context) {
   const publishIgnoreFilePath = getPublishIgnoreFilePath(context);
   if (fs.existsSync(publishIgnoreFilePath)) {
     try {
-      publishIgnore = require(publishIgnoreFilePath);
+      publishIgnore = context.amplify.readJsonFile(publishIgnoreFilePath);
     } catch (e) {
       publishIgnore = [];
     }

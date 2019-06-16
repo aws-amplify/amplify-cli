@@ -101,9 +101,7 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    await context.patching.replace(targetFilePath, 'export default awsmobile;\n', 'module.exports = {awsmobile};\n');
-    awsExports = require(targetFilePath).awsmobile;
-    await context.patching.replace(targetFilePath, 'module.exports = {awsmobile};\n', 'export default awsmobile;\n');
+    awsExports = require(targetFilePath).default;
   }
 
   return awsExports;

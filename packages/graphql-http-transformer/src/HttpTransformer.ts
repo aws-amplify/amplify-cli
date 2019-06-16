@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, TransformerContractError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, TransformerContractError, gql } from 'graphql-transformer-core'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
     Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
@@ -46,7 +46,7 @@ export class HttpTransformer extends Transformer {
     constructor() {
         super(
             'HttpTransformer',
-            `
+            gql`
             directive @http(
                 method: HttpMethod = GET,
                 url: String!,

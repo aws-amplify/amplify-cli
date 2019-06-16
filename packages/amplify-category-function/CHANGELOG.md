@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.1...amplify-category-function@1.5.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.0...amplify-category-function@1.5.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* fixing auth update flow ([#1579](https://github.com/aws-amplify/amplify-cli/issues/1579)) ([65783b5](https://github.com/aws-amplify/amplify-cli/commit/65783b5))
+* fixing ref name values in function cfn templates ([#1605](https://github.com/aws-amplify/amplify-cli/issues/1605)) ([3bda285](https://github.com/aws-amplify/amplify-cli/commit/3bda285)), closes [#1574](https://github.com/aws-amplify/amplify-cli/issues/1574)
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.6...amplify-category-function@1.5.0) (2019-05-29)
+
+
+### Bug Fixes
+
+* stringify region in function Cloudformation file ([#1536](https://github.com/aws-amplify/amplify-cli/issues/1536)) ([cb6f438](https://github.com/aws-amplify/amplify-cli/commit/cb6f438))
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
+## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.5...amplify-category-function@1.4.6) (2019-05-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.4...amplify-category-function@1.4.5) (2019-05-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.3...amplify-category-function@1.4.4) (2019-04-30)
 
 

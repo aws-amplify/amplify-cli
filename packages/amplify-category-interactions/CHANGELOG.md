@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.2...amplify-category-interactions@1.5.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** call updateMetaAfterAdd only once ([#1653](https://github.com/aws-amplify/amplify-cli/issues/1653)) ([dc28758](https://github.com/aws-amplify/amplify-cli/commit/dc28758)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.1...amplify-category-interactions@1.5.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.0...amplify-category-interactions@1.5.1) (2019-06-06)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.4.6...amplify-category-interactions@1.5.0) (2019-05-29)
+
+
+### Features
+
+* flow to add policies to access amplify resources from Lambda ([#1462](https://github.com/aws-amplify/amplify-cli/issues/1462)) ([fee247c](https://github.com/aws-amplify/amplify-cli/commit/fee247c))
+
+
+
+
+
+## [1.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.4.5...amplify-category-interactions@1.4.6) (2019-05-21)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.4.4...amplify-category-interactions@1.4.5) (2019-05-17)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 ## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.4.3...amplify-category-interactions@1.4.4) (2019-04-30)
 
 

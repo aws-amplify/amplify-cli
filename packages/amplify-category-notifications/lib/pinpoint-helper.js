@@ -17,65 +17,85 @@ function getPinpointApp(context) {
   return pinpointApp;
 }
 
-async function ensurePinpointApp(context) {
-  const { amplifyMeta } = context.exeInfo;
-  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName]);
-  if (!pinpointApp) {
+async function ensurePinpointApp(context, resourceName) {
+  const { amplifyMeta, localEnvInfo } = context.exeInfo;
+  const scanOptions = {
+    isRegulatingResourceName: true,
+    envName: localEnvInfo.envName,
+  };
+  let pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], scanOptions);
+  if (pinpointApp) {
+    resourceName = scanOptions.regulatedResourceName;
+  } else {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
     if (pinpointApp) {
-      if (!pinpointApp.Name) {
-        pinpointApp = await getApp(context, pinpointApp.Id);
-      }
-      amplifyMeta[constants.CategoryName] = {};
-      amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
-        service: constants.PinpointName,
-        output: {
-          Name: pinpointApp.Name,
-          Id: pinpointApp.Id,
-          Region: pinpointApp.Region,
-        },
-      };
+      resourceName = generateResourceName(pinpointApp.Name, localEnvInfo.envName);
+      constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
     } else {
       context.print.info('');
-      pinpointApp = await createPinpointApp(context);
+      resourceName = await createPinpointApp(context, resourceName);
     }
   }
-  context.exeInfo.pinpointApp = pinpointApp;
   context.exeInfo.serviceMeta =
-    context.exeInfo.amplifyMeta[constants.CategoryName][pinpointApp.Name];
+    context.exeInfo.amplifyMeta[constants.CategoryName][resourceName];
+  context.exeInfo.pinpointApp = context.exeInfo.serviceMeta.output;
 }
 
-async function createPinpointApp(context) {
+// rerouce name is consistent cross environments
+function generateResourceName(pinpointAppName, envName) {
+  return pinpointAppName.replace(getEnvTagPattern(envName), '');
+}
+
+function generatePinpoinAppName(resourceName, envName) {
+  return resourceName + getEnvTagPattern(envName);
+}
+
+function getEnvTagPattern(envName) {
+  return envName === 'NONE' ? '' : `-${envName}`;
+}
+
+async function createPinpointApp(context, resourceName) {
   const { projectConfig, amplifyMeta, localEnvInfo } = context.exeInfo;
-  let pinpointProjectName = localEnvInfo.envName === 'NONE' ?
-    (projectConfig.projectName + context.amplify.makeId(5)) :
-    `${projectConfig.projectName + context.amplify.makeId(5)}-${localEnvInfo.envName}`;
 
   context.print.info('An Amazon Pinpoint project will be created for notifications.');
-
-  if (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes) {
-    const answer = await inquirer.prompt({
-      name: 'projectName',
-      type: 'input',
-      message: 'Pinpoint project name',
-      default: pinpointProjectName,
-      validate: (name) => {
-        let result = false;
-        let message = '';
-        if (name && name.length > 0) {
-          result = true;
-        } else {
-          message = 'Project name can not be empty.';
-        }
-        return result || message;
-      },
-    });
-    pinpointProjectName = answer.projectName;
+  if (!resourceName) {
+    resourceName = projectConfig.projectName + context.amplify.makeId(5);
+    if (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes) {
+      const answer = await inquirer.prompt({
+        name: 'resourceNameInput',
+        type: 'input',
+        message: 'Provide your pinpoint resource name: ',
+        default: resourceName,
+        validate: (name) => {
+          let result = false;
+          let message = '';
+          if (name && name.length > 0) {
+            result = true;
+          } else {
+            message = 'Your pinpoint resource name can not be empty.';
+          }
+          return result || message;
+        },
+      });
+      resourceName = answer.resourceNameInput;
+    }
   }
 
-  const pinpointApp = await createApp(context, pinpointProjectName);
-  amplifyMeta[constants.CategoryName] = {};
-  amplifyMeta[constants.CategoryName][pinpointApp.Name] = {
+  const pinpointAppName = generatePinpoinAppName(resourceName, localEnvInfo.envName);
+  const pinpointApp = await createApp(context, pinpointAppName);
+  constructResourceMeta(amplifyMeta, resourceName, pinpointApp);
+  context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
+
+  context.print.info('');
+  await authHelper.ensureAuth(context);
+  context.print.info('');
+
+  return resourceName;
+}
+
+function constructResourceMeta(amplifyMeta, resourceName, pinpointApp) {
+  amplifyMeta[constants.CategoryName] = amplifyMeta[constants.CategoryName] || {};
+  amplifyMeta[constants.CategoryName][resourceName] = {
     service: constants.PinpointName,
     output: {
       Name: pinpointApp.Name,
@@ -84,13 +104,6 @@ async function createPinpointApp(context) {
     },
     lastPushTimeStamp: new Date(),
   };
-
-  context.exeInfo.pinpointApp = pinpointApp;
-  context.print.info('');
-  await authHelper.ensureAuth(context);
-  context.print.info('');
-
-  return pinpointApp;
 }
 
 async function deletePinpointApp(context) {
@@ -106,30 +119,37 @@ async function deletePinpointApp(context) {
   }
 }
 
-function scanCategoryMetaForPinpoint(categoryMeta) {
+function scanCategoryMetaForPinpoint(categoryMeta, options) {
   let result;
   if (categoryMeta) {
-    const services = Object.keys(categoryMeta);
-    for (let i = 0; i < services.length; i++) {
-      const serviceMeta = categoryMeta[services[i]];
+    let resourceName;
+    const resources = Object.keys(categoryMeta);
+    for (let i = 0; i < resources.length; i++) {
+      resourceName = resources[i];
+      const serviceMeta = categoryMeta[resourceName];
       if (serviceMeta.service === constants.PinpointName &&
         serviceMeta.output &&
         serviceMeta.output.Id) {
         result = {
           Id: serviceMeta.output.Id,
         };
-        if (serviceMeta.output.Name) {
-          result.Name = serviceMeta.output.Name;
-        } else if (serviceMeta.output.appName) {
-          result.Name = serviceMeta.output.appName;
+        result.Name = serviceMeta.output.Name || serviceMeta.output.appName;
+        result.Region = serviceMeta.output.Region;
+
+        if (options && options.isRegulatingResourceName) {
+          const regulatedResourceName = generateResourceName(result.Name, options.envName);
+          options.regulatedResourceName = regulatedResourceName;
+          if (resourceName !== regulatedResourceName) {
+            categoryMeta[regulatedResourceName] = serviceMeta;
+            delete categoryMeta[resourceName];
+          }
         }
-        if (serviceMeta.output.Region) {
-          result.Region = serviceMeta.output.Region;
-        }
+
         break;
       }
     }
   }
+
   return result;
 }
 
@@ -171,26 +191,6 @@ async function createApp(context, pinpointAppName) {
   });
 }
 
-async function getApp(context, pinpointAppId) {
-  const params = {
-    ApplicationId: pinpointAppId,
-  };
-  spinner.start('Retrieving Pinpoint app information.');
-  const pinpointClient = await getPinpointClient(context, 'get');
-  return new Promise((resolve, reject) => {
-    pinpointClient.getApp(params, (err, data) => {
-      if (err) {
-        spinner.fail('Pinpoint project retrieval error');
-        reject(err);
-      } else {
-        spinner.succeed(`Successfully retrieved Pinpoint project: ${data.ApplicationResponse.Name}`);
-        data.ApplicationResponse.Region = pinpointClient.config.region;
-        resolve(data.ApplicationResponse);
-      }
-    });
-  });
-}
-
 async function deleteApp(context, pinpointAppId) {
   const params = {
     ApplicationId: pinpointAppId,
@@ -223,7 +223,7 @@ function console(context) {
           `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
     opn(consoleUrl, { wait: false });
   } else {
-    context.print.error('Neither notifications nor analytics is anabled in the cloud.');
+    context.print.error('Neither notifications nor analytics is enabled in the cloud.');
   }
 }
 

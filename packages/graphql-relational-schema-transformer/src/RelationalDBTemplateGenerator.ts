@@ -146,6 +146,7 @@ export default class RelationalDBTemplateGenerator {
                                 Effect: 'Allow',
                                 Action: [
                                     'rds-data:ExecuteSql',
+				    'rds-data:ExecuteStatement',
                                     'rds-data:DeleteItems',
                                     'rds-data:GetItems',
                                     'rds-data:InsertItems',

@@ -19,7 +19,7 @@ const schema = parse(`
   }
 `);
 
-let simplePrimaryKeyMap = {}
+let simplePrimaryKeyMap = new Map<string, string>()
 let simpleStringFieldMap = new Map<string, string[]>()
 let simpleIntFieldMap = new Map<string, string[]>()
 let context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap)
@@ -58,12 +58,6 @@ test('Test Base CloudForm Template Generation', () => {
     expect(template.Resources).toBeDefined()
     expect(template.Resources).toHaveProperty(ResourceConstants.RESOURCES.RelationalDatabaseAccessRole)
     expect(template.Resources).toHaveProperty(ResourceConstants.RESOURCES.RelationalDatabaseAccessRole)
-
-    // Verify Outputs were created as expected
-    expect(template.Outputs).toBeDefined()
-    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput)
-    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput)
-    expect(template.Outputs).toHaveProperty(CommonResourceConstants.OUTPUTS.GraphQLAPIIdOutput)
 })
 
 /**

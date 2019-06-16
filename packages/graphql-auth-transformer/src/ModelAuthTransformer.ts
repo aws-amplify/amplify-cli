@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
@@ -82,7 +82,7 @@ export class ModelAuthTransformer extends Transformer {
     constructor(config?: ModelAuthTransformerConfig) {
         super(
             'ModelAuthTransformer',
-            `
+            gql`
             directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
             input AuthRule {
                 # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
@@ -186,6 +186,7 @@ export class ModelAuthTransformer extends Transformer {
         this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get)
         this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
         this.protectConnections(ctx, def, operationRules.read)
+        this.protectQueries(ctx, def, operationRules.read)
     }
 
     public field = (
@@ -413,7 +414,7 @@ Static group authorization should perform as expected.`
                     operationRules.delete.push(rule)
                 }
             } else {
-                // If operations is not provided, either use the default behavior or deprecated 
+                // If operations is not provided, either use the default behavior or deprecated
                 // behavior from the queries/mutations arguments for backwards compatibility.
 
                 // Handle default or deprecated query use case
@@ -834,12 +835,11 @@ All @auth directives used on field definitions are performed when the field is r
      */
     private protectConnections(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[]) {
         const thisModelName = def.name.value;
-        const connectionResolvers = {};
         for (const inputDef of ctx.inputDocument.definitions) {
             if (inputDef.kind === Kind.OBJECT_TYPE_DEFINITION) {
                 for (const field of inputDef.fields) {
                     const returnTypeName = getBaseType(field.type)
-                    if (hasDirective(field, 'connection') && returnTypeName === thisModelName) {
+                    if (fieldHasDirective(field, 'connection') && returnTypeName === thisModelName) {
                         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(inputDef.name.value, field.name.value)
                         if (isListType(field.type)) {
                             this.protectListQuery(ctx, resolverResourceId, rules)
@@ -849,6 +849,26 @@ All @auth directives used on field definitions are performed when the field is r
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * When read operations are protected via @auth, all secondary @key query resolvers will be protected.
+     * Find the directives & update their resolvers with auth logic
+     */
+    private protectQueries(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[]) {
+        const secondaryKeyDirectivesWithQueries = (def.directives || []).filter(d => {
+            const isKey = d.name.value === 'key';
+            const args = getDirectiveArguments(d);
+            // @key with a name is a secondary key.
+            const isSecondaryKey = Boolean(args.name);
+            const hasQueryField = Boolean(args.queryField);
+            return isKey && isSecondaryKey && hasQueryField;
+        });
+        for (const keyWithQuery of secondaryKeyDirectivesWithQueries) {
+            const args = getDirectiveArguments(keyWithQuery);
+            const resolverResourceId = ResolverResourceIDs.ResolverResourceID(ctx.getQueryTypeName(), args.queryField);
+            this.protectListQuery(ctx, resolverResourceId, rules)
         }
     }
 
@@ -866,11 +886,13 @@ All @auth directives used on field definitions are performed when the field is r
 
 }
 
-function hasDirective(field: FieldDefinitionNode, directiveName: string): boolean {
+function fieldHasDirective(field: FieldDefinitionNode, directiveName: string): boolean {
     return field.directives && field.directives.length && Boolean(field.directives.find(
         (d: DirectiveNode) => d.name.value === directiveName
     ))
 }
+
+
 
 function isTruthyOrNull(obj: any): boolean {
     return obj || obj === null;

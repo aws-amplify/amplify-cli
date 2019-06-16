@@ -23,8 +23,8 @@ module.exports = {
         description: 'Displays a list of all the environments in your Amplify project',
       },
       {
-        name: 'get --name <env-name>',
-        description: 'Displays the details of the environment specified in the command ',
+        name: 'get --name <env-name> [--json]',
+        description: 'Displays the details of the environment specified in the command',
       },
       {
         name: 'import --name <env-name> --config <provider-configs> [--awsInfo <aws-configs>]',

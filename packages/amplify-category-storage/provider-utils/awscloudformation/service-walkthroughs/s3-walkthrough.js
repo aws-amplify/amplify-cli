@@ -384,5 +384,50 @@ function convertToCRUD(parameters, answers) {
   }
 }
 
+function getIAMPolicies(resourceName, crudOptions) {
+  let policy = {};
+  let actions = new Set();
 
-module.exports = { addWalkthrough, updateWalkthrough, migrate };
+  crudOptions.forEach((crudOption) => {
+    switch (crudOption) {
+      case 'create': actions.add('s3:PutObject');
+        break;
+      case 'update': actions.add('s3:PutObject');
+        break;
+      case 'read': actions.add('s3:GetObject'); actions.add('s3:ListBucket');
+        break;
+      case 'delete': actions.add('s3:DeleteObject');
+        break;
+      default: console.log(`${crudOption} not supported`);
+    }
+  });
+
+  actions = Array.from(actions);
+  policy = {
+    Effect: 'Allow',
+    Action: actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:s3:::',
+            {
+              Ref: `${category}${resourceName}BucketName`,
+            },
+            '/*',
+          ],
+        ],
+      },
+    ],
+  };
+
+  const attributes = ['BucketName'];
+
+  return { policy, attributes };
+}
+
+
+module.exports = {
+  addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+};
