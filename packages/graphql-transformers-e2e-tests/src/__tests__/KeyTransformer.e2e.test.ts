@@ -247,8 +247,8 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
     items = await itemsByCreatedAt(hashKey, { between: [sortKey, sortKey] });
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
-    items = await itemsByCreatedAt(hashKey, { gt: '2018-08-01' });
-    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { gt: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
     items = await itemsByCreatedAt(hashKey, { ge: sortKey });
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
     items = await itemsByCreatedAt(hashKey, { lt: sortKey });
