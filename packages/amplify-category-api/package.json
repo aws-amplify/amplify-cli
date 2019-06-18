@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "amplify-cli api plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "amplify-category-auth": "1.6.2",
-    "amplify-category-function": "1.5.2",
+    "amplify-category-function": "1.5.3",
     "amplify-category-storage": "1.7.2",
     "aws-sdk": "^2.391.0",
     "eslint": "^4.9.0",
