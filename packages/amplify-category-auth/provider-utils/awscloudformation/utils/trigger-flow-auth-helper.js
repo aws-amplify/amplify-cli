@@ -20,7 +20,9 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     coreAnswers.resourceName;
 
 
-  const triggers = coreAnswers.authTriggers;
+  const triggers = typeof coreAnswers.triggers === 'string' ?
+    JSON.parse(coreAnswers.triggers) :
+    coreAnswers.triggers;
 
   const triggerEnvs = {};
   Object.keys(triggers).forEach((r) => {
@@ -31,7 +33,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     resourceName,
     triggerEnvs,
     parentStack: { Ref: 'AWS::StackId' },
-    authTriggers: triggers,
+    triggers,
   };
 
   // creating array of trigger names
@@ -45,6 +47,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
       const functionName = `${resourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
       if (previouslySaved && previouslySaved[keys[t]]) {
+        const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', functionName);
+        await triggerEnvParams(context, keys[t], values[t], functionName, currentEnvVariables);
         const updatedLambda = await context.amplify.updateTrigger(
           keys[t],
           values[t],
@@ -55,9 +59,11 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           'auth',
           targetPath,
           previouslySaved,
+          coreAnswers.resourceName,
         );
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
       } else {
+        await triggerEnvParams(context, keys[t], values[t], functionName);
         const newLambda = await context.amplify.addTrigger(
           keys[t],
           values[t],
@@ -67,6 +73,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           'amplify-category-auth',
           'auth',
           targetPath,
+          coreAnswers.resourceName,
         );
         triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
       }
@@ -96,7 +103,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
 
-  return parameters.authTriggers;
+
+  return parameters.triggers;
 }
 
 // since inquirer uses stringified key/value pairs as values for selected options,
@@ -120,6 +128,13 @@ const reduceAnswerArray = (answers) => {
     });
   }
   return triggerObj;
+};
+
+const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
+  const triggerPath = `${__dirname}/../triggers/${key}`;
+  const envs = await context
+    .amplify.getTriggerEnvInputs(context, triggerPath, key, value, currentEnvVars);
+  context.amplify.saveEnvResourceParameters(context, 'function', functionName, envs);
 };
 
 module.exports = {

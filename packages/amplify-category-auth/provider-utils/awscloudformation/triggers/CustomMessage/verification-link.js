@@ -2,11 +2,11 @@
 exports.handler = (event, context, callback) => {
   // Define the URL that you want the user to be directed to after verification is complete
   if (event.triggerSource === 'CustomMessage_SignUp') {
-    const redirectUrl = 'https://www.nytimes.com';
     const { codeParameter } = event.request;
     const { region, userName } = event;
     const { clientId } = event.callerContext;
-    const resourcePrefix = process.env.RESOURCE_NAME.split('CustomMessage')[0];
+    const redirectUrl = `${process.env.REDIRECTURL}/?username=${userName}`;
+    const resourcePrefix = process.env.RESOURCENAME.split('CustomMessage')[0];
 
     const payload = Buffer.from(JSON.stringify({
       userName,

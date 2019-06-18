@@ -49,20 +49,20 @@ async function serviceWalkthrough(
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
 
-    if (answer.authTriggers && answer.authTriggers.length > 0) {
-      const tempTriggers = context.updatingAuth && context.updatingAuth.authTriggers ?
-        JSON.parse(context.updatingAuth.authTriggers) :
+    if (answer.triggers && answer.triggers.length > 0) {
+      const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ?
+        JSON.parse(context.updatingAuth.triggers) :
         {};
       const selectionMetadata = capabilities;
 
       /* eslint-disable no-loop-func */
       selectionMetadata.forEach((s) => {
         Object.keys(s.triggers).forEach((t) => {
-          if (!tempTriggers[t] && answer.authTriggers.includes(s.value)) {
+          if (!tempTriggers[t] && answer.triggers.includes(s.value)) {
             tempTriggers[t] = s.triggers[t];
-          } else if (tempTriggers[t] && answer.authTriggers.includes(s.value)) {
+          } else if (tempTriggers[t] && answer.triggers.includes(s.value)) {
             tempTriggers[t] = uniq(tempTriggers[t].concat(s.triggers[t]));
-          } else if (tempTriggers[t] && !answer.authTriggers.includes(s.value)) {
+          } else if (tempTriggers[t] && !answer.triggers.includes(s.value)) {
             const tempForDiff = Object.assign([], tempTriggers[t]);
             const remainder = pullAll(tempForDiff, s.triggers[t]);
             if (remainder && remainder.length > 0) {
@@ -73,7 +73,7 @@ async function serviceWalkthrough(
           }
         });
       });
-      answer.authTriggers = tempTriggers;
+      answer.triggers = tempTriggers;
     }
 
     // LEARN MORE BLOCK
@@ -179,9 +179,9 @@ async function serviceWalkthrough(
 
 
   // ask manual trigger flow question
-  if (coreAnswers.authSelections !== 'identityPoolOnly') {
+  if (coreAnswers.authSelections !== 'identityPoolOnly' && context.commandName !== 'init') {
     if (coreAnswers.useDefault === 'manual') {
-      coreAnswers.authTriggers = await lambdaFlow(context, coreAnswers.authTriggers);
+      coreAnswers.triggers = await lambdaFlow(context, coreAnswers.triggers);
     }
   }
 
@@ -392,7 +392,8 @@ function filterInput(input, updateFlow) {
 */
 function handleUpdates(context, coreAnswers) {
   if (context.updatingAuth && context.updatingAuth.triggers) {
-    coreAnswers.triggers.push(...context.updatingAuth.triggers);
+    coreAnswers.triggers = {};
+    coreAnswers.triggers = context.updatingAuth.triggers;
   }
 
   if (context.updatingAuth && context.updatingAuth.oAuthMetadata) {
@@ -419,14 +420,6 @@ function handleUpdates(context, coreAnswers) {
   Adding lambda triggers
 */
 async function lambdaFlow(context, answers) {
-  // const previousTriggers = context.updatingAuth && context.updatingAuth.authTriggers ?
-  //   context.updatingAuth.authTriggers :
-  //   null;
-  // const previousAutoTriggers = context.updatingAuth && context.updatingAuth.automaticTriggers ?
-  //   context.updatingAuth.automaticTriggers :
-  //   null;
-  // previousTriggers = await sanitizePrevious(context, answers, previousTriggers);
-  // const parsedTriggers = parseTriggerSelections(answers, previousTriggers, previousAutoTriggers);
   const triggers = await context.amplify
     .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
   return triggers || answers;

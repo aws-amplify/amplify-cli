@@ -70,7 +70,6 @@ const privateKeys = [
   'newLogoutURLs',
   'editLogoutURLs',
   'addLogoutOnUpdate',
-  'audiences',
 ];
 
 function serviceQuestions(
@@ -103,6 +102,17 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
 
   // copy over the files
   // Todo: move to provider as each provider should decide where to store vars, and cfn
+  // deleting private keys from shared params before they are written to parameters.json
+  if (privateKeys && privateKeys.length > 0) {
+    // deleting private keys from shared params before they are written to parameters.json
+    privateKeys.forEach((e) => {
+      if (options[e]) {
+        delete options[e];
+      }
+    });
+  }
+
+
   return await context.amplify.copyBatch(context, copyJobs, options, true, false, privateKeys);
 }
 
@@ -236,7 +246,7 @@ async function updateResource(context, category, serviceResult) {
       props = Object.assign(defaults, context.updatingAuth, result);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
-      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).authTriggers || '{}';
+      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
       await lambdaTriggers(props, context, JSON.parse(previouslySaved), getAllDefaults);
 
       if (
@@ -566,9 +576,9 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
   const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
   let triggerKeyValues = {};
 
-  if (coreAnswers.authTriggers) {
+  if (coreAnswers.triggers) {
     triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
-    coreAnswers.authTriggers = triggerKeyValues ?
+    coreAnswers.triggers = triggerKeyValues ?
       JSON.stringify(triggerKeyValues) :
       '{}';
 
@@ -592,7 +602,7 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
     }
 
     // determine permissions needed for each trigger module
-    coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.authTriggers, 'amplify-category-auth', coreAnswers.resourceName);
+    coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.triggers, 'amplify-category-auth', coreAnswers.resourceName);
   } else if (previouslySaved) {
     const targetDir = context.amplify.pathManager.getBackendDirPath();
     Object.keys(previouslySaved).forEach((p) => {
@@ -601,9 +611,9 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
     await context.amplify
       .deleteAllTriggers(previouslySaved, coreAnswers.resourceName, targetDir, context);
   }
-  // remove unused coreAnswers.authTriggers key
-  if (coreAnswers.authTriggers && coreAnswers.authTriggers === '[]') {
-    delete coreAnswers.authTriggers;
+  // remove unused coreAnswers.triggers key
+  if (coreAnswers.triggers && coreAnswers.triggers === '[]') {
+    delete coreAnswers.triggers;
   }
 
   // handle dependsOn data
@@ -614,8 +624,8 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
 async function copyS3Assets(context, props) {
   const targetDir = `${context.amplify.pathManager.getBackendDirPath()}/auth/${props.resourceName}/assets`;
 
-  const triggers = props.authTriggers ? JSON.parse(props.authTriggers) : null;
-  const confirmationFileNeeded = props.authTriggers &&
+  const triggers = props.triggers ? JSON.parse(props.triggers) : null;
+  const confirmationFileNeeded = props.triggers &&
     triggers.CustomMessage &&
     triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
@@ -628,18 +638,18 @@ async function copyS3Assets(context, props) {
 
 async function verificationBucketName(current, previous) {
   if (
-    current.authTriggers &&
-    current.authTriggers.CustomMessage &&
-    current.authTriggers.CustomMessage.includes('verification-link')) {
+    current.triggers &&
+    current.triggers.CustomMessage &&
+    current.triggers.CustomMessage.includes('verification-link')) {
     const name = previous ? previous.resourceName : current.resourceName;
     current.verificationBucketName = `${name.toLowerCase()}verificationbucket`;
   } else if (
     previous &&
-    previous.authTriggers &&
-    previous.authTriggers.CustomMessage &&
-    previous.authTriggers.CustomMessage.includes('verification-link') &&
+    previous.triggers &&
+    previous.triggers.CustomMessage &&
+    previous.triggers.CustomMessage.includes('verification-link') &&
     previous.verificationBucketName &&
-    (!current.authTriggers || !current.authTriggers.CustomMessage || !current.authTriggers.CustomMessage.includes('verification-link'))
+    (!current.triggers || !current.triggers.CustomMessage || !current.triggers.CustomMessage.includes('verification-link'))
   ) {
     delete previous.updatingAuth.verificationBucketName;
   }

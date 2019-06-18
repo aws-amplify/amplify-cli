@@ -78,7 +78,7 @@ Resources:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref roleName, !Join ['',[!Ref roleName, '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_sns-role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_sns-role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -90,10 +90,10 @@ Resources:
               - "sts:AssumeRole"
             Condition: 
               StringEquals:
-                sts:ExternalId: !Ref roleExternalId
+                sts:ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
       Policies: 
         - 
-          PolicyName: !Ref policyName
+          PolicyName: <%=`${props.resourceNameTruncated}-sns-policy`%>
           PolicyDocument: 
             Version: "2012-10-17"
             Statement: 
@@ -119,7 +119,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.authTriggers) { %>
+      <%if (props.triggers) { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
@@ -167,11 +167,11 @@ Resources:
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: !Ref roleExternalId 
+        ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-  <%if (props.authTriggers) { %>
+  <%if (props.triggers) { %>
   <%if (props.CreateAuthChallenge) { %>
   UserPoolCreateAuthChallengeLambdaInvokePermission: 
     Type: "AWS::Lambda::Permission"
@@ -371,7 +371,7 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref userpoolClientLambdaPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_iam_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -388,7 +388,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref userpoolClientLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_log_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',[!Ref userpoolClientLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -783,7 +783,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: !Ref mfaPassRolePolicy
+      - PolicyName: <%=`${props.resourceNameTruncated}_totp_pass_role_policy`%>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -846,7 +846,7 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref mfaLambdaIAMPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_iam_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -862,7 +862,7 @@ Resources:
   # Marked as depending on MFALambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref mfaLambdaLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_log_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
       PolicyDocument:
@@ -890,7 +890,7 @@ Resources:
       totpEnabled: <%= props.mfaTypes.includes('TOTP') %>
       smsConfigCaller: !GetAtt SNSRole.Arn
       smsAuthenticationMessage: !Ref smsAuthenticationMessage
-      smsConfigExternalId: !Ref roleExternalId 
+      smsConfigExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
     DependsOn: MFALogPolicy
   <% } %>
   <% } -%>
@@ -913,7 +913,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Policies:
-      - PolicyName: !Ref openIdRolePolicy
+      - PolicyName: <%=`${props.resourceNameTruncated}_openid_pass_role_policy`%>
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -1006,7 +1006,7 @@ Resources:
   # Marked as depending on MFALambda for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref openIdLambdaIAMPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_iam_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
       PolicyDocument:
@@ -1033,7 +1033,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: !Ref openIdLogPolicy
+      PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_log_policy`%>
       Roles: 
         - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
       PolicyDocument:

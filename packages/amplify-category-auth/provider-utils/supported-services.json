@@ -1058,7 +1058,7 @@
 				]
 			},
 			{
-				"key": "authTriggers",
+				"key": "triggers",
 				"question": "Do you want to enable any of the following capabilities?",
 				"required": true,
 				"type": "multiselect",

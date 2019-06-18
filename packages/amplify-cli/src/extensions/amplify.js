@@ -50,6 +50,7 @@ const {
   getTriggerMetadata,
   getTriggerPermissions,
   getTriggerEnvVariables,
+  getTriggerEnvInputs,
 } = require('./amplify-helpers/trigger-flow');
 const {
   updateProvideramplifyMeta,
@@ -140,6 +141,7 @@ module.exports = (context) => {
     getTriggerMetadata,
     getTriggerPermissions,
     getTriggerEnvVariables,
+    getTriggerEnvInputs,
   };
 
   context.amplify = amplify;

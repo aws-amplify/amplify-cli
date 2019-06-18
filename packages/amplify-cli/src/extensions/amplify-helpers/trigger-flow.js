@@ -198,6 +198,7 @@ const addTrigger = async (
   category,
   parentStack,
   targetPath,
+  parentResource,
 ) => {
   let add;
   try {
@@ -208,7 +209,7 @@ const addTrigger = async (
 
   await add(context, 'awscloudformation', 'Lambda', {
     modules: values,
-    parentResource: resourceName,
+    parentResource,
     resourceName,
     functionName: resourceName,
     parentStack,
@@ -234,6 +235,7 @@ const updateTrigger = async (
   category,
   parentStack,
   targetPath,
+  parentResource,
 ) => {
   const updatedTrigger = {};
   let update;
@@ -245,7 +247,7 @@ const updateTrigger = async (
   try {
     await update(context, 'awscloudformation', 'Lambda', {
       modules: values,
-      parentResource: resourceName,
+      parentResource,
       resourceName,
       functionName: resourceName,
       parentStack,
@@ -364,13 +366,34 @@ const getTriggerEnvVariables = (context, trigger, category) => {
   if (trigger.modules) {
     for (let x = 0; x < trigger.modules.length; x++) {
       if (meta[trigger.modules[x]] && meta[trigger.modules[x]].env) {
-        env = env.concat(meta[trigger.modules[x]].env);
+        const newEnv = meta[trigger.modules[x]].env.filter(a => !a.question);
+        env = env.concat(newEnv);
       }
     }
     return env;
   }
 
   return null;
+};
+
+const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, currentEnvVars) => {
+  const metadata = getTriggerMetadata(path, triggerKey);
+  const union = [...new Set([...Object.keys(metadata), ...triggerValues])];
+  const answers = {};
+  for (let i = 0; i < union.length; i += 1) {
+    if (metadata[union[i]].env) {
+      const questions = metadata[union[i]].env.filter(m => m.question);
+      if (questions && questions.length) {
+        for (let j = 0; j < questions.length; j += 1) {
+          if (!currentEnvVars || !currentEnvVars[questions[j].key]) {
+            const answer = await inquirer.prompt(questions[j].question);
+            answers[questions[j].key] = answer[questions[j].key];
+          }
+        }
+      }
+    }
+  }
+  return Object.assign(answers, currentEnvVars);
 };
 
 const dependsOnBlock = (context, triggerKeys = [], provider) => {
@@ -410,4 +433,5 @@ module.exports = {
   getTriggerMetadata,
   getTriggerPermissions,
   getTriggerEnvVariables,
+  getTriggerEnvInputs,
 };

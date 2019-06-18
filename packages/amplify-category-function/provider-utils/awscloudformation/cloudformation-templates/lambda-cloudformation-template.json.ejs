@@ -3,6 +3,15 @@
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
         <% if (props.modules) { %>
+            <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
+                <% for (let a = 0; a < JSON.parse(props.triggerEnvs).length; a++) { %>
+                    <% if (JSON.parse(props.triggerEnvs)[a].userInput) { %>
+        "<%= JSON.parse(props.triggerEnvs)[a].key %>": {
+            "Type": "String"
+        },
+                     <% } %>
+                <% } %>
+            <% } %> 
         "modules": {
             "Type": "String",
             "Default": "",
@@ -103,10 +112,15 @@
                     <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
                     ,
                     <% for (let i = 0; i < JSON.parse(props.triggerEnvs).length; i++) { %>
-                    "<%=`${JSON.parse(props.triggerEnvs)[i].key}`%>":
+                    "<%=JSON.parse(props.triggerEnvs)[i].key%>": 
+                    <% if (JSON.parse(props.triggerEnvs)[i].userInput)  { %>
+                     "<%=JSON.parse(props.triggerEnvs)[i].value%>"
+                    <% } %>
+                    <% if (!JSON.parse(props.triggerEnvs)[i].userInput)  { %>
                     {
                         "Ref": "<%=JSON.parse(props.triggerEnvs)[i].value%>"
                     }
+                    <% } %>
                     <%if( i < JSON.parse(props.triggerEnvs).length -1 ){%>,<%}%>
                     <% } %>
                     <% } %>

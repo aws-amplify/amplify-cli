@@ -1,3 +1,10 @@
+
+const sequential = require('promise-sequential');
+const {
+  updateConfigOnEnvInit,
+} = require('./provider-utils/awscloudformation');
+
+
 const category = 'function';
 
 async function add(context, providerName, service, parameters) {
@@ -92,10 +99,33 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 }
 
 
+async function initEnv(context) {
+  const { amplify } = context;
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('function');
+
+  resourcesToBeDeleted.forEach((authResource) => {
+    amplify.removeResourceParameters(context, 'function', authResource.resourceName);
+  });
+
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  const functionTasks = tasks.map((functionResource) => {
+    const { resourceName } = functionResource;
+    return async () => {
+      const config = await updateConfigOnEnvInit(context, 'function', resourceName);
+      context.amplify.saveEnvResourceParameters(context, 'function', resourceName, config);
+    };
+  });
+
+  await sequential(functionTasks);
+}
+
+
 module.exports = {
   add,
   update,
   console,
   migrate,
+  initEnv,
   getPermissionPolicies,
 };

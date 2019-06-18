@@ -6,6 +6,7 @@ const categoryName = 'function';
 
 let serviceMetadata;
 
+
 async function serviceQuestions(context, defaultValuesFilename, serviceWalkthroughFilename) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
@@ -20,6 +21,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const pluginDir = __dirname;
   const params = Object.assign({}, writeParams);
   let force = false;
+  const privateKeys = [];
 
   const copyJobs = [{
     dir: pluginDir,
@@ -29,6 +31,16 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
 
   if (options.modules) {
     force = true;
+    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
+    options.triggerEnvs = JSON.parse(options.triggerEnvs);
+    const privateKeyObj = { triggerEnvs: [] };
+    Object.keys(currentEnvVariables).forEach((c) => {
+      privateKeyObj.triggerEnvs.push(c);
+      options.triggerEnvs.push({ key: c, value: currentEnvVariables[c], userInput: true });
+    });
+    options.triggerEnvs = JSON.stringify(options.triggerEnvs);
+    privateKeys.push(privateKeyObj);
+
     copyJobs.push(...[
       {
         dir: pluginDir,
@@ -119,7 +131,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, force, params);
+  return context.amplify.copyBatch(context, copyJobs, options, force, params, privateKeys);
 }
 
 function createParametersFile(context, parameters, resourceName) {
@@ -320,7 +332,107 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
+function isInHeadlessMode(context) {
+  return context.exeInfo.inputParams.yes;
+}
+
+function getHeadlessParams(context) {
+  const { inputParams } = context.exeInfo;
+  const { categories = {} } = inputParams;
+  return categories.function || {};
+}
+
+function getRequiredParamsForHeadlessInit(projectType, previousValues) {
+  const requiredParams = [];
+
+  if (previousValues.thirdPartyAuth) {
+    if (previousValues.authProviders.includes('accounts.google.com')) {
+      requiredParams.push('googleClientId');
+      if (projectType === 'ios') {
+        requiredParams.push('googleIos');
+      }
+      if (projectType === 'android') {
+        requiredParams.push('googleAndroid');
+      }
+    }
+    if (previousValues.authProviders.includes('graph.facebook.com')) {
+      requiredParams.push('facebookAppId');
+    }
+    if (previousValues.authProviders.includes('www.amazon.com')) {
+      requiredParams.push('amazonAppId');
+    }
+  }
+
+  if (previousValues.hostedUIProviderMeta) {
+    const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
+    if (oAuthProviders && oAuthProviders.length > 0) {
+      oAuthProviders.forEach((o) => {
+        requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
+        requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
+      });
+    }
+  }
+  return requiredParams;
+}
+
+async function updateConfigOnEnvInit(context, category, service) {
+  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
+    .Lambda;
+  const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+  const resourceParams = providerPlugin.loadResourceParameters(context, 'function', service);
+  let envParams = {};
+
+  if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
+    const parentResourceParams = providerPlugin
+      .loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
+    const triggers = typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
+    const parentKeys = Object.keys(parentResourceParams);
+    const parentValues = Object.values(parentResourceParams);
+    const index = parentValues.indexOf(resourceParams.resourceName);
+    const currentTrigger = parentKeys[index];
+    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
+    const triggerPath = `${__dirname}/../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
+    envParams = await context.amplify.getTriggerEnvInputs(
+      context,
+      triggerPath,
+      currentTrigger,
+      triggers[currentTrigger],
+      currentEnvVariables[currentTrigger],
+    );
+  }
+
+  // headless mode
+  if (isInHeadlessMode(context)) {
+    let mergedValues;
+    if (resourceParams.thirdPartyAuth || resourceParams.hostedUIProviderMeta) {
+      const authParams = getHeadlessParams(context);
+      const projectType = context.amplify.getProjectConfig().frontend;
+      mergedValues = { ...resourceParams, ...authParams };
+      const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
+      const missingParams = [];
+      requiredParams.forEach((p) => {
+        if (Object.keys(mergedValues).includes(p)) {
+          envParams[p] = mergedValues[p];
+        } else {
+          missingParams.push(p);
+        }
+      });
+
+      if (missingParams.length) {
+        throw Error(`function headless init is missing the following inputParams ${missingParams.join(', ')}`);
+      }
+    }
+    return envParams;
+  }
+  return envParams;
+}
+
 
 module.exports = {
-  addResource, updateResource, invoke, migrateResource, getPermissionPolicies,
+  addResource,
+  updateResource,
+  invoke,
+  migrateResource,
+  getPermissionPolicies,
+  updateConfigOnEnvInit,
 };
