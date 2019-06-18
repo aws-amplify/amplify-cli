@@ -7,16 +7,17 @@ export function runCypressTest(
     settings: { platform: string },
     verbose: boolean = !isCI()
 ) {
-    return new Promise((resolve,reject) => {
+    let isPassed: boolean = false;
+    return new Promise((resolve, reject) => {
         nexpect
             .spawn('npm', ['run', 'cypress:' + settings.platform], {cwd, stripColors: true, verbose})
-            .wait(/.*/)
+            .wait('failing')
             .run(function(err: Error) {
-                if (!err) {
-                    resolve();
-                } else {
-                    reject(err)
+                if (err) {
+                    // ‘failing' does not occur in command line, so the all the tests are passed.
+                    isPassed = true;
                 }
+                resolve(isPassed);
             });
     })
 }
