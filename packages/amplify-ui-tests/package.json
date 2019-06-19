@@ -45,5 +45,8 @@
       "json",
       "node"
     ]
+  },
+  "dependencies": {
+    "esm": "^3.2.25"
   }
 }

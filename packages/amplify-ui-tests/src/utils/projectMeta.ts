@@ -1,3 +1,4 @@
+require = require('esm')(module);
 import { join } from 'path';
 import { readFileSync, existsSync, copyFileSync } from 'fs';
 export default function getProjectMeta(projectRoot: string) {
@@ -21,4 +22,10 @@ export function copyAWSExportsToProj(projectRoot: string, destRoot: string, plat
     return
   }
   copyFileSync(awsExporFiletPath, destFilePath)
+}
+
+export function getAWSMeta(projectRoot: string) {
+  const metaFilePath = join(projectRoot, 'src', 'aws-exports.js')
+  const awsMeta = require(metaFilePath).default;
+  return awsMeta;
 }

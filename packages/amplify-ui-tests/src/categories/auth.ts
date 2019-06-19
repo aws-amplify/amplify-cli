@@ -3,10 +3,62 @@ import * as nexpect from 'nexpect';
 import { join } from 'path';
 import * as fs from 'fs';
 
-import { getCLIPath, isCI, getEnvVars } from '../utils';
+import { getCLIPath, isCI, getEnvVars, getAwsCLIPath } from '../utils';
+import { resolve } from 'dns';
 const defaultSettings = {
   projectName: 'CLIIntegTestAuth',
 };
+
+
+export async function signUpNewUser(
+  cwd: string,
+  settings: { username: string, password: string, email: string, clientId: string, userPoolId: string},
+  verbose: boolean = !isCI()
+) {
+      await signUpUser(cwd, settings);
+      await comfirmSignUp(cwd, settings);
+}
+
+function signUpUser(
+  cwd: string,
+  settings: any,
+  verbose: boolean = !isCI()
+) {
+  return new Promise((resolve, reject) => {
+    nexpect
+    .spawn(getAwsCLIPath(), ['cognito-idp', 'sign-up', '--client-id', settings.clientId,
+    '--username', settings.username, '--password',
+    settings.password, '--user-attributes', `Name=email,Value=${settings.email}`], { cwd, stripColors: true, verbose })
+    .run(function(err: Error){
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  })
+}
+
+function comfirmSignUp(
+  cwd: string,
+  settings: any,
+  verbose: boolean = !isCI()
+) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getAwsCLIPath(), ['cognito-idp', 'admin-confirm-sign-up', '--user-pool-id',
+        settings.userPoolId, '--username', settings.username], { cwd, stripColors: true, verbose })
+      .run(function(err: Error){
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  })
+}
+
+
 
 
 export function addAuthWithDefault(
