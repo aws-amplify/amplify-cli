@@ -74,34 +74,4 @@ describe('amplify authUI test', () => {
     });
 
   })
-
-  // it('Init the auth backend and run UI tests on JS app ', async () => {
-  //   // await initProjectWithProfile(projRoot, {});
-  //   // await addAuthWithDefault(projRoot, {});
-  //   // await amplifyPush(projRoot); // Push it to the cloud
-
-
-  //   //test if auth has been created in the cloud
-  //   // const meta = getProjectMeta(projRoot);
-  //   // const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-  //   // const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-  //   // await expect(userPool.UserPool).toBeDefined()
-
-  //   // TODO - assertion to make sure the resources are pushed. Use matcher
-  //   //test if aws-exports.js exists
-  //   //expect(existsAWSExportsPath(projRoot)).toBeTruthy()
-
-  //   //run UI test on react apps
-  //   //copyAWSExportsToProj(projRoot, destRoot, 'react', 'auth/amplify-authenticator')
-  //   //test if UI tests are all passed
-  //   //await runCypressTest(destRoot, {platform: 'react'}).then(isPassed => expect(isPassed).toBeTruthy())
-
-  //   //run UI test on angular app
-  //   //copyAWSExportsToProj(projRoot, destRoot, 'angular', 'auth/amplify-authenticator')
-  //   //await runCypressTest(destRoot, {platform: 'angular'})
-
-  //   //run UI test on vue app
-  //   // copyAWSExportsToProj(projRoot, destRoot, 'vue', 'auth/amplify-authenticator')
-  //   // await runCypressTest(destRoot, {platform: 'vue'})
-  // });
 });
