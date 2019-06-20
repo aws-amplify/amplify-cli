@@ -225,9 +225,17 @@ async function updateResource(context, category, service, parameters, resourceTo
 }
 
 async function openEditor(context, category, options) {
+  let displayName;
+  if (options.modules) {
+    try {
+      displayName = options.resourceName.substring(options.parentResource.length);
+    } catch (e) {
+      displayName = '';
+    }
+  }
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
-    if (!options.modules) {
+  if (!options.modules) {
+    if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
       switch (options.functionTemplate) {
         case 'helloWorld':
           await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
@@ -239,9 +247,9 @@ async function openEditor(context, category, options) {
           await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/app.js`);
           break;
       }
-    } else {
-      await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
     }
+  } else if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${displayName} lambda function now?`)) {
+    await context.amplify.openEditor(context, `${targetDir}/${category}/${options.resourceName}/src/index.js`);
   }
 }
 
@@ -382,22 +390,13 @@ async function updateConfigOnEnvInit(context, category, service) {
   const resourceParams = providerPlugin.loadResourceParameters(context, 'function', service);
   let envParams = {};
 
-  if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
-    const parentResourceParams = providerPlugin
-      .loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
-    const triggers = typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
-    const parentKeys = Object.keys(parentResourceParams);
-    const parentValues = Object.values(parentResourceParams);
-    const index = parentValues.indexOf(resourceParams.resourceName);
-    const currentTrigger = parentKeys[index];
-    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
-    const triggerPath = `${__dirname}/../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
-    envParams = await context.amplify.getTriggerEnvInputs(
+  if (resourceParams.modules && resourceParams.modules.length > 0) {
+    envParams = await initTriggerEnvs(
       context,
-      triggerPath,
-      currentTrigger,
-      triggers[currentTrigger],
-      currentEnvVariables[currentTrigger],
+      resourceParams,
+      providerPlugin,
+      envParams,
+      srvcMetaData,
     );
   }
 
@@ -423,6 +422,32 @@ async function updateConfigOnEnvInit(context, category, service) {
       }
     }
     return envParams;
+  }
+  return envParams;
+}
+
+async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData) {
+  if (resourceParams && resourceParams.parentStack && resourceParams.parentResource) {
+    const parentResourceParams = providerPlugin
+      .loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
+    const triggers = typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
+    const parentKeys = Object.keys(parentResourceParams);
+    const parentValues = Object.values(parentResourceParams);
+    const index = parentValues.indexOf(resourceParams.resourceName);
+    const currentTrigger = parentKeys[index];
+    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
+    const triggerPath = `${__dirname}/../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
+    if (context.commandName !== 'checkout') {
+      envParams = await context.amplify.getTriggerEnvInputs(
+        context,
+        triggerPath,
+        currentTrigger,
+        triggers[currentTrigger],
+        currentEnvVariables[currentTrigger],
+      );
+    } else {
+      envParams = currentEnvVariables;
+    }
   }
   return envParams;
 }

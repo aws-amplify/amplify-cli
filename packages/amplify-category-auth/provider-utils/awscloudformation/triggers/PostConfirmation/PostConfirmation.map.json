@@ -17,6 +17,17 @@
           "keys": ["UserPool", "Arn"]
         }
       }
+    ],
+    "env": [
+      {
+        "key": "GROUP",
+        "value": "askUser",
+        "question": {
+          "name" : "GROUP",
+          "type": "input",
+          "message": "Enter the name of the group to which users will be added."
+        }
+      }
     ]
   }
 }

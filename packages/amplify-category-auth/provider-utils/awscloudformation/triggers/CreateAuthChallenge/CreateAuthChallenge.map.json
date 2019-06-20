@@ -1,5 +1,5 @@
 {
-  "captcha": {
+  "captcha-create-challenge": {
     "name": "MFA w/ Captcha (Creation)",
     "description": "Forces your user to complete a Captcha as part of MFA process"
   }

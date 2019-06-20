@@ -475,16 +475,9 @@ const capabilities = [
     name: 'MFA w/ Captcha',
     value: 'mfaWithCaptcha',
     triggers: {
-      DefineAuthChallenge: ['captcha'],
-      CreateAuthChallenge: ['captcha'],
-      VerifyAuthChallengeResponse: ['captcha'],
-    },
-  },
-  {
-    name: 'Auto-Confirm User',
-    value: 'autoConfirmUser',
-    triggers: {
-      PreSignup: ['autoconfirm'],
+      DefineAuthChallenge: ['captcha-define-challenge'],
+      CreateAuthChallenge: ['captcha-create-challenge'],
+      VerifyAuthChallengeResponse: ['captcha-verify'],
     },
   },
   {

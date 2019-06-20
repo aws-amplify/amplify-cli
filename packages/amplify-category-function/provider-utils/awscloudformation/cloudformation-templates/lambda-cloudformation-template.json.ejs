@@ -113,10 +113,12 @@
                     ,
                     <% for (let i = 0; i < JSON.parse(props.triggerEnvs).length; i++) { %>
                     "<%=JSON.parse(props.triggerEnvs)[i].key%>": 
-                    <% if (JSON.parse(props.triggerEnvs)[i].userInput)  { %>
-                     "<%=JSON.parse(props.triggerEnvs)[i].value%>"
+                    <% if (JSON.parse(props.triggerEnvs)[i].userInput) { %>
+                    {
+                        "Ref": "<%=JSON.parse(props.triggerEnvs)[i].key%>"
+                    }
                     <% } %>
-                    <% if (!JSON.parse(props.triggerEnvs)[i].userInput)  { %>
+                    <% if (!JSON.parse(props.triggerEnvs)[i].userInput) { %>
                     {
                         "Ref": "<%=JSON.parse(props.triggerEnvs)[i].value%>"
                     }

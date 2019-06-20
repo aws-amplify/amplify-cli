@@ -54,6 +54,7 @@ Resources:
   <%if (props.verificationBucketName) { %>
   CustomMessageConfirmationBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: "Retain"
     Properties:
       BucketName:  !If [ShouldNotCreateEnvResources, !Ref verificationBucketName, !Join ['',[!Ref verificationBucketName, '-', !Ref env]]]
       AccessControl: "Private"
@@ -1059,7 +1060,7 @@ Resources:
       url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
   <% } %>
-  
+ 
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool

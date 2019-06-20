@@ -16,9 +16,9 @@ exports.handler = (event, context, callback) => {
     })).toString('base64');
     const bucketUrl = `http://${resourcePrefix}verificationbucket-${process.env.ENV}.s3-website-${region}.amazonaws.com`;
     const url = `${bucketUrl}/?data=${payload}&code=${codeParameter}`;
-    const message = `Welcome to the application. Click the link below to verify your account. \n ${url}`;
+    const message = `${process.env.EMAILMESSAGE}. \n ${url}`;
     event.response.smsMessage = message;
-    event.response.emailSubject = 'Welcome to the service';
+    event.response.emailSubject = process.env.EMAILSUBJECT;
     event.response.emailMessage = message;
     console.log('event.response', event.response);
     callback(null, event);

@@ -60,7 +60,7 @@ function removeResource(context, category) {
       return context.amplify.confirmPrompt.run('Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.')
         .then(async (confirm) => {
           if (confirm) {
-            await deleteResourceFiles(context, category, resourceName, resourceDir);
+            return await deleteResourceFiles(context, category, resourceName, resourceDir);
           }
         });
     })

@@ -160,7 +160,6 @@ async function addResource(context, category, service) {
       const {
         functionMap,
         generalDefaults,
-        getAllDefaults,
         roles,
       } = require(defaultValuesSrc);
 
@@ -176,7 +175,7 @@ async function addResource(context, category, service) {
        * ensuring that manual entries override defaults */
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
 
-      await lambdaTriggers(props, context, null, getAllDefaults);
+      await lambdaTriggers(props, context, null);
 
       await copyCfnTemplate(context, category, props, cfnFilename);
       saveResourceParameters(
@@ -217,7 +216,7 @@ async function updateResource(context, category, serviceResult) {
   )
     .then(async (result) => {
       const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap, getAllDefaults } = require(defaultValuesSrc);
+      const { functionMap } = require(defaultValuesSrc);
       const { authProviders } = require(`${__dirname}/assets/string-maps.js`);
 
       /* if user has used the default configuration,
@@ -247,7 +246,7 @@ async function updateResource(context, category, serviceResult) {
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
-      await lambdaTriggers(props, context, JSON.parse(previouslySaved), getAllDefaults);
+      await lambdaTriggers(props, context, JSON.parse(previouslySaved));
 
       if (
         (!result.updateFlow && !result.thirdPartyAuth) ||
@@ -572,7 +571,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
   return getIAMPolicies(resourceName, crudOptions);
 }
 
-async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefaults) {
+async function lambdaTriggers(coreAnswers, context, previouslySaved) {
   const { handleTriggers } = require('./utils/trigger-flow-auth-helper');
   let triggerKeyValues = {};
 
@@ -584,21 +583,6 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved, getAllDefau
 
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
-      if (triggerKeyValues.DefineAuthChallenge) {
-        if (triggerKeyValues.DefineAuthChallenge.includes('captcha') && (coreAnswers.mfaConfiguration === 'OFF' || !coreAnswers.mfaConfiguration)) {
-          const defaults = getAllDefaults(coreAnswers.resourceName);
-          coreAnswers.mfaConfiguration = 'ON';
-          if (!coreAnswers.mfaTypes || coreAnswers.mfaTypes.length < 1) {
-            coreAnswers.mfaTypes = defaults.mfaTypes;
-          }
-          if (!coreAnswers.smsAuthenticationMessage) {
-            coreAnswers.mfaTypes = defaults.smsAuthenticationMessage;
-          }
-          if (!coreAnswers.smsVerificationMessage) {
-            coreAnswers.mfaTypes = defaults.smsVerificationMessage;
-          }
-        }
-      }
     }
 
     // determine permissions needed for each trigger module

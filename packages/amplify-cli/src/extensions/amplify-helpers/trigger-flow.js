@@ -378,11 +378,11 @@ const getTriggerEnvVariables = (context, trigger, category) => {
 
 const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, currentEnvVars) => {
   const metadata = getTriggerMetadata(path, triggerKey);
-  const union = [...new Set([...Object.keys(metadata), ...triggerValues])];
+  const intersection = Object.keys(metadata).filter(value => triggerValues.includes(value));
   const answers = {};
-  for (let i = 0; i < union.length; i += 1) {
-    if (metadata[union[i]].env) {
-      const questions = metadata[union[i]].env.filter(m => m.question);
+  for (let i = 0; i < intersection.length; i += 1) {
+    if (metadata[intersection[i]].env) {
+      const questions = metadata[intersection[i]].env.filter(m => m.question);
       if (questions && questions.length) {
         for (let j = 0; j < questions.length; j += 1) {
           if (!currentEnvVars || !currentEnvVars[questions[j].key]) {
