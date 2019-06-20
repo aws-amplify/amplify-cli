@@ -100,18 +100,6 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
     },
   ];
 
-  // copy over the files
-  // Todo: move to provider as each provider should decide where to store vars, and cfn
-  // deleting private keys from shared params before they are written to parameters.json
-  if (privateKeys && privateKeys.length > 0) {
-    // deleting private keys from shared params before they are written to parameters.json
-    privateKeys.forEach((e) => {
-      if (options[e]) {
-        delete options[e];
-      }
-    });
-  }
-
 
   return await context.amplify.copyBatch(context, copyJobs, options, true, false, privateKeys);
 }

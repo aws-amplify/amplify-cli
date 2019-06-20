@@ -131,7 +131,7 @@ const getTriggerPermissions = async (context, triggers, category, resourceName) 
       if (parsedTriggers[index].includes(moduleKeys[v]) && meta[moduleKeys[v]].permissions) {
         permissions = permissions.concat(meta[moduleKeys[v]].permissions);
       } else if (parsedTriggers[index].includes('custom')) {
-        await updateResource(context, 'function', 'Lambda', null, `${resourceName}${triggerKeys[c]}`);
+        await updateResource(context, 'function', 'Lambda', null, `${resourceName}${triggerKeys[c]}`, true);
       }
     }
   }

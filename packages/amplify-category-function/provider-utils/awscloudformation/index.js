@@ -21,7 +21,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const pluginDir = __dirname;
   const params = Object.assign({}, writeParams);
   let force = false;
-  const privateKeys = [];
+  let privateParams;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -31,15 +31,19 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
 
   if (options.modules) {
     force = true;
-    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
-    options.triggerEnvs = JSON.parse(options.triggerEnvs);
-    const privateKeyObj = { triggerEnvs: [] };
-    Object.keys(currentEnvVariables).forEach((c) => {
-      privateKeyObj.triggerEnvs.push(c);
-      options.triggerEnvs.push({ key: c, value: currentEnvVariables[c], userInput: true });
-    });
-    options.triggerEnvs = JSON.stringify(options.triggerEnvs);
-    privateKeys.push(privateKeyObj);
+
+    if (options.triggerEnvs) {
+      const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
+
+      privateParams = Object.assign({}, options);
+      options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
+      privateParams.triggerEnvs = JSON.parse(privateParams.triggerEnvs) || [];
+      Object.keys(teamProviderEnvs).forEach((c) => {
+        privateParams.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
+      });
+      options.triggerEnvs = JSON.stringify(options.triggerEnvs);
+      privateParams.triggerEnvs = JSON.stringify(privateParams.triggerEnvs);
+    }
 
     copyJobs.push(...[
       {
@@ -131,7 +135,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, force, params, privateKeys);
+  return context.amplify.copyBatch(context, copyJobs, options, force, params, null, privateParams);
 }
 
 function createParametersFile(context, parameters, resourceName) {
@@ -179,7 +183,7 @@ async function addResource(context, category, service, options, parameters) {
   return answers.resourceName;
 }
 
-async function updateResource(context, category, service, parameters, resourceToUpdate) {
+async function updateResource(context, category, service, parameters, resourceToUpdate, skipEdit) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename, serviceWalkthroughFilename } = serviceMetadata;
@@ -219,7 +223,9 @@ async function updateResource(context, category, service, parameters, resourceTo
 
   copyCfnTemplate(context, category, answers, cfnFilename, parameters);
 
-  await openEditor(context, category, answers);
+  if (!skipEdit) {
+    await openEditor(context, category, answers);
+  }
 
   return answers.resourceName;
 }

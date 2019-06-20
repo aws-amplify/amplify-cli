@@ -21,7 +21,7 @@
     "name": "Pre Sign-up"
   },
   "VerifyAuthChallengeResponse": {
-    "name": "Pre Token Generation"
+    "name": "Verify Auth Challenge Response"
   },
   "URL": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html"
 }

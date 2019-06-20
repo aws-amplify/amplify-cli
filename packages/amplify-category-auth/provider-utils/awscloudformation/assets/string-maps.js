@@ -472,12 +472,21 @@ const oAuthScopes = [
 
 const capabilities = [
   {
-    name: 'MFA w/ Captcha',
+    name: 'Custom Auth Challenge with Google reCaptcha',
     value: 'mfaWithCaptcha',
     triggers: {
       DefineAuthChallenge: ['captcha-define-challenge'],
       CreateAuthChallenge: ['captcha-create-challenge'],
       VerifyAuthChallengeResponse: ['captcha-verify'],
+    },
+  },
+  {
+    name: 'Basic scaffolding for a custom auth challenge',
+    value: 'customAuthScaffolding',
+    triggers: {
+      DefineAuthChallenge: ['boilerplate-define-challenge'],
+      CreateAuthChallenge: ['boilerplate-create-challenge'],
+      VerifyAuthChallengeResponse: ['boilerplate-verify'],
     },
   },
   {

@@ -8,7 +8,7 @@ const fs = require('fs');
  * @param {any}   props          - The props to use for variable replacement.
  * @param {any}   opts           - Additional options
  */
-async function copyBatch(context, jobs, props, force, writeParams, privateKeys) {
+async function copyBatch(context, jobs, props, force, writeParams, privateKeys, privateParams) {
   // grab some features
   const {
     template,
@@ -25,6 +25,17 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
     return await confirm(`overwrite ${target}`);
   };
 
+  // TODO replace usages of privateKeys with privateParams
+  // deleting private keys from shared params before they are written to parameters.json
+  if (privateKeys && privateKeys.length > 0) {
+    // deleting private keys from shared params before they are written to parameters.json
+    privateKeys.forEach((e) => {
+      if (props[e]) {
+        delete props[e];
+      }
+    });
+  }
+
   for (let index = 0; index < jobs.length; index += 1) {
     // grab the current job
     const job = jobs[index];
@@ -32,6 +43,11 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
     if (!job) {
       continue;
     }
+
+    // key/value pairs that are needed for CFN generation but NOT for parameters.json file
+    // can be passed as "privateParams"
+    const params = privateParams && typeof privateParams === 'object' ? privateParams : props;
+
     // generate the React component
     // TODO: Error handling in event of single file write failure
     if (await shouldGenerate(job.target, force)) {
@@ -39,38 +55,9 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
         directory: job.dir,
         template: job.template,
         target: job.target,
-        props,
+        props: params,
       });
 
-      // deleting private keys from shared params before they are written to parameters.json
-      if (privateKeys && privateKeys.length > 0) {
-        for (let t = 0; t < privateKeys.length; t += 1) {
-          const e = privateKeys[t];
-          if (typeof e === 'object') {
-            const objKeys = Object.keys(e);
-            for (let a = 0; a < objKeys.length; a += 1) {
-              if (props[objKeys[a]] && typeof props[objKeys[a]] === 'string') {
-                props[objKeys[a]] = JSON.parse(props[objKeys[a]]);
-                for (let z = 0; z < e[objKeys[a]].length; z += 1) {
-                  const findKey = props[objKeys[a]].findIndex(x => x.key === e[objKeys[a]][z]);
-                  if (findKey !== -1) {
-                    props[objKeys[a]].splice(findKey, 1);
-                  }
-                }
-                props[objKeys[a]] = JSON.stringify(props[objKeys[a]]);
-              } else if (props[objKeys[a]]) {
-                for (let z = 0; z < privateKeys[e][a].length; z += 1) {
-                  if (props[objKeys[a]][z]) {
-                    delete props[objKeys[a]][z];
-                  }
-                }
-              }
-            }
-          } else if (props[e]) {
-            delete props[e];
-          }
-        }
-      }
 
       if (writeParams && job.paramsFile) {
         const jsonString = JSON.stringify(props, null, 4);

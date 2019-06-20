@@ -24,6 +24,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     JSON.parse(coreAnswers.triggers) :
     coreAnswers.triggers;
 
+  // getting static trigger env variables that do not change based on direct user input
   const triggerEnvs = {};
   Object.keys(triggers).forEach((r) => {
     triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'amplify-category-auth');
@@ -130,6 +131,7 @@ const reduceAnswerArray = (answers) => {
   return triggerObj;
 };
 
+// saving input-based trigger env variables to the team-provider
 const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
   const triggerPath = `${__dirname}/../triggers/${key}`;
   const envs = await context

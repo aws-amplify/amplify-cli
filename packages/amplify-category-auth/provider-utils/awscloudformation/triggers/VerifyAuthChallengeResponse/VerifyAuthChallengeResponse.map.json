@@ -13,5 +13,9 @@
         }
       }
     ]
+  },
+  "boilerplate-verify": {
+    "name": "Custom Auth Challenge Scaffolding (Verification)",
+    "description": "Forces your user to submit a correct answer"
   }
 }
