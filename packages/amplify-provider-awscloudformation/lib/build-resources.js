@@ -56,8 +56,7 @@ async function buildResource(context, resource) {
     return new Promise((resolve, reject) => {
       output.on('close', () => {
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
-        removeOutdatedPackage(zipFilePath).then(() =>
-          resolve({ zipFilePath, zipFilename }));
+        resolve({ zipFilePath, zipFilename });
       });
       output.on('error', () => {
         reject(new Error('Failed to zip code.'));
@@ -95,20 +94,6 @@ function getSourceFiles(dir, ignoredDir) {
   }, []);
 }
 
-function removeOutdatedPackage(currentBuildFile) {
-  try {
-    const distDir = path.dirname(currentBuildFile);
-    const deletePromises = fs
-      .readdirSync(distDir)
-      .map(p => path.join(distDir, p))
-      .filter(p => currentBuildFile !== p)
-      .map(p => fs.remove(p));
-    return Promise.all(deletePromises);
-  } catch (e) {
-    // nothing to do here
-    console.log(`Failed to clean up outdated packages ${e.message}`);
-  }
-}
 
 module.exports = {
   run,
