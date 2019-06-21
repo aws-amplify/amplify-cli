@@ -1,7 +1,8 @@
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 import * as path from 'path';
 import { Template } from "cloudform-types";
-import { exists, readFile, writeFile, readDir, throwIfNotJSONExt, lstat } from './fileUtils';
+import { throwIfNotJSONExt } from './fileUtils';
+const fs = require('fs-extra');
 
 export interface TransformMigrationConfig {
     V1?: {
@@ -25,17 +26,17 @@ export interface TransformConfig {
 }
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
-    const configExists = await exists(configPath);
+    const configExists = await fs.exists(configPath);
     let config = {};
     if (configExists) {
-        const configStr = await readFile(configPath);
+        const configStr = await fs.readFile(configPath);
         config = JSON.parse(configStr.toString());
     }
     return config as TransformConfig;
 }
 export async function writeConfig(projectDir: string, config: TransformConfig): Promise<TransformConfig> {
     const configFilePath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
-    await writeFile(configFilePath, JSON.stringify(config, null, 4));
+    await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
     return config;
 }
 
@@ -58,24 +59,24 @@ export async function loadProject(projectDirectory: string): Promise<ProjectConf
     const schema = await readSchema(projectDirectory);
     // Load the resolvers.
     const resolverDirectory = path.join(projectDirectory, 'resolvers')
-    const resolverDirExists = await exists(resolverDirectory);
+    const resolverDirExists = await fs.exists(resolverDirectory);
     const resolvers = {}
     if (resolverDirExists) {
-        const resolverFiles = await readDir(resolverDirectory)
+        const resolverFiles = await fs.readdir(resolverDirectory)
         for (const resolverFile of resolverFiles) {
             if (resolverFile.indexOf('.') === 0) {
                 continue;
             }
 
             const resolverFilePath = path.join(resolverDirectory, resolverFile)
-            resolvers[resolverFile] = await readFile(resolverFilePath)
+            resolvers[resolverFile] = await fs.readFile(resolverFilePath)
         }
     }
     const stacksDirectory = path.join(projectDirectory, 'stacks')
-    const stacksDirExists = await exists(stacksDirectory)
+    const stacksDirExists = await fs.exists(stacksDirectory)
     const stacks = {}
     if (stacksDirExists) {
-        const stackFiles = await readDir(stacksDirectory)
+        const stackFiles = await fs.readdir(stacksDirectory)
         for (const stackFile of stackFiles) {
             if (stackFile.indexOf('.') === 0) {
                 continue;
@@ -83,7 +84,7 @@ export async function loadProject(projectDirectory: string): Promise<ProjectConf
 
             const stackFilePath = path.join(stacksDirectory, stackFile)
             throwIfNotJSONExt(stackFile);
-            const stackBuffer = await readFile(stackFilePath);
+            const stackBuffer = await fs.readFile(stackFilePath);
             try {
                 stacks[stackFile] = JSON.parse(stackBuffer.toString());
             } catch (e) {
@@ -110,11 +111,11 @@ export async function loadProject(projectDirectory: string): Promise<ProjectConf
 export async function readSchema(projectDirectory: string): Promise<string> {
     const schemaFilePath = path.join(projectDirectory, 'schema.graphql')
     const schemaDirectoryPath = path.join(projectDirectory, 'schema')
-    const schemaFileExists = await exists(schemaFilePath);
-    const schemaDirectoryExists = await exists(schemaDirectoryPath);
+    const schemaFileExists = await fs.exists(schemaFilePath);
+    const schemaDirectoryExists = await fs.exists(schemaDirectoryPath);
     let schema;
     if (schemaFileExists) {
-        schema = (await readFile(schemaFilePath)).toString()
+        schema = (await fs.readFile(schemaFilePath)).toString()
     } else if (schemaDirectoryExists) {
         schema = (await readSchemaDocuments(schemaDirectoryPath)).join('\n');
     } else {
@@ -124,7 +125,7 @@ export async function readSchema(projectDirectory: string): Promise<string> {
 }
 
 async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[]> {
-    const files = await readDir(schemaDirectoryPath);
+    const files = await fs.readdir(schemaDirectoryPath);
     let schemaDocuments = [];
     for (const fileName of files) {
         if (fileName.indexOf('.') === 0) {
@@ -132,12 +133,12 @@ async function readSchemaDocuments(schemaDirectoryPath: string): Promise<string[
         }
 
         const fullPath = `${schemaDirectoryPath}/${fileName}`;
-        const stats = await lstat(fullPath);
+        const stats = await fs.lstat(fullPath);
         if (stats.isDirectory()) {
             const childDocs = await readSchemaDocuments(fullPath);
             schemaDocuments = schemaDocuments.concat(childDocs);
         } else if (stats.isFile()) {
-            const schemaDoc = await readFile(fullPath);
+            const schemaDoc = await fs.readFile(fullPath);
             schemaDocuments.push(schemaDoc);
         }
     }

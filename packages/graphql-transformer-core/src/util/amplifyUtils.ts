@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+const fs = require('fs-extra');
 import * as path from 'path';
 import { CloudFormation, Fn, Template } from "cloudform-types";
 import GraphQLTransform from '..';
@@ -6,7 +6,7 @@ import Transformer from '../Transformer';
 import DeploymentResources from '../DeploymentResources';
 import { StackMappingOption } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { exists, readFile, walkDirPosix, clearAtPath, readFromPath, writeToPath, emptyDirectory, throwIfNotJSONExt } from './fileUtils';
+import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema } from './transformConfig';
 
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
@@ -316,7 +316,7 @@ export async function migrateAPIProject(opts: MigrationOptions) {
     }
 }
 export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
-    await clearAtPath(directory);
+    await fs.remove(directory);
     await writeToPath(directory, oldProject);
 }
 
@@ -334,20 +334,20 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
     // Get the template
     const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
-    const cloudFormationTemplateExists = await exists(cloudFormationTemplatePath);
+    const cloudFormationTemplateExists = await fs.exists(cloudFormationTemplatePath);
     if (!cloudFormationTemplateExists) {
         throw new Error(`Could not find cloudformation template at ${cloudFormationTemplatePath}`);
     }
-    const cloudFormationTemplateStr = await readFile(cloudFormationTemplatePath);
+    const cloudFormationTemplateStr = await fs.readFile(cloudFormationTemplatePath);
     const cloudFormationTemplate = JSON.parse(cloudFormationTemplateStr.toString());
 
     // Get the params
     const parametersFilePath = path.join(projectDirectory, 'parameters.json');
-    const parametersFileExists = await exists(parametersFilePath);
+    const parametersFileExists = await fs.exists(parametersFilePath);
     if (!parametersFileExists) {
         throw new Error(`Could not find parameters.json at ${parametersFilePath}`);
     }
-    const parametersFileStr = await readFile(parametersFilePath);
+    const parametersFileStr = await fs.readFile(parametersFilePath);
     const parametersFile = JSON.parse(parametersFileStr.toString());
 
     return {
