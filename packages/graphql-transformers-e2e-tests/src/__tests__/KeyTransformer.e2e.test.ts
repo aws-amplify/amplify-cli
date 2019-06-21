@@ -240,7 +240,7 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
     expect(items.data).toBeNull();
     expect(items.errors.length).toBeGreaterThan(0);
     items = await itemsByCreatedAt(hashKey);
-    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(2)
     items = await itemsByCreatedAt(hashKey, { beginsWith: sortKey });
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
     items = await itemsByCreatedAt(hashKey, { eq: sortKey });
@@ -252,9 +252,9 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
     items = await itemsByCreatedAt(hashKey, { ge: sortKey });
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
     items = await itemsByCreatedAt(hashKey, { lt: sortKey });
-    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
-    items = await itemsByCreatedAt(hashKey, { le: sortKey });
     expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { le: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(2)
     items = await itemsByCreatedAt(undefined, { le: sortKey });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
