@@ -44,7 +44,9 @@ async function buildResource(context, resource) {
       folders: { exclude: ['node_modules'] },
     });
 
-    zipFilename = `${resourceName}-${folderHash}-build.zip`;
+    zipFilename = `${resourceName}-${Buffer.from(folderHash)
+      .toString('hex')
+      .substr(0, 20)}-build.zip`;
 
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir);
@@ -93,7 +95,6 @@ function getSourceFiles(dir, ignoredDir) {
     return acc.concat(getSourceFiles(path.join(dir, f)));
   }, []);
 }
-
 
 module.exports = {
   run,
