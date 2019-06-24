@@ -1063,12 +1063,14 @@
 				"required": true,
 				"type": "multiselect",
 				"map": "capabilities",
-				"orConditions": [
+				"andConditions": [
 					{
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
-					},
+					}
+				],
+				"orConditions": [
 					{
 						"key": "useDefault",
 						"value": "defaultTriggers",

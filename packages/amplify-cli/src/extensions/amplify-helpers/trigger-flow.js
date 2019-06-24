@@ -1,13 +1,8 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const chalkpipe = require('chalk-pipe');
-const {
-  readdirSync,
-  statSync,
-  readFileSync,
-  unlinkSync,
-} = require('fs');
-const { copySync } = require('fs-extra');
+const fs = require('fs');
+const fsExtra = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
 const { updateResource } = require('../../../../amplify-category-function/provider-utils/awscloudformation');
@@ -58,7 +53,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   };
 
   // get trigger metadata
-  const triggerMeta = getTriggerMetadata(triggerPath, resource);
+  const triggerMeta = context.amplify.getTriggerMetadata(triggerPath, resource);
 
   // ask triggers question via learn more loop
   const askTriggers = await learnMoreLoop('triggers', resourceName, triggerMeta, triggerQuestion);
@@ -73,7 +68,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
 
     const templateOptions = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
     templateOptions.push({ name: 'Create your own module', value: 'custom' });
-    const templateMeta = getTriggerMetadata(optionsPath, askTriggers.triggers[i]);
+    const templateMeta = context.amplify.getTriggerMetadata(optionsPath, askTriggers.triggers[i]);
     const readableTrigger = triggerMeta[askTriggers.triggers[i]].name;
 
     const templateQuestion = {
@@ -167,9 +162,9 @@ const learnMoreLoop = async (key, map, metaData, question) => {
 
 const choicesFromMetadata = (path, selection, isDir) => {
   const templates = isDir ?
-    readdirSync(path)
-      .filter(f => statSync(join(path, f)).isDirectory()) :
-    readdirSync(path).map(t => t.substring(0, t.length - 3));
+    fs.readdirSync(path)
+      .filter(f => fs.statSync(join(path, f)).isDirectory()) :
+    fs.readdirSync(path).map(t => t.substring(0, t.length - 3));
 
   const metaData = getTriggerMetadata(path, selection);
   const configuredOptions = Object.keys(metaData).filter(k => templates.includes(k));
@@ -180,7 +175,7 @@ const choicesFromMetadata = (path, selection, isDir) => {
   return options;
 };
 
-const getTriggerMetadata = (path, selection) => JSON.parse(readFileSync(`${path}/${selection}.map.json`));
+const getTriggerMetadata = (path, selection) => JSON.parse(fs.readFileSync(`${path}/${selection}.map.json`));
 
 async function openEditor(context, path, name) {
   const filePath = `${path}/${name}.js`;
@@ -237,7 +232,7 @@ const updateTrigger = async (
   targetPath,
   parentResource,
 ) => {
-  const updatedTrigger = {};
+  // const updatedTrigger = {};
   let update;
   try {
     ({ update } = require('amplify-category-function'));
@@ -268,10 +263,9 @@ const updateTrigger = async (
         },
       );
     }
-
     await cleanFunctions(key, values, category, context, targetPath);
-
-    return updatedTrigger;
+    // return updatedTrigger;
+    return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');
   }
@@ -310,49 +304,57 @@ const deleteAllTriggers = async (triggers, resourceName, dir, context) => {
   for (let y = 0; y < previousKeys.length; y += 1) {
     const functionName = `${resourceName}${previousKeys[y]}`;
     const targetPath = `${dir}/function/${functionName}`;
-    await deleteTrigger(context, functionName, targetPath);
+    await context.amplify.deleteTrigger(context, functionName, targetPath);
   }
 };
 
 const copyFunctions = async (key, value, category, context, targetPath) => {
-  const dirContents = readdirSync(targetPath);
-  if (!dirContents.includes(`${value}.js`)) {
-    let source = '';
-    if (value === 'custom') {
-      source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-custom.js`;
-    } else {
-      source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
+  try {
+    const dirContents = fs.readdirSync(targetPath);
+    if (!dirContents.includes(`${value}.js`)) {
+      let source = '';
+      if (value === 'custom') {
+        source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-custom.js`;
+      } else {
+        source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
+      }
+      fsExtra.copySync(source, `${targetPath}/${value}.js`);
+      await openEditor(context, targetPath, value);
     }
-    copySync(source, `${targetPath}/${value}.js`);
-    await openEditor(context, targetPath, value);
+  } catch (e) {
+    throw new Error('Error copying functions');
   }
 };
 
 const cleanFunctions = async (key, values, category, context, targetPath) => {
-  const meta = context.amplify.getTriggerMetadata(
-    `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}`,
-    key,
-  );
-  const dirContents = readdirSync(targetPath);
-  for (let x = 0; x < dirContents.length; x += 1) {
-    if (dirContents[x] !== 'custom.js') {
-      // checking that a file is js module (with extension removed) and no longer a selected module
-      if (meta[`${dirContents[x].substring(0, dirContents[x].length - 3)}`] &&
-      !values.includes(`${dirContents[x].substring(0, dirContents[x].length - 3)}`)) {
+  try {
+    const meta = context.amplify.getTriggerMetadata(
+      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}`,
+      key,
+    );
+    const dirContents = fs.readdirSync(targetPath);
+    for (let x = 0; x < dirContents.length; x += 1) {
+      if (dirContents[x] !== 'custom.js') {
+        // checking that a file is js module (with extension removed) and not a selected module
+        if (meta[`${dirContents[x].substring(0, dirContents[x].length - 3)}`] &&
+        !values.includes(`${dirContents[x].substring(0, dirContents[x].length - 3)}`)) {
+          try {
+            fs.unlinkSync(`${targetPath}/${dirContents[x]}`);
+          } catch (e) {
+            throw new Error('Failed to delete module');
+          }
+        }
+      }
+      if (dirContents[x] === 'custom.js' && !values.includes('custom')) {
         try {
-          unlinkSync(`${targetPath}/${dirContents[x]}`);
+          fs.unlinkSync(`${targetPath}/${dirContents[x]}`);
         } catch (e) {
           throw new Error('Failed to delete module');
         }
       }
     }
-    if (dirContents[x] === 'custom.js' && !values.includes('custom')) {
-      try {
-        unlinkSync(`${targetPath}/${dirContents[x]}`);
-      } catch (e) {
-        throw new Error('Failed to delete module');
-      }
-    }
+  } catch (e) {
+    throw new Error('Error cleaning functions');
   }
   return null;
 };
@@ -377,7 +379,7 @@ const getTriggerEnvVariables = (context, trigger, category) => {
 };
 
 const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, currentEnvVars) => {
-  const metadata = getTriggerMetadata(path, triggerKey);
+  const metadata = context.amplify.getTriggerMetadata(path, triggerKey);
   const intersection = Object.keys(metadata).filter(value => triggerValues.includes(value));
   const answers = {};
   for (let i = 0; i < intersection.length; i += 1) {
@@ -425,6 +427,7 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
 module.exports = {
   triggerFlow,
   addTrigger,
+  choicesFromMetadata,
   updateTrigger,
   deleteTrigger,
   deleteAllTriggers,
@@ -434,4 +437,6 @@ module.exports = {
   getTriggerPermissions,
   getTriggerEnvVariables,
   getTriggerEnvInputs,
+  copyFunctions,
+  cleanFunctions,
 };
