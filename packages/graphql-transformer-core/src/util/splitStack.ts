@@ -15,7 +15,9 @@ export interface NestedStacks {
     // All the nested stack templates.
     stacks: {
         [name: string]: Template
-    }
+    },
+    // The full stack mapping for the deployment.
+    stackMapping: { [resourceId: string]: string }
 }
 interface NestedStackInfo {
     stackDependencyMap: { [k: string]: string[] }
@@ -338,6 +340,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     const templateJson: any = JSON.parse(JSON.stringify(stack));
     const resourceToStackMap = mapResourcesToStack(templateJson);
     const outputToStackMap = mapOutputsToStack(templateJson);
+    const stackMapping = { ...resourceToStackMap, ...outputToStackMap };
     const stacks = collectTemplates(templateJson, resourceToStackMap, outputToStackMap);
     const stackInfo = replaceReferences(stacks, resourceToStackMap);
     let rootStack = stacks[rootStackName];
@@ -345,6 +348,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     rootStack = updateRootWithNestedStacks(rootStack, stacks, stackInfo);
     return {
         rootStack,
-        stacks
+        stacks,
+        stackMapping
     }
 }

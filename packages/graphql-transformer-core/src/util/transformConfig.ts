@@ -16,6 +16,21 @@ export interface TransformMigrationConfig {
 export interface TransformConfig {
 
     /**
+     * The transform library uses a "StackMapping" to determine which stack
+     * a particular resource belongs to. This "StackMapping" allows individual
+     * transformer implementations to add resources to a single context and
+     * reference resources as if they were all members of the same stack. The
+     * transform formatter takes the single context and the stack mapping
+     * and splits the context into a valid nested stack where any Fn::Ref or Fn::GetAtt
+     * is replaced by a Import/Export or Parameter. Users may provide mapping
+     * overrides to get specific behavior out of the transformer. Users may
+     * override the default stack mapping to customize behavior.
+     */
+    StackMapping?: {
+        [resourceId: string]: string
+    }
+
+    /**
      * For backwards compatibility we store a set of resource logical ids that
      * should be preserved in the top level template to prevent deleting
      * resources that holds data and that were created before the new nested stack config.
