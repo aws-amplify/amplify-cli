@@ -272,15 +272,13 @@ export default class GraphQLTransform {
         }
         // Format the context into many stacks.
         this.updateContextForStackMappingOverrides(context);
-        const formatter = new TransformFormatter({
-            stackRules: context.getStackMapping()
-        })
+        const formatter = new TransformFormatter();
         return formatter.format(context)
     }
 
     private updateContextForStackMappingOverrides(context: TransformerContext) {
-        for (const regexString of Object.keys(this.stackMappingOverrides)) {
-            context.addToStackMapping(this.stackMappingOverrides[regexString], regexString);
+        for (const resourceId of Object.keys(this.stackMappingOverrides)) {
+            context.mapResourceToStack(this.stackMappingOverrides[resourceId], resourceId);
         }
     }
 

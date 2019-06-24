@@ -22,9 +22,6 @@ interface NestedStackInfo {
     stackParameterMap: { [k: string]: {[p: string]: any }  }
 }
 
-// export interface StackRules {
-//     [key: string]: RegExp[];
-// }
 export type StackRules = Map<string, string>;
 export interface SplitStackOptions {
     stack: Template,
@@ -50,25 +47,24 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
 
     /**
      * Returns a map where the keys are the Resource/Output ids and the values are
-     * the names of the stack where that Resource/Output belongs.
+     * the names of the stack where that Resource/Output belongs. This fills
+     * any missing values with that of the root stack and thus returns a full-mapping.
      */
     function createMapByStackRules(
         keys: string[]
     ): { [key: string]: string } {
         const stackMap = {};
         for (const key of keys) {
-            stackRules.forEach((stackName, regExStr) => {
-                const regEx = new RegExp(regExStr, 'i');
-                if (regEx.test(key)) {
-                    stackMap[key] = stackName;
-                }
-            });
-            if (!stackMap[key]) {
+            const mappedTo = stackRules.get(key);
+            if (mappedTo) {
+                stackMap[key] = mappedTo;
+            } else {
                 stackMap[key] = rootStackName;
             }
         }
         return stackMap;
     }
+    
     /**
      * Returns a map where the keys are the resource ids and the values are the
      * names of the stack where that resource belongs.
@@ -78,6 +74,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     ): { [key: string]: string } {
         return createMapByStackRules(Object.keys(template.Resources));
     }
+
     /**
      * Returns a map where the keys are the Outputs ids and the values are the
      * names of the stack where that Output belongs.

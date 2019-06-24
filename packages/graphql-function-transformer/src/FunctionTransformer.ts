@@ -31,21 +31,21 @@ export default class FunctionTransformer extends Transformer {
         const iamRoleKey = FunctionResourceIDs.FunctionIAMRoleID(name, region);
         if (!ctx.getResource(iamRoleKey)) {
             ctx.setResource(iamRoleKey, this.role(name, region));
-            ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, iamRoleKey);
+            ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, iamRoleKey);
         }
 
         // Add the data source if it does not exist.
         const lambdaDataSourceKey = FunctionResourceIDs.FunctionDataSourceID(name, region);
         if (!ctx.getResource(lambdaDataSourceKey)) {
             ctx.setResource(lambdaDataSourceKey, this.datasource(name, region));
-            ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, lambdaDataSourceKey);
+            ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, lambdaDataSourceKey);
         }
 
         // Add function that invokes the lambda function
         const functionConfigurationKey = FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region);
         if (!ctx.getResource(functionConfigurationKey)) {
             ctx.setResource(functionConfigurationKey, this.function(name, region));
-            ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, functionConfigurationKey);
+            ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, functionConfigurationKey);
         }
 
         // Add resolver that invokes our function
@@ -55,7 +55,7 @@ export default class FunctionTransformer extends Transformer {
         const resolver = ctx.getResource(resolverKey);
         if (!resolver) {
             ctx.setResource(resolverKey, this.resolver(typeName, fieldName, name, region));
-            ctx.addToStackMapping(FUNCTION_DIRECTIVE_STACK, resolverKey);
+            ctx.mapResourceToStack(FUNCTION_DIRECTIVE_STACK, resolverKey);
         } else if (resolver.Properties.Kind === 'PIPELINE') {
             ctx.setResource(resolverKey, this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)))
         }

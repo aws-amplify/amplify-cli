@@ -149,7 +149,7 @@ export default class FunctionTransformer extends Transformer {
                 const queryTypeName = ctx.getQueryTypeName();
                 const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
                 const queryResolver = makeQueryResolver(definition, directive, ctx);
-                ctx.addToStackMapping(definition.name.value, `^${queryResolverId}$`);
+                ctx.mapResourceToStack(definition.name.value, queryResolverId);
                 ctx.setResource(queryResolverId, queryResolver);
             }
         }
