@@ -2,11 +2,10 @@
 
 /**
  * @function
- * @param {array} triggers Currently selected triggers in CLI flow array of key/values
- * @example ["{"TriggerName2":["template2"]}"]
- * @param {string} previous Serialized object of previously selected trigger values
- * @example "{\"TriggerName1\":[\"template1\"]}"
- * @return {object} Object with current and previous triggers, with concatenated values for unions
+ * @param {object} context CLI context
+ * @param {object} coreAnswers key/value pairs of auth flow answers
+ * @param {object} previouslySaved key/value pairs of previously saved triggers
+ * @return {object} Key/value pairs containing the trigger name and array of selected modules.
  */
 
 /*
@@ -15,11 +14,14 @@
 async function handleTriggers(context, coreAnswers, previouslySaved) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   let triggerKeyValues = {};
+
+  // get the resource name, either from user answer during creation or previous value
   const resourceName = context.updatingAuth ?
     context.updatingAuth.resourceName :
     coreAnswers.resourceName;
 
 
+  // double check to make sure triggers have not been serialized already
   const triggers = typeof coreAnswers.triggers === 'string' ?
     JSON.parse(coreAnswers.triggers) :
     coreAnswers.triggers;
@@ -91,6 +93,10 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     );
     const previousKeys = Object.keys(previouslySaved);
 
+    /*
+      if a trigger has been deselected entirely, we need to remove the key from coreAnswers
+      (this is in addition to the actual triggers key/value attribute).
+    */
     for (let i = 0; i < previousKeys.length; i += 1) {
       if (!keys.includes(previousKeys[i])) {
         delete coreAnswers[previousKeys[i]];
@@ -108,29 +114,6 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   return parameters.triggers;
 }
 
-// since inquirer uses stringified key/value pairs as values for selected options,
-// we change this array of stringified objects into a single object.
-const reduceAnswerArray = (answers) => {
-  const triggerObj = {};
-  if (!Array.isArray(answers)) {
-    return JSON.parse(answers);
-  } else if (answers && answers.length > 0) {
-    answers.forEach((t) => {
-      const parsed = typeof t === 'string' ? JSON.parse(t) : t;
-      Object.keys(parsed).forEach((p, index) => {
-        if (triggerObj[p]) {
-          triggerObj[p] = triggerObj[p].concat(Object.values(parsed)[index]);
-        } else {
-          triggerObj[p] = Object.values(parsed)[index];
-        }
-      });
-     /*eslint-disable-line*/ triggerObj[Object.keys(parsed)[0]] = Object.values(parsed)[0];
-      return triggerObj;
-    });
-  }
-  return triggerObj;
-};
-
 // saving input-based trigger env variables to the team-provider
 const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
   const triggerPath = `${__dirname}/../triggers/${key}`;
@@ -141,5 +124,4 @@ const triggerEnvParams = async (context, key, value, functionName, currentEnvVar
 
 module.exports = {
   handleTriggers,
-  reduceAnswerArray,
 };

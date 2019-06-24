@@ -1,8 +1,6 @@
 exports.handler = (event, context, callback) => {
   // whitelisted domains
-  const wld = [
-    'gmail.com',
-  ];
+  const wld = process.env.DOMAINWHITELIST.split(',').map(d => d.trim());
 
   const { email } = event.request.userAttributes;
   const domain = email.substring(email.indexOf('@') + 1);

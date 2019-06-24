@@ -356,38 +356,6 @@ function getHeadlessParams(context) {
   return categories.function || {};
 }
 
-function getRequiredParamsForHeadlessInit(projectType, previousValues) {
-  const requiredParams = [];
-
-  if (previousValues.thirdPartyAuth) {
-    if (previousValues.authProviders.includes('accounts.google.com')) {
-      requiredParams.push('googleClientId');
-      if (projectType === 'ios') {
-        requiredParams.push('googleIos');
-      }
-      if (projectType === 'android') {
-        requiredParams.push('googleAndroid');
-      }
-    }
-    if (previousValues.authProviders.includes('graph.facebook.com')) {
-      requiredParams.push('facebookAppId');
-    }
-    if (previousValues.authProviders.includes('www.amazon.com')) {
-      requiredParams.push('amazonAppId');
-    }
-  }
-
-  if (previousValues.hostedUIProviderMeta) {
-    const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
-    if (oAuthProviders && oAuthProviders.length > 0) {
-      oAuthProviders.forEach((o) => {
-        requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
-        requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
-      });
-    }
-  }
-  return requiredParams;
-}
 
 async function updateConfigOnEnvInit(context, category, service) {
   const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
@@ -408,26 +376,8 @@ async function updateConfigOnEnvInit(context, category, service) {
 
   // headless mode
   if (isInHeadlessMode(context)) {
-    let mergedValues;
-    if (resourceParams.thirdPartyAuth || resourceParams.hostedUIProviderMeta) {
-      const authParams = getHeadlessParams(context);
-      const projectType = context.amplify.getProjectConfig().frontend;
-      mergedValues = { ...resourceParams, ...authParams };
-      const requiredParams = getRequiredParamsForHeadlessInit(projectType, resourceParams);
-      const missingParams = [];
-      requiredParams.forEach((p) => {
-        if (Object.keys(mergedValues).includes(p)) {
-          envParams[p] = mergedValues[p];
-        } else {
-          missingParams.push(p);
-        }
-      });
-
-      if (missingParams.length) {
-        throw Error(`function headless init is missing the following inputParams ${missingParams.join(', ')}`);
-      }
-    }
-    return envParams;
+    const functionParams = getHeadlessParams(context);
+    return functionParams;
   }
   return envParams;
 }

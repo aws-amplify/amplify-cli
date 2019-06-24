@@ -1,8 +1,7 @@
 exports.handler = (event, context, callback) => {
   // blacklisted domains
-  const bld = [
-    'amazon.com',
-  ];
+  const bld = process.env.DOMAINBLACKLIST.split(',').map(d => d.trim());
+
 
   const { email } = event.request.userAttributes;
   const domain = email.substring(email.indexOf('@') + 1);
