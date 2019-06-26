@@ -1,0 +1,13 @@
+{
+    "name": "notifications",
+    "type": "category",
+    "commands": [
+        "add",
+        "configure",
+        "console",
+        "remove",
+        "status",
+        "help"
+    ],
+    "subscriptions":[]
+}

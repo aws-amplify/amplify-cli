@@ -42,4 +42,5 @@ module.exports = {
   console,
   migrate,
   getPermissionPolicies,
+  ...require('./amplify-plugin-index'),
 };

@@ -1,0 +1,15 @@
+{
+    "name": "api",
+    "type": "category",
+    "commands": [
+        "add-datesource",
+        "add",
+        "console",
+        "gql-compile",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "subscriptions":[]
+}

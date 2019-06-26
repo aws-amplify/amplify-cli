@@ -171,4 +171,5 @@ module.exports = {
   migrate,
   initEnv,
   getPermissionPolicies,
+  ...require('./amplify-plugin-index'),
 };

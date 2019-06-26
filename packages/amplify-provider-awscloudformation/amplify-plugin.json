@@ -1,0 +1,10 @@
+{
+    "name": "awscloudformation",
+    "type": "provider",
+    "commands": [
+        "configure",
+        "console",
+        "reset-cache",
+        "setupNewUser"
+    ]
+}

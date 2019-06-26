@@ -1,0 +1,16 @@
+{
+    "name": "codegen",
+    "type": "util",
+    "commands": [
+        "add",
+        "codegen",
+        "configure",
+        "remove",
+        "statement",
+        "types"
+    ],
+    "subscriptions":[
+        "PostPush",
+        "NotHere"
+    ]
+}

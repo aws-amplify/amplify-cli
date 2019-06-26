@@ -1,0 +1,13 @@
+{
+    "name": "xr",
+    "type": "category",
+    "commands": [
+        "add",
+        "console",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "subscriptions":[]
+}

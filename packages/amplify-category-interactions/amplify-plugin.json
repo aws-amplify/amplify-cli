@@ -1,0 +1,12 @@
+{
+    "name": "interactions",
+    "type": "category",
+    "commands": [
+        "add",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "subscriptions":[]
+}

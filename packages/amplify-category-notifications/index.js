@@ -22,5 +22,6 @@ module.exports = {
   deletePinpointAppForEnv,
   initEnv,
   migrate,
+  ...require('./amplify-plugin-index'),
 };
 
