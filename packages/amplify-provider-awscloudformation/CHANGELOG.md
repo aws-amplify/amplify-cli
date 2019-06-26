@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.5...amplify-provider-awscloudformation@1.12.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** generate consistent S3 keys ([#1668](https://github.com/aws-amplify/amplify-cli/issues/1668)) ([e393d3a](https://github.com/aws-amplify/amplify-cli/commit/e393d3a)), closes [#1666](https://github.com/aws-amplify/amplify-cli/issues/1666)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** update fn build file name ([#1702](https://github.com/aws-amplify/amplify-cli/issues/1702)) ([0658d75](https://github.com/aws-amplify/amplify-cli/commit/0658d75))
+
+
+
+
+
 ## [1.11.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.4...amplify-provider-awscloudformation@1.11.5) (2019-06-20)
 
 

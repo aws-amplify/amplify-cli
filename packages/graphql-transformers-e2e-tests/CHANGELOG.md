@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.3...graphql-transformers-e2e-tests@3.6.4) (2019-06-26)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** Fix type resolve for 2 field [@key](https://github.com/key) when second field is an Enum ([#1619](https://github.com/aws-amplify/amplify-cli/issues/1619)) ([bbd82b0](https://github.com/aws-amplify/amplify-cli/commit/bbd82b0)), closes [#1572](https://github.com/aws-amplify/amplify-cli/issues/1572)
+
+
+
+
+
 ## [3.6.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.2...graphql-transformers-e2e-tests@3.6.3) (2019-06-12)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
