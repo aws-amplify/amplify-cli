@@ -199,6 +199,9 @@ test('Test listX with three part primary key.', async () => {
     expect(items.data.listItems.items).toHaveLength(1)
     items = await listItem(hashKey, { le: { status: 'IN_TRANSIT', createdAt: '2018-01-01T00:01:01.000Z'}});
     expect(items.data.listItems.items).toHaveLength(1)
+    await deleteItem(hashKey, 'IN_TRANSIT', '2018-01-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-06-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 })
 
 test('Test query with three part secondary key.', async () => {
@@ -228,6 +231,9 @@ test('Test query with three part secondary key.', async () => {
     items = await itemsByStatus(undefined, { le: '2018-09-01' });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', hashKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', hashKey, '2018-06-01T00:01:01.000Z');
+    await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
 })
 
 test('Test query with three part secondary key, where sort key is an enum.', async () => {
@@ -258,6 +264,9 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
     items = await itemsByCreatedAt(undefined, { le: sortKey });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', sortKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', sortKey, hashKey);
+    await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 })
 
 test('Test update mutation validation with three part secondary key.', async () => {
