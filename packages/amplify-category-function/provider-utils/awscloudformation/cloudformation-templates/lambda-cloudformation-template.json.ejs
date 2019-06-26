@@ -2,7 +2,7 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
-        <% if (props.modules) { %>
+        <% if (props.trigger) { %>
             <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
                 <% for (let a = 0; a < JSON.parse(props.triggerEnvs).length; a++) { %>
                     <% if (JSON.parse(props.triggerEnvs)[a].userInput) { %>
@@ -25,6 +25,10 @@
         "resourceName": {
             "Type": "String",
             "Default": ""
+        },
+        "trigger": {
+            "Type": "Boolean",
+            "Default": false
         },
         "functionName": {
             "Type": "String",

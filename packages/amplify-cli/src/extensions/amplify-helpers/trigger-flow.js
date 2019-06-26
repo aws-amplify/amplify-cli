@@ -23,13 +23,13 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   if (!category) throw new Error('No category provided to trigger question flow');
 
   // make sure resource is capitalized
-  const resourceName = `${resource.charAt(0).toUpperCase()}${resource.slice(1)}`;
+  const functionName = `${resource.charAt(0).toUpperCase()}${resource.slice(1)}`;
 
   // ask user if they want to manually configure triggers
   const wantTriggers = await inquirer.prompt({
     name: 'confirmation',
     type: 'confirm',
-    message: `Do you want to configure Lambda Triggers for ${resourceName}?`,
+    message: `Do you want to configure Lambda Triggers for ${functionName}?`,
   });
 
   // if user does not want to manually configure triggers, return null
@@ -47,7 +47,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   const triggerQuestion = {
     name: 'triggers',
     type: 'checkbox',
-    message: `Which triggers do you want to enable for ${resourceName}`,
+    message: `Which triggers do you want to enable for ${functionName}`,
     choices: triggerOptions,
     default: Object.keys(previousTriggers),
   };
@@ -56,7 +56,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   const triggerMeta = context.amplify.getTriggerMetadata(triggerPath, resource);
 
   // ask triggers question via learn more loop
-  const askTriggers = await learnMoreLoop('triggers', resourceName, triggerMeta, triggerQuestion);
+  const askTriggers = await learnMoreLoop('triggers', functionName, triggerMeta, triggerQuestion);
 
   // instantiate triggerObj
   const triggerObj = {};
@@ -109,7 +109,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
  *    ]
  *  }"]
  */
-const getTriggerPermissions = async (context, triggers, category, resourceName) => {
+const getTriggerPermissions = async (context, triggers, category, functionName) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
@@ -126,7 +126,7 @@ const getTriggerPermissions = async (context, triggers, category, resourceName) 
       if (parsedTriggers[index].includes(moduleKeys[v]) && meta[moduleKeys[v]].permissions) {
         permissions = permissions.concat(meta[moduleKeys[v]].permissions);
       } else if (parsedTriggers[index].includes('custom')) {
-        await updateResource(context, 'function', 'Lambda', null, `${resourceName}${triggerKeys[c]}`, true);
+        await updateResource(context, 'function', 'Lambda', null, `${functionName}${triggerKeys[c]}`, true);
       }
     }
   }
@@ -184,17 +184,19 @@ async function openEditor(context, path, name) {
   }
 }
 
-const addTrigger = async (
-  key,
-  values,
-  context,
-  resourceName,
-  triggerEnvs,
-  category,
-  parentStack,
-  targetPath,
-  parentResource,
-) => {
+const addTrigger = async (triggerOptions) => {
+  const {
+    key,
+    values,
+    context,
+    functionName,
+    triggerEnvs,
+    category,
+    parentStack,
+    targetPath,
+    parentResource,
+  } = triggerOptions;
+
   let add;
   try {
     ({ add } = require('amplify-category-function'));
@@ -203,36 +205,37 @@ const addTrigger = async (
   }
 
   await add(context, 'awscloudformation', 'Lambda', {
+    trigger: true,
     modules: values,
     parentResource,
-    resourceName,
-    functionName: resourceName,
+    functionName,
     parentStack,
     triggerEnvs: JSON.stringify(triggerEnvs[key]),
-    roleName: resourceName,
   });
   context.print.success('Succesfully added the Lambda function locally');
-  for (let v = 0; v < values.length; v += 1) {
-    await copyFunctions(key, values[v], category, context, targetPath);
+  if (values && values.length > 0) {
+    for (let v = 0; v < values.length; v += 1) {
+      await copyFunctions(key, values[v], category, context, targetPath);
+    }
   }
 
   const result = {};
-  result[key] = resourceName;
+  result[key] = functionName;
   return result;
 };
 
-const updateTrigger = async (
-  key,
-  values,
-  context,
-  resourceName,
-  triggerEnvs,
-  category,
-  parentStack,
-  targetPath,
-  parentResource,
-) => {
-  // const updatedTrigger = {};
+const updateTrigger = async (triggerOptions) => {
+  const {
+    key,
+    values,
+    context,
+    functionName,
+    triggerEnvs,
+    category,
+    parentStack,
+    targetPath,
+    parentResource,
+  } = triggerOptions;
   let update;
   try {
     ({ update } = require('amplify-category-function'));
@@ -241,30 +244,30 @@ const updateTrigger = async (
   }
   try {
     await update(context, 'awscloudformation', 'Lambda', {
+      trigger: true,
       modules: values,
       parentResource,
-      resourceName,
-      functionName: resourceName,
+      functionName,
       parentStack,
       triggerEnvs: JSON.stringify(triggerEnvs[key]),
-      roleName: resourceName,
-    }, resourceName);
+    }, functionName);
     context.print.success('Succesfully updated the Lambda function locally');
-    for (let v = 0; v < values.length; v += 1) {
-      await copyFunctions(key, values[v], category, context, targetPath);
-      context.amplify.updateamplifyMetaAfterResourceAdd(
-        'function',
-        resourceName,
-        {
-          build: true,
-          dependsOn: undefined,
-          providerPlugin: 'awscloudformation',
-          service: 'Lambda',
-        },
-      );
+    if (values && values.length > 0) {
+      for (let v = 0; v < values.length; v += 1) {
+        await copyFunctions(key, values[v], category, context, targetPath);
+        context.amplify.updateamplifyMetaAfterResourceAdd(
+          'function',
+          functionName,
+          {
+            build: true,
+            dependsOn: undefined,
+            providerPlugin: 'awscloudformation',
+            service: 'Lambda',
+          },
+        );
+      }
+      await cleanFunctions(key, values, category, context, targetPath);
     }
-    await cleanFunctions(key, values, category, context, targetPath);
-    // return updatedTrigger;
     return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');
@@ -274,7 +277,7 @@ const updateTrigger = async (
 const deleteDeselectedTriggers = async (
   currentTriggers,
   previousTriggers,
-  resourceName,
+  functionName,
   targetDir,
   context,
 ) => {
@@ -284,7 +287,6 @@ const deleteDeselectedTriggers = async (
 
   for (let p = 0; p < previousKeys.length; p += 1) {
     if (!currentKeys.includes(previousKeys[p])) {
-      const functionName = `${resourceName}${previousKeys[p]}`;
       const targetPath = `${targetDir}/function/${functionName}`;
       await context.amplify.deleteTrigger(context, functionName, targetPath);
     }
@@ -299,10 +301,9 @@ const deleteTrigger = async (context, name, dir) => {
   }
 };
 
-const deleteAllTriggers = async (triggers, resourceName, dir, context) => {
+const deleteAllTriggers = async (triggers, functionName, dir, context) => {
   const previousKeys = Object.keys(triggers);
   for (let y = 0; y < previousKeys.length; y += 1) {
-    const functionName = `${resourceName}${previousKeys[y]}`;
     const targetPath = `${dir}/function/${functionName}`;
     await context.amplify.deleteTrigger(context, functionName, targetPath);
   }
@@ -405,7 +406,7 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
     context.updatingAuth.dependsOn :
     [];
   triggerKeys.forEach((l) => {
-    if (!dependsOnArray.find(a => a.resourceName === l)) {
+    if (!dependsOnArray.find(a => a.functionName === l)) {
       dependsOnArray.push({
         category: 'function',
         resourceName: l,
@@ -416,8 +417,8 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
   });
   const tempArray = Object.assign([], dependsOnArray);
   tempArray.forEach((x) => {
-    if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
-      const index = dependsOnArray.findIndex(i => i.resourceName === x.resourceName);
+    if (x.triggerProvider === provider && !triggerKeys.includes(x.functionName)) {
+      const index = dependsOnArray.findIndex(i => i.functionName === x.functionName);
       dependsOnArray.splice(index, 1);
     }
   });

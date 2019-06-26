@@ -29,7 +29,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
   }];
 
-  if (options.modules) {
+  if (options.trigger) {
     force = true;
 
     if (options.triggerEnvs) {
@@ -167,6 +167,10 @@ async function addResource(context, category, service, options, parameters) {
     answers = result;
   }
 
+  if (!answers.resourceName) {
+    answers.resourceName = answers.functionName;
+  }
+
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
     answers.resourceName,
@@ -206,6 +210,11 @@ async function updateResource(context, category, service, parameters, resourceTo
     answers = result;
   }
 
+  if (!answers.resourceName) {
+    answers.resourceName = answers.functionName;
+  }
+
+
   if (result.dependsOn) {
     context.amplify.updateamplifyMetaAfterResourceUpdate(
       category,
@@ -217,7 +226,7 @@ async function updateResource(context, category, service, parameters, resourceTo
 
   const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`);
 
-  if (previousParameters.modules) {
+  if (previousParameters.trigger) {
     answers = Object.assign(answers, previousParameters);
   }
 
@@ -232,7 +241,7 @@ async function updateResource(context, category, service, parameters, resourceTo
 
 async function openEditor(context, category, options) {
   let displayName;
-  if (options.modules) {
+  if (options.trigger) {
     try {
       displayName = options.resourceName.substring(options.parentResource.length);
     } catch (e) {
@@ -240,7 +249,7 @@ async function openEditor(context, category, options) {
     }
   }
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (!options.modules) {
+  if (!options.trigger) {
     if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
       switch (options.functionTemplate) {
         case 'helloWorld':
@@ -369,7 +378,7 @@ async function updateConfigOnEnvInit(context, category, service) {
     return functionParams;
   }
 
-  if (resourceParams.modules && resourceParams.modules.length > 0) {
+  if (resourceParams.trigger) {
     envParams = await initTriggerEnvs(
       context,
       resourceParams,

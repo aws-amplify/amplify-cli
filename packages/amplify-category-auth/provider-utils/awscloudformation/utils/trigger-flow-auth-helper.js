@@ -16,7 +16,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   let triggerKeyValues = {};
 
   // get the resource name, either from user answer during creation or previous value
-  const resourceName = context.updatingAuth ?
+  const authResourceName = context.updatingAuth ?
     context.updatingAuth.resourceName :
     coreAnswers.resourceName;
 
@@ -33,7 +33,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   });
 
   const parameters = {
-    resourceName,
+    authResourceName,
     triggerEnvs,
     parentStack: { Ref: 'AWS::StackId' },
     triggers,
@@ -47,37 +47,38 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
 
   if (triggers) {
     for (let t = 0; t < keys.length; t += 1) {
-      const functionName = `${resourceName}${keys[t]}`;
+      const functionName = `${authResourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
       if (previouslySaved && previouslySaved[keys[t]]) {
         const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', functionName);
         await triggerEnvParams(context, keys[t], values[t], functionName, currentEnvVariables);
-        const updatedLambda = await context.amplify.updateTrigger(
-          keys[t],
-          values[t],
+        const triggerOptions = {
+          key: keys[t],
+          values: values[t],
           context,
           functionName,
           triggerEnvs,
-          'amplify-category-auth',
-          'auth',
+          category: 'amplify-category-auth',
+          parentStack: 'auth',
           targetPath,
-          previouslySaved,
-          coreAnswers.resourceName,
-        );
+          parentResource: authResourceName,
+        };
+        const updatedLambda = await context.amplify.updateTrigger(triggerOptions);
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
       } else {
         await triggerEnvParams(context, keys[t], values[t], functionName);
-        const newLambda = await context.amplify.addTrigger(
-          keys[t],
-          values[t],
+        const triggerOptions = {
+          key: keys[t],
+          values: values[t],
           context,
           functionName,
           triggerEnvs,
-          'amplify-category-auth',
-          'auth',
+          category: 'amplify-category-auth',
+          parentStack: 'auth',
           targetPath,
-          coreAnswers.resourceName,
-        );
+          parentResource: authResourceName,
+        };
+        const newLambda = await context.amplify.addTrigger(triggerOptions);
         triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
       }
     }
@@ -87,7 +88,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     await context.amplify.deleteDeselectedTriggers(
       triggers,
       previouslySaved,
-      resourceName,
+      authResourceName,
       targetDir,
       context,
     );
