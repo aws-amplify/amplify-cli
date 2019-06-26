@@ -350,10 +350,9 @@ function isInHeadlessMode(context) {
   return context.exeInfo.inputParams.yes;
 }
 
-function getHeadlessParams(context) {
+function getHeadlessParams(context, service) {
   const { inputParams } = context.exeInfo;
-  const { categories = {} } = inputParams;
-  return categories.function || {};
+  return inputParams.categories.function.find(i => i.resourceName === service) || {};
 }
 
 
@@ -364,6 +363,12 @@ async function updateConfigOnEnvInit(context, category, service) {
   const resourceParams = providerPlugin.loadResourceParameters(context, 'function', service);
   let envParams = {};
 
+  // headless mode
+  if (isInHeadlessMode(context)) {
+    const functionParams = getHeadlessParams(context, service);
+    return functionParams;
+  }
+
   if (resourceParams.modules && resourceParams.modules.length > 0) {
     envParams = await initTriggerEnvs(
       context,
@@ -372,12 +377,6 @@ async function updateConfigOnEnvInit(context, category, service) {
       envParams,
       srvcMetaData,
     );
-  }
-
-  // headless mode
-  if (isInHeadlessMode(context)) {
-    const functionParams = getHeadlessParams(context);
-    return functionParams;
   }
   return envParams;
 }
