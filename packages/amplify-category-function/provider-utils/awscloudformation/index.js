@@ -19,9 +19,8 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
-  const params = Object.assign({}, writeParams);
   let force = false;
-  let privateParams;
+  let privateParams = false;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -32,17 +31,20 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   if (options.modules) {
     force = true;
 
+    /*
+      we treat the parameters from the team provider as private, so we need to update
+      the triggerEnvs stringified array only in the options that will be written to the CF
+      template parameters
+    */
     if (options.triggerEnvs) {
+      writeParams = Object.assign({}, writeParams);
       const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
-
-      privateParams = Object.assign({}, options);
       options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
-      privateParams.triggerEnvs = JSON.parse(privateParams.triggerEnvs) || [];
       Object.keys(teamProviderEnvs).forEach((c) => {
-        privateParams.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
+        options.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
       });
       options.triggerEnvs = JSON.stringify(options.triggerEnvs);
-      privateParams.triggerEnvs = JSON.stringify(privateParams.triggerEnvs);
+      privateParams = true;
     }
 
     copyJobs.push(...[
@@ -135,7 +137,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, force, params, null, privateParams);
+  return context.amplify.copyBatch(context, copyJobs, options, force, writeParams, privateParams);
 }
 
 function createParametersFile(context, parameters, resourceName) {
