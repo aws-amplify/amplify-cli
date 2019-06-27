@@ -95,7 +95,8 @@ export type FindMissingStackMappingConfig = ProjectOptions & { currentCloudBacke
 /**
  * Provided a build configuration & current-cloud-backend directory, calculate
  * any missing stack mappings that might have been caused by the stack mapping
- * bug in June 2019. This allows APIs that were deployed with the bug to continue
+ * bug in June 2019 (https://github.com/aws-amplify/amplify-cli/issues/1652).
+ * This allows APIs that were deployed with the bug to continue
  * working without changes.
  */
 export async function ensureMissingStackMappings(config: FindMissingStackMappingConfig) {
@@ -111,7 +112,6 @@ export async function ensureMissingStackMappings(config: FindMissingStackMapping
     // we make a note of it and include it in the missing stack mapping.
     for (const stackFileName of stackNames) {
         const stackName = stackFileName.slice(0, stackFileName.length - path.extname(stackFileName).length);
-        // const stack = transformOutput.stacks[stackName];
         const lastDeployedStack = JSON.parse(copyOfCloudBackend.build.stacks[stackFileName]);
         if (lastDeployedStack) {
             const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
