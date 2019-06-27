@@ -66,13 +66,13 @@ const template: Template = {
 
 
 test('Test getTemplateReferences', () => {
-    const stackRules = new Map<string, string>();
-    stackRules.set('.*PostResolver', 'PostModel');
-    stackRules.set('^PostTable.*', 'PostModel');
-    const formatter = new TransformFormatter({
-        stackRules: stackRules,
-    });
+    const formatter = new TransformFormatter();
     const context = new TransformerContext('type Post @model { id: ID! title: String }')
+    context.mapResourceToStack('PostModel', 'CreatePostResolver');
+    context.mapResourceToStack('PostModel', 'UpdatePostResolver');
+    context.mapResourceToStack('PostModel', 'PostTableDataSource');
+    context.mapResourceToStack('PostModel', 'PostTable');
+    context.mapResourceToStack('PostModel', 'PostTableOutput');
     context.template = template;
     const deploymentResources = formatter.format(context)
     expect(Object.keys(deploymentResources.stacks.PostModel.Resources)).toHaveLength(4)

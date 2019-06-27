@@ -225,11 +225,14 @@ async function transformGraphQLSchema(context, options) {
     transformerList.push(new SearchableModelTransformer());
   }
 
-  await TransformPackage.buildAPIProject({
+  const buildConfig = {
     projectDirectory: resourceDir,
     transformers: transformerList,
     rootStackFileName: 'cloudformation-template.json',
-  });
+    currentCloudBackendDirectory: previouslyDeployedBackendDir,
+  };
+  await TransformPackage.ensureMissingStackMappings(buildConfig);
+  await TransformPackage.buildAPIProject(buildConfig);
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
