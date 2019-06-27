@@ -190,11 +190,14 @@ const addTrigger = async (triggerOptions) => {
     values,
     context,
     functionName,
-    triggerEnvs,
+    triggerEnvs = '[]',
     category,
     parentStack,
     targetPath,
     parentResource,
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
   } = triggerOptions;
 
   let add;
@@ -211,6 +214,10 @@ const addTrigger = async (triggerOptions) => {
     functionName,
     parentStack,
     triggerEnvs: JSON.stringify(triggerEnvs[key]),
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
+    roleName: functionName,
   });
   context.print.success('Succesfully added the Lambda function locally');
   if (values && values.length > 0) {
@@ -230,11 +237,14 @@ const updateTrigger = async (triggerOptions) => {
     values,
     context,
     functionName,
-    triggerEnvs,
+    triggerEnvs = '[]',
     category,
     parentStack,
     targetPath,
     parentResource,
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
   } = triggerOptions;
   let update;
   try {
@@ -250,6 +260,10 @@ const updateTrigger = async (triggerOptions) => {
       functionName,
       parentStack,
       triggerEnvs: JSON.stringify(triggerEnvs[key]),
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      roleName: functionName,
     }, functionName);
     context.print.success('Succesfully updated the Lambda function locally');
     if (values && values.length > 0) {
@@ -417,8 +431,8 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
   });
   const tempArray = Object.assign([], dependsOnArray);
   tempArray.forEach((x) => {
-    if (x.triggerProvider === provider && !triggerKeys.includes(x.functionName)) {
-      const index = dependsOnArray.findIndex(i => i.functionName === x.functionName);
+    if (x.triggerProvider === provider && !triggerKeys.includes(x.resourceName)) {
+      const index = dependsOnArray.findIndex(i => i.resourceName === x.resourceName);
       dependsOnArray.splice(index, 1);
     }
   });

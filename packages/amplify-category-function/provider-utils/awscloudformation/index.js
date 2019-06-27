@@ -29,13 +29,22 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
   }];
 
-  if (options.trigger) {
+  if (options.trigger === true) {
     force = true;
+
+    const triggerIndexPath = options.triggerIndexPath || 'function-template-dir/trigger-index.js';
+    const triggerPackagePath = options.triggerPackagePath || 'function-template-dir/package.json.ejs';
+    const triggerDir = options.triggerDir || pluginDir;
+
+    privateParams = Object.assign({}, { triggerIndexPath, triggerPackagePath, triggerDir });
+    delete options.triggerIndexPath;
+    delete options.triggerPackagePath;
+    delete options.triggerDir;
 
     if (options.triggerEnvs) {
       const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
 
-      privateParams = Object.assign({}, options);
+      privateParams = Object.assign(privateParams, options);
       options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
       privateParams.triggerEnvs = JSON.parse(privateParams.triggerEnvs) || [];
       Object.keys(teamProviderEnvs).forEach((c) => {
@@ -47,8 +56,8 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
 
     copyJobs.push(...[
       {
-        dir: pluginDir,
-        template: 'function-template-dir/trigger-index.js',
+        dir: triggerDir,
+        template: triggerIndexPath,
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
         paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
       },
@@ -58,8 +67,8 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
         target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
       },
       {
-        dir: pluginDir,
-        template: 'function-template-dir/package.json.ejs',
+        dir: triggerDir,
+        template: triggerPackagePath,
         target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
       },
     ]);
@@ -226,7 +235,7 @@ async function updateResource(context, category, service, parameters, resourceTo
 
   const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`);
 
-  if (previousParameters.trigger) {
+  if (previousParameters.trigger === 'true') {
     answers = Object.assign(answers, previousParameters);
   }
 
@@ -240,16 +249,16 @@ async function updateResource(context, category, service, parameters, resourceTo
 }
 
 async function openEditor(context, category, options) {
-  let displayName;
-  if (options.trigger) {
-    try {
+  let displayName = '';
+  if (options.trigger === true) {
+    if (options.resourceName.includes(options.parentResource)) {
       displayName = options.resourceName.substring(options.parentResource.length);
-    } catch (e) {
-      displayName = '';
+    } else {
+      displayName = options.resourceName;
     }
   }
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (!options.trigger) {
+  if (!options.trigger === 'true') {
     if (await context.amplify.confirmPrompt.run('Do you want to edit the local lambda function now?')) {
       switch (options.functionTemplate) {
         case 'helloWorld':
@@ -378,7 +387,7 @@ async function updateConfigOnEnvInit(context, category, service) {
     return functionParams;
   }
 
-  if (resourceParams.trigger) {
+  if (resourceParams.trigger === 'true') {
     envParams = await initTriggerEnvs(
       context,
       resourceParams,
