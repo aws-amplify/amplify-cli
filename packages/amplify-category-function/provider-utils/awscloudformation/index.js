@@ -19,9 +19,8 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = __dirname;
-  const params = Object.assign({}, writeParams);
   let force = false;
-  let privateParams;
+  let privateParams = false;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -36,22 +35,26 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     const triggerPackagePath = options.triggerPackagePath || 'function-template-dir/package.json.ejs';
     const triggerDir = options.triggerDir || pluginDir;
 
-    privateParams = Object.assign({}, { triggerIndexPath, triggerPackagePath, triggerDir });
-    delete options.triggerIndexPath;
-    delete options.triggerPackagePath;
-    delete options.triggerDir;
+    /*
+      we treat the parameters from the team provider as private, so we need to update
+      the triggerEnvs stringified array only in the options that will be written to the CF
+      template parameters
+    */
 
-    if (options.triggerEnvs) {
-      const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
+    if (options.trigger) {
+      delete options.triggerIndexPath;
+      delete options.triggerPackagePath;
+      delete options.triggerDir;
 
-      privateParams = Object.assign(privateParams, options);
-      options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
-      privateParams.triggerEnvs = JSON.parse(privateParams.triggerEnvs) || [];
-      Object.keys(teamProviderEnvs).forEach((c) => {
-        privateParams.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
-      });
-      options.triggerEnvs = JSON.stringify(options.triggerEnvs);
-      privateParams.triggerEnvs = JSON.stringify(privateParams.triggerEnvs);
+      if (options.triggerEnvs) {
+        const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
+        options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
+        Object.keys(teamProviderEnvs).forEach((c) => {
+          options.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
+        });
+        options.triggerEnvs = JSON.stringify(options.triggerEnvs);
+        privateParams = true;
+      }
     }
 
     copyJobs.push(...[
@@ -144,7 +147,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, force, params, null, privateParams);
+  return context.amplify.copyBatch(context, copyJobs, options, force, writeParams, privateParams);
 }
 
 function createParametersFile(context, parameters, resourceName) {
