@@ -18,6 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@types/fs-extra": "^5.0.5",
+    "aws-sdk": "^2.475.0",
     "fs-extra": "^7.0.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "3.1.1",

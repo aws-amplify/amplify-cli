@@ -1,0 +1,21 @@
+{
+  "captcha-verify": {
+    "name": "MFA w/ Captcha (Verification)",
+    "description": "Forces your user to complete a Captcha as part of MFA process",
+    "env": [
+      {
+        "key": "RECAPTCHASECRET",
+        "value": "askUser",
+        "question": {
+          "name" : "RECAPTCHASECRET",
+          "type": "input",
+          "message": "Enter the Google reCaptcha secret key:"
+        }
+      }
+    ]
+  },
+  "boilerplate-verify": {
+    "name": "Custom Auth Challenge Scaffolding (Verification)",
+    "description": "Forces your user to submit a correct answer"
+  }
+}

@@ -18,6 +18,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const parameters = {};
   // Ask resource and Lambda function name
 
+
   const resourceQuestions = [
     {
       type: inputs[0].type,
@@ -99,7 +100,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   return { answers: allDefaultValues, dependsOn };
 }
 
-async function updateWalkthrough(context) {
+async function updateWalkthrough(context, lambdaToUpdate) {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources
     .filter(resource => resource.service === serviceName)
@@ -123,7 +124,9 @@ async function updateWalkthrough(context) {
   const currentDefaults = {};
   let dependsOn;
 
-  const resourceAnswer = await inquirer.prompt(resourceQuestion);
+  const resourceAnswer = !lambdaToUpdate ?
+    await inquirer.prompt(resourceQuestion) :
+    { resourceName: lambdaToUpdate };
   answers.resourceName = resourceAnswer.resourceName;
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -645,5 +648,5 @@ function getIAMPolicies(resourceName, crudOptions) {
 }
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
+  serviceWalkthrough, updateWalkthrough, migrate, getIAMPolicies, askExecRolePermissionsQuestions,
 };

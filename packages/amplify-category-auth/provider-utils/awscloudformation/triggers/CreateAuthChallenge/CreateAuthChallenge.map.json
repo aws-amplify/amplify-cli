@@ -1,0 +1,21 @@
+{
+  "captcha-create-challenge": {
+    "name": "MFA w/ Captcha (Creation)",
+    "description": "Forces your user to complete a Captcha as part of MFA process"
+  },
+  "boilerplate-create-challenge": {
+    "name": "Custom Auth Challenge Scaffolding (Creation)",
+    "description": "Custom auth challenge creation step",
+    "env": [
+      {
+        "key": "CHALLENGEANSWER",
+        "value": "askUser",
+        "question": {
+          "name" : "CHALLENGEANSWER",
+          "type": "input",
+          "message": "Enter the answer to your custom auth challenge"
+        }
+      }
+    ]
+  }
+}

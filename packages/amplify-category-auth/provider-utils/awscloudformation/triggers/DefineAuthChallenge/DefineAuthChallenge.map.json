@@ -1,0 +1,10 @@
+{
+  "captcha-define-challenge": {
+    "name": "MFA w/ Captcha (Definition)",
+    "description": "Forces your user to complete a Captcha as part of MFA process"
+  },
+  "boilerplate-define-challenge": {
+    "name": "Custom Auth Challenge Scaffolding (Definition)",
+    "description": "Custom auth challenge definition step"
+  }
+}

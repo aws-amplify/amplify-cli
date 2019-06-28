@@ -12,6 +12,7 @@ const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
+const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
@@ -62,6 +63,7 @@ async function run(context, category, resourceName) {
         );
       }
     })
+    .then(() => uploadAuthTriggerFiles(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(async () => {
       let {
         allResources,

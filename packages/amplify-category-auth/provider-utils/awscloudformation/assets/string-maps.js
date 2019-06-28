@@ -461,6 +461,66 @@ const oAuthScopes = [
   },
 ];
 
+const capabilities = [
+  {
+    name: 'Custom Auth Challenge with Google reCaptcha',
+    value: 'mfaWithCaptcha',
+    triggers: {
+      DefineAuthChallenge: ['captcha-define-challenge'],
+      CreateAuthChallenge: ['captcha-create-challenge'],
+      VerifyAuthChallengeResponse: ['captcha-verify'],
+    },
+  },
+  {
+    name: 'Basic scaffolding for a custom auth challenge',
+    value: 'customAuthScaffolding',
+    triggers: {
+      DefineAuthChallenge: ['boilerplate-define-challenge'],
+      CreateAuthChallenge: ['boilerplate-create-challenge'],
+      VerifyAuthChallengeResponse: ['boilerplate-verify'],
+    },
+  },
+  {
+    name: 'Email Verification Link with Redirect',
+    value: 'confirmationRedirect',
+    triggers: {
+      CustomMessage: ['verification-link'],
+    },
+  },
+  {
+    name: 'Add User to Group',
+    value: 'addUserToGroup',
+    triggers: {
+      PostConfirmation: ['add-to-group'],
+    },
+  },
+  {
+    name: 'Email Domain Filtering (blacklist)',
+    value: 'emailBlacklist',
+    triggers: {
+      PreSignup: ['email-filter-blacklist'],
+    },
+  },
+  {
+    name: 'Email Domain Filtering (whitelist)',
+    value: 'emailWhitelist',
+    triggers: {
+      PreSignup: ['email-filter-whitelist'],
+    },
+  },
+];
+
+const additonalConfigMap = [
+  {
+    name: 'No, I am done.',
+    value: [],
+  },
+  {
+    name: 'Yes, I want to make some additional changes.',
+    value: ['requiredAttributes', 'triggers'],
+  },
+];
+
 const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
@@ -487,6 +547,8 @@ const getAllMaps = ((edit) => {
     authorizeScopes,
     attributeProviderMap,
     updateFlowMap,
+    capabilities,
+    additonalConfigMap,
   };
 });
 
@@ -510,4 +572,6 @@ module.exports = {
   messages,
   attributeProviderMap,
   updateFlowMap,
+  capabilities,
+  additonalConfigMap,
 };

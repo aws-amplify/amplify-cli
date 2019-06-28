@@ -7,7 +7,7 @@ const constants = require('./amplify-helpers/constants');
 const confirmPrompt = require('./amplify-helpers/confirm-prompt');
 const pressEnterToContinue = require('./amplify-helpers/press-enter-to-continue');
 const { constructExeInfo } = require('./amplify-helpers/construct-exeInfo');
-const { removeResource } = require('./amplify-helpers/remove-resource');
+const { removeResource, forceRemoveResource } = require('./amplify-helpers/remove-resource');
 const { pushResources } = require('./amplify-helpers/push-resources');
 const { deleteProject } = require('./amplify-helpers/delete-project');
 const { removeEnvFromCloud } = require('./amplify-helpers/remove-env-from-cloud');
@@ -39,6 +39,19 @@ const { updateProjectConfig } = require('./amplify-helpers/update-project-config
 const { isRunningOnEC2 } = require('./amplify-helpers/is-running-on-EC2');
 const { onCategoryOutputsChange } = require('./amplify-helpers/on-category-outputs-change');
 const { getPluginInstance } = require('./amplify-helpers/get-plugin-instance');
+const {
+  triggerFlow,
+  addTrigger,
+  updateTrigger,
+  deleteTrigger,
+  deleteAllTriggers,
+  deleteDeselectedTriggers,
+  dependsOnBlock,
+  getTriggerMetadata,
+  getTriggerPermissions,
+  getTriggerEnvVariables,
+  getTriggerEnvInputs,
+} = require('./amplify-helpers/trigger-flow');
 const {
   updateProvideramplifyMeta,
   updateamplifyMetaAfterPush,
@@ -73,6 +86,7 @@ module.exports = (context) => {
     crudFlow,
     deleteProject,
     executeProviderUtils,
+    forceRemoveResource,
     getAllEnvs,
     getPlugin,
     getCategoryPlugins,
@@ -117,6 +131,17 @@ module.exports = (context) => {
     loadEnvResourceParameters,
     saveEnvResourceParameters,
     removeResourceParameters,
+    triggerFlow,
+    addTrigger,
+    updateTrigger,
+    deleteTrigger,
+    deleteAllTriggers,
+    deleteDeselectedTriggers,
+    dependsOnBlock,
+    getTriggerMetadata,
+    getTriggerPermissions,
+    getTriggerEnvVariables,
+    getTriggerEnvInputs,
   };
 
   context.amplify = amplify;

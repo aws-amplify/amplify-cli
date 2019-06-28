@@ -10,6 +10,9 @@
     "grunt": "^1.0.3",
     "grunt-aws-lambda": "^0.13.0",
     "inquirer": "6.3.1",
+    "mime-types": "^2.1.24",
+    "ora": "^3.4.0",
+    "promise-sequential": "^1.1.1",
     "uuid": "^3.3.2"
   },
   "scripts": {

@@ -2,6 +2,51 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
+        <% if (props.trigger) { %>
+            <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
+                <% for (let a = 0; a < JSON.parse(props.triggerEnvs).length; a++) { %>
+                    <% if (JSON.parse(props.triggerEnvs)[a].userInput) { %>
+        "<%= JSON.parse(props.triggerEnvs)[a].key %>": {
+            "Type": "String"
+        },
+                     <% } %>
+                <% } %>
+            <% } %> 
+        "modules": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Comma-delimmited list of modules to be executed by a lambda trigger. Sent to resource as an env variable."
+        },
+        "triggerEnvs": {
+            "Type": "String",
+            "Default": "",
+            "Description": "Serialized array representing other env variables for the lambda resource"
+        },
+        "resourceName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "trigger": {
+            "Type": "String",
+            "Default": "true"
+        },
+        "functionName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "roleName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "parentResource": {
+            "Type": "String",
+            "Default": ""
+        },
+        "parentStack": {
+			"Type": "String",
+			"Default": ""
+		},
+        <% } %>
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -54,7 +99,39 @@
                     }      
                 ]
             },
-            "Environment": {"Variables" : { "ENV": {"Ref": "env"}, "REGION": { "Ref": "AWS::Region"}<% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>}},
+            "Environment": {
+                "Variables" : {
+                    "ENV": {
+                        "Ref": "env"
+                    },
+                    <% if (props.modules) { %>
+                    "MODULES": {
+                        "Ref": "modules"
+                    },
+                    <% } %>
+                    "REGION": { 
+                        "Ref": "AWS::Region"
+                    }
+                    <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
+                    <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
+                    ,
+                    <% for (let i = 0; i < JSON.parse(props.triggerEnvs).length; i++) { %>
+                    "<%=JSON.parse(props.triggerEnvs)[i].key%>": 
+                    <% if (JSON.parse(props.triggerEnvs)[i].userInput) { %>
+                    {
+                        "Ref": "<%=JSON.parse(props.triggerEnvs)[i].key%>"
+                    }
+                    <% } %>
+                    <% if (!JSON.parse(props.triggerEnvs)[i].userInput) { %>
+                    {
+                        "Ref": "<%=JSON.parse(props.triggerEnvs)[i].value%>"
+                    }
+                    <% } %>
+                    <%if( i < JSON.parse(props.triggerEnvs).length -1 ){%>,<%}%>
+                    <% } %>
+                    <% } %>
+                }
+            },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
             "Runtime": "nodejs8.10",
             "Timeout": "25"

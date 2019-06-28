@@ -9,6 +9,8 @@
     "fs-extra": "^7.0.0",
     "inquirer": "6.3.1",
     "lodash": "^4.17.10",
+    "mime-types": "^2.1.24",
+    "ora": "^3.4.0",
     "uuid": "^2.0.3"
   },
   "scripts": {
