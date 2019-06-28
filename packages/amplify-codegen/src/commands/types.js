@@ -2,7 +2,7 @@ const glob = require('glob-all');
 const path = require('path');
 const { generate } = require('amplify-graphql-types-generator');
 const Ora = require('ora');
-const jetpack = require('fs-jetpack');
+const fs = require('fs-extra');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
@@ -37,7 +37,7 @@ async function generateTypes(context, forceDownloadSchema) {
       const target = cfg.amplifyExtension.codeGenTarget;
 
       const outputPath = path.join(projectPath, generatedFileName);
-      if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
+      if (forceDownloadSchema || fs.existsSync(schemaPath) !== 'file') {
         await downloadIntrospectionSchemaWithProgress(
           context,
           apis[0].id,
