@@ -278,6 +278,30 @@
 					}
 				]
 			},
+
+			{
+				"key": "additionalQuestions",
+				"question": "Do you want to make additional configurations?",
+				"type": "list",
+				"map": "additonalConfigMap",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"preventEdit": "always"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "!="
+					}
+				]
+			},
+
 			{
 				"key": "mfaConfiguration",
 				"question": "Multifactor authentication (MFA) user login options:",
@@ -542,6 +566,18 @@
 						"key": "authSelections",
 						"value": "identityPoolOnly",
 						"operator": "!="
+					}
+				],
+				"orConditions": [
+					{
+						"key": "additionalQuestions",
+						"value": "triggers",
+						"operator": "includes"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
 					}
 				]
 			},
@@ -1072,9 +1108,9 @@
 				],
 				"orConditions": [
 					{
-						"key": "useDefault",
-						"value": "defaultTriggers",
-						"operator": "="
+						"key": "additionalQuestions",
+						"value": "triggers",
+						"operator": "includes"
 					},
 					{
 						"key": "useDefault",

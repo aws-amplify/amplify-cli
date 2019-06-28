@@ -18,10 +18,6 @@ const defaultPrompMap = [
     value: 'defaultSocial',
   },
   {
-    name: 'Default configuration with Customized Events (Triggers)',
-    value: 'defaultTriggers',
-  },
-  {
     name: 'Manual configuration',
     value: 'manual',
   },
@@ -37,11 +33,6 @@ const updateFlowMap = [
   {
     name: 'Apply default configuration with Social Provider (Federation)',
     value: 'defaultSocial',
-    conditionKey: 'useDefault',
-  },
-  {
-    name: 'Default configuration with Customized Events (Triggers)',
-    value: 'defaultTriggers',
     conditionKey: 'useDefault',
   },
   {
@@ -497,13 +488,6 @@ const capabilities = [
     },
   },
   {
-    name: 'Show Legal Notice',
-    value: 'showLegalNotice',
-    triggers: {
-      PostAuthentication: ['show-notice'],
-    },
-  },
-  {
     name: 'Add User to Group',
     value: 'addUserToGroup',
     triggers: {
@@ -523,6 +507,17 @@ const capabilities = [
     triggers: {
       PreSignup: ['email-filter-whitelist'],
     },
+  },
+];
+
+const additonalConfigMap = [
+  {
+    name: 'No, I am done.',
+    value: [],
+  },
+  {
+    name: 'Yes, I want to make some additional changes.',
+    value: ['requiredAttributes', 'triggers'],
   },
 ];
 
@@ -553,6 +548,7 @@ const getAllMaps = ((edit) => {
     attributeProviderMap,
     updateFlowMap,
     capabilities,
+    additonalConfigMap,
   };
 });
 
@@ -577,4 +573,5 @@ module.exports = {
   attributeProviderMap,
   updateFlowMap,
   capabilities,
+  additonalConfigMap,
 };

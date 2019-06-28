@@ -18,7 +18,7 @@ async function serviceQuestions(context, defaultValuesFilename, serviceWalkthrou
 function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
-  const pluginDir = __dirname;
+  const pluginDir = options.triggerDir || __dirname;
   let force = false;
   let privateParams = false;
 
@@ -33,7 +33,6 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
 
     const triggerIndexPath = options.triggerIndexPath || 'function-template-dir/trigger-index.js';
     const triggerPackagePath = options.triggerPackagePath || 'function-template-dir/package.json.ejs';
-    const triggerDir = options.triggerDir || pluginDir;
 
     /*
       we treat the parameters from the team provider as private, so we need to update
@@ -59,7 +58,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
 
     copyJobs.push(...[
       {
-        dir: triggerDir,
+        dir: pluginDir,
         template: triggerIndexPath,
         target: `${targetDir}/${category}/${options.resourceName}/src/index.js`,
         paramsFile: `${targetDir}/${category}/${options.resourceName}/parameters.json`,
@@ -70,7 +69,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
         target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
       },
       {
-        dir: triggerDir,
+        dir: pluginDir,
         template: triggerPackagePath,
         target: `${targetDir}/${category}/${options.resourceName}/src/package.json`,
       },
@@ -238,7 +237,7 @@ async function updateResource(context, category, service, parameters, resourceTo
 
   const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`);
 
-  if (previousParameters.trigger === 'true') {
+  if (previousParameters.trigger === true) {
     answers = Object.assign(answers, previousParameters);
   }
 
@@ -390,7 +389,7 @@ async function updateConfigOnEnvInit(context, category, service) {
     return functionParams;
   }
 
-  if (resourceParams.trigger === 'true') {
+  if (resourceParams.trigger === true) {
     envParams = await initTriggerEnvs(
       context,
       resourceParams,

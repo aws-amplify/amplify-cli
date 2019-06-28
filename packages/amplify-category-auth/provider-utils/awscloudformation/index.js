@@ -70,6 +70,7 @@ const privateKeys = [
   'newLogoutURLs',
   'editLogoutURLs',
   'addLogoutOnUpdate',
+  'additionalQuestions',
 ];
 
 function serviceQuestions(
@@ -101,7 +102,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
 
-  return await context.amplify.copyBatch(context, copyJobs, options, true, false, privateKeys);
+  return await context.amplify.copyBatch(context, copyJobs, options, true, true, privateKeys);
 }
 
 function saveResourceParameters(
@@ -153,7 +154,7 @@ async function addResource(context, category, service) {
 
       /* if user has used the default configuration,
        * we populate base choices like authSelections and resourceName for them */
-      if (['default', 'defaultSocial', 'defaultTriggers'].includes(result.useDefault)) {
+      if (['default', 'defaultSocial'].includes(result.useDefault)) {
         result = Object.assign(generalDefaults(projectName), result);
       }
 
@@ -222,7 +223,7 @@ async function updateResource(context, category, serviceResult) {
         }
       }
 
-      if (result.useDefault && ['default', 'defaultSocial', 'defaultTriggers'].includes(result.useDefault)) {
+      if (result.useDefault && ['default', 'defaultSocial'].includes(result.useDefault)) {
         for (let i = 0; i < safeDefaults.length; i += 1) {
           delete context.updatingAuth[safeDefaults[i]];
         }

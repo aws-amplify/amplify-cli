@@ -5,7 +5,187 @@ const fs = require('fs');
 const fsExtra = require('fs-extra');
 const { flattenDeep } = require('lodash');
 const { join } = require('path');
-const { updateResource } = require('../../../../amplify-category-function/provider-utils/awscloudformation');
+const { uniq } = require('lodash');
+
+
+/** ADD A TRIGGER
+ * @function triggerFlow
+ * @param {any} triggerOptions CLI context
+ * {
+ *  key: "PostConfirmation",
+ *  values: ["add-to-group"]
+ *  category: "amplify-category-auth",
+ *  context: <cli-contex-object>,
+ *  functionName:"parentAuthResourcePostConfirmation",
+ *  parentResource:"parentAuthResource",
+ *  parentStack: "auth"
+ *  targetPath: "/<usersproject>/amplify/backend/function/vuedevca034d63PostConfirmation/src"
+ *  triggerEnvs: {PostConfirmation: []}
+ * }
+ * @returns {object} {<TriggerName>: <functionName>}  
+ * { PostConfirmation: parentAuthResourcePostConfirmation}
+ */
+
+const addTrigger = async (triggerOptions) => {
+  const {
+    key,
+    values,
+    context,
+    functionName,
+    triggerEnvs = '[]',
+    category,
+    parentStack,
+    targetPath,
+    parentResource,
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
+    triggerTemplate,
+  } = triggerOptions;
+
+  let add;
+  try {
+    ({ add } = require('amplify-category-function'));
+  } catch (e) {
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  }
+
+  await add(context, 'awscloudformation', 'Lambda', {
+    trigger: true,
+    modules: values,
+    parentResource,
+    functionName,
+    parentStack,
+    triggerEnvs: JSON.stringify(triggerEnvs[key]),
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
+    triggerTemplate,
+    roleName: functionName,
+  });
+  context.print.success('Succesfully added the Lambda function locally');
+  if (values && values.length > 0) {
+    for (let v = 0; v < values.length; v += 1) {
+      await copyFunctions(key, values[v], category, context, targetPath);
+    }
+  }
+
+  const result = {};
+  result[key] = functionName;
+  return result;
+};
+
+/** UPDATE A TRIGGER
+ * @function triggerFlow
+ * @param {any} triggerOptions CLI context
+ * {
+ *  key: "PostConfirmation",
+ *  values: ["add-to-group"]
+ *  category: "amplify-category-auth",
+ *  context: <cli-contex-object>,
+ *  functionName:"parentAuthResourcePostConfirmation",
+ *  parentResource:"parentAuthResource",
+ *  parentStack: "auth"
+ *  targetPath: "/<usersproject>/amplify/backend/function/vuedevca034d63PostConfirmation/src"
+ *  triggerEnvs: {PostConfirmation: []}
+ * }
+ * @returns {null}
+ */
+
+const updateTrigger = async (triggerOptions) => {
+  const {
+    key,
+    values,
+    context,
+    functionName,
+    triggerEnvs = '[]',
+    category,
+    parentStack,
+    targetPath,
+    parentResource,
+    triggerIndexPath,
+    triggerPackagePath,
+    triggerDir,
+    triggerTemplate,
+  } = triggerOptions;
+  let update;
+  try {
+    ({ update } = require('amplify-category-function'));
+  } catch (e) {
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  }
+  try {
+    await update(context, 'awscloudformation', 'Lambda', {
+      trigger: true,
+      modules: values,
+      parentResource,
+      functionName,
+      parentStack,
+      triggerEnvs: JSON.stringify(triggerEnvs[key]),
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      roleName: functionName,
+      triggerTemplate,
+    }, functionName);
+    context.print.success('Succesfully updated the Lambda function locally');
+    if (values && values.length > 0) {
+      for (let v = 0; v < values.length; v += 1) {
+        await copyFunctions(key, values[v], category, context, targetPath);
+        context.amplify.updateamplifyMetaAfterResourceAdd(
+          'function',
+          functionName,
+          {
+            build: true,
+            dependsOn: undefined,
+            providerPlugin: 'awscloudformation',
+            service: 'Lambda',
+          },
+        );
+      }
+      await cleanFunctions(key, values, category, context, targetPath);
+    }
+    return null;
+  } catch (e) {
+    throw new Error('Unable to update lambda function');
+  }
+};
+
+const deleteDeselectedTriggers = async (
+  currentTriggers,
+  previousTriggers,
+  functionName,
+  targetDir,
+  context,
+) => {
+  const currentKeys = Object.keys(currentTriggers);
+  const previousKeys = Object.keys(previousTriggers);
+  // const newKeyValues = Object.assign(currentTriggers);
+
+  for (let p = 0; p < previousKeys.length; p += 1) {
+    if (!currentKeys.includes(previousKeys[p])) {
+      const targetPath = `${targetDir}/function/${functionName}`;
+      await context.amplify.deleteTrigger(context, functionName, targetPath);
+    }
+  }
+};
+
+const deleteTrigger = async (context, name, dir) => {
+  try {
+    await context.amplify.forceRemoveResource(context, 'function', name, dir);
+  } catch (e) {
+    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  }
+};
+
+const deleteAllTriggers = async (triggers, functionName, dir, context) => {
+  const previousKeys = Object.keys(triggers);
+  for (let y = 0; y < previousKeys.length; y += 1) {
+    const targetPath = `${dir}/function/${functionName}`;
+    await context.amplify.deleteTrigger(context, functionName, targetPath);
+  }
+};
+
 
 /**
  * @function triggerFlow
@@ -109,7 +289,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
  *    ]
  *  }"]
  */
-const getTriggerPermissions = async (context, triggers, category, functionName) => {
+const getTriggerPermissions = async (context, triggers, category) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
@@ -125,8 +305,6 @@ const getTriggerPermissions = async (context, triggers, category, functionName) 
     for (let v = 0; v < moduleKeys.length; v += 1) {
       if (parsedTriggers[index].includes(moduleKeys[v]) && meta[moduleKeys[v]].permissions) {
         permissions = permissions.concat(meta[moduleKeys[v]].permissions);
-      } else if (parsedTriggers[index].includes('custom')) {
-        await updateResource(context, 'function', 'Lambda', null, `${functionName}${triggerKeys[c]}`, true);
       }
     }
   }
@@ -135,6 +313,7 @@ const getTriggerPermissions = async (context, triggers, category, functionName) 
 };
 
 
+// helper function to show help text and redisplay question if 'learn more' is selected
 const learnMoreLoop = async (key, map, metaData, question) => {
   let selections = await inquirer.prompt(question);
 
@@ -160,6 +339,8 @@ const learnMoreLoop = async (key, map, metaData, question) => {
   return selections;
 };
 
+
+// get triggerFlow options based on metadata stored in trigger directory;
 const choicesFromMetadata = (path, selection, isDir) => {
   const templates = isDir ?
     fs.readdirSync(path)
@@ -175,8 +356,11 @@ const choicesFromMetadata = (path, selection, isDir) => {
   return options;
 };
 
+
+// get metadata from a particular file
 const getTriggerMetadata = (path, selection) => JSON.parse(fs.readFileSync(`${path}/${selection}.map.json`));
 
+// open customer's text editor
 async function openEditor(context, path, name) {
   const filePath = `${path}/${name}.js`;
   if (await context.amplify.confirmPrompt.run(`Do you want to edit your ${name} function now?`)) {
@@ -184,144 +368,6 @@ async function openEditor(context, path, name) {
   }
 }
 
-const addTrigger = async (triggerOptions) => {
-  const {
-    key,
-    values,
-    context,
-    functionName,
-    triggerEnvs = '[]',
-    category,
-    parentStack,
-    targetPath,
-    parentResource,
-    triggerIndexPath,
-    triggerPackagePath,
-    triggerDir,
-  } = triggerOptions;
-
-  let add;
-  try {
-    ({ add } = require('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
-
-  await add(context, 'awscloudformation', 'Lambda', {
-    trigger: true,
-    modules: values,
-    parentResource,
-    functionName,
-    parentStack,
-    triggerEnvs: JSON.stringify(triggerEnvs[key]),
-    triggerIndexPath,
-    triggerPackagePath,
-    triggerDir,
-    roleName: functionName,
-  });
-  context.print.success('Succesfully added the Lambda function locally');
-  if (values && values.length > 0) {
-    for (let v = 0; v < values.length; v += 1) {
-      await copyFunctions(key, values[v], category, context, targetPath);
-    }
-  }
-
-  const result = {};
-  result[key] = functionName;
-  return result;
-};
-
-const updateTrigger = async (triggerOptions) => {
-  const {
-    key,
-    values,
-    context,
-    functionName,
-    triggerEnvs = '[]',
-    category,
-    parentStack,
-    targetPath,
-    parentResource,
-    triggerIndexPath,
-    triggerPackagePath,
-    triggerDir,
-  } = triggerOptions;
-  let update;
-  try {
-    ({ update } = require('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
-  try {
-    await update(context, 'awscloudformation', 'Lambda', {
-      trigger: true,
-      modules: values,
-      parentResource,
-      functionName,
-      parentStack,
-      triggerEnvs: JSON.stringify(triggerEnvs[key]),
-      triggerIndexPath,
-      triggerPackagePath,
-      triggerDir,
-      roleName: functionName,
-    }, functionName);
-    context.print.success('Succesfully updated the Lambda function locally');
-    if (values && values.length > 0) {
-      for (let v = 0; v < values.length; v += 1) {
-        await copyFunctions(key, values[v], category, context, targetPath);
-        context.amplify.updateamplifyMetaAfterResourceAdd(
-          'function',
-          functionName,
-          {
-            build: true,
-            dependsOn: undefined,
-            providerPlugin: 'awscloudformation',
-            service: 'Lambda',
-          },
-        );
-      }
-      await cleanFunctions(key, values, category, context, targetPath);
-    }
-    return null;
-  } catch (e) {
-    throw new Error('Unable to update lambda function');
-  }
-};
-
-const deleteDeselectedTriggers = async (
-  currentTriggers,
-  previousTriggers,
-  functionName,
-  targetDir,
-  context,
-) => {
-  const currentKeys = Object.keys(currentTriggers);
-  const previousKeys = Object.keys(previousTriggers);
-  // const newKeyValues = Object.assign(currentTriggers);
-
-  for (let p = 0; p < previousKeys.length; p += 1) {
-    if (!currentKeys.includes(previousKeys[p])) {
-      const targetPath = `${targetDir}/function/${functionName}`;
-      await context.amplify.deleteTrigger(context, functionName, targetPath);
-    }
-  }
-};
-
-const deleteTrigger = async (context, name, dir) => {
-  try {
-    await context.amplify.forceRemoveResource(context, 'function', name, dir);
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
-};
-
-const deleteAllTriggers = async (triggers, functionName, dir, context) => {
-  const previousKeys = Object.keys(triggers);
-  for (let y = 0; y < previousKeys.length; y += 1) {
-    const targetPath = `${dir}/function/${functionName}`;
-    await context.amplify.deleteTrigger(context, functionName, targetPath);
-  }
-};
 
 const copyFunctions = async (key, value, category, context, targetPath) => {
   try {
@@ -420,7 +466,7 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
     context.updatingAuth.dependsOn :
     [];
   triggerKeys.forEach((l) => {
-    if (!dependsOnArray.find(a => a.functionName === l)) {
+    if (!dependsOnArray.find(a => a.resourceName === l)) {
       dependsOnArray.push({
         category: 'function',
         resourceName: l,
@@ -436,7 +482,7 @@ const dependsOnBlock = (context, triggerKeys = [], provider) => {
       dependsOnArray.splice(index, 1);
     }
   });
-  return dependsOnArray;
+  return uniq(dependsOnArray);
 };
 
 module.exports = {
