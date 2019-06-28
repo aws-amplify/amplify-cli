@@ -22,7 +22,7 @@ const { uniq } = require('lodash');
  *  targetPath: "/<usersproject>/amplify/backend/function/vuedevca034d63PostConfirmation/src"
  *  triggerEnvs: {PostConfirmation: []}
  * }
- * @returns {object} {<TriggerName>: <functionName>}  
+ * @returns {object} {<TriggerName>: <functionName>}
  * { PostConfirmation: parentAuthResourcePostConfirmation}
  */
 
