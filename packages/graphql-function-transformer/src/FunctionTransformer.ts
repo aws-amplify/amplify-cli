@@ -132,8 +132,6 @@ export default class FunctionTransformer extends Transformer {
                 version: str('2018-05-29'),
                 operation: str('Invoke'),
                 payload: obj({
-                    typeName: str('$ctx.stash.get("typeName")'),
-                    fieldName: str('$ctx.stash.get("fieldName")'),
                     arguments: ref('util.toJson($ctx.arguments)'),
                     identity: ref('util.toJson($ctx.identity)'),
                     source: ref('util.toJson($ctx.source)'),
