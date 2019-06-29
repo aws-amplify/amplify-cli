@@ -22,7 +22,7 @@ async function buildResource(context, resource) {
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
   let zipFilename = resource.distZipFilename;
-  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, zipFilename)) : '';
+  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, 'latest-build.zip')) : '';
 
   if (
     !resource.lastBuildTimeStamp ||
