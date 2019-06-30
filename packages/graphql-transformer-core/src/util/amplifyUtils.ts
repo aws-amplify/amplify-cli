@@ -100,55 +100,58 @@ export type FindMissingStackMappingConfig = ProjectOptions & { currentCloudBacke
  * working without changes.
  */
 export async function ensureMissingStackMappings(config: FindMissingStackMappingConfig) {
-    const missingStackMappings = {};
     const { currentCloudBackendDirectory, ...buildConfig } = config;
-    const transformOutput = await _buildProject(buildConfig);
-    const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
-    const stackMapping = transformOutput.stackMapping;
-    if (copyOfCloudBackend && copyOfCloudBackend.build) {
-        const stackNames = copyOfCloudBackend.build.stacks;
 
-        // We walk through each of the stacks that were deployed in the most recent deployment.
-        // If we find a resource that was deployed into a different stack than it should have
-        // we make a note of it and include it in the missing stack mapping.
-        for (const stackFileName of stackNames) {
-            const stackName = stackFileName.slice(0, stackFileName.length - path.extname(stackFileName).length);
-            const lastDeployedStack = JSON.parse(copyOfCloudBackend.build.stacks[stackFileName]);
-            if (lastDeployedStack) {
-                const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
-                for (const resourceId of resourceIdsInStack) {
-                    if (stackMapping[resourceId] && stackName !== stackMapping[resourceId]) {
-                        missingStackMappings[resourceId] = stackName;
+    if (currentCloudBackendDirectory) {
+        const missingStackMappings = {};
+        const transformOutput = await _buildProject(buildConfig);
+        const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
+        const stackMapping = transformOutput.stackMapping;
+        if (copyOfCloudBackend && copyOfCloudBackend.build) {
+            const stackNames = copyOfCloudBackend.build.stacks;
+
+            // We walk through each of the stacks that were deployed in the most recent deployment.
+            // If we find a resource that was deployed into a different stack than it should have
+            // we make a note of it and include it in the missing stack mapping.
+            for (const stackFileName of stackNames) {
+                const stackName = stackFileName.slice(0, stackFileName.length - path.extname(stackFileName).length);
+                const lastDeployedStack = JSON.parse(copyOfCloudBackend.build.stacks[stackFileName]);
+                if (lastDeployedStack) {
+                    const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
+                    for (const resourceId of resourceIdsInStack) {
+                        if (stackMapping[resourceId] && stackName !== stackMapping[resourceId]) {
+                            missingStackMappings[resourceId] = stackName;
+                        }
+                    }
+                    const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+                    for (const outputId of outputIdsInStack) {
+                        if (stackMapping[outputId] && stackName !== stackMapping[outputId]) {
+                            missingStackMappings[outputId] = stackName;
+                        }
                     }
                 }
-                const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
-                for (const outputId of outputIdsInStack) {
-                    if (stackMapping[outputId] && stackName !== stackMapping[outputId]) {
-                        missingStackMappings[outputId] = stackName;
-                    }
+            }
+
+            // We then do the same thing with the root stack.
+            const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
+            const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
+            for (const resourceId of resourceIdsInStack) {
+                if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+                    missingStackMappings[resourceId] = 'root';
                 }
             }
-        }
-
-        // We then do the same thing with the root stack.
-        const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
-        const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
-        for (const resourceId of resourceIdsInStack) {
-            if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
-                missingStackMappings[resourceId] = 'root';
+            const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+            for (const outputId of outputIdsInStack) {
+                if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+                    missingStackMappings[outputId] = 'root';
+                }
+            };
+            // If there are missing stack mappings, we write them to disk.
+            if (Object.keys(missingStackMappings).length) {
+                let conf = await loadConfig(config.projectDirectory);
+                conf = { ...conf, StackMapping: { ...getOrDefault(conf, 'StackMapping', {}), ...missingStackMappings } };
+                await writeConfig(config.projectDirectory, conf);
             }
-        }
-        const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
-        for (const outputId of outputIdsInStack) {
-            if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
-                missingStackMappings[outputId] = 'root';
-            }
-        };
-        // If there are missing stack mappings, we write them to disk.
-        if (Object.keys(missingStackMappings).length) {
-            let conf = await loadConfig(config.projectDirectory);
-            conf = { ...conf, StackMapping: { ...getOrDefault(conf, 'StackMapping', {}), ...missingStackMappings } };
-            await writeConfig(config.projectDirectory, conf);
         }
     }
 }
