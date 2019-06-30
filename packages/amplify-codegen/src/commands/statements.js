@@ -1,7 +1,7 @@
 const path = require('path');
 const jetpack = require('fs-jetpack');
 const Ora = require('ora');
-const statementsGen = require('amplify-graphql-docs-generator').default;
+const { generateAndSave } = require('amplify-graphql-docs-generator');
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
@@ -35,7 +35,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
     jetpack.dir(opsGenDirectory);
-    await statementsGen(schemaPath, opsGenDirectory, {
+    await generateAndSave(schemaPath, opsGenDirectory, {
       separateFiles: true,
       language,
       maxDepth: maxDepth || cfg.amplifyExtension.maxDepth,

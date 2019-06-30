@@ -21,13 +21,26 @@ import { readFileSync } from 'fs'
 import { buildSchema, graphqlSync, introspectionQuery } from 'graphql'
 import generateQueries from 'amplify-graphql-docs-generator'
 
+// Read in a schema in GraphQL format
 const schema = readFileSync('your-schema.graphql', 'utf8')
 const schemaAst = buildSchema(schema)
 
 const schemaIntrospection = graphqlSync(schemaAst, introspectionQuery)
 const generatedQueries = generateQueries(schemaIntrospection.data, { maxDepth: 4 })
 
+// Possible queries based on input schema
 console.log(generatedQueries)
+```
+
+```javascript
+import { generateAndSave } from 'amplify-graphql-docs-generator'
+
+// Read in an existing schema.json introspection file and output queries to an all-operations.graphql file
+generateAndSave('schema.json', 'all-operations.graphql', {
+  separateFiles: false,
+  language: 'graphql',
+  maxDepth: 2,
+})
 ```
 
 ## Todo

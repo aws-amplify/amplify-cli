@@ -122,4 +122,5 @@ function format(str: string, language: string = 'graphql'): string {
   return prettier.format(str, { parser: parserMap[language] })
 }
 
+export { default as generateAndSave } from './cliFileHandler'
 export default generate

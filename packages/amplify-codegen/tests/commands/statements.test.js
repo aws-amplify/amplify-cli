@@ -1,5 +1,5 @@
 const path = require('path');
-const { default: generate } = require('amplify-graphql-docs-generator');
+const { generateAndSave } = require('amplify-graphql-docs-generator');
 const jetpack = require('fs-jetpack');
 
 const loadConfig = require('../../src/codegen-config');
@@ -73,7 +73,7 @@ describe('command - statements', () => {
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
 
     expect(jetpack.exists).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
-    expect(generate).toHaveBeenCalledWith(
+    expect(generateAndSave).toHaveBeenCalledWith(
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
       { separateFiles: true, language: MOCK_TARGET_LANGUAGE },
@@ -84,7 +84,7 @@ describe('command - statements', () => {
     getFrontEndHandler.mockReturnValue('ios');
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(generate).toHaveBeenCalledWith(
+    expect(generateAndSave).toHaveBeenCalledWith(
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
       { separateFiles: true, language: 'graphql' },
