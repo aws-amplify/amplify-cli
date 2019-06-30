@@ -8,11 +8,14 @@ import { stripDirectives } from './stripDirectives'
 import {
     buildProject as buildAPIProject,
     uploadDeployment as uploadAPIProject,
-    readSchema as readProjectSchema,
     migrateAPIProject,
     revertAPIMigration,
-    readProjectConfiguration
+    ensureMissingStackMappings
 } from './util/amplifyUtils'
+import {
+    readSchema as readProjectSchema,
+    loadProject as readProjectConfiguration
+} from './util/transformConfig'
 
 export * from './errors'
 export * from './util'
@@ -30,5 +33,6 @@ export {
     uploadAPIProject,
     readProjectSchema,
     readProjectConfiguration,
-    revertAPIMigration
+    revertAPIMigration,
+    ensureMissingStackMappings
 }

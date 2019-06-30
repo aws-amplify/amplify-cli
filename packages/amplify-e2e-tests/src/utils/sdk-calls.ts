@@ -41,4 +41,9 @@ const getBot = async (botName: string, region: string) => {
   return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
 };
 
-export { getUserPool, getUserPoolClients, getBot };
+const getFunction = async (functionName: string, region: string) => {
+  const service = new AWS.Lambda({ region });
+  return await service.getFunction({ FunctionName: functionName }).promise();
+};
+
+export { getUserPool, getUserPoolClients, getBot, getFunction };

@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
-const moment = require('moment');
 const archiver = require('archiver');
+const { hashElement } = require('folder-hash');
 
 async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
@@ -13,7 +13,7 @@ async function run(context, category, resourceName) {
   }
   return Promise.all(buildPromises);
 }
-function buildResource(context, resource) {
+async function buildResource(context, resource) {
   const { category, resourceName } = resource;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
@@ -22,7 +22,7 @@ function buildResource(context, resource) {
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
   let zipFilename = resource.distZipFilename;
-  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, zipFilename)) : '';
+  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, 'latest-build.zip')) : '';
 
   if (
     !resource.lastBuildTimeStamp ||
@@ -38,20 +38,27 @@ function buildResource(context, resource) {
     !resource.distZipFilename ||
     isPackageOutdated(resourceDir, resource.lastPackageTimeStamp)
   ) {
-    zipFilename = `${resourceName}-${moment().unix()}-latest-build.zip`;
+    // generating hash, ignoring node_modules as this can take long time to hash
+    // the content inside node_modules change only when content of package-lock.json changes
+    const { hash: folderHash } = await hashElement(resourceDir, {
+      folders: { exclude: ['node_modules'] },
+    });
+
+    zipFilename = `${resourceName}-${Buffer.from(folderHash)
+      .toString('hex')
+      .substr(0, 20)}-build.zip`;
 
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir);
     }
 
-    zipFilePath = path.normalize(path.join(distDir, zipFilename));
+    zipFilePath = path.normalize(path.join(distDir, 'latest-build.zip'));
     const output = fs.createWriteStream(zipFilePath);
 
     return new Promise((resolve, reject) => {
       output.on('close', () => {
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
-        removeOutdatedPackage(zipFilePath).then(() =>
-          resolve({ zipFilePath, zipFilename }));
+        resolve({ zipFilePath, zipFilename });
       });
       output.on('error', () => {
         reject(new Error('Failed to zip code.'));
@@ -87,21 +94,6 @@ function getSourceFiles(dir, ignoredDir) {
     }
     return acc.concat(getSourceFiles(path.join(dir, f)));
   }, []);
-}
-
-function removeOutdatedPackage(currentBuildFile) {
-  try {
-    const distDir = path.dirname(currentBuildFile);
-    const deletePromises = fs
-      .readdirSync(distDir)
-      .map(p => path.join(distDir, p))
-      .filter(p => currentBuildFile !== p)
-      .map(p => fs.remove(p));
-    return Promise.all(deletePromises);
-  } catch (e) {
-    // nothing to do here
-    console.log(`Failed to clean up outdated packages ${e.message}`);
-  }
 }
 
 module.exports = {

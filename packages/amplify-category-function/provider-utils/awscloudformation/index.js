@@ -202,6 +202,13 @@ async function invoke(context, category, service, resourceName) {
       validate: amplify.inputValidation(inputs[3]),
       default: 'handler',
     },
+    {
+      type: inputs[9].type,
+      name: inputs[9].key,
+      message: inputs[9].question,
+      validate: amplify.inputValidation(inputs[9]),
+      default: 'event.json',
+    },
   ];
 
   // Ask handler and function file name questions
@@ -222,7 +229,7 @@ async function invoke(context, category, service, resourceName) {
         options: {
           file_name: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
           handler: `${resourceAnswers[inputs[3].key]}`,
-          event: `${srcDir}/event.json`,
+          event: `${srcDir}/${resourceAnswers[inputs[9].key]}`,
         },
       },
     },

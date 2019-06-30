@@ -3,7 +3,7 @@ import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 export { default  as getProjectMeta } from './projectMeta';
-export { getUserPool, getUserPoolClients, getBot } from './sdk-calls'
+export { getUserPool, getUserPoolClients, getBot, getFunction } from './sdk-calls'
 
 // run dotenv config to update env variable
 config();

@@ -300,7 +300,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           Projection: {
             ProjectionType: 'ALL',
           },
-          IndexName: gsiPrimaryAnswer[inputs[7].key],
+          IndexName: gsiPrimaryAnswer[inputs[6].key],
           KeySchema: [
             {
               AttributeName: gsiPrimaryAnswer[inputs[7].key],

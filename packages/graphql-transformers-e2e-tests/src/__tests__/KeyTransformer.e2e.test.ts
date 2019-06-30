@@ -47,6 +47,7 @@ beforeAll(async () => {
     type Item @model
         @key(fields: ["orderId", "status", "createdAt"])
         @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+        @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt")
     {
         orderId: ID!
         status: Status!
@@ -198,6 +199,9 @@ test('Test listX with three part primary key.', async () => {
     expect(items.data.listItems.items).toHaveLength(1)
     items = await listItem(hashKey, { le: { status: 'IN_TRANSIT', createdAt: '2018-01-01T00:01:01.000Z'}});
     expect(items.data.listItems.items).toHaveLength(1)
+    await deleteItem(hashKey, 'IN_TRANSIT', '2018-01-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-06-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 })
 
 test('Test query with three part secondary key.', async () => {
@@ -227,6 +231,42 @@ test('Test query with three part secondary key.', async () => {
     items = await itemsByStatus(undefined, { le: '2018-09-01' });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', hashKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', hashKey, '2018-06-01T00:01:01.000Z');
+    await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
+})
+
+test('Test query with three part secondary key, where sort key is an enum.', async () => {
+    const hashKey = '2018-06-01T00:01:01.000Z';
+    const sortKey = 'UNKNOWN';
+    await createItem('order1', sortKey, 'list1', '2018-01-01T00:01:01.000Z');
+    await createItem('order2', sortKey, 'list2', hashKey);
+    await createItem('order3', sortKey, 'item3', '2018-09-01T00:01:01.000Z');
+    let items = await itemsByCreatedAt(undefined);
+    expect(items.data).toBeNull();
+    expect(items.errors.length).toBeGreaterThan(0);
+    items = await itemsByCreatedAt(hashKey);
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { beginsWith: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { eq: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { between: [sortKey, sortKey] });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { gt: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
+    items = await itemsByCreatedAt(hashKey, { ge: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { lt: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
+    items = await itemsByCreatedAt(hashKey, { le: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(undefined, { le: sortKey });
+    expect(items.data).toBeNull()
+    expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', sortKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', sortKey, hashKey);
+    await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 })
 
 test('Test update mutation validation with three part secondary key.', async () => {
@@ -480,6 +520,22 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`, { status, createdAt, limit, nextToken });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+    const result = await GRAPHQL_CLIENT.query(`query ListByCreatedAt($createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+        itemsByCreatedAt(createdAt: $createdAt, status: $status, limit: $limit, nextToken: $nextToken) {
+            items {
+                orderId
+                status
+                createdAt
+                name
+            }
+            nextToken
+        }
+    }`, { createdAt, status, limit, nextToken });
     console.log(JSON.stringify(result, null, 4));
     return result;
 }

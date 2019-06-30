@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "glob-all": "^3.1.0",
     "graphql": "^14.0.2",
     "graphql-config": "^2.1.0",
-    "inquirer": "^6.0.0",
+    "inquirer": "6.3.1",
     "ora": "^3.0.0",
     "underscore": "^1.9.1"
   },

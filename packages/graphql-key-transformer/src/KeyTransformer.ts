@@ -1,22 +1,22 @@
-import { 
+import {
     Transformer, gql, TransformerContext, getDirectiveArguments, TransformerContractError, InvalidDirectiveError
 } from 'graphql-transformer-core';
-import { 
+import {
     obj, str, ref, printBlock, compoundExpression, newline, raw, qref, set, Expression, print,
     ifElse, iff, block, bool, forEach, list
 } from 'graphql-mapping-template';
-import { 
+import {
     ResolverResourceIDs, ResourceConstants, isNonNullType,
     attributeTypeFromScalar, ModelResourceIDs, makeInputValueDefinition,
-    wrapNonNull, withNamedNodeNamed, 
+    wrapNonNull, withNamedNodeNamed,
     makeNonNullType, makeNamedType, getBaseType,
     makeConnectionField,
     makeScalarKeyConditionForType, applyKeyExpressionForCompositeKey,
     makeCompositeKeyConditionInputForKey, makeCompositeKeyInputForKey, toCamelCase, graphqlName
 } from 'graphql-transformer-common';
-import { 
-    ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode, 
-    InputObjectTypeDefinitionNode, TypeNode, Kind, InputValueDefinitionNode
+import {
+    ObjectTypeDefinitionNode, FieldDefinitionNode, DirectiveNode,
+    InputObjectTypeDefinitionNode, TypeNode, Kind, InputValueDefinitionNode, EnumTypeDefinitionNode
 } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
@@ -31,7 +31,7 @@ export default class FunctionTransformer extends Transformer {
 
     constructor() {
         super(
-            'KeyTransformer', 
+            'KeyTransformer',
             gql`directive @key(name: String, fields: [String!]!, queryField: String) on OBJECT`
         )
     }
@@ -65,11 +65,11 @@ export default class FunctionTransformer extends Transformer {
 
     /**
      * Update the structural components of the schema that are relevant to the new index structures.
-     * 
+     *
      * Updates:
      * 1. getX with new primary key information.
      * 2. listX with new primary key information.
-     * 
+     *
      * Creates:
      * 1. A query field for each secondary index.
      */
@@ -93,7 +93,7 @@ export default class FunctionTransformer extends Transformer {
             // and ensure any composite sort keys for the primary index.
             if (getResolver) {
                 getResolver.Properties.RequestMappingTemplate = joinSnippets([
-                    this.setKeySnippet(directive), 
+                    this.setKeySnippet(directive),
                     getResolver.Properties.RequestMappingTemplate
                 ]);
             }
@@ -112,7 +112,7 @@ export default class FunctionTransformer extends Transformer {
             }
             if (updateResolver) {
                 updateResolver.Properties.RequestMappingTemplate = joinSnippets([
-                    this.setKeySnippet(directive, true), 
+                    this.setKeySnippet(directive, true),
                     ensureCompositeKeySnippet(directive),
                     updateResolver.Properties.RequestMappingTemplate
                 ]);
@@ -149,10 +149,10 @@ export default class FunctionTransformer extends Transformer {
                 const queryTypeName = ctx.getQueryTypeName();
                 const queryResolverId = ResolverResourceIDs.ResolverResourceID(queryTypeName, directiveArgs.queryField);
                 const queryResolver = makeQueryResolver(definition, directive, ctx);
-                ctx.addToStackMapping(definition.name.value, `^${queryResolverId}$`);
+                ctx.mapResourceToStack(definition.name.value, queryResolverId);
                 ctx.setResource(queryResolverId, queryResolver);
             }
-        } 
+        }
     }
 
     private addKeyConditionInputs = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
@@ -172,7 +172,17 @@ export default class FunctionTransformer extends Transformer {
         } else if (args.fields.length === 2) {
             const finalSortKeyFieldName = args.fields[1];
             const finalSortKeyField = definition.fields.find(f => f.name.value === finalSortKeyFieldName);
-            const sortKeyConditionInput = makeScalarKeyConditionForType(finalSortKeyField.type);
+            const typeResolver = (baseType: string) => {
+                const resolvedEnumType = ctx.getType(baseType) as EnumTypeDefinitionNode;
+                return resolvedEnumType ? 'String' : undefined;
+            };
+            const sortKeyConditionInput = makeScalarKeyConditionForType(finalSortKeyField.type, typeResolver);
+
+            if (!sortKeyConditionInput) {
+                const checkedKeyName = args.name ? args.name : "<unnamed>";
+                throw new InvalidDirectiveError(`Cannot resolve type for field '${finalSortKeyFieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`);
+            }
+
             if (!ctx.getType(sortKeyConditionInput.name.value)) {
                 ctx.addInput(sortKeyConditionInput);
             }
@@ -225,7 +235,7 @@ export default class FunctionTransformer extends Transformer {
                 listArguments = addCompositeSortKey(definition, args, listArguments);
                 listArguments = addHashField(definition, args, listArguments);
             } else if (args.fields.length === 2) {
-                listArguments = addSimpleSortKey(definition, args, listArguments);
+                listArguments = addSimpleSortKey(ctx, definition, args, listArguments);
                 listArguments = addHashField(definition, args, listArguments);
             } else {
                 listArguments = addHashField(definition, args, listArguments);
@@ -240,13 +250,13 @@ export default class FunctionTransformer extends Transformer {
     private ensureQueryField = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const args: KeyArguments = getDirectiveArguments(directive);
         if (args.queryField && !this.isPrimaryKey(directive)) {
-            let queryType = ctx.getQuery();            
+            let queryType = ctx.getQuery();
             let queryArguments = [];
             if (args.fields.length > 2) {
                 queryArguments = addCompositeSortKey(definition, args, queryArguments);
                 queryArguments = addHashField(definition, args, queryArguments);
             } else if (args.fields.length === 2) {
-                queryArguments = addSimpleSortKey(definition, args, queryArguments);
+                queryArguments = addSimpleSortKey(ctx, definition, args, queryArguments);
                 queryArguments = addHashField(definition, args, queryArguments);
             } else {
                 queryArguments = addHashField(definition, args, queryArguments);
@@ -263,7 +273,7 @@ export default class FunctionTransformer extends Transformer {
     // Update the create, update, and delete input objects to account for any changes to the primary key.
     private updateInputObjects = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         if (this.isPrimaryKey(directive)) {
-            const directiveArgs: KeyArguments = getDirectiveArguments(directive);            
+            const directiveArgs: KeyArguments = getDirectiveArguments(directive);
             const createInput = ctx.getType(ModelResourceIDs.ModelCreateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
             if (createInput) {
                 ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
@@ -320,7 +330,7 @@ export default class FunctionTransformer extends Transformer {
 
     /**
      * Validates the directive usage is semantically valid.
-     * 
+     *
      * 1. There may only be 1 @key without a name (specifying the primary key)
      * 2. There may only be 1 @key with a given name.
      * 3. @key must only reference existing scalar fields that map to DynamoDB S, N, or B.
@@ -359,7 +369,8 @@ export default class FunctionTransformer extends Transformer {
         }
         for (const fieldName of directiveArgs.fields) {
             if (!fieldMap.has(fieldName)) {
-                throw new InvalidDirectiveError(`You cannot specify a non-existant field '${fieldName}' in @key '${directiveArgs.name}' on type '${definition.name.value}'.`);
+                const checkedKeyName = directiveArgs.name ? directiveArgs.name : "<unnamed>";
+                throw new InvalidDirectiveError(`You cannot specify a non-existant field '${fieldName}' in @key '${checkedKeyName}' on type '${definition.name.value}'.`);
             } else {
                 const existingField = fieldMap.get(fieldName);
                 const ddbKeyType = attributeTypeFromType(existingField.type, ctx);
@@ -718,10 +729,13 @@ function addHashField(definition: ObjectTypeDefinitionNode, args: KeyArguments, 
     const hashKey = makeInputValueDefinition(hashFieldName, makeNamedType(getBaseType(hashField.type)));
     return [hashKey, ...elems];
 }
-function addSimpleSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
+function addSimpleSortKey(ctx: TransformerContext, definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {
     let sortKeyName = args.fields[1];
     const sortField = definition.fields.find(field => field.name.value === sortKeyName);
-    const hashKey = makeInputValueDefinition(sortKeyName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(getBaseType(sortField.type))));
+    const baseType = getBaseType(sortField.type);
+    const resolvedTypeIfEnum = ctx.getType(baseType) as EnumTypeDefinitionNode ? 'String' : undefined;
+    const resolvedType = resolvedTypeIfEnum ? resolvedTypeIfEnum : baseType;
+    const hashKey = makeInputValueDefinition(sortKeyName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(resolvedType)));
     return [hashKey, ...elems];
 }
 function addCompositeSortKey(definition: ObjectTypeDefinitionNode, args: KeyArguments, elems: InputValueDefinitionNode[]): InputValueDefinitionNode[] {

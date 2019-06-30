@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.4...amplify-category-function@1.6.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** add policy for GSI ([#1618](https://github.com/aws-amplify/amplify-cli/issues/1618)) ([cc2f1b6](https://github.com/aws-amplify/amplify-cli/commit/cc2f1b6)), closes [#791](https://github.com/aws-amplify/amplify-cli/issues/791)
+
+
+### Features
+
+* **amplify-category-function:** provide evntName arg to lambda_invoke ([#1624](https://github.com/aws-amplify/amplify-cli/issues/1624)) ([a61237f](https://github.com/aws-amplify/amplify-cli/commit/a61237f))
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.3...amplify-category-function@1.5.4) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.2...amplify-category-function@1.5.3) (2019-06-18)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixed openEditor ([#1664](https://github.com/aws-amplify/amplify-cli/issues/1664)) ([0b9cf28](https://github.com/aws-amplify/amplify-cli/commit/0b9cf28))
+
+
+
+
+
 ## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.1...amplify-category-function@1.5.2) (2019-06-11)
 
 **Note:** Version bump only for package amplify-category-function
