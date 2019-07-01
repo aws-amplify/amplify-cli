@@ -223,7 +223,8 @@ function checkForCyclicDependencies(category, resourceName, dependsOn) {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
-      if (amplifyMeta[resource.category][resource.resourceName]) {
+      if (amplifyMeta[resource.category] &&
+          amplifyMeta[resource.category][resource.resourceName]) {
         const dependsOnResourceDependency =
           amplifyMeta[resource.category][resource.resourceName].dependsOn;
         if (dependsOnResourceDependency) {

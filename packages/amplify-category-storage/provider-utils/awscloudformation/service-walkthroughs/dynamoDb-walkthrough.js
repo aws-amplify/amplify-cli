@@ -360,6 +360,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(attributeDefinition =>
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
 
+  Object.assign(defaultValues, answers);
 
   // Ask Lambda trigger question
   if (!storageParams ||
@@ -408,7 +409,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
             context.print.error(e.message);
-            console.log(e.stack);
             continueWithTriggerOperationQuestion = true;
           }
           break;
@@ -450,7 +450,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
   }
 
-  Object.assign(defaultValues, answers);
   const resource = defaultValues.resourceName;
   const resourceDirPath = path.join(projectBackendDirPath, category, resource);
   delete defaultValues.resourceName;

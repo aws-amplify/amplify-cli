@@ -147,6 +147,13 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   }
 
   if (await context.amplify.confirmPrompt.run('Do you want to update permissions granted to this Lambda function to perform on other resources in your project?')) {
+    // Get current dependsOn for the resource
+
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+    const resourceDependsOn = amplifyMeta.function[answers.resourceName].dependsOn || [];
+    answers.dependsOn = resourceDependsOn;
+
     const { topLevelComment } = await askExecRolePermissionsQuestions(
       context,
       answers, newParams,
@@ -164,7 +171,14 @@ async function updateWalkthrough(context, lambdaToUpdate) {
         Default: answers.resourcePropertiesJSON[resourceProperty].Ref,
       };
     });
-    cfnContent.Parameters = dependsOnParams;
+
+
+    cfnContent.Parameters = getNewCFNParameters(
+      cfnContent.Parameters,
+      currentParameters,
+      dependsOnParams,
+      newParams,
+    );
 
     Object.assign(answers.resourcePropertiesJSON, { ENV: { Ref: 'env' }, REGION: { Ref: 'AWS::Region' } });
 
@@ -195,8 +209,14 @@ async function updateWalkthrough(context, lambdaToUpdate) {
       cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement =
       answers.categoryPolicies;
     }
+
     cfnContent.Resources.LambdaFunction.Properties.Environment.Variables =
-      answers.resourcePropertiesJSON;
+      getNewCFNEnvVariables(
+        cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
+        currentParameters,
+        answers.resourcePropertiesJSON,
+        newParams,
+      ); // Need to update
     // Update top level comment in app.js or index.js file
 
     const updateTopLevelComment = (filePath) => {
@@ -227,6 +247,111 @@ async function updateWalkthrough(context, lambdaToUpdate) {
   }
   return { answers, dependsOn };
 }
+
+function getNewCFNEnvVariables(
+  oldCFNEnvVariables,
+  currentDefaults,
+  newCFNEnvVariables,
+  newDefaults,
+) {
+  const currentResources = [];
+  const newResources = [];
+  const deletedResources = [];
+
+  if (currentDefaults.permissions) {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
+        currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
+      });
+    });
+  }
+
+  if (newDefaults.permissions) {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
+        newResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
+      });
+    });
+  }
+
+  currentResources.forEach((resourceName) => {
+    if (newResources.indexOf(resourceName) === -1) {
+      deletedResources.push(resourceName);
+    }
+  });
+
+  const toBeDeletedEnvVariables = [];
+
+  Object.keys(oldCFNEnvVariables).forEach((envVar) => {
+    for (let i = 0; i < deletedResources.length; i += 1) {
+      if (envVar.includes(deletedResources[i])) {
+        toBeDeletedEnvVariables.push(envVar);
+        break;
+      }
+    }
+  });
+
+  toBeDeletedEnvVariables.forEach((envVar) => {
+    delete oldCFNEnvVariables[envVar];
+  });
+
+  Object.assign(oldCFNEnvVariables, newCFNEnvVariables);
+
+  return oldCFNEnvVariables;
+}
+
+function getNewCFNParameters(
+  oldCFNParameters,
+  currentDefaults,
+  newCFNResourceParameters,
+  newDefaults,
+) {
+  const currentResources = [];
+  const newResources = [];
+  const deletedResources = [];
+
+
+  if (currentDefaults.permissions) {
+    Object.keys(currentDefaults.permissions).forEach((category) => {
+      Object.keys(currentDefaults.permissions[category]).forEach((resourceName) => {
+        currentResources.push(`${category}${resourceName}`);
+      });
+    });
+  }
+
+  if (newDefaults.permissions) {
+    Object.keys(newDefaults.permissions).forEach((category) => {
+      Object.keys(newDefaults.permissions[category]).forEach((resourceName) => {
+        newResources.push(`${category}${resourceName}`);
+      });
+    });
+  }
+
+  currentResources.forEach((resourceName) => {
+    if (newResources.indexOf(resourceName) === -1) {
+      deletedResources.push(resourceName);
+    }
+  });
+
+  const toBeDeletedParameters = [];
+
+  Object.keys(oldCFNParameters).forEach((parameter) => {
+    for (let i = 0; i < deletedResources.length; i += 1) {
+      if (parameter.includes(deletedResources[i])) {
+        toBeDeletedParameters.push(parameter);
+        break;
+      }
+    }
+  });
+  toBeDeletedParameters.forEach((parameter) => {
+    delete oldCFNParameters[parameter];
+  });
+
+  Object.assign(oldCFNParameters, newCFNResourceParameters);
+
+  return oldCFNParameters;
+}
+
 
 async function askExecRolePermissionsQuestions(
   context,
@@ -361,14 +486,26 @@ async function askExecRolePermissionsQuestions(
       }
       categoryMapping[category].push({ envName, varName });
     });
+
     if (!allDefaultValues.dependsOn) {
       allDefaultValues.dependsOn = [];
     }
-    allDefaultValues.dependsOn.push({
-      category: resource.category,
-      resourceName: resource.resourceName,
-      attributes: resource.attributes,
+
+
+    let resourceExists = false;
+    allDefaultValues.dependsOn.forEach((amplifyResource) => {
+      if (amplifyResource.resourceName === resourceName) {
+        resourceExists = true;
+      }
     });
+
+    if (!resourceExists) {
+      allDefaultValues.dependsOn.push({
+        category: resource.category,
+        resourceName: resource.resourceName,
+        attributes: resource.attributes,
+      });
+    }
   });
 
   allDefaultValues.resourceProperties = resourceProperties.join(',');

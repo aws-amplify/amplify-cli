@@ -243,16 +243,28 @@ async function updateResource(context, category, service, parameters, resourceTo
     );
   }
 
-  const previousParameters = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`);
+  if (answers.parameters) {
+    createParametersFile(context, answers.parameters, answers.resourceName);
+  }
 
-  if (previousParameters.trigger === true) {
-    answers = Object.assign(answers, previousParameters);
+  /* const parametersFilePath =
+  `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
+  let previousParameters;
+
+  if(fs.existsSync(parametersFilePath)) {
+    previousParameters = context.amplify.readJsonFile(parametersFilePath);
+
+    if (previousParameters.trigger === true) {
+      answers = Object.assign(answers, previousParameters);
+    }
   }
 
   if (answers.trigger) {
     const props = answers.parameters || parameters;
     createParametersFile(context, props, answers.resourceName);
   }
+  copyCfnTemplate(context, category, answers, cfnFilename, parameters); */
+
   if (!skipEdit) {
     await openEditor(context, category, answers);
   }
