@@ -245,7 +245,7 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type==='AWS::Serverless::Function') {
+        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
           cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
             Bucket: s3Bucket,
             Key: s3Key,
