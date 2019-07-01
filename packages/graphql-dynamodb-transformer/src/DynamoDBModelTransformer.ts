@@ -14,6 +14,7 @@ import {
     makeNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common'
+import { DeletionPolicy } from 'cloudform-types';
 
 interface QueryNameMap {
     get?: string;
@@ -39,6 +40,10 @@ interface ModelDirectiveArgs {
     subscriptions?: SubscriptionNameMap
 }
 
+export interface DynamoDBModelTransformerOptions {
+    EnableDeletionProtection?: boolean
+}
+
 /**
  * The @model transformer.
  *
@@ -57,8 +62,9 @@ interface ModelDirectiveArgs {
 export class DynamoDBModelTransformer extends Transformer {
 
     resources: ResourceFactory
+    opts: DynamoDBModelTransformerOptions
 
-    constructor() {
+    constructor(opts: DynamoDBModelTransformerOptions = {}) {
         super(
             'DynamoDBModelTransformer',
             gql`
@@ -76,6 +82,7 @@ export class DynamoDBModelTransformer extends Transformer {
             }
             `
         )
+        this.opts = this.getOpts(opts);
         this.resources = new ResourceFactory();
     }
 
@@ -118,9 +125,12 @@ export class DynamoDBModelTransformer extends Transformer {
         const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName)
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
         const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName)
+        const deletionPolicy = this.opts.EnableDeletionProtection ?
+            DeletionPolicy.Retain :
+            DeletionPolicy.Delete;
         ctx.setResource(
             tableLogicalID,
-            this.resources.makeModelTable(typeName, undefined, undefined)
+            this.resources.makeModelTable(typeName, undefined, undefined, deletionPolicy)
         )
         ctx.mapResourceToStack(stackName, tableLogicalID);
 
@@ -466,6 +476,16 @@ export class DynamoDBModelTransformer extends Transformer {
         const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
+        }
+    }
+
+    private getOpts(opts: DynamoDBModelTransformerOptions) {
+        const defaultOpts = {
+            EnableDeletionProtection: false
+        };
+        return {
+            ...defaultOpts,
+            ...opts
         }
     }
 }
