@@ -56,7 +56,7 @@ export class CloudFormationClient {
             this.client.createStack,
             {
                 StackName: name,
-                Capabilities: ['CAPABILITY_NAMED_IAM'],
+                Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
                 Parameters: params,
                 TemplateBody: JSON.stringify(template)
             },
