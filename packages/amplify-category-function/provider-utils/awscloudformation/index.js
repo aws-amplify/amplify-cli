@@ -21,7 +21,8 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
   const pluginDir = options.triggerDir || __dirname;
   let force = false;
   let params = Object.assign({}, options);
-  let triggerEnvs;
+  let triggerEnvs = {};
+  let writeParams;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -54,6 +55,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           triggerEnvs[c.key] = c.value;
         });
       }
+      writeParams = { modules: params.modules.join() };
       params = Object.assign(params, triggerEnvs);
     }
 
@@ -147,7 +149,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, params, force);
+  return context.amplify.copyBatch(context, copyJobs, params, force, writeParams);
 }
 
 function createParametersFile(context, parameters, resourceName) {
