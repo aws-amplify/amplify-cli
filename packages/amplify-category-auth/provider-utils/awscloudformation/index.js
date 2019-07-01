@@ -101,8 +101,11 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
     },
   ];
 
+  const privateParams = Object.assign({}, options);
+  privateKeys.forEach(p => delete privateParams[p]);
 
-  return await context.amplify.copyBatch(context, copyJobs, options, true, true, privateKeys);
+
+  return await context.amplify.copyBatch(context, copyJobs, options, true, privateParams);
 }
 
 function saveResourceParameters(

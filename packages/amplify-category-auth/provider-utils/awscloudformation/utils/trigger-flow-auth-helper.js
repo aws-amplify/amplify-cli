@@ -61,6 +61,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           category: 'amplify-category-auth',
           parentStack: 'auth',
           targetPath,
+          triggerTemplate: `${keys[t]}.json.ejs`,
+          triggerDir: `${__dirname}/../triggers/${keys[t]}`,
           parentResource: authResourceName,
         };
         const updatedLambda = await context.amplify.updateTrigger(triggerOptions);
@@ -76,6 +78,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           category: 'amplify-category-auth',
           parentStack: 'auth',
           targetPath,
+          triggerTemplate: `${keys[t]}.json.ejs`,
+          triggerDir: `${__dirname}/../triggers/${keys[t]}`,
           parentResource: authResourceName,
         };
         const newLambda = await context.amplify.addTrigger(triggerOptions);

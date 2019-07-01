@@ -15,12 +15,13 @@ async function serviceQuestions(context, defaultValuesFilename, serviceWalkthrou
 }
 
 
-function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
+function copyCfnTemplate(context, category, options, cfnFilename) {
   const { amplify } = context;
   const targetDir = amplify.pathManager.getBackendDirPath();
   const pluginDir = options.triggerDir || __dirname;
   let force = false;
-  let privateParams = false;
+  let params = Object.assign({}, options);
+  let triggerEnvs;
 
   const copyJobs = [{
     dir: pluginDir,
@@ -40,20 +41,20 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
       template parameters
     */
 
-    if (options.trigger) {
+    if (params.trigger) {
       delete options.triggerIndexPath;
       delete options.triggerPackagePath;
       delete options.triggerDir;
 
-      if (options.triggerEnvs) {
-        const teamProviderEnvs = context.amplify.loadEnvResourceParameters(context, 'function', options.resourceName);
-        options.triggerEnvs = JSON.parse(options.triggerEnvs) || [];
-        Object.keys(teamProviderEnvs).forEach((c) => {
-          options.triggerEnvs.push({ key: c, value: teamProviderEnvs[c], userInput: true });
+      if (params.triggerEnvs) {
+        triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', params.resourceName);
+        params.triggerEnvs = JSON.parse(params.triggerEnvs) || [];
+
+        params.triggerEnvs.forEach((c) => {
+          triggerEnvs[c.key] = c.value;
         });
-        options.triggerEnvs = JSON.stringify(options.triggerEnvs);
-        privateParams = true;
       }
+      params = Object.assign(params, triggerEnvs);
     }
 
     copyJobs.push(...[
@@ -146,7 +147,7 @@ function copyCfnTemplate(context, category, options, cfnFilename, writeParams) {
     }
   }
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, options, force, writeParams, privateParams);
+  return context.amplify.copyBatch(context, copyJobs, params, force);
 }
 
 function createParametersFile(context, parameters, resourceName) {
@@ -162,7 +163,9 @@ function createParametersFile(context, parameters, resourceName) {
 async function addResource(context, category, service, options, parameters) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
-  const { cfnFilename, defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const cfnFilename = parameters && parameters.triggerTemplate ?
+    parameters.triggerTemplate : serviceMetadata.cfnFilename;
   let result;
 
   if (!parameters) {
@@ -188,9 +191,10 @@ async function addResource(context, category, service, options, parameters) {
     options,
   );
 
-  copyCfnTemplate(context, category, answers, cfnFilename, parameters);
-  if (answers.parameters) {
-    createParametersFile(context, answers.parameters, answers.resourceName);
+  copyCfnTemplate(context, category, answers, cfnFilename);
+  if (answers.parameters || answers.trigger) {
+    const props = answers.parameters || parameters;
+    createParametersFile(context, props, answers.resourceName);
   }
 
   await openEditor(context, category, answers);
@@ -201,7 +205,7 @@ async function addResource(context, category, service, options, parameters) {
 async function updateResource(context, category, service, parameters, resourceToUpdate, skipEdit) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
-  const { cfnFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename } = serviceMetadata;
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
@@ -241,8 +245,10 @@ async function updateResource(context, category, service, parameters, resourceTo
     answers = Object.assign(answers, previousParameters);
   }
 
-  copyCfnTemplate(context, category, answers, cfnFilename, parameters);
-
+  if (answers.trigger) {
+    const props = answers.parameters || parameters;
+    createParametersFile(context, props, answers.resourceName);
+  }
   if (!skipEdit) {
     await openEditor(context, category, answers);
   }

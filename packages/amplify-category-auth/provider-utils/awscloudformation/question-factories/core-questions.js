@@ -187,7 +187,7 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
 function triggerDefaults(context, input, availableOptions) {
   const capabilityDefaults = [];
   if (context.updatingAuth.triggers) {
-    const current = JSON.parse(context.updatingAuth[input.key]);
+    const current = context.updatingAuth[input.key];
     try {
       if (current) {
         availableOptions.forEach((a) => {

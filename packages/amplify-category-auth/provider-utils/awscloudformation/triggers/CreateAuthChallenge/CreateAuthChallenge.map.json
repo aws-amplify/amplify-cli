@@ -10,6 +10,7 @@
       {
         "key": "CHALLENGEANSWER",
         "value": "askUser",
+        "private": true,
         "question": {
           "name" : "CHALLENGEANSWER",
           "type": "input",

@@ -13,7 +13,7 @@ jest.mock('fs-extra');
 
 
 const key = 'foo';
-const value = ['bar'];
+const values = ['bar'];
 const context = {
   print: {
     success: jest.fn(),
@@ -34,11 +34,15 @@ const context = {
     },
   },
 };
-const resourceName = 'name';
+const functionName = 'name';
 const category = 'category';
 const parentStack = 'parentStack';
 const path = './';
 const parentResource = 'parentResource';
+const triggerIndexPath = '';
+const triggerPackagePath = '';
+const triggerDir = '';
+const triggerTemplate = '';
 
 
 describe('When adding a trigger...', () => {
@@ -54,45 +58,60 @@ describe('When adding a trigger...', () => {
   });
 
   it('...it should call add', async () => {
-    await triggerFlow.addTrigger(
+    await triggerFlow.addTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(spyAdd).toHaveBeenCalled();
   });
 
-  it('...it should return a key/value pair of key and resourceName', async () => {
-    const result = await triggerFlow.addTrigger(
+  it('...it should return a key/value pair of key and functionName', async () => {
+    const result = await triggerFlow.addTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(result[key]).toBeDefined();
     expect(result[key]).toEqual('name');
   });
 
   it('...it should call readdirSync', async () => {
-    await triggerFlow.addTrigger(
+    await triggerFlow.addTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
   });
 });
@@ -128,30 +147,40 @@ describe('When updating a trigger...', () => {
   });
 
   it('...it should call update', async () => {
-    await triggerFlow.updateTrigger(
+    await triggerFlow.updateTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(spyUpdate).toHaveBeenCalled();
   });
 
   it('...it should return null', async () => {
-    const result = await triggerFlow.updateTrigger(
+    const result = await triggerFlow.updateTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(result).toBeNull();
   });
 
@@ -166,30 +195,40 @@ describe('When updating a trigger...', () => {
   });
 
   it('...it should call readdirSync twice', async () => {
-    await triggerFlow.updateTrigger(
+    await triggerFlow.updateTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(readdirSyncSpy).toHaveBeenCalledTimes(2);
   });
 
   it('...it should call metadataSpy twice', async () => {
-    await triggerFlow.updateTrigger(
+    await triggerFlow.updateTrigger({
+      trigger: true,
       key,
-      value,
+      values,
       context,
-      resourceName,
+      functionName,
       category,
       parentStack,
       path,
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
       parentResource,
-    );
+    });
     expect(metadataSpy).toHaveBeenCalledTimes(1);
   });
 });
@@ -213,7 +252,7 @@ describe('When deleteting deselected triggers...', () => {
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,
-      resourceName,
+      functionName,
       path,
       context,
     );
@@ -225,7 +264,7 @@ describe('When deleteting deselected triggers...', () => {
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,
-      resourceName,
+      functionName,
       path,
       context,
     );
@@ -237,7 +276,7 @@ describe('When deleteting deselected triggers...', () => {
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,
-      resourceName,
+      functionName,
       path,
       context,
     );
@@ -289,7 +328,7 @@ describe('When calling getTriggerPermissions...', () => {
       context,
       JSON.stringify(triggers),
       category,
-      resourceName,
+      functionName,
     );
     expect(metadataSpy).toHaveBeenCalledTimes(1);
   });
@@ -300,7 +339,7 @@ describe('When calling getTriggerPermissions...', () => {
       context,
       JSON.stringify(triggers),
       category,
-      resourceName,
+      functionName,
     );
     expect(metadataSpy).toHaveBeenCalledTimes(2);
   });
@@ -311,7 +350,7 @@ describe('When calling getTriggerPermissions...', () => {
       context,
       JSON.stringify(triggers),
       category,
-      resourceName,
+      functionName,
     );
     expect(result.length).toEqual(1);
   });
@@ -322,7 +361,7 @@ describe('When calling getTriggerPermissions...', () => {
       context,
       JSON.stringify(triggers),
       category,
-      resourceName,
+      functionName,
     );
     expect(result.length).toEqual(2);
   });
@@ -336,8 +375,8 @@ describe('When calling getTriggerEnvVariables...', () => {
         stark: {
           env: [
             {
-              key: 'RESOURCENAME',
-              value: 'resourceName',
+              key: 'functionName',
+              value: 'functionName',
             },
             {
               key: 'REDIRECTURL',
@@ -362,7 +401,7 @@ describe('When calling getTriggerEnvVariables...', () => {
     await triggerFlow.getTriggerEnvVariables(
       context,
       { key: 'stark' },
-      resourceName,
+      functionName,
     );
     expect(metadataSpy).toHaveBeenCalledTimes(1);
   });
@@ -371,7 +410,7 @@ describe('When calling getTriggerEnvVariables...', () => {
     const result = await triggerFlow.getTriggerEnvVariables(
       context,
       { key: 'arya', modules: ['stark'] },
-      resourceName,
+      functionName,
     );
     expect(result.length).toEqual(1);
   });
@@ -380,7 +419,7 @@ describe('When calling getTriggerEnvVariables...', () => {
     const result = await triggerFlow.getTriggerEnvVariables(
       context,
       { key: 'arya', modules: ['lannister'] },
-      resourceName,
+      functionName,
     );
     expect(result.length).toEqual(0);
   });
@@ -397,7 +436,7 @@ describe('When calling deleteTrigger...', () => {
   });
 
   it('...it should call forceRemoveResource once', async () => {
-    await triggerFlow.deleteTrigger(context, resourceName, path);
+    await triggerFlow.deleteTrigger(context, functionName, path);
     expect(forceRemoveSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -426,13 +465,13 @@ describe('When calling deleteAllTriggers...', () => {
 
   it('...it should call forceRemoveResource once for each key (test with two keys)', async () => {
     triggers = { arya: ['stark'], sandor: ['clegane'] };
-    await triggerFlow.deleteAllTriggers(triggers, resourceName, path, context);
+    await triggerFlow.deleteAllTriggers(triggers, functionName, path, context);
     expect(deleteTriggerSpy).toHaveBeenCalledTimes(2);
   });
 
   it('...it should call forceRemoveResource once for each key (test with one key)', async () => {
     triggers = { arya: ['stark'] };
-    await triggerFlow.deleteAllTriggers(triggers, resourceName, path, context);
+    await triggerFlow.deleteAllTriggers(triggers, functionName, path, context);
     expect(deleteTriggerSpy).toHaveBeenCalledTimes(1);
   });
 });
@@ -538,7 +577,7 @@ describe('When calling dependsOnBlock...', () => {
 
   it('...it should return an array with an index for each key (and should remove resources that are not current for same provider)', async () => {
     triggerKeys = ['arya', 'sandor'];
-    context.updatingAuth = { dependsOn: [{ resourceName: 'tyrion', triggerProvider: provider }] };
+    context.updatingAuth = { dependsOn: [{ functionName: 'tyrion', triggerProvider: provider }] };
     const result = await triggerFlow.dependsOnBlock(context, triggerKeys, provider);
     expect(result.length).toEqual(2);
     expect(result[0].resourceName).toEqual('arya');
@@ -632,31 +671,31 @@ describe('When calling cleanFunctions...', () => {
 
   it('...should call getTriggerMetadata once', async () => {
     readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
-    await triggerFlow.cleanFunctions(key, value, category, context, path);
+    await triggerFlow.cleanFunctions(key, values, category, context, path);
     expect(metadataSpy).toHaveBeenCalledTimes(1);
   });
 
   it('...should call readdirSync once', async () => {
     readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
-    await triggerFlow.cleanFunctions(key, value, category, context, path);
+    await triggerFlow.cleanFunctions(key, values, category, context, path);
     expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
   });
 
   it('...should call readdirSync once', async () => {
     readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['file1', 'file2']));
-    await triggerFlow.cleanFunctions(key, value, category, context, path);
+    await triggerFlow.cleanFunctions(key, values, category, context, path);
     expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
   });
 
   it('...should call unlinkSync if the dir contents have values not present in passed values', async () => {
     readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['stark.js']));
-    await triggerFlow.cleanFunctions(key, value, category, context, path);
+    await triggerFlow.cleanFunctions(key, values, category, context, path);
     expect(unlinkSyncSpy).toHaveBeenCalledTimes(1);
   });
 
   it('...should call unlinkSync if the dir contents have values not present in passed values (custom file)', async () => {
     readdirSyncSpy = jest.spyOn(fs, 'readdirSync').mockImplementation(() => (['custom.js']));
-    await triggerFlow.cleanFunctions(key, value, category, context, path);
+    await triggerFlow.cleanFunctions(key, values, category, context, path);
     expect(unlinkSyncSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -688,13 +727,13 @@ describe(('When calling choicesFromMetadata...'), () => {
   });
 
   it('...it should call readdirSync once', async () => {
-    await triggerFlow.choicesFromMetadata(path, resourceName);
+    await triggerFlow.choicesFromMetadata(path, functionName);
     expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     expect(statSyncSpy).toHaveBeenCalledTimes(0);
   });
 
   it('...it should call statSync twice when isDir is true', async () => {
-    await triggerFlow.choicesFromMetadata(path, resourceName, true);
+    await triggerFlow.choicesFromMetadata(path, functionName, true);
     expect(readdirSyncSpy).toHaveBeenCalledTimes(1);
     expect(statSyncSpy).toHaveBeenCalledTimes(2);
   });

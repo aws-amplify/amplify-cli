@@ -2,25 +2,18 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Lambda resource stack creation using Amplify CLI",
     "Parameters": {
-        <% if (props.trigger) { %>
-            <% if (props.triggerEnvs && JSON.parse(props.triggerEnvs).length > 0) { %>
-                <% for (let a = 0; a < JSON.parse(props.triggerEnvs).length; a++) { %>
-                    <% if (JSON.parse(props.triggerEnvs)[a].userInput) { %>
-        "<%= JSON.parse(props.triggerEnvs)[a].key %>": {
-            "Type": "String"
+        "DOMAINBLACKLIST": {
+          "Type": "String",
+          "Default": "",
         },
-                     <% } %>
-                <% } %>
-            <% } %> 
+        "DOMAINWHITELIST": {
+          "Type": "String",
+          "Default": "",
+        },
         "modules": {
             "Type": "String",
             "Default": "",
             "Description": "Comma-delimmited list of modules to be executed by a lambda trigger. Sent to resource as an env variable."
-        },
-        "triggerEnvs": {
-            "Type": "String",
-            "Default": "",
-            "Description": "Serialized array representing other env variables for the lambda resource"
         },
         "resourceName": {
             "Type": "String",
@@ -46,7 +39,6 @@
 			"Type": "String",
 			"Default": ""
 		},
-        <% } %>
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -104,15 +96,18 @@
                     "ENV": {
                         "Ref": "env"
                     },
-                    <% if (props.modules) { %>
                     "MODULES": {
                         "Ref": "modules"
                     },
-                    <% } %>
                     "REGION": { 
                         "Ref": "AWS::Region"
+                    },
+                    "DOMAINWHITELIST": {
+                        "Ref": "DOMAINWHITELIST"
+                    },
+                    "DOMAINBLACKLIST": {
+                        "Ref": "DOMAINBLACKLIST"
                     }
-                    <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
@@ -175,37 +170,7 @@
                             "logs:CreateLogStream",
                             "logs:PutLogEvents"],
                             "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
-                        }<% if (props.database && props.database.resourceName) { %>,
-                        {
-                            "Effect": "Allow", 
-                            "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
-                            "Resource": [
-                            <% if (props.database && props.database.Arn) { %>
-                                "<%= props.database.Arn %>",
-                                {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            "<%= props.database.Arn %>",
-                                            "index/*"
-                                        ]
-                                    ]
-                                }      
-                            <% } else { %>
-                                { "Ref": "storage<%= props.database.resourceName %>Arn" },
-                                {
-                                    "Fn::Join": [
-                                        "/",
-                                        [
-                                            { "Ref": "storage<%= props.database.resourceName %>Arn" },
-                                            "index/*"
-                                        ]
-                                    ]
-                                }      
-                            <% } %>
-                            ]
                         }
-                        <% } %>
                     ]
                 }
             }

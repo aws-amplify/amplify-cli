@@ -9,7 +9,7 @@ const fs = require('fs');
  * @param {boolean}         force          - Force CF template generation
  * @param {array|object}    privateKeys    - data for the CF template but not parameters file
  */
-async function copyBatch(context, jobs, props, force, writeParams, privateKeys) {
+async function copyBatch(context, jobs, props, force, writeParams) {
   // grab some features
   const {
     template,
@@ -26,20 +26,6 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
     return await confirm(`overwrite ${target}`);
   };
 
-  let params = Object.assign({}, props);
-
-  // TODO replace usages of privateKeys with privateParams
-  // deleting private keys from shared params before they are written to parameters.json
-  if (privateKeys && Array.isArray(privateKeys) && privateKeys.length > 0) {
-    // deleting private keys from shared params before they are written to parameters.json
-    privateKeys.forEach((e) => {
-      if (params[e]) {
-        delete params[e];
-      }
-    });
-  } else if (privateKeys && !Array.isArray(privateKeys)) {
-    params = Object.assign({}, writeParams);
-  }
 
   for (let index = 0; index < jobs.length; index += 1) {
     // grab the current job
@@ -62,6 +48,9 @@ async function copyBatch(context, jobs, props, force, writeParams, privateKeys) 
 
 
       if (writeParams && job.paramsFile) {
+        const params = writeParams &&
+          Object.keys(writeParams) &&
+          Object.keys(writeParams).length > 0 ? writeParams : props;
         const jsonString = JSON.stringify(params, null, 4);
         fs.writeFileSync(job.paramsFile, jsonString, 'utf8');
       }

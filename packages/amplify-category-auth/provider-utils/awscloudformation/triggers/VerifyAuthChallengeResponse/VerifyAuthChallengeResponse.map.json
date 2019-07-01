@@ -6,6 +6,7 @@
       {
         "key": "RECAPTCHASECRET",
         "value": "askUser",
+        "private": true,
         "question": {
           "name" : "RECAPTCHASECRET",
           "type": "input",
