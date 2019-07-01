@@ -41,7 +41,6 @@ export class ResourceConstants {
         DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
 
         // Elasticsearch
-        ElasticsearchDomainName: 'ElasticSearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
         ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
         ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
