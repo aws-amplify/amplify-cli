@@ -397,7 +397,7 @@ async function updateConfigOnEnvInit(context, category, service) {
   const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
     .Lambda;
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-  const resourceParams = providerPlugin.loadResourceParameters(context, 'function', service);
+  const resourceParams = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`);
   let envParams = {};
 
   // headless mode
