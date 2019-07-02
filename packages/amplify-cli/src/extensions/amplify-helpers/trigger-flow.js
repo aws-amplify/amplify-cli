@@ -128,23 +128,20 @@ const updateTrigger = async (triggerOptions) => {
       roleName: functionName,
       triggerTemplate,
     }, functionName);
-    context.print.success('Succesfully updated the Lambda function locally');
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
         await copyFunctions(key, values[v], category, context, targetPath);
-        context.amplify.updateamplifyMetaAfterResourceAdd(
-          'function',
-          functionName,
-          {
-            build: true,
-            dependsOn: undefined,
-            providerPlugin: 'awscloudformation',
-            service: 'Lambda',
-          },
-        );
       }
+      const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+      const parametersPath = `${projectBackendDirPath}/function/${functionName}`;
+      const dirContents = fs.readdirSync(parametersPath);
+      if (dirContents.includes('parameters.json')) {
+        fs.writeFileSync(`${parametersPath}/parameters.json`, JSON.stringify({ modules: values.join() }));
+      }
+
       await cleanFunctions(key, values, category, context, targetPath);
     }
+    context.print.success('Succesfully updated the Lambda function locally');
     return null;
   } catch (e) {
     throw new Error('Unable to update lambda function');
