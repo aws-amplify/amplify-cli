@@ -578,10 +578,6 @@
 						"key": "useDefault",
 						"value": "manual",
 						"operator": "="
-					},
-					{
-						"key": "triggers",
-						"operator": "exists"
 					}
 				]
 			},
