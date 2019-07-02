@@ -196,6 +196,12 @@
                             "Function": {
                                 "Ref": "function<%= props.triggerFunction %>Arn"
                             }
+                        },
+                        {
+                            "Event": "s3:ObjectRemoved:*",
+                            "Function": {
+                                "Ref": "function<%= props.triggerFunction %>Arn"
+                            }
                         }
                     ]
                 },

@@ -597,6 +597,8 @@ async function addTrigger(context, resourceName, triggerList) {
       functionName,
       backendConfigs,
     );
+
+    context.print.success(`Successfully added resource ${functionName} locally`);
   }
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
@@ -710,6 +712,7 @@ async function addTrigger(context, resourceName, triggerList) {
     fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
+    context.print.success(`Successfully updated resource ${functionName} locally`);
   } else {
     throw new Error(`Function ${functionName} does not exist`);
   }

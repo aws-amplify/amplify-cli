@@ -162,7 +162,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Ask Lambda trigger question
 
   if (!parameters || !parameters.triggerFunction || parameters.triggerFunction === 'NONE') {
-    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your S3 Bucket?')) {
+    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
       try {
         answers.triggerFunction = await addTrigger(
           context,
@@ -386,6 +386,7 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       functionName,
       backendConfigs,
     );
+    context.print.success(`Successfully added resource ${functionName} locally`);
   }
 
   // If updating an already existing S3 resource
@@ -419,6 +420,12 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       LambdaConfigurations: [
         {
           Event: 's3:ObjectCreated:*',
+          Function: {
+            Ref: `function${functionName}Arn`,
+          },
+        },
+        {
+          Event: 's3:ObjectRemoved:*',
           Function: {
             Ref: `function${functionName}Arn`,
           },
@@ -484,6 +491,7 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
         attributes: ['Name', 'Arn'],
       }],
     );
+    context.print.success(`Successfully updated resource ${functionName} locally`);
   } else {
     // New resource
     options.dependsOn = [];
