@@ -1,5 +1,14 @@
 {
-    "key1": "value1",
-    "key2": "value2",
-    "key3": "value3"
-}
+    "event": {
+      "region": "us-west-2",
+      "callerContext": {
+        "clientId": "dummyId"
+      },
+      "userName": "testUser",
+      "triggerSource": "CustomMessage_SignUp",
+      "request": {
+        "codeParameter": "0000"
+      },
+      "response": {}
+    }
+  }

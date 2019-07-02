@@ -63,6 +63,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           targetPath,
           triggerTemplate: `${keys[t]}.json.ejs`,
           triggerPackage: `${keys[t]}.package.json`,
+          triggerEventPath: `${keys[t]}.event.json`,
           triggerDir: `${__dirname}/../triggers/${keys[t]}`,
           parentResource: authResourceName,
         };

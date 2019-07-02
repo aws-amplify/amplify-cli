@@ -35,6 +35,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
 
     const triggerIndexPath = options.triggerIndexPath || 'function-template-dir/trigger-index.js';
     const triggerPackagePath = options.triggerPackagePath || 'function-template-dir/package.json.ejs';
+    const triggerEventPath = options.triggerEventPath || 'function-template-dir/event.json';
 
     /*
       we treat the parameters from the team provider as private, so we need to update
@@ -46,6 +47,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       delete options.triggerIndexPath;
       delete options.triggerPackagePath;
       delete options.triggerDir;
+      delete options.triggerEventPath;
 
       if (params.triggerEnvs) {
         triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', params.resourceName);
@@ -55,7 +57,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
           triggerEnvs[c.key] = c.value;
         });
       }
-      writeParams = { modules: params.modules.join() };
+      writeParams = { modules: params.modules.join(), resourceName: params.resourceName };
       params = Object.assign(params, triggerEnvs);
     }
 
@@ -68,7 +70,7 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
       },
       {
         dir: pluginDir,
-        template: 'function-template-dir/event.json',
+        template: triggerEventPath,
         target: `${targetDir}/${category}/${options.resourceName}/src/event.json`,
       },
       {

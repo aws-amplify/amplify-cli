@@ -41,6 +41,7 @@ const addTrigger = async (triggerOptions) => {
     triggerPackagePath,
     triggerDir,
     triggerTemplate,
+    triggerEventPath,
   } = triggerOptions;
 
   let add;
@@ -61,6 +62,7 @@ const addTrigger = async (triggerOptions) => {
     triggerPackagePath,
     triggerDir,
     triggerTemplate,
+    triggerEventPath,
     roleName: functionName,
   });
   context.print.success('Succesfully added the Lambda function locally');
@@ -107,6 +109,7 @@ const updateTrigger = async (triggerOptions) => {
     triggerPackagePath,
     triggerDir,
     triggerTemplate,
+    triggerEventPath,
   } = triggerOptions;
   let update;
   try {
@@ -127,6 +130,7 @@ const updateTrigger = async (triggerOptions) => {
       triggerDir,
       roleName: functionName,
       triggerTemplate,
+      triggerEventPath,
     }, functionName);
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
