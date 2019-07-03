@@ -437,7 +437,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
         triggerPath,
         currentTrigger,
         triggers[currentTrigger],
-        currentEnvVariables[currentTrigger],
+        currentEnvVariables,
       );
     } else {
       envParams = currentEnvVariables;

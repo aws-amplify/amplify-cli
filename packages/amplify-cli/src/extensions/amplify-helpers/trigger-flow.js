@@ -447,7 +447,9 @@ const getTriggerEnvInputs = async (context, path, triggerKey, triggerValues, cur
       const questions = metadata[intersection[i]].env.filter(m => m.question);
       if (questions && questions.length) {
         for (let j = 0; j < questions.length; j += 1) {
-          if (!currentEnvVars || !currentEnvVars[questions[j].key]) {
+          if (!currentEnvVars ||
+            (Object.keys(currentEnvVars) && Object.keys(currentEnvVars).length === 0) ||
+            !currentEnvVars[questions[j].key]) {
             const answer = await inquirer.prompt(questions[j].question);
             answers[questions[j].key] = answer[questions[j].key];
           }
