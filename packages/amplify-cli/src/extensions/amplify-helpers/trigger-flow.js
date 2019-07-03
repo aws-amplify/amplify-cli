@@ -9,7 +9,7 @@ const { uniq } = require('lodash');
 
 
 /** ADD A TRIGGER
- * @function triggerFlow
+ * @function addTrigger
  * @param {any} triggerOptions CLI context
  * {
  *  key: "PostConfirmation",
@@ -159,8 +159,6 @@ const deleteDeselectedTriggers = async (
   targetDir,
   context,
 ) => {
-  // const newKeyValues = Object.assign(currentTriggers);
-
   for (let p = 0; p < previousTriggers.length; p += 1) {
     if (!currentTriggers.includes(previousTriggers[p])) {
       const targetPath = `${targetDir}/function/${previousTriggers[p]}`;

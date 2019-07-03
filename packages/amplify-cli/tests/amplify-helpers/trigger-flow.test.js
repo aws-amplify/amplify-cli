@@ -194,7 +194,7 @@ describe('When updating a trigger...', () => {
     expect(error.message).toBeTruthy();
   });
 
-  it('...it should call readdirSync twice', async () => {
+  it('...it should call readdirSync thrice', async () => {
     await triggerFlow.updateTrigger({
       trigger: true,
       key,
@@ -210,7 +210,7 @@ describe('When updating a trigger...', () => {
       triggerTemplate,
       parentResource,
     });
-    expect(readdirSyncSpy).toHaveBeenCalledTimes(2);
+    expect(readdirSyncSpy).toHaveBeenCalledTimes(3);
   });
 
   it('...it should call metadataSpy twice', async () => {
@@ -234,7 +234,7 @@ describe('When updating a trigger...', () => {
 });
 
 describe('When deleteting deselected triggers...', () => {
-  const currentTriggers = { arya: ['stark'] };
+  const currentTriggers = ['arya'];
   let previousTriggers;
   let deleteSpy;
 
@@ -248,7 +248,7 @@ describe('When deleteting deselected triggers...', () => {
   });
 
   it('...it should call deleteTrigger twice when two triggers are removed', async () => {
-    previousTriggers = { arya: ['stark'], sandor: ['clegane'], gray: ['worm'] };
+    previousTriggers = ['arya', 'sandor', 'joffrey'];
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,
@@ -260,7 +260,7 @@ describe('When deleteting deselected triggers...', () => {
   });
 
   it('...it should call deleteTrigger once when one trigger is removed', async () => {
-    previousTriggers = { arya: ['stark'], sandor: ['clegane'] };
+    previousTriggers = ['arya', 'sandor'];
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,
@@ -272,7 +272,7 @@ describe('When deleteting deselected triggers...', () => {
   });
 
   it('...it should not call deleteTrigger when nothing is removed', async () => {
-    previousTriggers = { arya: ['stark'] };
+    previousTriggers = ['arya'];
     await triggerFlow.deleteDeselectedTriggers(
       currentTriggers,
       previousTriggers,

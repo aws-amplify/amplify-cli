@@ -8,7 +8,7 @@ import { addAuthWithDefault, addAuthWithDefaultSocial } from '../src/categories/
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients } from '../src/utils';
 
 
-describe('amplify add auth', () => {
+describe('amplify add auth...', () => {
   let projRoot: string;
   beforeEach(() => {
     projRoot = createNewProjectDir();
@@ -20,7 +20,7 @@ describe('amplify add auth', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('init a project and add auth with defaults', async () => {
+  it('...should init a project and add auth with defaults', async () => {
     await initProjectWithProfile(projRoot, { });
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -30,7 +30,7 @@ describe('amplify add auth', () => {
     await expect(userPool.UserPool).toBeDefined()
   });
 
-  it('init a project and add auth with defaultSocial', async () => {
+  it('...should init a project and add auth with defaultSocial', async () => {
     await initProjectWithProfile(projRoot, { });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
@@ -43,6 +43,7 @@ describe('amplify add auth', () => {
     await expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     await expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     await expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
-
   });
+
+
 });
