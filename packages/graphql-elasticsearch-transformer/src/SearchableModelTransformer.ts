@@ -16,13 +16,14 @@ import {
     extensionWithFields,
     blankObject,
     makeListType,
-    makeInputValueDefinition,
-    makeNonNullType
+    makeInputValueDefinition
 } from "graphql-transformer-common";
-import { ResolverResourceIDs, SearchableResourceIDs } from 'graphql-transformer-common'
+import { Expression, str } from 'graphql-mapping-template';
+import { ResolverResourceIDs, SearchableResourceIDs, getBaseType } from 'graphql-transformer-common'
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
+const stringTypes = ["ID", "String"];
 
 interface QueryNameMap {
     search?: string;
@@ -98,13 +99,19 @@ export class SearchableModelTransformer extends Transformer {
 
         //SearchablePostSortableFields
         const queryFields = [];
+        const stringFields: Expression[] = [];
+        def.fields.forEach( field => {
+            if (stringTypes.includes(getBaseType(field.type))) {
+                stringFields.push(str(field.name.value));
+            }
+        });
 
-        // Create listX
+        // Create list
         if (shouldMakeSearch) {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 
-            const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, stringFields, searchFieldNameOverride);
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
             ctx.mapResourceToStack(
                 STACK_NAME,
@@ -116,7 +123,7 @@ export class SearchableModelTransformer extends Transformer {
                     makeInputValueDefinition('filter', makeNamedType(`Searchable${def.name.value}FilterInput`)),
                     makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
                     makeInputValueDefinition('limit', makeNamedType('Int')),
-                    makeInputValueDefinition('nextToken', makeNamedType('Int'))
+                    makeInputValueDefinition('nextToken', makeNamedType('String'))
                 ],
                 makeNamedType(`Searchable${def.name.value}Connection`)
             ))
