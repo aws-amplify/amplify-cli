@@ -159,14 +159,12 @@ const deleteDeselectedTriggers = async (
   targetDir,
   context,
 ) => {
-  const currentKeys = Object.keys(currentTriggers);
-  const previousKeys = Object.keys(previousTriggers);
   // const newKeyValues = Object.assign(currentTriggers);
 
-  for (let p = 0; p < previousKeys.length; p += 1) {
-    if (!currentKeys.includes(previousKeys[p])) {
-      const targetPath = `${targetDir}/function/${functionName}`;
-      await context.amplify.deleteTrigger(context, functionName, targetPath);
+  for (let p = 0; p < previousTriggers.length; p += 1) {
+    if (!currentTriggers.includes(previousTriggers[p])) {
+      const targetPath = `${targetDir}/function/${previousTriggers[p]}`;
+      await context.amplify.deleteTrigger(context, `${previousTriggers[p]}`, targetPath);
     }
   }
 };

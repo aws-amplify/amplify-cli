@@ -91,9 +91,11 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   }
 
   if (previouslySaved) {
+    const previousTriggers = Object.keys(previouslySaved).map(i => `${authResourceName}${i}`);
+    const currentTriggers = Object.keys(triggers).map(i => `${authResourceName}${i}`);
     await context.amplify.deleteDeselectedTriggers(
-      triggers,
-      previouslySaved,
+      currentTriggers,
+      previousTriggers,
       authResourceName,
       targetDir,
       context,
