@@ -120,7 +120,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.triggers) { %>
+      <%if (props.triggers && props.triggers !== '{}') { %>
       LambdaConfig:
         <%if (props.CreateAuthChallenge) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
