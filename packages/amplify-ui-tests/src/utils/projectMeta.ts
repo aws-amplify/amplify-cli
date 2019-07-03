@@ -14,9 +14,8 @@ export function existsAWSExportsPath(projectRoot: string) : boolean {
 
 export function copyAWSExportsToProj(projectRoot: string, destRoot: string, platform: string, testFolder: string) {
   const awsExporFiletPath = join(projectRoot, 'src', 'aws-exports.js')
-  //const destFilePath = join(__dirname, '../../../../..', 'amplify-js-samples-staging/samples/react/auth/with-authenticator/src', 'aws-exports.js')
-  //const destFilePath = join(destRoot, 'samples/react/auth/with-authenticator/src', 'aws-exports.js')
-  const destFilePath = join(destRoot, 'samples', platform, testFolder, 'src', 'aws-exports.js')
+  //const destFilePath = join(destRoot, 'samples', platform, testFolder, 'src', 'aws-exports.js')
+  const destFilePath = join(destRoot, 'src', 'aws-exports.js')
   if (!existsSync(destFilePath)) {
     console.log('Path does not exist')
     return

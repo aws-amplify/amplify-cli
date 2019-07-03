@@ -100,7 +100,7 @@ export function initProjectWithAccessKey(
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
-      .run(function(err) {
+      .run(function(err: Error) {
         if (!err) {
           resolve();
         } else {

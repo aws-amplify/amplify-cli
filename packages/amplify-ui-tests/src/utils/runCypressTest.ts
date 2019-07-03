@@ -4,13 +4,13 @@ import { isCI } from '.';
 
 export function runCypressTest(
     cwd: string,
-    settings: { platform: string },
+    settings: { platform: string, category: string},
     verbose: boolean = !isCI()
 ) {
     let isPassed: boolean = false;
     return new Promise((resolve, reject) => {
         nexpect
-            .spawn('npm', ['run', 'cypress:' + settings.platform], {cwd, stripColors: true, verbose})
+            .spawn('npm', ['run', 'cypress:' + settings.platform + ':' + settings.category], {cwd, stripColors: true, verbose})
             .wait('failing')
             .run(function(err: Error) {
                 if (err) {

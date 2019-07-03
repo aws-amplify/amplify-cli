@@ -2,6 +2,7 @@ import { join } from 'path';
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
+import { writeFile } from 'fs';
 export { default  as getProjectMeta , existsAWSExportsPath, getAWSMeta} from './projectMeta';
 export { getUserPool, getUserPoolClients } from './sdk-calls'
 
@@ -41,6 +42,24 @@ export function getEnvVars(): { } {
 }
 
 export function getSampleRootPath() : string {
-  return join(__dirname, '../../../../..', 'amplify-js-samples-staging')
+  //return join(__dirname, '../../../../..', 'amplify-js-samples-staging')
+  return join(__dirname, '../../../../..', 'photo-albums')
+}
+
+export function createTestMetaFile(destRoot: string, settings: any) {
+  const testEnv = {
+    env: {
+      COGNITO_SIGN_IN_USERNAME: settings.username,
+      COGNITO_SIGN_IN_PASSWORD: settings.password,
+      COGNITO_SIGN_IN_EMAIL: settings.email,
+      COGNITO_SIGN_IN_PHONE_NUMBER: settings.phone
+    }
+  };
+  const outputPath = join(destRoot, 'cypress.json');
+  writeFile(outputPath, JSON.stringify(testEnv), function(err: Error) {
+    if (err) {
+      console.log(err);
+    }
+  });
 }
 

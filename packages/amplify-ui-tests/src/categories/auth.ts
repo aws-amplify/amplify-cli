@@ -12,7 +12,7 @@ const defaultSettings = {
 
 export async function signUpNewUser(
   cwd: string,
-  settings: { username: string, password: string, email: string, clientId: string, userPoolId: string},
+  settings: { username: string, password: string, email: string, phone: string, clientId: string, userPoolId: string},
   verbose: boolean = !isCI()
 ) {
       await signUpUser(cwd, settings);
@@ -28,8 +28,9 @@ function signUpUser(
     nexpect
     .spawn(getAwsCLIPath(), ['cognito-idp', 'sign-up', '--client-id', settings.clientId,
     '--username', settings.username, '--password',
-    settings.password, '--user-attributes', `Name=email,Value=${settings.email}`], { cwd, stripColors: true, verbose })
-    .run(function(err: Error){
+    settings.password, '--user-attributes', `Name=email,Value=${settings.email}`,
+    `Name=phone_number,Value=+1${settings.phone}`], { cwd, stripColors: true, verbose })
+    .run(function(err: Error) {
       if (!err) {
         resolve();
       } else {
@@ -48,7 +49,7 @@ function comfirmSignUp(
     nexpect
       .spawn(getAwsCLIPath(), ['cognito-idp', 'admin-confirm-sign-up', '--user-pool-id',
         settings.userPoolId, '--username', settings.username], { cwd, stripColors: true, verbose })
-      .run(function(err: Error){
+      .run(function(err: Error) {
         if (!err) {
           resolve();
         } else {

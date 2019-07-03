@@ -7,7 +7,7 @@ const defaultSettings = {
   projectName: 'CLIIntegTestApi',
 };
 
-function readSchemaDocument(schemaName: string): string {
+export function readSchemaDocument(schemaName: string): string {
   const docPath = `${__dirname}/../../schemas/${schemaName}.graphql`
   if (fs.existsSync(docPath)) {
     return fs.readFileSync(docPath).toString();
@@ -33,13 +33,12 @@ export function addApiWithSimpleModel(
       .wait('Provide API name:')
       .sendline('\r')
       .wait(/.*Choose an authorization type for the API.*/)
+      .sendline('j')
       .sendline('\r')
       .wait('Do you have an annotated GraphQL schema?')
       .sendline('y')
       .wait('Provide your schema file path:')
       .sendline(getSchemaPath('simple_model.graphql'))
-      // tslint:disable-next-line
-      .wait('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud')
       .run(function(err: Error) {
         if (!err) {
           resolve();

@@ -1,34 +1,64 @@
-require('../src/aws-matchers/'); // custom matcher for assertion
 import {
   initProjectWithProfile,
   deleteProject,
   amplifyPushApi
 } from '../src/init';
-import { addApiWithSimpleModel } from '../src/categories/api';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../src/utils';
+import { addApiWithSimpleModel, readSchemaDocument } from '../src/categories/api';
+import { createNewProjectDir, deleteProjectDir,
+  getSampleRootPath, existsAWSExportsPath,
+  getAWSMeta, createTestMetaFile } from '../src/utils';
+import { addAuthWithDefault, signUpNewUser } from '../src/categories/auth';
+import { copyAWSExportsToProj } from '../src/utils/projectMeta';
+import { runCypressTest } from '../src/utils/runCypressTest';
 
-describe('amplify add api', () => {
+describe('amplify API UI test', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
-    jest.setTimeout(1000 * 60 * 60); // 1 hour
-  });
+  let destRoot: string;
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+  describe('Run test on JS app:', async () => {
+    beforeAll(() => {
+      projRoot = createNewProjectDir();
+      destRoot = getSampleRootPath();
+      jest.setTimeout(1000 * 60 * 60); // 1 hour
+    });
 
-  it('init a project and add the simple_model api', async () => {
-    await initProjectWithProfile(projRoot, { name: 'simplemodel' });
-    await addApiWithSimpleModel(projRoot, {});
-    await amplifyPushApi(projRoot);
-    const { output } = getProjectMeta(projRoot).api.simplemodel;
+    afterAll(async () => {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    });
 
-    // TODO - Validate these using control plane API calls.
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    await expect(GraphQLAPIIdOutput).toBeDefined()
-    await expect(GraphQLAPIEndpointOutput).toBeDefined()
-    await expect(GraphQLAPIKeyOutput).toBeDefined()
+    it('should set up amplify backend and generate aws-export.js file', async () => {
+      await initProjectWithProfile(projRoot, {name: 'simplemodel'});
+      readSchemaDocument('simple_model');
+      await addAuthWithDefault(projRoot, {});
+      await addApiWithSimpleModel(projRoot, {});
+      await amplifyPushApi(projRoot);
+      expect(existsAWSExportsPath(projRoot)).toBeTruthy()
+    });
+
+    it('should have user pool in backend and sign up a user for test', async () => {
+      const awsMeta = getAWSMeta(projRoot);
+      const userPoolId = awsMeta.aws_user_pools_id;
+      const clientId = awsMeta.aws_user_pools_web_client_id;
+      expect(userPoolId).toBeDefined();
+      expect(clientId).toBeDefined();
+
+      const settings = {
+        username: 'test01',
+        password: 'The#test1',
+        email: 'lizeyutest01@amazon.com',
+        phone: '6666666666',
+        clientId: clientId,
+        userPoolId: userPoolId
+      };
+      await signUpNewUser(projRoot, settings);
+      await createTestMetaFile(destRoot, settings);
+  })
+
+  //run UI test on react app
+  it('should pass all UI tests on React app', async () => {
+      copyAWSExportsToProj(projRoot, destRoot, 'react', 'auth/amplify-authenticator');
+      await runCypressTest(destRoot, {platform: 'react', category: 'api'}).then(isPassed => expect(isPassed).toBeTruthy())
+    });
   });
 });
