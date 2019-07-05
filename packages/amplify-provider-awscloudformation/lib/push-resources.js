@@ -247,17 +247,10 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-            Bucket: s3Bucket,
-            Key: s3Key,
-          };
-        } else {
-          cfnMeta.Resources.LambdaFunction.Properties.Code = {
-            S3Bucket: s3Bucket,
-            S3Key: s3Key,
-          };
-        }
+        cfnMeta.Resources.LambdaFunction.Properties.Code = {
+          S3Bucket: s3Bucket,
+          S3Key: s3Key,
+        };
 
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
