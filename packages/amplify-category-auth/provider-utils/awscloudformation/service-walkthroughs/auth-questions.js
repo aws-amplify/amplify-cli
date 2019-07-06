@@ -49,7 +49,7 @@ async function serviceWalkthrough(
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
 
-    if (answer.triggers) {
+    if (answer.triggers && answer.triggers !== '{}') {
       const tempTriggers = context.updatingAuth && context.updatingAuth.triggers ?
         JSON.parse(context.updatingAuth.triggers) :
         {};

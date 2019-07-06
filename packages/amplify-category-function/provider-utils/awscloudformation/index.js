@@ -245,7 +245,9 @@ async function updateResource(context, category, service, parameters, resourceTo
 
   if (answers.parameters) {
     createParametersFile(context, answers.parameters, answers.resourceName);
-  } else if (answers.trigger) {
+  }
+
+  if (answers.trigger) {
     const parametersFilePath =
       `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
     let previousParameters;
