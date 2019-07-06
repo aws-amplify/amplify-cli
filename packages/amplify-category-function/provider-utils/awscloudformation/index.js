@@ -247,6 +247,21 @@ async function updateResource(context, category, service, parameters, resourceTo
     createParametersFile(context, answers.parameters, answers.resourceName);
   }
 
+  if (answers.trigger) {
+    const parametersFilePath =
+      `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
+    let previousParameters;
+
+    if (fs.existsSync(parametersFilePath)) {
+      previousParameters = context.amplify.readJsonFile(parametersFilePath);
+
+      if (previousParameters.trigger === true) {
+        answers = Object.assign(answers, previousParameters);
+      }
+    }
+    createParametersFile(context, parameters, answers.resourceName);
+  }
+
   /* const parametersFilePath =
   `${context.amplify.pathManager.getBackendDirPath()}/function/${resourceToUpdate}/parameters.json`;
   let previousParameters;
