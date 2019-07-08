@@ -27,7 +27,6 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.475.0",
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "fs-extra": "^8.0.1",
