@@ -201,7 +201,9 @@ async function addResource(context, category, service, options, parameters) {
     createParametersFile(context, props, answers.resourceName);
   }
 
-  await openEditor(context, category, answers);
+  if (!parameters || (parameters && !parameters.skipEdit)) {
+    await openEditor(context, category, answers);
+  }
 
   return answers.resourceName;
 }
