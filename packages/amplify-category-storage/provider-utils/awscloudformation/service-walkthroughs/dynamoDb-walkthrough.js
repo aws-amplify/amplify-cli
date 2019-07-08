@@ -366,7 +366,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   if (!storageParams ||
     !storageParams.triggerFunctions ||
     storageParams.triggerFunctions.length === 0) {
-    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your Table?')) {
+    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your Table?', false)) {
       let triggerName;
 
       try {
@@ -713,6 +713,9 @@ async function addTrigger(context, resourceName, triggerList) {
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
     context.print.success(`Successfully updated resource ${functionName} locally`);
+    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+      await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
+    }
   } else {
     throw new Error(`Function ${functionName} does not exist`);
   }
