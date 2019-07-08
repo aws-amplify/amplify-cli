@@ -16,9 +16,7 @@
     "aws"
   ],
   "dependencies": {
-    "cloudform": "^2.2.1",
-    "mime-types": "^2.1.24",
-    "ora": "^3.4.0"
+    "cloudform": "^2.2.1"
   },
   "devDependencies": {
     "@types/jest": "22.2.3",

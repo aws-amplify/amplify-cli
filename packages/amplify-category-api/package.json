@@ -20,7 +20,6 @@
     "graphql-relational-schema-transformer": "1.0.10",
     "inquirer": "6.3.1",
     "merge-graphql-schemas": "^1.5.8",
-    "mime-types": "^2.1.24",
     "moment": "^2.22.2",
     "opn": "^5.3.0",
     "ora": "^3.0.0",
