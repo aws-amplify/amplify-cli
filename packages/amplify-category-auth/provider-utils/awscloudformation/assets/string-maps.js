@@ -463,7 +463,7 @@ const oAuthScopes = [
 
 const capabilities = [
   {
-    name: 'Authentication using Google reCaptcha',
+    name: 'Add Google reCaptcha Challenge',
     value: 'mfaWithCaptcha',
     triggers: {
       DefineAuthChallenge: ['captcha-define-challenge'],
