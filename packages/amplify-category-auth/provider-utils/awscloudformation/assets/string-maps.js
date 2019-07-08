@@ -500,7 +500,7 @@ const capabilities = [
     },
   },
   {
-    name: 'Basic scaffolding for a custom auth challenge',
+    name: 'Custom Auth Challenge Flow (basic scaffolding - not for production)',
     value: 'customAuthScaffolding',
     triggers: {
       DefineAuthChallenge: ['boilerplate-define-challenge'],
