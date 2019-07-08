@@ -1,4 +1,5 @@
-// tslint:disable
+/* tslint:disable */
+/* eslint-disable */
 
 exports.handler = (event, context) => {
   if (event.request.session.length === 2 && event.request.challengeName === 'CUSTOM_CHALLENGE') {
