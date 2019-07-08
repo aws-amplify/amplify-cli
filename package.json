@@ -41,7 +41,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "cloudform": "^4.0.0-alpha.0",
     "lerna": "3.10.8"
   },
   "workspaces": [
