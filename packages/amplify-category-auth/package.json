@@ -24,6 +24,7 @@
     "lodash": "^4.17.10",
     "mime-types": "^2.1.24",
     "opn": "^5.3.0",
+    "ora": "^3.4.0",
     "promise-sequential": "^1.1.1",
     "uuid": "^2.0.3"
   },
