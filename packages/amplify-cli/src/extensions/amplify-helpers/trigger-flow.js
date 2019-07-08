@@ -42,6 +42,7 @@ const addTrigger = async (triggerOptions) => {
     triggerDir,
     triggerTemplate,
     triggerEventPath,
+    skipEdit,
   } = triggerOptions;
 
   let add;
@@ -64,6 +65,7 @@ const addTrigger = async (triggerOptions) => {
     triggerTemplate,
     triggerEventPath,
     roleName: functionName,
+    skipEdit,
   });
   context.print.success('Succesfully added the Lambda function locally');
   if (values && values.length > 0) {
@@ -110,6 +112,7 @@ const updateTrigger = async (triggerOptions) => {
     triggerDir,
     triggerTemplate,
     triggerEventPath,
+    skipEdit,
   } = triggerOptions;
   let update;
   try {
@@ -131,6 +134,7 @@ const updateTrigger = async (triggerOptions) => {
       roleName: functionName,
       triggerTemplate,
       triggerEventPath,
+      skipEdit,
     }, functionName);
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
@@ -368,6 +372,9 @@ async function openEditor(context, path, name) {
 
 const copyFunctions = async (key, value, category, context, targetPath) => {
   try {
+    if (!fs.existsSync(targetPath)) {
+      fs.mkdirSync(targetPath);
+    }
     const dirContents = fs.readdirSync(targetPath);
     if (!dirContents.includes(`${value}.js`)) {
       let source = '';
