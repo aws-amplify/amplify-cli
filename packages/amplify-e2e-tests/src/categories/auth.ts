@@ -14,9 +14,9 @@ export function addAuthWithDefault(
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
-      .wait('Do you want to use the default authentication and security configuration?')
+      .wait('Do you want to use the default authentication')
       .sendline('\r')
-      .wait('How do you want users to be able to sign in?')
+      .wait('How do you want users to be able to sign in')
       .sendline('\r')
       .wait('Do you want to configure advanced settings?')
       .sendline('\r')

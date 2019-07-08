@@ -3,7 +3,8 @@ import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 export { default  as getProjectMeta } from './projectMeta';
-export { getUserPool, getUserPoolClients, getBot, getLambdaFunction } from './sdk-calls'
+export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot, getLambdaFunction } from './sdk-calls'
+
 
 // run dotenv config to update env variable
 config();
