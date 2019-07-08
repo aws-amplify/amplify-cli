@@ -25,6 +25,20 @@ const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
+const getLambdaFunction = async (functionName, region) => {
+  AWS.config.update({ region });
+  const lambda = new AWS.Lambda();
+  let res;
+  try {
+    res = await lambda
+      .getFunction({ FunctionName: functionName })
+      .promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res;
+};
+
 const getUserPoolClients = async (userpoolId, region) => {
   AWS.config.update({ region });
   const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
@@ -52,4 +66,4 @@ const getBot = async (botName: string, region: string) => {
   return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
 };
 
-export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot };
+export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot, getLambdaFunction };
