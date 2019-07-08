@@ -1,5 +1,6 @@
 import * as nexpect from 'nexpect';
 import { join } from 'path';
+import { updateSchema } from '../utils';
 import * as fs from 'fs';
 
 import { getCLIPath, isCI } from '../utils';
@@ -20,9 +21,9 @@ function getSchemaPath(schemaName: string): string {
   return  `${__dirname}/../../schemas/${schemaName}`;
 }
 
-export function addApiWithSimpleModel(
+export function addApiWithSchema(
   cwd: string,
-  settings: any,
+  schemaFile: string,
   verbose: boolean = !isCI()
 ) {
   return new Promise((resolve, reject) => {
@@ -37,7 +38,7 @@ export function addApiWithSimpleModel(
       .wait('Do you have an annotated GraphQL schema?')
       .sendline('y')
       .wait('Provide your schema file path:')
-      .sendline(getSchemaPath('simple_model.graphql'))
+      .sendline(getSchemaPath(schemaFile))
       // tslint:disable-next-line
       .wait('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud')
       .run(function(err: Error) {
@@ -48,4 +49,14 @@ export function addApiWithSimpleModel(
         }
       })
   })
+}
+
+export function updateApiSchema(
+  cwd: string,
+  projectName: string,
+  schemaName: string
+) {
+  const testSchemaPath = getSchemaPath(schemaName);
+  const schemaText = fs.readFileSync(testSchemaPath).toString();
+  updateSchema(cwd, projectName, schemaText);
 }

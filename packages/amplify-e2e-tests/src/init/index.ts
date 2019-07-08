@@ -4,8 +4,6 @@ export {
   initNewEnvWithAccessKey,
   initNewEnvWithProfile
 } from './initProjectHelper';
-export {
-  amplifyPush, amplifyPushAuth
-} from './amplifyPush';
+export * from './amplifyPush';
 export { getProjectMeta } from '../utils';
 export { default as deleteProject } from './deleteProject';

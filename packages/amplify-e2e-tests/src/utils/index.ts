@@ -4,6 +4,7 @@ import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 export { default  as getProjectMeta } from './projectMeta';
 export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot, getLambdaFunction, getFunction } from './sdk-calls'
+export * from './api';
 
 // run dotenv config to update env variable
 config();
