@@ -11,7 +11,7 @@
         "policyName": "AddToGroupCognito",
         "trigger": "PostConfirmation",
         "effect": "Allow",
-        "actions": ["cognito-idp:AdminAddUserToGroup"],
+        "actions": ["cognito-idp:AdminAddUserToGroup", "cognito-idp:ListGroups", "cognito-idp:CreateGroup"],
         "resource": {
           "paramType": "!GetAtt",
           "keys": ["UserPool", "Arn"]
