@@ -66,6 +66,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           triggerEventPath: `${keys[t]}.event.json`,
           triggerDir: `${__dirname}/../triggers/${keys[t]}`,
           parentResource: authResourceName,
+          skipEdit: true,
         };
         const updatedLambda = await context.amplify.updateTrigger(triggerOptions);
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
@@ -83,6 +84,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           triggerTemplate: `${keys[t]}.json.ejs`,
           triggerDir: `${__dirname}/../triggers/${keys[t]}`,
           parentResource: authResourceName,
+          skipEdit: true,
         };
         const newLambda = await context.amplify.addTrigger(triggerOptions);
         triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
