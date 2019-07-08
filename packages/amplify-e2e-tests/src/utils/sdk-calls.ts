@@ -1,5 +1,16 @@
 import * as AWS from 'aws-sdk';
 
+
+const getDDBTable = async (tableName: string, region: string) => {
+  const service = new AWS.DynamoDB({ region });
+  return await service.describeTable({ TableName: tableName }).promise();
+};
+
+const checkIfBucketExists = async (bucketName: string, region: string) => {
+  const service = new AWS.S3({ region });
+  return await service.headBucket({ Bucket: bucketName }).promise();
+};
+
 const getUserPool = async (userpoolId, region) => {
   AWS.config.update({ region });
   const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
@@ -55,4 +66,4 @@ const getBot = async (botName: string, region: string) => {
   return await service.getBot({ name: botName, versionOrAlias: '$LATEST' }).promise();
 };
 
-export { getUserPool, getUserPoolClients, getLambdaFunction, getBot };
+export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getLambdaFunction, getBot };

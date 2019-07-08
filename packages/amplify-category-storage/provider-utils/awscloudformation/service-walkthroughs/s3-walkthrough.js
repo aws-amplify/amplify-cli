@@ -286,8 +286,10 @@ async function removeTrigger(context, resourceName, triggerFunction) {
   // Remove reference for old triggerFunction
   delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
   delete storageCFNFile.Parameters[`function${triggerFunction}Name`];
+  delete storageCFNFile.Parameters[`function${triggerFunction}LambdaExecutionRole`];
   delete storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration;
   delete storageCFNFile.Resources.TriggerPermissions;
+  delete storageCFNFile.Resources.S3TriggerBucketPolicy;
   delete storageCFNFile.Resources.S3Bucket.DependsOn;
 
   const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
@@ -333,6 +335,26 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
 
     const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
     functionName = triggerOptionAnswer.triggerOption;
+
+    // Update Lambda CFN
+
+    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+    const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+
+    if (fs.existsSync(functionCFNFilePath)) {
+      const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
+
+      functionCFNFile.Outputs.LambdaExecutionRole = {
+        Value: {
+          Ref: 'LambdaExecutionRole',
+        },
+      };
+
+      // Update the functions resource
+      const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
+      fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+      context.print.success(`Successfully updated resource ${functionName} locally`);
+    }
   } else {
     // Create a new lambda trigger
 
@@ -387,6 +409,9 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       backendConfigs,
     );
     context.print.success(`Successfully added resource ${functionName} locally`);
+    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+      await context.amplify.openEditor(context, `${targetDir}/function/${functionName}/src/index.js`);
+    }
   }
 
   // If updating an already existing S3 resource
@@ -400,6 +425,7 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
     if (triggerFunction) {
       delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
       delete storageCFNFile.Parameters[`function${triggerFunction}Name`];
+      delete storageCFNFile.Parameters[`function${triggerFunction}LambdaExecutionRole`];
     }
 
     // Add reference for the new triggerFunction
@@ -412,6 +438,16 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
     storageCFNFile.Parameters[`function${functionName}Name`] = {
       Type: 'String',
       Default: `function${functionName}Name`,
+    };
+
+    storageCFNFile.Parameters[`function${functionName}LambdaExecutionRole`] = {
+      Type: 'String',
+      Default: `function${functionName}LambdaExecutionRole`,
+    };
+
+
+    storageCFNFile.Parameters.triggerFunction = {
+      Type: 'String',
     };
 
     storageCFNFile.Resources.S3Bucket.DependsOn = ['TriggerPermissions'];
@@ -477,6 +513,47 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       },
     };
 
+    storageCFNFile.Resources.S3TriggerBucketPolicy = {
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: 's3-trigger-lambda-execution-policy',
+        Roles: [
+          {
+            Ref: `function${functionName}LambdaExecutionRole`,
+          },
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: [
+                's3:PutObject',
+                's3:GetObject',
+                's3:ListBucket',
+                's3:DeleteObject',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:s3:::',
+                      {
+                        Ref: 'bucketName',
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+
     const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
     fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
 
@@ -488,17 +565,16 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       [{
         category: 'function',
         resourceName: functionName,
-        attributes: ['Name', 'Arn'],
+        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
       }],
     );
-    context.print.success(`Successfully updated resource ${functionName} locally`);
   } else {
     // New resource
     options.dependsOn = [];
     options.dependsOn.push({
       category: 'function',
       resourceName: functionName,
-      attributes: ['Name', 'Arn'],
+      attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
     });
   }
 
