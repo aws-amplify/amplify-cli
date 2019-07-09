@@ -297,7 +297,7 @@ const getTriggerPermissions = async (context, triggers, category) => {
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
   const pluginPath = context.amplify.getCategoryPlugins(context)[category];
-  
+
 
   for (let c = 0; c < triggerKeys.length; c += 1) {
     const index = triggerKeys[c];
