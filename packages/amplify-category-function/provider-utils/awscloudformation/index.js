@@ -290,13 +290,9 @@ async function updateResource(context, category, service, parameters, resourceTo
 }
 
 async function openEditor(context, category, options) {
-  let displayName = '';
+  let displayName = 'local';
   if (options.trigger === true) {
-    if (options.resourceName.includes(options.parentResource)) {
-      displayName = options.resourceName.substring(options.parentResource.length);
-    } else {
-      displayName = options.resourceName;
-    }
+    displayName = options.resourceName;
   }
   const targetDir = context.amplify.pathManager.getBackendDirPath();
   if (!options.trigger === 'true') {
@@ -313,7 +309,7 @@ async function openEditor(context, category, options) {
           break;
       }
     }
-  } else if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${displayName} lambda function now?`)) {
+  } else if (await context.amplify.confirmPrompt.run(`Do you want to edit the ${displayName} lambda function now?`)) {
     const dirTemplate = `${targetDir}/${category}/${options.resourceName}/src`;
     const functionPackage = require(`${dirTemplate}/package.json`);
     await context.amplify.openEditor(context, `${dirTemplate}/${functionPackage.main}`);
