@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.3...amplify-category-auth@1.7.0) (2019-07-09)
+
+
+### Bug Fixes
+
+* replacing rel paths with plugin func ([71f553f](https://github.com/aws-amplify/amplify-cli/commit/71f553f))
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.6.2...amplify-category-auth@1.6.3) (2019-06-20)
 
 
