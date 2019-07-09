@@ -260,7 +260,7 @@
 			},
 			{
 				"key": "usernameAttributes",
-				"question": "How do you want users to be able to sign in when using your Cognito User Pool?",
+				"question": "How do you want users to be able to sign in?",
 				"type": "list",
 				"map": "signInOptions",
 				"prefix": "Warning: you will not be able to edit these selections.",
@@ -278,6 +278,30 @@
 					}
 				]
 			},
+
+			{
+				"key": "additionalQuestions",
+				"question": "Do you want to configure advanced settings?",
+				"type": "list",
+				"map": "additonalConfigMap",
+				"required": true,
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					},
+					{
+						"preventEdit": "always"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "!="
+					}
+				]
+			},
+
 			{
 				"key": "mfaConfiguration",
 				"question": "Multifactor authentication (MFA) user login options:",
@@ -543,6 +567,18 @@
 						"value": "identityPoolOnly",
 						"operator": "!="
 					}
+				],
+				"orConditions": [
+					{
+						"key": "additionalQuestions",
+						"value": "triggers",
+						"operator": "includes"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
+						"operator": "="
+					}
 				]
 			},
 			{
@@ -622,6 +658,32 @@
 					{
 						"key": "userpoolClientSetAttributes",
 						"value": true,
+						"operator": "="
+					}
+				]
+			},
+			{
+				"key": "triggers",
+				"question": "Do you want to enable any of the following capabilities?",
+				"required": true,
+				"type": "multiselect",
+				"map": "capabilities",
+				"andConditions": [
+					{
+						"key": "authSelections",
+						"value": "identityPoolOnly",
+						"operator": "!="
+					}
+				],
+				"orConditions": [
+					{
+						"key": "additionalQuestions",
+						"value": "triggers",
+						"operator": "includes"
+					},
+					{
+						"key": "useDefault",
+						"value": "manual",
 						"operator": "="
 					}
 				]

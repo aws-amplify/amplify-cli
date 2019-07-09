@@ -45,5 +45,10 @@
       "json",
       "node"
     ]
+  },
+  "dependencies": {
+    "aws-sdk": "^2.475.0",
+    "mime-types": "^2.1.24",
+    "ora": "^3.4.0"
   }
 }

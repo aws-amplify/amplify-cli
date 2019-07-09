@@ -66,7 +66,21 @@
 		},
 		"env": {
 			"Type": "String"
-		}
+		},
+		"triggerFunction": {
+			"Type": "String"
+		}<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
+	<% if (props.dependsOn) { %>
+    <% for(var i=0; i < props.dependsOn.length; i++) { %>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+        "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
+            "Type": "String",
+            "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
+        }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
+        <% } %>
+        <% } %>
+    <% } %>
+
 	},
 	"Conditions": {
 		"ShouldNotCreateEnvResources": {
@@ -145,6 +159,11 @@
 	"Resources": {
 		"S3Bucket": {
 			"Type": "AWS::S3::Bucket",
+		    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+            "DependsOn": [
+				"TriggerPermissions"
+			],
+            <% } %>
 			"DeletionPolicy" : "Retain",
 			"Properties": {
 				"BucketName": {
@@ -169,6 +188,24 @@
                         }
                     ]
                 },
+                <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+                "NotificationConfiguration": {
+                    "LambdaConfigurations": [
+                        {
+                            "Event": "s3:ObjectCreated:*",
+                            "Function": {
+                                "Ref": "function<%= props.triggerFunction %>Arn"
+                            }
+                        },
+                        {
+                            "Event": "s3:ObjectRemoved:*",
+                            "Function": {
+                                "Ref": "function<%= props.triggerFunction %>Arn"
+                            }
+                        }
+                    ]
+                },
+                <% } %>
 				"CorsConfiguration": {
 					"CorsRules": [
 						{
@@ -198,6 +235,90 @@
 				}
 			}
 		},
+	    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+	    "TriggerPermissions": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "Action": "lambda:InvokeFunction",
+                "FunctionName": {
+                    "Ref": "function<%= props.triggerFunction %>Name"
+                },
+                "Principal": "s3.amazonaws.com",
+                "SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                },
+                "SourceArn": {
+					"Fn::Join": [
+						"",
+						[
+							"arn:aws:s3:::",
+							{
+			                    "Fn::If": [
+			                        "ShouldNotCreateEnvResources",
+			                        {
+			                            "Ref": "bucketName"
+			                        },
+			                        {
+			                            "Fn::Join": [
+			                                "",
+			                                [
+			                                    {
+			                                        "Ref": "bucketName"
+			                                    },
+			                                    "-",
+			                                    {
+			                                        "Ref": "env"
+			                                    }
+			                                ]
+			                            ]
+			                        }
+			                    ]
+			                }
+						]
+					]
+                }
+            }
+        },
+         "S3TriggerBucketPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "amplify-lambda-execution-policy",
+                "Roles": [
+                    {
+                        "Ref": "function<%= props.triggerFunction %>LambdaExecutionRole"
+                    }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:ListBucket",
+                                "s3:DeleteObject"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref": "bucketName"
+                                            },
+                                            "/*"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+	    <% } %>
 		"S3AuthPublicPolicy": {
 			"DependsOn": [
 				"S3Bucket"

@@ -1,5 +1,16 @@
 import * as AWS from 'aws-sdk';
 
+
+const getDDBTable = async (tableName: string, region: string) => {
+  const service = new AWS.DynamoDB({ region });
+  return await service.describeTable({ TableName: tableName }).promise();
+};
+
+const checkIfBucketExists = async (bucketName: string, region: string) => {
+  const service = new AWS.S3({ region });
+  return await service.headBucket({ Bucket: bucketName }).promise();
+};
+
 const getUserPool = async (userpoolId, region) => {
   AWS.config.update({ region });
   const CognitoIdentityServiceProvider = AWS.CognitoIdentityServiceProvider;
@@ -7,6 +18,20 @@ const getUserPool = async (userpoolId, region) => {
   try {
     res = await new CognitoIdentityServiceProvider()
       .describeUserPool({ UserPoolId: userpoolId })
+      .promise();
+  } catch (e) {
+    console.log(e);
+  }
+  return res;
+};
+
+const getLambdaFunction = async (functionName, region) => {
+  AWS.config.update({ region });
+  const lambda = new AWS.Lambda();
+  let res;
+  try {
+    res = await lambda
+      .getFunction({ FunctionName: functionName })
       .promise();
   } catch (e) {
     console.log(e);
@@ -46,4 +71,4 @@ const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
-export { getUserPool, getUserPoolClients, getBot, getFunction };
+export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot, getLambdaFunction, getFunction };
