@@ -208,7 +208,7 @@ async function addResource(context, category, service, options, parameters) {
   return answers.resourceName;
 }
 
-async function updateResource(context, category, service, parameters, resourceToUpdate, skipEdit) {
+async function updateResource(context, category, service, parameters, resourceToUpdate) {
   let answers;
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
@@ -282,7 +282,7 @@ async function updateResource(context, category, service, parameters, resourceTo
   }
   copyCfnTemplate(context, category, answers, cfnFilename, parameters); */
 
-  if (!skipEdit) {
+  if (!parameters || (parameters && !parameters.skipEdit)) {
     await openEditor(context, category, answers);
   }
 
