@@ -29,7 +29,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   // getting static trigger env variables that do not change based on direct user input
   const triggerEnvs = {};
   Object.keys(triggers).forEach((r) => {
-    triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'amplify-category-auth');
+    triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'auth');
   });
 
   const parameters = {
@@ -58,7 +58,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           context,
           functionName,
           triggerEnvs,
-          category: 'amplify-category-auth',
+          category: 'auth',
           parentStack: 'auth',
           targetPath,
           triggerTemplate: `${keys[t]}.json.ejs`,
@@ -78,7 +78,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           context,
           functionName,
           triggerEnvs,
-          category: 'amplify-category-auth',
+          category: 'auth',
           parentStack: 'auth',
           targetPath,
           triggerTemplate: `${keys[t]}.json.ejs`,

@@ -218,8 +218,10 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
     return null;
   }
 
+  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+
   // path to trigger directory in category
-  const triggerPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/`;
+  const triggerPath = `${pluginPath}/provider-utils/awscloudformation/triggers/`;
 
   // get available triggers
   const triggerOptions = choicesFromMetadata(triggerPath, resource, true);
@@ -245,7 +247,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   // loop through triggers that user selected,
   // and ask which templates they want using template metadata and learn more loop
   for (let i = 0; i < askTriggers.triggers.length; i++) {
-    const optionsPath = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${askTriggers.triggers[i]}`;
+    const optionsPath = `${triggerPath}/${askTriggers.triggers[i]}`;
 
     const templateOptions = choicesFromMetadata(optionsPath, askTriggers.triggers[i]);
     templateOptions.push({ name: 'Create your own module', value: 'custom' });
@@ -294,11 +296,13 @@ const getTriggerPermissions = async (context, triggers, category) => {
   let permissions = [];
   const parsedTriggers = JSON.parse(triggers);
   const triggerKeys = Object.keys(parsedTriggers);
+  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+
 
   for (let c = 0; c < triggerKeys.length; c += 1) {
     const index = triggerKeys[c];
     const meta = context.amplify.getTriggerMetadata(
-      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${index}`,
+      `${pluginPath}/provider-utils/awscloudformation/triggers/${index}`,
       index,
     );
 
@@ -376,12 +380,15 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
       fs.mkdirSync(targetPath);
     }
     const dirContents = fs.readdirSync(targetPath);
+    const pluginPath = context.amplify.getCategoryPlugins(context)[category];
+    const functionPath = context.amplify.getCategoryPlugins(context).function;
+
     if (!dirContents.includes(`${value}.js`)) {
       let source = '';
       if (value === 'custom') {
-        source = `${__dirname}/../../../../amplify-category-function/provider-utils/awscloudformation/function-template-dir/trigger-custom.js`;
+        source = `${functionPath}/provider-utils/awscloudformation/function-template-dir/trigger-custom.js`;
       } else {
-        source = `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
+        source = `${pluginPath}/provider-utils/awscloudformation/triggers/${key}/${value}.js`;
       }
       fsExtra.copySync(source, `${targetPath}/${value}.js`);
       await openEditor(context, targetPath, value);
@@ -392,9 +399,10 @@ const copyFunctions = async (key, value, category, context, targetPath) => {
 };
 
 const cleanFunctions = async (key, values, category, context, targetPath) => {
+  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
   try {
     const meta = context.amplify.getTriggerMetadata(
-      `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${key}`,
+      `${pluginPath}/provider-utils/awscloudformation/triggers/${key}`,
       key,
     );
     const dirContents = fs.readdirSync(targetPath);
@@ -425,9 +433,10 @@ const cleanFunctions = async (key, values, category, context, targetPath) => {
 };
 
 const getTriggerEnvVariables = (context, trigger, category) => {
+  const pluginPath = context.amplify.getCategoryPlugins(context)[category];
   let env = [];
   const meta = context.amplify.getTriggerMetadata(
-    `${__dirname}/../../../../${category}/provider-utils/awscloudformation/triggers/${trigger.key}`,
+    `${pluginPath}/provider-utils/awscloudformation/triggers/${trigger.key}`,
     trigger.key,
   );
   if (trigger.modules) {

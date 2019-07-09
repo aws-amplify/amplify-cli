@@ -578,7 +578,7 @@ async function lambdaTriggers(coreAnswers, context, previouslySaved) {
     }
 
     // determine permissions needed for each trigger module
-    coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.triggers, 'amplify-category-auth', coreAnswers.resourceName);
+    coreAnswers.permissions = await context.amplify.getTriggerPermissions(context, coreAnswers.triggers, 'auth', coreAnswers.resourceName);
   } else if (previouslySaved) {
     const targetDir = context.amplify.pathManager.getBackendDirPath();
     Object.keys(previouslySaved).forEach((p) => {
