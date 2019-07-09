@@ -421,7 +421,7 @@ function handleUpdates(context, coreAnswers) {
 */
 async function lambdaFlow(context, answers) {
   const triggers = await context.amplify
-    .triggerFlow(context, 'cognito', 'amplify-category-auth', answers);
+    .triggerFlow(context, 'cognito', 'auth', answers);
   return triggers || answers;
 }
 
