@@ -769,7 +769,7 @@ function getIAMPolicies(resourceName, crudOptions) {
             },
             ':',
             { Ref: 'AWS::AccountId' },
-            ':function',
+            ':function:',
             {
               Ref: `${categoryName}${resourceName}Name`,
             },

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "1.7.6",
+  "version": "1.7.8",
   "description": "Amplify CLI",
   "bin": {
     "amplify": "bin/amplify"
@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amplify-category-analytics": "1.5.3",
-    "amplify-category-api": "1.7.4",
+    "amplify-category-api": "1.7.6",
     "amplify-category-auth": "1.6.3",
     "amplify-category-function": "1.6.0",
     "amplify-category-hosting": "1.2.2",
@@ -33,7 +33,7 @@
     "amplify-frontend-android": "1.8.2",
     "amplify-frontend-ios": "1.8.2",
     "amplify-frontend-javascript": "1.6.2",
-    "amplify-provider-awscloudformation": "1.12.0",
+    "amplify-provider-awscloudformation": "1.12.2",
     "babel-core": "^6.26.3",
     "chalk": "^2.0.1",
     "chalk-pipe": "^2.0.0",

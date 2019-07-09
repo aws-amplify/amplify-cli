@@ -22,7 +22,7 @@ async function run(context) {
     const unauthRoleName = `${stackName}-unauthRole`;
     const params = {
       StackName: stackName,
-      Capabilities: ['CAPABILITY_NAMED_IAM'],
+      Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
       TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
       Parameters: [
         {
