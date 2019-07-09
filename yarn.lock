@@ -2197,6 +2197,21 @@ aws-sdk@2.329.0:
     uuid "3.1.0"
     xml2js "0.4.19"
 
+aws-sdk@^2.259.1:
+  version "2.489.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.489.0.tgz#5ca376546dd3e912febf3114d2bcfa4d82c5584a"
+  integrity sha512-P85rLUWpO2DAG/ZQoOscNiwTKY4LgWNCHarw7RACGt0vOGiMkuKL0JN+FvurcmDEBj0xRUXsKDMfwWHDFhA2Jw==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.8"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.3.2"
+    xml2js "0.4.19"
+
 aws-sdk@^2.391.0, aws-sdk@^2.451.0:
   version "2.466.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.466.0.tgz#02d819c5af058e15fd1942296ed3b1def9f4b14d"
@@ -3489,11 +3504,6 @@ cloudform-types@^3.7.0, cloudform-types@^3.8.0:
   resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-3.8.0.tgz#d75185a40c2f8b38eec2b9c2d30b266efc8738a6"
   integrity sha512-sfxhWgGl7EbHf+25rbEjR5cgv27K7zpXSm4SgwTRooRLSbd+BFNSA7J1rdQbY0YBklj4pA16fw6X70bC5G3twg==
 
-cloudform-types@^4.0.0-alpha.0:
-  version "4.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-4.0.0-alpha.0.tgz#1eafbaf71ec90a226455d91a7f8b32a3a520a29d"
-  integrity sha512-ArTVisCpujo2w5LWEy1m+uRQAPO5G5Vv7S+MKKbeVcIE6om9Ouci4ME6W72mDsZSuu6pXmAyJTtQ5nDvrQzocA==
-
 cloudform@^2.2.1:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/cloudform/-/cloudform-2.3.0.tgz#db0dd21a85957c1af529646e7b48c7cca39cbe3c"
@@ -3509,16 +3519,6 @@ cloudform@^3.5.0:
   integrity sha512-zxbgpTw1X67Wb3FXXvjD3G/fiKPjn9PrUg2UOJkWFZJtBXuKsx6Uw4VuWcz9PVMmibZZG28QOcGcJICU/f+Tug==
   dependencies:
     cloudform-types "^3.8.0"
-    jsonminify "^0.4.1"
-    ts-node "^5.0.1"
-    typescript "^2.9.2"
-
-cloudform@^4.0.0-alpha.0:
-  version "4.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/cloudform/-/cloudform-4.0.0-alpha.0.tgz#a7dc0f82c9262a4f9269814d0cabc1c20abe56c7"
-  integrity sha512-jaEAlI64Jb+2QOxgUHmwkoyy4u8f565XLsHzqQQdqtUpwwybAJgoPJ51UIiaLfzfoHsYNMugXYNH0qwjOblbJg==
-  dependencies:
-    cloudform-types "^4.0.0-alpha.0"
     jsonminify "^0.4.1"
     ts-node "^5.0.1"
     typescript "^2.9.2"
