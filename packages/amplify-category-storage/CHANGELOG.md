@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.7.4...amplify-category-storage@1.7.5-beta.0) (2019-07-09)
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
 ## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.7.3...amplify-category-storage@1.7.4) (2019-06-26)
 
 **Note:** Version bump only for package amplify-category-storage

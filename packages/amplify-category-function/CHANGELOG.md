@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.6.0...amplify-category-function@1.6.1-beta.0) (2019-07-09)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** open Editor fix for displayname ([#1798](https://github.com/aws-amplify/amplify-cli/issues/1798)) ([e62aba6](https://github.com/aws-amplify/amplify-cli/commit/e62aba6))
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.4...amplify-category-function@1.6.0) (2019-06-26)
 
 
