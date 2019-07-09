@@ -71,24 +71,24 @@ describe('TriggerFlow:  ', () => {
       jest.resetAllMocks();
     });
 
-    // it('...it should call add', async () => {
-    //   await triggerFlow.addTrigger({
-    //     trigger: true,
-    //     key,
-    //     values,
-    //     context,
-    //     functionName,
-    //     category,
-    //     parentStack,
-    //     path,
-    //     triggerIndexPath,
-    //     triggerPackagePath,
-    //     triggerDir,
-    //     triggerTemplate,
-    //     parentResource,
-    //   });
-    //   expect(spyAdd).toHaveBeenCalled();
-    // });
+    it('...it should call add', async () => {
+      await triggerFlow.addTrigger({
+        trigger: true,
+        key,
+        values,
+        context,
+        functionName,
+        category,
+        parentStack,
+        path,
+        triggerIndexPath,
+        triggerPackagePath,
+        triggerDir,
+        triggerTemplate,
+        parentResource,
+      });
+      expect(spyAdd).toHaveBeenCalled();
+    });
 
     it('...it should return a key/value pair of key and functionName', async () => {
       const result = await triggerFlow.addTrigger({
