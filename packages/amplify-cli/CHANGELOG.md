@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.9-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.9-beta.0...@aws-amplify/cli@1.7.9-beta.1) (2019-07-09)
+
+
+### Bug Fixes
+
+* replacing rel paths with plugin func ([71f553f](https://github.com/aws-amplify/amplify-cli/commit/71f553f))
+
+
+
+
+
 ## [1.7.9-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.8...@aws-amplify/cli@1.7.9-beta.0) (2019-07-09)
 
 
