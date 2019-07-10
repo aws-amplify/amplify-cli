@@ -421,10 +421,14 @@ function getHeadlessParams(context, service) {
 
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)
-    .Lambda;
+  const srvcMetaData = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`).Lambda;
   const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-  const resourceParams = context.amplify.readJsonFile(`${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`);
+  const functionParametersPath = `${context.amplify.pathManager.getBackendDirPath()}/function/${service}/function-parameters.json`;
+  let resourceParams = {};
+  const functionParametersExists = await fs.exists(functionParametersPath);
+  if (functionParametersExists) {
+    resourceParams = context.amplify.readJsonFile(functionParametersPath);
+  }
   let envParams = {};
 
   // headless mode
