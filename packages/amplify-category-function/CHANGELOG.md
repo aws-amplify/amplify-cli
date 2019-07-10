@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.0...amplify-category-function@1.7.1-beta.0) (2019-07-10)
+
+
+### Bug Fixes
+
+* check that function-parameters.json exists before trying to read it ([#1808](https://github.com/aws-amplify/amplify-cli/issues/1808)) ([574218d](https://github.com/aws-amplify/amplify-cli/commit/574218d))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.6.0...amplify-category-function@1.7.0) (2019-07-09)
 
 
