@@ -1,0 +1,19 @@
+{
+    "name": "codegen",
+    "type": "util",
+    "commands": [
+        "add",
+        "codegen",
+        "configure",
+        "remove",
+        "statement",
+        "types"
+    ],
+    "commandAliases":{
+        "update": "configure"
+    },
+    "subscriptions":[
+        "PostPush",
+        "NotHere"
+    ]
+}

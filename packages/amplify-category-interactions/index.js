@@ -62,4 +62,5 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 module.exports = {
   migrate,
   getPermissionPolicies,
+  ...require('./amplify-plugin-index'),
 };

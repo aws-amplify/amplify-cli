@@ -1,0 +1,56 @@
+{
+  "name": "amplify-cli-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "bin": {
+    "rocket-amplify": "bin/amplify"
+  },
+  "scripts": {
+    "setup-dev": "npm run build && npm link",
+    "start": "tsc -w",
+    "build": "tsc",
+    "lint-fix": "./node_modules/.bin/tslint --fix --project .",
+    "test": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/global-prefix": "^3.0.0",
+    "clear": "^0.1.0",
+    "colors": "^1.3.3",
+    "ejs": "^2.6.2",
+    "esm": "^3.2.25",
+    "fs-extra": "^8.0.1",
+    "fs-jetpack": "^2.2.2",
+    "global-prefix": "^3.0.0",
+    "inquirer": "6.3.1",
+    "util": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.15",
+    "@types/node": "^12.0.4",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.17.0",
+    "typescript": "^3.4.5"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/src/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}

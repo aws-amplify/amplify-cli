@@ -1,0 +1,10 @@
+{
+    "name": "core",
+    "type": "core",
+    "commands": [
+        "plugin",
+        "diagnose",
+        "version"
+    ],
+    "subscriptions":[]
+}

@@ -46,4 +46,5 @@ module.exports = {
   publish,
   run,
   createFrontendConfigs,
+  ...require('./amplify-plugin-index'),
 };

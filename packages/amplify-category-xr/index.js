@@ -92,4 +92,5 @@ module.exports = {
   console,
   initEnv,
   getPermissionPolicies,
+  ...require('./amplify-plugin-index'),
 };

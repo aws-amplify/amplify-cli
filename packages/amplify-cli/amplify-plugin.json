@@ -1,0 +1,19 @@
+{
+    "name": "core",
+    "type": "core",
+    "commands": [
+        "categories",
+        "configure",
+        "console",
+        "delete",
+        "env",
+        "help",
+        "init",
+        "migrate",
+        "publish",
+        "push",
+        "run",
+        "status"
+    ],
+    "subscriptions":[]
+}

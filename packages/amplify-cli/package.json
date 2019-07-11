@@ -2,6 +2,7 @@
   "name": "@aws-amplify/cli",
   "version": "1.8.1",
   "description": "Amplify CLI",
+  "main": "index.js",
   "bin": {
     "amplify": "bin/amplify"
   },

@@ -19,4 +19,5 @@ module.exports = {
   prePushAddGraphQLCodegenHook,
   prePushUpdateGraphQLCodegenHook,
   postPushGraphQLCodegenHook,
+  ...require('../amplify-plugin-index'),
 };

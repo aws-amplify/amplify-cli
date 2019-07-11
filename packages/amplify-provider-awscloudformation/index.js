@@ -94,4 +94,5 @@ module.exports = {
   deleteEnv,
   loadResourceParameters,
   saveResourceParameters,
+  ...require('./amplify-plugin-index'),
 };
