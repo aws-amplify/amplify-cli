@@ -8,6 +8,7 @@ import { StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
+import * as Sanity from './sanity-check';
 
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -15,11 +16,18 @@ const PARAMETERS_FILE_NAME = 'parameters.json';
 export interface ProjectOptions {
     projectDirectory: string
     transformers: Transformer[]
+    currentCloudBackendDirectory: string
     rootStackFileName?: string
 }
 export async function buildProject(opts: ProjectOptions) {
+    await ensureMissingStackMappings(opts);
     const builtProject = await _buildProject(opts);
     await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+    if (opts.currentCloudBackendDirectory) {
+        const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
+        const thisBuildPath = path.join(opts.projectDirectory, 'build');
+        await Sanity.check(lastBuildPath, thisBuildPath, opts.rootStackFileName);
+    }
 }
 
 async function _buildProject(opts: ProjectOptions) {
@@ -90,8 +98,6 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
     return resources;
 }
 
-
-export type FindMissingStackMappingConfig = ProjectOptions & { currentCloudBackendDirectory: string }
 /**
  * Provided a build configuration & current-cloud-backend directory, calculate
  * any missing stack mappings that might have been caused by the stack mapping
@@ -99,12 +105,12 @@ export type FindMissingStackMappingConfig = ProjectOptions & { currentCloudBacke
  * This allows APIs that were deployed with the bug to continue
  * working without changes.
  */
-export async function ensureMissingStackMappings(config: FindMissingStackMappingConfig) {
-    const { currentCloudBackendDirectory, ...buildConfig } = config;
+export async function ensureMissingStackMappings(config: ProjectOptions) {
+    const { currentCloudBackendDirectory } = config;
 
     if (currentCloudBackendDirectory) {
         const missingStackMappings = {};
-        const transformOutput = await _buildProject(buildConfig);
+        const transformOutput = await _buildProject(config);
         const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
         const stackMapping = transformOutput.stackMapping;
         if (copyOfCloudBackend && copyOfCloudBackend.build) {

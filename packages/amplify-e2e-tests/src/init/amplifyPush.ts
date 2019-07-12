@@ -25,14 +25,15 @@ function amplifyPush(
 
 function amplifyPushUpdate(
   cwd: string,
-  verbose: Boolean = isCI() ? false : true
+  waitForText?: RegExp,
+  verbose: Boolean = isCI() ? false : true,
 ) {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
       .wait('Are you sure you want to continue?')
       .sendline('y')
-      .wait(/.*/)
+      .wait(waitForText || /.*/)
       .run(function(err: Error) {
         if (!err) {
           resolve();

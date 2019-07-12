@@ -26,6 +26,7 @@ export function addApiWithSchema(
   schemaFile: string,
   verbose: boolean = !isCI()
 ) {
+  const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
@@ -38,7 +39,7 @@ export function addApiWithSchema(
       .wait('Do you have an annotated GraphQL schema?')
       .sendline('y')
       .wait('Provide your schema file path:')
-      .sendline(getSchemaPath(schemaFile))
+      .sendline(schemaPath)
       // tslint:disable-next-line
       .wait('"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud')
       .run(function(err: Error) {
