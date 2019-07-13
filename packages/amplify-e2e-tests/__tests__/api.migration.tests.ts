@@ -75,4 +75,46 @@ describe('amplify add api', () => {
         /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/
     );
   });
+
+  it('init project, run invalid migration trying to add a sort key to @connection, and check for error', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_connection/initial_schema.graphql';
+    const nextSchema1 = 'migrations_connection/cant_add_a_sort_key.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(
+        projRoot,
+        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+    );
+  });
+
+  it('init project, run invalid migration trying to change add and remove connection at same time, and check for error', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_connection/initial_schema.graphql';
+    const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(
+        projRoot,
+        /Attempting to add and remove a global secondary index at the same time on the CommentTable table in the Comment stack.*/
+    );
+  });
+
+  it('init project, run invalid migration trying to change a @connection field name, and check for error', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_connection/initial_schema.graphql';
+    const nextSchema1 = 'migrations_connection/cant_change_connection_field_name.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(
+        projRoot,
+        /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
+    );
+  });
 });

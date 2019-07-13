@@ -27,7 +27,8 @@ export async function check(currentCloudBackendDir: string, buildDirectory: stri
         cantEditKeySchema,
         cantAddLSILater,
         cantEditGSIKeySchema,
-        cantEditLSIKeySchema
+        cantEditLSIKeySchema,
+        cantAddAndRemoveGSIAtSameTime
     ];
     // Project rules run on the full set of diffs, the current build, and the next build.
     const projectRules: ProjectRule[] = [
@@ -113,8 +114,18 @@ export function cantAddLSILater(diff: Diff) {
   * @param nextBuild The next build.
   */
  export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+    function throwError(indexName: string, stackName: string, tableName: string) {
+        throw new InvalidMigrationError(
+            `Attempting to edit the global secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
+            'The key schema of a global secondary indexes cannot be changed after being deployed.',
+            'If using @key, first add a new @key, run `amplify push`, ' +
+            'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
+            'and then add the new @connection with the new configuration.'
+        );
+    }
     if (
-        // ["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
+        // implies a field was changed in a GSI after it was created. 
+        // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
         diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema'
     ) {
         // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
@@ -134,14 +145,67 @@ export function cantAddLSILater(diff: Diff) {
                 const indexName = innerDiff.path[0];
                 const stackName = basename(diff.path[1], '.json')
                 const tableName = diff.path[3];
-                throw new InvalidMigrationError(
-                    `Attempting to edit the global secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
-                    'The key schema of a global secondary indexes cannot be changed after being deployed.',
-                    'If using the @key directive, first add a new @key, run `amplify push`, ' +
-                    'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
-                    'and then add the new @connection with the new configuration.'
-                );
+                throwError(indexName, stackName, tableName);
             }
+        }
+    } else if (
+        // implies a field was added to a GSI after it was created.
+        // Path like: [ "stacks", "Comment.json", "Resources", "CommentTable", "Properties", "GlobalSecondaryIndexes", 0, "KeySchema" ]
+        diff.kind === 'A' && diff.path.length === 8 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema'
+    ) {
+        const pathToSpecificGSI = diff.path.slice(0, 7);
+        const gsi = get(nextBuild, pathToSpecificGSI);
+        const indexName = gsi.IndexName;
+        const stackName = basename(diff.path[1], '.json')
+        const tableName = diff.path[3];
+        throwError(indexName, stackName, tableName);
+    }
+}
+
+/**
+  * Throws a helpful error when a customer is trying to complete an invalid migration.
+  * Users are unable to add and remove GSIs at the same time.
+  * @param diffs The set of diffs between currentBuild and nextBuild.
+  * @param currentBuild The last deployed build.
+  * @param nextBuild The next build.
+  */
+ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+    function throwError(stackName: string, tableName: string) {
+        throw new InvalidMigrationError(
+            `Attempting to add and remove a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
+            'You may only change one global secondary index in a single CloudFormation stack update. ',
+            'If using @key, change one @key at a time. ' +
+            'If using @connection, add the new @connection, run `amplify push`, ' +
+            'and then remove the new @connection with the new configuration.'
+        );
+    }
+    if (
+        // implies a field was changed in a GSI after it was created. 
+        // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
+        diff.kind === 'E' && diff.path.length > 6 && diff.path[5] === 'GlobalSecondaryIndexes'
+    ) {
+        // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
+        const pathToGSIs = diff.path.slice(0, 6);
+        const oldIndexes = get(currentBuild, pathToGSIs);
+        const newIndexes = get(nextBuild, pathToGSIs);
+        const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
+        const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
+        const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+        let sawDelete = false;
+        let sawNew = false;
+        for (const diff of innerDiffs) {
+            // A path of length 1 means an entire GSI was created or deleted.
+            if (diff.path.length === 1 && diff.kind === 'D') {
+                sawDelete = true;
+            }
+            if (diff.path.length === 1 && diff.kind === 'N') {
+                sawNew = true;
+            }
+        }
+        if (sawDelete && sawNew) {
+            const stackName = basename(diff.path[1], '.json')
+            const tableName = diff.path[3];
+            throwError(stackName, tableName);
         }
     }
 }
