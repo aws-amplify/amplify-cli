@@ -2,7 +2,8 @@ export {
   default as initProjectWithProfile,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initNewEnvWithProfile
+  initNewEnvWithProfile,
+  initHeadless
 } from './initProjectHelper';
 export {
   amplifyPush, amplifyPushAuth

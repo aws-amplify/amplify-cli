@@ -4,7 +4,8 @@ import {
   deleteProject,
   initProjectWithAccessKey,
   initNewEnvWithAccessKey,
-  initNewEnvWithProfile
+  initNewEnvWithProfile,
+  initHeadless
 } from '../src/init';
 import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from '../src/utils';
 import { access } from 'fs';
@@ -99,5 +100,29 @@ describe('amplify init', () => {
     await expect(newEnvUnAuthRoleName).toBeIAMRoleWithArn(newEnvUnauthRoleArn);
     await expect(newEnvAuthRoleName).toBeIAMRoleWithArn(newEnvAuthRoleArn);
     await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
+  });
+  it('should init project in headless mode', async () => {
+    await initHeadless(projRoot, {
+      amplify: {
+        envName: 'headless'
+      },
+      providers: {
+        configLevel: 'project',
+        useProfile: true,
+        profileName: 'amplifyinteg'
+      },
+      codegen: {
+        generateCode: false,
+        generateDocs: false
+      }
+    });
+
+    const meta = getProjectMeta(projRoot).providers.awscloudformation;
+    expect(meta.Region).toBeDefined();
+    const { AuthRoleName, UnauthRoleName, UnauthRoleArn, AuthRoleArn, DeploymentBucketName } = meta;
+
+    await expect(UnauthRoleName).toBeIAMRoleWithArn(UnauthRoleArn);
+    await expect(AuthRoleName).toBeIAMRoleWithArn(AuthRoleArn);
+    await expect(DeploymentBucketName).toBeAS3Bucket();
   });
 });
