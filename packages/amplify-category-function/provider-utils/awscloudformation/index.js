@@ -420,7 +420,8 @@ function getHeadlessParams(context, service) {
     inputParams.categories &&
     inputParams.categories.function &&
     Array.isArray(inputParams.categories.function)
-  ) ? inputParams.categories.function.find(i => i.resourceName === service) : {};
+  ) ? inputParams.categories.function.find(i => i.resourceName === service) || {}
+    : {};
 }
 
 
