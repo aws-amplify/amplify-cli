@@ -109,7 +109,7 @@ describe('amplify init', () => {
       providers: {
         configLevel: 'project',
         useProfile: true,
-        profileName: 'amplifyinteg'
+        profileName: 'amplify-integ-test-user'
       },
       codegen: {
         generateCode: false,
