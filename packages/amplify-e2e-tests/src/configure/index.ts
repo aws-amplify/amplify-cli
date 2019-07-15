@@ -8,7 +8,7 @@ type AmplifyConfiguration = {
   profileName?: string,
 };
 const defaultSettings = {
-  profileName: 'amplifyinteg',
+  profileName: 'amplify-integ-test-user',
   region: '\r',
   userName: '\r',
 };
