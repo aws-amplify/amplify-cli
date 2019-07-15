@@ -102,12 +102,6 @@ describe('amplify init', () => {
     await expect(newEnvDeploymentBucketName).toBeAS3Bucket();
   });
   it('should init project in headless mode', async () => {
-    const { ACCESS_KEY_ID, SECRET_ACCESS_KEY } = getEnvVars();
-    if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-      throw new Error(
-        'Set ACCESS_KEY_ID and SECRET_ACCESS_KEY either in .env file or as Environment variable'
-      );
-    }
     await initHeadless(projRoot, {
       amplify: {
         envName: 'headless'
