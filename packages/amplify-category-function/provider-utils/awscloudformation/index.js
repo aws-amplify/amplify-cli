@@ -415,8 +415,12 @@ function isInHeadlessMode(context) {
 }
 
 function getHeadlessParams(context, service) {
-  const { inputParams } = context.exeInfo;
-  return inputParams.categories.function.find(i => i.resourceName === service) || {};
+  const { inputParams = {} } = context.exeInfo;
+  return (
+    inputParams.categories &&
+    inputParams.categories.function &&
+    Array.isArray(inputParams.categories.function)
+  ) ? inputParams.categories.function.find(i => i.resourceName === service) : {};
 }
 
 
