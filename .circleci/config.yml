@@ -191,6 +191,7 @@ workflows:
           filters:
             branches:
               only:
+                - checke2e
                 - master
                 - graphql_e2e_testing
           requires:
@@ -199,6 +200,7 @@ workflows:
           filters:
             branches:
               only:
+                - checke2e
                 - master
                 - beta
           requires:
@@ -207,6 +209,7 @@ workflows:
           filters:
             branches:
               only:
+                - checke2e
                 - master
           requires:
             - build
