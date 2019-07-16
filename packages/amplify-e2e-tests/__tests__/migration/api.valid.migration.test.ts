@@ -21,7 +21,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run valid migration adding a GSI', async () => {
-    const projectName = 'valid-adding-gsi';
+    const projectName = 'validaddinggsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/add_gsi.graphql';
     await initProjectWithProfile(projRoot, { name: projectName });
@@ -32,7 +32,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run valid migration to remove a connection, then run another migration that adds a slightly different GSI.', async () => {
-    const projectName = 'valid-remove-then-add-connection';
+    const projectName = 'removeaddconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
     const nextSchema1 = 'migrations_connection/remove_connection.graphql';
     const nextSchema2 = 'migrations_connection/add_a_sort_key.graphql';

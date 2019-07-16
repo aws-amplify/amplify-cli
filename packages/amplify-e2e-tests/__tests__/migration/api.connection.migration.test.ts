@@ -21,7 +21,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run invalid migration trying to add a sort key to @connection, and check for error', async () => {
-    const projectName = 'migration-add-connection';
+    const projectName = 'addconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
     const nextSchema1 = 'migrations_connection/cant_add_a_sort_key.graphql';
     await initProjectWithProfile(projRoot, { name: projectName });
@@ -35,7 +35,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run invalid migration trying to change add and remove connection at same time, and check for error', async () => {
-    const projectName = 'migration-remove-add-connection';
+    const projectName = 'iremoveaddconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
     const nextSchema1 = 'migrations_connection/cant_add_and_remove_at_same_time.graphql';
     await initProjectWithProfile(projRoot, { name: projectName });
@@ -49,7 +49,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run invalid migration trying to change a @connection field name, and check for error', async () => {
-    const projectName = 'migration-change-connection';
+    const projectName = 'changeconnection';
     const initialSchema = 'migrations_connection/initial_schema.graphql';
     const nextSchema1 = 'migrations_connection/cant_change_connection_field_name.graphql';
     await initProjectWithProfile(projRoot, { name: projectName });

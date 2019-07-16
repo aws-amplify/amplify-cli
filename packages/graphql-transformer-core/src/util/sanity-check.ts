@@ -37,10 +37,7 @@ export async function check(currentCloudBackendDir: string, buildDirectory: stri
     if (cloudBackendDirectoryExists && buildDirectoryExists) {
         const current = await loadDiffableProject(currentCloudBackendDir, rootStackName);
         const next = await loadDiffableProject(buildDirectory, rootStackName);
-        fs.writeFileSync('current.json', JSON.stringify(current, null, 4));
-        fs.writeFileSync('next.json', JSON.stringify(next, null, 4));
         const diffs = getDiffs(current, next);
-        fs.writeFileSync('diff.json', JSON.stringify(diffs, null, 4));
         // Loop through the diffs and call each DiffRule.
         // We loop once so each rule does not need to loop.
         for (const diff of diffs) {
@@ -117,7 +114,7 @@ export function cantAddLSILater(diff: Diff) {
     function throwError(indexName: string, stackName: string, tableName: string) {
         throw new InvalidMigrationError(
             `Attempting to edit the global secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
-            'The key schema of a global secondary indexes cannot be changed after being deployed.',
+            'The key schema of a global secondary index cannot be changed after being deployed.',
             'If using @key, first add a new @key, run `amplify push`, ' +
             'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
             'and then add the new @connection with the new configuration.'

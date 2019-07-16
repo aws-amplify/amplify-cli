@@ -63,7 +63,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run invalid migration trying to change an lsi, and check for error', async () => {
-    const projectName = 'migration-change-lsi';
+    const projectName = 'migrationchangelsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_lsi.graphql';
     await initProjectWithProfile(projRoot, { name: projectName });
