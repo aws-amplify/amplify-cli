@@ -1380,6 +1380,53 @@ amazon-cognito-identity-js@^3.0.12, amazon-cognito-identity-js@^3.0.7:
     crypto-js "^3.1.9-1"
     js-cookie "^2.1.4"
 
+amplify-category-auth@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/amplify-category-auth/-/amplify-category-auth-1.7.0.tgz#d1d417030c520b58d7406f18ac606e497f051ee2"
+  integrity sha512-+uMX0fNuPgfbdzLLSH9niA8R1tZlLa3RxLbCBy7MQy9v/AddBPsIoH390ugqF3aIGLlMr+sUP84qnCfpYakpCw==
+  dependencies:
+    amplify-category-function "1.7.0"
+    aws-sdk "^2.475.0"
+    chalk "^2.4.1"
+    chalk-pipe "^2.0.0"
+    eslint "^4.19.1"
+    fs-extra "^7.0.0"
+    inquirer "6.3.1"
+    jest "^23.5.0"
+    lodash "^4.17.10"
+    mime-types "^2.1.24"
+    opn "^5.3.0"
+    ora "^3.4.0"
+    promise-sequential "^1.1.1"
+    uuid "^2.0.3"
+
+amplify-category-function@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/amplify-category-function/-/amplify-category-function-1.7.0.tgz#88b6bf8f334cc89571d7ed4b0d567c56bcb34f65"
+  integrity sha512-4IchQqBX5B3u3D87l8sna7cKRFx1dEdfcCfF6dzL1bCE+c+d372GQyskURo+ZpFIaTuj+rhu80IqN6iZE9iCtA==
+  dependencies:
+    amplify-category-storage "1.8.0"
+    eslint "^4.19.1"
+    fs-extra "^7.0.0"
+    grunt "^1.0.3"
+    grunt-aws-lambda "^0.13.0"
+    inquirer "6.3.1"
+    mime-types "^2.1.24"
+    promise-sequential "^1.1.1"
+    uuid "^3.3.2"
+
+amplify-category-storage@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/amplify-category-storage/-/amplify-category-storage-1.8.0.tgz#c3b329dc089e2d9f2b7cb780b556710d4503b135"
+  integrity sha512-7THys/QnHG3Z0ZxZCHq58QbIMagUKgaCeKMqClZwD8n1jj2hnHJdV7yBP1Stq4K9mXx41ufitxzDBFqSPSAD7w==
+  dependencies:
+    amplify-category-auth "1.7.0"
+    eslint "^4.19.1"
+    fs-extra "^7.0.0"
+    inquirer "6.3.1"
+    lodash "^4.17.10"
+    uuid "^2.0.3"
+
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"
