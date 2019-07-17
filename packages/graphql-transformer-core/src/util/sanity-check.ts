@@ -123,7 +123,10 @@ export function cantAddLSILater(diff: Diff) {
     if (
         // implies a field was changed in a GSI after it was created. 
         // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
-        diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema'
+        (diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema') ||
+        // implies a field was added to a GSI after it was created.
+        // Path like: [ "stacks", "Comment.json", "Resources", "CommentTable", "Properties", "GlobalSecondaryIndexes", 0, "KeySchema" ]
+        (diff.kind === 'A' && diff.path.length === 8 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema')
     ) {
         // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
         const pathToGSIs = diff.path.slice(0, 6);
@@ -143,19 +146,14 @@ export function cantAddLSILater(diff: Diff) {
                 const stackName = basename(diff.path[1], '.json')
                 const tableName = diff.path[3];
                 throwError(indexName, stackName, tableName);
+            } else if (innerDiff.kind === 'A' && innerDiff.path.length === 2 && innerDiff.path[1] === 'KeySchema') {
+                // Path like - ["gsi-PostComments", "KeySchema" ]
+                const indexName = innerDiff.path[0];
+                const stackName = basename(diff.path[1], '.json')
+                const tableName = diff.path[3];
+                throwError(indexName, stackName, tableName);
             }
         }
-    } else if (
-        // implies a field was added to a GSI after it was created.
-        // Path like: [ "stacks", "Comment.json", "Resources", "CommentTable", "Properties", "GlobalSecondaryIndexes", 0, "KeySchema" ]
-        diff.kind === 'A' && diff.path.length === 8 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema'
-    ) {
-        const pathToSpecificGSI = diff.path.slice(0, 7);
-        const gsi = get(nextBuild, pathToSpecificGSI);
-        const indexName = gsi.IndexName;
-        const stackName = basename(diff.path[1], '.json')
-        const tableName = diff.path[3];
-        throwError(indexName, stackName, tableName);
     }
 }
 
