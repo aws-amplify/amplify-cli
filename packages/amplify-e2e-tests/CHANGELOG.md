@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.0...amplify-e2e-tests@1.6.1-beta.0) (2019-07-17)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.5.5...amplify-e2e-tests@1.6.0) (2019-07-09)
 
 
