@@ -41,8 +41,8 @@ async function run(context) {
     };
 
     const spinner = ora();
-    spinner.start('Initializing project in the cloud...');
     const awsConfig = await getAwsConfig(context);
+    spinner.start('Initializing project in the cloud...');
     return new Cloudformation(context, 'init', awsConfig)
       .then(cfnItem => cfnItem.createResourceStack(params))
       .then((waitData) => {
