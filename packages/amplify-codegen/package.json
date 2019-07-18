@@ -19,7 +19,7 @@
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.1",
     "eslint": "^4.9.0",
-    "fs-jetpack": "^2.1.0",
+    "fs-extra": "^8.0.1",
     "glob-all": "^3.1.0",
     "graphql": "^14.0.2",
     "graphql-config": "^2.1.0",
