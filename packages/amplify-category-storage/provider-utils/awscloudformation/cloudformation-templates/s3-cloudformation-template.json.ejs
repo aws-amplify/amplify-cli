@@ -280,6 +280,9 @@
             }
         },
          "S3TriggerBucketPolicy": {
+            "DependsOn": [
+                "S3Bucket"
+            ],
             "Type": "AWS::IAM::Policy",
             "Properties": {
                 "PolicyName": "amplify-lambda-execution-policy",
@@ -306,7 +309,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "bucketName"
+                                                "Ref": "S3Bucket"
                                             },
                                             "/*"
                                         ]

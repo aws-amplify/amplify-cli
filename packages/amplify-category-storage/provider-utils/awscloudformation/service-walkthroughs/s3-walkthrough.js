@@ -515,6 +515,9 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
 
     storageCFNFile.Resources.S3TriggerBucketPolicy = {
       Type: 'AWS::IAM::Policy',
+      DependsOn: [
+        'S3Bucket',
+      ],
       Properties: {
         PolicyName: 's3-trigger-lambda-execution-policy',
         Roles: [
@@ -540,7 +543,7 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
                     [
                       'arn:aws:s3:::',
                       {
-                        Ref: 'bucketName',
+                        Ref: 'S3Bucket',
                       },
                       '/*',
                     ],
