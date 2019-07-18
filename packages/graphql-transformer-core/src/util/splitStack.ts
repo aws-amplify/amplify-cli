@@ -15,16 +15,15 @@ export interface NestedStacks {
     // All the nested stack templates.
     stacks: {
         [name: string]: Template
-    }
+    },
+    // The full stack mapping for the deployment.
+    stackMapping: { [resourceId: string]: string }
 }
 interface NestedStackInfo {
     stackDependencyMap: { [k: string]: string[] }
     stackParameterMap: { [k: string]: {[p: string]: any }  }
 }
 
-// export interface StackRules {
-//     [key: string]: RegExp[];
-// }
 export type StackRules = Map<string, string>;
 export interface SplitStackOptions {
     stack: Template,
@@ -50,25 +49,24 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
 
     /**
      * Returns a map where the keys are the Resource/Output ids and the values are
-     * the names of the stack where that Resource/Output belongs.
+     * the names of the stack where that Resource/Output belongs. This fills
+     * any missing values with that of the root stack and thus returns a full-mapping.
      */
     function createMapByStackRules(
         keys: string[]
     ): { [key: string]: string } {
         const stackMap = {};
         for (const key of keys) {
-            stackRules.forEach((stackName, regExStr) => {
-                const regEx = new RegExp(regExStr, 'i');
-                if (regEx.test(key)) {
-                    stackMap[key] = stackName;
-                }
-            });
-            if (!stackMap[key]) {
+            const mappedTo = stackRules.get(key);
+            if (mappedTo) {
+                stackMap[key] = mappedTo;
+            } else {
                 stackMap[key] = rootStackName;
             }
         }
         return stackMap;
     }
+    
     /**
      * Returns a map where the keys are the resource ids and the values are the
      * names of the stack where that resource belongs.
@@ -78,6 +76,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     ): { [key: string]: string } {
         return createMapByStackRules(Object.keys(template.Resources));
     }
+
     /**
      * Returns a map where the keys are the Outputs ids and the values are the
      * names of the stack where that Output belongs.
@@ -341,6 +340,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     const templateJson: any = JSON.parse(JSON.stringify(stack));
     const resourceToStackMap = mapResourcesToStack(templateJson);
     const outputToStackMap = mapOutputsToStack(templateJson);
+    const stackMapping = { ...resourceToStackMap, ...outputToStackMap };
     const stacks = collectTemplates(templateJson, resourceToStackMap, outputToStackMap);
     const stackInfo = replaceReferences(stacks, resourceToStackMap);
     let rootStack = stacks[rootStackName];
@@ -348,6 +348,7 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
     rootStack = updateRootWithNestedStacks(rootStack, stacks, stackInfo);
     return {
         rootStack,
-        stacks
+        stacks,
+        stackMapping
     }
 }

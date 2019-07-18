@@ -22,7 +22,7 @@ async function buildResource(context, resource) {
   const distDir = path.normalize(path.join(backEndDir, category, resourceName, 'dist'));
 
   let zipFilename = resource.distZipFilename;
-  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, zipFilename)) : '';
+  let zipFilePath = zipFilename ? path.normalize(path.join(distDir, 'latest-build.zip')) : '';
 
   if (
     !resource.lastBuildTimeStamp ||
@@ -75,11 +75,15 @@ async function buildResource(context, resource) {
 function isPackageOutdated(resourceDir, lastPackageTimeStamp) {
   const lastPackageDate = new Date(lastPackageTimeStamp);
   const sourceFiles = getSourceFiles(resourceDir, 'node_modules');
+  const dirMTime = fs.statSync(resourceDir).mtime;
+  if (new Date(dirMTime) > lastPackageDate) {
+    return true;
+  }
 
   for (let i = 0; i < sourceFiles.length; i += 1) {
     const file = sourceFiles[i];
-    const { mtime } = fs.statSync(file);
-    if (new Date(mtime) > lastPackageDate) {
+    const fileMTime = fs.statSync(file).mtime;
+    if (new Date(fileMTime) > lastPackageDate) {
       return true;
     }
   }

@@ -75,7 +75,13 @@ export class TransformerContextMetadata {
     }
 }
 
-// export interface StackMapping { [k: RegExp]: string }
+/**
+ * The stack mapping defines a full mapping from resource id
+ * to the stack that it belongs to. When transformers add
+ * resources to the context, they add an entry to the
+ * stack mapping and that resource will be pulled into the related stack
+ * automatically.
+ */
 export type StackMapping = Map<string, string>;
 
 /**
@@ -625,14 +631,13 @@ export default class TransformerContext {
         this.nodeMap[en.name.value] = en
     }
 
-    public putStackMapping(stackName: string, listOfRegex: string[]) {
-        for (const reg of listOfRegex) {
-            this.stackMapping.set(reg.toLowerCase(), stackName);
-        }
-    }
-
-    public addToStackMapping(stackName: string, regex: string) {
-        this.stackMapping.set(regex.toLowerCase(), stackName);
+    /**
+     * Add an item to the stack mapping.
+     * @param stackName The destination stack name.
+     * @param resource The resource id that should be put into the stack.
+     */
+    public mapResourceToStack(stackName: string, resource: string) {
+        this.stackMapping.set(resource, stackName);
     }
 
     public getStackMapping(): StackMapping {

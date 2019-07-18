@@ -10,6 +10,7 @@ import {
     uploadDeployment as uploadAPIProject,
     migrateAPIProject,
     revertAPIMigration,
+    ensureMissingStackMappings
 } from './util/amplifyUtils'
 import {
     readSchema as readProjectSchema,
@@ -32,5 +33,6 @@ export {
     uploadAPIProject,
     readProjectSchema,
     readProjectConfiguration,
-    revertAPIMigration
+    revertAPIMigration,
+    ensureMissingStackMappings
 }

@@ -1,15 +1,17 @@
 {
   "name": "amplify-category-function",
-  "version": "1.6.0",
+  "version": "1.7.2",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "1.7.4",
+    "amplify-category-storage": "^1.8.2",
     "eslint": "^4.19.1",
     "fs-extra": "^7.0.0",
     "grunt": "^1.0.3",
     "grunt-aws-lambda": "^0.13.0",
     "inquirer": "6.3.1",
+    "mime-types": "^2.1.24",
+    "promise-sequential": "^1.1.1",
     "uuid": "^3.3.2"
   },
   "scripts": {

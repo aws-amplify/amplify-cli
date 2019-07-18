@@ -13,17 +13,9 @@ import splitStack, { StackRules } from './util/splitStack'
 import { DeploymentResources, ResolversFunctionsAndSchema, ResolverMap } from './DeploymentResources';
 import { ResourceConstants } from "graphql-transformer-common";
 
-interface TransformFormatterOptions {
-    stackRules: StackRules
-}
 export class TransformFormatter {
 
-    private opts: TransformFormatterOptions;
     private schemaResourceUtil = new SchemaResourceUtil()
-
-    constructor(opts: TransformFormatterOptions) {
-        this.opts = opts;
-    }
 
     /**
      * Formats the ctx into a set of deployment resources.
@@ -39,7 +31,7 @@ export class TransformFormatter {
         }
         const nestedStacks = splitStack({
             stack: ctx.template,
-            stackRules: this.opts.stackRules,
+            stackRules: ctx.getStackMapping(),
             defaultParameterValues: {
                 [ResourceConstants.PARAMETERS.AppSyncApiId]: Fn.GetAtt(
                     ResourceConstants.RESOURCES.GraphQLAPILogicalID,

@@ -1,13 +1,13 @@
 const fs = require('fs-extra');
 import * as path from 'path';
-import { CloudFormation, Fn, Template } from "cloudform-types";
+import { CloudFormation, Fn, Template, Cognito } from "cloudform-types";
 import GraphQLTransform from '..';
 import Transformer from '../Transformer';
 import DeploymentResources from '../DeploymentResources';
-import { StackMappingOption } from '../GraphQLTransform';
+import { StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
-import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema } from './transformConfig';
+import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 
 const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -17,10 +17,14 @@ export interface ProjectOptions {
     transformers: Transformer[]
     rootStackFileName?: string
 }
-
 export async function buildProject(opts: ProjectOptions) {
+    const builtProject = await _buildProject(opts);
+    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+}
+
+async function _buildProject(opts: ProjectOptions) {
     const userProjectConfig = await loadProject(opts.projectDirectory)
-    const stackMapping = getStackMappingsFromMigrationConfig(userProjectConfig.config.Migration);
+    const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
     const transform = new GraphQLTransform({
         transformers: opts.transformers,
         stackMapping
@@ -30,7 +34,7 @@ export async function buildProject(opts: ProjectOptions) {
         transformOutput = adjustBuildForMigration(transformOutput, userProjectConfig.config.Migration);
     }
     const merged = mergeUserConfigWithTransformOutput(userProjectConfig, transformOutput)
-    await writeDeploymentToDisk(merged, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+    return merged;
 }
 
 /**
@@ -38,12 +42,16 @@ export async function buildProject(opts: ProjectOptions) {
  * This will be passed to the transform constructor to cause resources from a migration
  * to remain in the top level stack.
  */
-function getStackMappingsFromMigrationConfig(migrationConfig?: TransformMigrationConfig): StackMappingOption {
+function getStackMappingFromProjectConfig(config?: TransformConfig): StackMapping {
+    const stackMapping = getOrDefault(config, 'StackMapping', {});
+    const migrationConfig = config.Migration;
     if (migrationConfig && migrationConfig.V1) {
         const resourceIdsToHoist = migrationConfig.V1.Resources || [];
-        return resourceIdsToHoist.reduce((acc: any, k: string) => ({ ...acc, [k]: 'root'}), {});
+        for (const idToHoist of resourceIdsToHoist) {
+            stackMapping[idToHoist] = 'root';
+        }
     }
-    return {};
+    return stackMapping;
 }
 
 /**
@@ -80,6 +88,72 @@ function adjustBuildForMigration(resources: DeploymentResources, migrationConfig
         }
     }
     return resources;
+}
+
+
+export type FindMissingStackMappingConfig = ProjectOptions & { currentCloudBackendDirectory: string }
+/**
+ * Provided a build configuration & current-cloud-backend directory, calculate
+ * any missing stack mappings that might have been caused by the stack mapping
+ * bug in June 2019 (https://github.com/aws-amplify/amplify-cli/issues/1652).
+ * This allows APIs that were deployed with the bug to continue
+ * working without changes.
+ */
+export async function ensureMissingStackMappings(config: FindMissingStackMappingConfig) {
+    const { currentCloudBackendDirectory, ...buildConfig } = config;
+
+    if (currentCloudBackendDirectory) {
+        const missingStackMappings = {};
+        const transformOutput = await _buildProject(buildConfig);
+        const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
+        const stackMapping = transformOutput.stackMapping;
+        if (copyOfCloudBackend && copyOfCloudBackend.build) {
+            const stackNames = copyOfCloudBackend.build.stacks;
+
+            // We walk through each of the stacks that were deployed in the most recent deployment.
+            // If we find a resource that was deployed into a different stack than it should have
+            // we make a note of it and include it in the missing stack mapping.
+            for (const stackFileName of stackNames) {
+                const stackName = stackFileName.slice(0, stackFileName.length - path.extname(stackFileName).length);
+                const lastDeployedStack = JSON.parse(copyOfCloudBackend.build.stacks[stackFileName]);
+                if (lastDeployedStack) {
+                    const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
+                    for (const resourceId of resourceIdsInStack) {
+                        if (stackMapping[resourceId] && stackName !== stackMapping[resourceId]) {
+                            missingStackMappings[resourceId] = stackName;
+                        }
+                    }
+                    const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+                    for (const outputId of outputIdsInStack) {
+                        if (stackMapping[outputId] && stackName !== stackMapping[outputId]) {
+                            missingStackMappings[outputId] = stackName;
+                        }
+                    }
+                }
+            }
+
+            // We then do the same thing with the root stack.
+            const lastDeployedStack = JSON.parse(copyOfCloudBackend.build[config.rootStackFileName]);
+            const resourceIdsInStack = Object.keys(lastDeployedStack.Resources);
+            for (const resourceId of resourceIdsInStack) {
+                if (stackMapping[resourceId] && 'root' !== stackMapping[resourceId]) {
+                    missingStackMappings[resourceId] = 'root';
+                }
+            }
+            const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+            for (const outputId of outputIdsInStack) {
+                if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
+                    missingStackMappings[outputId] = 'root';
+                }
+            };
+            // If there are missing stack mappings, we write them to disk.
+            if (Object.keys(missingStackMappings).length) {
+                let conf = await loadConfig(config.projectDirectory);
+                conf = { ...conf, StackMapping: { ...getOrDefault(conf, 'StackMapping', {}), ...missingStackMappings } };
+                await writeConfig(config.projectDirectory, conf);
+            }
+        }
+    }
 }
 
 /**
@@ -544,4 +618,8 @@ function resolverDirectoryPath(rootPath: string) {
 
 function stacksDirectoryPath(rootPath: string) {
     return path.normalize(rootPath + `/stacks`)
+}
+
+function getOrDefault(o: any, k: string, d: any) {
+    return o[k] || d;
 }

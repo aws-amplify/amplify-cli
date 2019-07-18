@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+console.log('this is all lowercase');
+console.log('ThIs HAS mAny cases');
+console.log('ThIs also HAS mAny cASEs');

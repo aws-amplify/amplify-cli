@@ -1,0 +1,22 @@
+{
+  "captcha-create-challenge": {
+    "name": "MFA w/ Captcha (Creation)",
+    "description": "1 of 3 triggers needed to enable your application to use Google reCaptcha during the authentication flow."
+  },
+  "boilerplate-create-challenge": {
+    "name": "Custom Auth Challenge Scaffolding (Creation)",
+    "description": "1 of 3 triggers needed to set-up the basic scaffolding for a custom authentication flow.  Please note that this scaffolding should be built out using your desired functionality before being used in production.",
+    "env": [
+      {
+        "key": "CHALLENGEANSWER",
+        "value": "askUser",
+        "private": true,
+        "question": {
+          "name" : "CHALLENGEANSWER",
+          "type": "input",
+          "message": "Enter the answer to your custom auth challenge"
+        }
+      }
+    ]
+  }
+}
