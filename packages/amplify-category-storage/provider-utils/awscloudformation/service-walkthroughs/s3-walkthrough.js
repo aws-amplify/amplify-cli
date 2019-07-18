@@ -540,7 +540,7 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
                     [
                       'arn:aws:s3:::',
                       {
-                        Ref: 'bucketName',
+                        Ref: 'S3Bucket',
                       },
                       '/*',
                     ],
