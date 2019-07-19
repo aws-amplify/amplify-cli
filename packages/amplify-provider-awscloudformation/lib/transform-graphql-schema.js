@@ -10,6 +10,7 @@ const VersionedModelTransformer = require('graphql-versioned-transformer').defau
 const FunctionTransformer = require('graphql-function-transformer').default;
 const HTTPTransformer = require('graphql-http-transformer').default;
 const KeyTransformer = require('graphql-key-transformer').default;
+const RelationTransformer = require('graphql-relation-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
@@ -216,6 +217,7 @@ async function transformGraphQLSchema(context, options) {
     new FunctionTransformer(),
     new HTTPTransformer(),
     new KeyTransformer(),
+    new RelationTransformer(),
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
     new ModelAuthTransformer({ authMode }),

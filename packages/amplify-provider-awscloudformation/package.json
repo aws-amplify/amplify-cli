@@ -25,6 +25,7 @@
     "graphql-function-transformer": "1.1.4",
     "graphql-http-transformer": "3.4.11",
     "graphql-key-transformer": "1.1.6",
+    "graphql-relation-transformer": "1.0.0",
     "graphql-transformer-common": "3.8.2",
     "graphql-transformer-core": "3.7.4",
     "graphql-versioned-transformer": "3.4.11",

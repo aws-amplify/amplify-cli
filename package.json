@@ -41,7 +41,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "3.10.8"
+    "yarn": "^1.17.3"
   },
   "workspaces": [
     "packages/*"
@@ -52,7 +52,8 @@
     "@commitlint/config-lerna-scopes": "^7.1.2",
     "commitizen": "^3.0.2",
     "cz-conventional-changelog": "^2.1.0",
-    "husky": "^1.1.0"
+    "husky": "^1.1.0",
+    "lerna": "^3.10.8"
   },
   "config": {
     "commitizen": {
