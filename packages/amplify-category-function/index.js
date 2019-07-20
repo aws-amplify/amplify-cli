@@ -4,6 +4,10 @@ const {
   updateConfigOnEnvInit,
 } = require('./provider-utils/awscloudformation');
 
+const {
+  invokeFunction,
+} = require('./provider-utils/awscloudformation/utils/invoke');
+
 
 const category = 'function';
 
@@ -121,6 +125,11 @@ async function initEnv(context) {
 }
 
 
+function invoke(options) {
+  invokeFunction(options);
+}
+
+
 module.exports = {
   add,
   update,
@@ -128,4 +137,5 @@ module.exports = {
   migrate,
   initEnv,
   getPermissionPolicies,
+  invoke,
 };
