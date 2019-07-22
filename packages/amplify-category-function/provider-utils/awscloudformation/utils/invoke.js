@@ -1,15 +1,15 @@
 const path = require('path');
-const fs = require('fs');
 
 function loadFunction(fileName) {
   return require(path.resolve(fileName));
 }
 /*
 var options = this.options({
-    'packageFolder': './',
-    'handler': 'handler',
-    'fileName': 'index.js',
-    'event': 'event.json'
+    'packageFolder': './', //required
+    'handler': 'handler', // required
+    'fileName': 'index.js', // required
+    'event': 'event.json', // required
+    'context': 'context.json' // optional
 });
 */
 function invokeFunction(options) {
@@ -52,12 +52,16 @@ function invokeFunction(options) {
     logStreamName: 'LAMBDA_INVOKE',
   };
 
+  if (options.context) {
+    Object.assign(context, options.context);
+  }
+
   const callback = (error, object) => {
     context.done(error, object);
   };
 
   const lambda = loadFunction(options.fileName);
-  const event = JSON.parse(fs.readFileSync(path.resolve(options.event), 'utf8'));
+  const { event } = options;
   lambda[options.handler](event, context, callback);
 }
 
