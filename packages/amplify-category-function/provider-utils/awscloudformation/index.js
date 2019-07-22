@@ -1,6 +1,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
+const {
+  invokeFunction,
+} = require('./utils/invoke');
 
 const categoryName = 'function';
 
@@ -348,38 +351,19 @@ async function invoke(context, category, service, resourceName) {
 
   const resourceAnswers = await inquirer.prompt(resourceQuestions);
 
-
-  // Run grunt for invoking lambda function
-
-  const grunt = require('grunt');
-  grunt.task.init = function () { }; //eslint-disable-line
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
 
-  grunt.initConfig({
-    lambda_invoke: {
-      default: {
-        options: {
-          file_name: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
-          handler: `${resourceAnswers[inputs[3].key]}`,
-          event: `${srcDir}/${resourceAnswers[inputs[9].key]}`,
-        },
-      },
-    },
-  });
-  // For prod builds since dependencies are hoisted
-  if (!fs.existsSync(`${__dirname}/../../node_modules/grunt-aws-lambda`)) {
-    process.chdir(`${__dirname}/../../../../`); // grunt checks for node_mnodules in this dir
-  } else {
-    // For dev builds
-    process.chdir(`${__dirname}/../../`); // grunt checks for node_mnodules in this dir
-  }
+  const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[inputs[9].key]}`));
 
-  grunt.loadNpmTasks('grunt-aws-lambda');
+  const invokeOptions = {
+    packageFolder: srcDir,
+    fileName: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
+    handler: `${resourceAnswers[inputs[3].key]}`,
+    event,
+  };
 
-  grunt.tasks(['lambda_invoke'], {}, () => {
-    console.log('Done running invoke function.');
-  });
+  invokeFunction(invokeOptions);
 }
 
 function migrateResource(context, projectPath, service, resourceName) {
