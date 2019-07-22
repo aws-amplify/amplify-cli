@@ -355,6 +355,8 @@ async function invoke(context, category, service, resourceName) {
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
   const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[inputs[9].key]}`));
 
+  const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[inputs[9].key]}`));
+
   const invokeOptions = {
     packageFolder: srcDir,
     fileName: `${srcDir}/${resourceAnswers[inputs[2].key]}`,
