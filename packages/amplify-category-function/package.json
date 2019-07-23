@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-function",
-  "version": "1.7.2",
+  "version": "1.7.3-beta.0",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "^1.8.2",
+    "amplify-category-storage": "1.8.3-beta.0",
     "eslint": "^4.19.1",
     "fs-extra": "^7.0.0",
     "inquirer": "6.3.1",

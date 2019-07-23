@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.1...amplify-category-function@1.7.3-beta.0) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixing headless params ([#1828](https://github.com/aws-amplify/amplify-cli/issues/1828)) ([816e526](https://github.com/aws-amplify/amplify-cli/commit/816e526)), closes [#1826](https://github.com/aws-amplify/amplify-cli/issues/1826) [#1826](https://github.com/aws-amplify/amplify-cli/issues/1826)
+* remove grunt-lambda dependency for local function testing ([#1872](https://github.com/aws-amplify/amplify-cli/issues/1872)) ([bbe55bf](https://github.com/aws-amplify/amplify-cli/commit/bbe55bf))
+
+
+
+
+
 ## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.0...amplify-category-function@1.7.1) (2019-07-10)
 
 

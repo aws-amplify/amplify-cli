@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.1...amplify-category-storage@1.8.3-beta.0) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** consider env in S3TriggerBucketPolicy ([#1853](https://github.com/aws-amplify/amplify-cli/issues/1853)) ([73dbe84](https://github.com/aws-amplify/amplify-cli/commit/73dbe84)), closes [#1852](https://github.com/aws-amplify/amplify-cli/issues/1852)
+
+
+
+
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.0...amplify-category-storage@1.8.1) (2019-07-10)
 
 **Note:** Version bump only for package amplify-category-storage

@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "1.5.6",
+  "version": "1.5.7-beta.0",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
