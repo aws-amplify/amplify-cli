@@ -56,32 +56,33 @@ describe('amplify add api', () => {
     await expect(GraphQLAPIKeyOutput).toBeDefined()
   });
 
-  it('inits a project with a simple model and then migrates the api', async () => {
-    const projectName = 'retaintables';
-    const initialSchema = 'simple_model.graphql';
-    console.log(projRoot);
-    await initProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithSchema(projRoot, initialSchema);
-    updateConfig(projRoot, projectName, {
-      TransformerOptions: {
-        '@model': { EnableDeletionProtection: true }
-      }
-    });
-    await amplifyPush(projRoot);
-    const projectMeta = getProjectMeta(projRoot);
-    const region = projectMeta.providers.awscloudformation.Region;
-    const { output } = projectMeta.api[projectName];
-    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    await expect(GraphQLAPIIdOutput).toBeDefined()
-    await expect(GraphQLAPIEndpointOutput).toBeDefined()
-    await expect(GraphQLAPIKeyOutput).toBeDefined()
-    await deleteProject(projRoot);
-    const tableName = `Todo-${GraphQLAPIIdOutput}-integtest`;
-    const table = await getTable(tableName, region);
-    expect(table.Table).toBeDefined()
-    if (table.Table) {
-      const del = await deleteTable(tableName, region);
-      expect(del.TableDescription).toBeDefined()
-    }
-  });
+  // TODO: Disabling for now until further conversation.
+  // it('inits a project with a simple model with deletion protection enabled and then migrates the api', async () => {
+  //   const projectName = 'retaintables';
+  //   const initialSchema = 'simple_model.graphql';
+  //   console.log(projRoot);
+  //   await initProjectWithProfile(projRoot, { name: projectName });
+  //   await addApiWithSchema(projRoot, initialSchema);
+  //   updateConfig(projRoot, projectName, {
+  //     TransformerOptions: {
+  //       '@model': { EnableDeletionProtection: true }
+  //     }
+  //   });
+  //   await amplifyPush(projRoot);
+  //   const projectMeta = getProjectMeta(projRoot);
+  //   const region = projectMeta.providers.awscloudformation.Region;
+  //   const { output } = projectMeta.api[projectName];
+  //   const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+  //   await expect(GraphQLAPIIdOutput).toBeDefined()
+  //   await expect(GraphQLAPIEndpointOutput).toBeDefined()
+  //   await expect(GraphQLAPIKeyOutput).toBeDefined()
+  //   await deleteProject(projRoot);
+  //   const tableName = `Todo-${GraphQLAPIIdOutput}-integtest`;
+  //   const table = await getTable(tableName, region);
+  //   expect(table.Table).toBeDefined()
+  //   if (table.Table) {
+  //     const del = await deleteTable(tableName, region);
+  //     expect(del.TableDescription).toBeDefined()
+  //   }
+  // });
 });
