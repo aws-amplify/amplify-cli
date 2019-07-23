@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.13.0...amplify-provider-awscloudformation@1.13.1) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix MFA prompt during init ([#1858](https://github.com/aws-amplify/amplify-cli/issues/1858)) ([2de3185](https://github.com/aws-amplify/amplify-cli/commit/2de3185)), closes [#1807](https://github.com/aws-amplify/amplify-cli/issues/1807)
+
+
+
+
+
 # [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.12.2...amplify-provider-awscloudformation@1.13.0) (2019-07-09)
 
 
