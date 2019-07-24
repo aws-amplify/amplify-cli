@@ -39,6 +39,7 @@ export class ResourceConstants {
         DynamoDBModelTableReadIOPS: 'DynamoDBModelTableReadIOPS',
         DynamoDBModelTableWriteIOPS: 'DynamoDBModelTableWriteIOPS',
         DynamoDBEnablePointInTimeRecovery: 'DynamoDBEnablePointInTimeRecovery',
+        DynamoDBEnableServerSideEncryption: 'DynamoDBEnableServerSideEncryption',
 
         // Elasticsearch
         ElasticsearchDomainName: 'ElasticSearchDomainName',
@@ -63,6 +64,7 @@ export class ResourceConstants {
         // DynamoDB
         ShouldUsePayPerRequestBilling: 'ShouldUsePayPerRequestBilling',
         ShouldUsePointInTimeRecovery: 'ShouldUsePointInTimeRecovery',
+        ShouldUseServerSideEncryption: 'ShouldUseServerSideEncryption',
 
         // Auth
         ShouldCreateAPIKey: 'ShouldCreateAPIKey',

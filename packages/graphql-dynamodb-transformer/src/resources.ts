@@ -45,6 +45,14 @@ export class ResourceFactory {
                     'false'
                 ]
             }),
+            [ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption]: new StringParameter({
+                Description: 'Enable server side encryption powered by KMS.',
+                Default: 'true',
+                AllowedValues: [
+                    'true',
+                    'false'
+                ]
+            })
         }
     }
 
@@ -66,7 +74,9 @@ export class ResourceFactory {
                     Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBBillingMode), 'PAY_PER_REQUEST'),
 
                 [ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery]:
-                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true')
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery), 'true'),
+                [ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption]:
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption), 'true'),
             }
         }
     }
@@ -186,7 +196,11 @@ export class ResourceFactory {
                 }
             ) as any,
             SSESpecification: {
-                SSEEnabled: true
+                SSEEnabled: Fn.If(
+                    ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption,
+                    true,
+                    false
+                )
             },
             PointInTimeRecoverySpecification: Fn.If(
                 ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery,
