@@ -6,12 +6,21 @@ import {
   concatAST,
   parse,
   DocumentNode,
-  GraphQLSchema
+  GraphQLSchema,
+  buildASTSchema
 } from 'graphql';
 
 import { ToolError } from './errors'
+import { extname, join, normalize } from 'path';
 
 export function loadSchema(schemaPath: string): GraphQLSchema {
+  if (extname(schemaPath) === '.json') {
+    return loadIntrospectionSchema(schemaPath)
+  }
+  return loadSDLSchema(schemaPath)
+}
+
+function loadIntrospectionSchema(schemaPath: string): GraphQLSchema  {
   if (!fs.existsSync(schemaPath)) {
     throw new ToolError(`Cannot find GraphQL schema file: ${schemaPath}`);
   }
@@ -23,6 +32,11 @@ export function loadSchema(schemaPath: string): GraphQLSchema {
   return buildClientSchema((schemaData.data) ? schemaData.data : schemaData);
 }
 
+function loadSDLSchema(schemaPath: string): GraphQLSchema  {
+  const authDirectivePath = normalize(join(__dirname, '..', 'awsApppSyncDirectives.graphql'));
+  const doc = loadAndMergeQueryDocuments([authDirectivePath, schemaPath]);
+  return buildASTSchema(doc);
+}
 function extractDocumentFromJavascript(content: string, tagName: string = 'gql'): string | null {
   const re = new RegExp(tagName + '\\s*`([^`/]*)`', 'g');
 

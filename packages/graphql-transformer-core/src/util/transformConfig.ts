@@ -2,6 +2,7 @@ const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 import * as path from 'path';
 import { Template } from "cloudform-types";
 import { throwIfNotJSONExt } from './fileUtils';
+import { ProjectOptions } from './amplifyUtils';
 const fs = require('fs-extra');
 
 export interface TransformMigrationConfig {
@@ -69,22 +70,23 @@ interface ProjectConfiguration {
     },
     config: TransformConfig
 }
-export async function loadProject(projectDirectory: string): Promise<ProjectConfiguration> {
+export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
     // Schema
     const schema = await readSchema(projectDirectory);
     // Load the resolvers.
-    const resolverDirectory = path.join(projectDirectory, 'resolvers')
-    const resolverDirExists = await fs.exists(resolverDirectory);
     const resolvers = {}
-    if (resolverDirExists) {
-        const resolverFiles = await fs.readdir(resolverDirectory)
-        for (const resolverFile of resolverFiles) {
-            if (resolverFile.indexOf('.') === 0) {
-                continue;
+    if (!(opts && opts.disableResolverOverrides === true)) {
+        const resolverDirectory = path.join(projectDirectory, 'resolvers')
+        const resolverDirExists = await fs.exists(resolverDirectory);
+        if (resolverDirExists) {
+            const resolverFiles = await fs.readdir(resolverDirectory)
+            for (const resolverFile of resolverFiles) {
+                if (resolverFile.indexOf('.') === 0) {
+                    continue;
+                }
+                const resolverFilePath = path.join(resolverDirectory, resolverFile)
+                resolvers[resolverFile] = await fs.readFile(resolverFilePath)
             }
-
-            const resolverFilePath = path.join(resolverDirectory, resolverFile)
-            resolvers[resolverFile] = await fs.readFile(resolverFilePath)
         }
     }
     const stacksDirectory = path.join(projectDirectory, 'stacks')

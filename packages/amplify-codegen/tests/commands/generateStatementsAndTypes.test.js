@@ -3,12 +3,10 @@ const generateStatements = require('../../src/commands/statements');
 const generateTypes = require('../../src/commands/types');
 const generateStatementsAndTypes = require('../../src/commands/generateStatementsAndType');
 const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors');
-const constants = require('../../src/constants');
 const path = require('path');
 
 const {
   downloadIntrospectionSchemaWithProgress,
-  isAppSyncApiPendingPush,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
 
@@ -90,9 +88,9 @@ describe('command - generateStatementsAndTypes', () => {
     );
   });
 
-  it('should show a warning if the project has local change which is pending push', async () => {
-    isAppSyncApiPendingPush.mockReturnValue(true);
-    await generateStatementsAndTypes(MOCK_CONTEXT, false);
-    expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.MSG_CODEGEN_PENDING_API_PUSH);
-  });
+  // it('should show a warning if the project has local change which is pending push', async () => {
+  //   isAppSyncApiPendingPush.mockReturnValue(true);
+  //   await generateStatementsAndTypes(MOCK_CONTEXT, false);
+  //   expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.MSG_CODEGEN_PENDING_API_PUSH);
+  // });
 });

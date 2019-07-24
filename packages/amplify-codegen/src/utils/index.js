@@ -11,6 +11,7 @@ const getGraphQLDocPath = require('./getGraphQLDocPath');
 const downloadIntrospectionSchemaWithProgress = require('./generateIntrospectionSchemaWithProgress');
 const isAppSyncApiPendingPush = require('./isAppSyncApiPendingPush');
 const updateAmplifyMeta = require('./updateAmplifyMeta');
+const isCodegenConfigured = require('./isCodegenConfigured');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -26,4 +27,5 @@ module.exports = {
   getGraphQLDocPath,
   isAppSyncApiPendingPush,
   updateAmplifyMeta,
+  isCodegenConfigured,
 };

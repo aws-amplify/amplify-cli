@@ -1,0 +1,71 @@
+{
+  "name": "amplify-util-test",
+  "version": "0.1.0",
+  "description": "amplify cli plugin providing local testing ",
+  "main": "lib/index.js",
+  "scripts": {
+    "e2e": "jest src/__e2e__/*.e2e.test.ts",
+    "test-watch": "jest --watch",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -rf ./lib",
+    "format": "prettier --write ./src/**/*.ts ./__tests__/**/*.ts"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@conduitvc/dynamodb-emulator": "^0.5.3",
+    "@hapi/topo": "^3.1.0",
+    "amplify-appsync-simulator": "0.0.1",
+    "amplify-provider-awscloudformation": "^1.13.2",
+    "chokidar": "^3.0.0",
+    "fs-extra": "^7.0.1",
+    "lodash": "^4.17.11",
+    "amplify-codegen": "1.5.7"
+  },
+  "devDependencies": {
+    "@types/jest": "23.1.1",
+    "@types/lodash": "^4.14.129",
+    "@types/node": "^10.3.4",
+    "jest": "^23.1.0",
+    "prettier": "^1.14.2",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "graphql-transformer-common": "3.8.3",
+    "graphql-mapping-template": "3.1.1",
+    "graphql-transformer-core": "3.7.5",
+    "graphql-auth-transformer": "3.7.5",
+    "graphql-connection-transformer": "3.5.5",
+    "graphql-dynamodb-transformer": "3.8.5",
+    "graphql-elasticsearch-transformer": "3.6.6",
+    "graphql-function-transformer": "1.1.5",
+    "graphql-key-transformer": "1.1.7",
+    "graphql-versioned-transformer": "3.4.12",
+    "axios": "^0.19.0",
+    "aws-amplify": "1.1.32",
+    "aws-sdk": "^2.259.1",
+    "node-fetch": "^2.6.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**"
+    ],
+    "testURL": "http://localhost/",
+    "testRegex": "(src/(__tests__|__e2e__)/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}

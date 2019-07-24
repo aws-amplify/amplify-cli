@@ -8,6 +8,7 @@ package-lock.json
 packages/amplify-cli/amplify/.config/
 .vscode
 packages/graphql*/lib
+packages/amplify-appsync-simulator/lib
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/*/node_modules

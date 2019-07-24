@@ -43,6 +43,9 @@ function getAWSConfigObject(amplifyResources) {
     },
   };
 
+  if (amplifyResources.testMode) {
+    configOutput.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
   const projectRegion = amplifyResources.metadata.Region;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
@@ -240,6 +243,7 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const testMode = appsyncResource.testMode || false;
   const result = {
     AppSync: {
       Default: {
@@ -254,6 +258,11 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       },
     },
   };
+
+  if (testMode) {
+    result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+
   const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
   additionalAuths.forEach((authType) => {
     const apiName = `${appsyncResource.resourceName}_${authType}`;
@@ -264,6 +273,9 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
       ClientDatabasePrefix: apiName,
     };
+    if (testMode) {
+      config.DangerouslyConnectToHTTPEndpointForTesting = true;
+    }
     result.AppSync[apiName] = config;
   });
 

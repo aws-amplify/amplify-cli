@@ -13,17 +13,22 @@ const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
-    projectDirectory: string
+    projectDirectory?: string
     transformers: Transformer[]
     rootStackFileName?: string
+    dryRun?: boolean,
+    disableResolverOverrides?: boolean,
 }
 export async function buildProject(opts: ProjectOptions) {
     const builtProject = await _buildProject(opts);
-    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+    if (opts.projectDirectory && !opts.dryRun) {
+        await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName)
+    }
+    return builtProject;
 }
 
 async function _buildProject(opts: ProjectOptions) {
-    const userProjectConfig = await loadProject(opts.projectDirectory)
+    const userProjectConfig = await loadProject(opts.projectDirectory, opts)
     const stackMapping = getStackMappingFromProjectConfig(userProjectConfig.config);
     const transform = new GraphQLTransform({
         transformers: opts.transformers,

@@ -34,6 +34,7 @@
     "amplify-frontend-ios": "1.8.2",
     "amplify-frontend-javascript": "1.6.3",
     "amplify-provider-awscloudformation": "1.13.2",
+    "amplify-util-test": "0.1.0",
     "babel-core": "^6.26.3",
     "chalk": "^2.0.1",
     "chalk-pipe": "^2.0.0",
