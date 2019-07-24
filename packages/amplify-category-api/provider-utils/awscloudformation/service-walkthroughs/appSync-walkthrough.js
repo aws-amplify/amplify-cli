@@ -72,6 +72,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
     DynamoDBBillingMode: 'PAY_PER_REQUEST',
+    DynamoDBEnableServerSideEncryption: 'false',
   };
 
   // Ask auth/security question
