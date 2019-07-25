@@ -57,7 +57,9 @@ function invokeFunction(options) {
     const { event } = options;
     try {
       const result = await lambda[options.handler](event, context, callback);
-      context.done(null, result);
+      if(result !== undefined) {
+        context.done(null, result);
+      }
     } catch (e) {
       context.done(e, null);
     }
