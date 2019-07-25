@@ -45,7 +45,7 @@ async function add(context) {
 
       const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
 
-      if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+      if (authParameters.dependsOn) {
         options.dependsOn = authParameters.dependsOn;
       }
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
@@ -143,7 +143,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       };
       const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
 
-      if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+      if (authParameters.dependsOn) {
         options.dependsOn = authParameters.dependsOn;
       }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);

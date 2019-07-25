@@ -33,7 +33,7 @@ module.exports = {
       .then((resourceName) => {
         const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
 
-        if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+        if (authParameters.dependsOn) {
           options.dependsOn = authParameters.dependsOn;
         }
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
