@@ -1,0 +1,15 @@
+type Post @model {
+  id: ID!
+  title: String!
+  comments: [Comment] @connection(name: "PostComments")
+  recentComments: [Comment] @connection(name: "PostCommentsByCreatedAt", keyField: "commentPostId", sortField: "createdAt")
+  createdAt: String!
+}
+
+type Comment @model {
+  id: ID!
+  content: String!
+  post: Post @connection(name: "PostComments")
+  parentPost: Post @connection(name: "PostCommentsByCreatedAt", keyField: "commentPostId", sortField: "createdAt")
+  createdAt: String!
+}

@@ -71,4 +71,18 @@ const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
-export { getDDBTable, checkIfBucketExists, getUserPool, getUserPoolClients, getBot, getLambdaFunction, getFunction };
+const getTable = async (tableName: string, region: string) => {
+  const service = new AWS.DynamoDB({ region });
+  return await service.describeTable({ TableName: tableName }).promise();
+}
+
+const deleteTable = async (tableName: string, region: string) => {
+  const service = new AWS.DynamoDB({ region });
+  return await service.deleteTable({ TableName: tableName }).promise();
+}
+
+export {
+  getDDBTable, checkIfBucketExists, getUserPool,
+  getUserPoolClients, getBot, getLambdaFunction,
+  getFunction, getTable, deleteTable
+};

@@ -335,6 +335,7 @@ export default class FunctionTransformer extends Transformer {
      * 2. There may only be 1 @key with a given name.
      * 3. @key must only reference existing scalar fields that map to DynamoDB S, N, or B.
      * 4. A primary key must not include a 'queryField'.
+     * 5. If there is no primary sort key, make sure there are no more LSIs.
      * @param definition The object type definition node.
      * @param directive The @key directive
      * @param ctx The transformer context
@@ -347,6 +348,22 @@ export default class FunctionTransformer extends Transformer {
                 const otherArgs = getDirectiveArguments(otherDirective);
                 if (otherDirective !== directive && !otherArgs.name) {
                     throw new InvalidDirectiveError(`You may only supply one primary @key on type '${definition.name.value}'.`);
+                }
+                // 5. If there is no primary sort key, make sure there are no more LSIs.
+                const hasPrimarySortKey = directiveArgs.fields.length > 1;
+                const primaryHashField = directiveArgs.fields[0];
+                const otherHashField = otherArgs.fields[0];
+                if (
+                    otherDirective !== directive &&
+                    !hasPrimarySortKey &&
+                    // If the primary key and other key share the first field and are not the same directive it is an LSI.
+                    primaryHashField === otherHashField
+                ) {
+                    throw new InvalidDirectiveError(
+                        `Invalid @key "${otherArgs.name}". You may not create a @key where the first field in 'fields' ` +
+                        `is the same as that of the primary @key unless the primary @key has multiple 'fields'. ` +
+                        `You cannot have a local secondary index without a sort key in the primary index.`
+                    );
                 }
             }
             // 4. Make sure that a 'queryField' is not included on a primary @key.
