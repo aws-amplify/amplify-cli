@@ -210,7 +210,8 @@ async function transformGraphQLSchema(context, options) {
 
   const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
   const transformerList = [
-    new DynamoDBModelTransformer(), // TODO: Removing this for now until further discussion. `getTransformerOptions(project, '@model')`
+    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+    new DynamoDBModelTransformer(),
     new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
@@ -241,17 +242,18 @@ place .graphql files in a directory at ${schemaDirPath}`);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-function getTransformerOptions(project, transformerName) {
-  if (
-    project &&
-    project.config &&
-    project.config.TransformerOptions &&
-    project.config.TransformerOptions[transformerName]
-  ) {
-    return project.config.TransformerOptions[transformerName];
-  }
-  return undefined;
-}
+// TODO: Remove until further discussion
+// function getTransformerOptions(project, transformerName) {
+//   if (
+//     project &&
+//     project.config &&
+//     project.config.TransformerOptions &&
+//     project.config.TransformerOptions[transformerName]
+//   ) {
+//     return project.config.TransformerOptions[transformerName];
+//   }
+//   return undefined;
+// }
 
 module.exports = {
   transformGraphQLSchema,
