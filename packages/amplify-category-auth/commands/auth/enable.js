@@ -31,8 +31,10 @@ module.exports = {
         return providerController.addResource(context, category, result.service);
       })
       .then((resourceName) => {
-        if (context.amplify.auth && context.amplify.auth.dependsOn) {
-          options.dependsOn = context.amplify.auth.dependsOn;
+        const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
+
+        if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+          options.dependsOn = authParameters.dependsOn;
         }
         amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
         const { print } = context;

@@ -42,8 +42,11 @@ async function add(context) {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
-      if (context.amplify.auth && context.amplify.auth.dependsOn) {
-        options.dependsOn = context.amplify.auth.dependsOn;
+
+      const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
+
+      if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+        options.dependsOn = authParameters.dependsOn;
       }
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
       context.print.success('Successfully added auth resource');
@@ -138,8 +141,10 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
-      if (context.amplify.auth && context.amplify.auth.dependsOn) {
-        options.dependsOn = context.amplify.auth.dependsOn;
+      const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
+
+      if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
+        options.dependsOn = authParameters.dependsOn;
       }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
