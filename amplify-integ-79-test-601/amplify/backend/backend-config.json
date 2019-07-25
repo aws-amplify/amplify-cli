@@ -1,9 +1,0 @@
-{
-	"auth": {
-		"authtest37211abd": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": []
-		}
-	}
-}
