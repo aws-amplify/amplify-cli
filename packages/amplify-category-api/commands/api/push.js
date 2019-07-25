@@ -9,6 +9,7 @@ module.exports = {
     context.amplify.constructExeInfo(context);
     return amplify.pushResources(context, category, resourceName)
       .catch((err) => {
+        context.print.error('There was an error pushing the API resource');
         context.print.error(err.toString());
       });
   },
