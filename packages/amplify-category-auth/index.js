@@ -42,7 +42,11 @@ async function add(context) {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
+      if (context.amplify.auth && context.amplify.auth.dependsOn) {
+        options.dependsOn = context.amplify.auth.dependsOn;
+      }
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+      
       context.print.success('Successfully added auth resource');
       return resourceName;
     })
@@ -135,6 +139,9 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
+      if (context.amplify.auth && context.amplify.auth.dependsOn) {
+        options.dependsOn = context.amplify.auth.dependsOn;
+      }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
     const action = authExists ? 'updated' : 'added';
