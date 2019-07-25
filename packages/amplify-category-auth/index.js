@@ -46,7 +46,6 @@ async function add(context) {
         options.dependsOn = context.amplify.auth.dependsOn;
       }
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-      
       context.print.success('Successfully added auth resource');
       return resourceName;
     })
