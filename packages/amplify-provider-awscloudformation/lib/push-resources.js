@@ -19,13 +19,13 @@ const spinner = ora('Updating resources in the cloud. This may take a few minute
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
 
-async function run(context, category, resourceName) {
+async function run(context, resourceDefinition) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
     allResources,
-  } = await context.amplify.getResourceStatus(category, resourceName, providerName);
+  } = resourceDefinition;
 
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
@@ -36,11 +36,11 @@ async function run(context, category, resourceName) {
     .then(() => transformGraphQLSchema(context, {
       noConfig: true,
       handleMigration: opts =>
-        updateStackForAPIMigration(context, 'api', resourceName, opts),
+        updateStackForAPIMigration(context, 'api', undefined, opts),
     }))
     .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
-    .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
+    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
       spinner.start();
       projectDetails = context.amplify.getProjectDetails();
@@ -67,7 +67,7 @@ async function run(context, category, resourceName) {
     .then(async () => {
       let {
         allResources,
-      } = await context.amplify.getResourceStatus(category, resourceName);
+      } = await context.amplify.getResourceStatus();
 
 
       const newAPIresources = [];
