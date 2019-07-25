@@ -49,7 +49,6 @@ module.exports = {
         return providerController.updateResource(context, category, options);
       })
       .then((resourceName) => { // eslint-disable-line no-shadow
-
         const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
         if (authParameters.dependsOn && authParameters.dependsOn.length > 0) {
           amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', authParameters.dependsOn);
