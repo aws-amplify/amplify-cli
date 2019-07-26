@@ -1,4 +1,5 @@
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
+const path = require('path');
 
 const subcommand = 'enable';
 const category = 'auth';
@@ -31,7 +32,13 @@ module.exports = {
         return providerController.addResource(context, category, result.service);
       })
       .then((resourceName) => {
-        const authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${resourceName}/parameters.json`);
+        const resourceDirPath = path.join(
+          amplify.pathManager.getBackendDirPath(),
+          '/auth/',
+          resourceName,
+          'parameters.json',
+        );
+        const authParameters = amplify.readJsonFile(resourceDirPath);
 
         if (authParameters.dependsOn) {
           options.dependsOn = authParameters.dependsOn;
