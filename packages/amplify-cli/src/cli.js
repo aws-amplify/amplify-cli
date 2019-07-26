@@ -28,6 +28,8 @@ async function run(argv) {
 
   const context = await cli.run(argv);
 
+  context.ignoreSSL = !(argv.includes('--ignoressl') || argv.includes('--ignore-ssl'));
+
   // send it back (for testing, mostly)
   return context;
 }

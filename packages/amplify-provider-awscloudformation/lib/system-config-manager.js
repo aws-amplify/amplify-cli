@@ -62,6 +62,7 @@ function setProfile(awsConfig, profileName) {
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   let awsConfig;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
+
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     if (!isRoleSourceProfile && profileConfig.role_arn) {
@@ -86,7 +87,10 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   if (httpProxy) {
     awsConfig = {
       ...awsConfig,
-      httpOptions: { agent: proxyAgent(httpProxy) },
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+        rejectUnauthorized: context.ignoreSSL,
+      },
     };
   }
 

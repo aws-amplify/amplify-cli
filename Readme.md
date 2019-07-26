@@ -59,6 +59,10 @@ The Amplify CLI supports the commands shown in the following table.
 | amplify codegen add \| generate | Performs generation of strongly typed objects using a GraphQL schema. |
 | amplify env add \| list \| remove \| get \| pull \| import | See the [multienv docs](https://aws-amplify.github.io/docs/cli/multienv). |
 
+### Allow self-signed certs:
+
+To allow self-signed certs, please append --ignore-ssl to your amplify commands. 
+
 ### Category specific commands:
 - [auth (Amazon Cognito)](packages/amplify-category-auth/Readme.md)
 - [storage (Amazon S3 & Amazon DynamoDB)](packages/amplify-category-storage/Readme.md)

@@ -78,7 +78,10 @@ async function getAwsConfig(context) {
   if (httpProxy) {
     awsConfig = {
       ...awsConfig,
-      httpOptions: { agent: proxyAgent(httpProxy) },
+      httpOptions: {
+        agent: proxyAgent(httpProxy),
+        rejectUnauthorized: context.ignoreSSL,
+      },
     };
   }
 

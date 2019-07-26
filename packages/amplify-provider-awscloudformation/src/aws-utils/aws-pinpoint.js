@@ -43,11 +43,13 @@ async function getConfiguredPinpointClient(context, category, action, options = 
   };
 
   if (httpProxy) {
-    aws.config.update({
+    awsConfig = {
+      ...awsConfig,
       httpOptions: {
         agent: proxyAgent(httpProxy),
+        rejectUnauthorized: context.ignoreSSL,
       },
-    });
+    };
   }
 
   return new aws.Pinpoint({ ...cred, ...defaultOptions, ...options });
