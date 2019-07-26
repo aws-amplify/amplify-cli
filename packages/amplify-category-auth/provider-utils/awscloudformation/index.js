@@ -102,8 +102,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
   ];
 
   const privateParams = Object.assign({}, options);
-  privateKeys.forEach(p => delete privateParams[p]);
-
+  privateKeys.forEach(p => delete privateParams[p]);  
 
   return await context.amplify.copyBatch(context, copyJobs, options, true, privateParams);
 }
@@ -166,6 +165,7 @@ async function addResource(context, category, service) {
       /* merge actual answers object into props object,
        * ensuring that manual entries override defaults */
       props = Object.assign(functionMap[result.authSelections](result.resourceName), result, roles);
+      props = addVerificationAttributes(props);
 
       await lambdaTriggers(props, context, null);
 
@@ -235,6 +235,7 @@ async function updateResource(context, category, serviceResult) {
       await verificationBucketName(result, context.updatingAuth);
 
       props = Object.assign(defaults, context.updatingAuth, result);
+      props = addVerificationAttributes(props);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -515,6 +516,14 @@ async function console(context, amplifyMeta) {
   } else {
     context.print.error('Amazon Cognito resources have NOT been created for your project.');
   }
+}
+
+function addVerificationAttributes(props) {
+  let readAttributes = props.userpoolClientReadAttributes;
+  readAttributes.push('email_verified', 'phone_number_verified');
+  readAttributes = _.uniq(readAttributes);
+  props.userpoolClientReadAttributes = readAttributes;
+  return props;
 }
 
 function getCognitoOutput(amplifyMeta) {

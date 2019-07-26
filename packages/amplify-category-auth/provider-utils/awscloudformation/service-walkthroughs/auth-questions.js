@@ -177,7 +177,6 @@ async function serviceWalkthrough(
     identityPoolProviders(coreAnswers, projectType);
   }
 
-
   // ask manual trigger flow question
   if (coreAnswers.authSelections !== 'identityPoolOnly' && !['init', 'checkout'].includes(context.commandName)) {
     if (coreAnswers.useDefault === 'manual') {

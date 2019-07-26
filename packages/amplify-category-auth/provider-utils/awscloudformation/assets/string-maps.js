@@ -339,13 +339,6 @@ const coreAttributes = [
 
 const appClientReadAttributes = [
   ...coreAttributes,
-  {
-    name: 'Email Verified?',
-    value: 'email_verified',
-  }, {
-    name: 'Phone Number Verified?',
-    value: 'phone_number_verified',
-  },
 ];
 
 const authProviders = [
