@@ -33,11 +33,42 @@ async function run(context, resourceDefinition) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => transformGraphQLSchema(context, {
-      noConfig: true,
-      handleMigration: opts =>
-        updateStackForAPIMigration(context, 'api', undefined, opts),
-    }))
+    .then(() => {
+      projectDetails = context.amplify.getProjectDetails();
+
+      const appSyncAPIs = Object.keys(projectDetails.amplifyMeta.api).reduce((acc, apiName) => {
+        const api = projectDetails.amplifyMeta.api[apiName];
+        if (api.service === 'AppSync') {
+          acc.push({ ...api, name: apiName });
+        }
+        return acc;
+      }, []);
+
+      const appSyncApi = (appSyncAPIs && appSyncAPIs.length && appSyncAPIs.length > 0)
+        ? appSyncAPIs[0]
+        : undefined;
+
+      let authConfig = {};
+
+      if (appSyncApi) {
+        if (appSyncApi.output.securityType) {
+          authConfig = {
+            defaultAuthentication: {
+              authenticationType: appSyncApi.output.securityType,
+            },
+          };
+        } else {
+          ({ authConfig } = appSyncApi.output);
+        }
+      }
+
+      return transformGraphQLSchema(context, {
+        noConfig: true,
+        handleMigration: opts =>
+          updateStackForAPIMigration(context, 'api', undefined, opts),
+        authConfig,
+      });
+    })
     .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
@@ -114,7 +145,8 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
 
   return packageResources(context, resources)
     .then(() => uploadAppSyncFiles(context, resources, allResources, {
-      useDeprecatedParameters: isReverting, defaultParams: { APIKeyExpirationEpoch: -1 },
+      useDeprecatedParameters: isReverting,
+      defaultParams: { CreateAPIKey: 0, APIKeyExpirationEpoch: -1 },
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {

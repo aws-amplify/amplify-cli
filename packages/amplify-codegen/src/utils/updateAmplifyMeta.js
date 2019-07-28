@@ -5,10 +5,9 @@ module.exports = async (context, apiDetails) => {
   const appsyncMetadata = {
     service: 'AppSync',
     output: {
-      securityType: apiDetails.securityType,
+      authConfig: apiDetails.authConfig,
       GraphQLAPIIdOutput: apiDetails.id,
       GraphQLAPIEndpointOutput: apiDetails.endpoint,
-      additionalAuthenticationProviders: apiDetails.additionalAuthenticationProviders,
       name: apiDetails.name,
     },
     lastPushTimeStamp: new Date(),

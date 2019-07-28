@@ -7,8 +7,8 @@ import {
 } from '../src/init';
 import * as path from 'path';
 import { existsSync } from 'fs';
-import { addApiWithSchema, updateApiSchema } from '../src/categories/api';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, updateConfig, getTable, deleteTable } from '../src/utils';
+import { addApiWithSchema, updateApiSchema, updateApiWithMultiAuth } from '../src/categories/api';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, updateConfig, getTable, deleteTable, getAppSyncApi } from '../src/utils';
 
 describe('amplify add api', () => {
   let projRoot: string;
@@ -29,14 +29,18 @@ describe('amplify add api', () => {
     await initProjectWithProfile(projRoot, { name: 'simplemodel' });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
-    const { output } = getProjectMeta(projRoot).api.simplemodel;
 
-    // TODO - Validate these using control plane API calls.
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
-    await expect(GraphQLAPIIdOutput).toBeDefined()
-    await expect(GraphQLAPIEndpointOutput).toBeDefined()
-    await expect(GraphQLAPIKeyOutput).toBeDefined()
+    expect(GraphQLAPIIdOutput).toBeDefined()
+    expect(GraphQLAPIEndpointOutput).toBeDefined()
+    expect(GraphQLAPIKeyOutput).toBeDefined()
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
   it('inits a project with a simple model and then migrates the api', async () => {
@@ -54,6 +58,48 @@ describe('amplify add api', () => {
     await expect(GraphQLAPIIdOutput).toBeDefined()
     await expect(GraphQLAPIEndpointOutput).toBeDefined()
     await expect(GraphQLAPIKeyOutput).toBeDefined()
+  });
+
+  it('init a project and add the simple_model api with multiple authorization providers', async () => {
+    await initProjectWithProfile(projRoot, { name: 'simplemodelmultiauth' });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await updateApiWithMultiAuth(projRoot, {});
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const { output } = meta.api.simplemodelmultiauth;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.authenticationType).toEqual('API_KEY');
+    expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
+    expect(graphqlApi.additionalAuthenticationProviders).toHaveLength(3);
+
+    const cognito = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AMAZON_COGNITO_USER_POOLS')[0];
+
+    expect(cognito).toBeDefined();
+    expect(cognito.userPoolConfig).toBeDefined();
+
+    const iam = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'AWS_IAM')[0];
+
+    expect(iam).toBeDefined();
+
+    const oidc = graphqlApi.additionalAuthenticationProviders.filter(a => a.authenticationType === 'OPENID_CONNECT')[0];
+
+    expect(oidc).toBeDefined();
+    expect(oidc.openIDConnectConfig).toBeDefined();
+    expect(oidc.openIDConnectConfig.issuer).toEqual('https://facebook.com/');
+    expect(oidc.openIDConnectConfig.clientId).toEqual('clientId');
+    expect(oidc.openIDConnectConfig.iatTTL).toEqual(0);
+    expect(oidc.openIDConnectConfig.authTTL).toEqual(0);
+
+    expect(GraphQLAPIIdOutput).toBeDefined()
+    expect(GraphQLAPIEndpointOutput).toBeDefined()
+    expect(GraphQLAPIKeyOutput).toBeDefined()
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
   // TODO: Disabling for now until further conversation.

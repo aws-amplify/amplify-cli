@@ -20,13 +20,6 @@ const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
-function failOnInvalidAuthType(usedDirectives, opts) {
-  if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API.
-Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
-  }
-}
-
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
   const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
   if (!pathToProject || resources.length > 0) {
@@ -92,8 +85,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   let { resourceDir, parameters } = options;
-  // const { noConfig } = options;
-  const { forceCompile } = options;
+  const { forceCompile, authConfig } = options;
 
   // Compilation during the push step
   const {
@@ -203,12 +195,7 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const usedDirectives = collectDirectiveNames(project.schema);
-  failOnInvalidAuthType(
-    usedDirectives,
-    { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
-  );
 
-  const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
   const transformerList = [
     // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
     new DynamoDBModelTransformer(),
@@ -219,7 +206,7 @@ async function transformGraphQLSchema(context, options) {
     new KeyTransformer(),
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
-    new ModelAuthTransformer({ authMode }),
+    new ModelAuthTransformer({ authConfig }),
   ];
 
   if (usedDirectives.includes('searchable')) {

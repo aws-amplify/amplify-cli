@@ -240,28 +240,40 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const { authConfig, securityType } = appsyncResource.output;
+  let authMode = '';
+
+  if (securityType) {
+    authMode = securityType;
+  } else if (authConfig) {
+    authMode = authConfig.defaultAuthentication.authenticationType;
+  }
+
+  const apiKey = authMode === 'API_KEY'
+    ? appsyncResource.output.GraphQLAPIKeyOutput
+    : undefined;
+
   const result = {
     AppSync: {
       Default: {
         ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
         Region: appsyncResource.output.region || projectRegion,
-        AuthMode: appsyncResource.output.securityType,
-        ApiKey:
-          appsyncResource.output.securityType === 'API_KEY'
-            ? appsyncResource.output.GraphQLAPIKeyOutput
-            : undefined,
-        ClientDatabasePrefix: `${appsyncResource.resourceName}_${appsyncResource.output.securityType}`,
+        AuthMode: authMode,
+        ApiKey: apiKey,
+        ClientDatabasePrefix: `${appsyncResource.resourceName}_${authMode}`,
       },
     },
   };
-  const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
-  additionalAuths.forEach((authType) => {
-    const apiName = `${appsyncResource.resourceName}_${authType}`;
+  const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
+  additionalAuths.forEach((auth) => {
+    const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
     const config = {
       ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
       Region: appsyncResource.output.region || projectRegion,
-      AuthMode: authType,
-      ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
+      AuthMode: auth.authenticationType,
+      ApiKey: auth.authenticationType === 'API_KEY'
+        ? appsyncResource.output.GraphQLAPIKeyOutput
+        : undefined,
       ClientDatabasePrefix: apiName,
     };
     result.AppSync[apiName] = config;

@@ -5,32 +5,41 @@ exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson(
 exports[`Test "create", "update", "delete" auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test "create", "update", "delete" auth operations 3`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## No Dynamic Group Authorization Rules **
+
+
+  ## No Owner Authorization Rules **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Static Group Authorization Checks **
-
-
-## No Dynamic Group Authorization Rules **
-
-
-## No Owner Authorization Rules **
-
-
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
-  $util.unauthorized()
-#end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
@@ -54,81 +63,90 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test "create", "update", "delete" auth operations 4`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
-#if( ! $isStaticGroupAuthorized )
-  ## No dynamic group authorization rules **
+  #if( ! $isStaticGroupAuthorized )
+    ## No dynamic group authorization rules **
 
 
-  ## No owner authorization rules **
+    ## No owner authorization rules **
 
 
-  ## [Start] Collect Auth Condition **
-  #set( $authCondition = {
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
 } )
-  #set( $totalAuthExpression = \\"\\" )
-  ## Add dynamic group auth conditions if they exist **
-  #if( $groupAuthExpressions )
-    #foreach( $authExpr in $groupAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
-  #end
-  #if( $groupAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
-  #end
-  #if( $groupAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
-  #end
-  ## Add owner auth conditions if they exist **
-  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
-    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
-  #end
-  #if( $ownerAuthExpressions )
-    #foreach( $authExpr in $ownerAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+    #end
+    ## [End] Collect Auth Condition **
   #end
-  #if( $ownerAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
-  #end
-  #if( $ownerAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
-  #end
-  ## Set final expression if it has changed. **
-  #if( $totalAuthExpression != \\"\\" )
-    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
-  #end
-  ## [End] Collect Auth Condition **
-#end
 
 
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
-  $util.unauthorized()
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
@@ -253,81 +271,90 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 `;
 
 exports[`Test "create", "update", "delete" auth operations 5`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
-#if( ! $isStaticGroupAuthorized )
-  ## No dynamic group authorization rules **
+  #if( ! $isStaticGroupAuthorized )
+    ## No dynamic group authorization rules **
 
 
-  ## No owner authorization rules **
+    ## No owner authorization rules **
 
 
-  ## [Start] Collect Auth Condition **
-  #set( $authCondition = {
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
 } )
-  #set( $totalAuthExpression = \\"\\" )
-  ## Add dynamic group auth conditions if they exist **
-  #if( $groupAuthExpressions )
-    #foreach( $authExpr in $groupAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
-  #end
-  #if( $groupAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
-  #end
-  #if( $groupAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
-  #end
-  ## Add owner auth conditions if they exist **
-  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
-    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
-  #end
-  #if( $ownerAuthExpressions )
-    #foreach( $authExpr in $ownerAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+    #end
+    ## [End] Collect Auth Condition **
   #end
-  #if( $ownerAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
-  #end
-  #if( $ownerAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
-  #end
-  ## Set final expression if it has changed. **
-  #if( $totalAuthExpression != \\"\\" )
-    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
-  #end
-  ## [End] Collect Auth Condition **
-#end
 
 
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
-  $util.unauthorized()
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 #if( $authCondition )
   #set( $condition = $authCondition )
@@ -385,32 +412,41 @@ exports[`Test that operation overwrites queries in auth operations 1`] = `"$util
 exports[`Test that operation overwrites queries in auth operations 2`] = `"$util.toJson($ctx.result)"`;
 
 exports[`Test that operation overwrites queries in auth operations 3`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
+  ## [End] Static Group Authorization Checks **
+
+
+  ## No Dynamic Group Authorization Rules **
+
+
+  ## No Owner Authorization Rules **
+
+
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Static Group Authorization Checks **
-
-
-## No Dynamic Group Authorization Rules **
-
-
-## No Owner Authorization Rules **
-
-
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || $isDynamicGroupAuthorized == true || $isOwnerAuthorized == true) )
-  $util.unauthorized()
-#end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $util.time.nowISO8601())))
@@ -434,81 +470,90 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test that operation overwrites queries in auth operations 4`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
-#if( ! $isStaticGroupAuthorized )
-  ## No dynamic group authorization rules **
+  #if( ! $isStaticGroupAuthorized )
+    ## No dynamic group authorization rules **
 
 
-  ## No owner authorization rules **
+    ## No owner authorization rules **
 
 
-  ## [Start] Collect Auth Condition **
-  #set( $authCondition = {
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
 } )
-  #set( $totalAuthExpression = \\"\\" )
-  ## Add dynamic group auth conditions if they exist **
-  #if( $groupAuthExpressions )
-    #foreach( $authExpr in $groupAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
-  #end
-  #if( $groupAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
-  #end
-  #if( $groupAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
-  #end
-  ## Add owner auth conditions if they exist **
-  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
-    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
-  #end
-  #if( $ownerAuthExpressions )
-    #foreach( $authExpr in $ownerAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+    #end
+    ## [End] Collect Auth Condition **
   #end
-  #if( $ownerAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
-  #end
-  #if( $ownerAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
-  #end
-  ## Set final expression if it has changed. **
-  #if( $totalAuthExpression != \\"\\" )
-    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
-  #end
-  ## [End] Collect Auth Condition **
-#end
 
 
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
-  $util.unauthorized()
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
@@ -633,81 +678,90 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 `;
 
 exports[`Test that operation overwrites queries in auth operations 5`] = `
-"## [Start] Static Group Authorization Checks **
-## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
-#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
-#set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
-#foreach( $userGroup in $userGroups )
-  #foreach( $allowedGroup in $allowedGroups )
-    #if( $allowedGroup == $userGroup )
-      #set( $isStaticGroupAuthorized = true )
+"## [Start] Determine request authentication mode **
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+  #set( $authMode = \\"userPools\\" )
+#end
+## [End] Determine request authentication mode **
+## [Start] Check authMode and execute owner/group checks **
+#if( $authMode == \\"userPools\\" )
+  ## [Start] Static Group Authorization Checks **
+  ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
+  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+  #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
+  #set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+  #foreach( $userGroup in $userGroups )
+    #foreach( $allowedGroup in $allowedGroups )
+      #if( $allowedGroup == $userGroup )
+        #set( $isStaticGroupAuthorized = true )
+      #end
     #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
-#if( ! $isStaticGroupAuthorized )
-  ## No dynamic group authorization rules **
+  #if( ! $isStaticGroupAuthorized )
+    ## No dynamic group authorization rules **
 
 
-  ## No owner authorization rules **
+    ## No owner authorization rules **
 
 
-  ## [Start] Collect Auth Condition **
-  #set( $authCondition = {
+    ## [Start] Collect Auth Condition **
+    #set( $authCondition = {
   \\"expression\\": \\"\\",
   \\"expressionNames\\": {},
   \\"expressionValues\\": {}
 } )
-  #set( $totalAuthExpression = \\"\\" )
-  ## Add dynamic group auth conditions if they exist **
-  #if( $groupAuthExpressions )
-    #foreach( $authExpr in $groupAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #set( $totalAuthExpression = \\"\\" )
+    ## Add dynamic group auth conditions if they exist **
+    #if( $groupAuthExpressions )
+      #foreach( $authExpr in $groupAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
-  #end
-  #if( $groupAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
-  #end
-  #if( $groupAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
-  #end
-  ## Add owner auth conditions if they exist **
-  #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
-    #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
-  #end
-  #if( $ownerAuthExpressions )
-    #foreach( $authExpr in $ownerAuthExpressions )
-      #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
-      #if( $foreach.hasNext )
-        #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #if( $groupAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($groupAuthExpressionNames))
+    #end
+    #if( $groupAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($groupAuthExpressionValues))
+    #end
+    ## Add owner auth conditions if they exist **
+    #if( $totalAuthExpression != \\"\\" && $ownerAuthExpressions && $ownerAuthExpressions.size() > 0 )
+      #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+    #end
+    #if( $ownerAuthExpressions )
+      #foreach( $authExpr in $ownerAuthExpressions )
+        #set( $totalAuthExpression = \\"$totalAuthExpression $authExpr\\" )
+        #if( $foreach.hasNext )
+          #set( $totalAuthExpression = \\"$totalAuthExpression OR\\" )
+        #end
       #end
     #end
+    #if( $ownerAuthExpressionNames )
+      $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
+    #end
+    #if( $ownerAuthExpressionValues )
+      $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
+    #end
+    ## Set final expression if it has changed. **
+    #if( $totalAuthExpression != \\"\\" )
+      #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
+    #end
+    ## [End] Collect Auth Condition **
   #end
-  #if( $ownerAuthExpressionNames )
-    $util.qr($authCondition.expressionNames.putAll($ownerAuthExpressionNames))
-  #end
-  #if( $ownerAuthExpressionValues )
-    $util.qr($authCondition.expressionValues.putAll($ownerAuthExpressionValues))
-  #end
-  ## Set final expression if it has changed. **
-  #if( $totalAuthExpression != \\"\\" )
-    #set( $authCondition.expression = \\"($totalAuthExpression)\\" )
-  #end
-  ## [End] Collect Auth Condition **
-#end
 
 
-## [Start] Throw if unauthorized **
-#if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
-  $util.unauthorized()
+  ## [Start] Throw if unauthorized **
+  #if( !($isStaticGroupAuthorized == true || ($authCondition && $authCondition.expression != \\"\\")) )
+    $util.unauthorized()
+  #end
+  ## [End] Throw if unauthorized **
 #end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 #if( $authCondition )
   #set( $condition = $authCondition )

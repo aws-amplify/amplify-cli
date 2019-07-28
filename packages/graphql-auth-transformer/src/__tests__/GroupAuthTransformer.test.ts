@@ -15,7 +15,13 @@ test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -38,7 +44,13 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => 
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -61,7 +73,13 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -85,7 +103,13 @@ test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', (
         const transformer = new GraphQLTransform({
             transformers: [
                 new DynamoDBModelTransformer(),
-                new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+                new ModelAuthTransformer({
+                    authConfig: {
+                        defaultAuthentication: {
+                            authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                        },
+                        additionalAuthenticationProviders: []
+                    }})
             ]
         })
         const out = transformer.transform(validSchema)

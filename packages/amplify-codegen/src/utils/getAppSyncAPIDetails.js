@@ -10,7 +10,7 @@ function getAppSyncAPIDetails(context) {
     name: api.name,
     endpoint: api.output.GraphQLAPIEndpointOutput,
     id: api.output.GraphQLAPIIdOutput,
-    securityType: api.output.securityType,
+    authConfig: api.output.authConfig,
   }));
 }
 

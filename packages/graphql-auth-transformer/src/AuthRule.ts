@@ -1,8 +1,11 @@
-export type ModelQuery = 'get' | 'list'
-export type ModelMutation = 'create' | 'update' | 'delete'
-export type ModelOperation = 'create' | 'update' | 'delete' | 'read'
+export type AuthStrategy = 'owner' | 'groups' | 'public' | 'private';
+export type AuthProvider = 'apiKey' | 'iam' | 'oidc' | 'userPools';
+export type ModelQuery = 'get' | 'list';
+export type ModelMutation = 'create' | 'update' | 'delete';
+export type ModelOperation = 'create' | 'update' | 'delete' | 'read';
 export interface AuthRule {
-    allow: 'owner' | 'groups';
+    allow: AuthStrategy;
+    provider?: AuthProvider;
     ownerField?: string;
     identityField?: string;
     groupsField?: string;
@@ -10,4 +13,4 @@ export interface AuthRule {
     operations?: ModelOperation[]
     queries?: ModelQuery[]
     mutations?: ModelMutation[]
-}
+};

@@ -63,7 +63,13 @@ function transpileAndCheck(schema: string) {
             new ElasticsearchTransformer(),
             new ConnectionTransformer(),
             new FunctionTransformer,
-            new AuthTransformer(),
+            new AuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }}),
         ]
     });
 
@@ -79,7 +85,7 @@ function transpileAndCheck(schema: string) {
         ])
     );
     expectExactKeys(
-        out.rootStack.Outputs, 
+        out.rootStack.Outputs,
         new Set(['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput', 'GraphQLAPIKeyOutput'])
     );
 

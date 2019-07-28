@@ -1,17 +1,18 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
 import { ResourceFactory } from './resources'
-import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
+import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule'
 import {
-    ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode, TypeDefinitionNode, Kind,
-    FieldDefinitionNode, InterfaceTypeDefinitionNode
+    ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode, Kind,
+    FieldDefinitionNode, InterfaceTypeDefinitionNode, valueFromASTUntyped
 } from 'graphql'
-import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType } from 'graphql-transformer-common'
+import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType, makeDirective,
+    blankObjectExtension, extensionWithDirectives, extendFieldWithDirectives } from 'graphql-transformer-common'
 import {
     Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression, or, newline,
     comment
 } from 'graphql-mapping-template';
-import { valueFromASTUntyped } from 'graphql'
+import { ModelDirectiveConfiguration, ModelDirectiveOperationType } from './ModelDirectiveConfiguration';
 
 import {
     OWNER_AUTH_STRATEGY,
@@ -20,6 +21,7 @@ import {
     GROUPS_AUTH_STRATEGY,
     DEFAULT_GROUPS_FIELD
 } from './constants'
+import UserPool from 'cloudform-types/types/cognito/userPool';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -37,11 +39,11 @@ import {
  *
  * getPost - In the response mapping template we check the "owner" field === $ctx.identity.username.
  * listPost - In the response mapping template we return only items where "owner" === $ctx.identity.username
- * createPost - We automatically insert a "owner" field to attribute values where "owner" === $ctx.identity.username.
+ * createPost - We automatically insert an "owner" field to attribute values where "owner" === $ctx.identity.username.
  * updatePost - Expose "owner" field in input/output and would set conditional update expression to look for owner.
  * deletePost - Conditional expression checking that the owner === $ctx.identity.username
  *
- * Note: The name of the "owner" field may be configured via the CF paramaters.
+ * Note: The name of the "owner" field may be configured via "ownerField" parameter within the @auth directive.
  *
  * type Post @auth(allow: groups, groups: ["Admin", "Dev"]) {
  *   id: ID!
@@ -62,22 +64,73 @@ import {
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
-export type AppSyncAuthModeModes = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS'; // Introduce later: | 'AWS_IAM' | 'OPENID_CONNECT';
-const validateAuthMode = (mode: string) => {
-    if (
-        mode !== 'API_KEY' &&
-        mode !== 'AMAZON_COGNITO_USER_POOLS'
-    ) {
-        throw new Error(`Invalid auth mode ${mode}`);
+export type AppSyncAuthMode = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_IAM' | 'OPENID_CONNECT';
+export type AppSyncAuthConfiguration = {
+    defaultAuthentication: AppSyncAuthConfigurationEntry
+    additionalAuthenticationProviders: Array<AppSyncAuthConfigurationEntry>
+};
+export type AppSyncAuthConfigurationEntry = {
+    authenticationType: AppSyncAuthMode
+    apiKeyConfig?: ApiKeyConfig
+    userPoolConfig?: UserPoolConfig
+    openIDConnectConfig?: OpenIDConnectConfig
+}
+export type ApiKeyConfig = {
+    description?: string
+    apiKeyExpirationDays: number
+};
+export type UserPoolConfig = {
+    userPoolId: string
+};
+export type OpenIDConnectConfig = {
+    name: string
+    issuerUrl: string
+    clientId?: string
+    iatTTL?: number
+    authTTL?: number
+};
+
+const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
+    let additionalAuthModes = [];
+
+    if (authConfig.additionalAuthenticationProviders) {
+        additionalAuthModes = authConfig.additionalAuthenticationProviders.map(p => p.authenticationType).filter(t => !!t);
+    }
+
+    const authModes: AppSyncAuthMode[] = [...additionalAuthModes, authConfig.defaultAuthentication.authenticationType];
+
+    for (let i = 0; i < authModes.length; i++) {
+        const mode = authModes[i];
+
+        if (
+            mode !== 'API_KEY' &&
+            mode !== 'AMAZON_COGNITO_USER_POOLS' &&
+            mode !== 'AWS_IAM' &&
+            mode !== 'OPENID_CONNECT'
+        ) {
+            throw new Error(`Invalid auth mode ${mode}`);
+        }
     }
 }
-export interface ModelAuthTransformerConfig {
-    authMode: AppSyncAuthModeModes
-}
+
+export type ModelAuthTransformerConfig = {
+    authConfig?: AppSyncAuthConfiguration
+};
+
+export type ConfiguredAuthProviders = {
+    default: AuthProvider,
+    onlyDefaultAuthProviderConfigured: boolean,
+    hasApiKey: boolean,
+    hasUserPools: boolean,
+    hasOIDC: boolean,
+    hasIAM: boolean
+};
+
 export class ModelAuthTransformer extends Transformer {
 
     resources: ResourceFactory;
     config: ModelAuthTransformerConfig;
+    configuredAuthProviders: ConfiguredAuthProviders;
 
     constructor(config?: ModelAuthTransformerConfig) {
         super(
@@ -85,8 +138,13 @@ export class ModelAuthTransformer extends Transformer {
             gql`
             directive @auth(rules: [AuthRule!]!) on OBJECT | FIELD_DEFINITION
             input AuthRule {
-                # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
+                # Specifies the auth rule's strategy. Allowed values are 'owner', 'groups', 'public', 'private'.
                 allow: AuthStrategy!
+
+                # Specifies the name of the provider to use for the rule. This overrides the default provider
+                # when 'public' and 'private' AuthStrategy is used. Specifying a provider for 'owner' or 'groups'
+                # are not allowed.
+                provider: AuthProvider
 
                 # Specifies the name of the claim to look for on the request's JWT token
                 # from Cognito User Pools (and in the future OIDC) that contains the identity
@@ -118,7 +176,8 @@ export class ModelAuthTransformer extends Transformer {
                 mutations: [ModelMutation]
                     @deprecated(reason: "The 'mutations' argument will be replaced by the 'operations' argument in a future release.")
             }
-            enum AuthStrategy { owner groups }
+            enum AuthStrategy { owner groups private public }
+            enum AuthProvider { apiKey iam oidc userPools }
             enum ModelOperation { create update delete read }
             enum ModelQuery
                 @deprecated(reason: "ModelQuery will be replaced by the 'ModelOperation' in a future release.")
@@ -135,27 +194,50 @@ export class ModelAuthTransformer extends Transformer {
             }
             `
         )
-        this.config = config || { authMode: 'API_KEY' };
-        validateAuthMode(this.config.authMode);
+
+        if (config && config.authConfig) {
+            this.config = config;
+        } else {
+            this.config = { authConfig: { defaultAuthentication: { authenticationType: 'API_KEY' }, additionalAuthenticationProviders: [] } };
+        }
+        validateAuthModes(this.config.authConfig);
         this.resources = new ResourceFactory();
+        this.configuredAuthProviders = this.getConfiguredAuthProviders();
     }
 
     /**
-     * Updates the GraphQL API record to use user pool auth.
+     * Updates the GraphQL API record with configured authentication providers
      */
-    private updateAPIForUserPools = (ctx: TransformerContext): void => {
+    private updateAPIAuthentication = (ctx: TransformerContext): void => {
         const apiRecord = ctx.getResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID) as GraphQLAPI;
-        const updated = this.resources.updateGraphQLAPIWithAuth(apiRecord, this.config.authMode);
+        const updated = this.resources.updateGraphQLAPIWithAuth(apiRecord, this.config.authConfig);
         ctx.setResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID, updated);
+
+        // Check if we need to create an API key resource or not.
     }
 
     public before = (ctx: TransformerContext): void => {
-        const template = this.resources.initTemplate();
+        const template = this.resources.initTemplate(this.getApiKeyConfig());
         ctx.mergeResources(template.Resources)
         ctx.mergeParameters(template.Parameters)
         ctx.mergeOutputs(template.Outputs)
         ctx.mergeConditions(template.Conditions)
-        this.updateAPIForUserPools(ctx)
+        this.updateAPIAuthentication(ctx)
+    }
+
+    private getApiKeyConfig(): ApiKeyConfig {
+        const authProviders = [];
+
+        if (this.config.authConfig.additionalAuthenticationProviders) {
+            authProviders.concat (this.config.authConfig.additionalAuthenticationProviders.filter(p => !!p.authenticationType));
+        }
+
+        authProviders.push(this.config.authConfig.defaultAuthentication);
+
+        const apiKeyAuthProvider = authProviders.find(p => p.authenticationType === 'API_KEY');
+
+        // Return the found instance or a default instance with 180 days of API key expiration
+        return apiKeyAuthProvider ? apiKeyAuthProvider.apiKeyConfig : { apiKeyExpirationDays: 180 };
     }
 
     /**
@@ -175,18 +257,29 @@ export class ModelAuthTransformer extends Transformer {
 
         // Get and validate the auth rules.
         const rules = getArg('rules', []) as AuthRule[]
-        this.validateRules(rules)
+        this.ensureDefaultAuthProviderAssigned(rules);
+        this.validateRules(rules);
 
         const { operationRules, queryRules } = this.splitRules(rules);
 
+        const modelConfiguration = new ModelDirectiveConfiguration (modelDirective, def);
+        // Get the directives we need to add to the GraphQL nodes
+        const directives = this.getDirectivesForRules(rules);
+
+        // Add the directives to the Type node itself
+        this.extendTypeWithDirectives(ctx, def.name.value, directives);
+
         // For each operation evaluate the rules and apply the changes to the relevant resolver.
-        this.protectCreateMutation(ctx, ResolverResourceIDs.DynamoDBCreateResolverResourceID(def.name.value), operationRules.create, def)
-        this.protectUpdateMutation(ctx, ResolverResourceIDs.DynamoDBUpdateResolverResourceID(def.name.value), operationRules.update, def)
-        this.protectDeleteMutation(ctx, ResolverResourceIDs.DynamoDBDeleteResolverResourceID(def.name.value), operationRules.delete, def)
-        this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get)
-        this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
-        this.protectConnections(ctx, def, operationRules.read)
-        this.protectQueries(ctx, def, operationRules.read)
+        this.protectCreateMutation(ctx, ResolverResourceIDs.DynamoDBCreateResolverResourceID(def.name.value), operationRules.create, def,
+            modelConfiguration);
+        this.protectUpdateMutation(ctx, ResolverResourceIDs.DynamoDBUpdateResolverResourceID(def.name.value), operationRules.update, def,
+            modelConfiguration);
+        this.protectDeleteMutation(ctx, ResolverResourceIDs.DynamoDBDeleteResolverResourceID(def.name.value), operationRules.delete, def,
+            modelConfiguration);
+        this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get, modelConfiguration);
+        this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list, modelConfiguration);
+        this.protectConnections(ctx, def, operationRules.read, modelConfiguration);
+        this.protectQueries(ctx, def, operationRules.read, modelConfiguration);
     }
 
     public field = (
@@ -220,7 +313,8 @@ Static group authorization should perform as expected.`
 
         // Get and validate the auth rules.
         const rules = getArg('rules', []) as AuthRule[]
-        this.validateFieldRules(rules)
+        this.ensureDefaultAuthProviderAssigned(rules);
+        this.validateFieldRules(rules);
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
             if (rule.operations) {
                 const matchesOp = rule.operations.find(o => o === op)
@@ -253,6 +347,13 @@ Static group authorization should perform as expected.`
 
     private protectField(ctx: TransformerContext, typeName: string, fieldName: string, rules: AuthRule[]) {
         if (rules && rules.length) {
+
+            const directives = this.getDirectivesForRules(rules);
+
+            if (directives.length > 0) {
+                this.addDirectivesToField(ctx, typeName, fieldName, directives);
+            }
+
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
             // If the resolver exists (e.g. @connection use it else make a blank one against None)
             let resolver = ctx.getResource(resolverResourceId)
@@ -279,12 +380,12 @@ Static group authorization should perform as expected.`
 
     private protectUpdateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
         const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
-        this.protectUpdateMutation(ctx, resolverResourceId, rules, parent, field)
+        this.protectUpdateMutation(ctx, resolverResourceId, rules, parent, null, field)
     }
 
     private protectDeleteForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
         const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
-        this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, field)
+        this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, null, field)
     }
 
     /**
@@ -299,53 +400,90 @@ Static group authorization should perform as expected.`
         const resolverResourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
         const createResolverResource = ctx.getResource(resolverResourceId);
         if (rules && rules.length && createResolverResource) {
+
+            const directives = this.getDirectivesForRules(rules);
+
+            if (directives.length > 0) {
+                this.addDirectivesToField(ctx, typeName, field.name.value, directives);
+            }
+
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
             const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
             const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-            // Generate the expressions to validate each strategy.
-            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+            if (staticGroupAuthorizationRules.length > 0 ||
+                dynamicGroupAuthorizationRules.length > 0 ||
+                ownerAuthorizationRules.length > 0) {
 
-            // In create mutations, the dynamic group and ownership authorization checks
-            // are done before calling PutItem.
-            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperationsByField(
-                dynamicGroupAuthorizationRules,
-                field.name.value
-            )
-            const fieldIsList = (fieldName: string) => {
-                const field = parent.fields.find(field => field.name.value === fieldName);
-                if (field) {
-                    return isListType(field.type);
+                // Generate the expressions to validate each strategy.
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+
+                // In create mutations, the dynamic group and ownership authorization checks
+                // are done before calling PutItem.
+                const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperationsByField(
+                    dynamicGroupAuthorizationRules,
+                    field.name.value
+                )
+                const fieldIsList = (fieldName: string) => {
+                    const field = parent.fields.find(field => field.name.value === fieldName);
+                    if (field) {
+                        return isListType(field.type);
+                    }
+                    return false;
                 }
-                return false;
-            }
-            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperationsByField(
-                ownerAuthorizationRules,
-                field.name.value,
-                fieldIsList
-            )
+                const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperationsByField(
+                    ownerAuthorizationRules,
+                    field.name.value,
+                    fieldIsList
+                )
 
-            const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
-            const templateParts = [
-                print(
-                    iff(
-                        raw(`$ctx.args.input.containsKey("${field.name.value}")`),
-                        compoundExpression([
-                            staticGroupAuthorizationExpression,
-                            newline(),
-                            dynamicGroupAuthorizationExpression,
-                            newline(),
-                            ownerAuthorizationExpression,
-                            newline(),
-                            throwIfUnauthorizedExpression
-                        ])
-                    )
-                ),
-                createResolverResource.Properties.RequestMappingTemplate
-            ]
-            createResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, createResolverResource)
+                const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
+
+                const authModesToCheck = new Set<AuthProvider>();
+                const expressions: Array<Expression> = new Array();
+
+                if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                    staticGroupAuthorizationRules.length > 0 ||
+                    dynamicGroupAuthorizationRules.length > 0) {
+                    authModesToCheck.add('userPools');
+                }
+                if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                    authModesToCheck.add('oidc');
+                }
+
+                if (authModesToCheck.size > 0) {
+                    expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+                }
+
+                const authCheckExpressions = [
+                    staticGroupAuthorizationExpression,
+                    newline(),
+                    dynamicGroupAuthorizationExpression,
+                    newline(),
+                    ownerAuthorizationExpression,
+                    newline(),
+                    throwIfUnauthorizedExpression
+                ];
+
+                expressions.push(
+                    this.resources.getAuthModeCheckWrappedExpression(
+                        authModesToCheck,
+                        compoundExpression(authCheckExpressions))
+                );
+
+                const templateParts = [
+                    print(
+                        iff(
+                            raw(`$ctx.args.input.containsKey("${field.name.value}")`),
+                            compoundExpression(expressions)
+                        )
+                    ),
+                    createResolverResource.Properties.RequestMappingTemplate
+                ]
+                createResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, createResolverResource)
+            }
         }
     }
 
@@ -469,6 +607,9 @@ Static group authorization should perform as expected.`
 
     private validateRules(rules: AuthRule[]) {
         for (const rule of rules) {
+
+            this.validateRuleAuthStrategy(rule);
+
             const { queries, mutations, operations } = rule;
             if (mutations && operations) {
                 console.warn(
@@ -483,6 +624,9 @@ Static group authorization should perform as expected.`
 
     private validateFieldRules(rules: AuthRule[]) {
         for (const rule of rules) {
+
+            this.validateRuleAuthStrategy(rule);
+
             const { queries, mutations } = rule;
             if (queries || mutations) {
                 throw new InvalidDirectiveError(
@@ -503,18 +647,33 @@ All @auth directives used on field definitions are performed when the field is r
      * @param resolverResourceId The logical id of the get resolver.
      * @param rules The auth rules to apply.
      */
-    private protectGetQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
+    private protectGetQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
+
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
-            const authExpression = this.authorizationExpressionOnSingleObject(rules)
-            const templateParts = [
-                print(authExpression),
-                resolver.Properties.ResponseMappingTemplate
-            ]
-            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, resolver)
+
+            if (modelConfiguration.shouldHave('get')) {
+                const operationName = modelConfiguration.getName('get');
+                const directives = this.getDirectivesForRules(rules);
+
+                if (directives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getQueryTypeName(), operationName, directives);
+                }
+            }
+
+            const authExpression = this.authorizationExpressionOnSingleObject(rules);
+
+            if (authExpression) {
+                const templateParts = [
+                    print(authExpression),
+                    resolver.Properties.ResponseMappingTemplate
+                ]
+                resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver)
+            }
         }
     }
 
@@ -524,29 +683,57 @@ All @auth directives used on field definitions are performed when the field is r
         const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
         const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-        // Generate the expressions to validate each strategy.
-        const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
-        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
-            dynamicGroupAuthorizationRules,
-            objectPath
-        )
-        const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
-            ownerAuthorizationRules,
-            objectPath
-        )
-        const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
+        if (staticGroupAuthorizationRules.length > 0 ||
+            dynamicGroupAuthorizationRules.length > 0 ||
+            ownerAuthorizationRules.length > 0) {
 
-        // Update the existing resolver with the authorization checks.
-        const templateExpression = compoundExpression([
-            staticGroupAuthorizationExpression,
-            newline(),
-            dynamicGroupAuthorizationExpression,
-            newline(),
-            ownerAuthorizationExpression,
-            newline(),
-            throwIfUnauthorizedExpression
-        ])
-        return templateExpression
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
+                dynamicGroupAuthorizationRules,
+                objectPath
+            )
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
+                ownerAuthorizationRules,
+                objectPath
+            )
+            const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
+
+            const authModesToCheck = new Set<AuthProvider>();
+            const expressions: Array<Expression> = new Array();
+
+            if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                staticGroupAuthorizationRules.length > 0 ||
+                dynamicGroupAuthorizationRules.length > 0) {
+                authModesToCheck.add('userPools');
+            }
+            if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                authModesToCheck.add('oidc');
+            }
+
+            if (authModesToCheck.size > 0) {
+                expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+            }
+
+            // Update the existing resolver with the authorization checks.
+            const templateExpressions = [
+                staticGroupAuthorizationExpression,
+                newline(),
+                dynamicGroupAuthorizationExpression,
+                newline(),
+                ownerAuthorizationExpression,
+                newline(),
+                throwIfUnauthorizedExpression
+            ];
+
+            expressions.push(
+                this.resources.getAuthModeCheckWrappedExpression(
+                    authModesToCheck,
+                    compoundExpression(templateExpressions))
+            );
+
+            return compoundExpression(expressions);
+        }
     }
 
     /**
@@ -560,18 +747,33 @@ All @auth directives used on field definitions are performed when the field is r
      * @param resolverResourceId The logical id of the resolver to be updated in the CF template.
      * @param rules The set of rules that apply to the operation.
      */
-    private protectListQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[]) {
+    private protectListQuery(ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
+
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
-            const authExpression = this.authorizationExpressionForListResult(rules)
-            const templateParts = [
-                print(authExpression),
-                resolver.Properties.ResponseMappingTemplate
-            ]
-            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, resolver)
+
+            if (modelConfiguration.shouldHave('list')) {
+                const operationName = modelConfiguration.getName('list');
+                const directives = this.getDirectivesForRules(rules);
+
+                if (directives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getQueryTypeName(), operationName, directives);
+                }
+            }
+
+            const authExpression = this.authorizationExpressionForListResult(rules);
+
+            if (authExpression) {
+                const templateParts = [
+                    print(authExpression),
+                    resolver.Properties.ResponseMappingTemplate
+                ]
+                resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver)
+            }
         }
     }
 
@@ -585,51 +787,81 @@ All @auth directives used on field definitions are performed when the field is r
         const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
         const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-        // Generate the expressions to validate each strategy.
-        const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+        if (staticGroupAuthorizationRules.length > 0 ||
+            dynamicGroupAuthorizationRules.length > 0 ||
+            ownerAuthorizationRules.length > 0) {
 
-        // In list queries, the dynamic group and ownership authorization checks
-        // occur on a per item basis. The helpers take the variable names
-        // as parameters to allow for this use case.
-        const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
-            dynamicGroupAuthorizationRules,
-            'item',
-            ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable,
-            raw(`false`)
-        )
-        const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
-            ownerAuthorizationRules,
-            'item',
-            ResourceConstants.SNIPPETS.IsLocalOwnerAuthorizedVariable,
-            raw(`false`)
-        )
-        const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized()
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
 
-        const ifNotStaticallyAuthedFilterObjects = iff(
-            raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
-            compoundExpression([
-                set(ref('items'), list([])),
-                forEach(
-                    ref('item'),
-                    ref('ctx.result.items'),
-                    [
-                        dynamicGroupAuthorizationExpression,
-                        newline(),
-                        ownerAuthorizationExpression,
-                        newline(),
-                        appendIfLocallyAuthorized
-                    ]
-                ),
-                set(ref('ctx.result.items'), ref('items'))
-            ])
-        )
-        return compoundExpression([
-            staticGroupAuthorizationExpression,
-            newline(),
-            comment('[Start] If not static group authorized, filter items'),
-            ifNotStaticallyAuthedFilterObjects,
-            comment('[End] If not static group authorized, filter items')
-        ])
+            // In list queries, the dynamic group and ownership authorization checks
+            // occur on a per item basis. The helpers take the variable names
+            // as parameters to allow for this use case.
+            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForReadOperations(
+                dynamicGroupAuthorizationRules,
+                'item',
+                ResourceConstants.SNIPPETS.IsLocalDynamicGroupAuthorizedVariable,
+                raw(`false`)
+            )
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForReadOperations(
+                ownerAuthorizationRules,
+                'item',
+                ResourceConstants.SNIPPETS.IsLocalOwnerAuthorizedVariable,
+                raw(`false`)
+            )
+            const appendIfLocallyAuthorized = this.resources.appendItemIfLocallyAuthorized()
+
+            const ifNotStaticallyAuthedFilterObjects = iff(
+                raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+                compoundExpression([
+                    set(ref('items'), list([])),
+                    forEach(
+                        ref('item'),
+                        ref('ctx.result.items'),
+                        [
+                            dynamicGroupAuthorizationExpression,
+                            newline(),
+                            ownerAuthorizationExpression,
+                            newline(),
+                            appendIfLocallyAuthorized
+                        ]
+                    ),
+                    set(ref('ctx.result.items'), ref('items'))
+                ])
+            )
+
+            const authModesToCheck = new Set<AuthProvider>();
+            const expressions: Array<Expression> = new Array();
+
+            if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                staticGroupAuthorizationRules.length > 0 ||
+                dynamicGroupAuthorizationRules.length > 0) {
+                authModesToCheck.add('userPools');
+            }
+            if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                authModesToCheck.add('oidc');
+            }
+
+            if (authModesToCheck.size > 0) {
+                expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+            }
+
+            const templateExpressions = [
+                staticGroupAuthorizationExpression,
+                newline(),
+                comment('[Start] If not static group authorized, filter items'),
+                ifNotStaticallyAuthedFilterObjects,
+                comment('[End] If not static group authorized, filter items')
+            ];
+
+            expressions.push(
+                this.resources.getAuthModeCheckWrappedExpression(
+                    authModesToCheck,
+                    compoundExpression(templateExpressions))
+            );
+
+            return compoundExpression(expressions);
+        }
     }
 
     /**
@@ -648,54 +880,93 @@ All @auth directives used on field definitions are performed when the field is r
         ctx: TransformerContext,
         resolverResourceId: string,
         rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode
+        parent: ObjectTypeDefinitionNode,
+        modelConfiguration: ModelDirectiveConfiguration
     ) {
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
+
+            if (modelConfiguration.shouldHave('create')) {
+                const operationName = modelConfiguration.getName('create');
+                const directives = this.getDirectivesForRules(rules);
+
+                if (directives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getMutationTypeName(), operationName, directives);
+                }
+            }
+
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
             const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
             const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-            // Generate the expressions to validate each strategy.
-            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+            if (staticGroupAuthorizationRules.length > 0 ||
+                dynamicGroupAuthorizationRules.length > 0 ||
+                ownerAuthorizationRules.length > 0) {
 
-            // In create mutations, the dynamic group and ownership authorization checks
-            // are done before calling PutItem.
-            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperations(
-                dynamicGroupAuthorizationRules
-            )
-            const fieldIsList = (fieldName: string) => {
-                const field = parent.fields.find(field => field.name.value === fieldName);
-                if (field) {
-                    return isListType(field.type);
+                // Generate the expressions to validate each strategy.
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+
+                // In create mutations, the dynamic group and ownership authorization checks
+                // are done before calling PutItem.
+                const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForCreateOperations(
+                    dynamicGroupAuthorizationRules
+                )
+                const fieldIsList = (fieldName: string) => {
+                    const field = parent.fields.find(field => field.name.value === fieldName);
+                    if (field) {
+                        return isListType(field.type);
+                    }
+                    return false;
                 }
-                return false;
-            }
-            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperations(
-                ownerAuthorizationRules,
-                fieldIsList
-            )
+                const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForCreateOperations(
+                    ownerAuthorizationRules,
+                    fieldIsList
+                )
 
-            const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
-            const templateParts = [
-                print(
-                    compoundExpression([
-                        staticGroupAuthorizationExpression,
-                        newline(),
-                        dynamicGroupAuthorizationExpression,
-                        newline(),
-                        ownerAuthorizationExpression,
-                        newline(),
-                        throwIfUnauthorizedExpression
-                    ])
-                ),
-                resolver.Properties.RequestMappingTemplate
-            ]
-            resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, resolver)
+                const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized();
+
+                const authModesToCheck = new Set<AuthProvider>();
+                const expressions: Array<Expression> = new Array();
+
+                if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                    staticGroupAuthorizationRules.length > 0 ||
+                    dynamicGroupAuthorizationRules.length > 0) {
+                    authModesToCheck.add('userPools');
+                }
+                if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                    authModesToCheck.add('oidc');
+                }
+
+                if (authModesToCheck.size > 0) {
+                    expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+                }
+
+                const authCheckExpressions = [
+                    staticGroupAuthorizationExpression,
+                    newline(),
+                    dynamicGroupAuthorizationExpression,
+                    newline(),
+                    ownerAuthorizationExpression,
+                    newline(),
+                    throwIfUnauthorizedExpression
+                ];
+
+                expressions.push(
+                    this.resources.getAuthModeCheckWrappedExpression(
+                        authModesToCheck,
+                        compoundExpression(authCheckExpressions))
+                );
+
+                const templateParts = [
+                    print(compoundExpression(expressions)),
+                    resolver.Properties.RequestMappingTemplate
+                ]
+                resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver)
+            }
         }
     }
 
@@ -721,73 +992,110 @@ All @auth directives used on field definitions are performed when the field is r
         resolverResourceId: string,
         rules: AuthRule[],
         parent: ObjectTypeDefinitionNode,
+        modelConfiguration: ModelDirectiveConfiguration,
+        isUpdate: boolean,
         field?: FieldDefinitionNode,
-        ifCondition?: Expression
+        ifCondition?: Expression,
     ) {
         const resolver = ctx.getResource(resolverResourceId)
         if (!rules || rules.length === 0 || !resolver) {
             return
         } else {
+
+            if (!field && modelConfiguration.shouldHave(isUpdate ? 'update' : 'delete')) {
+                const operationName = modelConfiguration.getName(isUpdate ? 'update' : 'delete');
+                const directives = this.getDirectivesForRules(rules);
+
+                if (directives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getMutationTypeName(), operationName, directives);
+                }
+            }
+
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules)
             const dynamicGroupAuthorizationRules = this.getDynamicGroupRules(rules)
             const ownerAuthorizationRules = this.getOwnerRules(rules)
 
-            // Generate the expressions to validate each strategy.
-            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
+            if (staticGroupAuthorizationRules.length > 0 ||
+                dynamicGroupAuthorizationRules.length > 0 ||
+                ownerAuthorizationRules.length > 0) {
 
-            // In create mutations, the dynamic group and ownership authorization checks
-            // are done before calling PutItem.
-            const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
-                dynamicGroupAuthorizationRules,
-                field ? field.name.value : undefined
-            )
+                // Generate the expressions to validate each strategy.
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules)
 
-            const fieldIsList = (fieldName: string) => {
-                const field = parent.fields.find(field => field.name.value === fieldName);
-                if (field) {
-                    return isListType(field.type);
+                // In create mutations, the dynamic group and ownership authorization checks
+                // are done before calling PutItem.
+                const dynamicGroupAuthorizationExpression = this.resources.dynamicGroupAuthorizationExpressionForUpdateOrDeleteOperations(
+                    dynamicGroupAuthorizationRules,
+                    field ? field.name.value : undefined
+                )
+
+                const fieldIsList = (fieldName: string) => {
+                    const field = parent.fields.find(field => field.name.value === fieldName);
+                    if (field) {
+                        return isListType(field.type);
+                    }
+                    return false;
                 }
-                return false;
+                const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForUpdateOrDeleteOperations(
+                    ownerAuthorizationRules,
+                    fieldIsList,
+                    field ? field.name.value : undefined
+                )
+
+                const collectAuthCondition = this.resources.collectAuthCondition()
+                const ifNotStaticallyAuthedCreateAuthCondition = iff(
+                    raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
+                    compoundExpression([
+                        dynamicGroupAuthorizationExpression,
+                        newline(),
+                        ownerAuthorizationExpression,
+                        newline(),
+                        collectAuthCondition
+                    ])
+                )
+
+                const throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty = this.resources.throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty()
+
+                const authModesToCheck = new Set<AuthProvider>();
+                const expressions: Array<Expression> = new Array();
+
+                if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                    staticGroupAuthorizationRules.length > 0 ||
+                    dynamicGroupAuthorizationRules.length > 0) {
+                    authModesToCheck.add('userPools');
+                }
+                if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                    authModesToCheck.add('oidc');
+                }
+
+                if (authModesToCheck.size > 0) {
+                    expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+                }
+
+                const authorizationLogic = compoundExpression([
+                    staticGroupAuthorizationExpression,
+                    newline(),
+                    ifNotStaticallyAuthedCreateAuthCondition,
+                    newline(),
+                    throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty
+                ]);
+
+                expressions.push(
+                    this.resources.getAuthModeCheckWrappedExpression(
+                        authModesToCheck,
+                        authorizationLogic)
+                );
+
+                const templateParts = [
+                    print(field && ifCondition ?
+                        iff(ifCondition, compoundExpression(expressions)) :
+                        compoundExpression(expressions)),
+                    resolver.Properties.RequestMappingTemplate
+                ]
+                resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver)
             }
-            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForUpdateOrDeleteOperations(
-                ownerAuthorizationRules,
-                fieldIsList,
-                field ? field.name.value : undefined
-            )
-
-            const collectAuthCondition = this.resources.collectAuthCondition()
-            const ifNotStaticallyAuthedCreateAuthCondition = iff(
-                raw(`! $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}`),
-                compoundExpression([
-                    dynamicGroupAuthorizationExpression,
-                    newline(),
-                    ownerAuthorizationExpression,
-                    newline(),
-                    collectAuthCondition
-                ])
-            )
-
-            const throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty = this.resources.throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty()
-
-            const authorizationLogic = compoundExpression([
-                staticGroupAuthorizationExpression,
-                newline(),
-                ifNotStaticallyAuthedCreateAuthCondition,
-                newline(),
-                throwIfNotStaticGroupAuthorizedOrAuthConditionIsEmpty
-            ]);
-
-            const templateParts = [
-                print(
-                    field && ifCondition ?
-                        iff(ifCondition, authorizationLogic) :
-                        authorizationLogic
-                ),
-                resolver.Properties.RequestMappingTemplate
-            ]
-            resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, resolver)
         }
     }
 
@@ -803,10 +1111,11 @@ All @auth directives used on field definitions are performed when the field is r
     private protectUpdateMutation(
         ctx: TransformerContext, resolverResourceId: string,
         rules: AuthRule[], parent: ObjectTypeDefinitionNode,
+        modelConfiguration: ModelDirectiveConfiguration,
         field?: FieldDefinitionNode
     ) {
         return this.protectUpdateOrDeleteMutation(
-            ctx, resolverResourceId, rules, parent, field,
+            ctx, resolverResourceId, rules, parent, modelConfiguration, true, field,
             field ? raw(`$ctx.args.input.containsKey("${field.name.value}")`) : undefined
         );
     }
@@ -821,10 +1130,13 @@ All @auth directives used on field definitions are performed when the field is r
      * @param field The optional field
      */
     private protectDeleteMutation(
-        ctx: TransformerContext, resolverResourceId: string, rules: AuthRule[], parent: ObjectTypeDefinitionNode, field?: FieldDefinitionNode
+        ctx: TransformerContext, resolverResourceId: string,
+        rules: AuthRule[], parent: ObjectTypeDefinitionNode,
+        modelConfiguration: ModelDirectiveConfiguration,
+        field?: FieldDefinitionNode,
     ) {
         return this.protectUpdateOrDeleteMutation(
-            ctx, resolverResourceId, rules, parent, field,
+            ctx, resolverResourceId, rules, parent, modelConfiguration, false, field,
             field ? raw(`$ctx.args.input.containsKey("${field.name.value}") && $util.isNull($ctx.args.input.get("${field.name.value}"))`) : undefined
         )
     }
@@ -833,7 +1145,8 @@ All @auth directives used on field definitions are performed when the field is r
      * When read operations are protected via @auth, all @connection resolvers will be protected.
      * Find the directives & update their resolvers with auth logic
      */
-    private protectConnections(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[]) {
+    private protectConnections(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
         const thisModelName = def.name.value;
         for (const inputDef of ctx.inputDocument.definitions) {
             if (inputDef.kind === Kind.OBJECT_TYPE_DEFINITION) {
@@ -842,9 +1155,9 @@ All @auth directives used on field definitions are performed when the field is r
                     if (fieldHasDirective(field, 'connection') && returnTypeName === thisModelName) {
                         const resolverResourceId = ResolverResourceIDs.ResolverResourceID(inputDef.name.value, field.name.value)
                         if (isListType(field.type)) {
-                            this.protectListQuery(ctx, resolverResourceId, rules)
+                            this.protectListQuery(ctx, resolverResourceId, rules, modelConfiguration)
                         } else {
-                            this.protectGetQuery(ctx, resolverResourceId, rules)
+                            this.protectGetQuery(ctx, resolverResourceId, rules, modelConfiguration)
                         }
                     }
                 }
@@ -856,8 +1169,9 @@ All @auth directives used on field definitions are performed when the field is r
      * When read operations are protected via @auth, all secondary @key query resolvers will be protected.
      * Find the directives & update their resolvers with auth logic
      */
-    private protectQueries(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[]) {
-        const secondaryKeyDirectivesWithQueries = (def.directives || []).filter(d => {
+    private protectQueries(ctx: TransformerContext, def: ObjectTypeDefinitionNode, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
+            const secondaryKeyDirectivesWithQueries = (def.directives || []).filter(d => {
             const isKey = d.name.value === 'key';
             const args = getDirectiveArguments(d);
             // @key with a name is a secondary key.
@@ -868,7 +1182,7 @@ All @auth directives used on field definitions are performed when the field is r
         for (const keyWithQuery of secondaryKeyDirectivesWithQueries) {
             const args = getDirectiveArguments(keyWithQuery);
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(ctx.getQueryTypeName(), args.queryField);
-            this.protectListQuery(ctx, resolverResourceId, rules)
+            this.protectListQuery(ctx, resolverResourceId, rules, modelConfiguration)
         }
     }
 
@@ -884,6 +1198,180 @@ All @auth directives used on field definitions are performed when the field is r
         return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
     }
 
+    private extendTypeWithDirectives(ctx: TransformerContext, typeName: string, directives: DirectiveNode[]) {
+        let objectTypeExtension = blankObjectExtension(typeName);
+
+        objectTypeExtension = extensionWithDirectives(
+            objectTypeExtension,
+            directives
+        );
+
+        ctx.addObjectExtension(objectTypeExtension);
+    }
+
+    private addDirectivesToField(ctx: TransformerContext, typeName: string, fieldName: string, directives: DirectiveNode[]) {
+        const type = ctx.getType(typeName) as ObjectTypeDefinitionNode;
+
+        if (type) {
+            const field = type.fields.find((f) => f.name.value === fieldName);
+
+            if (field) {
+                const newFields = [
+                    ...type.fields.filter((f) => f.name.value !== field.name.value),
+                    extendFieldWithDirectives(field, directives)
+                ];
+
+                const newMutation = {
+                    ...type,
+                    fields: newFields
+                };
+
+                ctx.putType(newMutation);
+            }
+        }
+    }
+
+    private getDirectivesForRules(rules: AuthRule[]): DirectiveNode[] {
+        if (!rules || rules.length === 0) {
+            return [];
+        }
+
+        const directives: DirectiveNode[] = new Array();
+
+        if (rules.find((r) => r.provider === 'apiKey') && this.configuredAuthProviders.default !== 'apiKey') {
+            directives.push(makeDirective('aws_api_key', []));
+        }
+
+        if (rules.find((r) => r.provider === 'iam') && this.configuredAuthProviders.default !== 'iam') {
+            directives.push(makeDirective('aws_iam', []));
+        }
+
+        if (rules.find((r) => r.provider === 'oidc') && this.configuredAuthProviders.default !== 'oidc') {
+            directives.push(makeDirective('aws_oidc', []));
+        }
+
+        if (rules.find((r) => r.provider === 'userPools') && this.configuredAuthProviders.default !== 'userPools') {
+            directives.push(makeDirective('aws_cognito_user_pools', []));
+        }
+
+        return directives;
+    }
+
+    private ensureDefaultAuthProviderAssigned(rules: AuthRule[]) {
+        // We assign the default provider if an override is not present make further handling easier.
+        for (const rule of rules) {
+            if (!rule.provider) {
+                switch (rule.allow) {
+                    case 'owner':
+                        rule.provider = 'userPools';
+                        break;
+                    case 'private':
+                        rule.provider = 'userPools'
+                        break;
+                    case 'public':
+                        rule.provider = 'apiKey'
+                        break;
+                    default:
+                        rule.provider = null;
+                        break;
+                }
+            }
+        }
+    }
+
+    private validateRuleAuthStrategy(rule: AuthRule) {
+        //
+        // Groups
+        //
+
+        if (rule.allow === 'groups' && rule.provider !== null) {
+            throw new InvalidDirectiveError(
+                `@auth directive with 'groups' strategy does not support providers, but found '${rule.provider}' assigned.`);
+        }
+
+        //
+        // Owner
+        //
+
+        if (rule.allow === 'owner') {
+            if (rule.provider !== null && rule.provider !== 'userPools' && rule.provider !== 'oidc') {
+                throw new InvalidDirectiveError(
+                    `@auth directive with 'owner' strategy only supports 'userPools' (default) and 'oidc' providers, but \
+found '${rule.provider}' assigned.`);
+            }
+        }
+
+        //
+        // Public
+        //
+
+        if (rule.allow === 'public') {
+            if (rule.provider !== null && rule.provider !== 'apiKey' && rule.provider !== 'iam') {
+                throw new InvalidDirectiveError(
+                    `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+found '${rule.provider}' assigned.`);
+            }
+        }
+
+        //
+        // Private
+        //
+
+        if (rule.allow === 'private') {
+            if (rule.provider !== null && rule.provider !== 'userPools' && rule.provider !== 'iam') {
+                throw new InvalidDirectiveError(
+                    `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+found '${rule.provider}' assigned.`);
+            }
+        }
+
+        //
+        // Validate provider values against project configuration.
+        //
+
+        if (rule.provider === 'apiKey' && this.configuredAuthProviders.hasApiKey === false) {
+            throw new InvalidDirectiveError(
+                `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`);
+        } else if (rule.provider === 'oidc' && this.configuredAuthProviders.hasOIDC === false) {
+            throw new InvalidDirectiveError(
+                `@auth directive with 'oidc' provider found, but the project has no OIDC authentication provider configured.`);
+        } else if (rule.provider === 'userPools' && this.configuredAuthProviders.hasUserPools === false) {
+            throw new InvalidDirectiveError(
+                `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`);
+        } else if (rule.provider === 'iam' && this.configuredAuthProviders.hasIAM === false) {
+            throw new InvalidDirectiveError(
+                `@auth directive with 'iam' provider found, but the project has no IAM authentication provider configured.`);
+        }
+    }
+
+    private getConfiguredAuthProviders(): ConfiguredAuthProviders {
+        const providers = [
+            this.config.authConfig.defaultAuthentication.authenticationType,
+            ...this.config.authConfig.additionalAuthenticationProviders.map((p) => p.authenticationType)
+        ];
+
+        const getAuthProvider = (authType: AppSyncAuthMode): AuthProvider => {
+            switch (authType) {
+                case "AMAZON_COGNITO_USER_POOLS":
+                    return "userPools";
+                case "API_KEY":
+                    return "apiKey";
+                case "AWS_IAM":
+                    return "iam";
+                case "OPENID_CONNECT":
+                    return "oidc";
+            }
+        };
+
+        return {
+            default: getAuthProvider(this.config.authConfig.defaultAuthentication.authenticationType),
+            onlyDefaultAuthProviderConfigured: this.config.authConfig.additionalAuthenticationProviders.length === 0,
+            hasApiKey: providers.find((p) => p === 'API_KEY') ? true : false,
+            hasUserPools: providers.find((p) => p === 'AMAZON_COGNITO_USER_POOLS') ? true : false,
+            hasOIDC: providers.find((p) => p === 'OPENID_CONNECT') ? true : false,
+            hasIAM: providers.find((p) => p === "AWS_IAM") ? true : false
+        };
+    }
 }
 
 function fieldHasDirective(field: FieldDefinitionNode, directiveName: string): boolean {
@@ -892,11 +1380,10 @@ function fieldHasDirective(field: FieldDefinitionNode, directiveName: string): b
     ))
 }
 
-
-
 function isTruthyOrNull(obj: any): boolean {
     return obj || obj === null;
 }
+
 function isUndefined(obj: any): boolean {
     return obj === undefined;
 }

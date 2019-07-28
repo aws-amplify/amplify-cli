@@ -19,7 +19,11 @@ describe('getAppSyncDetail', () => {
       output: {
         GraphQLAPIEndpointOutput: 'http://appsync.aws.com/api1',
         GraphQLAPIIdOutput: 'some-random-id',
-        securityType: 'AWS_IAM',
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AWS_IAM',
+          },
+        },
       },
     },
   ];
@@ -32,7 +36,7 @@ describe('getAppSyncDetail', () => {
         name: mockAppSyncAPIs[0].name,
         endpoint: mockAppSyncAPIs[0].output.GraphQLAPIEndpointOutput,
         id: mockAppSyncAPIs[0].output.GraphQLAPIIdOutput,
-        securityType: mockAppSyncAPIs[0].output.securityType,
+        authConfig: mockAppSyncAPIs[0].output.authConfig,
       },
     ];
     expect(getAppSyncDetail(context)).toEqual(expectedResult);

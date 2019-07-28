@@ -5,7 +5,11 @@ describe('getAppSyncAPIs', () => {
     appSync1: {
       service: 'AppSync',
       output: {
-        securityType: 'AWS_IAM',
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AWS_IAM',
+          },
+        },
         GraphQLApiId: 'rmez4smy7bbqrpanvaaefywt64',
         GraphQLApiEndpoint:
           'https://fp772p7p3faoldgp54vxicfyjy.appsync-api.us-east-1.amazonaws.com/graphql',
@@ -15,7 +19,11 @@ describe('getAppSyncAPIs', () => {
     appSync2: {
       service: 'AppSync',
       output: {
-        securityType: 'AWS_IAM',
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AWS_IAM',
+          },
+        },
         GraphQLApiId: '2c6gvpbh6jfjhjdazm2d5cixtm',
         GraphQLApiEndpoint:
           'https://vq5t7rm63fazjlbn74duugnyle.appsync-api.us-east-1.amazonaws.com/graphql',
