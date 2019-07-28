@@ -32,6 +32,7 @@ export class ResourceConstants {
         // AppSync
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
+        CreateAPIKey: 'CreateAPIKey',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
@@ -91,6 +92,7 @@ export class ResourceConstants {
 
     public static readonly SNIPPETS = {
         AuthCondition: "authCondition",
+        AuthMode: "authMode",
         VersionedCondition: "versionedCondition",
         ModelObjectKey: "modelObjectKey",
         DynamoDBNameOverrideMap: "dynamodbNameOverrideMap",

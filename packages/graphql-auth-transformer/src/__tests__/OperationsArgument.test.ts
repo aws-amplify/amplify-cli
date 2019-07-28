@@ -15,7 +15,13 @@ test('Test "read" auth operation', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -43,7 +49,13 @@ test('Test "create", "update", "delete" auth operations', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -85,7 +97,13 @@ test('Test that operation overwrites queries in auth operations', () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)

@@ -43,16 +43,69 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     return deploymentRootKey;
   };
 
+  const getApiKeyConfigured = () => {
+    const projectDetails = context.amplify.getProjectDetails();
+    const appSyncAPIs = Object.keys(projectDetails.amplifyMeta.api).reduce((acc, apiName) => {
+      const api = projectDetails.amplifyMeta.api[apiName];
+      if (api.service === 'AppSync') {
+        acc.push({ ...api, name: apiName });
+      }
+      return acc;
+    }, []);
+
+    const appSyncApi = (appSyncAPIs && appSyncAPIs.length && appSyncAPIs.length > 0)
+      ? appSyncAPIs[0]
+      : undefined;
+
+    let hasApiKey = false;
+
+    if (appSyncApi) {
+      if (appSyncApi.output.securityType && appSyncApi.output.securityType === 'API_KEY') {
+        hasApiKey = true;
+      } else {
+        const { authConfig } = appSyncApi.output;
+
+        if (authConfig.defaultAuthentication.authenticationType === 'API_KEY') {
+          hasApiKey = true;
+        } else if (authConfig.additionalAuthenticationProviders &&
+          authConfig.additionalAuthenticationProviders.find(p => p.authenticationType === 'API_KEY')) {
+          hasApiKey = true;
+        }
+      }
+    }
+
+    return hasApiKey;
+  };
+
   const writeUpdatedParametersJson = (resource, rootKey) => {
     const { category, resourceName } = resource;
     // Read parameters.json, add timestamps, and write to build/parameters.json
     const parametersFilePath = path.join(backEndDir, category, resourceName, PARAM_FILE_NAME);
     const currentParameters = defaultParams || {};
+    const apiKeyConfigured = getApiKeyConfigured();
+    currentParameters.CreateAPIKey = apiKeyConfigured ? 1 : 0;
     if (fs.existsSync(parametersFilePath)) {
       try {
         const paramFile = fs.readFileSync(parametersFilePath).toString();
         const personalParams = JSON.parse(paramFile);
         Object.assign(currentParameters, personalParams);
+
+        // If the customer explicitly disabled API Key creation, show a warning and
+        // honor the setting.
+        if (personalParams.APIKeyExpirationEpoch) {
+          if (personalParams.APIKeyExpirationEpoch === -1) {
+            currentParameters.CreateAPIKey = 0;
+
+            delete currentParameters.APIKeyExpirationEpoch;
+
+            context.print.warning('APIKeyExpirationEpoch parameter\'s -1 value is deprecated to disable ' +
+              'the API Key creation. In the future CreateAPIKey parameter replaces this behavior.');
+          } else {
+            currentParameters.CreateAPIKey = 1;
+          }
+        } else {
+          currentParameters.CreateAPIKey = apiKeyConfigured ? 1 : 0;
+        }
       } catch (e) {
         context.print.error(`Could not parse parameters file at "${parametersFilePath}"`);
       }

@@ -16,7 +16,6 @@ import {
     parse,
     EnumTypeDefinitionNode,
     TypeDefinitionNode,
-    DefinitionNode,
     OperationTypeDefinitionNode,
     InterfaceTypeDefinitionNode
 } from 'graphql'
@@ -27,7 +26,6 @@ import {
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
-import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
