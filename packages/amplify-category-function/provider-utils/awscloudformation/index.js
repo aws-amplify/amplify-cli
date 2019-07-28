@@ -353,7 +353,6 @@ async function invoke(context, category, service, resourceName) {
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const srcDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
-
   const event = context.amplify.readJsonFile(path.resolve(`${srcDir}/${resourceAnswers[inputs[9].key]}`));
 
   const invokeOptions = {
