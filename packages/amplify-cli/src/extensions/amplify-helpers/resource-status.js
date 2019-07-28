@@ -56,7 +56,7 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
-function getCommonResources(resources, filteredResources) {
+function filterResources(resources, filteredResources) {
   if (!filteredResources) {
     return resources;
   }
@@ -91,7 +91,7 @@ function getAllResources(amplifyMeta, category, resourceName, filteredResources)
     });
   });
 
-  resources = getCommonResources(resources, filteredResources);
+  resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
@@ -130,7 +130,7 @@ function getResourcesToBeCreated(
     });
   });
 
-  resources = getCommonResources(resources, filteredResources);
+  resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
     // Create only specified resource in the cloud
@@ -183,7 +183,7 @@ function getResourcesToBeDeleted(
     });
   });
 
-  resources = getCommonResources(resources, filteredResources);
+  resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
     // Deletes only specified resource in the cloud
@@ -231,7 +231,7 @@ async function getResourcesToBeUpdated(
     });
   });
 
-  resources = getCommonResources(resources, filteredResources);
+  resources = filterResources(resources, filteredResources);
 
   if (category !== undefined && resourceName !== undefined) {
     resources = resources.filter(resource => resource.category === category &&
