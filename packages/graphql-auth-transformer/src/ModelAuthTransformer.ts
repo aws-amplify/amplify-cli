@@ -1,5 +1,6 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
+import { StringParameter } from 'cloudform-types';
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation, ModelOperation, AuthProvider } from './AuthRule'
 import {
@@ -13,15 +14,6 @@ import {
     comment
 } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType } from './ModelDirectiveConfiguration';
-
-import {
-    OWNER_AUTH_STRATEGY,
-    DEFAULT_OWNER_FIELD,
-    DEFAULT_IDENTITY_FIELD,
-    GROUPS_AUTH_STRATEGY,
-    DEFAULT_GROUPS_FIELD
-} from './constants'
-import UserPool from 'cloudform-types/types/cognito/userPool';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -127,10 +119,10 @@ export type ConfiguredAuthProviders = {
 };
 
 export class ModelAuthTransformer extends Transformer {
-
     resources: ResourceFactory;
     config: ModelAuthTransformerConfig;
     configuredAuthProviders: ConfiguredAuthProviders;
+    generateIAMPolicyforUnauthRole: boolean;
 
     constructor(config?: ModelAuthTransformerConfig) {
         super(
@@ -203,6 +195,7 @@ export class ModelAuthTransformer extends Transformer {
         validateAuthModes(this.config.authConfig);
         this.resources = new ResourceFactory();
         this.configuredAuthProviders = this.getConfiguredAuthProviders();
+        this.generateIAMPolicyforUnauthRole = false;
     }
 
     /**
@@ -223,6 +216,23 @@ export class ModelAuthTransformer extends Transformer {
         ctx.mergeOutputs(template.Outputs)
         ctx.mergeConditions(template.Conditions)
         this.updateAPIAuthentication(ctx)
+    }
+
+    public after = (ctx: TransformerContext): void => {
+        if (this.generateIAMPolicyforUnauthRole === true) {
+            ctx.mergeParameters({
+                [ResourceConstants.PARAMETERS.UnauthRoleName]: new StringParameter({
+                    Description: 'Reference to the name of the Unauth Role created for the project.'
+                }),
+            });
+
+            ctx.mergeResources(
+                {
+                    [ResourceConstants.RESOURCES.UnauthRolePolicy]:
+                    this.resources.makeIAMPolicyforUnauthRole()
+                }
+            );
+        }
     }
 
     private getApiKeyConfig(): ApiKeyConfig {
@@ -259,6 +269,7 @@ export class ModelAuthTransformer extends Transformer {
         const rules = getArg('rules', []) as AuthRule[]
         this.ensureDefaultAuthProviderAssigned(rules);
         this.validateRules(rules);
+        this.setUnauthPolicyFlag(rules);
 
         const { operationRules, queryRules } = this.splitRules(rules);
 
@@ -315,6 +326,8 @@ Static group authorization should perform as expected.`
         const rules = getArg('rules', []) as AuthRule[]
         this.ensureDefaultAuthProviderAssigned(rules);
         this.validateFieldRules(rules);
+        this.setUnauthPolicyFlag(rules);
+
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
             if (rule.operations) {
                 const matchesOp = rule.operations.find(o => o === op)
@@ -1371,6 +1384,19 @@ found '${rule.provider}' assigned.`);
             hasOIDC: providers.find((p) => p === 'OPENID_CONNECT') ? true : false,
             hasIAM: providers.find((p) => p === "AWS_IAM") ? true : false
         };
+    }
+
+    private setUnauthPolicyFlag(rules: AuthRule[]): void {
+        if (!rules || rules.length === 0 || this.generateIAMPolicyforUnauthRole === true) {
+            return;
+        }
+
+        for (const rule of rules) {
+            if (rule.allow === 'private' && rule.provider === 'iam') {
+                this.generateIAMPolicyforUnauthRole = true;
+                return;
+            }
+        }
     }
 }
 

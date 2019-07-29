@@ -90,6 +90,13 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
         const personalParams = JSON.parse(paramFile);
         Object.assign(currentParameters, personalParams);
 
+        // If unauthRoleName parameter not present, add it
+        if (!currentParameters.unauthRole) {
+          currentParameters.unauthRoleName = {
+            Ref: 'UnauthRoleName',
+          };
+        }
+
         // If the customer explicitly disabled API Key creation, show a warning and
         // honor the setting.
         if (personalParams.APIKeyExpirationEpoch) {

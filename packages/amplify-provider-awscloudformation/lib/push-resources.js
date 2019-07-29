@@ -146,7 +146,13 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
   return packageResources(context, resources)
     .then(() => uploadAppSyncFiles(context, resources, allResources, {
       useDeprecatedParameters: isReverting,
-      defaultParams: { CreateAPIKey: 0, APIKeyExpirationEpoch: -1 },
+      defaultParams: {
+        CreateAPIKey: 0,
+        APIKeyExpirationEpoch: -1,
+        unauthRoleName: {
+          Ref: 'UnauthRoleName',
+        },
+      },
     }))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {

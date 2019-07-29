@@ -1,7 +1,6 @@
 import Template from 'cloudform-types/types/template'
-import Cognito from 'cloudform-types/types/cognito'
-import Output from 'cloudform-types/types/output'
-import { AppSync, Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
+import Policy from 'cloudform-types/types/iam/policy';
+import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types'
 import { AuthRule, AuthProvider } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
@@ -14,13 +13,10 @@ import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, 
 import * as Transformer from './ModelAuthTransformer'
 
 import {
-    OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     DEFAULT_IDENTITY_FIELD,
-    GROUPS_AUTH_STRATEGY,
     DEFAULT_GROUPS_FIELD
 } from './constants'
-import { ConfiguredAuthProviders } from './ModelAuthTransformer';
 
 function replaceIfUsername(identityField: string): string {
     return (identityField === 'username') ? 'cognito:username' : identityField;
@@ -856,5 +852,44 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         }
 
         return block("Determine request authentication mode", expressions);
+    }
+
+    public makeIAMPolicyforUnauthRole(): Policy {
+        return new IAM.Policy({
+            PolicyName: 'appsync-unauthrole-policy',
+            Roles: [
+                //HACK double casting needed because it cannot except Ref
+                { Ref: 'unauthRoleName' } as unknown as Value<string>
+            ],
+            PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                {
+                    Effect: 'Allow',
+                    Action: [
+                        'appsync:GraphQL'
+                    ],
+                    Resource: [{
+                        'Fn::Join': [
+                            '',
+                            [
+                                'arn:aws:appsync:',
+                                { Ref: 'AWS::Region' },
+                                ':',
+                                { Ref: 'AWS::AccountId' },
+                                ':apis/',
+                                {
+                                    "Fn::GetAtt": [
+                                        "GraphQLAPI",
+                                        "ApiId"
+                                    ]
+                                },
+                                '/*',
+                            ],
+                        ],
+                    }],
+                }],
+            },
+        });
     }
 }
