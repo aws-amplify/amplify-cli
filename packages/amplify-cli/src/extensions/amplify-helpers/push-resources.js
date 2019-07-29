@@ -30,7 +30,10 @@ async function pushResources(context, category, resourceName, filteredResources)
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
         const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-        const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
+        const localEnvFilePath = context
+          .amplify
+          .pathManager
+          .getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
         fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
       }
 
