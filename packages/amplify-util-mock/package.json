@@ -1,5 +1,5 @@
 {
-  "name": "amplify-util-test",
+  "name": "amplify-util-mock",
   "version": "0.1.0",
   "description": "amplify cli plugin providing local testing ",
   "main": "lib/index.js",
