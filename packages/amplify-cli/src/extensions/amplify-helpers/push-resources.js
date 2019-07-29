@@ -30,8 +30,7 @@ async function pushResources(context, category, resourceName, filteredResources)
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
         const jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
-        const localEnvFilePath =
-          context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
+        const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath(context.exeInfo.localEnvInfo.projectPath);
         fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
       }
 
@@ -42,7 +41,6 @@ async function pushResources(context, category, resourceName, filteredResources)
     }
   }
 
-
   const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected
@@ -51,7 +49,8 @@ async function pushResources(context, category, resourceName, filteredResources)
     return context;
   }
 
-  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  let continueToPush =
+    context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt.run('Are you sure you want to continue?');
   }
