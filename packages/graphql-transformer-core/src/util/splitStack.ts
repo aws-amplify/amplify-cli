@@ -178,6 +178,13 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
                         const referencedStack = stacks[referencedStackName];
                         const exportLogicalId = `Ref${resourceId}`
                         if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
+                            if (template.Outputs[exportLogicalId]) {
+                                // https://github.com/aws-amplify/amplify-cli/issues/1581
+                                // Export names are unique and the transformer libraries
+                                // enforce resource id uniqueness as well. Delete the existing
+                                // output if we are adding it to another stack to prevent push failures.
+                                delete template.Outputs[exportLogicalId];
+                            }
                             referencedStack.Outputs[exportLogicalId] = outputForInput;
                         }
                         if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {
@@ -201,6 +208,13 @@ export default function splitStack(opts: SplitStackOptions): NestedStacks {
                         const referencedStack = stacks[referencedStackName];
                         const exportLogicalId = `GetAtt${resourceId}${attr}`
                         if (referencedStack && referencedStack.Outputs && !referencedStack.Outputs[exportLogicalId]) {
+                            if (template.Outputs[exportLogicalId]) {
+                                // https://github.com/aws-amplify/amplify-cli/issues/1581
+                                // Export names are unique and the transformer libraries
+                                // enforce resource id uniqueness as well. Delete the existing
+                                // output if we are adding it to another stack to prevent push failures.
+                                delete template.Outputs[exportLogicalId];
+                            }
                             referencedStack.Outputs[exportLogicalId] = outputForInput;
                         }
                         if (stackDependsOnMap[thisStackName] && !stackDependsOnMap[thisStackName].find(s => s === referencedStackName)) {

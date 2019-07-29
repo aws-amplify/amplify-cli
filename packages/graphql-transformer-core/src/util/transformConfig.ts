@@ -29,7 +29,18 @@ export interface TransformConfig {
      */
     StackMapping?: {
         [resourceId: string]: string
-    }
+    },
+
+    /**
+     * Provide build time options to GraphQL Transformer constructor functions.
+     * Certain options cannot be configured via CloudFormation parameters and
+     * need to be set at build time. E.G. DeletionPolicies cannot depend on parameters.
+     */
+    TransformerOptions?: {
+        [transformer: string]: {
+            [option: string]: any
+        }
+    },
 
     /**
      * For backwards compatibility we store a set of resource logical ids that

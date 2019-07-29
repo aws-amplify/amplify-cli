@@ -1,4 +1,4 @@
-import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction } from 'cloudform-types'
+import { DynamoDB, AppSync, IAM, Template, Fn, StringParameter, NumberParameter, Refs, IntrinsicFunction, DeletionPolicy } from 'cloudform-types'
 import Output from 'cloudform-types/types/output';
 import {
     DynamoDBMappingTemplate, printBlock, str, print,
@@ -158,7 +158,7 @@ export class ResourceFactory {
     /**
      * Create a DynamoDB table for a specific type.
      */
-    public makeModelTable(typeName: string, hashKey: string = 'id', rangeKey?: string) {
+    public makeModelTable(typeName: string, hashKey: string = 'id', rangeKey?: string, deletionPolicy: DeletionPolicy = DeletionPolicy.Delete) {
         const keySchema = hashKey && rangeKey ? [
             {
                 AttributeName: hashKey,
@@ -209,7 +209,7 @@ export class ResourceFactory {
                 },
                 Refs.NoValue
             ) as any,
-        })
+        }).deletionPolicy(deletionPolicy)
     }
 
     private dynamoDBTableName(typeName: string): IntrinsicFunction {

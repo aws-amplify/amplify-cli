@@ -44,6 +44,24 @@ export class TransformerContractError extends Error {
     }
 }
 
+/**
+ * Thrown by the sanity checker when a user is trying to make a migration that is known to not work.
+ */
+export class InvalidMigrationError extends Error {
+    fix: string;
+    cause: string;
+    constructor(message: string, cause: string, fix: string) {
+        super(message);
+        Object.setPrototypeOf(this, InvalidMigrationError.prototype);
+        this.name = "InvalidMigrationError";
+        this.fix = fix;
+        this.cause = cause;
+    }
+}
+InvalidMigrationError.prototype.toString = function() {
+    return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
+}
+
 export class InvalidDirectiveError extends Error {
     constructor(message: string) {
         super(message);

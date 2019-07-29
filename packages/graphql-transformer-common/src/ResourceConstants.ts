@@ -42,7 +42,6 @@ export class ResourceConstants {
         DynamoDBEnableServerSideEncryption: 'DynamoDBEnableServerSideEncryption',
 
         // Elasticsearch
-        ElasticsearchDomainName: 'ElasticSearchDomainName',
         ElasticsearchAccessIAMRoleName: 'ElasticSearchAccessIAMRoleName',
         ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
         ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
