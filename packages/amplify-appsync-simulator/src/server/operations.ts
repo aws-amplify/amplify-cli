@@ -80,7 +80,6 @@ export class OperationServer {
         try {
             const appSyncConfig = this.simulatorContext.appSyncConfig;
             const { headers } = request;
-            console.log(JSON.stringify(headers));
             const apiKey = headers['x-api-key'];
 
             const authorization = headers.Authorization || headers.authorization;
