@@ -7,6 +7,7 @@ export class ResourceConstants {
         GraphQLAPILogicalID: 'GraphQLAPI',
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
+        UnauthRolePolicy: 'UnauthRolePolicy',
 
         // Elasticsearch
         ElasticsearchAccessIAMRoleLogicalID: 'ElasticSearchAccessIAMRole',
@@ -33,6 +34,7 @@ export class ResourceConstants {
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
         CreateAPIKey: 'CreateAPIKey',
+        UnauthRoleName: 'unauthRoleName',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 
         // DynamoDB
