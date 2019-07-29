@@ -51,10 +51,9 @@ async function pushResources(context, category, resourceName, filteredResources)
     return context;
   }
 
-  let continueToPush = context.exeInfo.inputParams.yes;
+  let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt.run('Are you sure you want to continue?');
-    context.exeInfo.pushAborted = !continueToPush;
   }
 
   if (continueToPush) {
@@ -72,7 +71,7 @@ async function pushResources(context, category, resourceName, filteredResources)
     }
   }
 
-  return context;
+  return continueToPush;
 }
 
 function providersPush(context, category, resourceName, filteredResources) {

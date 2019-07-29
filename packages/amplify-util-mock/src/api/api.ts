@@ -5,7 +5,7 @@ import { add, generate, isCodegenConfigured } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, addCleanupTask } from '../utils';
+import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
 import { runTransformer } from './run-graphql-transformer';
 import { processResources } from '../CFNParser/resource-processor';
 import { ResolverOverrides } from './resolver-overrides';
@@ -231,7 +231,7 @@ export class APITest {
 
     private async startDynamoDBLocalServer(context) {
         const { projectPath } = context.amplify.getEnvInfo();
-        const dbPath = path.join(projectPath, 'amplify', 'test', 'dynamodb');
+        const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
         fs.ensureDirSync(dbPath);
         this.ddbEmulator = await dynamoEmulator.launch({
             dbPath,

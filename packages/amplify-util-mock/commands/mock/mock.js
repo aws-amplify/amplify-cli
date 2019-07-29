@@ -1,3 +1,4 @@
+const testUtil = require('../../lib');
 module.exports = {
   name: 'mock',
   run: async function(context) {
@@ -14,5 +15,6 @@ module.exports = {
       context.amplify.showHelp(header, commands);
       return;
     }
+    testUtil.mockAllCategories(context);
   }
 }
