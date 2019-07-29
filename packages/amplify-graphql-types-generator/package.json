@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "main": "./lib/index.js",
   "bin": "./lib/cli.js",
@@ -41,7 +41,7 @@
     "jest-matcher-utils": "^23.6.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^3.5.1"
   },
   "dependencies": {
     "@babel/generator": "7.0.0-beta.4",

@@ -70,7 +70,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
 }
 
-function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
+function updateamplifyMetaAfterResourceAdd(category, resourceName, options = {}) {
   const amplifyMetaFilePath = pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = readJsonFile(amplifyMetaFilePath);
   if (options.dependsOn) {
@@ -80,12 +80,13 @@ function updateamplifyMetaAfterResourceAdd(category, resourceName, options) {
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
-  if (!amplifyMeta[category][resourceName]) {
-    amplifyMeta[category][resourceName] = {};
-    amplifyMeta[category][resourceName] = options;
-    const jsonString = JSON.stringify(amplifyMeta, null, '\t');
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
+  if (amplifyMeta[category][resourceName]) {
+    throw new Error(`${resourceName} is present in amplify-meta.json`);
   }
+  amplifyMeta[category][resourceName] = {};
+  amplifyMeta[category][resourceName] = options;
+  const jsonString = JSON.stringify(amplifyMeta, null, '\t');
+  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   updateBackendConfigAfterResourceAdd(category, resourceName, options);
 }
@@ -222,15 +223,18 @@ function checkForCyclicDependencies(category, resourceName, dependsOn) {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
-      const dependsOnResourceDependency =
-        amplifyMeta[resource.category][resource.resourceName].dependsOn;
-      if (dependsOnResourceDependency) {
-        dependsOnResourceDependency.forEach((dependsOnResource) => {
-          if (dependsOnResource.category === category &&
-            dependsOnResource.resourceName === resourceName) {
-            cyclicDependency = true;
-          }
-        });
+      if (amplifyMeta[resource.category] &&
+          amplifyMeta[resource.category][resource.resourceName]) {
+        const dependsOnResourceDependency =
+          amplifyMeta[resource.category][resource.resourceName].dependsOn;
+        if (dependsOnResourceDependency) {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
+            if (dependsOnResource.category === category &&
+              dependsOnResource.resourceName === resourceName) {
+              cyclicDependency = true;
+            }
+          });
+        }
       }
     });
   }

@@ -20,7 +20,7 @@ const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
-function checkForCommonIssues(usedDirectives, opts) {
+function failOnInvalidAuthType(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
     throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API.
 Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
@@ -203,14 +203,15 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const usedDirectives = collectDirectiveNames(project.schema);
-  checkForCommonIssues(
+  failOnInvalidAuthType(
     usedDirectives,
     { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
   );
 
   const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
   const transformerList = [
-    new DynamoDBModelTransformer(getModelConfig(project)),
+    // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
+    new DynamoDBModelTransformer(),
     new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
@@ -225,11 +226,13 @@ async function transformGraphQLSchema(context, options) {
     transformerList.push(new SearchableModelTransformer());
   }
 
-  await TransformPackage.buildAPIProject({
+  const buildConfig = {
     projectDirectory: resourceDir,
     transformers: transformerList,
     rootStackFileName: 'cloudformation-template.json',
-  });
+    currentCloudBackendDirectory: previouslyDeployedBackendDir,
+  };
+  await TransformPackage.buildAPIProject(buildConfig);
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
@@ -239,14 +242,18 @@ place .graphql files in a directory at ${schemaDirPath}`);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 }
 
-function getModelConfig(project) {
-  if (project && project.config && project.config.Model && project.config.Model.BillingMode) {
-    return {
-      BillingMode: project.config.Model.BillingMode,
-    };
-  }
-  return undefined;
-}
+// TODO: Remove until further discussion
+// function getTransformerOptions(project, transformerName) {
+//   if (
+//     project &&
+//     project.config &&
+//     project.config.TransformerOptions &&
+//     project.config.TransformerOptions[transformerName]
+//   ) {
+//     return project.config.TransformerOptions[transformerName];
+//   }
+//   return undefined;
+// }
 
 module.exports = {
   transformGraphQLSchema,

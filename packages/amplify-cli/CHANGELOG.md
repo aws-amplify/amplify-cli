@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.4...@aws-amplify/cli@1.8.5) (2019-07-24)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.8.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.3...@aws-amplify/cli@1.8.4) (2019-07-24)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.1...@aws-amplify/cli@1.8.3) (2019-07-23)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.0...@aws-amplify/cli@1.8.1) (2019-07-10)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.8...@aws-amplify/cli@1.8.0) (2019-07-09)
+
+
+### Bug Fixes
+
+* replacing rel paths with plugin func ([71f553f](https://github.com/aws-amplify/amplify-cli/commit/71f553f))
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
+## [1.7.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.6...@aws-amplify/cli@1.7.8) (2019-06-30)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.5...@aws-amplify/cli@1.7.6) (2019-06-26)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.7.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.4...@aws-amplify/cli@1.7.5) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.3...@aws-amplify/cli@1.7.4) (2019-06-18)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.2...@aws-amplify/cli@1.7.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** call updateMetaAfterAdd only once ([#1653](https://github.com/aws-amplify/amplify-cli/issues/1653)) ([dc28758](https://github.com/aws-amplify/amplify-cli/commit/dc28758)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+* **cli:** add default value for options in updateAmplifyMeta ([#1648](https://github.com/aws-amplify/amplify-cli/issues/1648)) ([f9c87bb](https://github.com/aws-amplify/amplify-cli/commit/f9c87bb)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+
+
+
+
+
+## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.1...@aws-amplify/cli@1.7.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-cli:** return valid JSON when using amplify env get --json ([#1622](https://github.com/aws-amplify/amplify-cli/issues/1622)) ([49f4339](https://github.com/aws-amplify/amplify-cli/commit/49f4339)), closes [#1616](https://github.com/aws-amplify/amplify-cli/issues/1616)
+* **cli:** support es6 import/export ([#1635](https://github.com/aws-amplify/amplify-cli/issues/1635)) ([18d5409](https://github.com/aws-amplify/amplify-cli/commit/18d5409)), closes [#1623](https://github.com/aws-amplify/amplify-cli/issues/1623)
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.7.0...@aws-amplify/cli@1.7.1) (2019-06-06)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.6.11...@aws-amplify/cli@1.7.0) (2019-05-29)
 
 

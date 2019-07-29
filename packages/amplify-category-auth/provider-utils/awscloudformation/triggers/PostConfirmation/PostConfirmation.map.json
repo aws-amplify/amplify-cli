@@ -1,0 +1,29 @@
+{
+  "add-to-group": {
+    "name": "Add User To Group",
+    "description": "This template adds a user to a Cognito Userpool group after they have been confirmed.",
+    "permissions": [
+      {
+        "policyName": "AddToGroupCognito",
+        "trigger": "PostConfirmation",
+        "effect": "Allow",
+        "actions": ["cognito-idp:AdminAddUserToGroup", "cognito-idp:GetGroup", "cognito-idp:CreateGroup"],
+        "resource": {
+          "paramType": "!GetAtt",
+          "keys": ["UserPool", "Arn"]
+        }
+      }
+    ],
+    "env": [
+      {
+        "key": "GROUP",
+        "value": "askUser",
+        "question": {
+          "name" : "GROUP",
+          "type": "input",
+          "message": "Enter the name of the group to which users will be added."
+        }
+      }
+    ]
+  }
+}

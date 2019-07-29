@@ -251,7 +251,7 @@ class CloudFormation {
             const cfnParentStackParams = {
               StackName: stackName,
               TemplateURL: templateURL,
-              Capabilities: ['CAPABILITY_NAMED_IAM'],
+              Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
               Parameters: [
                 {
                   ParameterKey: 'DeploymentBucketName',

@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.12...amplify-category-notifications@1.4.14) (2019-07-23)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [1.4.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.11...amplify-category-notifications@1.4.12) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [1.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.10...amplify-category-notifications@1.4.11) (2019-07-09)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [1.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.9...amplify-category-notifications@1.4.10) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.4.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.8...amplify-category-notifications@1.4.9) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** remove env name ([#1440](https://github.com/aws-amplify/amplify-cli/issues/1440)) ([19ff63c](https://github.com/aws-amplify/amplify-cli/commit/19ff63c)), closes [#1372](https://github.com/aws-amplify/amplify-cli/issues/1372)
+
+
+
+
+
+## [1.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.7...amplify-category-notifications@1.4.8) (2019-06-06)
+
+
+### Bug Fixes
+
+* spelling mistakes in cli output ([#1588](https://github.com/aws-amplify/amplify-cli/issues/1588)) ([787ac57](https://github.com/aws-amplify/amplify-cli/commit/787ac57))
+
+
+
+
+
 ## [1.4.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.6...amplify-category-notifications@1.4.7) (2019-05-29)
 
 **Note:** Version bump only for package amplify-category-notifications

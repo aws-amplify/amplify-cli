@@ -41,11 +41,13 @@ beforeAll(async () => {
     }
     type Customer @model @key(fields: ["email"]) {
         email: String!
+        addresslist:  [String]
         username: String
     }
     type Item @model
         @key(fields: ["orderId", "status", "createdAt"])
         @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+        @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt")
     {
         orderId: ID!
         status: Status!
@@ -197,6 +199,9 @@ test('Test listX with three part primary key.', async () => {
     expect(items.data.listItems.items).toHaveLength(1)
     items = await listItem(hashKey, { le: { status: 'IN_TRANSIT', createdAt: '2018-01-01T00:01:01.000Z'}});
     expect(items.data.listItems.items).toHaveLength(1)
+    await deleteItem(hashKey, 'IN_TRANSIT', '2018-01-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-06-01T00:01:01.000Z');
+    await deleteItem(hashKey, 'PENDING', '2018-09-01T00:01:01.000Z');
 })
 
 test('Test query with three part secondary key.', async () => {
@@ -226,6 +231,42 @@ test('Test query with three part secondary key.', async () => {
     items = await itemsByStatus(undefined, { le: '2018-09-01' });
     expect(items.data).toBeNull()
     expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', hashKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', hashKey, '2018-06-01T00:01:01.000Z');
+    await deleteItem('order3', hashKey, '2018-09-01T00:01:01.000Z');
+})
+
+test('Test query with three part secondary key, where sort key is an enum.', async () => {
+    const hashKey = '2018-06-01T00:01:01.000Z';
+    const sortKey = 'UNKNOWN';
+    await createItem('order1', sortKey, 'list1', '2018-01-01T00:01:01.000Z');
+    await createItem('order2', sortKey, 'list2', hashKey);
+    await createItem('order3', sortKey, 'item3', '2018-09-01T00:01:01.000Z');
+    let items = await itemsByCreatedAt(undefined);
+    expect(items.data).toBeNull();
+    expect(items.errors.length).toBeGreaterThan(0);
+    items = await itemsByCreatedAt(hashKey);
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { beginsWith: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { eq: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { between: [sortKey, sortKey] });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { gt: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
+    items = await itemsByCreatedAt(hashKey, { ge: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(hashKey, { lt: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(0)
+    items = await itemsByCreatedAt(hashKey, { le: sortKey });
+    expect(items.data.itemsByCreatedAt.items).toHaveLength(1)
+    items = await itemsByCreatedAt(undefined, { le: sortKey });
+    expect(items.data).toBeNull()
+    expect(items.errors.length).toBeGreaterThan(0);
+    await deleteItem('order1', sortKey, '2018-01-01T00:01:01.000Z');
+    await deleteItem('order2', sortKey, hashKey);
+    await deleteItem('order3', sortKey, '2018-09-01T00:01:01.000Z');
 })
 
 test('Test update mutation validation with three part secondary key.', async () => {
@@ -254,6 +295,61 @@ test('Test update mutation validation with three part secondary key.', async () 
     const updateResponseMissingNoKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'testing2' });
     expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2')
 })
+
+test('Test Customer Create with list member and secondary key', async () => {
+    const createCustomer1 = await createCustomer("customer1@email.com", ["thing1", "thing2"], "customerusr1");
+    const getCustomer1 = await getCustomer("customer1@email.com");
+    expect(getCustomer1.data.getCustomer.addresslist).toEqual(["thing1", "thing2"]);
+    // const items = await onCreateCustomer
+})
+
+test('Test Customer Mutation with list member', async () => {
+    const updateCustomer1 = await updateCustomer("customer1@email.com", ["thing3", "thing4"], "new_customerusr1");
+    const getCustomer1 = await getCustomer("customer1@email.com");
+    expect(getCustomer1.data.getCustomer.addresslist).toEqual(["thing3", "thing4"]);
+})
+
+async function createCustomer(email: string, addresslist: string[], username: string) {
+    const result = await GRAPHQL_CLIENT.query(`mutation CreateCustomer($input: CreateCustomerInput!) {
+        createCustomer(input: $input) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        input: {email, addresslist, username}
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function updateCustomer(email: string, addresslist: string[], username: string) {
+    const result = await GRAPHQL_CLIENT.query(`mutation UpdateCustomer($input: UpdateCustomerInput!) {
+        updateCustomer(input: $input) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        input: {email, addresslist, username}
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
+async function getCustomer(email: string) {
+    const result = await GRAPHQL_CLIENT.query(`query GetCustomer($email: String!) {
+        getCustomer(email: $email) {
+            email
+            addresslist
+            username
+        }
+    }`, {
+        email
+    });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
 
 async function createOrder(customerEmail: string, orderId: string) {
     const result = await GRAPHQL_CLIENT.query(`mutation CreateOrder($input: CreateOrderInput!) {
@@ -428,6 +524,22 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
     return result;
 }
 
+async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string) {
+    const result = await GRAPHQL_CLIENT.query(`query ListByCreatedAt($createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+        itemsByCreatedAt(createdAt: $createdAt, status: $status, limit: $limit, nextToken: $nextToken) {
+            items {
+                orderId
+                status
+                createdAt
+                name
+            }
+            nextToken
+        }
+    }`, { createdAt, status, limit, nextToken });
+    console.log(JSON.stringify(result, null, 4));
+    return result;
+}
+
 async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
     const input = { status, orderId, itemId, name };
     const result = await GRAPHQL_CLIENT.query(`mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
@@ -500,5 +612,3 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
     console.log(JSON.stringify(result, null, 4));
     return result;
 }
-
-

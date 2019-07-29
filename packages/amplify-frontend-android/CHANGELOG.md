@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.1...amplify-frontend-android@1.8.2) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.0...amplify-frontend-android@1.8.1) (2019-05-17)
 
 

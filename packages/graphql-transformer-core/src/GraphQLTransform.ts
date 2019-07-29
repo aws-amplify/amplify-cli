@@ -172,13 +172,13 @@ export interface GraphQLTransformOptions {
     // Override the formatter's stack mapping. This is useful when handling
     // migrations as all the input/export/ref/getatt changes will be made
     // automatically.
-    stackMapping?: StackMappingOption,
+    stackMapping?: StackMapping,
 }
-export type StackMappingOption = { [regexStr: string]: string };
+export type StackMapping = { [resourceId: string]: string };
 export default class GraphQLTransform {
 
     private transformers: ITransformer[]
-    private stackMappingOverrides: StackMappingOption;
+    private stackMappingOverrides: StackMapping;
 
     // A map from `${directive}.${typename}.${fieldName?}`: true
     // that specifies we have run already run a directive at a given location.
@@ -272,15 +272,13 @@ export default class GraphQLTransform {
         }
         // Format the context into many stacks.
         this.updateContextForStackMappingOverrides(context);
-        const formatter = new TransformFormatter({
-            stackRules: context.getStackMapping()
-        })
+        const formatter = new TransformFormatter();
         return formatter.format(context)
     }
 
     private updateContextForStackMappingOverrides(context: TransformerContext) {
-        for (const regexString of Object.keys(this.stackMappingOverrides)) {
-            context.addToStackMapping(this.stackMappingOverrides[regexString], regexString);
+        for (const resourceId of Object.keys(this.stackMappingOverrides)) {
+            context.mapResourceToStack(this.stackMappingOverrides[resourceId], resourceId);
         }
     }
 

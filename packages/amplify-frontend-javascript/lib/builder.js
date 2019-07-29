@@ -7,7 +7,7 @@ function run(context) {
     const { projectConfig } = context.exeInfo;
     const buildCommand = projectConfig[constants.Label].config.BuildCommand;
     let args = buildCommand.split(/\s+/);
-    const command = args[0];
+    const command = normalizeCommand(args[0]);
     args = args.slice(1);
 
     const buildExecution = spawn(command, args, { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
@@ -31,6 +31,23 @@ function run(context) {
       }
     });
   });
+}
+
+function normalizeCommand(command) {
+  let result = command;
+  const isOnWindows = /^win/.test(process.platform);
+  if (isOnWindows) {
+    if (command === 'npm') {
+      result = 'npm.cmd';
+    } else if (command === 'yarn') {
+      result = 'yarn.cmd';
+    }
+  } else if (command === 'npm.cmd') {
+    result = 'npm';
+  } else if (command === 'yarn.cmd') {
+    result = 'yarn';
+  }
+  return result;
 }
 
 module.exports = {

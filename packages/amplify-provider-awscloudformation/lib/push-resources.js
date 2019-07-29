@@ -12,19 +12,20 @@ const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
 const { loadResourceParameters } = require('../src/resourceParams');
+const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('../src/utils/archiver');
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
 const optionalBuildDirectoryName = 'build';
 
-async function run(context, category, resourceName) {
+async function run(context, resourceDefinition) {
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
     resourcesToBeDeleted,
     allResources,
-  } = await context.amplify.getResourceStatus(category, resourceName, providerName);
+  } = resourceDefinition;
 
   const resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
   let projectDetails = context.amplify.getProjectDetails();
@@ -35,11 +36,11 @@ async function run(context, category, resourceName) {
     .then(() => transformGraphQLSchema(context, {
       noConfig: true,
       handleMigration: opts =>
-        updateStackForAPIMigration(context, 'api', resourceName, opts),
+        updateStackForAPIMigration(context, 'api', undefined, opts),
     }))
     .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
-    .then(() => updateS3Templates(context, allResources, projectDetails.amplifyMeta))
+    .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
     .then(() => {
       spinner.start();
       projectDetails = context.amplify.getProjectDetails();
@@ -62,10 +63,11 @@ async function run(context, category, resourceName) {
         );
       }
     })
+    .then(() => uploadAuthTriggerFiles(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(async () => {
       let {
         allResources,
-      } = await context.amplify.getResourceStatus(category, resourceName);
+      } = await context.amplify.getResourceStatus();
 
 
       const newAPIresources = [];
@@ -245,10 +247,17 @@ function packageResources(context, resources) {
 
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        cfnMeta.Resources.LambdaFunction.Properties.Code = {
-          S3Bucket: s3Bucket,
-          S3Key: s3Key,
-        };
+        if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+          cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+            Bucket: s3Bucket,
+            Key: s3Key,
+          };
+        } else {
+          cfnMeta.Resources.LambdaFunction.Properties.Code = {
+            S3Bucket: s3Bucket,
+            S3Key: s3Key,
+          };
+        }
 
         const jsonString = JSON.stringify(cfnMeta, null, '\t');
         fs.writeFileSync(cfnFilePath, jsonString, 'utf8');

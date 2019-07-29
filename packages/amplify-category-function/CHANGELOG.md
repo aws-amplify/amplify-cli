@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.1...amplify-category-function@1.7.3) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixing headless params ([#1828](https://github.com/aws-amplify/amplify-cli/issues/1828)) ([816e526](https://github.com/aws-amplify/amplify-cli/commit/816e526)), closes [#1826](https://github.com/aws-amplify/amplify-cli/issues/1826) [#1826](https://github.com/aws-amplify/amplify-cli/issues/1826)
+* remove grunt-lambda dependency for local function testing ([#1872](https://github.com/aws-amplify/amplify-cli/issues/1872)) ([bbe55bf](https://github.com/aws-amplify/amplify-cli/commit/bbe55bf))
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.0...amplify-category-function@1.7.1) (2019-07-10)
+
+
+### Bug Fixes
+
+* check that function-parameters.json exists before trying to read it ([#1808](https://github.com/aws-amplify/amplify-cli/issues/1808)) ([574218d](https://github.com/aws-amplify/amplify-cli/commit/574218d))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.6.0...amplify-category-function@1.7.0) (2019-07-09)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** open Editor fix for displayname ([#1798](https://github.com/aws-amplify/amplify-cli/issues/1798)) ([e62aba6](https://github.com/aws-amplify/amplify-cli/commit/e62aba6))
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.4...amplify-category-function@1.6.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** add policy for GSI ([#1618](https://github.com/aws-amplify/amplify-cli/issues/1618)) ([cc2f1b6](https://github.com/aws-amplify/amplify-cli/commit/cc2f1b6)), closes [#791](https://github.com/aws-amplify/amplify-cli/issues/791)
+
+
+### Features
+
+* **amplify-category-function:** provide evntName arg to lambda_invoke ([#1624](https://github.com/aws-amplify/amplify-cli/issues/1624)) ([a61237f](https://github.com/aws-amplify/amplify-cli/commit/a61237f))
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.3...amplify-category-function@1.5.4) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.2...amplify-category-function@1.5.3) (2019-06-18)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fixed openEditor ([#1664](https://github.com/aws-amplify/amplify-cli/issues/1664)) ([0b9cf28](https://github.com/aws-amplify/amplify-cli/commit/0b9cf28))
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.1...amplify-category-function@1.5.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.5.0...amplify-category-function@1.5.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* fixing auth update flow ([#1579](https://github.com/aws-amplify/amplify-cli/issues/1579)) ([65783b5](https://github.com/aws-amplify/amplify-cli/commit/65783b5))
+* fixing ref name values in function cfn templates ([#1605](https://github.com/aws-amplify/amplify-cli/issues/1605)) ([3bda285](https://github.com/aws-amplify/amplify-cli/commit/3bda285)), closes [#1574](https://github.com/aws-amplify/amplify-cli/issues/1574)
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.4.6...amplify-category-function@1.5.0) (2019-05-29)
 
 
