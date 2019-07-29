@@ -6,6 +6,7 @@ coverage
 .nyc_output
 package-lock.json
 packages/amplify-cli/amplify/.config/
+packages/amplify-appsync-simulator/public
 .vscode
 packages/graphql*/lib
 packages/amplify-appsync-simulator/lib

@@ -36,6 +36,10 @@ export async function deploy(transformerOutput: any, client = null) {
     );
 
     let config:any = processResources(stacks, transformerOutput);
+    if(config.appSync.authenticationType == "API_KEY" && !config.appSync.apiKey) {
+        // transformer generates API Key only if AuthTransformer is included
+        config.appSync.apiKey = 'da-fake-api-key';
+    }
     if(client) {
         await ensureDynamoDBTables(client, config);
         config = configureDDBDataSource(config, client.config);

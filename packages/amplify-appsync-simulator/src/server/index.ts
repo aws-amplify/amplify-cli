@@ -1,6 +1,7 @@
 import { OperationServer } from './operations';
 import { SubscriptionServer } from './subscription';
-import { AmplifyAppSyncSimulator, AppSyncSimulatorServerConfig } from '..';
+import { AmplifyAppSyncSimulator } from '..';
+import { AppSyncSimulatorServerConfig } from "../type-definition";
 
 export class AppSyncSimulatorServer {
   private operationServer: OperationServer;

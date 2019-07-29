@@ -1,6 +1,7 @@
 import { buildASTSchema, concatAST, DocumentNode, GraphQLObjectType, parse, Source } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import { AmplifyAppSyncSimulator, AppSyncSimulatorBaseResolverConfig } from '..';
+import { AmplifyAppSyncSimulator } from '..';
+import { AppSyncSimulatorBaseResolverConfig } from "../type-definition";
 import { scalars } from './appsync-scalars';
 import { AwsSubscribe, AwsAuth } from './directives';
 import AppSyncSimulatorDirectiveBase from './directives/directive-base';

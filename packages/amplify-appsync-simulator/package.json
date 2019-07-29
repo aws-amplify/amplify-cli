@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
-    "build": "tsc",
+    "copy-assets":"rm -rf ./public && cp -R ../amplify-graphiql-explorer/build ./public",
+    "build": "yarn copy-assets && tsc",
     "clean": "rm -rf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js"
@@ -51,7 +52,8 @@
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
     "tslint": "^5.17.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "amplify-graphiql-explorer": "0.1.0"
   },
   "jest": {
     "transform": {

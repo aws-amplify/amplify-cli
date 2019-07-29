@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from '@conduitvc/dynamodb-emulator';
-import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
+import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
 import { add, generate, isCodegenConfigured } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
@@ -30,7 +30,6 @@ export class APITest {
             addCleanupTask(context, async context => {
                 await this.stop(context);
             });
-            // context.amplify
             this.projectRoot = context.amplify.getEnvInfo().projectPath;
             this.configOverrideManager = ConfigOverrideManager.getInstance(context);
             this.lambdaFunctionProvider = context.amplify.getPluginInstance(context, 'function');
@@ -45,7 +44,7 @@ export class APITest {
             await this.appSyncSimulator.start();
             await this.resolverOverrideManager.start();
             await this.watch(context);
-            const appSyncConfig = await this.runTransformer(context);
+            const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context);
             this.appSyncSimulator.init(appSyncConfig);
             console.log('AppSync Emulator is running in', this.appSyncSimulator.url);
 

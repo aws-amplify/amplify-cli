@@ -13,6 +13,7 @@
             "esnext.asynciterable",
             "dom"
         ],
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",

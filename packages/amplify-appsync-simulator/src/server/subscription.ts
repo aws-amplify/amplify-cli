@@ -4,7 +4,6 @@ import { inspect } from 'util';
 import { createServer as createHTTPServer } from 'http';
 import * as e2p from 'event-to-promise';
 import * as portfinder from 'portfinder';
-// import { createServer as createHTTPServer} from 'https';
 
 import { Server as CoreHTTPServer, AddressInfo } from 'net';
 import { Server as MQTTServer } from '@conduitvc/mosca';
@@ -12,9 +11,8 @@ import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { address as getLocalIpAddress } from 'ip';
 
-import { AmplifyAppSyncSimulator, AppSyncSimulatorConfig, AppSyncSimulatorServerConfig } from '..';
-import { Address } from 'aws-sdk/clients/ses';
-import { toJSON } from '../velocity/value-mapper/to-json';
+import { AmplifyAppSyncSimulator } from '..';
+import { AppSyncSimulatorServerConfig } from "../type-definition";
 
 const MINUTE = 1000 * 60;
 const CONNECTION_TIME_OUT = 2 * MINUTE; // 2 mins
