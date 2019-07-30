@@ -3,7 +3,8 @@ const fs = require('fs');
 import {
   initProjectWithProfile,
   deleteProject,
-  amplifyPushAuth
+  amplifyPushAuth,
+  amplifyPush
 } from '../src/init';
 import {
   addAuthWithDefault,
@@ -11,7 +12,8 @@ import {
   addAuthWithGroupTrigger,
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
-  updateAuthWithoutCustomTrigger
+  updateAuthWithoutCustomTrigger,
+  addAuthViaAPIWithTrigger
 } from '../src/categories/auth';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../src/utils';
 
@@ -60,6 +62,23 @@ describe('amplify add auth...', () => {
     await initProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithGroupTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
+
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const lambdaFunction =  await getLambdaFunction(functionName, meta.providers.awscloudformation.Region)
+    await expect(userPool.UserPool).toBeDefined();
+    await expect(clients).toHaveLength(2);
+    await expect(lambdaFunction).toBeDefined();
+    await expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+  });
+
+  it('...should allow the user to add auth via API category, with a trigger', async () => {
+    await initProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthViaAPIWithTrigger(projRoot, {});
+    await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
