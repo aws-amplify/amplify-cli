@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 machine:
     environment:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
@@ -7,6 +7,9 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
 
 jobs:
   build:
@@ -179,6 +182,101 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+  integration_test_js:
+    working_directory: ~/repo
+    docker:
+      - image: cypress/base:10
+        environment:
+          TERM: dumb
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: 
+          command: |
+            apt-get install -y sudo
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python
+            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+          name: "Install AWS CLI dependencies"
+      - run: 
+          command: |
+            cd ..
+            mkdir videos
+            mkdir screenshots
+            npm install cypress
+          name: "Install Cypress Binary"
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          command: "cd packages/amplify-ui-tests && yarn run ui js"
+          name: "Run ui tests in JS SDK"
+          no_output_timeout: 45m
+      - store_artifacts:
+          path: /root/videos
+      - store_artifacts:
+          path: /root/screenshots
+  integration_test_ios:
+    macos:
+      xcode: "10.2.1"
+    parameters:
+      appname:
+        description: "specifies app for UI Testing. Should be a subset of apps specified in config file"
+        type: string
+        default: "S3TransferUtility"
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: "Install Latest Cocoapods and set-up master repo"
+          command: |
+            sudo gem install cocoapods
+            pod --version
+            pod setup
+      - run:
+          name: "Install XCPretty"
+          command: |
+            sudo gem install xcpretty
+      - run:
+          name: "Set up environment variables"
+          command: |
+            cd ..
+            circleci_root_directory=$(pwd)
+            echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
+      - run:
+          name: "Checkout sample apps repository"
+          command: |
+            cd ..
+            git clone https://github.com/phanisrikar93/aws-sdk-ios-samples
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          name: "Edit config file for UITests"
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 edit_uitest_config.py -s master -l uitest_logs
+      - run:
+          name: "Set-Up Pods"
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_setup_pods.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples
+      - run:
+          name: "Configure AWS Resources"
+          command: |
+            cd packages/amplify-ui-tests
+            cp ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>/simple_model.graphql ./schemas/simple_model.graphql
+            npm run config ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >> ios auth storage api
+      - run:
+          name: "Build and UITest"
+          command: |
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_build_and_uitest.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
+      - run:
+          name: "Clean-Up UITest"
+          command: |
+            cd packages/amplify-ui-tests
+            npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
+      - store_artifacts:
+          path: ../uitest_logs
 workflows:
   version: 2
   build_test_deploy:
@@ -224,3 +322,17 @@ workflows:
                 - release
                 - master
                 - beta
+      - integration_test_js:
+          filters:
+            branches:
+              only:
+                - integtest
+          requires:
+            - build
+      - integration_test_ios:
+          filters:
+            branches:
+              only:
+                - integtest
+          requires:
+            - build
