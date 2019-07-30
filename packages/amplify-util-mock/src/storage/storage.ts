@@ -8,10 +8,14 @@ export class StorageTest {
     private storageName: string;
     private storageSimulator: AmplifyStorageSimulator;
     private configOverrideManager: ConfigOverrideManager;
+    private storageRegion: string;
+    private bucketName: string;
 
     async start(context) {
         // loading s3 resource config form parameters.json
-        const existingStorage = context.amplify.getProjectDetails().amplifyMeta.storage;
+        const meta = context.amplify.getProjectDetails().amplifyMeta;
+        const existingStorage = meta.storage;
+        this.storageRegion = meta.providers.awscloudformation.Region;
         //console.log("existingStorage",existingStorage);
         if (existingStorage === undefined || Object.keys(existingStorage).length === 0) {
             return context.print.warning('Storage has not yet been added to this project.');
@@ -24,13 +28,19 @@ export class StorageTest {
             resourceName,
             'parameters.json'
         );
-        const metaData = context.amplify.readJsonFile(parametersFilePath);
+
         const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
         const localEnvInfo = context.amplify.readJsonFile(localEnvFilePath);
-        const route = path.join('/', metaData.bucketName + '-' + localEnvInfo.envName, '/');
+        const storageParams = context.amplify.readJsonFile(parametersFilePath);
+        this.bucketName = `${storageParams.bucketName}-${localEnvInfo.envName}`
+        const route = path.join(
+            '/',
+            this.bucketName,
+            '/'
+        );
+
         let localDirS3 = this.createLocalStorage(context, resourceName);
         const port = 20005; // port for S3
-        const wsPort = 20006;
 
         try {
             addCleanupTask(context, async context => {
@@ -38,7 +48,7 @@ export class StorageTest {
             });
             this.configOverrideManager = ConfigOverrideManager.getInstance(context);
             this.storageName = await this.getStorage(context);
-            const storageConfig = { port, wsPort, route, localDirS3 };
+            const storageConfig = { port, route, localDirS3 };
             this.storageSimulator = new AmplifyStorageSimulator(storageConfig);
             await this.storageSimulator.start();
             console.log('Storage Emulator is running in', this.storageSimulator.url);
@@ -77,13 +87,14 @@ export class StorageTest {
                 service: 'S3',
                 ...storageMeta,
                 output: {
-                    ...storageMeta.output,
-                    StorageEndpointOutput: localStorageDetails.endpoint
+                    BucketName: this.bucketName,
+                    Region: this.storageRegion,
+                    ...storageMeta.output
                 },
                 testMode: localStorageDetails.testMode,
                 lastPushTimeStamp: new Date()
             };
-        }
+        };
         this.configOverrideManager.addOverride('storage', override);
         await this.configOverrideManager.generateOverriddenFrontendExports(context);
     }
@@ -107,8 +118,6 @@ export class StorageTest {
         fs.ensureDirSync(directoryPath);
 
         //console.log(directoryPath);
-
-        // create resource name folder
         const localPath = path.join(directoryPath, resourceName);
         fs.ensureDirSync(localPath);
         //console.log(localPath);

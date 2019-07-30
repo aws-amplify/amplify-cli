@@ -69,7 +69,6 @@ export class StorageServer {
       this.connection = this.server.address();
       //this.url = `http://${getLocalIpAddress()}:${this.connection.port}`;
       this.url = `http://localhost:${this.connection.port}`;
-      console.log('given url is: ', this.url);
       return this.server;
     })
   }
@@ -100,9 +99,6 @@ export class StorageServer {
     if(request.params.path === '/'){
       request.params.path = '';
     }
-    console.log("path", request.params.path);
-
-    console.log("request", request.method);
 
     if (request.method === 'PUT') {
       this.handleRequestPut(request, response);
@@ -127,7 +123,7 @@ export class StorageServer {
 
   private async handleRequestGet(request, response) {
     // fill in  this content
-    console.log("enter get");
+    // console.log("enter get");
     const filePath = join(this.localDirectoryPath, request.params.path);
     if (existsSync(filePath)) {
       readFile(filePath, (err, data) => {
@@ -154,7 +150,7 @@ export class StorageServer {
 
   private async handleRequestList(request, response) {
     // fill in  this content
-    console.log("enter list");
+    // console.log("enter list");
     let ListBucketResult = {};
     let key1 = 'Contents';
     ListBucketResult[key1] = [];
@@ -220,7 +216,7 @@ export class StorageServer {
 
   private async handleRequestDelete(request, response) {
     // fill in  this content
-    console.log("enter delete");
+    // console.log("enter delete");
     const filePath = join(this.localDirectoryPath, request.params.path);
     if(existsSync(filePath)){
       unlink(filePath, (err) => {
@@ -235,7 +231,7 @@ export class StorageServer {
 
   private async handleRequestPut(request, response) {
     // fill in  this content
-    console.log("put entered");
+    // console.log("put entered");
     const directoryPath = join(String(this.localDirectoryPath), String(request.params.path));
     ensureFileSync(directoryPath);
     var new_data = stripChunkSignaturev2(request.body);
@@ -244,7 +240,7 @@ export class StorageServer {
   }
   private async handleRequestPost(request, response) {
     // fill in  this content
-    console.log("post entered");
+    // console.log("post entered");
     const directoryPath = join(String(this.localDirectoryPath), String(request.params.path));
 
     if (request.query.uploads !== undefined) {
@@ -291,7 +287,7 @@ function stripChunkSignaturev2(buf: Buffer) {
       offset.push(Buffer.from(match).byteLength);
       var temp = match.split(';')[0];
       chunk_size.push(parseInt(temp, 16));
-      console.log(`Found match, group ${groupIndex}: ${match}`);
+      // console.log(`Found match, group ${groupIndex}: ${match}`);
     });
   }
   var start = 0;
