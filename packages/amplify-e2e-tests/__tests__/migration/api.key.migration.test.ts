@@ -75,4 +75,15 @@ describe('amplify add api', () => {
         /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/
     );
   });
+
+  it('init project, run valid migration adding a GSI', async () => {
+    const projectName = 'validaddinggsi';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations_key/add_gsi.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+  });
 });
