@@ -1,0 +1,59 @@
+{
+  "name": "amplify-util-mock",
+  "version": "0.1.0",
+  "description": "amplify cli plugin providing local testing ",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "test-ci": "jest --ci -i",
+    "test-watch": "jest --watch",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -rf ./lib",
+    "format": "prettier --write ./src/**/*.ts ./__tests__/**/*.ts"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@conduitvc/dynamodb-emulator": "^0.5.3",
+    "@hapi/topo": "^3.1.0",
+
+    "amplify-provider-awscloudformation": "^1.13.2",
+    "amplify-storage-simulator": "0.0.1",
+    "chokidar": "^3.0.0",
+    "fs-extra": "^7.0.1",
+    "lodash": "^4.17.11",
+    "amplify-codegen": "1.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "23.1.1",
+    "@types/lodash": "^4.14.129",
+    "@types/node": "^10.3.4",
+    "jest": "^23.1.0",
+    "prettier": "^1.14.2",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!src/__tests__/**"
+    ],
+    "testURL": "http://localhost/",
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
