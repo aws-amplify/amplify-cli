@@ -1333,7 +1333,7 @@ found '${rule.provider}' assigned.`);
         if (rule.allow === 'private') {
             if (rule.provider !== null && rule.provider !== 'userPools' && rule.provider !== 'iam') {
                 throw new InvalidDirectiveError(
-                    `@auth directive with 'public' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+                    `@auth directive with 'private' strategy only supports 'apiKey' (default) and 'iam' providers, but \
 found '${rule.provider}' assigned.`);
             }
         }
@@ -1347,7 +1347,7 @@ found '${rule.provider}' assigned.`);
                 `@auth directive with 'apiKey' provider found, but the project has no API Key authentication provider configured.`);
         } else if (rule.provider === 'oidc' && this.configuredAuthProviders.hasOIDC === false) {
             throw new InvalidDirectiveError(
-                `@auth directive with 'oidc' provider found, but the project has no OIDC authentication provider configured.`);
+                `@auth directive with 'oidc' provider found, but the project has no OPENID_CONNECT authentication provider configured.`);
         } else if (rule.provider === 'userPools' && this.configuredAuthProviders.hasUserPools === false) {
             throw new InvalidDirectiveError(
                 `@auth directive with 'userPools' provider found, but the project has no Cognito User Pools authentication provider configured.`);

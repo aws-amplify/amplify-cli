@@ -142,8 +142,7 @@ export class ResourceFactory {
         if (authConfig.additionalAuthenticationProviders && authConfig.additionalAuthenticationProviders.length > 0) {
             const additionalAuthenticationProviders = new Array<AdditionalAuthenticationProvider>();
 
-            for (let i = 0; i < authConfig.additionalAuthenticationProviders.length; i++) {
-                const sourceProvider = authConfig.additionalAuthenticationProviders[i];
+            for (const sourceProvider of authConfig.additionalAuthenticationProviders) {
                 let provider: AdditionalAuthenticationProvider;
 
                 switch (sourceProvider.authenticationType) {
@@ -168,10 +167,7 @@ export class ResourceFactory {
                         break;
                     case 'OPENID_CONNECT':
                             if (!sourceProvider.openIDConnectConfig) {
-                                const providerName = sourceProvider.openIDConnectConfig.name ?
-                                    sourceProvider.openIDConnectConfig.name :
-                                    '<Unnamed>';
-                                throw new Error(`openIDConnectConfig is not configured for ${providerName} provider`);
+                                throw new Error('openIDConnectConfig is not configured for provider');
                             }
 
                             provider = {
