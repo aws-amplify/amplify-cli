@@ -2,15 +2,11 @@
   "name": "amplify-velocity-template",
   "description": "Velocity Template Language(VTL) for JavaScript",
   "version": "0.0.1",
-  "license": "MIT",
   "keywords": [
     "velocity template"
   ],
-  "homepage": "http://git.shepherdwind.com/velocity.js/",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/yuth/velocity.js.git"
-  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=0.8.0"
   },
@@ -18,10 +14,10 @@
   "bin": {
     "velocity": "bin/velocity"
   },
-  "browser": {
-    "fs": false,
-    "path": false
-  },
+  "contributors": [
+    "Eward Song",
+    "Yathiraj"
+  ],
   "devDependencies": {
     "coveralls": "~2.11.2",
     "istanbul": "~0.3.5",
@@ -37,9 +33,5 @@
     "test": "mocha tests --require should",
     "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
     "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
-  },
-  "spm": {
-    "main": "index.js",
-    "buildArgs": "--skip fs,path"
   }
 }
