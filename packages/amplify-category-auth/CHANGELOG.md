@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.7.3...amplify-category-auth@1.7.4) (2019-07-30)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** remove check on dependsOn length ([c8a26f1](https://github.com/aws-amplify/amplify-cli/commit/c8a26f1))
+* **amplify-category-auth:** setting dependsOn in meta ([7a33f02](https://github.com/aws-amplify/amplify-cli/commit/7a33f02))
+
+
+
+
+
 ## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@1.7.1...amplify-category-auth@1.7.3) (2019-07-23)
 
 
