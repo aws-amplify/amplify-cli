@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.6.1...amplify-category-interactions@1.6.3) (2019-07-23)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.6.0...amplify-category-interactions@1.6.1) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.6...amplify-category-interactions@1.6.0) (2019-07-09)
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
+## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.5...amplify-category-interactions@1.5.6) (2019-06-26)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.4...amplify-category-interactions@1.5.5) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.3...amplify-category-interactions@1.5.4) (2019-06-18)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.2...amplify-category-interactions@1.5.3) (2019-06-12)
+
+
+### Bug Fixes
+
+* **amplify-category-interactions:** call updateMetaAfterAdd only once ([#1653](https://github.com/aws-amplify/amplify-cli/issues/1653)) ([dc28758](https://github.com/aws-amplify/amplify-cli/commit/dc28758)), closes [#1621](https://github.com/aws-amplify/amplify-cli/issues/1621)
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.1...amplify-category-interactions@1.5.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.5.0...amplify-category-interactions@1.5.1) (2019-06-06)
+
+**Note:** Version bump only for package amplify-category-interactions
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.4.6...amplify-category-interactions@1.5.0) (2019-05-29)
 
 

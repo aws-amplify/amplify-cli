@@ -55,15 +55,12 @@ export class SearchableModelTransformer extends Transformer {
         ctx.mergeParameters(template.Parameters);
         ctx.mergeOutputs(template.Outputs);
         ctx.metadata.set('ElasticsearchPathToStreamingLambda', path.resolve(`${__dirname}/../lib/streaming-lambda.zip`))
-        ctx.putStackMapping(STACK_NAME, [
-            'ElasticsearchDomain',
-            '^ElasticsearchAccess.*',
-            '^ElasticsearchStreaming.*',
-            '^ElasticsearchDataSource$',
-            '^Searchable.*LambdaMapping$',
-            '^ElasticsearchDomainArn$',
-            '^ElasticsearchDomainEndpoint$'
-        ])
+        for (const resourceId of Object.keys(template.Resources)) {
+            ctx.mapResourceToStack(STACK_NAME, resourceId);
+        }
+        for (const outputId of Object.keys(template.Outputs)) {
+            ctx.mapResourceToStack(STACK_NAME, outputId);
+        }
     };
 
     /**
@@ -76,10 +73,6 @@ export class SearchableModelTransformer extends Transformer {
         directive: DirectiveNode,
         ctx: TransformerContext
     ): void => {
-        ctx.addToStackMapping(
-            STACK_NAME,
-            "^Search" + def.name.value + "Resolver$"
-        )
         const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive)
         let shouldMakeSearch = true;
         let searchFieldNameOverride = undefined;
@@ -98,6 +91,10 @@ export class SearchableModelTransformer extends Transformer {
             SearchableResourceIDs.SearchableEventSourceMappingID(typeName),
             this.resources.makeDynamoDBStreamEventSourceMapping(typeName)
         )
+        ctx.mapResourceToStack(
+            STACK_NAME,
+            SearchableResourceIDs.SearchableEventSourceMappingID(typeName)
+        )
 
         //SearchablePostSortableFields
         const queryFields = [];
@@ -109,6 +106,10 @@ export class SearchableModelTransformer extends Transformer {
 
             const searchResolver = this.resources.makeSearchResolver(def.name.value, searchFieldNameOverride)
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
+            ctx.mapResourceToStack(
+                STACK_NAME,
+                ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value)
+            )
             queryFields.push(makeField(
                 searchResolver.Properties.FieldName,
                 [

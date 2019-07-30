@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.4...graphql-dynamodb-transformer@3.8.5) (2019-07-24)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [3.8.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.2...graphql-dynamodb-transformer@3.8.4) (2019-06-30)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [3.8.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.1...graphql-dynamodb-transformer@3.8.2) (2019-06-26)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [3.8.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.0...graphql-dynamodb-transformer@3.8.1) (2019-06-12)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 # [3.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.7.0...graphql-dynamodb-transformer@3.8.0) (2019-05-29)
 
 

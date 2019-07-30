@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "npm run setup-profile && jest --maxWorkers=1",
+    "ui": "npm run setup-profile && jest --maxWorkers=1",
     "setup-profile": "tsc && node ./lib/configure_tests.js",
     "build": "tsc",
     "clean": "rm -rf ./lib"

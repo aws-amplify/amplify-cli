@@ -54,3 +54,40 @@ export function getInputType(doc: DocumentNode, type: string): InputObjectTypeDe
         (def: DefinitionNode) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type
     ) as InputObjectTypeDefinitionNode | undefined
 }
+
+export function expectInputValues(type: InputObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: InputValueDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+    }
+}
+
+export function expectInputValueToHandle(type: InputObjectTypeDefinitionNode, f: (input: InputValueDefinitionNode) => boolean) {
+    for (const field of type.fields) {
+        expect(f(field)).toBeTruthy()
+    }
+}
+
+export function expectNonNullInputValues(type: InputObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: InputValueDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+        expect(isNonNullType(foundField.type)).toBeTruthy();
+    }
+}
+
+export function expectNullableInputValues(type: InputObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: InputValueDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+        expect(isNonNullType(foundField.type)).toBeFalsy();
+    }
+}
+
+export function expectExactKeys(obj: Object, expectedSet: Set<string>) {
+    const resourceSet = new Set(Object.keys(obj));
+    expectedSet.forEach(item => {
+        expect(resourceSet.has(item)).toBeTruthy();
+    })
+    expect(resourceSet.size).toEqual(expectedSet.size);
+}

@@ -14,6 +14,7 @@ import {
     makeNonNullType
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common'
+import { DeletionPolicy } from 'cloudform-types';
 
 interface QueryNameMap {
     get?: string;
@@ -39,6 +40,10 @@ interface ModelDirectiveArgs {
     subscriptions?: SubscriptionNameMap
 }
 
+export interface DynamoDBModelTransformerOptions {
+    EnableDeletionProtection?: boolean
+}
+
 /**
  * The @model transformer.
  *
@@ -57,8 +62,9 @@ interface ModelDirectiveArgs {
 export class DynamoDBModelTransformer extends Transformer {
 
     resources: ResourceFactory
+    opts: DynamoDBModelTransformerOptions
 
-    constructor() {
+    constructor(opts: DynamoDBModelTransformerOptions = {}) {
         super(
             'DynamoDBModelTransformer',
             gql`
@@ -76,6 +82,7 @@ export class DynamoDBModelTransformer extends Transformer {
             }
             `
         )
+        this.opts = this.getOpts(opts);
         this.resources = new ResourceFactory();
     }
 
@@ -95,19 +102,7 @@ export class DynamoDBModelTransformer extends Transformer {
     public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
         // Add a stack mapping so that all model resources are pulled
         // into their own stack at the end of the transformation.
-        ctx.putStackMapping(
-            `${def.name.value}`,
-            [
-                ".*" + def.name.value + "Model",
-                ".*" + def.name.value + "DataSource",
-                ".*" + def.name.value + "IAMRole",
-                // All resolvers except the search resolver.
-                "^[^S].*" + def.name.value + "Resolver",
-                "^" + def.name.value + ".+Resolver",
-                def.name.value + "Table",
-                "^GetAtt" + def.name.value + "Table"
-            ]
-        )
+        const stackName = def.name.value;
 
         let nonModelArray: ObjectTypeDefinitionNode[] = getNonModelObjectArray(
             def,
@@ -130,31 +125,48 @@ export class DynamoDBModelTransformer extends Transformer {
         const tableLogicalID = ModelResourceIDs.ModelTableResourceID(typeName)
         const iamRoleLogicalID = ModelResourceIDs.ModelTableIAMRoleID(typeName)
         const dataSourceRoleLogicalID = ModelResourceIDs.ModelTableDataSourceID(typeName)
+        const deletionPolicy = this.opts.EnableDeletionProtection ?
+            DeletionPolicy.Retain :
+            DeletionPolicy.Delete;
         ctx.setResource(
             tableLogicalID,
-            this.resources.makeModelTable(typeName, undefined, undefined)
+            this.resources.makeModelTable(typeName, undefined, undefined, deletionPolicy)
         )
+        ctx.mapResourceToStack(stackName, tableLogicalID);
+
         ctx.setResource(
             iamRoleLogicalID,
             this.resources.makeIAMRole(typeName)
         )
+        ctx.mapResourceToStack(stackName, iamRoleLogicalID);
+
         ctx.setResource(
             dataSourceRoleLogicalID,
             this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName)
         )
+        ctx.mapResourceToStack(stackName, dataSourceRoleLogicalID);
+
+        const streamArnOutputId = `GetAtt${ModelResourceIDs.ModelTableStreamArn(typeName)}`;
         ctx.setOutput(
             // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
-            `GetAtt${ModelResourceIDs.ModelTableStreamArn(typeName)}`,
+            streamArnOutputId,
             this.resources.makeTableStreamArnOutput(tableLogicalID)
         )
+        ctx.mapResourceToStack(stackName, streamArnOutputId);
+
+        const datasourceOutputId = `GetAtt${dataSourceRoleLogicalID}Name`;
         ctx.setOutput(
-            `GetAtt${dataSourceRoleLogicalID}Name`,
+            datasourceOutputId,
             this.resources.makeDataSourceOutput(dataSourceRoleLogicalID)
         )
+        ctx.mapResourceToStack(stackName, datasourceOutputId);
+
+        const tableNameOutputId = `GetAtt${tableLogicalID}Name`;
         ctx.setOutput(
-            `GetAtt${tableLogicalID}Name`,
+            tableNameOutputId,
             this.resources.makeTableNameOutput(tableLogicalID)
         )
+        ctx.mapResourceToStack(stackName, tableNameOutputId);
 
         this.createQueries(def, directive, ctx)
         this.createMutations(def, directive, ctx, nonModelArray)
@@ -213,7 +225,9 @@ export class DynamoDBModelTransformer extends Transformer {
                 ctx.addInput(createInput)
             }
             const createResolver = this.resources.makeCreateResolver(def.name.value, createFieldNameOverride)
-            ctx.setResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName), createResolver)
+            const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+            ctx.setResource(resourceId, createResolver)
+            ctx.mapResourceToStack(typeName, resourceId);
             mutationFields.push(makeField(
                 createResolver.Properties.FieldName,
                 [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))],
@@ -227,7 +241,9 @@ export class DynamoDBModelTransformer extends Transformer {
                 ctx.addInput(updateInput)
             }
             const updateResolver = this.resources.makeUpdateResolver(def.name.value, updateFieldNameOverride)
-            ctx.setResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName), updateResolver)
+            const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
+            ctx.setResource(resourceId, updateResolver);
+            ctx.mapResourceToStack(typeName, resourceId);
             mutationFields.push(makeField(
                 updateResolver.Properties.FieldName,
                 [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))],
@@ -241,7 +257,9 @@ export class DynamoDBModelTransformer extends Transformer {
                 ctx.addInput(deleteInput)
             }
             const deleteResolver = this.resources.makeDeleteResolver(def.name.value, deleteFieldNameOverride)
-            ctx.setResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName), deleteResolver)
+            const resourceId = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
+            ctx.setResource(resourceId, deleteResolver);
+            ctx.mapResourceToStack(typeName, resourceId);
             mutationFields.push(makeField(
                 deleteResolver.Properties.FieldName,
                 [makeInputValueDefinition('input', makeNonNullType(makeNamedType(deleteInput.name.value)))],
@@ -296,7 +314,9 @@ export class DynamoDBModelTransformer extends Transformer {
         // Create get queries
         if (shouldMakeGet) {
             const getResolver = this.resources.makeGetResolver(def.name.value, getFieldNameOverride, ctx.getQueryTypeName())
-            ctx.setResource(ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName), getResolver)
+            const resourceId = ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName);
+            ctx.setResource(resourceId, getResolver);
+            ctx.mapResourceToStack(typeName, resourceId);
 
             queryFields.push(makeField(
                 getResolver.Properties.FieldName,
@@ -311,7 +331,9 @@ export class DynamoDBModelTransformer extends Transformer {
 
             // Create the list resolver
             const listResolver = this.resources.makeListResolver(def.name.value, listFieldNameOverride, ctx.getQueryTypeName())
-            ctx.setResource(ResolverResourceIDs.DynamoDBListResolverResourceID(typeName), listResolver)
+            const resourceId = ResolverResourceIDs.DynamoDBListResolverResourceID(typeName);
+            ctx.setResource(resourceId, listResolver);
+            ctx.mapResourceToStack(typeName, resourceId);
 
             queryFields.push(makeConnectionField(listResolver.Properties.FieldName, def.name.value))
         }
@@ -454,6 +476,16 @@ export class DynamoDBModelTransformer extends Transformer {
         const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx)
         if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
             ctx.addInput(tableXQueryFilterInput)
+        }
+    }
+
+    private getOpts(opts: DynamoDBModelTransformerOptions) {
+        const defaultOpts = {
+            EnableDeletionProtection: false
+        };
+        return {
+            ...defaultOpts,
+            ...opts
         }
     }
 }

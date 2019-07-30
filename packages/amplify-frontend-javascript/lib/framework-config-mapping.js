@@ -1,5 +1,3 @@
-
-
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
 const reactConfig = {

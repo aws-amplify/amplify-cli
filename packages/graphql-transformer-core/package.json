@@ -1,12 +1,13 @@
 {
   "name": "graphql-transformer-core",
-  "version": "3.7.0",
+  "version": "3.7.5",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
     "test-ci": "jest --ci -i",
     "build": "tsc",
+    "buildw": "tsc -w",
     "clean": "rm -rf ./lib"
   },
   "keywords": [
@@ -17,21 +18,22 @@
   "author": "Michael Paris",
   "license": "MIT",
   "devDependencies": {
+    "@types/fs-extra": "^7.0.0",
     "@types/graphql": "^0.13.1",
     "@types/jest": "23.1.0",
-    "@types/js-yaml": "^3.11.4",
     "@types/node": "10.3.4",
     "jest": "^23.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^3.5.1"
   },
   "dependencies": {
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
+    "deep-diff": "^1.0.2",
+    "fs-extra": "^8.0.1",
     "graphql": "^0.13.2",
-    "graphql-transformer-common": "3.8.0",
-    "js-yaml": "^3.12.1"
+    "graphql-transformer-common": "3.8.3"
   },
   "jest": {
     "transform": {

@@ -28,8 +28,8 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function pushResources(context, category, resourceName) {
-  return resourcePusher.run(context, category, resourceName);
+function pushResources(context, resourceList) {
+  return resourcePusher.run(context, resourceList);
 }
 
 function deleteEnv(context, envName) {

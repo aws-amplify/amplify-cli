@@ -1,5 +1,5 @@
 const path = require('path');
-const jetpack = require('fs-jetpack');
+const fs = require('fs-extra');
 const Ora = require('ora');
 const statementsGen = require('amplify-graphql-docs-generator').default;
 
@@ -22,7 +22,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
       : path.dirname(path.dirname(includeFiles));
     const schemaPath = path.join(projectPath, cfg.schema);
-    if (forceDownloadSchema || jetpack.exists(schemaPath) !== 'file') {
+    if (forceDownloadSchema || fs.existsSync(schemaPath) !== 'file') {
       await downloadIntrospectionSchemaWithProgress(
         context,
         apis[0].id,
@@ -34,7 +34,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();
-    jetpack.dir(opsGenDirectory);
+    fs.ensureDirSync(opsGenDirectory);
     await statementsGen(schemaPath, opsGenDirectory, {
       separateFiles: true,
       language,

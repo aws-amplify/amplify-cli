@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.13.1...amplify-provider-awscloudformation@1.13.2) (2019-07-24)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.13.0...amplify-provider-awscloudformation@1.13.1) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix MFA prompt during init ([#1858](https://github.com/aws-amplify/amplify-cli/issues/1858)) ([2de3185](https://github.com/aws-amplify/amplify-cli/commit/2de3185)), closes [#1807](https://github.com/aws-amplify/amplify-cli/issues/1807)
+
+
+
+
+
+# [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.12.2...amplify-provider-awscloudformation@1.13.0) (2019-07-09)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** enable SAM templates for functions ([#1763](https://github.com/aws-amplify/amplify-cli/issues/1763)) ([9fc3854](https://github.com/aws-amplify/amplify-cli/commit/9fc3854)), closes [#1740](https://github.com/aws-amplify/amplify-cli/issues/1740)
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
+## [1.12.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.12.0...amplify-provider-awscloudformation@1.12.2) (2019-06-30)
+
+
+### Bug Fixes
+
+* fixing function build issue + e2e tests ([#1750](https://github.com/aws-amplify/amplify-cli/issues/1750)) ([c11c0bc](https://github.com/aws-amplify/amplify-cli/commit/c11c0bc)), closes [#1747](https://github.com/aws-amplify/amplify-cli/issues/1747)
+
+
+
+
+
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.5...amplify-provider-awscloudformation@1.12.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** generate consistent S3 keys ([#1668](https://github.com/aws-amplify/amplify-cli/issues/1668)) ([e393d3a](https://github.com/aws-amplify/amplify-cli/commit/e393d3a)), closes [#1666](https://github.com/aws-amplify/amplify-cli/issues/1666)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** update fn build file name ([#1702](https://github.com/aws-amplify/amplify-cli/issues/1702)) ([0658d75](https://github.com/aws-amplify/amplify-cli/commit/0658d75))
+
+
+
+
+
+## [1.11.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.4...amplify-provider-awscloudformation@1.11.5) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.11.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.3...amplify-provider-awscloudformation@1.11.4) (2019-06-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** prevent abrupt closing of CLI ([#1655](https://github.com/aws-amplify/amplify-cli/issues/1655)) ([cf755df](https://github.com/aws-amplify/amplify-cli/commit/cf755df))
+
+
+
+
+
+## [1.11.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.2...amplify-provider-awscloudformation@1.11.3) (2019-06-12)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.11.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.1...amplify-provider-awscloudformation@1.11.2) (2019-06-11)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [1.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.11.0...amplify-provider-awscloudformation@1.11.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** filter by template extensions ([#1596](https://github.com/aws-amplify/amplify-cli/issues/1596)) ([adbf95a](https://github.com/aws-amplify/amplify-cli/commit/adbf95a))
+* **amplify-provider-awscloudformation:** fix general configeLevel init ([#1602](https://github.com/aws-amplify/amplify-cli/issues/1602)) ([426acbf](https://github.com/aws-amplify/amplify-cli/commit/426acbf)), closes [#1388](https://github.com/aws-amplify/amplify-cli/issues/1388)
+* **amplify-provider-awscloudformation:** fix http proxy ([#1604](https://github.com/aws-amplify/amplify-cli/issues/1604)) ([16dc4b4](https://github.com/aws-amplify/amplify-cli/commit/16dc4b4)), closes [#495](https://github.com/aws-amplify/amplify-cli/issues/495)
+
+
+
+
+
 # [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@1.10.0...amplify-provider-awscloudformation@1.11.0) (2019-05-29)
 
 

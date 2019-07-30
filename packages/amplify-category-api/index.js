@@ -59,6 +59,10 @@ async function initEnv(context) {
   const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
   const backendConfig = amplify.readJsonFile(backendConfigFilePath);
 
+  if (!backendConfig[category]) {
+    return;
+  }
+
   let resourceName;
   const apis = Object.keys(backendConfig[category]);
   for (let i = 0; i < apis.length; i += 1) {

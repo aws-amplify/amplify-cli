@@ -1,9 +1,11 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const uuid = require('uuid');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
+const storageParamsFileName = 'storage-params.json';
 const serviceName = 'DynamoDB';
 const templateFileName = 'dynamoDb-cloudformation-template.json.ejs';
 
@@ -67,6 +69,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     'binary set': { code: 'BS', indexable: false },
   };
   let usedAttributeDefinitions = new Set();
+  let storageParams = {};
 
   if (resourceName) {
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
@@ -79,6 +82,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     }
     parameters.resourceName = resourceName;
     Object.assign(defaultValues, parameters);
+
+    // Get storage question params
+    const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
+
+    try {
+      storageParams = context.amplify.readJsonFile(storageParamsFilePath);
+    } catch (e) {
+      storageParams = {};
+    }
   }
 
   const resourceQuestions = [
@@ -349,6 +361,95 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1);
 
   Object.assign(defaultValues, answers);
+
+  // Ask Lambda trigger question
+  if (!storageParams ||
+    !storageParams.triggerFunctions ||
+    storageParams.triggerFunctions.length === 0) {
+    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your Table?', false)) {
+      let triggerName;
+
+      try {
+        triggerName = await addTrigger(context, defaultValues.resourceName);
+        if (!storageParams) {
+          storageParams = {};
+        }
+        storageParams.triggerFunctions = [triggerName];
+      } catch (e) {
+        context.print.error(e.message);
+      }
+    }
+  } else {
+    const triggerOperationQuestion = {
+      type: 'list',
+      name: 'triggerOperation',
+      message: 'Select from the following options',
+      choices: ['Add a Trigger', 'Remove a trigger', 'Skip Question'],
+    };
+    let triggerName;
+    let continueWithTriggerOperationQuestion = true;
+    while (continueWithTriggerOperationQuestion) {
+      const triggerOperationAnswer = await inquirer.prompt([triggerOperationQuestion]);
+
+      switch (triggerOperationAnswer.triggerOperation) {
+        case 'Add a Trigger': {
+          try {
+            triggerName = await addTrigger(
+              context,
+              defaultValues.resourceName,
+              storageParams.triggerFunctions,
+            );
+            if (!storageParams) {
+              storageParams = {};
+            } else if (!storageParams.triggerFunctions) {
+              storageParams.triggerFunctions = [triggerName];
+            } else {
+              storageParams.triggerFunctions.push(triggerName);
+            }
+            continueWithTriggerOperationQuestion = false;
+          } catch (e) {
+            context.print.error(e.message);
+            continueWithTriggerOperationQuestion = true;
+          }
+          break;
+        }
+        case 'Remove a trigger': {
+          try {
+            if (!storageParams ||
+              !storageParams.triggerFunctions ||
+              storageParams.triggerFunctions.length === 0) {
+              throw new Error('No triggers found associated with this table');
+            } else {
+              triggerName = await removeTrigger(
+                context,
+                defaultValues.resourceName,
+                storageParams.triggerFunctions,
+              );
+
+              const index = storageParams.triggerFunctions.indexOf(triggerName);
+              if (index >= 0) {
+                storageParams.triggerFunctions.splice(index, 1);
+                continueWithTriggerOperationQuestion = false;
+              } else {
+                throw new Error('Could not find trigger function');
+              }
+            }
+          } catch (e) {
+            context.print.error(e.message);
+            continueWithTriggerOperationQuestion = true;
+          }
+
+          break;
+        }
+        case 'Skip Question': {
+          continueWithTriggerOperationQuestion = false;
+          break;
+        }
+        default: console.log(`${triggerOperationAnswer.triggerOperation} not supported`);
+      }
+    }
+  }
+
   const resource = defaultValues.resourceName;
   const resourceDirPath = path.join(projectBackendDirPath, category, resource);
   delete defaultValues.resourceName;
@@ -365,11 +466,270 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     Object.assign(parameters, { sortKeyName, sortKeyType });
   }
 
-  const jsonString = JSON.stringify(parameters, null, 4);
+  let jsonString = JSON.stringify(parameters, null, 4);
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+
+  const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
+  jsonString = JSON.stringify(storageParams, null, 4);
+  fs.writeFileSync(storageParamsFilePath, jsonString, 'utf8');
 
   await copyCfnTemplate(context, category, resource, defaultValues);
   return resource;
+}
+
+
+async function removeTrigger(context, resourceName, triggerList) {
+  const triggerOptionQuestion = {
+    type: 'list',
+    name: 'triggerOption',
+    message: 'Select from the function you would like to remove',
+    choices: triggerList,
+  };
+
+  const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
+
+
+  const functionName = triggerOptionAnswer.triggerOption;
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+
+
+  if (fs.existsSync(functionCFNFilePath)) {
+    const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
+    delete functionCFNFile.Resources[`${resourceName}TriggerPolicy`];
+    delete functionCFNFile.Resources[`${resourceName}Trigger`];
+    // Update the functions resource
+    const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
+    fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+  }
+
+  return functionName;
+}
+
+
+async function addTrigger(context, resourceName, triggerList) {
+  const triggerTypeQuestion = {
+    type: 'list',
+    name: 'triggerType',
+    message: 'Select from the following options',
+    choices: ['Choose an existing function from the project', 'Create a new function'],
+  };
+  const triggerTypeAnswer = await inquirer.prompt([triggerTypeQuestion]);
+  let functionName;
+
+  if (triggerTypeAnswer.triggerType === 'Choose an existing function from the project') {
+    let lambdaResources = await getLambdaFunctions(context);
+
+    if (triggerList) {
+      const filteredLambdaResources = [];
+      lambdaResources.forEach((lambdaResource) => {
+        if (triggerList.indexOf(lambdaResource) === -1) {
+          filteredLambdaResources.push(lambdaResource);
+        }
+      });
+
+      lambdaResources = filteredLambdaResources;
+    }
+
+    if (lambdaResources.length === 0) {
+      throw new Error('No pre-existing functions found in the project. Please use \'amplify add function\' command to add a new function to your project.');
+    }
+
+    const triggerOptionQuestion = {
+      type: 'list',
+      name: 'triggerOption',
+      message: 'Select from the following options',
+      choices: lambdaResources,
+    };
+
+    const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
+    functionName = triggerOptionAnswer.triggerOption;
+  } else {
+  // Create a new lambda trigger
+
+    const targetDir = context.amplify.pathManager.getBackendDirPath();
+    const [shortId] = uuid().split('-');
+    functionName = `${resourceName}Trigger${shortId}`;
+    const pluginDir = __dirname;
+
+    const defaults = {
+      functionName: `${functionName}`,
+      roleName: `${resourceName}LambdaRole${shortId}`,
+    };
+
+
+    const copyJobs = [
+      {
+        dir: pluginDir,
+        template: '../triggers/dynamoDB/lambda-cloudformation-template.json.ejs',
+        target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+      },
+      {
+        dir: pluginDir,
+        template: '../triggers/dynamoDB/event.json',
+        target: `${targetDir}/function/${functionName}/src/event.json`,
+      },
+      {
+        dir: pluginDir,
+        template: '../triggers/dynamoDB/index.js',
+        target: `${targetDir}/function/${functionName}/src/index.js`,
+      },
+      {
+        dir: pluginDir,
+        template: '../triggers/dynamoDB/package.json.ejs',
+        target: `${targetDir}/function/${functionName}/src/package.json`,
+      },
+    ];
+
+    // copy over the files
+    await context.amplify.copyBatch(context, copyJobs, defaults);
+
+    // Update amplify-meta and backend-config
+
+    const backendConfigs = {
+      service: 'Lambda',
+      providerPlugin: 'awscloudformation',
+      build: true,
+    };
+
+    context.amplify.updateamplifyMetaAfterResourceAdd(
+      'function',
+      functionName,
+      backendConfigs,
+    );
+
+    context.print.success(`Successfully added resource ${functionName} locally`);
+  }
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
+
+  if (fs.existsSync(functionCFNFilePath)) {
+    const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
+
+    // Update parameters block
+    functionCFNFile.Parameters[`storage${resourceName}Name`] = {
+      Type: 'String',
+      Default: `storage${resourceName}Name`,
+    };
+
+    functionCFNFile.Parameters[`storage${resourceName}Arn`] = {
+      Type: 'String',
+      Default: `storage${resourceName}Arn`,
+    };
+
+    functionCFNFile.Parameters[`storage${resourceName}StreamArn`] = {
+      Type: 'String',
+      Default: `storage${resourceName}Arn`,
+    };
+
+
+    // Update policies
+    functionCFNFile.Resources[`${resourceName}TriggerPolicy`] = {
+      DependsOn: [
+        'LambdaExecutionRole',
+      ],
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: 'lambda-execution-policy',
+        Roles: [
+          {
+            Ref: 'LambdaExecutionRole',
+          },
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+
+            {
+              Effect: 'Allow',
+              Action: [
+                'dynamodb:DescribeStream',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:ListStreams',
+              ],
+              Resource: [
+                {
+                  Ref: `storage${resourceName}StreamArn`,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+
+    // Add TriggerResource
+
+    functionCFNFile.Resources[`${resourceName}Trigger`] = {
+      Type: 'AWS::Lambda::EventSourceMapping',
+      DependsOn: [
+        `${resourceName}TriggerPolicy`,
+      ],
+      Properties: {
+        BatchSize: 100,
+        Enabled: true,
+        EventSourceArn: {
+          Ref: `storage${resourceName}StreamArn`,
+        },
+        FunctionName: {
+          'Fn::GetAtt': [
+            'LambdaFunction',
+            'Arn',
+          ],
+        },
+        StartingPosition: 'LATEST',
+      },
+    };
+
+
+    // Update dependsOn
+
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
+    const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
+
+
+    const resourceDependsOn = amplifyMeta.function[functionName].dependsOn || [];
+    let resourceExists = false;
+    resourceDependsOn.forEach((resource) => {
+      if (resource.resourceName === resourceName) {
+        resourceExists = true;
+        resourceDependsOn.attributes = ['Name', 'Arn', 'StreamArn'];
+      }
+    });
+
+    if (!resourceExists) {
+      resourceDependsOn.push({
+        category: 'storage',
+        resourceName,
+        attributes: ['Name', 'Arn', 'StreamArn'],
+      });
+    }
+
+    // Update the functions resource
+    const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
+    fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
+    context.print.success(`Successfully updated resource ${functionName} locally`);
+    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+      await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
+    }
+  } else {
+    throw new Error(`Function ${functionName} does not exist`);
+  }
+
+  return functionName;
+}
+
+async function getLambdaFunctions(context) {
+  const { allResources } = await context.amplify.getResourceStatus();
+  const lambdaResources = allResources
+    .filter(resource => resource.service === 'Lambda')
+    .map(resource => resource.resourceName);
+
+  return lambdaResources;
 }
 
 function copyCfnTemplate(context, categoryName, resourceName, options) {

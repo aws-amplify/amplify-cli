@@ -1,0 +1,16 @@
+type Post @model {
+  id: ID!
+  title: String!
+}
+
+type Comment @model {
+  id: ID!
+  content: String!
+  author: User @connection(name: "UserComments")
+}
+
+type User @model {
+    id: ID!
+    name: String
+    comments: [Comment] @connection(name: "UserComments")
+}

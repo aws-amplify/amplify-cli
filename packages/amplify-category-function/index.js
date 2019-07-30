@@ -1,6 +1,17 @@
+
+const sequential = require('promise-sequential');
+const {
+  updateConfigOnEnvInit,
+} = require('./provider-utils/awscloudformation');
+
+const {
+  invokeFunction,
+} = require('./provider-utils/awscloudformation/utils/invoke');
+
+
 const category = 'function';
 
-async function add(context, providerName, service) {
+async function add(context, providerName, service, parameters) {
   const options = {
     service,
     providerPlugin: providerName,
@@ -11,7 +22,22 @@ async function add(context, providerName, service) {
     context.print.error('Provider not confgiured for this category');
     return;
   }
-  return providerController.addResource(context, category, service, options);
+  return providerController.addResource(context, category, service, options, parameters);
+}
+
+async function update(context, providerName, service, parameters, resourceToUpdate) {
+  const providerController = require(`./provider-utils/${providerName}/index`);
+  if (!providerController) {
+    context.print.error('Provider not confgiured for this category');
+    return;
+  }
+  return providerController.updateResource(
+    context,
+    category,
+    service,
+    parameters,
+    resourceToUpdate,
+  );
 }
 
 async function console(context) {
@@ -77,9 +103,39 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 }
 
 
+async function initEnv(context) {
+  const { amplify } = context;
+  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('function');
+
+  resourcesToBeDeleted.forEach((authResource) => {
+    amplify.removeResourceParameters(context, 'function', authResource.resourceName);
+  });
+
+  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+  const functionTasks = tasks.map((functionResource) => {
+    const { resourceName } = functionResource;
+    return async () => {
+      const config = await updateConfigOnEnvInit(context, 'function', resourceName);
+      context.amplify.saveEnvResourceParameters(context, 'function', resourceName, config);
+    };
+  });
+
+  await sequential(functionTasks);
+}
+
+
+function invoke(options) {
+  invokeFunction(options);
+}
+
+
 module.exports = {
   add,
+  update,
   console,
   migrate,
+  initEnv,
   getPermissionPolicies,
+  invoke,
 };

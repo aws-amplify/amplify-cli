@@ -72,6 +72,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   const parameters = {
     AppSyncApiName: resourceAnswers[inputs[1].key],
     DynamoDBBillingMode: 'PAY_PER_REQUEST',
+    DynamoDBEnableServerSideEncryption: 'false',
   };
 
   // Ask auth/security question
@@ -409,13 +410,14 @@ function getIAMPolicies(resourceName, crudOptions) {
             {
               Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
             },
+            '/*',
           ],
         ],
       },
     ],
   };
 
-  const attributes = ['GraphQLAPIIdOutput'];
+  const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
 
   return { policy, attributes };
 }

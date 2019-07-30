@@ -12,20 +12,19 @@ async function postPushCallback(context, graphQLConfig) {
   if (!graphQLConfig) {
     return;
   }
-  const config = loadConfig(context);
-  const newAPIs = getAppSyncAPIDetails(context);
 
-  const api = newAPIs[0];
-  const schemaLocation = getSchemaDownloadLocation(context, graphQLConfig.gqlConfig.projectName);
-  const schema = await downloadIntrospectionSchema(context, api.id, schemaLocation);
+  if (!graphQLConfig.gqlConfig.schema) {
+    const config = loadConfig(context);
+    const schemaLocation = getSchemaDownloadLocation(context);
 
-  const newProject = graphQLConfig.gqlConfig;
-  newProject.schema = schema;
+    const newProject = graphQLConfig.gqlConfig;
+    newProject.schema = schemaLocation;
+    config.addProject(newProject);
+    config.save();
+  }
+  const apis = getAppSyncAPIDetails(context);
 
-  config.addProject(newProject);
-
-  config.save();
-
+  await downloadIntrospectionSchema(context, apis[0].id, graphQLConfig.gqlConfig.schema);
   if (graphQLConfig.shouldGenerateDocs) {
     generateStatements(context);
   }

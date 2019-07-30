@@ -263,7 +263,7 @@ Static group authorization should perform as expected.`
                     ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
                 }
                 // We also need to add a stack mapping so that this resolver is added to the model stack.
-                ctx.addToStackMapping(`${typeName}`, resolverResourceId)
+                ctx.mapResourceToStack(typeName, resolverResourceId)
                 resolver = this.resources.blankResolver(typeName, fieldName)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')

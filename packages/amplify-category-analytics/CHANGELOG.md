@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.5...amplify-category-analytics@1.5.7) (2019-07-23)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.4...amplify-category-analytics@1.5.5) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.3...amplify-category-analytics@1.5.4) (2019-07-09)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.2...amplify-category-analytics@1.5.3) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.1...amplify-category-analytics@1.5.2) (2019-06-11)
+
+
+### Bug Fixes
+
+* **amplify-category-notifications:** remove env name ([#1440](https://github.com/aws-amplify/amplify-cli/issues/1440)) ([19ff63c](https://github.com/aws-amplify/amplify-cli/commit/19ff63c)), closes [#1372](https://github.com/aws-amplify/amplify-cli/issues/1372)
+
+
+
+
+
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.0...amplify-category-analytics@1.5.1) (2019-06-06)
+
+
+### Bug Fixes
+
+* spelling mistakes in cli output ([#1588](https://github.com/aws-amplify/amplify-cli/issues/1588)) ([787ac57](https://github.com/aws-amplify/amplify-cli/commit/787ac57))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.4.6...amplify-category-analytics@1.5.0) (2019-05-29)
 
 

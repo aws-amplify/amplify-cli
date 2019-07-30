@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.10...amplify-category-api@1.7.11) (2019-07-24)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.8...amplify-category-api@1.7.10) (2019-07-23)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.7...amplify-category-api@1.7.8) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.6...amplify-category-api@1.7.7) (2019-07-09)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.4...amplify-category-api@1.7.6) (2019-06-30)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.3...amplify-category-api@1.7.4) (2019-06-26)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** fix init env bug ([#1715](https://github.com/aws-amplify/amplify-cli/issues/1715)) ([1e21371](https://github.com/aws-amplify/amplify-cli/commit/1e21371)), closes [#1713](https://github.com/aws-amplify/amplify-cli/issues/1713)
+
+
+
+
+
+## [1.7.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.2...amplify-category-api@1.7.3) (2019-06-20)
+
+
+### Bug Fixes
+
+* **cli:** fix inquirer version ([#1690](https://github.com/aws-amplify/amplify-cli/issues/1690)) ([9246032](https://github.com/aws-amplify/amplify-cli/commit/9246032)), closes [#1688](https://github.com/aws-amplify/amplify-cli/issues/1688)
+
+
+
+
+
+## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.1...amplify-category-api@1.7.2) (2019-06-18)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.0...amplify-category-api@1.7.1) (2019-06-12)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.6.1...amplify-category-api@1.7.0) (2019-06-11)
+
+
+### Bug Fixes
+
+* fixing the IAM policies for AppSync API ([#1634](https://github.com/aws-amplify/amplify-cli/issues/1634)) ([9fb2fa9](https://github.com/aws-amplify/amplify-cli/commit/9fb2fa9))
+
+
+### Features
+
+* add graphQLEndpoint as an env var to lambda functions ([#1641](https://github.com/aws-amplify/amplify-cli/issues/1641)) ([ae825a6](https://github.com/aws-amplify/amplify-cli/commit/ae825a6)), closes [#1620](https://github.com/aws-amplify/amplify-cli/issues/1620)
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.6.0...amplify-category-api@1.6.1) (2019-06-06)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.5.10...amplify-category-api@1.6.0) (2019-05-29)
 
 
