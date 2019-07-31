@@ -83,7 +83,7 @@ function getSageMaker(amplifyMeta) {
   return sagemakerOutput;
 }
 
-async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, printOnlyURL) {
+async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, showOnAmplifyStatus) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, 'predictions', resourceName);
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
@@ -109,7 +109,11 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, pri
       return;
     }
     const region = amplifyMeta.providers.awscloudformation.Region;
-    await openRekognitionUploadUrl(context, bucketName, region, parameters.folderPolicies, printOnlyURL);
+    await openRekognitionUploadUrl(context, bucketName, region, parameters.folderPolicies, showOnAmplifyStatus);
+  } else if (!showOnAmplifyStatus) {
+    // !showOnAmplifyStatus is used so that this message is not shown in amplify status scenario.
+    context.print.error('Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.');
+    process.exit(0);
   }
 }
 
