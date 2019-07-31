@@ -231,7 +231,7 @@ jobs:
           command: |
             sudo gem install cocoapods
             pod --version
-            pod setup
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - run:
           name: "Install XCPretty"
           command: |
