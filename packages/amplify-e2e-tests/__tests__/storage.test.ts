@@ -30,8 +30,8 @@ describe('amplify add/update storage(S3)', () => {
 
     expect(bucketName).toBeDefined();
     expect(region).toBeDefined();
-    
-    const bucketExists = await checkIfBucketExists(bucketName,region);
+
+    const bucketExists = await checkIfBucketExists(bucketName, region);
     expect(bucketExists).toMatchObject({});
 
   });

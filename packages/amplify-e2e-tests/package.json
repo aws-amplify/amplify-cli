@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "",
   "main": "index.js",
   "private": true,
@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.475.0",
+    "esm": "^3.2.25",
     "mime-types": "^2.1.24",
     "ora": "^3.4.0"
   }
