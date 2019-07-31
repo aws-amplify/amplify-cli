@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.12...graphql-http-transformer@3.5.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [3.4.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.11...graphql-http-transformer@3.4.12) (2019-07-24)
 
 **Note:** Version bump only for package graphql-http-transformer
