@@ -3,6 +3,7 @@ import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 export { default  as getProjectMeta } from './projectMeta';
+export { default  as getAWSExports } from './awsExports';
 export * from './sdk-calls'
 export * from './api';
 

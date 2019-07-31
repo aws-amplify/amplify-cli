@@ -27,6 +27,7 @@
     "amplify-category-hosting": "1.2.2",
     "amplify-category-interactions": "1.6.3",
     "amplify-category-notifications": "1.4.14",
+    "amplify-category-predictions": "1.0.0",
     "amplify-category-storage": "1.8.3",
     "amplify-category-xr": "1.6.7",
     "amplify-codegen": "1.5.7",
