@@ -110,6 +110,10 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, pri
     }
     const region = amplifyMeta.providers.awscloudformation.Region;
     await openRekognitionUploadUrl(context, bucketName, region, parameters.folderPolicies, printOnlyURL);
+  } else if (!printOnlyURL) {
+    // !printOnlyURL is used so that this message is not shown in amplify status scenario.
+    context.print.error('Console not supported for the configuration in the project.');
+    process.exit(0);
   }
 }
 
