@@ -23,7 +23,7 @@ describe('amplify add predictions', () => {
         await addConvert(projRoot, {});
         await addInterpret(projRoot, {});
         await amplifyPushAuth(projRoot);
-        const awsExports: any = getAWSExports(projRoot);
+        const awsExports: any = getAWSExports(projRoot).default;
         console.log(`AWS Exports \n${JSON.stringify(awsExports, null, 4)}`);
         const { sourceLanguage, targetLanguage } = awsExports.predictions.convert.translateText.defaults;
         const { type } = awsExports.predictions.interpret.interpretText.defaults;
