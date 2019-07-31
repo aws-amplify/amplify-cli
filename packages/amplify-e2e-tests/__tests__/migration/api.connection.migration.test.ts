@@ -61,4 +61,35 @@ describe('amplify add api', () => {
         /Attempting to edit the global secondary index gsi-PostComments on the CommentTable table in the Comment stack.*/
     );
   });
+
+  it('init project, run valid migration to remove a connection, then run another migration that adds a slightly different GSI.', async () => {
+    const projectName = 'removeaddconnection';
+    const initialSchema = 'migrations_connection/initial_schema.graphql';
+    const nextSchema1 = 'migrations_connection/remove_connection.graphql';
+    const nextSchema2 = 'migrations_connection/add_a_sort_key.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+    updateApiSchema(projRoot, projectName, nextSchema2);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+  });
+
+  it(`init project, run valid migration to add a connection that uses the \
+  existing key fields, then run another migration that removes the old connection \
+  and renames the field.`,
+  async () => {
+    const projectName = 'addremoveconnection';
+    const initialSchema = 'migrations_connection/initial_schema.graphql';
+    const nextSchema1 = 'migrations_connection/add_a_sort_key_before_remove.graphql';
+    const nextSchema2 = 'migrations_connection/remove_old_connection_after.graphql';
+    await initProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+    updateApiSchema(projRoot, projectName, nextSchema2);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+  });
 });
