@@ -110,6 +110,10 @@ export class ModelConnectionTransformer extends Transformer {
         // Find the associated connection field if one exists.
         const associatedConnectionField = relatedType.fields.find(
             (f: FieldDefinitionNode) => {
+                // Make sure we don't associate with the same field in a self connection
+                if (f === field) {
+                    return false;
+                }
                 const relatedDirective = f.directives.find((dir: DirectiveNode) => dir.name.value === 'connection');
                 if (relatedDirective) {
                     const relatedDirectiveName = getDirectiveArgument(relatedDirective)("name")
@@ -179,9 +183,11 @@ export class ModelConnectionTransformer extends Transformer {
             // 2. [] to {} when the association exists. Note: false and undefined are not equal.
             // Store a foreign key on the related table and wire up a Query resolver.
             // This is the inverse of 3.
+            
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(relatedTypeName, associatedConnectionField.name.value)
             }
+
             // Validate the provided key field is legit.
             const existingKeyField = relatedType.fields.find(f => f.name.value === connectionAttributeName)
             validateKeyField(existingKeyField);
@@ -202,7 +208,7 @@ export class ModelConnectionTransformer extends Transformer {
             // 3. {} to [] when the association exists.
             // Store foreign key on this table and wire up a GetItem resolver.
             // This is the inverse of 2.
-
+            
             // if the sortField is not defined as a field, throw an error
             // Cannot assume the required type of the field
             if (associatedSortFieldName && !associatedSortField) {
@@ -214,6 +220,7 @@ export class ModelConnectionTransformer extends Transformer {
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
+            
             // Validate the provided key field is legit.
             const existingKeyField = parent.fields.find(f => f.name.value === connectionAttributeName)
             validateKeyField(existingKeyField);
@@ -246,11 +253,12 @@ export class ModelConnectionTransformer extends Transformer {
                 const updated = updateUpdateInputWithConnectionField(updateInput, connectionAttributeName)
                 ctx.putType(updated)
             }
-
+            
         } else if (leftConnectionIsList) {
             // 4. [] to ?
             // Store foreign key on the related table and wire up a Query resolver.
             // This has no inverse and has limited knowlege of the connection.
+            
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
@@ -293,6 +301,7 @@ export class ModelConnectionTransformer extends Transformer {
             // 5. {} to ?
             // Store foreign key on this table and wire up a GetItem resolver.
             // This has no inverse and has limited knowlege of the connection.
+            
             if (!connectionAttributeName) {
                 connectionAttributeName = makeConnectionAttributeName(parentTypeName, fieldName)
             }
