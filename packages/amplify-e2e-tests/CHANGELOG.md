@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.4-predictions.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.2...amplify-e2e-tests@1.6.4-predictions.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([6d6ac10](https://github.com/aws-amplify/amplify-cli/commit/6d6ac10))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 ## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.0...amplify-e2e-tests@1.6.2) (2019-07-23)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.5-predictions.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@1.6.5-predictions.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([6d6ac10](https://github.com/aws-amplify/amplify-cli/commit/6d6ac10))
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.2...amplify-frontend-javascript@1.6.3) (2019-07-23)
 
 

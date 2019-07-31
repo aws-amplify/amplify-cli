@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.4-predictions.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.2...amplify-frontend-android@1.8.4-predictions.0) (2019-07-31)
+
+**Note:** Version bump only for package amplify-frontend-android
+
+
+
+
+
 ## [1.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@1.8.1...amplify-frontend-android@1.8.2) (2019-06-20)
 
 

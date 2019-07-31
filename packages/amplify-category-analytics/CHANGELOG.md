@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.9-predictions.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.7...amplify-category-analytics@1.5.9-predictions.0) (2019-07-31)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
 ## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@1.5.5...amplify-category-analytics@1.5.7) (2019-07-23)
 
 **Note:** Version bump only for package amplify-category-analytics
