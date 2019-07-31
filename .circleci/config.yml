@@ -224,3 +224,4 @@ workflows:
                 - release
                 - master
                 - beta
+                - predictions
