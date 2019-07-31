@@ -108,12 +108,14 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
     }
     return false;
   });
-  const { category, resourceName } = resource;
-  const amplifyMeta = context.amplify.getProjectMeta();
-  if (!amplifyMeta[category][resourceName].output) {
-    return;
+  if (resource) {
+    const { category, resourceName } = resource;
+    const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
+    await predictionsConsole.printRekognitionUploadUrl(context, resourceName, amplifyMeta, true);
   }
-  await predictionsConsole.printRekognitionUploadUrl(context, resourceName, amplifyMeta, true);
 }
 
 module.exports = {
