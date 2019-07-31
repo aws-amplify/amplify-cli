@@ -68,6 +68,7 @@ The Amplify CLI supports the commands shown in the following table.
 - [hosting (Amazon S3 and Amazon CloudFront distribution)](packages/amplify-category-hosting/Readme.md)
 - [notifications (Amazon Pinpoint)](packages/amplify-category-notifications/Readme.md)
 - [interactions (Amazon Lex)](packages/amplify-category-interactions/Readme.md)
+- [predictions (Amazon Rekognition, Amazon Textract, Amazon Translate, Amazon Polly, Amazon Transcribe, Amazon Comprehend, and Amazon SageMaker)](packages/amplify-category-predictions/Readme.md)
 
 ## Tutorials
 
