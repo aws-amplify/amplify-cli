@@ -1,5 +1,5 @@
 node_modules
 __tests__
-__mockes__
+__mocks__
 coverage
 cfn-response.js

@@ -6,8 +6,8 @@ The current set of commands supported by the Amplify Predictions Category Plugin
 
 | Command              | Description |
 | --- | --- |
-| amplify predictions add | Takes you through a CLI flow to add an predictions resource to your backend   |
-| amplify predictions update | Takes you through steps in the CLI to update an predictions resource.  |
+| amplify predictions add | Walks you through a CLI flow to add a predictions resource to your backend   |
+| amplify predictions update | Walks you through steps in the CLI to update a predictions resource.  |
 | amplify predictions remove | Removes predictions resource from your local backend which would be removed from the cloud on the next push command |
 | amplify predictions console | Opens a web console to view your predictions resources |
 
