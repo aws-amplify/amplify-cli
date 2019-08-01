@@ -381,7 +381,7 @@ async function migrate(context) {
     provider,
     category,
     resourceName,
-    { ...props },
+    { ...roles, ...props },
     ENV_SPECIFIC_PARAMS,
   );
 }
