@@ -57,7 +57,9 @@ function copyCfnTemplate(context, category, options, cfnFilename) {
         params.triggerEnvs = JSON.parse(params.triggerEnvs) || [];
 
         params.triggerEnvs.forEach((c) => {
-          triggerEnvs[c.key] = c.key !== 'RESOURCENAME' ? c.value : params.resourceName;
+          triggerEnvs[c.key] = c.key !== 'RESOURCENAME' ?
+            c.value :
+            params.resourceName || '';
         });
       }
       writeParams = { modules: params.modules.join(), resourceName: params.resourceName };
