@@ -631,6 +631,18 @@ function removeDeprecatedProps(props) {
   if (props.authRoleName) { delete props.authRoleName; }
   if (props.unauthRoleName) { delete props.unauthRoleName; }
   if (props.userpoolClientName) { delete props.userpoolClientName; }
+  if (props.roleName) { delete props.roleName; }
+  if (props.policyName) { delete props.policyName; }
+  if (props.mfaLambdaLogPolicy) { delete props.mfaLambdaLogPolicy; }
+  if (props.mfaPassRolePolicy) { delete props.mfaPassRolePolicy; }
+  if (props.mfaLambdaIAMPolicy) { delete props.mfaLambdaIAMPolicy; }
+  if (props.userpoolClientLogPolicy) { delete props.userpoolClientLogPolicy; }
+  if (props.userpoolClientLambdaPolicy) { delete props.userpoolClientLambdaPolicy; }
+  if (props.lambdaLogPolicy) { delete props.lambdaLogPolicy; }
+  if (props.openIdRolePolicy) { delete props.openIdRolePolicy; }
+  if (props.openIdRopenIdLambdaIAMPolicyolePolicy) { delete props.openIdLambdaIAMPolicy; }
+  if (props.openIdLogPolicy) { delete props.openIdLogPolicy; }
+
   const keys = Object.keys(props);
   const deprecatedTriggerParams = [
     'CreateAuthChallenge',
