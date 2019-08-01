@@ -3,7 +3,7 @@ import {
     CreateGroupRequest, CreateGroupResponse,
     AdminAddUserToGroupRequest, CreateUserPoolResponse,
     CreateUserPoolRequest, CreateUserPoolClientRequest,
-    CreateUserPoolClientResponse, DeleteUserPoolRequest,
+    CreateUserPoolClientResponse, DeleteUserPoolRequest, DeleteUserRequest,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import {
     AuthenticationDetails,
@@ -13,14 +13,15 @@ import TestStorage from './TestStorage'
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' })
 
-export function configureAmplify(userPoolId: string, userPoolClientId: string) {
+export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
     Amplify.configure({
         Auth: {
             // REQUIRED - Amazon Cognito Region
             region: 'us-west-2',
             userPoolId: userPoolId,
             userPoolWebClientId: userPoolClientId,
-            storage: new TestStorage()
+            storage: new TestStorage(),
+            identityPoolId: identityPoolId
         }
     })
 }
@@ -84,6 +85,15 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
         console.error(`Failed to login.\n`)
         console.error(e)
     }
+}
+
+export async function deleteUser(accessToken: string): Promise<{}> {
+    return new Promise((res, rej) => {
+        const params: DeleteUserRequest = {
+            AccessToken: accessToken
+        };
+        cognitoClient.deleteUser(params, (err, data) => err ? rej(err) : res(data));
+    })
 }
 
 export async function createGroup(userPoolId: string, name: string): Promise<CreateGroupResponse> {
