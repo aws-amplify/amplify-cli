@@ -304,6 +304,12 @@ export class ModelAuthTransformer extends Transformer {
                 `The @auth directive cannot be placed on an interface's field. See ${parent.name.value}${definition.name.value}`
             );
         }
+        const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
+        if (!modelDirective) {
+            throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.')
+        }
+        const modelConfiguration = new ModelDirectiveConfiguration (modelDirective, parent);
+
         const get = (s: string) => (arg: ArgumentNode) => arg.name.value === s
         const getArg = (arg: string, dflt?: any) => {
             const argument = directive.arguments.find(get(arg))
@@ -328,6 +334,14 @@ Static group authorization should perform as expected.`
         this.validateFieldRules(rules);
         this.setUnauthPolicyFlag(rules);
 
+        // Add the directives to the parent type as well, but default must be included
+        // in propagation
+        const typeDirectives = this.getDirectivesForRules(rules);
+
+        if (typeDirectives.length > 0) {
+            this.extendTypeWithDirectives(ctx, parent.name.value, typeDirectives);
+        }
+
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
             if (rule.operations) {
                 const matchesOp = rule.operations.find(o => o === op)
@@ -343,28 +357,47 @@ Static group authorization should perform as expected.`
         const isDeleteRule = isOpRule('delete');
         // The field handler adds the read rule on the object
         const readRules = rules.filter((rule: AuthRule) => isReadRule(rule))
-        this.protectField(ctx, parent.name.value, definition.name.value, readRules)
+        this.protectReadForField(ctx, parent.name.value, definition.name.value, readRules, modelConfiguration)
 
         // Protect mutations when objects including this field are trying to be created.
         const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule))
-        this.protectCreateForField(ctx, parent, definition, createRules)
+        this.protectCreateForField(ctx, parent, definition, createRules, modelConfiguration)
 
         // Protect update mutations when objects inluding this field are trying to be updated.
         const updateRules = rules.filter((rule: AuthRule) => isUpdateRule(rule))
-        this.protectUpdateForField(ctx, parent, definition, updateRules)
+        this.protectUpdateForField(ctx, parent, definition, updateRules, modelConfiguration)
 
         // Delete operations are only protected by @auth directives on objects.
         const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule))
-        this.protectDeleteForField(ctx, parent, definition, deleteRules)
+        this.protectDeleteForField(ctx, parent, definition, deleteRules, modelConfiguration)
     }
 
-    private protectField(ctx: TransformerContext, typeName: string, fieldName: string, rules: AuthRule[]) {
+    private protectReadForField(ctx: TransformerContext, typeName: string, fieldName: string, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
         if (rules && rules.length) {
 
-            const directives = this.getDirectivesForRules(rules);
+            const directives = this.getDirectivesForRules(rules, false);
 
             if (directives.length > 0) {
                 this.addDirectivesToField(ctx, typeName, fieldName, directives);
+            }
+
+            if (modelConfiguration.shouldHave('get')) {
+                const operationName = modelConfiguration.getName('get');
+                const operationDirectives = this.getDirectivesForRules(rules);
+
+                if (operationDirectives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                }
+            }
+
+            if (modelConfiguration.shouldHave('list')) {
+                const operationName = modelConfiguration.getName('list');
+                const operationDirectives = this.getDirectivesForRules(rules);
+
+                if (operationDirectives.length > 0) {
+                    this.addDirectivesToField(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                }
             }
 
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
@@ -391,14 +424,16 @@ Static group authorization should perform as expected.`
         }
     }
 
-    private protectUpdateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
+    private protectUpdateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
         const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
-        this.protectUpdateMutation(ctx, resolverResourceId, rules, parent, null, field)
+        this.protectUpdateMutation(ctx, resolverResourceId, rules, parent, modelConfiguration, field)
     }
 
-    private protectDeleteForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
+    private protectDeleteForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
         const resolverResourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(parent.name.value);
-        this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, null, field)
+        this.protectDeleteMutation(ctx, resolverResourceId, rules, parent, modelConfiguration, field)
     }
 
     /**
@@ -408,16 +443,26 @@ Static group authorization should perform as expected.`
      * @param fieldName The name of the field with the @auth directive.
      * @param rules The set of rules that should be applied to create operations.
      */
-    private protectCreateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
+    private protectCreateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
+        modelConfiguration: ModelDirectiveConfiguration) {
         const typeName = parent.name.value;
         const resolverResourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
         const createResolverResource = ctx.getResource(resolverResourceId);
         if (rules && rules.length && createResolverResource) {
 
-            const directives = this.getDirectivesForRules(rules);
+            const directives = this.getDirectivesForRules(rules, false);
 
             if (directives.length > 0) {
                 this.addDirectivesToField(ctx, typeName, field.name.value, directives);
+
+                if (modelConfiguration.shouldHave('create')) {
+                    const operationName = modelConfiguration.getName('create');
+                    const operationDirectives = this.getDirectivesForRules(rules);
+
+                    if (operationDirectives.length > 0) {
+                        this.addDirectivesToField(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    }
+                }
             }
 
             // Break the rules out by strategy.
@@ -1015,7 +1060,7 @@ All @auth directives used on field definitions are performed when the field is r
             return
         } else {
 
-            if (!field && modelConfiguration.shouldHave(isUpdate ? 'update' : 'delete')) {
+            if (modelConfiguration.shouldHave(isUpdate ? 'update' : 'delete')) {
                 const operationName = modelConfiguration.getName(isUpdate ? 'update' : 'delete');
                 const directives = this.getDirectivesForRules(rules);
 
@@ -1244,26 +1289,54 @@ All @auth directives used on field definitions are performed when the field is r
         }
     }
 
-    private getDirectivesForRules(rules: AuthRule[]): DirectiveNode[] {
+    private getDirectivesForRules(rules: AuthRule[], addDefaultIfNeeded: boolean = true): DirectiveNode[] {
         if (!rules || rules.length === 0) {
             return [];
         }
 
         const directives: DirectiveNode[] = new Array();
 
-        if (rules.find((r) => r.provider === 'apiKey') && this.configuredAuthProviders.default !== 'apiKey') {
+        //
+        // We only add a directive if it is not the default auth or
+        // if it is the default one, but there are other rules for a
+        // different provider.
+        // For fields we don't add the default, since it would open up
+        // the access rights.
+        //
+
+        if ((this.configuredAuthProviders.default !== 'apiKey' &&
+            Boolean(rules.find((r) => r.provider === 'apiKey'))) ||
+            (this.configuredAuthProviders.default === 'apiKey' &&
+            Boolean(rules.find((r) => r.provider !== 'apiKey' &&
+            addDefaultIfNeeded === true))
+        )) {
             directives.push(makeDirective('aws_api_key', []));
         }
 
-        if (rules.find((r) => r.provider === 'iam') && this.configuredAuthProviders.default !== 'iam') {
+        if ((this.configuredAuthProviders.default !== 'iam' &&
+            Boolean(rules.find((r) => r.provider === 'iam'))) ||
+            (this.configuredAuthProviders.default === 'iam' &&
+            Boolean(rules.find((r) => r.provider !== 'iam' &&
+            addDefaultIfNeeded === true))
+        )) {
             directives.push(makeDirective('aws_iam', []));
         }
 
-        if (rules.find((r) => r.provider === 'oidc') && this.configuredAuthProviders.default !== 'oidc') {
+        if ((this.configuredAuthProviders.default !== 'oidc' &&
+            Boolean(rules.find((r) => r.provider === 'oidc'))) ||
+            (this.configuredAuthProviders.default === 'oidc' &&
+            Boolean(rules.find((r) => r.provider !== 'oidc' &&
+            addDefaultIfNeeded === true))
+        )) {
             directives.push(makeDirective('aws_oidc', []));
         }
 
-        if (rules.find((r) => r.provider === 'userPools') && this.configuredAuthProviders.default !== 'userPools') {
+        if ((this.configuredAuthProviders.default !== 'userPools' &&
+            Boolean(rules.find((r) => r.provider === 'userPools'))) ||
+            (this.configuredAuthProviders.default === 'userPools' &&
+            Boolean(rules.find((r) => r.provider !== 'userPools' &&
+            addDefaultIfNeeded === true))
+        )) {
             directives.push(makeDirective('aws_cognito_user_pools', []));
         }
 
@@ -1392,7 +1465,7 @@ found '${rule.provider}' assigned.`);
         }
 
         for (const rule of rules) {
-            if (rule.allow === 'private' && rule.provider === 'iam') {
+            if (rule.allow === 'public' && rule.provider === 'iam') {
                 this.generateIAMPolicyforUnauthRole = true;
                 return;
             }

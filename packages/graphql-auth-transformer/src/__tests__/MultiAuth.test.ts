@@ -1,8 +1,8 @@
 import {
-    ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
-    DefinitionNode, Kind, InputObjectTypeDefinitionNode
+    ObjectTypeDefinitionNode, parse, DocumentNode,
+    Kind
 } from 'graphql'
-import GraphQLTransform, { InvalidDirectiveError } from 'graphql-transformer-core'
+import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
 import { ModelAuthTransformer, AppSyncAuthConfiguration, AppSyncAuthMode } from '../ModelAuthTransformer'
@@ -59,6 +59,7 @@ const withAuthModes = (authConfig: AppSyncAuthConfiguration, authModes: AppSyncA
     return newAuthConfig;
 };
 
+const apiKeyDirectiveName = 'aws_api_key';
 const userPoolsDirectiveName = 'aws_cognito_user_pools';
 const iamDirectiveName = 'aws_iam';
 const openIdDirectiveName = 'aws_oidc';
@@ -71,7 +72,7 @@ const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
 const ownerOpenIdAuthDirective = '@auth(rules: [{allow: owner, provider: oidc }])';
 const privateAuthDirective = '@auth(rules: [{allow: private}])';
-const privateIAMAuthDirective = '@auth(rules: [{allow: private, provider: iam }])';
+const publicIAMAuthDirective = '@auth(rules: [{allow: public, provider: iam }])';
 const privateWithApiKeyAuthDirective = '@auth(rules: [{allow: private, provider: apiKey }])';
 const publicAuthDirective = '@auth(rules: [{allow: public}])';
 const publicUserPoolsAuthDirective = '@auth(rules: [{allow: public, provider: userPools}])';
@@ -131,7 +132,7 @@ authentication provider configured.`
 
     test('AWS_IAM not configured for project', () => {
         validationTest(
-            privateIAMAuthDirective,
+            publicIAMAuthDirective,
             userPoolsDefaultConfig,
             `@auth directive with 'iam' provider found, but the project has no IAM \
 authentication provider configured.`
@@ -196,9 +197,14 @@ describe('Type directive transformation tests', () => {
         const postType = getObjectType(schemaDoc, 'Post');
 
         if (expectedDirectiveNames && expectedDirectiveNames.length > 0) {
+            let expectedDireciveNameCount = 0;
+
             for (const expectedDirectiveName of expectedDirectiveNames) {
                 expect(postType.directives.find((d) => d.name.value === expectedDirectiveName)).toBeDefined();
+                expectedDireciveNameCount++;
             }
+
+            expect(expectedDireciveNameCount).toEqual(postType.directives.length);
         }
     };
 
@@ -213,11 +219,11 @@ describe('Type directive transformation tests', () => {
         transformTest(
             ownerAuthDirective,
             withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']),
-            [userPoolsDirectiveName]
+            [userPoolsDirectiveName, apiKeyDirectiveName]
         );
     });
 
-    test(`When all providers are configured only 3 of them is added, the default is not`, () => {
+    test(`When all providers are configured all of them are added`, () => {
         const authConfig = withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS', 'AWS_IAM', 'OPENID_CONNECT']);
 
         authConfig.additionalAuthenticationProviders[2].openIDConnectConfig = {
@@ -228,7 +234,7 @@ describe('Type directive transformation tests', () => {
         transformTest(
             multiAuthDirective,
             authConfig,
-            [userPoolsDirectiveName, iamDirectiveName, openIdDirectiveName]
+            [userPoolsDirectiveName, iamDirectiveName, openIdDirectiveName, apiKeyDirectiveName]
         );
     });
 
@@ -263,8 +269,8 @@ describe('Type directive transformation tests', () => {
         expect(out.resolvers['Mutation.deletePost.req.vtl']).toContain(authModeCheckSnippet);
     });
 
-    test(`'private' with IAM provider adds policy for Unauth role`, () => {
-        const schema = getSchema(privateIAMAuthDirective);
+    test(`'public' with IAM provider adds policy for Unauth role`, () => {
+        const schema = getSchema(publicIAMAuthDirective);
         const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
         const out = transformer.transform(schema);

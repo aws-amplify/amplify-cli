@@ -30,19 +30,20 @@ exports[`JSON output should generate JSON output for a mutation with an enum and
 							\\"value\\": {
 								\\"kind\\": \\"Variable\\",
 								\\"variableName\\": \\"episode\\"
-							}
+							},
+							\\"type\\": \\"Episode\\"
 						},
 						{
 							\\"name\\": \\"review\\",
 							\\"value\\": {
 								\\"kind\\": \\"Variable\\",
 								\\"variableName\\": \\"review\\"
-							}
+							},
+							\\"type\\": \\"ReviewInput!\\"
 						}
 					],
 					\\"isConditional\\": false,
 					\\"isDeprecated\\": false,
-					\\"deprecationReason\\": null,
 					\\"fields\\": [
 						{
 							\\"responseName\\": \\"__typename\\",
@@ -56,8 +57,7 @@ exports[`JSON output should generate JSON output for a mutation with an enum and
 							\\"type\\": \\"Int!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"The number of stars this review gave, 1-5\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						},
 						{
 							\\"responseName\\": \\"commentary\\",
@@ -65,8 +65,7 @@ exports[`JSON output should generate JSON output for a mutation with an enum and
 							\\"type\\": \\"String\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"Comment about the movie\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						}
 					],
 					\\"fragmentSpreads\\": [],
@@ -114,18 +113,18 @@ exports[`JSON output should generate JSON output for a mutation with an enum and
 			\\"fields\\": [
 				{
 					\\"name\\": \\"stars\\",
-					\\"description\\": \\"0-5 stars\\",
-					\\"type\\": \\"Int!\\"
+					\\"type\\": \\"Int!\\",
+					\\"description\\": \\"0-5 stars\\"
 				},
 				{
 					\\"name\\": \\"commentary\\",
-					\\"description\\": \\"Comment about the movie, optional\\",
-					\\"type\\": \\"String\\"
+					\\"type\\": \\"String\\",
+					\\"description\\": \\"Comment about the movie, optional\\"
 				},
 				{
 					\\"name\\": \\"favorite_color\\",
-					\\"description\\": \\"Favorite color, optional\\",
-					\\"type\\": \\"ColorInput\\"
+					\\"type\\": \\"ColorInput\\",
+					\\"description\\": \\"Favorite color, optional\\"
 				}
 			]
 		},
@@ -136,18 +135,18 @@ exports[`JSON output should generate JSON output for a mutation with an enum and
 			\\"fields\\": [
 				{
 					\\"name\\": \\"red\\",
-					\\"description\\": \\"\\",
-					\\"type\\": \\"Int!\\"
+					\\"type\\": \\"Int!\\",
+					\\"description\\": \\"\\"
 				},
 				{
 					\\"name\\": \\"green\\",
-					\\"description\\": \\"\\",
-					\\"type\\": \\"Int!\\"
+					\\"type\\": \\"Int!\\",
+					\\"description\\": \\"\\"
 				},
 				{
 					\\"name\\": \\"blue\\",
-					\\"description\\": \\"\\",
-					\\"type\\": \\"Int!\\"
+					\\"type\\": \\"Int!\\",
+					\\"description\\": \\"\\"
 				}
 			]
 		}
@@ -172,7 +171,6 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 					\\"type\\": \\"Character\\",
 					\\"isConditional\\": false,
 					\\"isDeprecated\\": false,
-					\\"deprecationReason\\": null,
 					\\"fields\\": [
 						{
 							\\"responseName\\": \\"__typename\\",
@@ -186,8 +184,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 							\\"type\\": \\"ID!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"The ID of the character\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						}
 					],
 					\\"fragmentSpreads\\": [
@@ -228,8 +225,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 					\\"type\\": \\"String!\\",
 					\\"isConditional\\": false,
 					\\"description\\": \\"The name of the character\\",
-					\\"isDeprecated\\": false,
-					\\"deprecationReason\\": null
+					\\"isDeprecated\\": false
 				}
 			],
 			\\"fragmentSpreads\\": [],
@@ -252,8 +248,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 							\\"type\\": \\"String!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"What others call this droid\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						},
 						{
 							\\"responseName\\": \\"primaryFunction\\",
@@ -261,8 +256,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 							\\"type\\": \\"String\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"This droid's primary function\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						}
 					],
 					\\"fragmentSpreads\\": []
@@ -285,8 +279,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 							\\"type\\": \\"String!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"What this human calls themselves\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						},
 						{
 							\\"responseName\\": \\"height\\",
@@ -294,8 +287,7 @@ exports[`JSON output should generate JSON output for a query with a fragment spr
 							\\"type\\": \\"Float\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"Height in the preferred unit, default is meters\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						}
 					],
 					\\"fragmentSpreads\\": []
@@ -324,7 +316,6 @@ exports[`JSON output should generate JSON output for a query with a nested selec
 					\\"type\\": \\"Character\\",
 					\\"isConditional\\": false,
 					\\"isDeprecated\\": false,
-					\\"deprecationReason\\": null,
 					\\"fields\\": [
 						{
 							\\"responseName\\": \\"__typename\\",
@@ -338,8 +329,7 @@ exports[`JSON output should generate JSON output for a query with a nested selec
 							\\"type\\": \\"String!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"The name of the character\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						},
 						{
 							\\"responseName\\": \\"friends\\",
@@ -348,7 +338,6 @@ exports[`JSON output should generate JSON output for a query with a nested selec
 							\\"isConditional\\": false,
 							\\"description\\": \\"The friends of the character, or an empty list if they have none\\",
 							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null,
 							\\"fields\\": [
 								{
 									\\"responseName\\": \\"__typename\\",
@@ -362,8 +351,7 @@ exports[`JSON output should generate JSON output for a query with a nested selec
 									\\"type\\": \\"String!\\",
 									\\"isConditional\\": false,
 									\\"description\\": \\"The name of the character\\",
-									\\"isDeprecated\\": false,
-									\\"deprecationReason\\": null
+									\\"isDeprecated\\": false
 								}
 							],
 							\\"fragmentSpreads\\": [],
@@ -412,12 +400,12 @@ exports[`JSON output should generate JSON output for a query with an enum variab
 							\\"value\\": {
 								\\"kind\\": \\"Variable\\",
 								\\"variableName\\": \\"episode\\"
-							}
+							},
+							\\"type\\": \\"Episode\\"
 						}
 					],
 					\\"isConditional\\": false,
 					\\"isDeprecated\\": false,
-					\\"deprecationReason\\": null,
 					\\"fields\\": [
 						{
 							\\"responseName\\": \\"__typename\\",
@@ -431,8 +419,7 @@ exports[`JSON output should generate JSON output for a query with an enum variab
 							\\"type\\": \\"String!\\",
 							\\"isConditional\\": false,
 							\\"description\\": \\"The name of the character\\",
-							\\"isDeprecated\\": false,
-							\\"deprecationReason\\": null
+							\\"isDeprecated\\": false
 						}
 					],
 					\\"fragmentSpreads\\": [],
