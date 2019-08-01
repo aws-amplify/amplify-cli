@@ -1,0 +1,19 @@
+{
+    "extends": "airbnb-base",
+    "rules": {
+    	"no-param-reassign": "off",
+    	"no-return-await" : "off",
+    	"no-continue": "off",
+    	"no-await-in-loop": "off",
+    	"no-use-before-define": "off",
+		"no-console": "off",
+		"no-plusplus": "off",
+		"prefer-destructuring": "off",
+		"max-len": "off",
+		"no-loop-func": "off",
+		"global-require": "off",
+		"no-inner-declarations": "off",
+    	"import/no-dynamic-require": "off",
+    	"consistent-return": "off"
+    }
+}

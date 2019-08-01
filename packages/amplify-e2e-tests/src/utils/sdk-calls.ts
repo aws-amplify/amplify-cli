@@ -71,6 +71,11 @@ const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+const getCollection = async (collectionId: string, region: string) => {
+  const service = new AWS.Rekognition({ region });
+  return await service.describeCollection({ CollectionId: collectionId }).promise();
+};
+
 const getTable = async (tableName: string, region: string) => {
   const service = new AWS.DynamoDB({ region });
   return await service.describeTable({ TableName: tableName }).promise();
@@ -89,5 +94,5 @@ const getAppSyncApi = async(appSyncApiId: string, region: string) => {
 export {
   getDDBTable, checkIfBucketExists, getUserPool,
   getUserPoolClients, getBot, getLambdaFunction,
-  getFunction, getTable, deleteTable, getAppSyncApi
+  getFunction, getTable, deleteTable, getAppSyncApi, getCollection,
 };

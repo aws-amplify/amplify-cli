@@ -68,6 +68,60 @@ export function addAuthWithGroupTrigger(
   })
 }
 
+export function addAuthViaAPIWithTrigger(
+  cwd: string,
+  settings: any,
+  verbose: boolean = !isCI(),
+) {
+  return new Promise((resolve, reject) => {
+    nexpect
+      .spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true, verbose })
+      .wait('Please select from one of the below mentioned services')
+      .send('\r')
+      .wait('Provide API name')
+      .send('\r')
+      .wait('Choose an authorization type for the API')
+      .send('j')
+      .send('\r')
+      .wait('Do you want to use the default authentication and security configuration?')
+      .send('\r')
+      .wait('How do you want users to be able to sign in')
+      .send('\r')
+      .wait('Do you want to configure advanced settings?')
+      .send('j')
+      .send('\r')
+      .wait('What attributes are required for signing up?')
+      .send('\r')
+      .wait('Do you want to enable any of the following capabilities?')
+      .send('jj ')
+      .send('\r')
+      .wait('Enter the name of the group to which users will be added.')
+      .send('mygroup')
+      .send('\r')
+      .wait('Do you want to edit your add-to-group function now?')
+      .send('n')
+      .send('\r')
+      .wait('Do you have an annotated GraphQL schema?')
+      .send('n')
+      .send('\r')
+      .wait('Do you want a guided schema creation?')
+      .send('y')
+      .send('\r')
+      .wait('What best describes your project:')
+      .send('\r')
+      .wait('Do you want to edit the schema now?')
+      .send('n')
+      .send('\r')
+      .run(function(err: Error) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      })
+  })
+}
+
 export function addAuthWithCustomTrigger(
   cwd: string,
   settings: any,

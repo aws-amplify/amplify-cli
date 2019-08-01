@@ -181,9 +181,6 @@ async function addResource(context, category, service) {
     })
     .then(async () => {
       await copyS3Assets(context, props);
-      if (props.dependsOn) {
-        context.amplify.auth = { dependsOn: props.dependsOn };
-      }
       return props.resourceName;
     });
 }
@@ -275,9 +272,6 @@ async function updateResource(context, category, serviceResult) {
     })
     .then(async () => {
       await copyS3Assets(context, props);
-      if (props.dependsOn) {
-        context.amplify.auth = { dependsOn: props.dependsOn };
-      }
       return props.resourceName;
     });
 }
