@@ -51,7 +51,6 @@ const userPoolDefaults = (projectName) => {
     passwordPolicyCharacters: [
     ],
     requiredAttributes: ['email'],
-    userpoolClientName: `${projectNameTruncated}_app_client`,
     userpoolClientGenerateSecret: true,
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['email'],

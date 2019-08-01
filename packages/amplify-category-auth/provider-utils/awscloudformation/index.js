@@ -105,7 +105,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
   privateKeys.forEach(p => delete privateParams[p]);
 
 
-  return await context.amplify.copyBatch(context, copyJobs, options, true, privateParams);
+  return await context.amplify.copyBatch(context, copyJobs, privateParams, true);
 }
 
 function saveResourceParameters(
@@ -117,13 +117,15 @@ function saveResourceParameters(
   envSpecificParams = [],
 ) {
   const provider = context.amplify.getPluginInstance(context, providerName);
+  let privateParams = Object.assign({}, params);
+  privateKeys.forEach(p => delete privateParams[p]);
+  privateParams = removeDeprecatedProps(privateParams);
   provider.saveResourceParameters(
     context,
     category,
     resource,
-    params,
+    privateParams,
     envSpecificParams,
-    privateKeys,
   );
 }
 
@@ -231,7 +233,7 @@ async function updateResource(context, category, serviceResult) {
 
       await verificationBucketName(result, context.updatingAuth);
 
-      props = Object.assign(defaults, context.updatingAuth, result);
+      props = Object.assign(defaults, removeDeprecatedProps(context.updatingAuth), result);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -379,7 +381,7 @@ async function migrate(context) {
     provider,
     category,
     resourceName,
-    { ...roles, ...props },
+    { ...props },
     ENV_SPECIFIC_PARAMS,
   );
 }
@@ -623,6 +625,29 @@ async function verificationBucketName(current, previous) {
   ) {
     delete previous.updatingAuth.verificationBucketName;
   }
+}
+
+function removeDeprecatedProps(props) {
+  if (props.authRoleName) { delete props.authRoleName; }
+  if (props.unauthRoleName) { delete props.unauthRoleName; }
+  if (props.userpoolClientName) { delete props.userpoolClientName; }
+  const keys = Object.keys(props);
+  const deprecatedTriggerParams = [
+    'CreateAuthChallenge',
+    'CustomMessage',
+    'DefineAuthChallenge',
+    'PostAuthentication',
+    'PostConfirmation',
+    'PreAuthentication',
+    'PreSignup',
+    'VerifyAuthChallengeResponse',
+  ];
+  keys.forEach((el) => {
+    if (deprecatedTriggerParams.includes(el)) {
+      delete props[el];
+    }
+  });
+  return props;
 }
 
 module.exports = {
