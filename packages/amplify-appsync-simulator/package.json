@@ -43,7 +43,6 @@
     "amplify-velocity-template": "^0.0.1"
   },
   "devDependencies": {
-    "@conduitvc/dynamodb-emulator": "^0.5.3",
     "@types/cors": "^2.8.5",
     "@types/express": "^4.17.0",
     "@types/graphql": "^14.2.2",

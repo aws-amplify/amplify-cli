@@ -14,7 +14,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@conduitvc/dynamodb-emulator": "^0.5.3",
+    "amplify-dynamodb-simulator": "^0.1.0",
     "@hapi/topo": "^3.1.0",
     "amplify-appsync-simulator": "0.0.1",
     "amplify-provider-awscloudformation": "^1.13.2",

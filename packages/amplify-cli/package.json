@@ -15,7 +15,7 @@
     "lint-fix": "eslint . --fix"
   },
   "engines": {
-    "node": ">=8.11.0"
+    "node": ">=8.12.0"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
