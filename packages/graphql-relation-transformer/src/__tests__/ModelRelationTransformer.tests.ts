@@ -1,4 +1,10 @@
+import {
+    ObjectTypeDefinitionNode, parse, FieldDefinitionNode, DocumentNode,
+    DefinitionNode, Kind, InputObjectTypeDefinitionNode,
+    InputValueDefinitionNode
+} from 'graphql'
 import GraphQLTransform, { Transformer, InvalidDirectiveError } from 'graphql-transformer-core'
+import { ResourceConstants, ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import RelationTransformer from '../ModelRelationTransformer'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
 import KeyTransformer from 'graphql-key-transformer'
@@ -7,7 +13,7 @@ test('RelationTransformer should fail if relation was called on an object that i
     const validSchema = `
     type Test {
         id: ID!
-        email: String
+        email: String!
         testObj: Test1 @relation(fields: ["email"])
     }
 
@@ -31,7 +37,7 @@ test('RelationTransformer should fail if relation was with an object that is not
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: Test1 @relation(fields: ["email"])
     }
 
@@ -55,7 +61,7 @@ test('RelationTransformer should fail if the field type where the directive is c
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: Test2 @relation(fields: ["email"])
     }
 
@@ -188,7 +194,7 @@ test('RelationTransformer should fail if first field does not match PK of table.
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: Test1 @relation(fields: ["email"])
     }
 
@@ -214,7 +220,7 @@ test('RelationTransformer should fail if sort key type passed in does not match 
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: [Test1] @relation(fields: ["id", "email"])
     }
 
@@ -243,7 +249,7 @@ test('RelationTransformer should fail if sort key type passed in does not match 
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: [Test1] @relation(index: "testIndex", fields: ["id", "email"])
     }
 
@@ -272,7 +278,7 @@ test('RelationTransformer should fail if partition key type passed in does not m
     const validSchema = `
     type Test @model {
         id: ID!
-        email: String
+        email: String!
         testObj: [Test1] @relation(index: "testIndex", fields: ["email", "id"])
     }
 
@@ -296,17 +302,55 @@ test('RelationTransformer should fail if partition key type passed in does not m
 
     expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
 })
-/* Notes
 
-            let hashAttributeName = tableResource.Properties.KeySchema[0].AttributeName;
+test('Test RelationTransformer for One-to-One getItem case.', () => {
+    const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        otherHalf: Test1 @relation(fields: ["id", "email"])
+    }
 
-            if (relatedType.fields.find(f => f.name.value === hashAttributeName).type !==
-                parent.fields.find(f => f.name.value === args.fields[0]).type) {
-                throw new InvalidDirectiveError(args.fields[0] + ' field is not of type ID.')
-            }
+    type Test1
+        @model
+        @key(fields: ["id", "email"])
+    {
+        id: ID!
+        friendID: ID!
+        email: String!
+    }
+    `
 
-            !(isNonNullType(queryPKType) &&
-                !isListType(wrapNonNull(queryPKType).type) &&
-                (<NamedTypeNode>wrapNonNull(queryPKType).type).name.value === 'ID')
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new KeyTransformer(),
+            new RelationTransformer()
+        ]
+    })
 
-*/
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    expect(out.stacks.Test.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
+    const schemaDoc = parse(out.schema);
+
+    const testObjType = getObjectType(schemaDoc, 'Test');
+    expectFields(testObjType, ['otherHalf']);
+    const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
+    expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+})
+
+// Taken from ModelConnectionTransforner.test.ts
+function getObjectType(doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined {
+    return doc.definitions.find(
+        (def: DefinitionNode) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type
+    ) as ObjectTypeDefinitionNode | undefined
+}
+
+function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
+    for (const fieldName of fields) {
+        const foundField = type.fields.find((f: FieldDefinitionNode) => f.name.value === fieldName)
+        expect(foundField).toBeDefined()
+    }
+}
+

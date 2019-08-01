@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Implements the @relation directive.",
     "main": "lib/index.js",
-    "author": "Aman Javeri Kadri",
+    "author": "Amazon Web Services",
     "license": "MIT",
     "scripts": {
       "test": "jest",
