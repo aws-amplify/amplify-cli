@@ -189,6 +189,9 @@ export class ModelAuthTransformer extends Transformer {
 
         if (config && config.authConfig) {
             this.config = config;
+            if (!this.config.authConfig.additionalAuthenticationProviders) {
+                this.config.authConfig.additionalAuthenticationProviders = [];
+            }
         } else {
             this.config = { authConfig: { defaultAuthentication: { authenticationType: 'API_KEY' }, additionalAuthenticationProviders: [] } };
         }
