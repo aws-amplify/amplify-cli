@@ -46,10 +46,11 @@ export class APITest {
             await this.watch(context);
             const appSyncConfig: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context);
             this.appSyncSimulator.init(appSyncConfig);
-            console.log('AppSync Emulator is running in', this.appSyncSimulator.url);
 
             await this.generateTestFrontendExports(context);
             await this.generateCode(context);
+
+            console.log('AppSync Emulator is running in', this.appSyncSimulator.url);
         } catch (e) {
             console.error('Failed to start API test server \n', e);
         }
