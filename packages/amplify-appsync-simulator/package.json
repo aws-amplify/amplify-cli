@@ -4,7 +4,6 @@
   "description": "An AppSync Simulator to test AppSync API.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest",
     "test-ci": "jest --ci -i",
     "copy-assets":"rm -rf ./public && cp -R ../amplify-graphiql-explorer/build ./public",
     "build": "yarn copy-assets && tsc",
