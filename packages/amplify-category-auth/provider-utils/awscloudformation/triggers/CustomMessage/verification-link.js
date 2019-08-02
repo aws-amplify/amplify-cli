@@ -22,5 +22,7 @@ exports.handler = (event, context, callback) => {
     event.response.emailMessage = message;
     console.log('event.response', event.response);
     callback(null, event);
+  } else {
+    callback(null, event);
   }
 };
