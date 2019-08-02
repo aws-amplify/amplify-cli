@@ -382,7 +382,7 @@ export class ResourceFactory {
     /**
      * Create the Elasticsearch search resolver.
      */
-    public makeSearchResolver(type: string, stringFields: Expression[], nameOverride?: string, queryTypeName: string = 'Query') {
+    public makeSearchResolver(type: string, numberFields: Expression[], nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -392,7 +392,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
-                    set(ref('stringFields'), list(stringFields)),
+                    set(ref('numberFields'), list(numberFields)),
                     ElasticsearchMappingTemplate.searchItem({
                         path: str('$indexPath'),
                         size: ifElse(
@@ -400,7 +400,7 @@ export class ResourceFactory {
                             ref('context.args.limit'),
                             int(10),
                             true),
-                        search_after: list(stringFields),
+                        search_after: list([str('$context.args.nextToken')]),
                         query: ifElse(
                             ref('context.args.filter'),
                             ref('util.transform.toElasticsearchQueryDSL($ctx.args.filter)'),
@@ -411,8 +411,8 @@ export class ResourceFactory {
                             ref('context.args.sort'),
                             list([
                                 iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
-                                raw(`{${'#if($stringFields.contains($context.args.sort.field))\
-                                    \n"${context.args.sort.field}.keyword" #else "$context.args.sort.field" #end'} : {
+                                raw(`{${'#if($numberFields.contains($context.args.sort.field))\
+                                    \n"$context.args.sort.field" #else "${context.args.sort.field}.keyword" #end'} : {
                                         "order": "$context.args.sort.direction"
                                     }
                                 }`)

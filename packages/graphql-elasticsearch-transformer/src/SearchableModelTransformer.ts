@@ -23,7 +23,7 @@ import { ResolverResourceIDs, SearchableResourceIDs, getBaseType } from 'graphql
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
-const stringTypes = ["ID", "String"];
+const numberTypes = ["Int", "Float", "Boolean", "AWSTimestamp"];
 
 interface QueryNameMap {
     search?: string;
@@ -99,10 +99,10 @@ export class SearchableModelTransformer extends Transformer {
 
         //SearchablePostSortableFields
         const queryFields = [];
-        const stringFields: Expression[] = [];
+        const numberFields: Expression[] = [];
         def.fields.forEach( field => {
-            if (stringTypes.includes(getBaseType(field.type))) {
-                stringFields.push(str(field.name.value));
+            if (numberTypes.includes(getBaseType(field.type))) {
+                numberFields.push(str(field.name.value));
             }
         });
 
@@ -111,7 +111,7 @@ export class SearchableModelTransformer extends Transformer {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 
-            const searchResolver = this.resources.makeSearchResolver(def.name.value, stringFields, searchFieldNameOverride);
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, numberFields, searchFieldNameOverride);
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
             ctx.mapResourceToStack(
                 STACK_NAME,
