@@ -76,23 +76,23 @@ async function pushResources(context, category, resourceName, filteredResources)
   return continueToPush;
 }
 
-function providersPush(context, category, resourceName, filteredResources) {
+async function providersPush(context, category, resourceName, filteredResources) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 
-  providers.forEach(async (provider) => {
-    const providerModule = require(providerPlugins[provider]);
+  for (let i = 0; i < providers.length; i += 1) {
+    const providerModule = require(providerPlugins[providers[i]]);
     const resourceDefiniton = await context.amplify.getResourceStatus(
       category,
       resourceName,
-      provider,
+      providers[i],
       filteredResources,
     );
     providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
-  });
+  }
 
-  return Promise.all(providerPromises);
+  await Promise.all(providerPromises);
 }
 
 module.exports = {

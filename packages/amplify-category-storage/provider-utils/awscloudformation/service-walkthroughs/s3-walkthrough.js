@@ -8,6 +8,7 @@ const category = 'storage';
 const parametersFileName = 'parameters.json';
 const serviceName = 'S3';
 const templateFileName = 's3-cloudformation-template.json.ejs';
+const amplifyMetaFilename = 'amplify-meta.json';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, options) {
   while (!checkIfAuthExists(context)) {
@@ -168,6 +169,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           context,
           parameters.resourceName,
           undefined,
+          parameters.adminTriggerFunction,
           options,
         );
       } catch (e) {
@@ -194,6 +196,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
               context,
               parameters.resourceName,
               parameters.triggerFunction,
+              parameters.adminTriggerFunction,
               options,
             );
             continueWithTriggerOperationQuestion = false;
@@ -233,7 +236,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   if (foundUnmetRequirements) {
     try {
-      await externalAuthEnable(context, 'storage', answers.resourceName, storageRequirements);
+      await externalAuthEnable(context, category, answers.resourceName, storageRequirements);
     } catch (e) {
       context.print.error(e);
       throw e;
@@ -280,32 +283,73 @@ async function copyCfnTemplate(context, categoryName, resourceName, options) {
 async function removeTrigger(context, resourceName, triggerFunction) {
   // Update Cloudformtion file
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const storageCFNFilePath = path.join(projectBackendDirPath, 'storage', resourceName, 's3-cloudformation-template.json');
+  const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
+  const storageCFNFilePath = path.join(resourceDirPath, 's3-cloudformation-template.json');
   const storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
+  const parametersFilePath = path.join(resourceDirPath, parametersFileName);
+  const bucketParameters = context.amplify.readJsonFile(parametersFilePath);
+  const adminTrigger = bucketParameters.adminTriggerFunction;
 
-  // Remove reference for old triggerFunction
   delete storageCFNFile.Parameters[`function${triggerFunction}Arn`];
   delete storageCFNFile.Parameters[`function${triggerFunction}Name`];
   delete storageCFNFile.Parameters[`function${triggerFunction}LambdaExecutionRole`];
-  delete storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration;
   delete storageCFNFile.Resources.TriggerPermissions;
-  delete storageCFNFile.Resources.S3TriggerBucketPolicy;
-  delete storageCFNFile.Resources.S3Bucket.DependsOn;
+
+  if (!adminTrigger) {
+  // Remove reference for old triggerFunction
+    delete storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration;
+    delete storageCFNFile.Resources.S3TriggerBucketPolicy;
+    delete storageCFNFile.Resources.S3Bucket.DependsOn;
+  } else {
+    const lambdaConfigurations = [];
+    // eslint-disable-next-line max-len
+    storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((triggers) => {
+      if (triggers.Filter && (typeof (triggers.Filter.S3Key.Rules[0].Value) === 'string') && triggers.Filter.S3Key.Rules[0].Value.includes('index-faces')) {
+        lambdaConfigurations.push(triggers);
+      }
+    });
+    // eslint-disable-next-line max-len
+    storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
+    const index = storageCFNFile.Resources.S3Bucket.DependsOn.indexOf('TriggerPermissions');
+    if (index > -1) {
+      storageCFNFile.Resources.S3Bucket.DependsOn.splice(index, 1);
+    }
+    const roles = [];
+    storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach((role) => {
+      if (!role.Ref.includes(triggerFunction)) {
+        roles.push(role);
+      }
+    });
+    storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles = roles;
+  }
 
   const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
   fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
 
-  // Update DependsOn
+  const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
+  const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
+  const s3DependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn;
+  const s3Resources = [];
+  s3DependsOnResources.forEach((resource) => {
+    if (resource.resourceName !== triggerFunction) {
+      s3Resources.push(resource);
+    }
+  });
+
   context.amplify.updateamplifyMetaAfterResourceUpdate(
     category,
     resourceName,
     'dependsOn',
-    [],
+    s3Resources,
   );
 }
 
-
-async function addTrigger(context, resourceName, triggerFunction, options) {
+/*
+When updating
+Remove the old trigger
+Add a new one
+*/
+async function addTrigger(context, resourceName, triggerFunction, adminTriggerFunction, options) {
   let functionName;
 
   const triggerTypeQuestion = {
@@ -418,8 +462,10 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
   if (resourceName) {
     // Update Cloudformtion file
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const storageCFNFilePath = path.join(projectBackendDirPath, 'storage', resourceName, 's3-cloudformation-template.json');
+    const storageCFNFilePath = path.join(projectBackendDirPath, category, resourceName, 's3-cloudformation-template.json');
     const storageCFNFile = context.amplify.readJsonFile(storageCFNFilePath);
+    const amplifyMetaFilePath = path.join(projectBackendDirPath, amplifyMetaFilename);
+    const amplifyMetaFile = context.amplify.readJsonFile(amplifyMetaFilePath);
 
     // Remove reference for old triggerFunction
     if (triggerFunction) {
@@ -450,24 +496,135 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
       Type: 'String',
     };
 
-    storageCFNFile.Resources.S3Bucket.DependsOn = ['TriggerPermissions'];
+    if (adminTriggerFunction && !triggerFunction) {
+      storageCFNFile.Resources.S3Bucket.DependsOn.push('TriggerPermissions');
+      storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.push({
+        Ref: `function${functionName}LambdaExecutionRole`,
+      });
+      // eslint-disable-next-line max-len
+      let lambdaConf = storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
 
-    storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration = {
-      LambdaConfigurations: [
-        {
-          Event: 's3:ObjectCreated:*',
-          Function: {
-            Ref: `function${functionName}Arn`,
+      lambdaConf = lambdaConf.concat(
+        getTriggersForLambdaConfiguration('private', functionName),
+        getTriggersForLambdaConfiguration('protected', functionName),
+        getTriggersForLambdaConfiguration('public', functionName),
+      );
+      // eslint-disable-next-line max-len
+      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConf;
+      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn;
+      dependsOnResources.push({
+        category: 'function',
+        resourceName: functionName,
+        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
+      });
+
+      context.amplify.updateamplifyMetaAfterResourceUpdate(
+        category,
+        resourceName,
+        'dependsOn',
+        dependsOnResources,
+      );
+    } else if (adminTriggerFunction && triggerFunction !== 'NONE') {
+      storageCFNFile.Resources.S3TriggerBucketPolicy.Properties.Roles.forEach((role) => {
+        if (role.Ref.includes(triggerFunction)) {
+          role.Ref = `function${functionName}LambdaExecutionRole`;
+        }
+      });
+      storageCFNFile.Resources.TriggerPermissions.Properties.FunctionName.Ref = `function${functionName}Name`;
+      // eslint-disable-next-line max-len
+      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations.forEach((lambdaConf) => {
+        if (!((typeof (lambdaConf.Filter.S3Key.Rules[0].Value) === 'string') && lambdaConf.Filter.S3Key.Rules[0].Value.includes('index-faces'))) {
+          lambdaConf.Function.Ref = `function${functionName}Arn`;
+        }
+      });
+      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn;
+      dependsOnResources.forEach((resource) => {
+        if (resource.resourceName === triggerFunction) {
+          resource.resourceName = functionName;
+        }
+      });
+
+      context.amplify.updateamplifyMetaAfterResourceUpdate(
+        category,
+        resourceName,
+        'dependsOn',
+        dependsOnResources,
+      );
+    } else {
+      storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration = {
+        LambdaConfigurations: [
+          {
+            Event: 's3:ObjectCreated:*',
+            Function: {
+              Ref: `function${functionName}Arn`,
+            },
+          },
+          {
+            Event: 's3:ObjectRemoved:*',
+            Function: {
+              Ref: `function${functionName}Arn`,
+            },
+          },
+        ],
+      };
+
+      storageCFNFile.Resources.S3Bucket.DependsOn = ['TriggerPermissions'];
+
+      storageCFNFile.Resources.S3TriggerBucketPolicy = {
+        Type: 'AWS::IAM::Policy',
+        DependsOn: [
+          'S3Bucket',
+        ],
+        Properties: {
+          PolicyName: 's3-trigger-lambda-execution-policy',
+          Roles: [
+            {
+              Ref: `function${functionName}LambdaExecutionRole`,
+            },
+          ],
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: [
+                  's3:PutObject',
+                  's3:GetObject',
+                  's3:ListBucket',
+                  's3:DeleteObject',
+                ],
+                Resource: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:aws:s3:::',
+                        {
+                          Ref: 'S3Bucket',
+                        },
+                        '/*',
+                      ],
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         },
-        {
-          Event: 's3:ObjectRemoved:*',
-          Function: {
-            Ref: `function${functionName}Arn`,
-          },
-        },
-      ],
-    };
+      };
+
+      // Update DependsOn
+      context.amplify.updateamplifyMetaAfterResourceUpdate(
+        category,
+        resourceName,
+        'dependsOn',
+        [{
+          category: 'function',
+          resourceName: functionName,
+          attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
+        }],
+      );
+    }
 
     storageCFNFile.Resources.TriggerPermissions = {
       Type: 'AWS::Lambda::Permission',
@@ -512,65 +669,8 @@ async function addTrigger(context, resourceName, triggerFunction, options) {
         },
       },
     };
-
-    storageCFNFile.Resources.S3TriggerBucketPolicy = {
-      Type: 'AWS::IAM::Policy',
-      DependsOn: [
-        'S3Bucket',
-      ],
-      Properties: {
-        PolicyName: 's3-trigger-lambda-execution-policy',
-        Roles: [
-          {
-            Ref: `function${functionName}LambdaExecutionRole`,
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: [
-                's3:PutObject',
-                's3:GetObject',
-                's3:ListBucket',
-                's3:DeleteObject',
-              ],
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:aws:s3:::',
-                      {
-                        Ref: 'S3Bucket',
-                      },
-                      '/*',
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      },
-    };
-
-
     const storageCFNString = JSON.stringify(storageCFNFile, null, 4);
     fs.writeFileSync(storageCFNFilePath, storageCFNString, 'utf8');
-
-    // Update DependsOn
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      resourceName,
-      'dependsOn',
-      [{
-        category: 'function',
-        resourceName: functionName,
-        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-      }],
-    );
   } else {
     // New resource
     options.dependsOn = [];
@@ -830,6 +930,65 @@ function getIAMPolicies(resourceName, crudOptions) {
   return { policy, attributes };
 }
 
+function getTriggersForLambdaConfiguration(protectionLevel, functionName) {
+  const triggers = [
+    {
+      Event: 's3:ObjectCreated:*',
+      Filter: {
+        S3Key: {
+          Rules: [
+            {
+              Name: 'prefix',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    `${protectionLevel}/`,
+                    {
+                      Ref: 'AWS::Region',
+                    },
+
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+      Function: {
+        Ref: `function${functionName}Arn`,
+      },
+    },
+    {
+      Event: 's3:ObjectRemoved:*',
+      Filter: {
+        S3Key: {
+          Rules: [
+            {
+              Name: 'prefix',
+              Value: {
+                'Fn::Join': [
+                  '',
+                  [
+                    `${protectionLevel}/`,
+                    {
+                      Ref: 'AWS::Region',
+                    },
+
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+      Function: {
+        Ref: `function${functionName}Arn`,
+      },
+    },
+  ];
+  return triggers;
+}
 
 module.exports = {
   addWalkthrough, updateWalkthrough, migrate, getIAMPolicies,
