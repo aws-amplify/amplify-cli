@@ -642,6 +642,9 @@ function removeDeprecatedProps(props) {
   if (props.openIdRolePolicy) { delete props.openIdRolePolicy; }
   if (props.openIdRopenIdLambdaIAMPolicyolePolicy) { delete props.openIdLambdaIAMPolicy; }
   if (props.openIdLogPolicy) { delete props.openIdLogPolicy; }
+  if (props.mfaLambdaRole) { delete props.mfaLambdaRole; }
+  if (props.openIdLambdaRoleName) { delete props.openIdLambdaRoleName; }
+
 
   const keys = Object.keys(props);
   const deprecatedTriggerParams = [

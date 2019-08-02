@@ -7,12 +7,6 @@ const {
 const [sharedId] = uuid().split('-');
 
 const roles = {
-  authRoleName: {
-    Ref: 'AuthRoleName',
-  },
-  unauthRoleName: {
-    Ref: 'UnauthRoleName',
-  },
   authRoleArn: {
     'Fn::GetAtt': [
       'AuthRole',
@@ -55,7 +49,6 @@ const userPoolDefaults = (projectName) => {
     userpoolClientRefreshTokenValidity: 30,
     userpoolClientWriteAttributes: ['email'],
     userpoolClientReadAttributes: ['email'],
-    mfaLambdaRole: `${projectNameTruncated}_totp_lambda_role`,
     userpoolClientLambdaRole: `${projectNameTruncated}_userpoolclient_lambda_role`,
     userpoolClientSetAttributes: false,
   });
@@ -73,7 +66,6 @@ const identityPoolDefaults = (projectName) => {
   return ({
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
     allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
-    openIdLambdaRoleName: `${projectNameTruncated}_openid_lambda_role`,
   });
 };
 
