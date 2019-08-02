@@ -11,6 +11,7 @@ const {
   getAppSyncAPIDetails,
   getAppSyncAPIInfo,
   getProjectAwsRegion,
+  getSDLSchemaLocation,
 } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
@@ -68,6 +69,7 @@ describe('command - add', () => {
     getAppSyncAPIDetails.mockReturnValue([MOCK_APPSYNC_API_DETAIL]);
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
     getProjectAwsRegion.mockReturnValue(MOCK_AWS_REGION);
+    getSDLSchemaLocation.mockReturnValue(MOCK_SCHEMA_FILE_LOCATION);
   });
 
   it('should walkthrough add questions', async () => {
