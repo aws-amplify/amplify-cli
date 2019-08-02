@@ -61,8 +61,7 @@ const withSocialDefaults = projectName => ({
   AllowedOAuthScopes: oAuthScopes.map(i => i.value),
 });
 
-const identityPoolDefaults = (projectName) => {
-  const projectNameTruncated = `${projectName.substring(0, 6)}${sharedId}`;
+const identityPoolDefaults = (projectName) => {// eslint-disable-line
   return ({
     identityPoolName: `${projectName}_identitypool_${sharedId}`,
     allowUnauthenticatedIdentities: booleanOptions.find(b => b.value === false).value,
