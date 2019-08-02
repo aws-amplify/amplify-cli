@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const { predictionsConsole } = require('amplify-category-predictions');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -6,6 +7,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showGraphQLURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
+  showRekognitionURLS(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -99,6 +101,22 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
   }
 }
 
+async function showRekognitionURLS(context, resourcesToBeCreated) {
+  const resource = resourcesToBeCreated.find((resource) => {
+    if (resource.identifyType && resource.identifyType === 'identifyEntities') {
+      return true;
+    }
+    return false;
+  });
+  if (resource) {
+    const { category, resourceName } = resource;
+    const amplifyMeta = context.amplify.getProjectMeta();
+    if (!amplifyMeta[category][resourceName].output) {
+      return;
+    }
+    await predictionsConsole.printRekognitionUploadUrl(context, resourceName, amplifyMeta, true);
+  }
+}
 
 module.exports = {
   displayHelpfulURLs,

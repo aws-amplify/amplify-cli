@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.13...graphql-relational-schema-transformer@1.2.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.13...graphql-relational-schema-transformer@1.1.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [1.0.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.12...graphql-relational-schema-transformer@1.0.13) (2019-07-24)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

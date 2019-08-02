@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.4...@aws-amplify/cli@1.10.0) (2019-08-02)
+
+
+### Bug Fixes
+
+* fixing force push on init of new env ([#1949](https://github.com/aws-amplify/amplify-cli/issues/1949)) ([d4d0c97](https://github.com/aws-amplify/amplify-cli/commit/d4d0c97)), closes [#1945](https://github.com/aws-amplify/amplify-cli/issues/1945)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.4...@aws-amplify/cli@1.9.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [1.8.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@1.8.4...@aws-amplify/cli@1.8.5) (2019-07-24)
 
 **Note:** Version bump only for package @aws-amplify/cli

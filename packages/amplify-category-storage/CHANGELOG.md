@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.3...amplify-category-storage@1.10.0) (2019-08-02)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** remove unnecessary comma ([#1755](https://github.com/aws-amplify/amplify-cli/issues/1755)) ([854c4c6](https://github.com/aws-amplify/amplify-cli/commit/854c4c6))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.3...amplify-category-storage@1.9.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.1...amplify-category-storage@1.8.3) (2019-07-23)
 
 
