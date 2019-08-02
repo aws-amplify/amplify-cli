@@ -12,6 +12,8 @@ const downloadIntrospectionSchemaWithProgress = require('./generateIntrospection
 const isAppSyncApiPendingPush = require('./isAppSyncApiPendingPush');
 const updateAmplifyMeta = require('./updateAmplifyMeta');
 const isCodegenConfigured = require('./isCodegenConfigured');
+const getSDLSchemaLocation = require('./getSDLSchemaLocation');
+const switchToSDLSchema = require('./switchToSDLSchema');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -28,4 +30,6 @@ module.exports = {
   isAppSyncApiPendingPush,
   updateAmplifyMeta,
   isCodegenConfigured,
+  getSDLSchemaLocation,
+  switchToSDLSchema,
 };

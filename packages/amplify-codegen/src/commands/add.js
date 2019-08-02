@@ -1,5 +1,4 @@
 const Ora = require('ora');
-const path = require('path');
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const generateStatements = require('./statements');
@@ -14,6 +13,7 @@ const {
   getAppSyncAPIInfo,
   getProjectAwsRegion,
   updateAmplifyMeta,
+  getSDLSchemaLocation,
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
@@ -68,7 +68,7 @@ async function add(context, apiId = null) {
       region,
     );
   } else {
-    schema = path.join('amplify', 'backend', 'api', apiDetails.name, 'build', 'schema.graphql');
+    schema = getSDLSchemaLocation(apiDetails.name);
   }
 
   const newProject = {

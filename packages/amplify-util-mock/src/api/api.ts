@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import { AmplifyAppSyncSimulator, AmplifyAppSyncSimulatorConfig } from 'amplify-appsync-simulator';
-import { add, generate, isCodegenConfigured } from 'amplify-codegen';
+import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-codegen';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
@@ -99,6 +99,7 @@ export class APITest {
         if (!isCodegenConfigured(context)) {
             await add(context);
         } else {
+            switchToSDLSchema(context, this.apiName);
             await generate(context);
         }
     }
