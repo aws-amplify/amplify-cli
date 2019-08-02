@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
 import { ensureDynamoDBTables, configureDDBDataSource } from '../../utils/ddb-utils';
-import { processResources } from '../../CFNParser/resource-processor';
+import { processResources } from '../../CFNParser/appsync-resource-processor';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import * as path from 'path';

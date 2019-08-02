@@ -7,7 +7,7 @@ import * as chokidar from 'chokidar';
 
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
 import { runTransformer } from './run-graphql-transformer';
-import { processResources } from '../CFNParser/resource-processor';
+import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
@@ -72,7 +72,7 @@ export class APITest {
 
     private async runTransformer(context) {
         const { transformerOutput, stack } = await runTransformer(context);
-        let config: any = processResources(stack, transformerOutput);
+        let config: any = processAppSyncResources(stack, transformerOutput);
         await this.ensureDDBTables(config);
         this.transformerResult = this.configureDDBDataSource(config);
         this.transformerResult = this.configureLambdaDataSource(config);

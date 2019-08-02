@@ -23,8 +23,8 @@ const DEFAULT_API_INFO = {
 
 const LOCAL_STORAGE_KEY_NAMES = {
     jwtToken: 'AMPLIFY_GRPAHIQL_EXPLORER_JWT_TOKEN',
-    apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY',
-}
+    apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY'
+};
 
 function getAPIInfo() {
     return fetch('/api-config').then(response => response.json());
@@ -87,7 +87,7 @@ class App extends Component<{}, State> {
     }
     async componentDidMount() {
         const apiInfo = await getAPIInfo();
-        this.loadCredentials(apiInfo)
+        this.loadCredentials(apiInfo);
         this.setState({ apiInfo });
         this.fetch({
             query: getIntrospectionQuery()
@@ -185,11 +185,11 @@ class App extends Component<{}, State> {
     storeCredentials(credentials) {
         const apiInfo = this.state.apiInfo;
         const newState = {
-            apiInfo: {...apiInfo, authenticationType: credentials.authMode}
-        }
-        if(credentials.authMode === 'API_KEY') {
+            apiInfo: { ...apiInfo, authenticationType: credentials.authMode }
+        };
+        if (credentials.authMode === 'API_KEY') {
             newState['apiKey'] = credentials.apiKey;
-            window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.apiKey, credentials.apiKey)
+            window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.apiKey, credentials.apiKey);
         } else {
             newState['jwtToken'] = credentials.jwtToken;
             window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.jwtToken, credentials.jwtToken);
@@ -199,10 +199,13 @@ class App extends Component<{}, State> {
 
     loadCredentials(apiInfo = this.state.apiInfo) {
         const credentials = {};
-        if(apiInfo.authenticationType === 'API_KEY') {
-            credentials['apiKey'] = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.apiKey) || DEFAULT_API_INFO.apiKey
+        if (apiInfo.authenticationType === 'API_KEY') {
+            credentials['apiKey'] =
+                window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.apiKey) ||
+                DEFAULT_API_INFO.apiKey;
         } else {
-            credentials['jwtToken'] = window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.jwtToken) || DEFAULT_JWT_TOKEN;
+            credentials['jwtToken'] =
+                window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.jwtToken) || DEFAULT_JWT_TOKEN;
         }
         this.setState(credentials);
         return credentials;
@@ -227,13 +230,18 @@ class App extends Component<{}, State> {
                 authMode={this.state.apiInfo.authenticationType}
                 apiKey={this.state.apiKey}
                 currentToken={this.state.jwtToken}
-                onClose={(credentials) => {
-                    this.storeCredentials(credentials)
+                onClose={credentials => {
+                    this.storeCredentials(credentials);
                     console.log('closing.....');
                     this.setState({ authModalVisible: false });
                 }}
             />
         ) : null;
+        const authButton =
+            this.state.apiInfo.authenticationType !== 'API_KEY' ? (
+                <GraphiQL.Button onClick={this.toggleAuthModal} label="Auth" title="Auth Setting" />
+            ) : null;
+            debugger;
         return (
             <>
                 {authModal}
@@ -276,11 +284,7 @@ class App extends Component<{}, State> {
                                 label="Code Exporter"
                                 title="Toggle Code Exporter"
                             />
-                            <GraphiQL.Button
-                                onClick={this.toggleAuthModal}
-                                label="Auth"
-                                title="Auth Setting"
-                            />
+                            {authButton}
                         </GraphiQL.Toolbar>
                     </GraphiQL>
                     {codeExporter}

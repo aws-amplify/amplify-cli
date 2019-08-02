@@ -9,7 +9,6 @@ module.exports = {
       return;
     }
     try {
-      // await testUtil.api.testGraphQLAPI(context);
       await testUtil.api.start(context);
     } catch(e) {
       context.print.error(e.message);
