@@ -1,0 +1,9 @@
+type Post @model @key(name: "ByDate", fields: ["blogId", "createdAt"]) {
+    # Key attributes
+    id: ID!
+    blogId: ID!
+    createdAt: String
+
+    # Other
+    content: String
+}

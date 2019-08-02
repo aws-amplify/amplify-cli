@@ -6,7 +6,14 @@ const { initializeEnv } = require('../../lib/initialize-env');
 const { getProviderPlugins } = require('./get-provider-plugins');
 const { readJsonFile } = require('./read-json-file');
 
-async function pushResources(context, category, resourceName) {
+/*
+context: Object // Required
+category: String // Optional
+resourceName: String // Optional
+filteredResources: [{category: String, resourceName: String}] // Optional
+*/
+
+async function pushResources(context, category, resourceName, filteredResources) {
   if (context.parameters.options.env) {
     const envName = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs(context);
@@ -36,7 +43,7 @@ async function pushResources(context, category, resourceName) {
   }
 
 
-  const hasChanges = await showResourceTable(category, resourceName);
+  const hasChanges = await showResourceTable(category, resourceName, filteredResources);
 
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush) {
@@ -56,7 +63,7 @@ async function pushResources(context, category, resourceName) {
       const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
       const currentAmplifyMeta = readJsonFile(currentAmplifyMetaFilePath);
 
-      await providersPush(context);
+      await providersPush(context, category, resourceName, filteredResources);
       await onCategoryOutputsChange(context, currentAmplifyMeta);
     } catch (err) {
       // Handle the errors and print them nicely for the user.
@@ -68,17 +75,23 @@ async function pushResources(context, category, resourceName) {
   return context;
 }
 
-function providersPush(context, category, resourceName) {
+async function providersPush(context, category, resourceName, filteredResources) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
   const providerPromises = [];
 
-  providers.forEach((provider) => {
-    const providerModule = require(providerPlugins[provider]);
-    providerPromises.push(providerModule.pushResources(context, category, resourceName));
-  });
+  for (let i = 0; i < providers.length; i += 1) {
+    const providerModule = require(providerPlugins[providers[i]]);
+    const resourceDefiniton = await context.amplify.getResourceStatus(
+      category,
+      resourceName,
+      providers[i],
+      filteredResources,
+    );
+    providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
+  }
 
-  return Promise.all(providerPromises);
+  await Promise.all(providerPromises);
 }
 
 module.exports = {

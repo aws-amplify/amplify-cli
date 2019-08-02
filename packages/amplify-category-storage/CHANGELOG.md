@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.3...amplify-category-storage@1.10.0) (2019-08-02)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** remove unnecessary comma ([#1755](https://github.com/aws-amplify/amplify-cli/issues/1755)) ([854c4c6](https://github.com/aws-amplify/amplify-cli/commit/854c4c6))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.3...amplify-category-storage@1.9.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+## [1.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.1...amplify-category-storage@1.8.3) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** consider env in S3TriggerBucketPolicy ([#1853](https://github.com/aws-amplify/amplify-cli/issues/1853)) ([73dbe84](https://github.com/aws-amplify/amplify-cli/commit/73dbe84)), closes [#1852](https://github.com/aws-amplify/amplify-cli/issues/1852)
+
+
+
+
+
+## [1.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.0...amplify-category-storage@1.8.1) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.7.4...amplify-category-storage@1.8.0) (2019-07-09)
+
+
+### Features
+
+* cognito + s3 + dyanmodb lambda trigger support ([#1783](https://github.com/aws-amplify/amplify-cli/issues/1783)) ([c6fc838](https://github.com/aws-amplify/amplify-cli/commit/c6fc838))
+
+
+
+
+
 ## [1.7.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.7.3...amplify-category-storage@1.7.4) (2019-06-26)
 
 **Note:** Version bump only for package amplify-category-storage

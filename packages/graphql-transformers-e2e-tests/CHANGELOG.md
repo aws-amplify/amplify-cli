@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.8...graphql-transformers-e2e-tests@3.8.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.8...graphql-transformers-e2e-tests@3.7.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+## [3.6.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.7...graphql-transformers-e2e-tests@3.6.8) (2019-07-24)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [3.6.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.6...graphql-transformers-e2e-tests@3.6.7) (2019-07-09)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** enable SAM templates for functions ([#1763](https://github.com/aws-amplify/amplify-cli/issues/1763)) ([9fc3854](https://github.com/aws-amplify/amplify-cli/commit/9fc3854)), closes [#1740](https://github.com/aws-amplify/amplify-cli/issues/1740)
+
+
+
+
+
 ## [3.6.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@3.6.4...graphql-transformers-e2e-tests@3.6.6) (2019-06-30)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

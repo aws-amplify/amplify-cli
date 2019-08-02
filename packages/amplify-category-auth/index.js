@@ -1,6 +1,7 @@
 const category = 'auth';
 const _ = require('lodash');
 const uuid = require('uuid');
+const path = require('path');
 const sequential = require('promise-sequential');
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const {
@@ -42,6 +43,17 @@ async function add(context) {
         service: resultMetadata.service,
         providerPlugin: resultMetadata.providerName,
       };
+      const resourceDirPath = path.join(
+        amplify.pathManager.getBackendDirPath(),
+        '/auth/',
+        resourceName,
+        'parameters.json',
+      );
+      const authParameters = amplify.readJsonFile(resourceDirPath);
+
+      if (authParameters.dependsOn) {
+        options.dependsOn = authParameters.dependsOn;
+      }
       amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
       context.print.success('Successfully added auth resource');
       return resourceName;
@@ -135,6 +147,17 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
         service: 'Cognito',
         providerPlugin: 'awscloudformation',
       };
+      const resourceDirPath = path.join(
+        amplify.pathManager.getBackendDirPath(),
+        '/auth/',
+        resourceName,
+        'parameters.json',
+      );
+      const authParameters = amplify.readJsonFile(resourceDirPath);
+
+      if (authParameters.dependsOn) {
+        options.dependsOn = authParameters.dependsOn;
+      }
       await amplify.updateamplifyMetaAfterResourceAdd(category, authProps.resourceName, options);
     }
     const action = authExists ? 'updated' : 'added';
@@ -164,9 +187,13 @@ async function checkRequirements(requirements, context) {
   let authParameters;
 
   if (existingAuth && Object.keys(existingAuth).length > 0) {
-    authParameters = amplify.readJsonFile(`${amplify.pathManager.getBackendDirPath()}/auth/${
-      Object.keys(existingAuth)[0]
-    }/parameters.json`);
+    const resourceDirPath = path.join(
+      amplify.pathManager.getBackendDirPath(),
+      '/auth/',
+      Object.keys(existingAuth)[0],
+      'parameters.json',
+    );
+    authParameters = amplify.readJsonFile(resourceDirPath);
   } else {
     return { authEnabled: false };
   }
@@ -188,12 +215,25 @@ async function checkRequirements(requirements, context) {
 async function initEnv(context) {
   const { amplify } = context;
   const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus('auth');
+  let toBeCreated = [];
+  let toBeDeleted = [];
+  let toBeUpdated = [];
 
-  resourcesToBeDeleted.forEach((authResource) => {
+  if (resourcesToBeCreated && resourcesToBeCreated.length > 0) {
+    toBeCreated = resourcesToBeCreated.filter(a => a.category === 'auth');
+  }
+  if (resourcesToBeDeleted && resourcesToBeDeleted.length > 0) {
+    toBeDeleted = resourcesToBeDeleted.filter(b => b.category === 'auth');
+  }
+  if (resourcesToBeUpdated && resourcesToBeUpdated.length > 0) {
+    toBeUpdated = resourcesToBeUpdated.filter(c => c.category === 'auth');
+  }
+
+  toBeDeleted.forEach((authResource) => {
     amplify.removeResourceParameters(context, 'auth', authResource.resourceName);
   });
 
-  const tasks = resourcesToBeCreated.concat(resourcesToBeUpdated);
+  const tasks = toBeCreated.concat(toBeUpdated);
 
   const authTasks = tasks.map((authResource) => {
     const { resourceName } = authResource;

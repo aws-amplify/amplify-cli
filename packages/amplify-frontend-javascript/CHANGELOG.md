@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@1.8.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@1.7.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.2...amplify-frontend-javascript@1.6.3) (2019-07-23)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** fix cross os issue ([#1741](https://github.com/aws-amplify/amplify-cli/issues/1741)) ([ae20d0d](https://github.com/aws-amplify/amplify-cli/commit/ae20d0d)), closes [#1522](https://github.com/aws-amplify/amplify-cli/issues/1522)
+
+
+
+
+
 ## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.1...amplify-frontend-javascript@1.6.2) (2019-06-20)
 
 

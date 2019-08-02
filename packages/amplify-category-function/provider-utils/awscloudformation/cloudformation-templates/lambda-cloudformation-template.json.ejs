@@ -54,7 +54,17 @@
                     }      
                 ]
             },
-            "Environment": {"Variables" : { "ENV": {"Ref": "env"}, "REGION": { "Ref": "AWS::Region"}<% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>}},
+            "Environment": {
+                "Variables" : {
+                    "ENV": {
+                        "Ref": "env"
+                    },
+                    "REGION": { 
+                        "Ref": "AWS::Region"
+                    }
+                    <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
+                }
+            },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
             "Runtime": "nodejs10.x",
             "Timeout": "25"
@@ -176,6 +186,11 @@
         "Region": {
             "Value": {
                 "Ref": "AWS::Region"
+            }
+        },
+        "LambdaExecutionRole": {
+            "Value": {
+                "Ref": "LambdaExecutionRole"
             }
         }
     }

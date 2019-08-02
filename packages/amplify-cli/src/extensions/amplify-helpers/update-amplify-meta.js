@@ -126,8 +126,8 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
-  if (attribute === 'dependsOn') {
-    updateBackendConfigDependsOn(category, resourceName, value);
+  if (['dependsOn', 'service'].includes(attribute)) {
+    updateBackendConfigDependsOn(category, resourceName, attribute, value);
   }
 }
 
@@ -223,15 +223,18 @@ function checkForCyclicDependencies(category, resourceName, dependsOn) {
       if (resource.category === category && resource.resourceName === resourceName) {
         cyclicDependency = true;
       }
-      const dependsOnResourceDependency =
-        amplifyMeta[resource.category][resource.resourceName].dependsOn;
-      if (dependsOnResourceDependency) {
-        dependsOnResourceDependency.forEach((dependsOnResource) => {
-          if (dependsOnResource.category === category &&
-            dependsOnResource.resourceName === resourceName) {
-            cyclicDependency = true;
-          }
-        });
+      if (amplifyMeta[resource.category] &&
+          amplifyMeta[resource.category][resource.resourceName]) {
+        const dependsOnResourceDependency =
+          amplifyMeta[resource.category][resource.resourceName].dependsOn;
+        if (dependsOnResourceDependency) {
+          dependsOnResourceDependency.forEach((dependsOnResource) => {
+            if (dependsOnResource.category === category &&
+              dependsOnResource.resourceName === resourceName) {
+              cyclicDependency = true;
+            }
+          });
+        }
       }
     });
   }

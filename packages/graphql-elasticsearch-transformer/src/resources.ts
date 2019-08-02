@@ -45,13 +45,6 @@ export class ResourceFactory {
                 Description: 'The number of instances to launch into the Elasticsearch domain.',
                 Default: 1
             }),
-            [ResourceConstants.PARAMETERS.ElasticsearchDomainName]: new StringParameter({
-                Description: 'The name of the Elasticsearch domain.',
-                Default: 'appsync-elasticsearch-domain',
-                AllowedPattern: '^[a-z][a-z0-9-]*$',
-                MinLength: 1,
-                MaxLength: 28
-            }),
             [ResourceConstants.PARAMETERS.ElasticsearchInstanceType]: new StringParameter({
                 Description: 'The type of instance to launch into the Elasticsearch domain.',
                 Default: 't2.small.elasticsearch',

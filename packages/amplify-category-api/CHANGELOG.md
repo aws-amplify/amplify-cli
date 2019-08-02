@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.11...amplify-category-api@1.9.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.11...amplify-category-api@1.8.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
+## [1.7.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.10...amplify-category-api@1.7.11) (2019-07-24)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.8...amplify-category-api@1.7.10) (2019-07-23)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.7...amplify-category-api@1.7.8) (2019-07-10)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [1.7.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.6...amplify-category-api@1.7.7) (2019-07-09)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
 ## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.4...amplify-category-api@1.7.6) (2019-06-30)
 
 **Note:** Version bump only for package amplify-category-api

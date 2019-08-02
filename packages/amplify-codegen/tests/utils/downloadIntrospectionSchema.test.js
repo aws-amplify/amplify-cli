@@ -1,9 +1,9 @@
-const jetpack = require('fs-jetpack');
+const fs = require('fs-extra');
 const path = require('path');
 
 const downloadIntrospectionSchema = require('../../src/utils/downloadIntrospectionSchema');
 
-jest.mock('fs-jetpack');
+jest.mock('fs-extra');
 
 describe('downloadIntrospectionSchema', () => {
   const mockExecuteProviderUtils = jest.fn();
@@ -40,9 +40,9 @@ describe('downloadIntrospectionSchema', () => {
       'getIntrospectionSchema',
       { apiId: mockApiId },
     );
-    expect(jetpack.dir).toHaveBeenCalledWith(mockDownloadDirectory);
+    expect(fs.ensureDirSync).toHaveBeenCalledWith(mockDownloadDirectory);
     const expectedIntrospectionFileName = path.join(mockDownloadDirectory, 'schema.json');
-    expect(jetpack.write).toHaveBeenCalledWith(expectedIntrospectionFileName, mockIntroSchema);
+    expect(fs.writeFileSync).toHaveBeenCalledWith(expectedIntrospectionFileName, mockIntroSchema, 'utf8');
 
     expect(introSchemaPath).toEqual(path.relative(mockProjectPath, expectedIntrospectionFileName));
   });
