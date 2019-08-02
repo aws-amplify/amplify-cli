@@ -1,10 +1,6 @@
-import { homedir } from 'os';
-import { join } from 'path';
-
 import configure from './configure';
 import { isCI } from './utils';
 
-const AWS_CREDENTIAL_PATH = join(homedir(), '.aws', 'credentials');
 
 async function setUpAmplify() {
   if (isCI()) {

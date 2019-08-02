@@ -1,11 +1,9 @@
 import { join } from 'path';
-import { mkdirSync, existsSync, fstat, copyFileSync } from 'fs';
+import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import { writeFile } from 'fs';
-import * as nexpect from 'nexpect';
-export { default  as getProjectMeta , existsAWSExportsPath} from './projectMeta';
-export * from './command'
+export { default as getProjectMeta } from './projectMeta'
 
 // run dotenv config to update env variable
 config();

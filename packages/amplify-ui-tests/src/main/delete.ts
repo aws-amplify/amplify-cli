@@ -1,11 +1,9 @@
 import { deleteProject } from "../init";
-import { deleteProjectDir } from "../utils";
 import { existsSync } from "fs";
 
 //node delete.js [projectRoot]
 async function deleteProj(projRoot: string) {
     await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
 }
 
 if (process.argv.length !== 3) {

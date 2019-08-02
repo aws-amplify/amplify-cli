@@ -31,9 +31,9 @@ describe('Javascript SDK:', () => {
     });
 
     it('should set up amplify backend and generate aws-export.js file', async () => {
-      await initProjectWithProfile(projRoot, {}, true);
-      await addAuthWithDefault(projRoot, {}, true);
-      await amplifyPush(projRoot, true); // Push it to the cloud
+      await initProjectWithProfile(projRoot, {});
+      await addAuthWithDefault(projRoot, {});
+      await amplifyPush(projRoot); // Push it to the cloud
       expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy();
     });
 

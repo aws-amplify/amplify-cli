@@ -1,8 +1,8 @@
 import initProjectWithProfile, { initIosProject, initAndroidProject } from "../init/initProjectHelper";
 import { addAuthWithDefault, signUpNewUser } from "../categories/auth";
-import { amplifyPushApi, amplifyPush, getProjectMeta } from "../init";
+import { amplifyPushApi, amplifyPush } from "../init";
 import { addStorageWithDefault } from "../categories/storage";
-import { addApiWithSimpleModel, readSchemaDocument } from "../categories/api";
+import { addApiWithSimpleModel } from "../categories/api";
 import { existsSync } from "fs";
 
 
