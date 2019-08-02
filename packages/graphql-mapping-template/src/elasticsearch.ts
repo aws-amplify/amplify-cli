@@ -42,7 +42,7 @@ export class ElasticsearchMappingTemplate {
             path,
             params: obj({
                 body: raw(`{
-                #if( $context.args.nextToken )"search_after": ${print(search_after)} #end
+                #if( $context.args.nextToken )"search_after": ${print(search_after)}, #end
                 "size": ${print(size)},
                 "sort": ${print(sort)},
                 "query": ${print(query)}
