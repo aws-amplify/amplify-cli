@@ -46,11 +46,13 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
-  Object.keys(currentAWSExports).forEach((key) => {
-    if (!cloudAWSExports[key]) {
-      customConfigs[key] = currentAWSExports[key];
-    }
-  });
+  if (currentAWSExports) {
+    Object.keys(currentAWSExports).forEach((key) => {
+      if (!cloudAWSExports[key]) {
+        customConfigs[key] = currentAWSExports[key];
+      }
+    });
+  }
   return customConfigs;
 }
 
