@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulator } from 'amplify-appsync-simulator';
 import { ensureDynamoDBTables, configureDDBDataSource } from '../../utils/ddb-utils';
-import { processResources } from '../../CFNParser/appsync-resource-processor';
+import { processAppSyncResources } from '../../CFNParser';
 import * as dynamoEmulator from 'amplify-dynamodb-simulator';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -35,7 +35,7 @@ export async function deploy(transformerOutput: any, client = null) {
         { ...transformerOutput.rootStack.Resources }
     );
 
-    let config:any = processResources(stacks, transformerOutput);
+    let config:any = processAppSyncResources(stacks, transformerOutput);
     if(config.appSync.authenticationType == "API_KEY" && !config.appSync.apiKey) {
         // transformer generates API Key only if AuthTransformer is included
         config.appSync.apiKey = 'da-fake-api-key';

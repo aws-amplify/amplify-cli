@@ -58,7 +58,7 @@
       "!src/__tests__/**"
     ],
     "testURL": "http://localhost/",
-    "testRegex": "(src/(__tests__|__e2e__)/.*.test.*)$",
+    "testRegex": "(src/(__tests__|__e2e__)/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
