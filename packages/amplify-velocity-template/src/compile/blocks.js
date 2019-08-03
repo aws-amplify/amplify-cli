@@ -1,6 +1,5 @@
 'use strict';
 module.exports = function(Velocity, utils) {
-
   /**
    * blocks语法处理
    */
@@ -9,7 +8,6 @@ module.exports = function(Velocity, utils) {
      * 处理代码库: if foreach macro
      */
     getBlock: function(block) {
-
       var ast = block[0];
       var ret = '';
 
@@ -60,7 +58,7 @@ module.exports = function(Velocity, utils) {
 
       macros[ast.id] = {
         asts: _block,
-        args: ast.args
+        args: ast.args,
       };
     },
 
@@ -79,16 +77,18 @@ module.exports = function(Velocity, utils) {
       var ret = '';
 
       if (!macro) {
-
         var jsmacros = this.jsmacros;
         macro = jsmacros[ast.id];
         var jsArgs = [];
 
         if (macro && macro.apply) {
-
-          utils.forEach(ast.args, function(a) {
-            jsArgs.push(this.getLiteral(a));
-          }, this);
+          utils.forEach(
+            ast.args,
+            function(a) {
+              jsArgs.push(this.getLiteral(a));
+            },
+            this
+          );
 
           var self = this;
 
@@ -96,7 +96,6 @@ module.exports = function(Velocity, utils) {
           jsmacros.eval = function() {
             return self.eval.apply(self, arguments);
           };
-
 
           try {
             ret = macro.apply(jsmacros, jsArgs);
@@ -109,9 +108,7 @@ module.exports = function(Velocity, utils) {
             e.message += err;
             throw new Error(e);
           }
-
         }
-
       } else {
         var asts = macro.asts;
         var args = macro.args;
@@ -120,13 +117,17 @@ module.exports = function(Velocity, utils) {
         var guid = utils.guid();
         var contextId = 'macro:' + ast.id + ':' + guid;
 
-        utils.forEach(args, function(ref, i) {
-          if (callArgs[i]) {
-            local[ref.id] = this.getLiteral(callArgs[i]);
-          } else {
-            local[ref.id] = undefined;
-          }
-        }, this);
+        utils.forEach(
+          args,
+          function(ref, i) {
+            if (callArgs[i]) {
+              local[ref.id] = this.getLiteral(callArgs[i]);
+            } else {
+              local[ref.id] = undefined;
+            }
+          },
+          this
+        );
 
         ret = this.eval(asts, local, contextId);
       }
@@ -142,33 +143,24 @@ module.exports = function(Velocity, utils) {
      * @return {string}
      */
     eval: function(str, local, contextId) {
-
       if (!local) {
-
         if (utils.isArray(str)) {
           return this._render(str);
         } else {
           return this.evalStr(str);
         }
-
       } else {
-
         var asts = [];
         var parse = Velocity.parse;
-        contextId = contextId || ('eval:' + utils.guid());
+        contextId = contextId || 'eval:' + utils.guid();
 
         if (utils.isArray(str)) {
-
           asts = str;
-
         } else if (parse) {
-
           asts = parse(str);
-
         }
 
         if (asts.length) {
-
           this.local[contextId] = local;
           var ret = this._render(asts, contextId);
           this.local[contextId] = {};
@@ -177,69 +169,73 @@ module.exports = function(Velocity, utils) {
 
           return ret;
         }
-
       }
-
     },
 
     /**
      * parse #foreach
      */
     getBlockEach: function(block) {
-
       var ast = block[0];
       var _from = this.getLiteral(ast.from);
       var _block = block.slice(1);
       var _to = ast.to;
       var local = {
         foreach: {
-          count: 0
-        }
+          count: 0,
+        },
       };
       var ret = '';
       var guid = utils.guid();
       var contextId = 'foreach:' + guid;
 
-      var type = ({}).toString.call(_from);
+      var type = {}.toString.call(_from);
       if (!_from || (type !== '[object Array]' && type !== '[object Object]')) {
         return '';
       }
 
       if (utils.isArray(_from)) {
         var len = _from.length;
-        utils.forEach(_from, function(val, i) {
-          if (this._state.break) {
-            return;
-          }
-          // 构造临时变量
-          local[_to] = val;
-          local.foreach = {
-            count: i + 1,
-            index: i,
-            hasNext: () => i + 1 < len
-          };
-          local.velocityCount = i + 1;
+        utils.forEach(
+          _from,
+          function(val, i) {
+            if (this._state.break) {
+              return;
+            }
+            // 构造临时变量
+            local[_to] = val;
+            local.foreach = {
+              count: i + 1,
+              index: i,
+              hasNext: () => i + 1 < len,
+            };
+            local.velocityCount = i + 1;
 
-          this.local[contextId] = local;
-          ret += this._render(_block, contextId);
-
-        }, this);
+            this.local[contextId] = local;
+            ret += this._render(_block, contextId);
+          },
+          this
+        );
       } else {
         var len = utils.keys(_from).length;
-        utils.forEach(utils.keys(_from), function(key, i) {
-          if (this._state.break) {
-            return;
-          }
-          local[_to] = _from[key];
-          local.foreach = {
-            count: i + 1,
-            index: i,
-            hasNext: () => i + 1 < len
-          };
-          local.velocityCount = i + 1;
-          this.local[contextId] = local;
-          ret += this._render(_block, contextId);
-        }, this);
+        utils.forEach(
+          utils.keys(_from),
+          function(key, i) {
+            if (this._state.break) {
+              return;
+            }
+            local[_to] = _from[key];
+            local.foreach = {
+              count: i + 1,
+              index: i,
+              hasNext: () => i + 1 < len,
+            };
+            local.velocityCount = i + 1;
+            this.local[contextId] = local;
+            ret += this._render(_block, contextId);
+          },
+          this
+        );
       }
 
       // if foreach items be an empty array, then this code will shift current
@@ -253,41 +249,39 @@ module.exports = function(Velocity, utils) {
       }
 
       return ret;
-
     },
 
     /**
      * parse #if
      */
     getBlockIf: function(block) {
-
       var received = false;
       var asts = [];
 
-      utils.some(block, function(ast) {
-
-        if (ast.condition) {
-
-          if (received) {
-            return true;
+      utils.some(
+        block,
+        function(ast) {
+          if (ast.condition) {
+            if (received) {
+              return true;
+            }
+            received = this.getExpression(ast.condition);
+          } else if (ast.type === 'else') {
+            if (received) {
+              return true;
+            }
+            received = true;
+          } else if (received) {
+            asts.push(ast);
           }
-          received = this.getExpression(ast.condition);
 
-        } else if (ast.type === 'else') {
-          if (received) {
-            return true;
-          }
-          received = true;
-        } else if (received) {
-          asts.push(ast);
-        }
-
-        return false;
-
-      }, this);
+          return false;
+        },
+        this
+      );
 
       // keep current condition fix #77
       return this._render(asts, this.condition);
-    }
+    },
   });
 };

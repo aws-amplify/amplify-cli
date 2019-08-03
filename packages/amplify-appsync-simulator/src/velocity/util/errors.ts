@@ -11,8 +11,8 @@ export class Unauthorized extends TemplateSentError {
   constructor(gqlMessage) {
     super(gqlMessage, 'Unauthorized', {}, {});
     this.extensions = {
-      errorType: 'Unauthorized'
-    }
+      errorType: 'Unauthorized',
+    };
     this.errorType = 'Unauthorized';
   }
 }
@@ -22,4 +22,3 @@ export class ValidateError extends Error {
     Object.assign(this, { gqlMessage, type, data });
   }
 }
-

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var utils = {};
 
 ['forEach', 'some', 'every', 'filter', 'map'].forEach(function(fnName) {
@@ -47,6 +47,6 @@ utils.indexOf = function(elem, arr) {
 };
 
 utils.keys = Object.keys;
-utils.now  = Date.now;
+utils.now = Date.now;
 
 module.exports = utils;

@@ -5,7 +5,7 @@ export const transformUtils = {
     return JSON.stringify({
       expression: result.expressions.join(' ').trim(),
       expressionNames: result.expressionNames,
-      expressionValues: result.expressionValues
+      expressionValues: result.expressionValues,
     });
-  }
+  },
 };

@@ -15,6 +15,6 @@ export function create(errors = [], now: Date = new Date()) {
     transform: transformUtils,
     now,
     errors,
-    time: time(now)
+    time: time(now),
   };
 }

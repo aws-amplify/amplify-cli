@@ -20,7 +20,7 @@ function Velocity(asts, config) {
 
 Velocity.Helper = Helper;
 Velocity.prototype = {
-  constructor: Velocity
+  constructor: Velocity,
 };
 
 require('./blocks')(Velocity, utils);

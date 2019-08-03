@@ -4,7 +4,7 @@ import { JavaString } from '../value-mapper/string';
 import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
 export const generalUtils = {
-  errors:[],
+  errors: [],
   quiet: () => '',
   qr: () => '',
   escapeJavaScript(value) {
@@ -58,13 +58,12 @@ export const generalUtils = {
     return value === null || typeof value == 'undefined';
   },
   isNullOrEmpty(value) {
-    if(this.isNull(value))
-      return true;
+    if (this.isNull(value)) return true;
 
-    if(value instanceof JavaMap) {
+    if (value instanceof JavaMap) {
       return Object.keys(value.toJSON()).length == 0;
     }
-    if(value instanceof JavaArray || value instanceof JavaString) {
+    if (value instanceof JavaArray || value instanceof JavaString) {
       return value.toJSON().length == 0;
     }
     return !!value;
@@ -118,5 +117,5 @@ export const generalUtils = {
   },
   matches(pattern, value) {
     return new RegExp(pattern).test(value);
-  }
-}
+  },
+};

@@ -1,5 +1,5 @@
 'use strict';
-var Parser  = require('./parse/index');
+var Parser = require('./parse/index');
 var _parse = Parser.parse;
 var utils = require('./utils');
 
@@ -27,16 +27,17 @@ var parse = function(str, blocks, ignoreSpace) {
   /**
    * remove all newline after all direction such as `#set, #each`
    */
-  ignoreSpace || utils.forEach(asts, function trim(ast, i) {
-    var TRIM_REG = /^[ \t]*\n/;
-    // after raw and references, then keep the newline.
-    if (ast.type && ['references', 'raw'].indexOf(ast.type) === -1) {
-      var _ast = asts[i + 1];
-      if (typeof _ast === 'string' && TRIM_REG.test(_ast)) {
-        asts[i + 1] = _ast.replace(TRIM_REG, '');
+  ignoreSpace ||
+    utils.forEach(asts, function trim(ast, i) {
+      var TRIM_REG = /^[ \t]*\n/;
+      // after raw and references, then keep the newline.
+      if (ast.type && ['references', 'raw'].indexOf(ast.type) === -1) {
+        var _ast = asts[i + 1];
+        if (typeof _ast === 'string' && TRIM_REG.test(_ast)) {
+          asts[i + 1] = _ast.replace(TRIM_REG, '');
+        }
       }
-    }
-  });
+    });
 
   var ret = makeLevel(asts);
 
@@ -44,14 +45,12 @@ var parse = function(str, blocks, ignoreSpace) {
 };
 
 function makeLevel(block, index) {
-
   var len = block.length;
   index = index || 0;
   var ret = [];
   var ignore = index - 1;
 
   for (var i = index; i < len; i++) {
-
     if (i <= ignore) continue;
 
     var ast = block[i];
@@ -67,22 +66,15 @@ function makeLevel(block, index) {
     }
 
     if (!isBlockType && type !== 'end') {
-
       ret.push(ast);
-
     } else if (type === 'end') {
-
-      return {arr: ret, step: i};
-
+      return { arr: ret, step: i };
     } else {
-
       var _ret = makeLevel(block, i + 1);
       ignore = _ret.step;
       _ret.arr.unshift(block[i]);
       ret.push(_ret.arr);
-
     }
-
   }
 
   return ret;

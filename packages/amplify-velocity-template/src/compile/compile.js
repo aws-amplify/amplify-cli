@@ -1,5 +1,4 @@
 module.exports = function(Velocity, utils) {
-
   /**
    * compile
    */
@@ -18,7 +17,7 @@ module.exports = function(Velocity, utils) {
         stop: function() {
           self._state.stop = true;
           return '';
-        }
+        },
       };
     },
 
@@ -29,7 +28,6 @@ module.exports = function(Velocity, utils) {
      * @return str
      */
     render: function(context, macros, silence) {
-
       this.silence = !!silence;
       this.context = context || {};
       this.jsmacros = utils.mixin(macros || {}, this.directive);
@@ -51,71 +49,70 @@ module.exports = function(Velocity, utils) {
      * @return {string}解析后的字符串
      */
     _render: function(asts, contextId) {
-
       var str = '';
       asts = asts || this.asts;
 
       if (contextId) {
-
-        if (contextId !== this.condition &&
-            utils.indexOf(contextId, this.conditions) === -1) {
+        if (contextId !== this.condition && utils.indexOf(contextId, this.conditions) === -1) {
           this.conditions.unshift(contextId);
         }
 
         this.condition = contextId;
-
       } else {
         this.condition = null;
       }
 
-      utils.forEach(asts, function(ast) {
+      utils.forEach(
+        asts,
+        function(ast) {
+          // 进入stop，直接退出
+          if (this._state.stop === true) {
+            return false;
+          }
 
-        // 进入stop，直接退出
-        if (this._state.stop === true) {
-          return false;
-        }
+          switch (ast.type) {
+            case 'references':
+              str += this.format(this.getReferences(ast, true));
+              break;
 
-        switch (ast.type) {
-          case 'references':
-            str += this.format(this.getReferences(ast, true));
-          break;
+            case 'set':
+              this.setValue(ast);
+              break;
 
-          case 'set':
-            this.setValue(ast);
-          break;
+            case 'break':
+              this._state.break = true;
+              break;
 
-          case 'break':
-            this._state.break = true;
-          break;
+            case 'macro_call':
+              str += this.getMacro(ast);
+              break;
 
-          case 'macro_call':
-            str += this.getMacro(ast);
-          break;
+            case 'comment':
+              break;
 
-          case 'comment':
-          break;
+            case 'raw':
+              str += ast.value;
+              break;
 
-          case 'raw':
-            str += ast.value;
-          break;
-
-          case 'return':
-            this._state.stop = true;
-            if(ast.value) {
-              str += this.format(this.getExpression(ast.value, true));
-            }
-          break;
-          default:
-            str += typeof ast === 'string' ? ast : this.getBlock(ast);
-          break;
-        }
-      }, this);
+            case 'return':
+              this._state.stop = true;
+              if (ast.value) {
+                str += this.format(this.getExpression(ast.value, true));
+              }
+              break;
+            default:
+              str += typeof ast === 'string' ? ast : this.getBlock(ast);
+              break;
+          }
+        },
+        this
+      );
 
       return str;
     },
     format: function(value) {
       if (utils.isArray(value)) {
-        return "[" + value.map(this.format.bind(this)).join(", ") + "]";
+        return '[' + value.map(this.format.bind(this)).join(', ') + ']';
       }
 
       if (utils.isObject(value)) {
@@ -123,11 +120,19 @@ module.exports = function(Velocity, utils) {
           return value;
         }
 
-        var kvJoin = function(k) { return k + "=" + this.format(value[k]); }.bind(this);
-        return "{" + Object.keys(value).map(kvJoin).join(", ") + "}";
+        var kvJoin = function(k) {
+          return k + '=' + this.format(value[k]);
+        }.bind(this);
+        return (
+          '{' +
+          Object.keys(value)
+            .map(kvJoin)
+            .join(', ') +
+          '}'
+        );
       }
 
       return value;
-    }
+    },
   });
 };

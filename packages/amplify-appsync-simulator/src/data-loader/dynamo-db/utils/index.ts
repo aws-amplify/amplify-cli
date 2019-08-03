@@ -5,7 +5,7 @@ export function nullIfEmpty(obj: object): object | null {
 }
 
 export function unmarshall(raw, isRaw: boolean = true) {
-  const content = isRaw ? Converter.unmarshall(raw): raw;
+  const content = isRaw ? Converter.unmarshall(raw) : raw;
   // Because of the funky set type used in the aws-sdk, we need to further unwrap
   // to find if there is a set that needs to be unpacked into an array.
 
@@ -31,5 +31,4 @@ export function unmarshall(raw, isRaw: boolean = true) {
   }
 
   return content;
-
 }

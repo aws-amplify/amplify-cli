@@ -1,7 +1,7 @@
 import { OperationServer } from './operations';
 import { SubscriptionServer } from './subscription';
 import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorServerConfig } from "../type-definition";
+import { AppSyncSimulatorServerConfig } from '../type-definition';
 
 export class AppSyncSimulatorServer {
   private operationServer: OperationServer;
@@ -22,7 +22,7 @@ export class AppSyncSimulatorServer {
   get url() {
     return {
       graphql: this.operationServer.url,
-      subscription: this.subscriptionServer.url
+      subscription: this.subscriptionServer.url,
     };
   }
 }

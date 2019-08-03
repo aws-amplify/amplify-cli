@@ -11,16 +11,14 @@ export function map(value: any) {
   if (isPlainObject(value)) {
     return createMapProxy(
       new JavaMap(
-        Object.entries(value).reduce(
-          (sum, [k, v]) => {
-            return ({
+        Object.entries(value).reduce((sum, [k, v]) => {
+          return {
             ...sum,
-            [k]: map(v)
-          })},
-          {}
-        ),
-        map
-      )
+            [k]: map(v),
+          };
+        }, {}),
+        map,
+      ),
     );
   }
 

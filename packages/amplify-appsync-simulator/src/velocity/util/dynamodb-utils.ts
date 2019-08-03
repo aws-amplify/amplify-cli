@@ -79,9 +79,9 @@ export const dynamodbUtils = {
     return Object.entries(toJSON(values)).reduce(
       (sum, [key, value]) => ({
         ...sum,
-        [key]: this.toDynamoDB(value)
+        [key]: this.toDynamoDB(value),
       }),
-      {}
+      {},
     );
   },
   toMapValuesJson(values) {
@@ -95,5 +95,5 @@ export const dynamodbUtils = {
   },
   fromS3ObjectJson() {
     throw new Error('not implemented');
-  }
+  },
 };

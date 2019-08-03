@@ -7,7 +7,7 @@ import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 import { EmailAddress, URL } from '@okgrow/graphql-scalars';
 
 const phoneValidator = (ast, options) => {
-  const { country = 'US'} = options;
+  const { country = 'US' } = options;
   const { kind, value } = ast;
   if (kind !== Kind.STRING) {
     throw new GraphQLError(`Query error: Can only parse strings got a: ${kind}`, [ast]);
@@ -22,7 +22,7 @@ const phoneValidator = (ast, options) => {
 };
 
 class AWSPhone extends GraphQLScalarType {
-  constructor(options = {name: null, description: null}) {
+  constructor(options = { name: null, description: null }) {
     const { name, description } = options;
     super({
       name,
@@ -30,18 +30,18 @@ class AWSPhone extends GraphQLScalarType {
       serialize: value => {
         const ast = {
           kind: Kind.STRING,
-          value
+          value,
         };
         return phoneValidator(ast, options);
       },
       parseValue: value => {
         const ast = {
           kind: Kind.STRING,
-          value
+          value,
         };
         return phoneValidator(ast, options);
       },
-      parseLiteral: ast => phoneValidator(ast, options)
+      parseLiteral: ast => phoneValidator(ast, options),
     });
   }
 }
@@ -57,7 +57,7 @@ const AWSDate = new GraphQLScalarType({
   },
   parseLiteral(value) {
     return GraphQLDate.parseLiteral(value) ? (value as StringValueNode).value : undefined;
-  }
+  },
 });
 
 const AWSTime = new GraphQLScalarType({
@@ -71,7 +71,7 @@ const AWSTime = new GraphQLScalarType({
   },
   parseLiteral(value) {
     return GraphQLTime.parseLiteral(value) ? (value as StringValueNode).value : undefined;
-  }
+  },
 });
 
 const AWSDateTime = new GraphQLScalarType({
@@ -85,7 +85,7 @@ const AWSDateTime = new GraphQLScalarType({
   },
   parseLiteral(value) {
     return GraphQLDateTime.parseLiteral(value) ? (value as StringValueNode).value : undefined;
-  }
+  },
 });
 
 export const scalars = {
@@ -95,7 +95,7 @@ export const scalars = {
   AWSDateTime,
   AWSPhone,
   AWSEmail: EmailAddress,
-  AWSURL: URL
+  AWSURL: URL,
 };
 
 export function wrapSchema(schemaString) {
@@ -104,5 +104,4 @@ export function wrapSchema(schemaString) {
     .join('');
 
   return scalarStrings + schemaString;
-};
-
+}

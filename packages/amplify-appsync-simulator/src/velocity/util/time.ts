@@ -1,6 +1,6 @@
 import * as dateformat from 'dateformat';
 
-export const time = (now) => ({
+export const time = now => ({
   nowISO8601() {
     return now.toISOString();
   },

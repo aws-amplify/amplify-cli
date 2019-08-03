@@ -40,24 +40,21 @@ module.exports = function(Velocity, utils) {
       }
 
       if (!ref.path) {
-
         context[ref.id] = val;
-
       } else {
-
         var baseRef = context[ref.id];
         if (typeof baseRef != 'object') {
           baseRef = {};
         }
 
         context[ref.id] = baseRef;
-        var len = ref.path ? ref.path.length: 0;
+        var len = ref.path ? ref.path.length : 0;
 
         const self = this;
         utils.some(ref.path, function(exp, i) {
           var isEnd = len === i + 1;
           var key = exp.id;
-          if (exp.type === 'index')  {
+          if (exp.type === 'index') {
             if (exp.id) {
               key = self.getLiteral(exp.id);
             } else {
@@ -66,7 +63,7 @@ module.exports = function(Velocity, utils) {
           }
 
           if (isEnd) {
-            return baseRef[key] = val;
+            return (baseRef[key] = val);
           }
 
           baseRef = baseRef[key];
@@ -78,8 +75,7 @@ module.exports = function(Velocity, utils) {
             return true;
           }
         });
-
       }
-    }
+    },
   });
 };

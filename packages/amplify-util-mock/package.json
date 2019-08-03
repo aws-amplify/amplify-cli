@@ -9,7 +9,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -rf ./lib",
-    "format": "prettier --write ./src/**/*.ts ./__tests__/**/*.ts"
+    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -45,7 +45,8 @@
     "axios": "^0.19.0",
     "aws-amplify": "1.1.32",
     "aws-sdk": "^2.259.1",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "prettier": "^1.18.2"
   },
   "jest": {
     "transform": {

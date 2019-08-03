@@ -1,18 +1,18 @@
 import { addIntrinsicFunction } from './field-parser';
 
 import {
-    cfnAnd,
-    cfnCondition,
-    cfnEquals,
-    cfnGetAtt,
-    cfnIf,
-    cfnJoin,
-    cfnNot,
-    cfnOr,
-    cfnRef,
-    cfnSelect,
-    cfnSplit,
-    cfnSub
+  cfnAnd,
+  cfnCondition,
+  cfnEquals,
+  cfnGetAtt,
+  cfnIf,
+  cfnJoin,
+  cfnNot,
+  cfnOr,
+  cfnRef,
+  cfnSelect,
+  cfnSplit,
+  cfnSub,
 } from './intrinsic-functions';
 
 // Add know intrinsic functions

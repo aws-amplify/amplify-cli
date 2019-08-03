@@ -6,17 +6,17 @@ export type CloudFormationParseContext = {
 };
 
 export type CloudFormationWalkContext = CloudFormationParseContext & {
-  walkFn: Function,
-  parent: Object,
-  path: string[]
+  walkFn: Function;
+  parent: Object;
+  path: string[];
 };
 
 export type AWSCloudFormationParameterDefinition = {
-  'Type': string;
+  Type: string;
   Default?: string;
   Description?: string;
-}
+};
 
 export type AWSCloudFormationParametersBlock = {
-  [key: string] : AWSCloudFormationParameterDefinition;
+  [key: string]: AWSCloudFormationParameterDefinition;
 };

@@ -2,7 +2,7 @@ import { create as createUtil } from './util';
 import { map as convertToJavaTypes } from './value-mapper/mapper';
 import { Compile, parse } from 'amplify-velocity-template';
 import { map } from './value-mapper/mapper';
-import { AppSyncVTLTemplate } from "../type-definition";
+import { AppSyncVTLTemplate } from '../type-definition';
 import * as JSON5 from 'json5';
 
 export type AppSyncSimulatorRequestContext = {
@@ -15,12 +15,12 @@ export type AppSyncSimulatorRequestContext = {
 };
 
 export type AppSyncVTLRenderContext = {
-  arguments: object,
-  source: object,
-  stash?: object,
-  result?: any,
-  prevResult?: any,
-}
+  arguments: object;
+  source: object;
+  stash?: object;
+  result?: any;
+  prevResult?: any;
+};
 
 class VelocityTemplateParseError extends Error {}
 
@@ -37,8 +37,8 @@ export class VelocityTemplate {
       this.template = template;
     } catch (e) {
       const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
-      const fileName = template.path? `${template.path}:${lineDetails}`: lineDetails;
-      const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName}`)
+      const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
+      const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName}`);
       templateError.stack = e.stack;
       throw templateError;
     }
@@ -46,21 +46,21 @@ export class VelocityTemplate {
   render(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncSimulatorRequestContext,
-    info?: any,
+    info?: any
   ): any {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
     try {
       const templateResult = this.compiler.render(context);
-      const stash = context.ctx.stash.toJSON()
+      const stash = context.ctx.stash.toJSON();
       let result;
 
       try {
         result = JSON5.parse(templateResult);
-      } catch(e) {
+      } catch (e) {
         result = templateResult;
       }
-      return {result, stash, errors: context.util.errors };
-    } catch(e) {
+      return { result, stash, errors: context.util.errors };
+    } catch (e) {
       throw e;
     }
   }
@@ -68,14 +68,13 @@ export class VelocityTemplate {
   private buildRenderContext(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: any,
-    info: any,
-
+    info: any
   ): any {
     const { source, arguments: argument, result, stash, prevResult } = ctxValues;
 
     const {
       jwt: { iss: issuer, sub, 'cognito:username': username },
-      request
+      request,
     } = requestContext;
 
     const util = createUtil();
@@ -86,7 +85,7 @@ export class VelocityTemplate {
       username,
       sourceIp: ['0.0.0.0'],
       defaultStrategy: 'ALLOW',
-      claims: requestContext.jwt
+      claims: requestContext.jwt,
     });
 
     const vtlContext = {
@@ -96,20 +95,20 @@ export class VelocityTemplate {
       identity,
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
-      result: convertToJavaTypes(result || {})
+      result: convertToJavaTypes(result || {}),
     };
 
-    if(prevResult) {
+    if (prevResult) {
       vtlContext['prev'] = convertToJavaTypes({
-        result: prevResult
-      })
+        result: prevResult,
+      });
     }
 
     return {
       util,
       utils: util,
       context: vtlContext,
-      ctx: vtlContext
+      ctx: vtlContext,
     };
   }
 }

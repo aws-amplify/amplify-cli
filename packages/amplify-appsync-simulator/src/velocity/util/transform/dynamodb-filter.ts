@@ -11,26 +11,26 @@ const OPERATOR_MAP = {
   lt: '<',
   le: '<=',
   gt: '>',
-  ge: '>='
+  ge: '>=',
 };
 
 const FUNCTION_MAP = {
   contains: 'contains',
   notContains: 'NOT contains',
-  beginsWith: 'begins_with'
+  beginsWith: 'begins_with',
 };
 
 export function generateFilterExpression(
   filter: any,
   prefix = null,
-  parent = null
+  parent = null,
 ): DDBFilterExpression {
   const expr = Object.entries(filter).reduce(
     (sum, [name, value]) => {
       let subExpr = {
         expressions: [],
         expressionNames: {},
-        expressionValues: {}
+        expressionValues: {},
       };
       const fieldName = createExpressionFieldName(parent);
       const filedValueName = createExpressionValueName(parent, name, prefix);
@@ -44,21 +44,21 @@ export function generateFilterExpression(
               value.reduce((expr, subFilter, idx) => {
                 const newExpr = generateFilterExpression(
                   subFilter,
-                  [prefix, name, idx].filter(i => i !== null).join('_')
+                  [prefix, name, idx].filter(i => i !== null).join('_'),
                 );
                 return merge(expr, newExpr, JOINER);
-              }, subExpr)
+              }, subExpr),
             );
           } else {
             subExpr = generateFilterExpression(
               value,
-              [prefix, name].filter(val => val !== null).join('_')
+              [prefix, name].filter(val => val !== null).join('_'),
             );
           }
           break;
         case 'not':
           subExpr = scopeExpression(
-            generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_'))
+            generateFilterExpression(value, [prefix, name].filter(val => val !== null).join('_')),
           );
           subExpr.expressions.unshift('NOT');
           break;
@@ -69,12 +69,12 @@ export function generateFilterExpression(
           const subExprExpr = `${createExpressionFieldName(parent)} BETWEEN ${expr1} AND ${expr2}`;
           const exprValues = {
             ...createExpressionValue(parent, 'between_1', value[0], prefix),
-            ...createExpressionValue(parent, 'between_2', value[1], prefix)
+            ...createExpressionValue(parent, 'between_2', value[1], prefix),
           };
           subExpr = {
             expressions: [subExprExpr],
             expressionNames: exprName,
-            expressionValues: exprValues
+            expressionValues: exprValues,
           };
           break;
         case 'ne':
@@ -87,7 +87,7 @@ export function generateFilterExpression(
           subExpr = {
             expressions: [`${fieldName} ${operator} ${filedValueName}`],
             expressionNames: createExpressionName(parent),
-            expressionValues: createExpressionValue(parent, name, value, prefix)
+            expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
         case 'contains':
@@ -97,7 +97,7 @@ export function generateFilterExpression(
           subExpr = {
             expressions: [`${functionName}(${fieldName}, ${filedValueName})`],
             expressionNames: createExpressionName(parent),
-            expressionValues: createExpressionValue(parent, name, value, prefix)
+            expressionValues: createExpressionValue(parent, name, value, prefix),
           };
           break;
         default:
@@ -108,8 +108,8 @@ export function generateFilterExpression(
     {
       expressions: [],
       expressionNames: {},
-      expressionValues: {}
-    }
+      expressionValues: {},
+    },
   );
 
   return expr;
@@ -118,7 +118,7 @@ export function generateFilterExpression(
 function merge(
   expr1: DDBFilterExpression,
   expr2: DDBFilterExpression,
-  joinCondition = 'AND'
+  joinCondition = 'AND',
 ): DDBFilterExpression {
   if (!expr2.expressions.length) {
     return expr1;
@@ -128,10 +128,10 @@ function merge(
     expressions: [
       ...expr1.expressions,
       expr1.expressions.length ? joinCondition : '',
-      ...expr2.expressions
+      ...expr2.expressions,
     ],
     expressionNames: { ...expr1.expressionNames, ...expr2.expressionNames },
-    expressionValues: { ...expr1.expressionValues, ...expr2.expressionValues }
+    expressionValues: { ...expr1.expressionValues, ...expr2.expressionValues },
   };
 }
 
@@ -140,7 +140,7 @@ function createExpressionValueName(fieldName, op, prefix?) {
 }
 function createExpressionName(fieldName) {
   return {
-    [createExpressionFieldName(fieldName)]: fieldName
+    [createExpressionFieldName(fieldName)]: fieldName,
   };
 }
 
@@ -151,7 +151,7 @@ function createExpressionValue(fieldName, op, value, prefix?) {
   const exprName = createExpressionValueName(fieldName, op, prefix);
   const exprValue = dynamodbUtils.toDynamoDB(value);
   return {
-    [`${exprName}`]: exprValue
+    [`${exprName}`]: exprValue,
   };
 }
 

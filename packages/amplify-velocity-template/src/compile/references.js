@@ -169,7 +169,7 @@ module.exports = function(Velocity, utils) {
 
       return {
         value: ret,
-        isLocaled: isLocaled
+        isLocaled: isLocaled,
       };
     },
     /**
@@ -322,6 +322,6 @@ module.exports = function(Velocity, utils) {
       var e = new Error(errorMsg);
       e.name = errorName || 'ReferenceError';
       throw e;
-    }
+    },
   });
 };

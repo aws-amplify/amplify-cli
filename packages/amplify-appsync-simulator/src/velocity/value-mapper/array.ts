@@ -2,8 +2,8 @@ import { toJSON } from './to-json';
 
 export class JavaArray extends Array<any> {
   private mapper: Function;
-  constructor(values = [], mapper:Function ) {
-    super(...values)
+  constructor(values = [], mapper: Function) {
+    super(...values);
     Object.setPrototypeOf(this, Object.create(JavaArray.prototype));
     this.mapper = mapper;
   }
@@ -56,5 +56,4 @@ export class JavaArray extends Array<any> {
   toJSON() {
     return Array.from(this).map(toJSON);
   }
-
 }

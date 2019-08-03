@@ -9,13 +9,13 @@ export class AwsSubscribe extends AppSyncSimulatorDirectiveBase {
     const mutationFiled = this.schema.getMutationType().getFields();
     this.args.mutations.forEach(mutation => {
       const m = mutationFiled[mutation];
-      if(m && m.resolve)  {
+      if (m && m.resolve) {
         const resolve = m.resolve;
         m.resolve = async (...rest) => {
           const result = await resolve(...rest);
           AwsSubscribe.simulatorContext.pubsub.publish(field.name, result);
           return result;
-        }
+        };
       }
     });
   }

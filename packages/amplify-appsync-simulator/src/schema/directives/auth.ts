@@ -7,7 +7,7 @@ import {
   GraphQLDirective,
   DirectiveLocation,
   GraphQLEnumType,
-  GraphQLInterfaceType
+  GraphQLInterfaceType,
 } from 'graphql';
 
 export class AwsAuth extends AppSyncSimulatorDirectiveBase {
@@ -21,9 +21,9 @@ export class AwsAuth extends AppSyncSimulatorDirectiveBase {
     field: GraphQLField<any, any>,
     details: {
       objectType: GraphQLObjectType | GraphQLInterfaceType;
-    }
+    },
   ) {
-    console.log(field)
+    console.log(field);
   }
 
   visitObject(object: GraphQLObjectType) {

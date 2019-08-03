@@ -1,5 +1,5 @@
 const _ = require('lodash');
-module.exports = function(Velocity, utils){
+module.exports = function(Velocity, utils) {
   /**
    * expression运算
    */
@@ -9,48 +9,46 @@ module.exports = function(Velocity, utils){
      * 基本数据类型，使用 getLiteral求值，getLiteral遇到是引用的时候，使用
      * getReferences求值
      */
-    getExpression: function(ast){
-
+    getExpression: function(ast) {
       var exp = ast.expression;
       var ret;
       if (ast.type === 'math') {
-
-        switch(ast.operator) {
+        switch (ast.operator) {
           case '+':
-          ret = this.getExpression(exp[0]) + this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) + this.getExpression(exp[1]);
+            break;
 
           case '-':
-          ret = this.getExpression(exp[0]) - this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) - this.getExpression(exp[1]);
+            break;
 
           case '/':
-          ret = this.getExpression(exp[0]) / this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) / this.getExpression(exp[1]);
+            break;
 
           case '%':
-          ret = this.getExpression(exp[0]) % this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) % this.getExpression(exp[1]);
+            break;
 
           case '*':
-          ret = this.getExpression(exp[0]) * this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) * this.getExpression(exp[1]);
+            break;
 
           case '||':
-          ret = this.getExpression(exp[0]) || this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) || this.getExpression(exp[1]);
+            break;
 
           case '&&':
-          ret = this.getExpression(exp[0]) && this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) && this.getExpression(exp[1]);
+            break;
 
           case '>':
-          ret = this.getExpression(exp[0]) > this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) > this.getExpression(exp[1]);
+            break;
 
           case '<':
-          ret = this.getExpression(exp[0]) < this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) < this.getExpression(exp[1]);
+            break;
 
           case '==':
             const val0 = this.getExpression(exp[0]);
@@ -58,34 +56,34 @@ module.exports = function(Velocity, utils){
             const val0Json = val0 && val0.toJSON ? val0.toJSON() : val0;
             const val1Json = val1 && val1.toJSON ? val1.toJSON() : val1;
             ret = _.isEqual(val0, val1);
-          break;
+            break;
 
           case '>=':
-          ret = this.getExpression(exp[0]) >= this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) >= this.getExpression(exp[1]);
+            break;
 
           case '<=':
-          ret = this.getExpression(exp[0]) <= this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) <= this.getExpression(exp[1]);
+            break;
 
           case '!=':
-          ret = this.getExpression(exp[0]) != this.getExpression(exp[1]);
-          break;
+            ret = this.getExpression(exp[0]) != this.getExpression(exp[1]);
+            break;
 
           case 'minus':
-          ret = - this.getExpression(exp[0]);
-          break;
+            ret = -this.getExpression(exp[0]);
+            break;
 
           case 'not':
-          ret = !this.getExpression(exp[0]);
-          break;
+            ret = !this.getExpression(exp[0]);
+            break;
 
           case 'parenthesis':
-          ret = this.getExpression(exp[0]);
-          break;
+            ret = this.getExpression(exp[0]);
+            break;
 
           default:
-          return;
+            return;
           // code
         }
 
@@ -93,6 +91,6 @@ module.exports = function(Velocity, utils){
       } else {
         return this.getLiteral(ast);
       }
-    }
+    },
   });
 };
