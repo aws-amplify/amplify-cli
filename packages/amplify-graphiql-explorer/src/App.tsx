@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import GraphiQL from 'graphiql';
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, parse } from 'graphql';
-import CodeExporter from 'graphiql-code-exporter';
-import snippets from 'graphiql-code-exporter/lib/snippets';
 import 'semantic-ui-css/semantic.min.css';
 import { AuthModal } from './AuthModal';
 
@@ -213,18 +211,6 @@ class App extends Component<{}, State> {
 
     render() {
         const { query, schema, codeExporterVisible, authModalVisible } = this.state;
-
-        const codeExporter = codeExporterVisible ? (
-            <CodeExporter
-                hideCodeExporter={this.toggleCodeExporter}
-                snippets={snippets}
-                serverUrl="/graphql"
-                query={query}
-                // Optional if you want to use a custom theme
-                codeMirrorTheme="neo"
-            />
-        ) : null;
-
         const authModal = authModalVisible ? (
             <AuthModal
                 authMode={this.state.apiInfo.authenticationType}
@@ -279,15 +265,9 @@ class App extends Component<{}, State> {
                                 label="Explorer"
                                 title="Toggle Explorer"
                             />
-                            <GraphiQL.Button
-                                onClick={this.toggleCodeExporter}
-                                label="Code Exporter"
-                                title="Toggle Code Exporter"
-                            />
                             {authButton}
                         </GraphiQL.Toolbar>
                     </GraphiQL>
-                    {codeExporter}
                 </div>
             </>
         );
