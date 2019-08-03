@@ -331,7 +331,7 @@ test('Test RelationTransformer for One-to-One getItem case.', () => {
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.stacks.Test.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
+    expect(out.stacks.Test1.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
     const schemaDoc = parse(out.schema);
 
     const testObjType = getObjectType(schemaDoc, 'Test');
@@ -339,6 +339,55 @@ test('Test RelationTransformer for One-to-One getItem case.', () => {
     const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
     expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 })
+
+test('Test RelationTransformer for One-to-Many query case.', () => {
+    const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        otherParts: [Test1] @relation(fields: ["id", "email"])
+    }
+
+    type Test1
+        @model
+        @key(fields: ["id", "email"])
+    {
+        id: ID!
+        friendID: ID!
+        email: String!
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new KeyTransformer(),
+            new RelationTransformer()
+        ]
+    })
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    expect(out.stacks.Test1.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherParts')]).toBeTruthy();
+    const schemaDoc = parse(out.schema);
+
+    const testObjType = getObjectType(schemaDoc, 'Test');
+    expectFields(testObjType, ['otherParts']);
+    const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+
+    expect(relatedField.arguments.length).toEqual(5);
+    expectArguments(relatedField, ['email', 'filter', 'limit', 'nextToken', 'sortDirection']);
+    expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+    expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
+
+})
+
+function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitionNode | undefined {
+    return doc.definitions.find(
+        (def: DefinitionNode) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type
+    ) as InputObjectTypeDefinitionNode | undefined
+}
 
 // Taken from ModelConnectionTransforner.test.ts
 function getObjectType(doc: DocumentNode, type: string): ObjectTypeDefinitionNode | undefined {
@@ -354,3 +403,9 @@ function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {
     }
 }
 
+function expectArguments(field: FieldDefinitionNode, args: string[]) {
+    for (const argName of args) {
+        const foundArg = field.arguments.find((a: InputValueDefinitionNode) => a.name.value === argName)
+        expect(foundArg).toBeDefined()
+    }
+}

@@ -3,6 +3,13 @@ import {
     gql, getDirectiveArguments
 } from 'graphql-transformer-core'
 import {
+    makeModelConnectionType,
+    makeModelConnectionField,
+    makeScalarFilterInputs,
+    makeModelXFilterInputObject,
+    makeModelSortDirectionEnumObject,
+} from 'graphql-dynamodb-transformer'
+import {
     DirectiveNode, ObjectTypeDefinitionNode,
     Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
     InputObjectTypeDefinitionNode,
@@ -10,20 +17,35 @@ import {
 } from 'graphql'
 import {
     getBaseType, isListType, ModelResourceIDs, isNonNullType, wrapNonNull, ResourceConstants,
-    NONE_VALUE, ResolverResourceIDs, applyKeyConditionExpression, attributeTypeFromScalar
+    NONE_VALUE, ResolverResourceIDs, applyKeyConditionExpression, attributeTypeFromScalar, blankObject,
+    makeScalarKeyConditionForType, makeNamedType
 } from 'graphql-transformer-common'
-import Table, { KeySchema } from 'cloudform-types/types/dynamoDb/table';
+import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DynamoDBMappingTemplate, str, print,
     ref, obj, set, nul,
-    ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block, ObjectNode
+    ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block, ObjectNode, RawNode
 } from 'graphql-mapping-template'
 import { Fn } from 'cloudform-types'
 import Resolver from 'cloudform-types/types/appSync/resolver'
+import Key from 'cloudform-types/types/kms/key';
+import { PrivateIpAddressSpecification } from 'cloudform-types/types/ec2/networkInterface';
+
+interface KeySchema {
+    AttributeName: string;
+    KeyType: string;
+}
 
 interface RelationArguments {
     index?: string;
     fields: string[];
+}
+
+interface Index {
+    IndexName: string;
+    KeySchema: KeySchema[];
+    Projection?: any;
+    ProvisionedThroughput?: any;
 }
 
 /**
@@ -31,36 +53,33 @@ interface RelationArguments {
  * @param type The parent type name.
  * @param field The connection field name.
  * @param relatedType The name of the related type to fetch from.
- * @param connectionAttribute The name of the underlying attribute containing the id.
+ * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
  * @param keySchema Key schema of the index or table being queried.
  */
-function makeGetItemConnectionResolver(type: string,
+function makeGetItemRelationResolver(type: string,
                                        field: string,
                                        relatedType: string,
                                        connectionAttributes: string[],
-                                       keySchema: any): Resolver {
+                                       keySchema: KeySchema[]): Resolver {
 
     let attributeName = keySchema[0].AttributeName as string
 
-    let keyObj : ObjectNode;
+    let keyObj : ObjectNode = obj({
+        [attributeName] :
+            ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`)
+        })
+
     if (connectionAttributes[1]) {
         const sortKeyName = keySchema[1].AttributeName as string
-        keyObj = obj({
-            [attributeName] :
-                ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`),
-            [sortKeyName] :
-                ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[1]}, "${NONE_VALUE}"))`)
-            })
-    } else {
-        keyObj = obj({
-            [attributeName] :
-                ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`)
-            })
+        keyObj.attributes.push([
+            sortKeyName,
+            ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[1]}, "${NONE_VALUE}"))`)
+        ]);
     }
 
     return new Resolver({
         ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-        DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
+        DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType),
         FieldName: field,
         TypeName: type,
         RequestMappingTemplate: print(
@@ -73,7 +92,92 @@ function makeGetItemConnectionResolver(type: string,
         ResponseMappingTemplate: print(
             ref('util.toJson($context.result)')
         )
-    }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
+    }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType)])
+}
+
+
+/**
+ * Create a resolver that queries an item in DynamoDB.
+ * @param type The parent type name.
+ * @param field The connection field name.
+ * @param relatedType The name of the related type to fetch from.
+ * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
+ * @param parentFields The fields of the parent object.
+ * @param keySchema The index to run the query on.
+ */
+function makeQueryRelationResolver(
+    type: string, field: string, relatedType: string,
+    connectionAttributes: string[],
+    parentFields: ReadonlyArray<FieldDefinitionNode>,
+    keySchema: KeySchema[], indexName: string
+) {
+    const defaultPageLimit = 10
+    const setup: Expression[] = [
+        set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+        set(ref('query'), obj({
+            'expression': str('#connectionAttribute = :connectionAttribute'),
+            'expressionNames': obj({
+                '#connectionAttribute': str(keySchema[0].AttributeName)
+            }),
+            'expressionValues': obj({
+                ':connectionAttribute': obj({
+                    'S': str(`$context.source.${connectionAttributes[0]}`)
+                })
+            })
+        }))
+    ];
+    if (connectionAttributes[1]) {
+        let sortKeyType = parentFields.find(f => f.name.value === connectionAttributes[1]).type;
+        let sortKeyAttType = attributeTypeFromScalar(sortKeyType);
+        setup.push(applyKeyConditionExpression(connectionAttributes[1], sortKeyAttType, 'query'));
+    }
+
+    var queryArguments : { query, filter, scanIndexForward, limit, nextToken, index? } = {
+        query: raw('$util.toJson($query)'),
+        scanIndexForward: ifElse(
+            ref('context.args.sortDirection'),
+            ifElse(
+                equals(ref('context.args.sortDirection'), str('ASC')),
+                bool(true),
+                bool(false)
+            ),
+            bool(true)
+        ),
+        filter: ifElse(
+            ref('context.args.filter'),
+            ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+            nul()
+        ),
+        limit: ref('limit'),
+        nextToken: ifElse(
+            ref('context.args.nextToken'),
+            str('$context.args.nextToken'),
+            nul()
+        )
+    }
+    if (indexName) {
+        let indexArg = "index";
+        queryArguments[indexArg] = str(indexName);
+    }
+
+    return new Resolver({
+        ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+        DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType), // Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name')
+        FieldName: field,
+        TypeName: type,
+        RequestMappingTemplate: print(
+            compoundExpression([
+                ...setup,
+                DynamoDBMappingTemplate.query(queryArguments)
+            ])
+        ),
+        ResponseMappingTemplate: print(
+            compoundExpression([
+                iff(raw('!$result'), set(ref('result'), ref('ctx.result'))),
+                raw('$util.toJson($result)')
+            ])
+        )
+    }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType)])
 }
 
 
@@ -106,7 +210,7 @@ function validateKeyField(field: FieldDefinitionNode): void {
 function checkFieldsAgainstIndex(parentFields: ReadonlyArray<FieldDefinitionNode>,
                                  relatedTypeFields: ReadonlyArray<FieldDefinitionNode>,
                                  inputFieldNames: string[],
-                                 keySchema: any): void {
+                                 keySchema: KeySchema[]): void {
     let hashAttributeName = keySchema[0].AttributeName;
     let tablePKType = relatedTypeFields.find(f => f.name.value === hashAttributeName).type;
     let queryPKType = parentFields.find(f => f.name.value === inputFieldNames[0]).type;
@@ -206,6 +310,7 @@ export default class RelationTransformer extends Transformer {
                 validateKeyField(inputFields[fieldsArrayLength]);
             })
 
+        var index : Index;
         // If no index is provided use the default index for the related model type and
         // check that the query fields match the PK/SK of the table. Else confirm that index exists.
         if (!args.index || args.index === 'default' || args.index === 'Default') {
@@ -214,7 +319,7 @@ export default class RelationTransformer extends Transformer {
             checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, tableResource.Properties.KeySchema);
 
         } else {
-            const index = (tableResource.Properties.GlobalSecondaryIndexes ?
+            index = (tableResource.Properties.GlobalSecondaryIndexes ?
                 tableResource.Properties.GlobalSecondaryIndexes.find(GSI => GSI.IndexName === args.index) : null)
                 || (tableResource.Properties.LocalSecondaryIndexes ?
                 tableResource.Properties.LocalSecondaryIndexes.find(LSI => LSI.IndexName === args.index) : null)
@@ -233,7 +338,7 @@ export default class RelationTransformer extends Transformer {
             }
 
             // Start with GetItem resolver for case where the connection is to a single object.
-            const getResolver = makeGetItemConnectionResolver(
+            let getResolver = makeGetItemRelationResolver(
                 parentTypeName,
                 fieldName,
                 relatedTypeName,
@@ -242,11 +347,118 @@ export default class RelationTransformer extends Transformer {
             )
 
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver);
-            ctx.mapResourceToStack(parentTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
+            ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
+        } else {
+
+
+            let queryResolver = makeQueryRelationResolver(
+                parentTypeName,
+                fieldName,
+                relatedTypeName,
+                args.fields,
+                parent.fields,
+                index ? index.KeySchema : tableResource.Properties.KeySchema as KeySchema[],
+                index ? index.IndexName : null
+            )
+
+            ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
+            ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
+
+            const sortKeyInfo = inputFields[1] ?
+                                { fieldName : inputFields[1].name.value, typeName : getBaseType(inputFields[1].type) } :
+                                undefined;
+            this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo);
         }
 
-        // TODO configure query resolver.
+    }
 
+
+    private typeExist(type: string, ctx: TransformerContext): boolean {
+        return Boolean(type in ctx.nodeMap);
+    }
+
+    private generateModelXConnectionType(ctx: TransformerContext, typeDef: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): void {
+        const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(typeDef.name.value)
+        if (this.typeExist(tableXConnectionName, ctx)) {
+            return
+        }
+
+        // Create the ModelXConnection
+        const connectionType = blankObject(tableXConnectionName)
+        ctx.addObject(connectionType)
+
+        ctx.addObjectExtension(makeModelConnectionType(typeDef.name.value))
+    }
+
+    private extendTypeWithConnection(
+        ctx: TransformerContext,
+        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        field: FieldDefinitionNode,
+        returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        sortKeyInfo?: { fieldName: string, typeName: string }
+    ) {
+        this.generateModelXConnectionType(ctx, returnType)
+
+        // Extensions are not allowed to redeclare fields so we must replace
+        // it in place.
+        const type = ctx.getType(parent.name.value) as ObjectTypeDefinitionNode
+        if (
+            type &&
+            (type.kind === Kind.OBJECT_TYPE_DEFINITION || type.kind === Kind.INTERFACE_TYPE_DEFINITION)
+        ) {
+            // Find the field and replace it in place.
+            const newFields = type.fields.map(
+                (f: FieldDefinitionNode) => {
+                    if (f.name.value === field.name.value) {
+                        const updated = makeModelConnectionField(field.name.value, returnType.name.value, sortKeyInfo)
+                        updated.directives = f.directives
+                        return updated
+                    }
+                    return f;
+                }
+            )
+            const updatedType = {
+                ...type,
+                fields: newFields
+            }
+            ctx.putType(updatedType)
+
+            if (!this.typeExist('ModelSortDirection', ctx)) {
+                const modelSortDirection = makeModelSortDirectionEnumObject()
+                ctx.addEnum(modelSortDirection)
+            }
+
+            this.generateFilterAndKeyConditionInputs(ctx, returnType, sortKeyInfo)
+        } else {
+            throw new InvalidDirectiveError(`Could not find a object or interface type named ${parent.name.value}.`)
+        }
+    }
+
+    private generateFilterAndKeyConditionInputs(
+        ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        sortKeyInfo?: { fieldName: string, typeName: string }
+    ): void {
+        const scalarFilters = makeScalarFilterInputs()
+        for (const filter of scalarFilters) {
+            if (!this.typeExist(filter.name.value, ctx)) {
+                ctx.addInput(filter)
+            }
+        }
+
+        // Create the ModelXFilterInput
+        const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx)
+        if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
+            ctx.addInput(tableXQueryFilterInput)
+        }
+
+        // Create sort key condition inputs for valid sort key types
+        // We only create the KeyConditionInput if it is being used.
+        if (sortKeyInfo) {
+            const sortKeyConditionInput = makeScalarKeyConditionForType(makeNamedType(sortKeyInfo.typeName))
+            if (!this.typeExist(sortKeyConditionInput.name.value, ctx)) {
+                ctx.addInput(sortKeyConditionInput);
+            }
+        }
     }
 
 }
