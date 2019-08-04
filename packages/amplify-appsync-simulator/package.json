@@ -9,7 +9,8 @@
     "clean": "rm -rf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
-    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts"
+    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts",
+    "test": "jest"
   },
   "keywords": [
     "graphql",
@@ -45,14 +46,17 @@
     "@types/cors": "^2.8.5",
     "@types/express": "^4.17.0",
     "@types/graphql": "^14.2.2",
-    "@types/jest": "23.1.1",
     "@types/mosca": "^2.8.1",
     "@types/node": "^10.3.4",
     "aws-sdk": "^2.259.1",
     "tslint": "^5.17.0",
     "typescript": "^3.5.1",
     "amplify-graphiql-explorer": "0.1.0",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "@types/jest": "^24.0.16"
+
   },
   "jest": {
     "transform": {

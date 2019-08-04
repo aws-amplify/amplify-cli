@@ -4,7 +4,7 @@
   "description": "amplify cli plugin providing local testing ",
   "main": "lib/index.js",
   "scripts": {
-    "e2e": "jest src/__e2e__/*.e2e.test.ts",
+    "e2e": "jest -w 4 src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
@@ -24,12 +24,11 @@
     "amplify-codegen": "1.7.0"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
+    "@types/jest": "^24.0.16",
     "@types/lodash": "^4.14.129",
     "@types/node": "^10.3.4",
-    "jest": "^23.1.0",
-    "prettier": "^1.14.2",
-    "ts-jest": "^22.4.6",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3",
     "graphql-transformer-common": "3.10.0",
@@ -46,7 +45,8 @@
     "aws-amplify": "1.1.32",
     "aws-sdk": "^2.259.1",
     "node-fetch": "^2.6.0",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "jest-environment-node": "24.8.0"
   },
   "jest": {
     "transform": {
@@ -58,6 +58,7 @@
       "!**/node_modules/**",
       "!src/__tests__/**"
     ],
+    "testEnvironment": "node",
     "testURL": "http://localhost/",
     "testRegex": "(src/(__tests__|__e2e__)/.*.test.ts)$",
     "moduleFileExtensions": [

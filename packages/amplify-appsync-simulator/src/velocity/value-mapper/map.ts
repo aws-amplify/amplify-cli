@@ -7,10 +7,10 @@ export class JavaMap {
   constructor(obj, mapper) {
     this.mapper = mapper;
     this.map = new Map();
-    this.toJSON = this.toJSON.bind(this);
     Object.entries(obj).forEach(([key, value]) => {
       this.map.set(key, value);
     });
+    
   }
 
   clear() {
@@ -66,8 +66,9 @@ export class JavaMap {
     return saveValue;
   }
 
-  putAll(map) {
-    Array.from(map.map.entries()).forEach(([key, value]) => {
+  putAll(map: object| JavaMap) {
+    map = toJSON(map);
+    Object.entries(map).forEach(([key, value]) => {
       this.put(key, value);
     });
   }
