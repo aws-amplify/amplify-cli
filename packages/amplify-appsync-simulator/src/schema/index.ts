@@ -3,7 +3,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorBaseResolverConfig } from '../type-definition';
 import { scalars } from './appsync-scalars';
-import { AwsSubscribe, AwsAuth } from './directives';
+import { AwsSubscribe } from './directives';
 import AppSyncSimulatorDirectiveBase from './directives/directive-base';
 const KNOWN_DIRECTIVES: {
   name: string;
@@ -112,7 +112,3 @@ export function addDirective(name: string, visitor: typeof AppSyncSimulatorDirec
 }
 
 addDirective('aws_subscribe', AwsSubscribe);
-addDirective('aws_api_key', AwsAuth);
-addDirective('aws_iam', AwsAuth);
-addDirective('aws_oidc', AwsAuth);
-addDirective('aws_cognito_user_pools', AwsAuth);
