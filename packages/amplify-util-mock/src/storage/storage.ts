@@ -4,6 +4,9 @@ import * as fs from 'fs-extra';
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 
+
+const port = 20005; // port for S3
+
 export class StorageTest {
     private storageName: string;
     private storageSimulator: AmplifyStorageSimulator;
@@ -36,11 +39,9 @@ export class StorageTest {
         const route = path.join(
             '/',
             this.bucketName,
-            '/'
         );
 
         let localDirS3 = this.createLocalStorage(context, resourceName);
-        const port = 20005; // port for S3
 
         try {
             addCleanupTask(context, async context => {

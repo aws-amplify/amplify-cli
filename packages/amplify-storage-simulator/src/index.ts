@@ -1,4 +1,4 @@
-import {StorageSimulatorServer} from './server';
+import { StorageServer } from './server/S3server';
 
 export interface StorageSimulatorDataSourceBaseConfig {
   name: string;
@@ -7,22 +7,20 @@ export interface StorageSimulatorDataSourceBaseConfig {
 
 export type StorageSimulatorServerConfig = {
   port: number;
-  wsPort: number;
   route: string;
   localDirS3: string;
 };
 
 export class AmplifyStorageSimulator {
 
-  private _server: StorageSimulatorServer;
+  private _server: StorageServer;
   private _serverConfig: StorageSimulatorServerConfig;
-
 
   constructor(serverConfig: StorageSimulatorServerConfig) {
     this._serverConfig = serverConfig;
 
     try {
-      this._server = new StorageSimulatorServer(serverConfig);
+      this._server = new StorageServer(serverConfig);
     } catch (e) {
       console.log(e);
     }
@@ -36,10 +34,10 @@ export class AmplifyStorageSimulator {
     this._server.stop();
   }
 
-  
+
   get url() {
-    return this._server.url.storage;
+    return this._server.url;
   }
-  
+
 }
 

@@ -203,8 +203,9 @@ function getS3Config(s3Resources) {
     aws_user_files_s3_bucket: s3Resource.output.BucketName,
     aws_user_files_s3_bucket_region: s3Resource.output.Region,
   };
-  if(s3Resource.testMode) {
-      config.aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing = true;
+
+  if (s3Resource.testMode) {
+    config.aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing = true;
   }
   return config;
 }

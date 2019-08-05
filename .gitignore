@@ -15,6 +15,4 @@ packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
-packages/amplify-util-mock/lib
-packages/amplify-util-mock/node_modules
 **/.env
