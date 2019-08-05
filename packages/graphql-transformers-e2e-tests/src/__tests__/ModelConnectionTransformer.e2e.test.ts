@@ -66,12 +66,10 @@ beforeAll(async () => {
         children: [Album] @connection(name: "AlbumAlbums", keyField: "parentId")
         photos: [Photo] @connection(name: "AlbumPhotos", keyField: "albumId")
     }
-
     type Photo @model @auth(rules: [{allow: owner}]) {
         id: ID!
         album: Album @connection (name: "AlbumPhotos", keyField: "albumId")
-      }
-    
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
