@@ -93,7 +93,6 @@ export class SubscriptionServer {
 
   async afterSubscription(topic, client) {
     const { id: clientId } = client;
-    console.info(`client (${clientId}) subscribed to : ${topic}`);
     log.info(`client (${clientId}) subscribed to : ${topic}`);
     const regs = this.registrations.get(clientId);
     if (!regs) {
@@ -171,7 +170,6 @@ export class SubscriptionServer {
   afterDisconnect(client) {
     const { id: clientId } = client;
     log.info('clientDisconnect', { clientId });
-    console.info(`client disconnected to subscription server (${clientId})`);
     const reg = this.registrations.get(clientId);
     if (!reg) {
       log.warn('Disconnecting client with unknown id', clientId);
