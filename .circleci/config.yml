@@ -36,6 +36,9 @@ jobs:
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
+          name: Install Java
+          command: 'sudo apt-get update && sudo apt-get install default-jre default-jdk'
+      - run:
           name: Run tests
           command: yarn test-ci
   graphql_e2e_tests:
