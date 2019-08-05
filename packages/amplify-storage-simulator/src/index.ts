@@ -1,4 +1,4 @@
-import { StorageServer } from './server/S3server';
+import { StorageServer } from "./server/S3server";
 
 export interface StorageSimulatorDataSourceBaseConfig {
   name: string;
@@ -12,7 +12,6 @@ export type StorageSimulatorServerConfig = {
 };
 
 export class AmplifyStorageSimulator {
-
   private _server: StorageServer;
   private _serverConfig: StorageSimulatorServerConfig;
 
@@ -34,10 +33,7 @@ export class AmplifyStorageSimulator {
     this._server.stop();
   }
 
-
   get url() {
     return this._server.url;
   }
-
 }
-
