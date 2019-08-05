@@ -84,18 +84,18 @@ class App extends Component<{}, State> {
     const apiInfo = await getAPIInfo();
     this.loadCredentials(apiInfo);
     this.setState({ apiInfo });
-    this.fetch({
+    const introspectionResult = await this.fetch({
       query: getIntrospectionQuery(),
-    }).then(result => {
-      const editor = this._graphiql.getQueryEditor();
-      editor.setOption('extraKeys', {
-        ...(editor.options.extraKeys || {}),
-        'Shift-Alt-LeftClick': this._handleInspectOperation,
-      });
-      if (result && result.data) {
-        this.setState({ schema: buildClientSchema(result.data) });
-      }
     });
+
+    const editor = this._graphiql.getQueryEditor();
+    editor.setOption('extraKeys', {
+      ...(editor.options.extraKeys || {}),
+      'Shift-Alt-LeftClick': this._handleInspectOperation,
+    });
+    if (introspectionResult && introspectionResult.data) {
+      this.setState({ schema: buildClientSchema(introspectionResult.data) });
+    }
   }
 
   toggleAuthModal = () =>
@@ -132,7 +132,7 @@ class App extends Component<{}, State> {
     });
 
     if (!def) {
-      console.error('Unable to find definition corresponding to mouse position');
+      console.error(`Unable to find definition corresponding position at ${position.start}`);
       return null;
     }
 
@@ -209,7 +209,6 @@ class App extends Component<{}, State> {
         currentToken={this.state.jwtToken}
         onClose={credentials => {
           this.storeCredentials(credentials);
-          console.log('closing.....');
           this.setState({ authModalVisible: false });
         }}
       />
@@ -218,7 +217,6 @@ class App extends Component<{}, State> {
       this.state.apiInfo.authenticationType !== 'API_KEY' ? (
         <GraphiQL.Button onClick={this.toggleAuthModal} label='Auth' title='Auth Setting' />
       ) : null;
-    debugger;
     return (
       <>
         {authModal}

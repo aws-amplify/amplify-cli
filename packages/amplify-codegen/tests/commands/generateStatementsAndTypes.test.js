@@ -87,10 +87,4 @@ describe('command - generateStatementsAndTypes', () => {
       AmplifyCodeGenNoAppSyncAPIAvailableError,
     );
   });
-
-  // it('should show a warning if the project has local change which is pending push', async () => {
-  //   isAppSyncApiPendingPush.mockReturnValue(true);
-  //   await generateStatementsAndTypes(MOCK_CONTEXT, false);
-  //   expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.MSG_CODEGEN_PENDING_API_PUSH);
-  // });
 });

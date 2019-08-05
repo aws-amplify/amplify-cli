@@ -31,10 +31,6 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
   }
   await generateStatements(context, false, maxDepth);
   await generateTypes(context, false);
-  // const pendingPush = await isAppSyncApiPendingPush(context);
-  // if (pendingPush) {
-  //   context.print.info(constants.MSG_CODEGEN_PENDING_API_PUSH);
-  // }
 }
 
 module.exports = generateStatementsAndTypes;

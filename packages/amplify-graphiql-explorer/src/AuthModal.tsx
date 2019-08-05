@@ -4,16 +4,8 @@ import { decode, sign } from 'jsonwebtoken';
 
 enum AUTH_MODE {
   API_KEY = 'API_KEY',
-  AWS_IAM = 'AWS_IAM',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-  OPENID_CONNECT = ' OPENID_CONNECT',
 }
-type AuthModalProps = {
-  onClose?: Function;
-  authMode: string;
-  jwtToke?: String;
-  apiKey?: String;
-};
 
 type State = {
   currentToken?: string;
@@ -149,7 +141,7 @@ export class AuthModal extends Component<Props, State> {
             <Input
               placeholder='User Name'
               value={this.state.userName}
-              onChange={this.changeUserName.bind(this)}
+              onChange={this.changeUserName}
             />
           </Form.Field>
           <Form.Field>
@@ -180,11 +172,7 @@ export class AuthModal extends Component<Props, State> {
     }
 
     return (
-      <Modal
-        onClose={this.onClose}
-        onActionClick={this.onGenerate.bind(this)}
-        open={this.state.isOpen}
-      >
+      <Modal onClose={this.onClose} onActionClick={this.onGenerate} open={this.state.isOpen}>
         <Modal.Header>Auth Options</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -192,7 +180,7 @@ export class AuthModal extends Component<Props, State> {
           </Modal.Description>
         </Modal.Content>
         <Modal.Actions>
-          <Button primary onClick={this.onGenerate.bind(this)}>
+          <Button primary onClick={this.onGenerate}>
             {actionText}
           </Button>
         </Modal.Actions>

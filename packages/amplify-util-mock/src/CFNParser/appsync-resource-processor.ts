@@ -28,8 +28,6 @@ export function dynamoDBResourceHandler(
   transformResult: any
 ) {
   const tableName = resourceName;
-  // const keySchemaList = resource.Properties.KeySchema.map(s => s.AttributeName);
-  // const attributeDefinitions = resource.Properties.AttributeDefinitions.filter(attDef => keySchemaList.includes(attDef.AttributeName))
   const gsis = (resource.Properties.GlobalSecondaryIndexes || []).map(gsi => {
     const p = { ...gsi };
     delete p.ProvisionedThroughput;
@@ -41,7 +39,6 @@ export function dynamoDBResourceHandler(
       TableName: tableName,
       BillingMode: 'PAY_PER_REQUEST',
       KeySchema: resource.Properties.KeySchema,
-      // AttributeDefinitions: attributeDefinitions,
       AttributeDefinitions: resource.Properties.AttributeDefinitions,
     },
   };
@@ -100,7 +97,7 @@ export function graphQLAPIResourceHandler(
   cfnContext: CloudFormationParseContext,
   transformResult: any
 ) {
-  const apiId = 'amplify-test-api-id'; // TODO: Generate
+  const apiId = 'amplify-test-api-id';
   const processedResource = {
     type: resource.Type,
     name: cfnContext.params.AppSyncApiName || 'AppSyncTransformer',

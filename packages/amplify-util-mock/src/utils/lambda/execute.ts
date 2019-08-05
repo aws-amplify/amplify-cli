@@ -1,18 +1,20 @@
+import { fstat, existsSync } from 'fs-extra';
+
 const path = require('path');
 
 function loadFunction(fileName) {
   return require(path.resolve(fileName));
 }
-/*
-var options = this.options({
-    'packageFolder': './', //required
-    'handler': 'handler', // required
-    'fileName': 'index.js', // required
-    'event': 'event.json', // required
-    'context': 'context.json' // optional
-});
-*/
-function invokeFunction(options) {
+
+type InvokeOptions = {
+  packageFolder: string;
+  handler: string;
+  fileName: string;
+  event: string;
+  context?: object;
+};
+
+function invokeFunction(options: InvokeOptions) {
   return new Promise(async (resolve, reject) => {
     let returned = false;
 
@@ -40,9 +42,20 @@ function invokeFunction(options) {
     };
 
     if (options.packageFolder) {
-      process.chdir(path.resolve(options.packageFolder));
+      const p = path.resolve(options.packageFolder);
+      if (!existsSync(p)) {
+        context.fail('packageFolder does not exist');
+        return;
+      }
+      process.chdir(p);
     } else {
       context.fail('packageFolder is not defined');
+      return;
+    }
+
+    if (!options.handler) {
+      context.fail('handler is not defined');
+      return;
     }
 
     if (options.context) {
@@ -56,8 +69,17 @@ function invokeFunction(options) {
     const lambda = loadFunction(options.fileName);
     const { event } = options;
     try {
+      if (!lambda[options.handler]) {
+        context.fail(
+          `handler ${options.handler} does not exist in the lambda function ${path.join(
+            options.packageFolder,
+            options.fileName
+          )}`
+        );
+        return;
+      }
       const result = await lambda[options.handler](event, context, callback);
-      if(result !== undefined) {
+      if (result !== undefined) {
         context.done(null, result);
       }
     } catch (e) {
@@ -66,7 +88,7 @@ function invokeFunction(options) {
   });
 }
 
-process.on('message', async (options) => {
+process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
     process.send(JSON.stringify({ result, error: null }));

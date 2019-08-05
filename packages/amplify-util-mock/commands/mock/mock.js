@@ -3,13 +3,13 @@ module.exports = {
   name: 'mock',
   run: async function(context) {
     if (context.parameters.options.help) {
-      const header = `amplify ${this.name} [subcommand]\nDescriptions:
+      const header = `amplify ${this.name} [subcommand]\nDescription:
       Mock resources locally`
 
       const commands = [
         {
           name: 'api',
-          description: 'Run GraphQL API test server',
+          description: 'Run GraphQL API mock server',
         },
       ];
       context.amplify.showHelp(header, commands);

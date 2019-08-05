@@ -22,7 +22,7 @@ export class APITest {
   private watcher: chokidar.FSWatcher;
   private ddbEmulator;
   private configOverrideManager: ConfigOverrideManager;
-  private lambdaFunctionProvider;
+
   private projectRoot: string;
 
   async start(context, port: number = 20002, wsPort: number = 20003) {
@@ -32,7 +32,6 @@ export class APITest {
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
-      this.lambdaFunctionProvider = context.amplify.getPluginInstance(context, 'function');
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -50,9 +49,9 @@ export class APITest {
       await this.generateTestFrontendExports(context);
       await this.generateCode(context);
 
-      console.log('AppSync Emulator is running in', this.appSyncSimulator.url);
+      context.print.info(`AppSync Emulator is running in ${this.appSyncSimulator.url}`);
     } catch (e) {
-      console.error('Failed to start API test server \n', e);
+      context.print.error(`Failed to start API test server ${e}`);
     }
   }
 
@@ -62,10 +61,16 @@ export class APITest {
       this.watcher.close();
       this.watcher = null;
     }
-    if (this.ddbEmulator) {
-      await this.ddbEmulator.terminate();
-      this.ddbEmulator = null;
+    try {
+      if (this.ddbEmulator) {
+        await this.ddbEmulator.terminate();
+        this.ddbEmulator = null;
+      }
+    } catch (e) {
+      // failed to stop DDB emulator
+      context.print.error(`Failed to stop DynamoDB Emulator ${e.message}`);
     }
+
     await this.appSyncSimulator.stop();
     this.resolverOverrideManager.stop();
   }
@@ -83,7 +88,7 @@ export class APITest {
   }
   private async generateCode(context, transformerOutput = null) {
     try {
-      console.log('Running codegen');
+      context.print.info('Running codegen');
       const { projectPath } = context.amplify.getEnvInfo();
       const schemaPath = path.join(
         projectPath,
@@ -104,7 +109,7 @@ export class APITest {
         await generate(context);
       }
     } catch (e) {
-      console.log('Failed to generate code with following error:\n', e.message);
+      context.print.info(`Failed to generate code with following error:\n${e.message}`);
     }
   }
 
@@ -125,7 +130,7 @@ export class APITest {
         }
 
         if (shouldReload) {
-          console.log('Mapping template change detected. Reloading');
+          context.print.info('Mapping template change detected. Reloading');
           const mappingTemplates = this.resolverOverrideManager.sync(
             this.transformerResult.mappingTemplates
           );
@@ -135,13 +140,13 @@ export class APITest {
           });
         }
       } else {
-        console.log('reloading....');
+        context.print.info('reloading....');
         const config = await this.runTransformer(context);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
       }
     } catch (e) {
-      console.log('Reloading failed', e);
+      context.print.info(`Reloading failed with error\n${e}`);
     }
   }
 
@@ -190,7 +195,7 @@ export class APITest {
           };
         } else {
           throw new Error(
-            'Local testing does not support LAMBDA data source that is not provisioned locally'
+            'Local testing does not support AWS_LAMBDA data source that is not provisioned locally'
           );
         }
       });

@@ -23,7 +23,7 @@ export class ResolverOverrides {
         if (fs.existsSync(folder) && fs.lstatSync(folder).isDirectory()) {
           fs.readdirSync(folder)
             .map(f => path.join(folder, f))
-            .filter(this.isTemplateFile.bind(this))
+            .filter(f => this.isTemplateFile(f))
             .forEach(f => {
               this.updateContentMap(f);
             });

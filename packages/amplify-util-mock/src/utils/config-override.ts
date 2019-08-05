@@ -1,7 +1,7 @@
 import { getAmplifyMeta } from './index';
 import { addCleanupTask } from './cleanup-task';
-let instance: ConfigOverrideManager = null;
 export class ConfigOverrideManager {
+  private static instance: ConfigOverrideManager = null;
   private overrides: {};
   constructor(context) {
     this.overrides = {};
@@ -28,9 +28,9 @@ export class ConfigOverrideManager {
   }
 
   static getInstance(context: any) {
-    if (!instance) {
-      instance = new ConfigOverrideManager(context);
+    if (!ConfigOverrideManager.instance) {
+      ConfigOverrideManager.instance = new ConfigOverrideManager(context);
     }
-    return instance;
+    return ConfigOverrideManager.instance;
   }
 }

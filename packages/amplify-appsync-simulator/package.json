@@ -10,7 +10,8 @@
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts",
-    "test": "jest"
+    "test": "jest",
+    "test-ci": "jest"
   },
   "keywords": [
     "graphql",

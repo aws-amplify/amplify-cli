@@ -23,9 +23,6 @@ jest.setTimeout(2000000);
 
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `ConnectionsWithAuthTests-${BUILD_TIMESTAMP}`;
-const BUCKET_NAME = `connections-with-auth-test-bucket-${BUILD_TIMESTAMP}`;
-const LOCAL_BUILD_ROOT = '/tmp/connections_with_auth_test/';
-const DEPLOYMENT_ROOT_KEY = 'deployments';
 
 let GRAPHQL_ENDPOINT = undefined;
 

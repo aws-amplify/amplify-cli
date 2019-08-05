@@ -43,9 +43,6 @@ function getAWSConfigObject(amplifyResources) {
     },
   };
 
-  if (amplifyResources.testMode) {
-    configOutput.DangerouslyConnectToHTTPEndpointForTesting = true;
-  }
   const projectRegion = amplifyResources.metadata.Region;
 
   Object.keys(serviceResourceMapping).forEach((service) => {

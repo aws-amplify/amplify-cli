@@ -7,7 +7,8 @@
   "private": false,
   "scripts": {
     "install": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
-    "test": "jest"
+    "test": "jest",
+    "test-ci": "jest"
   },
   "dependencies": {
     "download-cli": "^1.1.1",

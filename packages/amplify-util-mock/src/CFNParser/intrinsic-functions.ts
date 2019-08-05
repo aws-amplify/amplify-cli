@@ -7,7 +7,7 @@ export function cfnJoin(
   { params, conditions, resources, exports }: CloudFormationParseContext,
   processValue
 ) {
-  if (!(Array.isArray(valNode) && valNode.length === 2)) {
+  if (!(Array.isArray(valNode) && valNode.length === 2 && Array.isArray(valNode[1]))) {
     throw new Error(
       `FN::Join expects an array with 2 elements instead got ${JSON.stringify(valNode)}`
     );
@@ -255,7 +255,7 @@ export function cfnImportValue(
       `FN::ImportValue expects an array with  1 elements instead got ${JSON.stringify(valNode)}`
     );
   }
-  const key = processValue(valNode, { params, conditions, resizeBy, exports });
+  const key = processValue(valNode, { params, conditions, resources, exports });
   if (!Object.keys(exports).includes(key)) {
     throw new Error('Fn::ImortValue could not find `{key} in exports');
   }

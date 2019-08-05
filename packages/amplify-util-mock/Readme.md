@@ -5,7 +5,7 @@ Mocking is intended for testing only, and should not be utilized for production 
 
 ## Commands Summary
 
-The current set of commands supported by the Amplify Mock  Util Plugin
+The current set of commands supported by the Amplify Mock Util Plugin
 
 | Command              | Description |
 | --- | --- |
