@@ -1,21 +1,15 @@
-import { execute, validate, specifiedRules, parse } from 'graphql';
-import * as express from 'express';
 import * as cors from 'cors';
+import * as e2p from 'event-to-promise';
+import * as express from 'express';
+import { execute, parse, specifiedRules, validate } from 'graphql';
 import * as jwtDecode from 'jwt-decode';
 import { join } from 'path';
-import { createServer } from 'https';
-import { readFileSync } from 'fs-extra';
-import { address as getLocalIpAddress } from 'ip';
-import * as e2p from 'event-to-promise';
 import * as portfinder from 'portfinder';
-
 import { AmplifyAppSyncSimulator } from '..';
-import {
-  AppSyncSimulatorServerConfig,
-  AmplifyAppSyncSimulatorAuthenticationType,
-} from '../type-definition';
-import { SubscriptionServer } from './subscription';
+import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncSimulatorServerConfig } from '../type-definition';
 import { exposeGraphQLErrors } from '../utils/expose-graphql-errors';
+import { SubscriptionServer } from './subscription';
+
 
 const BASE_PORT = 8900;
 const MAX_PORT = 9999;
@@ -59,7 +53,7 @@ export class OperationServer {
 
     return await e2p(this.server, 'listening').then(() => {
       this.connection = this.server.address();
-      this.url = `http://${getLocalIpAddress()}:${this.connection.port}`;
+      this.url = `http://localhost:${this.connection.port}`;
       return this.server;
     });
   }

@@ -3,7 +3,7 @@ export async function ensureDynamoDBTables(dynamodb, config) {
   return await Promise.all(
     tables.map(async resource => {
       try {
-        console.info('Creating table', resource.TableName);
+        console.info(`Creating table ${resource.TableName} locally`);
         await dynamodb.createTable(resource).promise();
       } catch (err) {
         if (err.code !== 'ResourceInUseException') throw err;
