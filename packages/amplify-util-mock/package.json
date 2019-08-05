@@ -30,7 +30,7 @@
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3",
+    "typescript": "^3.5.1",
     "graphql-transformer-common": "3.10.0",
     "graphql-mapping-template": "3.3.0",
     "graphql-transformer-core": "3.9.0",
