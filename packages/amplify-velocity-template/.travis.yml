@@ -1,0 +1,14 @@
+language: node_js
+
+notifications:
+  email:
+    - eward.song@gmail.com
+
+node_js:
+  - '8.9.0'
+
+install:
+  - npm install
+
+script:
+  - make cov

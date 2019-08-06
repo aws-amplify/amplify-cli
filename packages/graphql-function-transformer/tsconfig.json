@@ -9,7 +9,8 @@
             "es2016.array.include",
             "esnext.asynciterable",
             "dom"
-        ]
+        ],
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",

@@ -6,7 +6,7 @@ const generateTypes = require('./types');
 const generateStatements = require('./statements');
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush, getAppSyncAPIDetails } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
@@ -31,10 +31,6 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
   }
   await generateStatements(context, false, maxDepth);
   await generateTypes(context, false);
-  const pendingPush = await isAppSyncApiPendingPush(context);
-  if (pendingPush) {
-    context.print.info(constants.MSG_CODEGEN_PENDING_API_PUSH);
-  }
 }
 
 module.exports = generateStatementsAndTypes;

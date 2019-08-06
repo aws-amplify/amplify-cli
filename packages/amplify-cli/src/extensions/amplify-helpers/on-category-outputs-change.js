@@ -3,7 +3,7 @@ const pathManager = require('./path-manager');
 const { getResourceOutputs } = require('./get-resource-outputs');
 const { readJsonFile } = require('./read-json-file');
 
-async function onCategoryOutputsChange(context, cloudAmplifyMeta) {
+async function onCategoryOutputsChange(context, cloudAmplifyMeta, localMeta) {
   if (!cloudAmplifyMeta) {
     const currentAmplifyMetafilePath = context.amplify.pathManager.getCurentAmplifyMetaFilePath();
     if (fs.existsSync(currentAmplifyMetafilePath)) {
@@ -21,7 +21,7 @@ async function onCategoryOutputsChange(context, cloudAmplifyMeta) {
       require(frontendPlugins[projectConfig.frontend]);
     await frontendHandlerModule.createFrontendConfigs(
       context,
-      getResourceOutputs(), getResourceOutputs(cloudAmplifyMeta),
+      getResourceOutputs(localMeta), getResourceOutputs(cloudAmplifyMeta),
     );
   }
 
