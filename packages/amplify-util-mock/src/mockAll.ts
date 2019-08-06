@@ -1,4 +1,5 @@
 import { start as startAppSyncServer } from './api';
+import { start as startS3Server } from './storage';
 const MOCK_SUPPORTED_CATEGORY = ['AppSync', 'S3', 'Lambda'];
 export async function mockAllCategories(context: any) {
   const resources = await context.amplify.getResourceStatus();
@@ -45,7 +46,7 @@ export async function mockAllCategories(context: any) {
       serverPromises.push(startAppSyncServer(context));
     }
     if (mockableResources.find(r => r.service === 'S3')) {
-      // run S3 server
+      serverPromises.push(startS3Server(context));
     }
     await Promise.all(serverPromises);
   } else {

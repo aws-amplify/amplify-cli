@@ -17,4 +17,5 @@ packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
+packages/amplify-storage-simulator/lib
 **/.env
