@@ -1,8 +1,15 @@
 import * as nexpect from 'nexpect';
-import { isCI } from '.';
+import { isCI, getProjectMeta, getAwsCLIPath } from '.';
 
 //30s to start server
 const SEVER_LAUNCH_TIME: number = 30000;
+//default settings for new user sign up
+const defaultSettings = {
+    username: process.env.COGNITO_SIGN_IN_USERNAME ? process.env.COGNITO_SIGN_IN_USERNAME : 'test01',
+    password: process.env.COGNITO_SIGN_IN_PASSWORD ? process.env.COGNITO_SIGN_IN_PASSWORD : 'The#test1',
+    email: process.env.COGNITO_SIGN_IN_EMAIL ? process.env.COGNITO_SIGN_IN_EMAIL : 'lizeyutest01@amazon.com',
+    phone: process.env.COGNITO_SIGN_IN_PHONE_NUMBER ? process.env.COGNITO_SIGN_IN_PHONE_NUMBER : '6666666666'
+};
 
 export function gitCloneSampleApp(
     cwd: string,
@@ -99,3 +106,59 @@ export function closeServer(
         })
     })
 }
+
+export async function signUpNewUser(
+    cwd: string,
+    settings: any = {},
+    verbose: boolean = !isCI()
+  ) {
+      const meta = getProjectMeta(cwd);
+      const {UserPoolId, AppClientIDWeb} = Object.keys(meta.auth).map(key => meta.auth[key])[0].output;
+      const s = {...defaultSettings, ...settings,
+        clientId: AppClientIDWeb,
+        userPoolId: UserPoolId
+      };
+      await signUpUser(cwd, s, verbose);
+      await comfirmSignUp(cwd, s, verbose);
+      return s;
+    }
+
+function signUpUser(
+    cwd: string,
+    settings: any,
+    verbose: boolean = !isCI()
+  ) {
+    return new Promise((resolve, reject) => {
+      nexpect
+      .spawn(getAwsCLIPath(), ['cognito-idp', 'sign-up', '--client-id', settings.clientId,
+      '--username', settings.username, '--password',
+      settings.password, '--user-attributes', `Name=email,Value=${settings.email}`,
+      `Name=phone_number,Value=+1${settings.phone}`], { cwd, stripColors: true, verbose })
+      .run(function(err: Error) {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+    })
+  }
+
+function comfirmSignUp(
+    cwd: string,
+    settings: any,
+    verbose: boolean = !isCI()
+  ) {
+    return new Promise((resolve, reject) => {
+      nexpect
+        .spawn(getAwsCLIPath(), ['cognito-idp', 'admin-confirm-sign-up', '--user-pool-id',
+          settings.userPoolId, '--username', settings.username], { cwd, stripColors: true, verbose })
+        .run(function(err: Error) {
+          if (!err) {
+            resolve();
+          } else {
+            reject(err);
+          }
+        });
+    })
+  }

@@ -5,9 +5,9 @@ import {
 } from '../../src/init';
 
 import { createNewProjectDir, deleteProjectDir, createTestMetaFile } from '../../src/utils';
-import { addAuthWithDefault, signUpNewUser } from '../../src/categories/auth';
+import { addAuthWithDefault } from '../../src/categories/auth';
 import { existsAWSExportsPath, copyAWSExportsToProj} from '../../src/utils/projectMeta';
-import { runCypressTest, startServer, closeServer, gitCloneSampleApp, buildApp } from '../../src/utils/command'
+import { runCypressTest, startServer, closeServer, gitCloneSampleApp, buildApp, signUpNewUser } from '../../src/utils/command'
 
 
 describe('Javascript SDK:', () => {
