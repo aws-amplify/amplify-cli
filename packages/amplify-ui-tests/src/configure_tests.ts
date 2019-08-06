@@ -2,7 +2,7 @@ import configure from './configure';
 import { isCI } from './utils';
 
 async function setUpAmplify() {
-  // if (isCI()) {
+  if (isCI()) {
     let AWS_ACCESS_KEY_ID;
     let AWS_SECRET_ACCESS_KEY;
     AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
@@ -17,14 +17,13 @@ async function setUpAmplify() {
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
       profileName: 'amplify-integ-test-user'
     });
-  // } else {
-  //   console.log('AWS Profile is already configured');
-  // }
+  } else {
+    console.log('AWS Profile is already configured');
+  }
 }
 
 process.nextTick(async () => {
   try {
-    console.log('debug: ' + process.env.CI);
     await setUpAmplify();
   } catch (e) {
     console.log(e.stack);

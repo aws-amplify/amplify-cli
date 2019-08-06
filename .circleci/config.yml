@@ -277,6 +277,32 @@ jobs:
             npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
       - store_artifacts:
           path: ../uitest_logs
+  integration_test_android:
+    docker:
+      - image: circleci/android:api-27-node
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: "Checkout PhotoAlbum Sample App Repo"
+          command: |
+            cd ..
+            git clone https://github.com/changxu0306/aws-android-sdk-sample.git -b appAndTest sample_app_repo
+            cd sample_app_repo/PhotoAlbumSample
+            app_root=$(pwd)
+            echo 'export app_root=$app_root' >> $BASH_ENV
+      - run:
+          name: "Configure AWS Resources"
+          command: |
+            cd packages/amplify-ui-tests
+            npm run config ${app_root} android auth
+      - run: 
+          name: "Clean-Up UITest"
+          command: |
+            cd packages/amplify-ui-tests
+            npm run delete ${app_root}
 workflows:
   version: 2
   build_test_deploy:
@@ -322,18 +348,25 @@ workflows:
                 - release
                 - master
                 - beta
-      - integration_test_js:
-          filters:
-            branches:
-              only:
-                - integtest
-          requires:
-            - build
-      - integration_test_ios:
-          appname: PhotoAlbum
-          filters:
-            branches:
-              only:
-                - integtest
-          requires:
-            - build
+      # - integration_test_js:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - integtest
+      #     requires:
+      #       - build
+      # - integration_test_ios:
+      #     appname: PhotoAlbum
+      #     filters:
+      #       branches:
+      #         only:
+      #           - integtest
+      #     requires:
+      #       - build
+      - integration_test_android:
+            filters:
+              branches:
+                only:
+                  - integtest
+            requires:
+              - build
