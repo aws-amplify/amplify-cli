@@ -65,7 +65,6 @@ describe("Test get api", () => {
       .promise();
     expect(data).toBeDefined();
     expect(data.Body).toBeDefined();
-    //expect(md5(data.Body)).toEqual(md5(actual_file));
   });
 
   test("get text file", async () => {
@@ -125,14 +124,9 @@ describe("Test list api", () => {
 
 describe("Test delete api", () => {
   const dirPathOne = __dirname + "/test-data/deleteOne";
-  const dirPathMany = __dirname + "/test-data/deleteMany";
-  let num_images = 6;
   beforeEach(() => {
     fs.ensureDirSync(dirPathOne);
     fs.copySync(__dirname + "/test-data/normal/", dirPathOne + "/");
-
-    // fs.ensureDirSync(dirPathMany);
-    // fs.copySync(__dirname + '/test-data/pagination/', dirPathMany + '/');
   });
   test("test one delete ", async () => {
     const data = await s3client
@@ -140,23 +134,6 @@ describe("Test delete api", () => {
       .promise();
     expect(fs.rmdirSync(dirPathOne)).toBeUndefined;
   });
-  // var params = {
-  //     Bucket: "bucket",
-  //     Delete: {
-  //      Objects: [
-  //         {Key: 'deleteMany/2.png' }, {Key: 'deleteMany/3.png' },{Key: 'deleteMany/4.png' },
-  //         {Key: 'deleteMany/5.png' },{Key: 'deleteMany/6.png' },{Key: 'deleteMany/7.png' },
-  //         {Key: 'deleteMany/8.png' }
-  //      ],
-  //      Quiet: false
-  //     }
-  //    };
-  // test('test more than one  delete ', async () => {
-  //     const data = await s3client.deleteObjects(params).promise();
-  //     expect(data).toBeDefined();
-  //     expect(data.Body).toBeDefined();
-  //     //expect(md5(data.Body)).toEqual(md5(actual_file));
-  // });
 });
 
 describe("Test put api", () => {

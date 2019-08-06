@@ -6,13 +6,11 @@ coverage
 .nyc_output
 package-lock.json
 packages/amplify-cli/amplify/.config/
-packages/amplify-storage-simulator/public
 .vscode
 packages/graphql*/lib
-packages/amplify-storage-simulator/lib
-packages/amplify-storage-simulator/node_modules
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
+packages/*/lib
 **/.env

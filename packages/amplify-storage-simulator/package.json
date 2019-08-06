@@ -1,13 +1,12 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "An S3 simulator to test S3 APIs",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "watch": "tsc -w",
-    "start": "node lib/test/test.js"
+    "watch": "tsc -w"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
@@ -24,8 +23,6 @@
     "save": "^2.4.0",
     "serve-static": "^1.14.1",
     "tsc-watch": "^2.2.1",
-    "typescript": "^3.5.3",
-    "typescript-logging": "^0.6.3",
     "xml": "^1.0.1",
     "xml-js": "^1.6.11"
   },
@@ -33,7 +30,9 @@
     "@types/body-parser": "^1.17.0",
     "@types/cors": "^2.8.5",
     "@types/glob": "^7.1.1",
-    "@types/serve-static": "^1.13.2"
+    "@types/serve-static": "^1.13.2",
+    "typescript": "^3.5.3",
+    "typescript-logging": "^0.6.3"
   },
   "jest": {
     "transform": {
