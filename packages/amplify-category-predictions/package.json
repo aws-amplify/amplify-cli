@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-predictions",
-  "version": "1.2.0",
+  "version": "1.2.1-local-mock.0",
   "main": "index.js",
   "description": "amplify-cli predictions plugin",
   "author": "Amazon Web Services",

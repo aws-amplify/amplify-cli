@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1-local-mock.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.3...amplify-category-function@1.9.1-local-mock.0) (2019-08-06)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** consolidates parameters below limit ([#1948](https://github.com/aws-amplify/amplify-cli/issues/1948)) ([3cdbad8](https://github.com/aws-amplify/amplify-cli/commit/3cdbad8))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+
+
+
+
+
 # [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@1.7.3...amplify-category-function@1.9.0) (2019-08-02)
 
 

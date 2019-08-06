@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "0.1.0",
+  "version": "0.1.1-local-mock.0",
   "private": true,
   "dependencies": {
     "add": "^2.0.6",
@@ -9,14 +9,13 @@
     "graphiql-code-exporter": "^2.0.5",
     "graphiql-explorer": "^0.4.3",
     "graphql": "^14.4.2",
-    "jsonwebtoken":"^8.5.1",
+    "jsonwebtoken": "^8.5.1",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-scripts": "3.0.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "0.87.3",
     "yarn": "^1.17.3"
-    
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
