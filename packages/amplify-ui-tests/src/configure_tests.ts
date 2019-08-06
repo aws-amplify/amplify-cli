@@ -19,6 +19,7 @@ async function setUpAmplify() {
       profileName: 'amplify-integ-test-user'
     });
   } else {
+    console.log('It is ' + isCI() + 'CI');
     console.log('AWS Profile is already configured');
   }
 }
