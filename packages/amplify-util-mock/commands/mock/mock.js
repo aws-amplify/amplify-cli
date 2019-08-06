@@ -8,6 +8,10 @@ module.exports = {
 
       const commands = [
         {
+          name: 'storage',
+          description: 'Run Storage test server',         
+        },
+        {
           name: 'api',
           description: 'Run GraphQL API mock server',
         },
