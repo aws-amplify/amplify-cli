@@ -147,7 +147,22 @@
                             {
                                 "Effect": "Allow",
                                 "Action": "iam:UpdateAssumeRolePolicy",
-                                "Resource": "*"
+                                "Resource": {
+                                    "Fn::GetAtt": [
+                                        "AuthRole",
+                                        "Arn"
+                                    ]
+                                }
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Action": "iam:UpdateAssumeRolePolicy",
+                                "Resource": {
+                                    "Fn::GetAtt": [
+                                        "UnauthRole",
+                                        "Arn"
+                                    ]
+                                }
                             }
                         ]
                     }
