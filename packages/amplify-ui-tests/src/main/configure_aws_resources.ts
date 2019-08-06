@@ -1,5 +1,6 @@
 import initProjectWithProfile, { initIosProject, initAndroidProject } from "../init/initProjectHelper";
-import { addAuthWithDefault, signUpNewUser } from "../categories/auth";
+import { addAuthWithDefault } from "../categories/auth";
+import { signUpNewUser } from "../utils/command"
 import { amplifyPushApi, amplifyPush } from "../init";
 import { addStorageWithDefault } from "../categories/storage";
 import { addApiWithSimpleModel } from "../categories/api";

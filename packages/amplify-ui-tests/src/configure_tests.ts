@@ -25,6 +25,7 @@ async function setUpAmplify() {
 
 process.nextTick(async () => {
   try {
+    console.log('debug: ' + process.env.CI);
     await setUpAmplify();
   } catch (e) {
     console.log(e.stack);
