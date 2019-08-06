@@ -1,0 +1,77 @@
+{
+  "name": "amplify-appsync-simulator",
+  "version": "0.1.0",
+  "description": "An AppSync Simulator to test AppSync API.",
+  "main": "lib/index.js",
+  "scripts": {
+    "copy-assets":"rm -rf ./public && cp -R ../amplify-graphiql-explorer/build ./public",
+    "build": "yarn copy-assets && tsc",
+    "clean": "rm -rf ./lib",
+    "watch": "tsc -w",
+    "start": "node ./lib/index.js",
+    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts",
+    "test": "jest",
+    "test-ci": "jest"
+  },
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws",
+    "simulator"
+  ],
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@conduitvc/mosca": "^2.8.3",
+    "@okgrow/graphql-scalars": "^0.4.5",
+    "cors": "^2.8.4",
+    "dateformat": "^3.0.3",
+    "event-to-promise": "^0.8.0",
+    "express": "^4.17.1",
+    "fs-extra": "^8.0.1",
+    "graphql": "^14.3.1",
+    "graphql-iso-date": "^3.6.1",
+    "graphql-subscriptions": "^1.1.0",
+    "graphql-tools": "^4.0.4",
+    "graphql-type-json": "^0.3.0",
+    "ip": "^1.1.5",
+    "json5": "^2.1.0",
+    "jwt-decode": "^2.2.0",
+    "libphonenumber-js": "^1.7.18",
+    "portfinder": "^1.0.20",
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2",
+    "amplify-velocity-template": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.5",
+    "@types/express": "^4.17.0",
+    "@types/graphql": "^14.2.2",
+    "@types/mosca": "^2.8.1",
+    "@types/node": "^10.3.4",
+    "aws-sdk": "^2.259.1",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1",
+    "amplify-graphiql-explorer": "0.1.0",
+    "prettier": "^1.18.2",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "@types/jest": "^24.0.16"
+
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost/",
+    "testRegex": "(src/__tests__/.*.test.*)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
