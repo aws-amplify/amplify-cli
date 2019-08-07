@@ -240,6 +240,7 @@ export default class FunctionTransformer extends Transformer {
             } else {
                 listArguments = addHashField(definition, args, listArguments);
             }
+            listArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
             listField = { ...listField, arguments: listArguments };
             query = { ...query, fields: query.fields.map(field => field.name.value === listField.name.value ? listField : field)}
             ctx.putType(query);
@@ -261,6 +262,7 @@ export default class FunctionTransformer extends Transformer {
             } else {
                 queryArguments = addHashField(definition, args, queryArguments);
             }
+            queryArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
             const queryField = makeConnectionField(args.queryField, definition.name.value, queryArguments);
             queryType = {
                 ...queryType,
