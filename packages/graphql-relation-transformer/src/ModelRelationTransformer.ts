@@ -100,36 +100,28 @@ function makeGetItemRelationResolver(type: string,
  * Create a resolver that queries an item in DynamoDB.
  * @param type The parent type name.
  * @param field The connection field name.
- * @param relatedType The name of the related type to fetch from.
+ * @param relatedType The related type to fetch from.
  * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
- * @param parentFields The fields of the parent object.
- * @param keySchema The index to run the query on.
+ * @param keySchema The keySchema for the table or index being queried.
+ * @param indexName The index to run the query on.
  */
 function makeQueryRelationResolver(
-    type: string, field: string, relatedType: string,
+    type: string,
+    field: string,
+    relatedType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     connectionAttributes: string[],
-    parentFields: ReadonlyArray<FieldDefinitionNode>,
-    keySchema: KeySchema[], indexName: string
+    keySchema: KeySchema[],
+    indexName: string
 ) {
     const defaultPageLimit = 10
     const setup: Expression[] = [
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
-        set(ref('query'), obj({
-            'expression': str('#connectionAttribute = :connectionAttribute'),
-            'expressionNames': obj({
-                '#connectionAttribute': str(keySchema[0].AttributeName)
-            }),
-            'expressionValues': obj({
-                ':connectionAttribute': obj({
-                    'S': str(`$context.source.${connectionAttributes[0]}`)
-                })
-            })
-        }))
+        set(ref('query'), makeExpression(keySchema, connectionAttributes))
     ];
-    if (connectionAttributes[1]) {
-        let sortKeyType = parentFields.find(f => f.name.value === connectionAttributes[1]).type;
+    if (keySchema[1] && !connectionAttributes[1]) {
+        let sortKeyType = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName).type;
         let sortKeyAttType = attributeTypeFromScalar(sortKeyType);
-        setup.push(applyKeyConditionExpression(connectionAttributes[1], sortKeyAttType, 'query'));
+        setup.push(applyKeyConditionExpression(keySchema[1].AttributeName, sortKeyAttType, 'query'));
     }
 
     var queryArguments : { query, filter, scanIndexForward, limit, nextToken, index? } = {
@@ -162,7 +154,7 @@ function makeQueryRelationResolver(
 
     return new Resolver({
         ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-        DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType), // Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name')
+        DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType.name.value),
         FieldName: field,
         TypeName: type,
         RequestMappingTemplate: print(
@@ -177,8 +169,47 @@ function makeQueryRelationResolver(
                 raw('$util.toJson($result)')
             ])
         )
-    }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType)])
+    }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType.name.value)])
 }
+
+/**
+ * Makes the query expression based on whether there is a sort key to be used for the query
+ * or not.
+ * @param keySchema The key schema for the table or index being queried.
+ * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
+ */
+function makeExpression(keySchema: KeySchema[], connectionAttributes: string[]) : ObjectNode {
+    if (keySchema[1]) {
+        return obj({
+            'expression': str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
+            'expressionNames': obj({
+                '#partitionKey': str(keySchema[0].AttributeName),
+                '#sortKey': str(keySchema[1].AttributeName),
+            }),
+            'expressionValues': obj({
+                ':partitionKey': obj({
+                    'S': str(`$context.source.${connectionAttributes[0]}`)
+                }),
+                ':sortKey': obj({
+                    'S': str(`$context.source.${connectionAttributes[1]}`)
+                }),
+            })
+        })
+    }
+
+    return obj({
+        'expression': str('#partitionKey = :partitionKey'),
+        'expressionNames': obj({
+            '#partitionKey': str(keySchema[0].AttributeName)
+        }),
+        'expressionValues': obj({
+            ':partitionKey': obj({
+                'S': str(`$context.source.${connectionAttributes[0]}`)
+            })
+        })
+    })
+}
+
 
 
 /**
@@ -350,22 +381,23 @@ export default class RelationTransformer extends Transformer {
             ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
         } else {
 
+            let keySchema : KeySchema[] = index ? index.KeySchema : tableResource.Properties.KeySchema;
 
             let queryResolver = makeQueryRelationResolver(
                 parentTypeName,
                 fieldName,
-                relatedTypeName,
+                relatedType,
                 args.fields,
-                parent.fields,
-                index ? index.KeySchema : tableResource.Properties.KeySchema as KeySchema[],
+                keySchema,
                 index ? index.IndexName : null
             )
 
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
             ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
 
-            const sortKeyInfo = inputFields[1] ?
-                                { fieldName : inputFields[1].name.value, typeName : getBaseType(inputFields[1].type) } :
+            let sortKeyType = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName).type
+            const sortKeyInfo = keySchema[1] ?
+                                { fieldName : keySchema[1].AttributeName, typeName : getBaseType(sortKeyType)} :
                                 undefined;
             this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo);
         }
