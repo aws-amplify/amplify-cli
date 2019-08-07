@@ -166,7 +166,7 @@ export class OperationServer {
           throw new Error(`unknown operation type: ${queryType}`);
       }
     } catch (e) {
-      console.log('Error while executing', e);
+      console.log('Error while executing GraphQL statement', e);
       return response.send({
         errorMessage: e.message,
       });

@@ -49,9 +49,9 @@ export class APITest {
       await this.generateTestFrontendExports(context);
       await this.generateCode(context);
 
-      context.print.info(`AppSync Emulator is running in ${this.appSyncSimulator.url}`);
+      context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
     } catch (e) {
-      context.print.error(`Failed to start API test server ${e}`);
+      context.print.error(`Failed to start API Mock endpoint ${e}`);
     }
   }
 
@@ -68,7 +68,7 @@ export class APITest {
       }
     } catch (e) {
       // failed to stop DDB emulator
-      context.print.error(`Failed to stop DynamoDB Emulator ${e.message}`);
+      context.print.error(`Failed to stop DynamoDB Local Server ${e.message}`);
     }
 
     await this.appSyncSimulator.stop();
@@ -88,7 +88,7 @@ export class APITest {
   }
   private async generateCode(context, transformerOutput = null) {
     try {
-      context.print.info('Running codegen');
+      context.print.info('Running GraphQL codegen');
       const { projectPath } = context.amplify.getEnvInfo();
       const schemaPath = path.join(
         projectPath,
@@ -109,7 +109,7 @@ export class APITest {
         await generate(context);
       }
     } catch (e) {
-      context.print.info(`Failed to generate code with following error:\n${e.message}`);
+      context.print.info(`Failed to run GraphQL codegen with following error:\n${e.message}`);
     }
   }
 
@@ -130,7 +130,7 @@ export class APITest {
         }
 
         if (shouldReload) {
-          context.print.info('Mapping template change detected. Reloading');
+          context.print.info('Mapping template change detected. Reloading...');
           const mappingTemplates = this.resolverOverrideManager.sync(
             this.transformerResult.mappingTemplates
           );
@@ -140,7 +140,7 @@ export class APITest {
           });
         }
       } else {
-        context.print.info('reloading....');
+        context.print.info('GraphQL Schema change detected. Reloading...');
         const config = await this.runTransformer(context);
         await this.appSyncSimulator.reload(config);
         await this.generateCode(context);
@@ -183,7 +183,7 @@ export class APITest {
             'src'
           );
           if (!fs.existsSync(path.join(lambdaPath, 'index.js'))) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project`);
+            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
           }
           d.invoke = payload => {
             return invoke({
@@ -195,7 +195,7 @@ export class APITest {
           };
         } else {
           throw new Error(
-            'Local testing does not support AWS_LAMBDA data source that is not provisioned locally'
+            'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function'
           );
         }
       });

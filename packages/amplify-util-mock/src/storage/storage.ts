@@ -53,10 +53,10 @@ export class StorageTest {
       const storageConfig = { port, route, localDirS3 };
       this.storageSimulator = new AmplifyStorageSimulator(storageConfig);
       await this.storageSimulator.start();
-      console.log("Storage Emulator is running in", this.storageSimulator.url);
+      console.log("Mock Storage endpoint is running at", this.storageSimulator.url);
       await this.generateTestFrontendExports(context);
     } catch (e) {
-      console.error("Failed to start Storage test server", e);
+      console.error("Failed to start Mock Storage server", e);
     }
   }
 

@@ -232,15 +232,6 @@ export class SubscriptionServer {
       }, CONNECTION_TIME_OUT)
     );
 
-    console.info(
-      'subscription handshake sent',
-      inspect({
-        clientId,
-        url: this.url,
-        topic: topicId,
-      })
-    );
-
     return {
       extensions: {
         subscription: {
