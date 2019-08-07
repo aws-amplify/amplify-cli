@@ -2,6 +2,10 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 
+const CUSTOM_CONFIG_BLACK_LIST = [
+  'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
+  'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
+];
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
@@ -47,11 +51,13 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
   if (currentAWSExports) {
-    Object.keys(currentAWSExports).forEach((key) => {
-      if (!cloudAWSExports[key]) {
-        customConfigs[key] = currentAWSExports[key];
-      }
-    });
+    Object.keys(currentAWSExports)
+      .filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key))
+      .forEach((key) => {
+        if (!cloudAWSExports[key]) {
+          customConfigs[key] = currentAWSExports[key];
+        }
+      });
   }
   return customConfigs;
 }
