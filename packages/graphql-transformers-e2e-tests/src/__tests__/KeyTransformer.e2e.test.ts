@@ -10,7 +10,6 @@ import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks'
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
-import { expectFields } from '../testUtil';
 
 jest.setTimeout(2000000);
 
