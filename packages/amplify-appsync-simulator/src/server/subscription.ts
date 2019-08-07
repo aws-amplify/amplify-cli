@@ -102,7 +102,7 @@ export class SubscriptionServer {
 
     const reg = regs.find(({ topicId }) => topicId === topic);
     if (!reg) {
-      log.error(`Not subscribed to topicId: ${topic} for clientId`, clientId);
+      log.error(`Not subscribed to subscriptionId: ${topic} for clientId`, clientId);
       return;
     }
 
@@ -125,17 +125,16 @@ export class SubscriptionServer {
     }
 
     const { asyncIterator, topicId, variables } = reg;
-    log.info('clientConnect', { clientId, topicId, variables });
+    log.info('clientConnect', { clientId, subscriptionId:topicId, variables });
 
     while (true) {
       let { value: payload } = await asyncIterator.next();
       if (!this.shouldPublishSubscription(payload, variables)) {
-        console.info('skipping publish', { clientId, topicId });
+        console.info('skipping publish', { clientId, subscriptionId:topicId });
         continue;
       }
 
-      log.info('publish', { payload, topicId });
-      console.info('publish', inspect({ payload, topicId }, { depth: null }));
+      console.info('publish', inspect({ payload, subscriptionId:topicId }, { depth: null }));
       this.mqttServer.publish({
         topic: topicId,
         payload: JSON.stringify(payload),
@@ -157,7 +156,7 @@ export class SubscriptionServer {
 
     const reg = regs.find(({ topicId }) => topicId === topic);
     if (!reg) {
-      log.warn(`Unsubscribe unregistered topic ${topic} from client`, clientId);
+      log.warn(`Unsubscribe unregistered subscription ${topic} from client`, clientId);
       return;
     }
 
@@ -196,7 +195,7 @@ export class SubscriptionServer {
         : null;
     const topicId = [clientId, subscriptionName, paramHash].join('/');
 
-    log.info('register', { clientId, topicId });
+    log.info('register', { clientId, subscriptionId:topicId });
 
     const registration = {
       context,
