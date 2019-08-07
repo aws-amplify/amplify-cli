@@ -1,6 +1,6 @@
 {
   "name": "amplify-dynamodb-simulator",
-  "version": "0.1.0",
+  "version": "0.1.1-deps-issue-fix.0",
   "description": "DynamoDB emulator nodejs wrapper",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -23,8 +23,8 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.260.1",
-    "jest-environment-node": "^24.8.0",
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "jest-environment-node": "^24.8.0"
   },
   "peerDependencies": {
     "aws-sdk": "^2.260.1"

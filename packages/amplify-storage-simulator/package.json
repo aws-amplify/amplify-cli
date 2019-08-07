@@ -1,6 +1,6 @@
 {
   "name": "amplify-storage-simulator",
-  "version": "0.1.0",
+  "version": "0.1.1-deps-issue-fix.0",
   "description": "An S3 simulator to test S3 APIs",
   "main": "lib/index.js",
   "scripts": {

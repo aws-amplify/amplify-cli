@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.1-deps-issue-fix.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.7.1-deps-issue-fix.0) (2019-08-07)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 # [3.7.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@3.7.0) (2019-08-02)
 
 
