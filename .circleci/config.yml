@@ -217,25 +217,19 @@ jobs:
           path: /root/screenshots
   integration_test_ios:
     macos:
-      xcode: "10.2.1"
+      xcode: "10.3.0"
     parameters:
       appname:
         description: "specifies app for UI Testing. Should be a subset of apps specified in config file"
         type: string
-        default: "S3TransferUtility"
+
     steps:
       - attach_workspace:
           at: ./
       - run:
-          name: "Install Latest Cocoapods and set-up master repo"
+          name: "Set-up master specs repo for cocoapods"
           command: |
-            sudo gem install cocoapods
-            pod --version
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-      - run:
-          name: "Install XCPretty"
-          command: |
-            sudo gem install xcpretty
       - run:
           name: "Set up environment variables"
           command: |
@@ -250,21 +244,23 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          name: "Edit config file for UITests"
+          name: "Set-Up configuration for UITests"
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 edit_uitest_config.py -s master -l uitest_logs
+            python3 setup_uitest_config.py -s master -l uitest_logs
       - run:
-          name: "Set-Up Pods"
+          name: "Set-Up Mobile SDK Dependencies"
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 run_setup_pods.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples
+            python3 run_setup_mobile_sdk_dependencies.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples
       - run:
           name: "Configure AWS Resources"
           command: |
-            cd packages/amplify-ui-tests
-            cp ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>/simple_model.graphql ./schemas/simple_model.graphql
-            npm run config ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >> ios auth storage api
+            #cd packages/amplify-ui-tests
+            #cp ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>/simple_model.graphql ./schemas/simple_model.graphql
+            #npm run config ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >> ios auth storage api
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_configure_aws_resources.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -p ${circleci_root_directory}/amplify-cli/packages
       - run:
           name: "Build and UITest"
           command: |
@@ -273,8 +269,10 @@ jobs:
       - run:
           name: "Clean-Up UITest"
           command: |
-            cd packages/amplify-ui-tests
-            npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
+            # cd packages/amplify-ui-tests
+            # npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
+            cd ../aws-sdk-ios-samples/CircleciScripts
+            python3 run_cleanup_uitests.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -p ${circleci_root_directory}/amplify-cli/packages
       - store_artifacts:
           path: ../uitest_logs
   integration_test_android:
