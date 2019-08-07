@@ -14,6 +14,7 @@ const {
   getProjectAwsRegion,
   updateAmplifyMeta,
   getSDLSchemaLocation,
+  getFrontEndHandler,
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
@@ -67,6 +68,8 @@ async function add(context, apiId = null) {
       answer.schemaLocation,
       region,
     );
+  } else if (getFrontEndHandler(context) === 'android') {
+    schema = answer.schemaLocation;
   } else {
     schema = getSDLSchemaLocation(apiDetails.name);
   }
