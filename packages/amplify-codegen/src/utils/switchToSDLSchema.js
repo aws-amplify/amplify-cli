@@ -1,7 +1,11 @@
 const loadConfig = require('../codegen-config');
 const getSDLSchemaPath = require('./getSDLSchemaLocation');
+const getFrontendHandler = require('./getFrontEndHandler');
 
 function switchToSDLSchema(context, apiName) {
+  if (getFrontendHandler(context) === 'android') {
+    return false;
+  }
   const config = loadConfig(context);
   const projects = config.getProjects();
   const project = projects.find(p => p.projectName === apiName);

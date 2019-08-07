@@ -127,15 +127,14 @@ export class StorageServer {
   }
 
   private async handleRequestGet(request, response) {
-    // fill in  this content
-    // console.log("enter get");
+
     const filePath = normalize(
       join(this.localDirectoryPath, request.params.path)
     );
     if (existsSync(filePath)) {
       readFile(filePath, (err, data) => {
         if (err) {
-          console.log("error");
+          console.log(`failed to read file ${filePath} with error ${err}`);
         }
         response.send(data);
       });
@@ -157,8 +156,6 @@ export class StorageServer {
   }
 
   private async handleRequestList(request, response) {
-    // fill in  this content
-    // console.log("enter list");
     let ListBucketResult = {};
     ListBucketResult[LIST_CONTENT] = [];
     ListBucketResult[LIST_COMMOM_PREFIXES] = [];
@@ -177,7 +174,6 @@ export class StorageServer {
     const dirPath = normalize(
       join(this.localDirectoryPath, request.params.path) + "/"
     );
-    //console.log("dirPath", dirPath);
     let files = glob.sync(dirPath + "/**/*");
     for (let file in files) {
       if (delimiter !== "" && checkfile(file, prefix, delimiter)) {
@@ -197,7 +193,6 @@ export class StorageServer {
           ETag: etag(files[file]),
           StorageClass: "STANDARD"
         });
-        //console.log(request.params.path + files[file].split(dirPath)[1]);
         keyCount = keyCount + 1;
       }
     }
@@ -222,7 +217,6 @@ export class StorageServer {
 
   private async handleRequestDelete(request, response) {
     // fill in  this content
-    // console.log("enter delete");
     const filePath = join(this.localDirectoryPath, request.params.path);
     if (existsSync(filePath)) {
       unlink(filePath, err => {
@@ -326,9 +320,7 @@ function stripChunkSignature(buf: Buffer) {
     return buf;
   }
   for (let i = 0; i < offset.length - 1; i++) {
-    //console.log("i = ", i);
     start = start + offset[i] + 2;
-    //console.log("start= ", start);
     arr.push(buf.slice(start, start + chunk_size[i]));
     start = start + chunk_size[i] + 2;
   }

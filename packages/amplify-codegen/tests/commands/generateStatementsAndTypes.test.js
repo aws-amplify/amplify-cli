@@ -6,7 +6,7 @@ const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors')
 const path = require('path');
 
 const {
-  downloadIntrospectionSchemaWithProgress,
+  ensureIntrospectionSchema,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
 
@@ -71,11 +71,12 @@ describe('command - generateStatementsAndTypes', () => {
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
     await generateStatementsAndTypes(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
