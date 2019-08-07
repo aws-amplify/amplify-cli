@@ -12,7 +12,8 @@
     "test": "jest",
     "test-ci": "jest --ci -i",
     "lint": "eslint src",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+    "postinstall": "node scripts/post-install.js"
   },
   "engines": {
     "node": ">=8.12.0"
