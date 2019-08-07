@@ -68,12 +68,12 @@ export async function terminateDDB(emulator, dbPath) {
       await emulator.terminate();
     }
   } catch (e) {
-    console.log('Failed to terminate the DDB server', e);
+    console.log('Failed to terminate the Local DynamoDB Server', e);
   }
   try {
     fs.removeSync(dbPath);
   } catch (e) {
-    console.log('Failed delete DDB Folder', e);
+    console.log('Failed delete Local DynamoDB Server Folder', e);
   }
 }
 

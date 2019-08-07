@@ -38,7 +38,7 @@ export class VelocityTemplate {
     } catch (e) {
       const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
-      const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName}`);
+      const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
       throw templateError;
     }

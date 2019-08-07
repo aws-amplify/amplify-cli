@@ -51,7 +51,7 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       }
     } catch (e) {
       if (e.code) {
-        console.log('Error while executing dynamodb');
+        console.log('Error while executing Local DynamoDB');
         console.log(JSON.stringify(payload, null, 4));
         console.log(e);
         e.extensions = { errorType: 'DynamoDB:' + e.code };
@@ -126,7 +126,6 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         ...(filter.expressionNames || {}),
         ...(keyCondition.expressionNames || {}),
       }),
-      // XXX: need to validate that this works ...
       ExclusiveStartKey: nextToken ? JSON.parse(Buffer.from(nextToken, 'base64').toString()) : null,
       IndexName: index,
       Limit: limit,

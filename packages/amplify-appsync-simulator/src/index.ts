@@ -35,7 +35,6 @@ export class AmplifyAppSyncSimulator {
   private rawSchema: string;
   private _schema: GraphQLSchema;
   private _server: AppSyncSimulatorServer;
-  private _eventEmitter: EventEmitter;
   private _config: AmplifyAppSyncSimulatorConfig;
   private _appSyncConfig: AmplifyAppSyncAPIConfig;
   constructor(
@@ -46,12 +45,11 @@ export class AmplifyAppSyncSimulator {
   ) {
     this._serverConfig = serverConfig;
     this._pubsub = new PubSub();
-    this._eventEmitter = new EventEmitter();
     try {
       this._server = new AppSyncSimulatorServer(serverConfig, this);
     } catch (e) {
+      console.log('Could not start AppSync mock endpoint');
       console.log(e);
-      // XXX: Show error message but keep the server config
     }
   }
 
