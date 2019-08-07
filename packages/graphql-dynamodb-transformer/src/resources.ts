@@ -571,7 +571,12 @@ export class ResourceFactory {
                         raw(`!$util.isNull($${ResourceConstants.SNIPPETS.ModelQueryExpression}) && !$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.ModelQueryExpression}.expression)`),
                         compoundExpression([
                             qref(`$${requestVariable}.put("operation", "Query")`),
-                            qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`)
+                            qref(`$${requestVariable}.put("query", $${ResourceConstants.SNIPPETS.ModelQueryExpression})`),
+                            ifElse(
+                                raw(`!$util.isNull($ctx.args.sortDirection) && $ctx.args.sortDirection == "DESC"`),
+                                set(ref(`$ListRequest.scanIndexForward`), bool(false)),
+                                set(ref(`$ListRequest.scanIndexForward`), bool(true)),
+                            )
                         ]),
                         qref(`$${requestVariable}.put("operation", "Scan")`)
                     ),
