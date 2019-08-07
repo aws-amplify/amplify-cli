@@ -10,6 +10,7 @@ import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks'
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
+import { expectFields } from '../testUtil';
 
 jest.setTimeout(2000000);
 
@@ -309,6 +310,16 @@ test('Test Customer Mutation with list member', async () => {
     expect(getCustomer1.data.getCustomer.addresslist).toEqual(["thing3", "thing4"]);
 })
 
+test('Test @key directive with customer sortDirection', async () => {
+    await createOrder('testorder1@email.com', '1', '2016-03-10');
+    await createOrder('testorder1@email.com', '2', '2018-05-22');
+    await createOrder('testorder1@email.com', '3', '2019-06-27');
+    const newOrders = await listOrders('testorder1@email.com', { beginsWith: "201" }, "DESC");
+    const oldOrders = await listOrders('testorder1@email.com', { beginsWith: "201" }, "ASC");
+    expect(newOrders.data.listOrders.items[0].createdAt).toEqual('2019-06-27');
+    expect(oldOrders.data.listOrders.items[0].createdAt).toEqual('2016-03-10');
+})
+
 async function createCustomer(email: string, addresslist: string[], username: string) {
     const result = await GRAPHQL_CLIENT.query(`mutation CreateCustomer($input: CreateCustomerInput!) {
         createCustomer(input: $input) {
@@ -351,7 +362,7 @@ async function getCustomer(email: string) {
     return result;
 }
 
-async function createOrder(customerEmail: string, orderId: string) {
+async function createOrder(customerEmail: string, orderId: string, createdAt: string = new Date().toISOString()) {
     const result = await GRAPHQL_CLIENT.query(`mutation CreateOrder($input: CreateOrderInput!) {
         createOrder(input: $input) {
             customerEmail
@@ -359,7 +370,7 @@ async function createOrder(customerEmail: string, orderId: string) {
             createdAt
         }
     }`, {
-        input: { customerEmail, orderId, createdAt: new Date().toISOString() }
+        input: { customerEmail, orderId, createdAt }
     });
     console.log(JSON.stringify(result, null, 4));
     return result;
@@ -403,6 +414,32 @@ async function getOrder(customerEmail: string, createdAt: string) {
     }`, { customerEmail, createdAt });
     console.log(JSON.stringify(result, null, 4));
     return result;
+}
+
+interface ModelStringKeyConditionInput {
+    eq?: string,
+    gt?: string,
+    ge?: string,
+    lt?: string,
+    le?: string,
+    between?: string[],
+    beginsWith?: string,
+}
+
+async function listOrders(customerEmail: string, createdAt: ModelStringKeyConditionInput, sortDirection: string ) {
+    const input  = { customerEmail, createdAt, sortDirection };
+    const result = await GRAPHQL_CLIENT.query(`query ListOrders(
+        $customerEmail: String, $createdAt: ModelStringKeyConditionInput, $sortDirection: ModelSortDirection) {
+            listOrders(customerEmail: $customerEmail, createdAt: $createdAt, sortDirection: $sortDirection) {
+                items {
+                    orderId
+                    customerEmail
+                    createdAt
+                }
+            }
+        }`, input);
+        console.log(JSON.stringify(result, null, 4));
+        return result;
 }
 
 async function createItem(orderId: string, status: string, name: string, createdAt: string = new Date().toISOString()) {
