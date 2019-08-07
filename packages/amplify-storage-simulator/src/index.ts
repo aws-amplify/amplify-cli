@@ -21,6 +21,7 @@ export class AmplifyStorageSimulator {
     try {
       this._server = new StorageServer(serverConfig);
     } catch (e) {
+      console.log('Mock storage sever failed to start');
       console.log(e);
     }
   }

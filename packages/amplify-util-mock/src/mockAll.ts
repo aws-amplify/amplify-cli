@@ -33,7 +33,7 @@ export async function mockAllCategories(context: any) {
           `Pushing to the cloud failed with the following error \n${e.message}\n\n`
         );
         const startServer = await await context.amplify.confirmPrompt.run(
-          'Do you still want to start the mock server'
+          'Do you still want to start the mock server?'
         );
         if (!startServer) {
           return;

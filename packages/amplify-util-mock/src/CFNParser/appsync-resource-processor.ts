@@ -83,7 +83,7 @@ export function graphQLDataSource(
 
   // XXX: Handle un-supported data sources
   console.log(
-    `Data soruce of type ${typeName} is not supported by in local testing. A non data source will be used`
+    `Data source of type ${typeName} is not supported by local mocking. A NONE data source will be used.`
   );
   return {
     name: resource.Properties.Name,
