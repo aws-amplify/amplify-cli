@@ -5,6 +5,7 @@ import { execute, parse, specifiedRules, validate } from 'graphql';
 import * as jwtDecode from 'jwt-decode';
 import { join } from 'path';
 import * as portfinder from 'portfinder';
+import { address as getLocalIpAddress } from 'ip';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncSimulatorServerConfig } from '../type-definition';
 import { exposeGraphQLErrors } from '../utils/expose-graphql-errors';
@@ -53,7 +54,7 @@ export class OperationServer {
 
     return await e2p(this.server, 'listening').then(() => {
       this.connection = this.server.address();
-      this.url = `http://localhost:${this.connection.port}`;
+      this.url = `http://${getLocalIpAddress()}:${this.connection.port}`;
       return this.server;
     });
   }
