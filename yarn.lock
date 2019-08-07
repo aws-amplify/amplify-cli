@@ -8545,13 +8545,6 @@ fs-constants@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
 
-fs-ext@^1.2.1:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/fs-ext/-/fs-ext-1.3.0.tgz#d841ee147e73640c2407ea9e210774e119f6a0b9"
-  integrity sha512-5vnYjW7wivBliuAF9UKakoponxubTtom81e5usWGUT/i66z+3rPWUkfNnU1dFqGjo3FL3e0Uepk+pdyI08Wn+Q==
-  dependencies:
-    nan "^2.14.0"
-
 fs-ext@~0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/fs-ext/-/fs-ext-0.5.0.tgz#9c1f9a20b8e7e012e0a914b5e19132724f44f69e"
@@ -14178,7 +14171,7 @@ nan@2.3.5, nan@~2.3.0:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.3.5.tgz#822a0dc266290ce4cd3a12282ca3e7e364668a08"
   integrity sha1-gioNwmYpDOTNOhIoLKPn42Rmigg=
 
-nan@^2.0, nan@^2.12.1, nan@^2.14.0:
+nan@^2.0, nan@^2.12.1:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
