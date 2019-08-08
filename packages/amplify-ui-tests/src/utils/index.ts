@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { mkdirSync } from 'fs';
+import { mkdirSync, readFileSync } from 'fs';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import { writeFile } from 'fs';
@@ -13,10 +13,7 @@ export function getCLIPath() {
 }
 
 export function getAwsCLIPath() {
-  if (isCI()) {
-    return 'aws';
-  }
-  return '/Users/lizeyu/Library/Python/3.7/bin/aws';
+  return 'aws';
 }
 
 export function createNewProjectDir(root?: string): string {
@@ -36,7 +33,6 @@ export function deleteProjectDir(root: string) {
 }
 
 export function isCI(): Boolean {
-  //return process.env.CI ? false : true;
   return process.env.CI ? true : false;
 }
 
@@ -49,6 +45,10 @@ export function getSampleRootPath() : string {
   return join(__dirname, '../../../../..', 'photo-albums')
 }
 
+export function getUITestConfig() {
+  return JSON.parse(readFileSync(join(__dirname, '../../test.json'), 'utf8'));
+}
+
 export function createTestMetaFile(destRoot: string, settings: any) {
   let testEnv: any = {
     baseUrl: 'http://localhost:' + settings.port,
@@ -58,12 +58,13 @@ export function createTestMetaFile(destRoot: string, settings: any) {
       COGNITO_SIGN_IN_PASSWORD: settings.password,
       COGNITO_SIGN_IN_EMAIL: settings.email,
       COGNITO_SIGN_IN_PHONE_NUMBER: settings.phone
-    }
+    },
+    testFiles: settings.testFiles
   };
   if (isCI()) {
     testEnv = {...testEnv,
-      videosFolder: "/root/videos/" + settings.category,
-      screenshotsFolder: "/root/screenshots/" + settings.category,
+      videosFolder: "/root/videos/" + settings.name,
+      screenshotsFolder: "/root/screenshots/" + settings.name,
       video: true
     };
   }

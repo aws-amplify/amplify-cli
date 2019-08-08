@@ -4,23 +4,30 @@ import {
   amplifyPushApi
 } from '../../src/init';
 import { addApiWithSimpleModel, readSchemaDocument } from '../../src/categories/api';
-import { createNewProjectDir, deleteProjectDir, createTestMetaFile } from '../../src/utils';
+import { createNewProjectDir, deleteProjectDir, createTestMetaFile, getUITestConfig } from '../../src/utils';
 import { addAuthWithDefault } from '../../src/categories/auth';
 import { copyAWSExportsToProj, existsAWSExportsPath } from '../../src/utils/projectMeta';
-import { runCypressTest, gitCloneSampleApp, buildApp, startServer, closeServer, signUpNewUser } from '../../src/utils/command';
+import { runCypressTest, gitCloneSampleApp, buildApp, startServer, closeServer, signUpNewUser, setupCypress } from '../../src/utils/command';
+import { join } from 'path';
 
 describe('Javascript SDK', () => {
   let projRoot: string;
   let destRoot: string;
-  const API_PORT_NUMBER: string = '3003';
-  const JS_SAMPLE_APP_REPO: string = 'https://github.com/AaronZyLee/photo-albums.git';
+  const { API, gitRepo } = getUITestConfig();
+  const API_PORT_NUMBER: string = API.port;
+  const JS_SAMPLE_APP_REPO: string = gitRepo;
 
-  describe('Simple API UI test:', async () => {
+  describe('Simple GraphQL UI test:', async () => {
+
+    const { apps } = API.simpleGraphQL;
+    let settings = {};
+
     beforeAll(async () => {
       projRoot = createNewProjectDir();
       jest.setTimeout(1000 * 60 * 60); // 1 hour
       await gitCloneSampleApp(projRoot, {repo: JS_SAMPLE_APP_REPO});
-      destRoot = projRoot + '/photo-albums';
+      destRoot = projRoot + '/amplify-js-samples-staging';
+      await setupCypress(destRoot);
     });
 
     afterAll(async () => {
@@ -31,38 +38,34 @@ describe('Javascript SDK', () => {
     it('should set up amplify backend and generate aws-export.js file', async () => {
       await initProjectWithProfile(projRoot, {name: 'simplemodel'});
       readSchemaDocument('simple_model');
-      await addAuthWithDefault(projRoot, {});
-      await addApiWithSimpleModel(projRoot, {});
+      await addAuthWithDefault(projRoot);
+      await addApiWithSimpleModel(projRoot);
       await amplifyPushApi(projRoot);
       expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy();
     });
 
     it('should have user pool in backend and sign up a user for test', async () => {
-      const settings = await signUpNewUser(projRoot);
-      await createTestMetaFile(destRoot, {...settings, port: API_PORT_NUMBER, category: "api"});
+      settings = await signUpNewUser(projRoot);
   })
 
     describe('Run UI tests on JS app', async () => {
+      let appPort = API_PORT_NUMBER;
       afterEach(async () => {
-        await closeServer(destRoot, {port: API_PORT_NUMBER});
+        await closeServer(destRoot, {port: appPort});
       });
-
-      it('should pass all UI tests on React app', async () => {
-        copyAWSExportsToProj(projRoot, destRoot, 'react', 'auth/amplify-authenticator');
-        await buildApp(destRoot, {});
-        await startServer(destRoot, {category: 'api'});
-        await runCypressTest(destRoot, {platform: 'react', category: 'api'}).then(isPassed => expect(isPassed).toBeTruthy());
-      });
-
-      it('should pass all UI tests on Angular app', () => {
-        //TODO: add angular tests
-      })
-
-
-      it('should pass all UI tests on Vue app', () => {
-        //TODO: add vue tests
-      });
+      for (let i = 0; i < apps.length; i++) {
+        it(`should pass all UI tests on app <${apps[i].name}>`, async () => {
+          const appRoot = join(destRoot, apps[i].path);
+          appPort = apps[i].port ? apps[i].port : API_PORT_NUMBER;
+          if (!apps[i].hasExports) {
+            copyAWSExportsToProj(projRoot, appRoot);
+          }
+          await createTestMetaFile(destRoot, {...settings, port: appPort, name: apps[i].name, testFiles: apps[i].testFiles});
+          await buildApp(appRoot);
+          await startServer(appRoot, {port: appPort});
+          await runCypressTest(destRoot).then(isPassed => expect(isPassed).toBeTruthy());
+        });
+      }
     });
-
   });
 });

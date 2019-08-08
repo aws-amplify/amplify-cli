@@ -353,18 +353,18 @@ workflows:
       #           - integtest
       #     requires:
       #       - build
-      # - integration_test_ios:
-      #     appname: PhotoAlbum
-      #     filters:
-      #       branches:
-      #         only:
-      #           - integtest
-      #     requires:
-      #       - build
-      - integration_test_android:
-            filters:
-              branches:
-                only:
-                  - integtest
-            requires:
-              - build
+      - integration_test_ios:
+          appname: PhotoAlbum
+          filters:
+            branches:
+              only:
+                - integtest
+          requires:
+            - build
+      # - integration_test_android:
+      #       filters:
+      #         branches:
+      #           only:
+      #             - integtest
+      #       requires:
+      #         - build

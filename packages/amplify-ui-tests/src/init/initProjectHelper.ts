@@ -18,7 +18,7 @@ const defaultSettings = {
 
 export default function initProjectWithProfile(
   cwd: string,
-  settings: Object,
+  settings: any = {},
   verbose: Boolean = isCI() ? false : true
 ) {
   const s = { ...defaultSettings, ...settings };
@@ -51,7 +51,7 @@ export default function initProjectWithProfile(
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
-      .run(function(err) {
+      .run(function(err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -63,7 +63,7 @@ export default function initProjectWithProfile(
 
 export function initAndroidProject(
   cwd: string,
-  settings: any,
+  settings: any = {},
   verbose: Boolean = isCI() ? false : true
 ) {
   return new Promise((resolve, reject) => {
@@ -98,7 +98,7 @@ export function initAndroidProject(
 
 export function initIosProject(
   cwd: string,
-  settings: any,
+  settings: any = {},
   verbose: Boolean = isCI() ? false : true
 ) {
   return new Promise((resolve, reject) => {

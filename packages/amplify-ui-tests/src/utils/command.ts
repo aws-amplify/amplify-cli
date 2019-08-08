@@ -1,5 +1,6 @@
 import * as nexpect from 'nexpect';
 import { isCI, getProjectMeta, getAwsCLIPath } from '.';
+import { exec } from 'child_process';
 
 //30s to start server
 const SEVER_LAUNCH_TIME: number = 30000;
@@ -17,7 +18,8 @@ export function gitCloneSampleApp(
     verbose: boolean = !isCI()
 ) {
     return new Promise((resolve, reject) => {
-        nexpect.spawn('git', ['clone', '-b', 'dev', '--single-branch', settings.repo], {cwd, stripColors: true, verbose})
+        // nexpect.spawn('git', ['clone', '-b', 'dev', '--single-branch', settings.repo], {cwd, stripColors: true, verbose})
+        nexpect.spawn('git', ['clone', settings.repo], {cwd, stripColors: true, verbose})
         .run(err => {
             if (err) {
                 reject(err);
@@ -28,13 +30,25 @@ export function gitCloneSampleApp(
     });
 }
 
+export function setupCypress(cwd: string) {
+    return new Promise((resolve, reject) => {
+        exec('CYPRESS_INSTALL_BINARY=0 yarn', {cwd: cwd}, function(err: Error) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
 export function buildApp(
     cwd: string,
-    settings: any,
+    settings?: any,
     verbose: boolean = !isCI()
 ) {
     return new Promise((resolve, reject) => {
-        nexpect.spawn('npm', ['run', 'setup-dev'], {cwd, stripColors: true, verbose})
+        nexpect.spawn('yarn', {cwd, stripColors: true, verbose})
         .run(err => {
             if (err) {
                 reject(err);
@@ -47,13 +61,14 @@ export function buildApp(
 
 export function runCypressTest(
     cwd: string,
-    settings: { platform: string, category: string},
+    settings?: any,
     verbose: boolean = true
 ) {
     let isPassed: boolean = true;
     return new Promise((resolve) => {
         nexpect
-            .spawn('npm', ['run', 'cypress:' + settings.platform + ':' + settings.category], {cwd, stripColors: true, verbose})
+            // .spawn('npm', ['run', 'cypress:' + settings.platform + ':' + settings.category], {cwd, stripColors: true, verbose})
+            .spawn('yarn', ['cypress', 'run'], {cwd, stripColors: true, verbose})
             .wait('All specs passed!')
             .run(function(err: Error) {
                 if (err) {
@@ -70,15 +85,11 @@ function sleep(ms: number) {
 
 export async function startServer(
     cwd: string,
-    settings: {category: string},
+    settings: any,
     verbose: boolean = !isCI()
 ) {
-    nexpect.spawn('yarn', ['start:' + settings.category], {cwd, stripColors: true, verbose})
-    .run((err: Error) => {
-        if (err) {
-            console.log(err)
-        }
-    })
+    console.log('Server is starting at PORT ' + settings.port + ' with waiting time ' + SEVER_LAUNCH_TIME + 'ms');
+    exec('PORT=' + settings.port + ' yarn start', {cwd: cwd});
     //waiting for the server to launch
     await sleep(SEVER_LAUNCH_TIME);
 }

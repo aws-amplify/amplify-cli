@@ -3,7 +3,7 @@ import { getCLIPath, isCI, getEnvVars } from '../utils';
 
 export function addAuthWithDefault(
   cwd: string,
-  settings: any,
+  settings: any = {},
   verbose: boolean = !isCI()
 ) {
   return new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ export function addAuthWithDefault(
 
 export function addAuthWithDefaultSocial(
   cwd: string,
-  settings: any,
+  settings: any = {},
   verbose: boolean = !isCI()
 ) {
   return new Promise((resolve, reject) => {

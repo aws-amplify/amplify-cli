@@ -21,7 +21,7 @@ function getSchemaPath(schemaName: string): string {
 
 export function addApiWithSimpleModel(
   cwd: string,
-  settings: any,
+  settings: any = {},
   verbose: boolean = !isCI()
 ) {
   settings = {...defaultSettings, ...settings};

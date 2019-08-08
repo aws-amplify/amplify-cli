@@ -5,7 +5,7 @@ import { getCLIPath, isCI } from '../utils';
 //content, auth user only, all access
 export function addStorageWithDefault(
     cwd: string,
-    settings: any,
+    settings: any = {},
     verbose: boolean = !isCI()
   ) {
     return new Promise((resolve, reject) => {

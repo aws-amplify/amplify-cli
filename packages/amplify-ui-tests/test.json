@@ -1,0 +1,45 @@
+{
+    "gitRepo": "https://github.com/AaronZyLee/amplify-js-samples-staging.git",
+    "Auth": {
+        "port": "3001",
+        "simpleAuth": {
+            "apps": [
+                {
+                    "name": "Photo Album",
+                    "path": "samples/react/cli/photo-albums",
+                    "testFiles": "auth-storage-api/authenticator.spec.js"
+                },
+                {
+                    "name": "Auth in Vue",
+                    "path": "samples/vue/auth/amplify-authenticator",
+                    "testFiles": "auth/*.spec.js",
+                    "hasExports": "true"
+                }
+            ]
+        }
+    },
+    "Storage": {
+        "port": "3002",
+        "simpleStorage": {
+            "apps": [
+                {
+                    "name": "Photo Album",
+                    "path": "samples/react/cli/photo-albums",
+                    "testFiles": "auth-storage-api/storage.spec.js"
+                }
+            ]
+        }
+    },
+    "API": {
+        "port": "3003",
+        "simpleGraphQL": {
+            "apps": [
+                {
+                    "name": "Photo Album",
+                    "path": "samples/react/cli/photo-albums",
+                    "testFiles": "auth-storage-api/api.spec.js"
+                }
+            ]
+        }
+    }
+}

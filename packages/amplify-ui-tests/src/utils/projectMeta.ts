@@ -16,7 +16,7 @@ export function existsAWSExportsPath(projectRoot: string, platform: string) : bo
   return existsSync(metaFilePath)
 }
 
-export function copyAWSExportsToProj(projectRoot: string, destRoot: string, platform: string, testFolder: string) {
+export function copyAWSExportsToProj(projectRoot: string, destRoot: string) {
   const awsExporFiletPath = join(projectRoot, 'src', 'aws-exports.js')
   const destFilePath = join(destRoot, 'src', 'aws-exports.js')
   copyFileSync(awsExporFiletPath, destFilePath)
