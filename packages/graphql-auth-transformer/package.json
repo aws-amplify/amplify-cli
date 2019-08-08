@@ -18,6 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "graphql": "^0.13.2",
+    "graphql-connection-transformer": "3.8.0",
     "graphql-mapping-template": "3.4.0",
     "graphql-transformer-common": "3.11.0",
     "graphql-transformer-core": "3.10.0"
