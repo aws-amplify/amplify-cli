@@ -12,6 +12,7 @@ const HTTPTransformer = require('graphql-http-transformer').default;
 const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
+const { hashElement } = require('folder-hash');
 
 const { collectDirectivesByTypeNames, readTransformerConfiguration, writeTransformerConfiguration } = TransformPackage;
 
@@ -19,6 +20,7 @@ const category = 'api';
 const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
+const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -134,6 +136,7 @@ async function migrateProject(context, options) {
 }
 
 async function transformGraphQLSchema(context, options) {
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
     return;
@@ -158,7 +161,6 @@ async function transformGraphQLSchema(context, options) {
         return;
       }
       const { category, resourceName } = resource;
-      const backEndDir = context.amplify.pathManager.getBackendDirPath();
       resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     } else {
       // No appsync resource to update/add
@@ -254,9 +256,17 @@ async function transformGraphQLSchema(context, options) {
     }
   }
 
-  const buildDir = `${resourceDir}/build`;
-  const schemaFilePath = `${resourceDir}/${schemaFileName}`;
-  const schemaDirPath = `${resourceDir}/${schemaDirName}`;
+  const buildDir = path.normalize(path.join(resourceDir, 'build'));
+  const schemaFilePath = path.normalize(path.join(resourceDir, schemaFileName));
+  const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
+  const deploymentSubKey = await hashDirectory(resourceDir);
+  const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
+  const projectBucket = getProjectBucket(context);
+  const buildParameters = {
+    ...parameters,
+    S3DeploymentBucket: projectBucket,
+    S3DeploymentRootKey: deploymentRootKey,
+  };
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
@@ -297,6 +307,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const buildConfig = {
+    buildParameters,
     projectDirectory: options.dryrun ? false : resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag],
@@ -315,6 +326,23 @@ place .graphql files in a directory at ${schemaDirPath}`);
     fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
   }
   return transformerOutput;
+}
+
+function getProjectBucket(context) {
+  const projectDetails = context.amplify.getProjectDetails();
+  const projectBucket = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].DeploymentBucketName : '';
+  return projectBucket;
+}
+
+async function hashDirectory(directory) {
+  const options = {
+    encoding: 'hex',
+    folders: {
+      exclude: ['build'],
+    },
+  };
+
+  return hashElement(directory, options).then(result => result.hash);
 }
 
 // TODO: Remove until further discussion
