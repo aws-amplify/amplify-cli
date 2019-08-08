@@ -310,7 +310,12 @@ class CloudFormation {
       .then((result) => {
         let resources = result.StackResources;
         resources = resources.filter(resource =>
-          !['DeploymentBucket', 'AuthRole', 'UnauthRole'].includes(resource.LogicalResourceId));
+          !['DeploymentBucket',
+            'AuthRole',
+            'UnauthRole',
+            'UpdateRolesWithIDPFunction',
+            'UpdateRolesWithIDPFunctionOutputs',
+            'UpdateRolesWithIDPFunctionRole'].includes(resource.LogicalResourceId));
 
         const promises = [];
 
