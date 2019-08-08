@@ -38,7 +38,6 @@ function getAWSConfigObject(amplifyResources) {
       Default: {},
     },
   };
-
   const projectRegion = amplifyResources.metadata.Region;
 
   Object.keys(serviceResourceMapping).forEach((service) => {
@@ -216,8 +215,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
 function getS3Config(s3Resources) {
   const s3Resource = s3Resources[0];
-
-  return {
+  const testMode = s3Resource.testMode || false;
+  const result = {
     S3TransferUtility: {
       Default: {
         Bucket: s3Resource.output.BucketName,
@@ -225,6 +224,10 @@ function getS3Config(s3Resources) {
       },
     },
   };
+  if (testMode) {
+    result.S3TransferUtility.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+  return result;
 }
 
 function getPinpointConfig(pinpointResources) {
@@ -270,6 +273,8 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
     ? appsyncResource.output.GraphQLAPIKeyOutput
     : undefined;
 
+  const testMode = appsyncResource.testMode || false;
+
   const result = {
     AppSync: {
       Default: {
@@ -281,9 +286,15 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       },
     },
   };
+
+  if (testMode) {
+    result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+
   const additionalAuths = appsyncResource.output.authConfig.additionalAuthenticationProviders || [];
   additionalAuths.forEach((auth) => {
     const apiName = `${appsyncResource.resourceName}_${auth.authenticationType}`;
+
     const config = {
       ApiUrl: appsyncResource.output.GraphQLAPIEndpointOutput,
       Region: appsyncResource.output.region || projectRegion,
@@ -293,6 +304,9 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
         : undefined,
       ClientDatabasePrefix: apiName,
     };
+    if (testMode) {
+      config.DangerouslyConnectToHTTPEndpointForTesting = true;
+    }
     result.AppSync[apiName] = config;
   });
 

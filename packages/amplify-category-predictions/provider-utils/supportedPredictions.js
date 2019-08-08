@@ -9,7 +9,7 @@ function categories(info) {
     {
       type: 'list',
       name: 'predictionsCategory',
-      message: 'Please select from of the below mentioned categories',
+      message: 'Please select from one of the categories below',
       choices: [
         {
           name: 'Identify',
@@ -51,7 +51,7 @@ export function consoleSupportedCategories() {
     {
       type: 'list',
       name: 'category',
-      message: 'Please select from of the below mentioned categories',
+      message: 'Please select from one of the categories below',
       choices: [
         {
           name: 'Infer',

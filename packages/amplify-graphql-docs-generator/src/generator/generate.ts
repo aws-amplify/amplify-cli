@@ -3,12 +3,11 @@ import { buildClientSchema, GraphQLObjectType, GraphQLSchema, IntrospectionQuery
 import { generateQueries, generateMutations, generateSubscriptions, collectExternalFragments } from './generateAllOperations'
 import { GQLDocsGenOptions, GQLAllOperations} from './types'
 export default function generate(
-  schemaDocument: IntrospectionQuery,
+  schemaDoc: GraphQLSchema,
   maxDepth: number,
   options: GQLDocsGenOptions
 ): GQLAllOperations {
   try {
-    const schemaDoc: GraphQLSchema = buildClientSchema(schemaDocument)
     const queryTypes: GraphQLObjectType = schemaDoc.getQueryType()
     const mutationType: GraphQLObjectType = schemaDoc.getMutationType()
     const subscriptionType: GraphQLObjectType = schemaDoc.getSubscriptionType()

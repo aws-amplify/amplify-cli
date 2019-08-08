@@ -2,6 +2,8 @@ const addWalkthrough = require('../../src/walkthrough/add');
 const askShouldGenerateCode = require('../../src/walkthrough/questions/generateCode');
 
 const prePushAddCallback = require('../../src/callbacks/prePushAddCallback');
+const prePushUpdateCallback = require('../../src/callbacks/prePushUpdateCallback');
+const { isCodegenConfigured } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
   exeInfo: {},
@@ -11,6 +13,8 @@ const MOCK_CONTEXT = {
 };
 jest.mock('../../src/walkthrough/add');
 jest.mock('../../src/walkthrough/questions/generateCode');
+jest.mock('../../src/utils');
+jest.mock('../../src/callbacks/prePushUpdateCallback');
 
 const MOCK_RESOURCE_NAME = 'MOCK_API_NAME';
 const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE';
@@ -34,6 +38,7 @@ describe('callback - prePushAddCallback', () => {
     jest.resetAllMocks();
     addWalkthrough.mockReturnValue(MOCK_ANSWERS);
     askShouldGenerateCode.mockReturnValue(true);
+    isCodegenConfigured.mockReturnValue(false);
   });
 
   it('should walkthrough add questions', async () => {
@@ -60,5 +65,11 @@ describe('callback - prePushAddCallback', () => {
     askShouldGenerateCode.mockReturnValue(false);
     const result = await prePushAddCallback(MOCK_CONTEXT, MOCK_RESOURCE_NAME);
     expect(result).toBeUndefined();
+  });
+
+  it('should call prePushUpdate if the codegen config is already added', async () => {
+    isCodegenConfigured.mockReturnValue(true);
+    await prePushAddCallback(MOCK_CONTEXT, MOCK_RESOURCE_NAME);
+    expect(prePushUpdateCallback).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_RESOURCE_NAME);
   });
 });

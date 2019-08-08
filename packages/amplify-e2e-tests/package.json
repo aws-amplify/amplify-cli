@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.7.0",
+  "version": "1.9.0",
   "description": "",
   "main": "index.js",
   "private": true,

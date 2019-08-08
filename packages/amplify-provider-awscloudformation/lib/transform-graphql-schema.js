@@ -235,19 +235,23 @@ async function transformGraphQLSchema(context, options) {
   }
 
   const buildConfig = {
-    projectDirectory: resourceDir,
+    projectDirectory: options.dryrun ? false : resourceDir,
     transformers: transformerList,
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
+    disableResolverOverrides: options.disableResolverOverrides,
   };
-  await TransformPackage.buildAPIProject(buildConfig);
+  const transformerOutput = await TransformPackage.buildAPIProject(buildConfig);
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
   const jsonString = JSON.stringify(parameters, null, 4);
 
-  fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  if (!options.dryRun) {
+    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+  }
+  return transformerOutput;
 }
 
 // TODO: Remove until further discussion

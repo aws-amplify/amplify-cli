@@ -5,7 +5,7 @@ const statementsGen = require('amplify-graphql-docs-generator').default;
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
@@ -16,20 +16,14 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
-  projects.forEach(async (cfg) => {
+  await projects.forEach(async (cfg) => {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
       : path.dirname(path.dirname(includeFiles));
     const schemaPath = path.join(projectPath, cfg.schema);
-    if (forceDownloadSchema || fs.existsSync(schemaPath) !== 'file') {
-      await downloadIntrospectionSchemaWithProgress(
-        context,
-        apis[0].id,
-        schemaPath,
-        cfg.amplifyExtension.region,
-      );
-    }
+    const { region } = cfg.amplifyExtension;
+    await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
     const frontend = getFrontEndHandler(context);
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
