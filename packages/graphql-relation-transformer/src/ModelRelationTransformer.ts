@@ -11,12 +11,10 @@ import {
 } from 'graphql-dynamodb-transformer'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
-    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode,
-    InputObjectTypeDefinitionNode,
-    NamedTypeNode
+    Kind, FieldDefinitionNode, InterfaceTypeDefinitionNode
 } from 'graphql'
 import {
-    getBaseType, isListType, ModelResourceIDs, isNonNullType, wrapNonNull, ResourceConstants,
+    getBaseType, isListType, ModelResourceIDs, isNonNullType, ResourceConstants,
     NONE_VALUE, ResolverResourceIDs, applyKeyConditionExpression, attributeTypeFromScalar, blankObject,
     makeScalarKeyConditionForType, makeNamedType
 } from 'graphql-transformer-common'
@@ -24,12 +22,10 @@ import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DynamoDBMappingTemplate, str, print,
     ref, obj, set, nul,
-    ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block, ObjectNode, RawNode
+    ifElse, compoundExpression, bool, equals, iff, raw, Expression, ObjectNode,
 } from 'graphql-mapping-template'
 import { Fn } from 'cloudform-types'
 import Resolver from 'cloudform-types/types/appSync/resolver'
-import Key from 'cloudform-types/types/kms/key';
-import { PrivateIpAddressSpecification } from 'cloudform-types/types/ec2/networkInterface';
 
 interface KeySchema {
     AttributeName: string;
@@ -69,6 +65,7 @@ function makeGetItemRelationResolver(type: string,
             ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`)
         })
 
+    // Add sort key if there is one.
     if (connectionAttributes[1]) {
         const sortKeyName = keySchema[1].AttributeName as string
         keyObj.attributes.push([
@@ -118,6 +115,9 @@ function makeQueryRelationResolver(
         set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
         set(ref('query'), makeExpression(keySchema, connectionAttributes))
     ];
+
+    // If the key schema has a sort key but one is not provided for the query, let a sort key be
+    // passed in via $ctx.args.
     if (keySchema[1] && !connectionAttributes[1]) {
         let sortKeyType = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName).type;
         let sortKeyAttType = attributeTypeFromScalar(sortKeyType);
@@ -147,6 +147,7 @@ function makeQueryRelationResolver(
             nul()
         )
     }
+
     if (indexName) {
         let indexArg = "index";
         queryArguments[indexArg] = str(indexName);
@@ -399,11 +400,13 @@ export default class RelationTransformer extends Transformer {
             const sortKeyInfo = keySchema[1] ?
                                 { fieldName : keySchema[1].AttributeName, typeName : getBaseType(sortKeyType)} :
                                 undefined;
+
             this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo);
         }
 
     }
 
+    // Function below were taken directly from the Connection transformer files and have not been edited.
 
     private typeExist(type: string, ctx: TransformerContext): boolean {
         return Boolean(type in ctx.nodeMap);
