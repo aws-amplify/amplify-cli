@@ -166,7 +166,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     context.print.info('Creating a base schema for you...');
 
     await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      resourceDir, parameters, noConfig: true, authConfig,
+      resourceDir, parameters, authConfig,
     });
 
     return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
@@ -603,7 +603,7 @@ function checkIfAuthExists(context) {
 }
 
 async function migrate(context) {
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true, migrate: true });
 }
 
 function getIAMPolicies(resourceName, crudOptions) {

@@ -33,42 +33,10 @@ async function run(context, resourceDefinition) {
   validateCfnTemplates(context, resources);
 
   return packageResources(context, resources)
-    .then(() => {
-      projectDetails = context.amplify.getProjectDetails();
-
-      const appSyncAPIs = Object.keys(projectDetails.amplifyMeta.api).reduce((acc, apiName) => {
-        const api = projectDetails.amplifyMeta.api[apiName];
-        if (api.service === 'AppSync') {
-          acc.push({ ...api, name: apiName });
-        }
-        return acc;
-      }, []);
-
-      const appSyncApi = (appSyncAPIs && appSyncAPIs.length && appSyncAPIs.length > 0)
-        ? appSyncAPIs[0]
-        : undefined;
-
-      let authConfig = {};
-
-      if (appSyncApi) {
-        if (appSyncApi.output.securityType) {
-          authConfig = {
-            defaultAuthentication: {
-              authenticationType: appSyncApi.output.securityType,
-            },
-          };
-        } else {
-          ({ authConfig } = appSyncApi.output);
-        }
-      }
-
-      return transformGraphQLSchema(context, {
-        noConfig: true,
-        handleMigration: opts =>
-          updateStackForAPIMigration(context, 'api', undefined, opts),
-        authConfig,
-      });
-    })
+    .then(() => transformGraphQLSchema(context, {
+      handleMigration: opts =>
+        updateStackForAPIMigration(context, 'api', undefined, opts),
+    }))
     .then(() => uploadAppSyncFiles(context, resources, allResources))
     .then(() => prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated))
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))

@@ -5,6 +5,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import GraphQLTransform from 'graphql-transformer-core';
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer';
 import ModelAuthTransformer from 'graphql-auth-transformer';
+import ModelConnectionTransformer from 'graphql-connection-transformer'
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
@@ -29,9 +30,9 @@ import IdentityPoolRoleAttachment from 'cloudform-types/types/cognito/identityPo
 
 jest.setTimeout(2000000);
 
-const cf = new CloudFormationClient('us-west-2');
-
 const REGION = 'us-west-2';
+const cf = new CloudFormationClient(REGION);
+
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `MultiAuthModelAuthTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-multi-auth-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -143,11 +144,24 @@ beforeAll(async () => {
                 ]
             )
     }
+
+    type PostConnection @model @auth(rules:[{allow: public}]){
+        id: ID!
+        title: String!
+        comments: [CommentConnection] @connection(name: "PostComments")
+    }
+
+    type CommentConnection @model {
+        id: ID!
+        content: String!
+        post: PostConnection @connection(name: "PostComments")
+    }
     `;
 
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer(),
             new ModelAuthTransformer({
                 authConfig: {
                     defaultAuthentication: {
@@ -344,7 +358,6 @@ beforeAll(async () => {
                 out.rootStack.Resources[key].Properties.Parameters &&
                 out.rootStack.Resources[key].Properties.Parameters.unauthRoleName) {
                 delete out.rootStack.Resources[key].Properties.Parameters.unauthRoleName;
-                const a2 = out.rootStack.Resources[key].Properties.Parameters.unauthRoleName;
             }
         }
 
@@ -363,10 +376,6 @@ beforeAll(async () => {
                 }
             }
         }
-
-        // const a = out.rootStack.Resources.PostOwnerIAM.Properties.Parameters.unauthRoleName;
-        // delete out.rootStack.Resources.PostOwnerIAM.Properties.Parameters.unauthRoleName;
-        // const b = out.rootStack.Resources.PostOwnerIAM.Properties.Parameters.unauthRoleName;
 
         const params = {
             CreateAPIKey: '1',
@@ -391,6 +400,9 @@ beforeAll(async () => {
         const identityPoolId = getIdentityPoolId(finishedStack.Outputs);
         expect(identityPoolId).toBeTruthy();
         console.log(`Identity Pool Id: ${identityPoolId}`);
+
+        console.log(`User pool Id: ${USER_POOL_ID}`);
+        console.log(`User pool ClientId: ${userPoolClientId}`);
 
         // Verify we have all the details
         expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -517,6 +529,8 @@ test(`Test 'public' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublic on type Query');
         }
@@ -530,6 +544,8 @@ test(`Test 'public' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublic on type Query');
         }
@@ -574,6 +590,8 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublicIAM on type Query');
         }
@@ -587,6 +605,8 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPublicIAM on type Query');
         }
@@ -631,6 +651,8 @@ test(`Test 'private' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivate on type Query');
         }
@@ -644,6 +666,8 @@ test(`Test 'private' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivate on type Query');
         }
@@ -690,6 +714,8 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivateIAM on type Query');
         }
@@ -703,6 +729,8 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
                     id: postId
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostPrivateIAM on type Query');
         }
@@ -781,6 +809,8 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
                     id: postIdIAM
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostOwnerIAM on type Query');
         }
@@ -794,6 +824,8 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
                     id: postIdOwner
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostOwnerIAM on type Query');
         }
@@ -806,6 +838,8 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
                     id: postIdOwner
                 }
             });
+
+            expect(true).toBe(false);
         } catch (e) {
             expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostOwnerIAM on type Query');
         }
@@ -816,66 +850,67 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
     }
 });
 
-test(`Test IAM protected field operations`, async () => {
+describe(`Test IAM protected field operations`, () => {
     // This test reuses the unauth role, but any IAM credentials would work
     // in real world scenarios, we've to see if provider override works.
 
-    // - Create UserPool - no secret - Verify success
-    // - Create IAM - with secret - Verify success
-    // - Get UserPool - Verify success
-    // - Get UserPool with secret - Verify deny
-    // - Get IAM with secret - Verify deny (only create and update)
+    const createMutation = gql(`mutation {
+        createPostSecretFieldIAM(input: { title: "Hello, World!"  }) {
+            id
+            title
+        }
+    }`);
 
-    try {
-        const createMutation = gql(`mutation {
-            createPostSecretFieldIAM(input: { title: "Hello, World!"  }) {
-                id
-                title
+    const createMutationWithSecret = gql(`mutation {
+        createPostSecretFieldIAM(input: { title: "Hello, World!", secret: "42" }) {
+            id
+            title
+            secret
+        }
+    }`);
+
+    const getQuery = gql(`query ($id: ID!) {
+        getPostSecretFieldIAM(id: $id) {
+            id
+            title
+        }
+    }`);
+
+    const getQueryWithSecret = gql(`query ($id: ID!) {
+        getPostSecretFieldIAM(id: $id) {
+            id
+            title
+            secret
+        }
+    }`);
+
+    let postIdNoSecret = '';
+    let postIdSecret = '';
+
+    beforeAll(async () => {
+        try {
+            // - Create UserPool - no secret - Success
+            const response = await USER_POOL_AUTH_CLIENT.mutate({
+                mutation: createMutation,
+                fetchPolicy: 'no-cache',
+            });
+
+            postIdNoSecret = response.data.createPostSecretFieldIAM.id;
+
+            // - Create IAM - with secret - Success
+            const responseIAMSecret = await IAM_UNAUTHCLIENT.mutate({
+                mutation: createMutationWithSecret,
+                fetchPolicy: 'no-cache',
+            });
+
+            postIdSecret = responseIAMSecret.data.createPostSecretFieldIAM.id;
+        } catch (e) {
+            console.error(e);
+            expect(true).toEqual(false);
             }
-        }`);
+    });
 
-        const createMutationWithSecret = gql(`mutation {
-            createPostSecretFieldIAM(input: { title: "Hello, World!", secret: "42" }) {
-                id
-                title
-                secret
-            }
-        }`);
-
-        const getQuery = gql(`query ($id: ID!) {
-            getPostSecretFieldIAM(id: $id) {
-                id
-                title
-            }
-        }`);
-
-        const getQueryWithSecret = gql(`query ($id: ID!) {
-            getPostSecretFieldIAM(id: $id) {
-                id
-                title
-                secret
-            }
-        }`);
-
-        const response = await USER_POOL_AUTH_CLIENT.mutate({
-            mutation: createMutation,
-            fetchPolicy: 'no-cache',
-        });
-        expect(response.data.createPostSecretFieldIAM.id).toBeDefined();
-        expect(response.data.createPostSecretFieldIAM.title).toEqual('Hello, World!');
-
-        const postIdNoSecret = response.data.createPostSecretFieldIAM.id;
-
-        const responseIAMSecret = await IAM_UNAUTHCLIENT.mutate({
-            mutation: createMutationWithSecret,
-            fetchPolicy: 'no-cache',
-        });
-        expect(responseIAMSecret.data.createPostSecretFieldIAM.id).toBeDefined();
-        expect(responseIAMSecret.data.createPostSecretFieldIAM.title).toEqual('Hello, World!');
-        expect(responseIAMSecret.data.createPostSecretFieldIAM.secret).toEqual('42');
-
-        const postIdSecret = responseIAMSecret.data.createPostSecretFieldIAM.id;
-
+    it ('Get UserPool - Succeed', async () => {
         const responseGetUserPool = await USER_POOL_AUTH_CLIENT.query<any>({
             query: getQuery,
             fetchPolicy: 'no-cache',
@@ -885,33 +920,204 @@ test(`Test IAM protected field operations`, async () => {
         });
         expect(responseGetUserPool.data.getPostSecretFieldIAM.id).toBeDefined();
         expect(responseGetUserPool.data.getPostSecretFieldIAM.title).toEqual('Hello, World!');
+    });
 
-        try {
-            await USER_POOL_AUTH_CLIENT.query({
-                query: getQueryWithSecret,
-                fetchPolicy: 'no-cache',
-                variables: {
-                    id: postIdSecret
-                }
-            });
-        } catch (e) {
-            expect(e.message).toMatch('GraphQL error: Not Authorized to access secret on type PostSecretFieldIAM');
+    it ('Get UserPool with secret - Fail', async () => {
+        expect.assertions(1);
+        await expect (USER_POOL_AUTH_CLIENT.query({
+            query: getQueryWithSecret,
+            fetchPolicy: 'no-cache',
+            variables: {
+                id: postIdSecret
+            }
+        })).rejects.toThrow('GraphQL error: Not Authorized to access secret on type PostSecretFieldIAM');
+    });
+
+    it ('Get IAM with secret - Fail (only create and update)', async () => {
+        expect.assertions(1);
+        await expect (IAM_UNAUTHCLIENT.query({
+            query: getQueryWithSecret,
+            fetchPolicy: 'no-cache',
+            variables: {
+                id: postIdSecret
+            }
+        })).rejects.toThrow('GraphQL error: Not Authorized to access getPostSecretFieldIAM on type Query');
+    });
+});
+
+describe(`Connection tests with @auth on type`, () => {
+    const createPostMutation = gql(`mutation {
+        createPostConnection(input: { title: "Hello, World!" }) {
+            id
+            title
         }
+    }`);
 
-        try {
-            await IAM_UNAUTHCLIENT.query({
-                query: getQueryWithSecret,
-                fetchPolicy: 'no-cache',
-                variables: {
-                    id: postIdSecret
-                }
-            });
-        } catch (e) {
-            expect(e.message).toMatch('GraphQL error: Not Authorized to access getPostSecretFieldIAM on type Query');
+    const createCommentMutation = gql(`mutation ( $postId: ID! ) {
+        createCommentConnection(input: { content: "Comment", commentConnectionPostId: $postId }) {
+            id
+            content
         }
+    }`);
 
-    } catch (e) {
-        console.error(e);
-        expect(true).toEqual(false);
+    const getPostQuery = gql(`query ( $postId: ID! ) {
+        getPostConnection ( id: $postId ) {
+            id
+            title
+        }
     }
+    `);
+
+    const getPostQueryWithComments = gql(`query ( $postId: ID! ) {
+        getPostConnection ( id: $postId ) {
+            id
+            title
+            comments {
+                items {
+                    id
+                    content
+                }
+            }
+        }
+    }
+    `);
+
+    const getCommentQuery = gql(`query ( $commentId: ID! ) {
+        getCommentConnection ( id: $commentId ) {
+            id
+            content
+        }
+    }
+    `);
+
+    const getCommentWithPostQuery = gql(`query ( $commentId: ID! ) {
+        getCommentConnection ( id: $commentId ) {
+            id
+            content
+            post {
+                id
+                title
+            }
+        }
+    }
+    `);
+
+    let postId = '';
+    let commentId = '';
+
+    beforeAll(async () => {
+        try {
+            // Add a comment with ApiKey - Succeed
+            const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+                mutation: createPostMutation,
+                fetchPolicy: 'no-cache',
+            });
+
+            postId = response.data.createPostConnection.id;
+
+            // Add a comment with UserPool - Succeed
+            const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
+                mutation: createCommentMutation,
+                fetchPolicy: 'no-cache',
+                variables: {
+                    postId
+                }
+            });
+
+            commentId = commentResponse.data.createCommentConnection.id;
+        } catch (e) {
+            console.error(e);
+            expect(true).toEqual(false);
+        }
+    });
+
+    it ('Create a Post with UserPool - Fail', async () => {
+        expect.assertions(1);
+        await expect (USER_POOL_AUTH_CLIENT.mutate({
+            mutation: createPostMutation,
+            fetchPolicy: 'no-cache'
+        })).rejects.toThrow('GraphQL error: Not Authorized to access createPostConnection on type Mutation');
+    });
+
+    it ('Add a comment with ApiKey - Fail', async () => {
+        expect.assertions(1);
+        await expect (APIKEY_GRAPHQL_CLIENT.mutate({
+            mutation: createCommentMutation,
+            fetchPolicy: 'no-cache',
+            variables: {
+                postId
+            }
+        })).rejects.toThrow('Not Authorized to access createCommentConnection on type Mutation');
+    });
+
+    it ('Get Post with ApiKey - Succeed', async () => {
+        const responseGetPost = await APIKEY_GRAPHQL_CLIENT.query<any>({
+            query: getPostQuery,
+            fetchPolicy: 'no-cache',
+            variables: {
+                postId
+            }
+        });
+        expect(responseGetPost.data.getPostConnection.id).toEqual(postId);
+        expect(responseGetPost.data.getPostConnection.title).toEqual('Hello, World!');
+    });
+
+    it ('Get Post+Comments with ApiKey - Fail', async () => {
+        expect.assertions(1);
+        await expect (APIKEY_GRAPHQL_CLIENT.query<any>({
+            query: getPostQueryWithComments,
+            fetchPolicy: 'no-cache',
+            variables: {
+                postId
+            }
+        })).rejects.toThrow('Not Authorized to access items on type ModelCommentConnectionConnection');
+    });
+
+    it ('Get Post with UserPool - Fail', async () => {
+        expect.assertions(1);
+        await expect (USER_POOL_AUTH_CLIENT.query<any>({
+            query: getPostQuery,
+            fetchPolicy: 'no-cache',
+            variables: {
+                postId
+            }
+        })).rejects.toThrow('Not Authorized to access getPostConnection on type Query');
+    });
+
+    it ('Get Comment with UserPool - Succeed', async () => {
+        const responseGetComment = await USER_POOL_AUTH_CLIENT.query<any>({
+            query: getCommentQuery,
+            fetchPolicy: 'no-cache',
+            variables: {
+                commentId
+            }
+        });
+        expect(responseGetComment.data.getCommentConnection.id).toEqual(commentId);
+        expect(responseGetComment.data.getCommentConnection.content).toEqual('Comment');
+    });
+
+    it ('Get Comment with ApiKey - Fail', async () => {
+        expect.assertions(1);
+        await expect (APIKEY_GRAPHQL_CLIENT.query<any>({
+            query: getCommentQuery,
+            fetchPolicy: 'no-cache',
+            variables: {
+                commentId
+            }
+        })).rejects.toThrow('Not Authorized to access getCommentConnection on type Query');
+    });
+
+    it ('Get Comment with Post with UserPool - Succeed, but null for Post field', async () => {
+        const responseGetComment = await USER_POOL_AUTH_CLIENT.query<any>({
+            query: getCommentWithPostQuery,
+            errorPolicy: 'all',
+            fetchPolicy: 'no-cache',
+            variables: {
+                commentId
+            }
+        });
+        expect(responseGetComment.data.getCommentConnection.id).toEqual(commentId);
+        expect(responseGetComment.data.getCommentConnection.content).toEqual('Comment');
+        expect(responseGetComment.data.getCommentConnection.post).toBeNull();
+    });
 });
