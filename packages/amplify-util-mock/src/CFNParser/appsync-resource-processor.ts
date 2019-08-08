@@ -86,7 +86,7 @@ export function graphQLDataSource(
     `Data source of type ${typeName} is not supported by local mocking. A NONE data source will be used.`
   );
   return {
-    name: resource.Properties.Name,
+    name: resourceName,
     type: 'NONE',
   };
 }
