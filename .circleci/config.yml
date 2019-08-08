@@ -226,10 +226,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - run:
-          name: "Set-up master specs repo for cocoapods"
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+      # - run:
+      #     name: "Set-up master specs repo for cocoapods"
+      #     command: |
+      #       curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - run:
           name: "Set up environment variables"
           command: |
@@ -261,11 +261,11 @@ jobs:
             #npm run config ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >> ios auth storage api
             cd ../aws-sdk-ios-samples/CircleciScripts
             python3 run_configure_aws_resources.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -p ${circleci_root_directory}/amplify-cli/packages
-      - run:
-          name: "Build and UITest"
-          command: |
-            cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 run_build_and_uitest.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
+      # - run:
+      #     name: "Build and UITest"
+      #     command: |
+      #       cd ../aws-sdk-ios-samples/CircleciScripts
+      #       python3 run_build_and_uitest.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
       - run:
           name: "Clean-Up UITest"
           command: |
@@ -361,10 +361,10 @@ workflows:
                 - integtest
           requires:
             - build
-      # - integration_test_android:
-      #       filters:
-      #         branches:
-      #           only:
-      #             - integtest
-      #       requires:
-      #         - build
+      - integration_test_android:
+            filters:
+              branches:
+                only:
+                  - integtest
+            requires:
+              - build
