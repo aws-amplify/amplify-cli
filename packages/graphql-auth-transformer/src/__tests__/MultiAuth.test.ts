@@ -5,6 +5,7 @@ import {
 import GraphQLTransform from 'graphql-transformer-core'
 import { ResourceConstants } from 'graphql-transformer-common'
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer'
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer, AppSyncAuthConfiguration, AppSyncAuthMode } from '../ModelAuthTransformer'
 
 const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
@@ -28,7 +29,7 @@ const apiKeyDefaultConfig: AppSyncAuthConfiguration = {
     additionalAuthenticationProviders: []
 };
 
-const openIdDefaultConfig: AppSyncAuthConfiguration= {
+const openIdDefaultConfig: AppSyncAuthConfiguration = {
     defaultAuthentication: {
         authenticationType: 'OPENID_CONNECT'
     },
@@ -64,10 +65,10 @@ const userPoolsDirectiveName = 'aws_cognito_user_pools';
 const iamDirectiveName = 'aws_iam';
 const openIdDirectiveName = 'aws_oidc';
 
-
 const multiAuthDirective = '@auth(rules: [{allow: private}, {allow: public}, {allow: private, provider: iam }, {allow: owner, provider: oidc }])';
 const ownerAuthDirective = '@auth(rules: [{allow: owner}])';
 const ownerWithIAMAuthDirective = '@auth(rules: [{allow: owner, provider: iam }])';
+const ownerRestrictedPublicAuthDirective = '@auth(rules: [{allow: owner},{allow: public, operations: [read]}])';
 const groupsAuthDirective = '@auth(rules: [{allow: groups}])';
 const groupsWithProviderAuthDirective = '@auth(rules: [{allow: groups, provider: iam }])';
 const ownerOpenIdAuthDirective = '@auth(rules: [{allow: owner, provider: oidc }])';
@@ -78,7 +79,8 @@ const publicAuthDirective = '@auth(rules: [{allow: public}])';
 const publicUserPoolsAuthDirective = '@auth(rules: [{allow: public, provider: userPools}])';
 
 const getSchema = (authDirective: string) => {
-    return `type Post @model ${authDirective} {
+    return `
+    type Post @model ${authDirective} {
         id: ID!
         title: String!
         createdAt: String
@@ -86,10 +88,22 @@ const getSchema = (authDirective: string) => {
     }`;
 };
 
+const getSchemaWithFieldAuth = (authDirective: string) => {
+    return `
+    type Post @model {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+        protected: String ${authDirective}
+    }`;
+};
+
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
     new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
+            new ModelConnectionTransformer(),
             new ModelAuthTransformer({ authConfig })
         ]
     });
@@ -99,6 +113,25 @@ const getObjectType = (doc: DocumentNode, type: string): ObjectTypeDefinitionNod
         (def) => def.kind === Kind.OBJECT_TYPE_DEFINITION && def.name.value === type
         ) as ObjectTypeDefinitionNode | undefined;
 }
+
+const expectNone = (fieldOrType) => {
+    expect(fieldOrType.directives.length === 0);
+}
+
+const expectOne = (fieldOrType, directiveName) => {
+    expect(fieldOrType.directives.length === 1);
+    expect(fieldOrType.directives.find((d) => d.name.value === directiveName)).toBeDefined();
+}
+
+const expectTwo = (fieldOrType, directiveNames) => {
+    expect(directiveNames).toBeDefined();
+    expect(directiveNames).toHaveLength(2);
+    expect(fieldOrType.directives.length === 2);
+    expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[0])).toBeDefined();
+    expect(fieldOrType.directives.find((d) => d.name.value === directiveNames[1])).toBeDefined();
+}
+
+const getField = (type, name) => type.fields.find((f) => f.name.value === name);
 
 describe('Validation tests', () => {
     const validationTest = (authDirective, authConfig, expectedError) => {
@@ -179,7 +212,7 @@ found 'userPools' assigned.`
         validationTest(
             privateWithApiKeyAuthDirective,
             userPoolsDefaultConfig,
-            `@auth directive with 'private' strategy only supports 'apiKey' (default) and 'iam' providers, but \
+            `@auth directive with 'private' strategy only supports 'userPools' (default) and 'iam' providers, but \
 found 'apiKey' assigned.`
         );
     });
@@ -238,14 +271,12 @@ describe('Type directive transformation tests', () => {
         );
     });
 
-    test(`Operation fields are getting the directive added, when type has the @auth`, () => {
+    test(`Operation fields are getting the directive added, when type has the @auth for all operations`, () => {
         const schema = getSchema(ownerAuthDirective);
         const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
 
         const out = transformer.transform(schema);
-
         const schemaDoc = parse(out.schema);
-
         const queryType = getObjectType(schemaDoc, 'Query');
         const mutationType = getObjectType(schemaDoc, 'Mutation');
 
@@ -269,6 +300,23 @@ describe('Type directive transformation tests', () => {
         expect(out.resolvers['Mutation.deletePost.req.vtl']).toContain(authModeCheckSnippet);
     });
 
+    test(`Operation fields are getting the directive added, when type has the @auth only for allowed operations`, () => {
+        const schema = getSchema(ownerRestrictedPublicAuthDirective);
+        const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+        const out = transformer.transform(schema);
+        const schemaDoc = parse(out.schema);
+        const queryType = getObjectType(schemaDoc, 'Query');
+        const mutationType = getObjectType(schemaDoc, 'Mutation');
+
+        expect (expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
+        expect (expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+
+        expect (expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+    });
+
     test(`'public' with IAM provider adds policy for Unauth role`, () => {
         const schema = getSchema(publicIAMAuthDirective);
         const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
@@ -278,5 +326,69 @@ describe('Type directive transformation tests', () => {
         expect(
             out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy]
         ).toBeDefined();
+    });
+
+    test(`Field level @auth is propagated to type and the type related operations`, () => {
+        const schema = getSchemaWithFieldAuth(ownerRestrictedPublicAuthDirective);
+        const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+
+        const out = transformer.transform(schema);
+        const schemaDoc = parse(out.schema);
+        const queryType = getObjectType(schemaDoc, 'Query');
+        const mutationType = getObjectType(schemaDoc, 'Mutation');
+
+        expect (expectTwo(getField(queryType, 'getPost'), ['aws_cognito_user_pools', 'aws_api_key']));
+        expect (expectTwo(getField(queryType, 'listPosts'), ['aws_cognito_user_pools', 'aws_api_key']));
+
+        expect (expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+
+        const postType = getObjectType(schemaDoc, 'Post');
+        expect (expectTwo(getField(postType, 'protected'), ['aws_cognito_user_pools', 'aws_api_key']));
+
+        // Check that resolvers containing the authMode check block
+        const authModeCheckSnippet = '## [Start] Determine request authentication mode';
+
+        expect(out.resolvers['Post.protected.req.vtl']).toContain(authModeCheckSnippet);
+    });
+
+    test(`Connected type is also getting the directives added, when a field has @connection`, () => {
+        const schema = `
+            type Post @model @auth(rules:[{allow: private}]){
+                id: ID!
+                title: String!
+                comments: [Comment] @connection(name: "PostComments")
+            }
+
+            type Comment @model {
+                id: ID!
+                content: String!
+                post: Post @connection(name: "PostComments")
+            }
+        `;
+
+        const transformer = getTransformer(withAuthModes(apiKeyDefaultConfig, ['AMAZON_COGNITO_USER_POOLS']));
+        const out = transformer.transform(schema);
+        const schemaDoc = parse(out.schema);
+        const queryType = getObjectType(schemaDoc, 'Query');
+        const mutationType = getObjectType(schemaDoc, 'Mutation');
+
+        expect (expectOne(getField(queryType, 'getPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(queryType, 'listPosts'), 'aws_cognito_user_pools'));
+
+        expect (expectOne(getField(mutationType, 'createPost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'updatePost'), 'aws_cognito_user_pools'));
+        expect (expectOne(getField(mutationType, 'deletePost'), 'aws_cognito_user_pools'));
+
+        const postType = getObjectType(schemaDoc, 'Post');
+        expect (expectTwo(postType, ['aws_api_key', 'aws_cognito_user_pools']));
+        expect (expectNone(getField(postType, 'comments')));
+
+        const commentType = getObjectType(schemaDoc, 'Comment');
+        expect (expectOne(getField(commentType, 'post'), 'aws_cognito_user_pools'));
+
+        const modelPostConnectionType = getObjectType(schemaDoc, 'ModelPostConnection');
+        expect (expectOne(modelPostConnectionType, 'aws_cognito_user_pools'));
     });
 });

@@ -85,7 +85,7 @@ async function transformGraphQLSchema(context, options) {
   }
 
   let { resourceDir, parameters } = options;
-  const { forceCompile, authConfig } = options;
+  const { forceCompile } = options;
 
   // Compilation during the push step
   const {
@@ -182,6 +182,27 @@ async function transformGraphQLSchema(context, options) {
       throw new Error('Migration cancelled. Please downgrade to a older version of the Amplify CLI or migrate your API project.');
     }
     return await migrateProject(context, migrateOptions);
+  }
+
+  let { authConfig } = options;
+
+  //
+  // If we don't have an authConfig from the caller, use it from the
+  // already read resources[0], which is an AppSync API.
+  //
+
+  if (!authConfig) {
+    if (resources[0].output.securityType) {
+      // Convert to multi-auth format if needed.
+      authConfig = {
+        defaultAuthentication: {
+          authenticationType: resources[0].output.securityType,
+        },
+        additionalAuthenticationProviders: [],
+      };
+    } else {
+      ({ authConfig } = resources[0].output);
+    }
   }
 
   const buildDir = `${resourceDir}/build`;
