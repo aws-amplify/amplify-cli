@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.2...amplify-category-hosting@1.5.0) (2019-08-07)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.2...amplify-category-hosting@1.4.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.2...amplify-category-hosting@1.3.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@1.2.1...amplify-category-hosting@1.2.2) (2019-06-20)
 
 

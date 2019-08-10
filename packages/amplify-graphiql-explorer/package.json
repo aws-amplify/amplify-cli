@@ -1,0 +1,51 @@
+{
+  "name": "amplify-graphiql-explorer",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "add": "^2.0.6",
+    "codemirror": "^5.48.2",
+    "graphiql": "^0.13.2",
+    "graphiql-code-exporter": "^2.0.5",
+    "graphiql-explorer": "^0.4.3",
+    "graphql": "^14.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "react-scripts": "3.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "0.87.3",
+    "yarn": "^1.17.3"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.15",
+    "@types/node": "12.6.8",
+    "@types/react-dom": "16.8.5",
+    "cross-env": "^5.2.0",
+    "prettier": "^1.18.2"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "eject": "react-scripts eject",
+    "prettier": "prettier --config ../../.prettierrc --write src/**/*.ts[x]*"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:20002"
+}

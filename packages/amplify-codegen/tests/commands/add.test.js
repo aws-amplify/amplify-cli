@@ -8,10 +8,10 @@ const { AmplifyCodeGenAPINotFoundError } = require('../../src/errors');
 const add = require('../../src/commands/add');
 
 const {
-  downloadIntrospectionSchemaWithProgress,
   getAppSyncAPIDetails,
   getAppSyncAPIInfo,
   getProjectAwsRegion,
+  getSDLSchemaLocation,
 } = require('../../src/utils');
 
 const MOCK_CONTEXT = {
@@ -35,7 +35,7 @@ const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_DOCS_FILE_PATH = 'MOCK_DOCS_FILE_PATH';
 const MOCK_ENDPOINT = 'MOCK_APPSYNC_ENDPOINT';
 const MOCK_API_NAME = 'MOCK_API_NAME';
-const MOCK_DOWNLOADED_SCHEMA_LOCATION = 'MOCK_DOWNLOADED_SCHEMA_LOCATION';
+const MOCK_SCHEMA_FILE_LOCATION = 'amplify/backend/api/MOCK_API_NAME/build/schema.graphql';
 const MOCK_AWS_REGION = 'MOCK_AWS_PROJECT_REGION';
 
 const MOCK_ANSWERS = {
@@ -68,8 +68,8 @@ describe('command - add', () => {
     addWalkthrough.mockReturnValue(MOCK_ANSWERS);
     getAppSyncAPIDetails.mockReturnValue([MOCK_APPSYNC_API_DETAIL]);
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
-    downloadIntrospectionSchemaWithProgress.mockReturnValue(MOCK_DOWNLOADED_SCHEMA_LOCATION);
     getProjectAwsRegion.mockReturnValue(MOCK_AWS_REGION);
+    getSDLSchemaLocation.mockReturnValue(MOCK_SCHEMA_FILE_LOCATION);
   });
 
   it('should walkthrough add questions', async () => {
@@ -77,18 +77,12 @@ describe('command - add', () => {
     expect(getAppSyncAPIDetails).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getAppSyncAPIInfo).not.toHaveBeenCalled();
     expect(LOAD_CONFIG_METHODS.getProjects).toHaveBeenCalledWith();
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
-      MOCK_CONTEXT,
-      MOCK_API_ID,
-      MOCK_SCHEMA_LOCATION,
-      MOCK_AWS_REGION,
-    );
     expect(LOAD_CONFIG_METHODS.addProject).toHaveBeenCalled();
     const newProjectConfig = LOAD_CONFIG_METHODS.addProject.mock.calls[0][0];
     expect(newProjectConfig.projectName).toEqual(MOCK_API_NAME);
     expect(newProjectConfig.includes).toEqual(MOCK_INCLUDE_PATTERN);
     expect(newProjectConfig.excludes).toEqual(MOCK_EXCLUDE_PATTERN);
-    expect(newProjectConfig.schema).toEqual(MOCK_DOWNLOADED_SCHEMA_LOCATION);
+    expect(newProjectConfig.schema).toEqual(MOCK_SCHEMA_FILE_LOCATION);
     expect(newProjectConfig.amplifyExtension.codeGenTarget).toEqual(MOCK_TARGET);
     expect(newProjectConfig.amplifyExtension.generatedFileName).toEqual(MOCK_GENERATED_FILE_NAME);
     expect(newProjectConfig.amplifyExtension.docsFilePath).toEqual(MOCK_DOCS_FILE_PATH);
@@ -145,10 +139,6 @@ describe('command - add', () => {
     await expect(add(MOCK_CONTEXT)).rejects.toBeInstanceOf(Error);
   });
 
-  it('should throw an error if no AppSync APIs is not pushed to cloud', async () => {
-    getAppSyncAPIDetails.mockReturnValue([{ name: ' pending push' }]);
-    await expect(add(MOCK_CONTEXT)).rejects.toBeInstanceOf(Error);
-  });
   it('should not generate statements when user chooses not to', async () => {
     addWalkthrough.mockReturnValue({ ...MOCK_ANSWERS, shouldGenerateDocs: false });
     await add(MOCK_CONTEXT);

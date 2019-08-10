@@ -6,10 +6,16 @@ coverage
 .nyc_output
 package-lock.json
 packages/amplify-cli/amplify/.config/
+packages/amplify-appsync-simulator/public
+packages/amplify-dynamodb-simulator/emulator
+packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 .vscode
 packages/graphql*/lib
+packages/amplify-appsync-simulator/lib
+packagea/amplify-graphiql-explorer/build
 packages/amplify-graphql*/lib
 packages/amplify-e2e-tests/lib
 packages/*/node_modules
 packages/*/package-lock.json
+packages/amplify-storage-simulator/lib
 **/.env

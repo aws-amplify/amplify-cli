@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
 const { hashElement } = require('folder-hash');
+const childProcess = require('child_process');
 
 async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
@@ -16,6 +17,7 @@ async function run(context, category, resourceName) {
 async function buildResource(context, resource) {
   const { category, resourceName } = resource;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const projectRoot = context.amplify.pathManager.searchProjectRootPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName, 'src'));
   const packageJsonPath = path.normalize(path.join(backEndDir, category, resourceName, 'src', 'package.json'));
   const packageJsonMeta = fs.statSync(packageJsonPath);
@@ -28,10 +30,11 @@ async function buildResource(context, resource) {
     !resource.lastBuildTimeStamp ||
     new Date(packageJsonMeta.mtime) > new Date(resource.lastBuildTimeStamp)
   ) {
-    const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-    require('child_process').spawnSync(npm, ['install'], { cwd: resourceDir });
+    installDependencies(resourceDir);
     context.amplify.updateamplifyMetaAfterBuild(resource);
   }
+
+  runBuildScriptHook(resourceName, projectRoot);
 
   if (
     !resource.lastPackageTimeStamp ||
@@ -72,6 +75,47 @@ async function buildResource(context, resource) {
 
   return new Promise(resolve => resolve({ zipFilename, zipFilePath }));
 }
+
+function runBuildScriptHook(resourceName, projectRoot) {
+  const scriptName = `amplify:${resourceName}`;
+  if (scriptExists(projectRoot, scriptName)) {
+    runPackageManager(projectRoot, scriptName);
+  }
+}
+
+function scriptExists(projectRoot, scriptName) {
+  const rootPackageJsonContents = require(path.normalize(path.join(projectRoot, 'package.json')));
+  return rootPackageJsonContents.scripts && rootPackageJsonContents.scripts[scriptName];
+}
+
+function installDependencies(resourceDir) {
+  runPackageManager(resourceDir);
+}
+
+function runPackageManager(cwd, scriptName = undefined) {
+  const isWindows = /^win/.test(process.platform);
+  const npm = isWindows ? 'npm.cmd' : 'npm';
+  const yarn = isWindows ? 'yarn.cmd' : 'yarn';
+  const useYarn = fs.existsSync(`${cwd}/yarn.lock`);
+  const packageManager = useYarn ? yarn : npm;
+  const args = toPackageManagerArgs(useYarn, scriptName);
+  const childProcessResult = childProcess.spawnSync(packageManager, args, {
+    cwd,
+    stdio: 'pipe',
+    encoding: 'utf-8',
+  });
+  if (childProcessResult.status !== 0) {
+    throw new Error(childProcessResult.output);
+  }
+}
+
+function toPackageManagerArgs(useYarn, scriptName) {
+  if (scriptName) {
+    return useYarn ? [scriptName] : ['run-script', scriptName];
+  }
+  return useYarn ? [] : ['install'];
+}
+
 function isPackageOutdated(resourceDir, lastPackageTimeStamp) {
   const lastPackageDate = new Date(lastPackageTimeStamp);
   const sourceFiles = getSourceFiles(resourceDir, 'node_modules');

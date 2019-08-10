@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.11.0) (2019-08-07)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
+# [3.10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.10.0) (2019-08-02)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
+# [3.9.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.9.0) (2019-07-31)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 ## [3.8.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.4...graphql-dynamodb-transformer@3.8.5) (2019-07-24)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

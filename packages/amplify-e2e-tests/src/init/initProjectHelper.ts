@@ -51,7 +51,7 @@ export default function initProjectWithProfile(
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
-      .run(function(err) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -100,7 +100,7 @@ export function initProjectWithAccessKey(
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
-      .run(function(err) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -134,7 +134,7 @@ export function initNewEnvWithAccessKey(
       .wait(
         'Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything'
       )
-      .run(function(err) {
+      .run((err: Error) => {
         if (!err) {
           resolve();
         } else {

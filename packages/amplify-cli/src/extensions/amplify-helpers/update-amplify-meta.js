@@ -126,8 +126,8 @@ function updateamplifyMetaAfterResourceUpdate(category, resourceName, attribute,
     value,
     currentTimestamp,
   );
-  if (attribute === 'dependsOn') {
-    updateBackendConfigDependsOn(category, resourceName, value);
+  if (['dependsOn', 'service'].includes(attribute)) {
+    updateBackendConfigDependsOn(category, resourceName, attribute, value);
   }
 }
 

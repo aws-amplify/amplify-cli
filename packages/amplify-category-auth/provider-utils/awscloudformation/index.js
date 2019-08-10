@@ -105,7 +105,7 @@ async function copyCfnTemplate(context, category, options, cfnFilename) {
   privateKeys.forEach(p => delete privateParams[p]);
 
 
-  return await context.amplify.copyBatch(context, copyJobs, options, true, privateParams);
+  return await context.amplify.copyBatch(context, copyJobs, privateParams, true);
 }
 
 function saveResourceParameters(
@@ -117,13 +117,15 @@ function saveResourceParameters(
   envSpecificParams = [],
 ) {
   const provider = context.amplify.getPluginInstance(context, providerName);
+  let privateParams = Object.assign({}, params);
+  privateKeys.forEach(p => delete privateParams[p]);
+  privateParams = removeDeprecatedProps(privateParams);
   provider.saveResourceParameters(
     context,
     category,
     resource,
-    params,
+    privateParams,
     envSpecificParams,
-    privateKeys,
   );
 }
 
@@ -181,9 +183,6 @@ async function addResource(context, category, service) {
     })
     .then(async () => {
       await copyS3Assets(context, props);
-      if (props.dependsOn) {
-        context.amplify.auth = { dependsOn: props.dependsOn };
-      }
       return props.resourceName;
     });
 }
@@ -234,7 +233,7 @@ async function updateResource(context, category, serviceResult) {
 
       await verificationBucketName(result, context.updatingAuth);
 
-      props = Object.assign(defaults, context.updatingAuth, result);
+      props = Object.assign(defaults, removeDeprecatedProps(context.updatingAuth), result);
 
       const providerPlugin = context.amplify.getPluginInstance(context, provider);
       const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
@@ -275,9 +274,6 @@ async function updateResource(context, category, serviceResult) {
     })
     .then(async () => {
       await copyS3Assets(context, props);
-      if (props.dependsOn) {
-        context.amplify.auth = { dependsOn: props.dependsOn };
-      }
       return props.resourceName;
     });
 }
@@ -629,6 +625,44 @@ async function verificationBucketName(current, previous) {
   ) {
     delete previous.updatingAuth.verificationBucketName;
   }
+}
+
+function removeDeprecatedProps(props) {
+  if (props.authRoleName) { delete props.authRoleName; }
+  if (props.unauthRoleName) { delete props.unauthRoleName; }
+  if (props.userpoolClientName) { delete props.userpoolClientName; }
+  if (props.roleName) { delete props.roleName; }
+  if (props.policyName) { delete props.policyName; }
+  if (props.mfaLambdaLogPolicy) { delete props.mfaLambdaLogPolicy; }
+  if (props.mfaPassRolePolicy) { delete props.mfaPassRolePolicy; }
+  if (props.mfaLambdaIAMPolicy) { delete props.mfaLambdaIAMPolicy; }
+  if (props.userpoolClientLogPolicy) { delete props.userpoolClientLogPolicy; }
+  if (props.userpoolClientLambdaPolicy) { delete props.userpoolClientLambdaPolicy; }
+  if (props.lambdaLogPolicy) { delete props.lambdaLogPolicy; }
+  if (props.openIdRolePolicy) { delete props.openIdRolePolicy; }
+  if (props.openIdRopenIdLambdaIAMPolicyolePolicy) { delete props.openIdLambdaIAMPolicy; }
+  if (props.openIdLogPolicy) { delete props.openIdLogPolicy; }
+  if (props.mfaLambdaRole) { delete props.mfaLambdaRole; }
+  if (props.openIdLambdaRoleName) { delete props.openIdLambdaRoleName; }
+
+
+  const keys = Object.keys(props);
+  const deprecatedTriggerParams = [
+    'CreateAuthChallenge',
+    'CustomMessage',
+    'DefineAuthChallenge',
+    'PostAuthentication',
+    'PostConfirmation',
+    'PreAuthentication',
+    'PreSignup',
+    'VerifyAuthChallengeResponse',
+  ];
+  keys.forEach((el) => {
+    if (deprecatedTriggerParams.includes(el)) {
+      delete props[el];
+    }
+  });
+  return props;
 }
 
 module.exports = {

@@ -1,0 +1,19 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir": "lib",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "lib": [
+            "es2015",
+            "esnext.asynciterable",
+        ],
+    },
+    "exclude": [
+        "node_modules",
+        "lib",
+    ],
+}
