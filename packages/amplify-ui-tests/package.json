@@ -9,7 +9,7 @@
     "setup-profile": "tsc && node ./lib/configure_tests.js",
     "build": "tsc",
     "clean": "rm -rf ./lib",
-    "config": "tsc && node ./lib/configure_tests.js && node ./lib/main/configure_aws_resources.js",
+    "config": "tsc && node ./lib/configure_tests.js && node ./lib/main/setup_aws_resources.js",
     "delete": "node ./lib/main/delete.js"
   },
   "author": "Amazon Web Services",

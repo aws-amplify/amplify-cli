@@ -5,15 +5,14 @@
         "simpleAuth": {
             "apps": [
                 {
-                    "name": "Photo Album",
-                    "path": "samples/react/cli/photo-albums",
-                    "testFiles": "auth-storage-api/authenticator.spec.js"
+                    "name": "Auth in React",
+                    "path": "samples/react/auth/with-authenticator",
+                    "testFiles": "auth/authenticator.spec.js"
                 },
                 {
                     "name": "Auth in Vue",
                     "path": "samples/vue/auth/amplify-authenticator",
-                    "testFiles": "auth/*.spec.js",
-                    "hasExports": "true"
+                    "testFiles": "auth/*.spec.js"
                 }
             ]
         }
@@ -24,8 +23,8 @@
             "apps": [
                 {
                     "name": "Photo Album",
-                    "path": "samples/react/cli/photo-albums",
-                    "testFiles": "auth-storage-api/storage.spec.js"
+                    "path": "samples/react/multi-category/photo-albums",
+                    "testFiles": "multi-category/storage.spec.js"
                 }
             ]
         }
@@ -36,8 +35,8 @@
             "apps": [
                 {
                     "name": "Photo Album",
-                    "path": "samples/react/cli/photo-albums",
-                    "testFiles": "auth-storage-api/api.spec.js"
+                    "path": "samples/react/multi-category/photo-albums",
+                    "testFiles": "multi-category/api.spec.js"
                 }
             ]
         }

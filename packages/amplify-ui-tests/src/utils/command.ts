@@ -65,10 +65,13 @@ export function runCypressTest(
     verbose: boolean = true
 ) {
     let isPassed: boolean = true;
+    let options = ['cypress', 'run'];
+    if (!isCI()) {
+        options.push('--headed');
+    }
     return new Promise((resolve) => {
         nexpect
-            // .spawn('npm', ['run', 'cypress:' + settings.platform + ':' + settings.category], {cwd, stripColors: true, verbose})
-            .spawn('yarn', ['cypress', 'run'], {cwd, stripColors: true, verbose})
+            .spawn('yarn', options, {cwd, stripColors: true, verbose})
             .wait('All specs passed!')
             .run(function(err: Error) {
                 if (err) {
@@ -86,7 +89,6 @@ function sleep(ms: number) {
 export async function startServer(
     cwd: string,
     settings: any,
-    verbose: boolean = !isCI()
 ) {
     console.log('Server is starting at PORT ' + settings.port + ' with waiting time ' + SEVER_LAUNCH_TIME + 'ms');
     exec('PORT=' + settings.port + ' yarn start', {cwd: cwd});
@@ -95,27 +97,9 @@ export async function startServer(
 }
 
 export function closeServer(
-    cwd: string,
     settings: {port: string},
-    verbose: boolean = !isCI()
 ) {
-    return new Promise((resolve, reject) => {
-        nexpect.spawn('lsof', ['-t', '-i:' + settings.port], {cwd, stripColors: true, verbose})
-        .run((err, output) => {
-            if (err) {
-                reject(err);
-            } else {
-                nexpect.spawn('kill', ['-9', ...output], {cwd, stripColors: true, verbose})
-                .run(err => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                })
-            }
-        })
-    })
+    exec(`kill -9 $(lsof -t -i:${settings.port})`);
 }
 
 export async function signUpNewUser(
@@ -130,7 +114,7 @@ export async function signUpNewUser(
         userPoolId: UserPoolId
       };
       await signUpUser(cwd, s, verbose);
-      await comfirmSignUp(cwd, s, verbose);
+      comfirmSignUp(cwd, s, verbose);
       return s;
     }
 
@@ -160,16 +144,8 @@ function comfirmSignUp(
     settings: any,
     verbose: boolean = !isCI()
   ) {
-    return new Promise((resolve, reject) => {
-      nexpect
-        .spawn(getAwsCLIPath(), ['cognito-idp', 'admin-confirm-sign-up', '--user-pool-id',
-          settings.userPoolId, '--username', settings.username], { cwd, stripColors: true, verbose })
-        .run(function(err: Error) {
-          if (!err) {
-            resolve();
-          } else {
-            reject(err);
-          }
-        });
-    })
+    // Comfirm the sign-up status and get the email verified
+    exec(`aws cognito-idp admin-confirm-sign-up --user-pool-id ${settings.userPoolId} --username ${settings.username}`);
+    exec(`aws cognito-idp admin-update-user-attributes --user-pool-id ${settings.userPoolId} --username ${settings.username}` +
+    ` --user-attributes Name=email_verified,Value=true`);
   }

@@ -51,7 +51,7 @@ describe('Javascript SDK:', () => {
         describe('Run UI tests on JS app', async () => {
           let appPort = STORAGE_PORT_NUMBER;
           afterEach(async () => {
-            await closeServer(destRoot, {port: appPort});
+            closeServer({port: appPort});
           });
 
           for (let i = 0; i < apps.length; i++) {
