@@ -46,28 +46,28 @@ export class ResolverOverrides {
       content: string;
     }[] = transformerResolvers.map(resolver => {
       const r = { ...resolver };
-
+      const normalizedPath = path.normalize(resolver.path);
       // Step 1: Check if the file is in the override map and if it really is
       // different from transformer generated file or its here because it was not
       // deleted from last execution
-      if (this.overrides.has(resolver.path)) {
-        const overriddenContent = this.contentMap.get(resolver.path);
+      if (this.overrides.has(normalizedPath)) {
+        const overriddenContent = this.contentMap.get(normalizedPath);
         if (overriddenContent === resolver.content) {
-          this.overrides.delete(resolver.path);
+          this.overrides.delete(normalizedPath);
         } else {
           r.content = overriddenContent;
         }
       } else {
         // Step 2. The file is not in content map. Its a new created by transformer
-        if (this.contentMap.has(resolver.path)) {
+        if (this.contentMap.has(normalizedPath)) {
           // existing file, not a newly created file
-          const diskFileContent = this.contentMap.get(resolver.path);
+          const diskFileContent = this.contentMap.get(normalizedPath);
           if (diskFileContent !== resolver.content) {
-            filesToWrite.set(resolver.path, resolver.content);
+            filesToWrite.set(normalizedPath, resolver.content);
           }
         } else {
           // new resolver created by transformer
-          filesToWrite.set(resolver.path, resolver.content);
+          filesToWrite.set(normalizedPath, resolver.content);
         }
         r.content = resolver.content;
       }
@@ -87,8 +87,8 @@ export class ResolverOverrides {
       // Update the content in the map
       this.contentMap.set(filePath, content);
       const abPath = this.getAbsPath(filePath);
-      fs.ensureDirSync(path.dirname(abPath));
-      fs.writeFileSync(abPath, content);
+      fs.ensureFileSync(abPath);
+      fs.writeFileSync(abPath, content)
     });
 
     // Delete the files that are no longer needed
