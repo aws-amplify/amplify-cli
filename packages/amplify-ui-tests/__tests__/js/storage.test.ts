@@ -1,7 +1,7 @@
 import {
     initProjectWithProfile,
     deleteProject,
-    amplifyPush
+    amplifyPushApi
   } from '../../src/init';
 import { addStorageWithDefault } from '../../src/categories/storage';
 import { createNewProjectDir, deleteProjectDir, createTestMetaFile, getUITestConfig } from '../../src/utils';
@@ -9,6 +9,7 @@ import { addAuthWithDefault } from '../../src/categories/auth';
 import { copyAWSExportsToProj, existsAWSExportsPath } from '../../src/utils/projectMeta';
 import { runCypressTest, gitCloneSampleApp, buildApp, startServer, closeServer, signUpNewUser, setupCypress } from '../../src/utils/command';
 import { join } from 'path';
+import { addApiWithSimpleModel } from '../../src/categories/api';
 
 describe('Javascript SDK:', () => {
     let projRoot: string;
@@ -19,7 +20,7 @@ describe('Javascript SDK:', () => {
 
     describe('Simple Storage UI test:', async () => {
 
-      const { apps } = Storage.simpleStorage;
+      const { apps } = Storage.simpleStorageWithGraphQL;
       let settings = {};
 
         beforeAll(async () => {
@@ -39,13 +40,13 @@ describe('Javascript SDK:', () => {
             await initProjectWithProfile(projRoot);
             await addAuthWithDefault(projRoot); // should add auth before add storage
             await addStorageWithDefault(projRoot);
-            await amplifyPush(projRoot);
+            await addApiWithSimpleModel(projRoot);
+            await amplifyPushApi(projRoot);
             expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy()
         });
 
         it('should have user pool in backend and sign up a user for test', async () => {
           settings = await signUpNewUser(projRoot);
-          await createTestMetaFile(destRoot, {...settings, port: STORAGE_PORT_NUMBER, category: "storage"});
         })
 
         describe('Run UI tests on JS app', async () => {
@@ -55,19 +56,16 @@ describe('Javascript SDK:', () => {
           });
 
           for (let i = 0; i < apps.length; i++) {
-            it('should pass all UI tests on React app', async () => {
+            it(`should pass all UI tests on app <${apps[i].name}>`, async () => {
               const appRoot = join(destRoot, apps[i].path);
               appPort = apps[i].port ? apps[i].port : STORAGE_PORT_NUMBER;
-              if (!apps[i].hasExports) {
-                copyAWSExportsToProj(projRoot, appRoot);
-              }
+              copyAWSExportsToProj(projRoot, appRoot);
               await createTestMetaFile(destRoot, {...settings, port: appPort, name: apps[i].name, testFiles: apps[i].testFiles});
               await buildApp(appRoot);
               await startServer(appRoot, {port: appPort});
               await runCypressTest(destRoot).then(isPassed => expect(isPassed).toBeTruthy());
             });
           }
-
         });
     });
 })

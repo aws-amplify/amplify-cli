@@ -265,16 +265,32 @@ jobs:
           command: |
             cd packages/amplify-ui-tests
             npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
+          when: always
       - store_artifacts:
           path: ../uitest_logs
   integration_test_android:
     docker:
       - image: circleci/android:api-27-node
     environment:
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xms1024m -Xmx3584m
+      JAVA_TOOL_OPTIONS: -Xms1024m -Xmx3584m
+      MAVEN_OPTS: -Xms1024m -Xmx3584m 
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx3584m -XX:+HeapDumpOnOutOfMemoryError"'
     steps:
       - attach_workspace:
           at: ./
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          name: Install Android platforms 18, 21, 23
+          command: |
+            sudo yes | sdkmanager "platforms;android-18" "platforms;android-21" "platforms;android-23"
+            sdkmanager --update
+      - run:
+         name: Install Maven
+         command: |
+            sudo apt-get update
+            sudo apt-get install maven
       - run:
           name: "Checkout PhotoAlbum Sample App Repo"
           command: |
@@ -284,15 +300,82 @@ jobs:
             app_root=$(pwd)
             echo "export app_root=$app_root" >> $BASH_ENV
       - run:
+          name: Set environment variables
+          command: |
+            cd ..
+            echo "Home: ${HOME}"
+            echo "JAVA_HOME: $JAVA_HOME"
+            echo "ANDROID_HOME: $ANDROID_HOME"
+            echo "PATH: $PATH"
+            echo 'export ANDROID_PLATFORM="27"' >> $BASH_ENV
+            echo 'export ANDROID_BUILDTOOL_VERSION="27.0.1"' >> $BASH_ENV
+            echo "export ANDROID_SDK_ROOT=$ANDROID_HOME" >> $BASH_ENV
+            circleci_root_directory=$(pwd)
+            echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
+            echo 'export appSync_branch_to_uitest="master"' >> $BASH_ENV
+            echo 'export android_sdk_branch_to_uitest="master"' >> $BASH_ENV 
+      - run:
+          name: Install pip3
+          command: |
+            sudo apt-get -y install python3-pip
+      - run: 
+          name: Install json parser
+          command: sudo pip3 install demjson
+      - run: 
+          name: Install lxml
+          command: sudo pip3 install lxml
+      - run:
+          name: Download Gradle Dependencies
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample
+            bash gradlew app:dependencies
+            sudo npm install -g apollo-codegen@0.19.1 
+      - run:
           name: "Configure AWS Resources"
           command: |
             cd packages/amplify-ui-tests
-            npm run config ${app_root} android auth
+            cp ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample/simple_model.graphql schemas/simple_model.graphql
+            npm run config ${app_root} android auth storage api
+      - run:
+          name: "Set-Up Mobile SDK Dependencies"
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
+            python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo
+      - run:
+          name: Setup emulator
+          command: |
+            echo y | sdkmanager "system-images;android-23;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-23;default;armeabi-v7a"
+      - run:
+          name: Launch emulator
+          command: |
+            cd ${ANDROID_HOME}/emulator;ls
+            export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib:/usr/lib64:/usr/lib:${ANDROID_HOME}/emulator/lib
+            sudo apt-get install libpulse0
+            ${ANDROID_HOME}/emulator/emulator -avd test -no-boot-anim -no-window -noaudio -accel auto -verbose 
+          background: true 
+      - run:
+          name: Launch logcat
+          command: 
+            adb logcat > logcat.log
+          background: true
+      - run:
+          name: Wait emulator
+          command: |
+            circle-android wait-for-boot
+            python3 CircleciScripts/unlock_emulatorscreen.py 
+      - run:
+          name: "Build and UITest"
+          command: |
+            cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
+            python3 run_build_and_uitest.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo -c ${circleci_root_directory}
       - run: 
           name: "Clean-Up UITest"
           command: |
             cd packages/amplify-ui-tests
             npm run delete ${app_root}
+          when: always
+      - store_artifacts:
+          path: ../uitest_android_results
 workflows:
   version: 2
   build_test_deploy:

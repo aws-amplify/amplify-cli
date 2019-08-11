@@ -57,9 +57,7 @@ describe('Javascript SDK:', () => {
         it('should pass all UI tests on app <' + apps[i].name + '>', async () => {
           const appRoot = join(destRoot, apps[i].path);
           appPort = apps[i].port ? apps[i].port : AUTH_PORT_NUMBER;
-          if (!apps[i].hasExports) {
-            copyAWSExportsToProj(projRoot, appRoot);
-          }
+          copyAWSExportsToProj(projRoot, appRoot);
           await createTestMetaFile(destRoot, {...settings, port: appPort, name: apps[i].name, testFiles: apps[i].testFiles});
           await buildApp(appRoot);
           await startServer(appRoot, {port: appPort});

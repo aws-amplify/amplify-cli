@@ -19,24 +19,24 @@
     },
     "Storage": {
         "port": "3002",
-        "simpleStorage": {
+        "simpleStorageWithGraphQL": {
             "apps": [
                 {
                     "name": "Photo Album",
                     "path": "samples/react/multi-category/photo-albums",
-                    "testFiles": "multi-category/storage.spec.js"
+                    "testFiles": "multi-category/photo-albums.spec.js"
                 }
             ]
         }
     },
-    "API": {
+    "Predictions": {
         "port": "3003",
-        "simpleGraphQL": {
+        "simplePredictions": {
             "apps": [
                 {
-                    "name": "Photo Album",
-                    "path": "samples/react/multi-category/photo-albums",
-                    "testFiles": "multi-category/api.spec.js"
+                    "name": "Multi-translator",
+                    "path": "samples/react/predictions/multi-user-translation",
+                    "testFiles": "predictions/multiuser-translation.spec.js"
                 }
             ]
         }
