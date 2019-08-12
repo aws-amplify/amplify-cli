@@ -189,35 +189,36 @@ jobs:
         environment:
           TERM: dumb
     steps:
-      - attach_workspace:
-          at: ./
-      - add_ssh_keys:
-            fingerprints:
-              - "01:c7:91:04:b1:c0:3a:8c:49:2b:68:7c:6a:cf:5a:e9"
-      - run: 
-          command: |
-            apt-get install -y sudo
-            sudo apt-get install -y lsof
-            sudo apt-get install -y python
-            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
-          name: "Install AWS CLI dependencies"
-      - run: 
-          command: |
-            cd ..
-            mkdir videos
-            mkdir screenshots
-            npm install cypress
-          name: "Install Cypress Binary"
-      - aws-cli/install
-      - aws-cli/configure
-      - run:
-          command: "cd packages/amplify-ui-tests && yarn run ui js"
-          name: "Run ui tests in JS SDK"
-          no_output_timeout: 45m
-      - store_artifacts:
-          path: /root/videos
-      - store_artifacts:
-          path: /root/screenshots
+      # - attach_workspace:
+      #     at: ./
+      # - add_ssh_keys:
+      #       fingerprints:
+      #         - "01:c7:91:04:b1:c0:3a:8c:49:2b:68:7c:6a:cf:5a:e9"
+      - run: cd .. && git clone https://github.com/AaronZyLee/amplify-js-samples-staging.git
+      # - run: 
+      #     command: |
+      #       apt-get install -y sudo
+      #       sudo apt-get install -y lsof
+      #       sudo apt-get install -y python
+      #       sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+      #     name: "Install AWS CLI dependencies"
+      # - run: 
+      #     command: |
+      #       cd ..
+      #       mkdir videos
+      #       mkdir screenshots
+      #       npm install cypress
+      #     name: "Install Cypress Binary"
+      # - aws-cli/install
+      # - aws-cli/configure
+      # - run:
+      #     command: "cd packages/amplify-ui-tests && yarn run ui js/auth"
+      #     name: "Run ui tests in JS SDK"
+      #     no_output_timeout: 45m
+      # - store_artifacts:
+      #     path: /root/videos
+      # - store_artifacts:
+      #     path: /root/screenshots
   integration_test_ios:
     macos:
       xcode: "10.3.0"
@@ -382,10 +383,10 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      # - build
+      # - test:
+      #     requires:
+      #       - build
       - graphql_e2e_tests:
           filters:
             branches:
