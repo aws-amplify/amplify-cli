@@ -14,16 +14,15 @@ async function run(context, distributionDirPath) {
   const fileList = fileScanner.scan(
     context,
     distributionDirPath,
-    WebsiteConfiguration.IndexDocument
+    WebsiteConfiguration.IndexDocument,
   );
 
   const uploadFileTasks = [];
   const s3Client = await getS3Client(context, 'update');
   const hostingBucketName = getHostingBucketName(context);
-  fileList.forEach(filePath => {
+  fileList.forEach((filePath) => {
     uploadFileTasks.push(() =>
-      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath)
-    );
+      uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath));
   });
 
   const spinner = new Ora('Uploading files...');
