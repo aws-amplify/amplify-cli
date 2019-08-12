@@ -437,8 +437,8 @@ workflows:
             branches:
               only:
                 - integtest
-          requires:
-            - build
+          # requires:
+          #   - build
       # - integration_test_ios:
       #     appname: PhotoAlbum
       #     filters:
