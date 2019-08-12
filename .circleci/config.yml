@@ -189,34 +189,36 @@ jobs:
         environment:
           TERM: dumb
     steps:
-      # - attach_workspace:
-      #     at: ./
-      - checkout
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          keys:
+            - amplify-cli-ssh-deps-{{ .Branch }}
       - run: cd .. && git clone https://github.com/AaronZyLee/amplify-js-samples-staging.git
-      # - run: 
-      #     command: |
-      #       apt-get install -y sudo
-      #       sudo apt-get install -y lsof
-      #       sudo apt-get install -y python
-      #       sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
-      #     name: "Install AWS CLI dependencies"
-      # - run: 
-      #     command: |
-      #       cd ..
-      #       mkdir videos
-      #       mkdir screenshots
-      #       npm install cypress
-      #     name: "Install Cypress Binary"
-      # - aws-cli/install
-      # - aws-cli/configure
-      # - run:
-      #     command: "cd packages/amplify-ui-tests && yarn run ui js/auth"
-      #     name: "Run ui tests in JS SDK"
-      #     no_output_timeout: 45m
-      # - store_artifacts:
-      #     path: /root/videos
-      # - store_artifacts:
-      #     path: /root/screenshots
+      - run: 
+          command: |
+            apt-get install -y sudo
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python
+            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+          name: "Install AWS CLI dependencies"
+      - run: 
+          command: |
+            cd ..
+            mkdir videos
+            mkdir screenshots
+            npm install cypress
+          name: "Install Cypress Binary"
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          command: "cd packages/amplify-ui-tests && yarn run ui js/auth"
+          name: "Run ui tests in JS SDK"
+          no_output_timeout: 45m
+      - store_artifacts:
+          path: /root/videos
+      - store_artifacts:
+          path: /root/screenshots
   integration_test_ios:
     macos:
       xcode: "10.3.0"
@@ -381,11 +383,7 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
+      - build
       - test:
           requires:
             - build
@@ -435,8 +433,8 @@ workflows:
             branches:
               only:
                 - integtest
-          # requires:
-          #   - build
+          requires:
+            - build
       # - integration_test_ios:
       #     appname: PhotoAlbum
       #     filters:
