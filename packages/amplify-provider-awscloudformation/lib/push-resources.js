@@ -312,7 +312,7 @@ function updateCloudFormationNestedStack(
   const jsonString = JSON.stringify(nestedStack, null, '\t');
   context.filesystem.write(nestedStackFilepath, jsonString);
 
-  return new Cloudformation(context, undefined, userAgentAction)
+  return new Cloudformation(context, userAgentAction)
     .then(cfnItem => cfnItem.updateResourceStack(
       path.normalize(path.join(backEndDir, providerName)),
       nestedStackFileName,
