@@ -421,13 +421,13 @@ workflows:
                 - release
                 - master
                 - beta
-      # - integration_test_js:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - integtest
-      #     requires:
-      #       - build
+      - integration_test_js:
+          filters:
+            branches:
+              only:
+                - integtest
+          requires:
+            - build
       - integration_test_ios:
           appname: PhotoAlbum
           filters:
@@ -436,10 +436,10 @@ workflows:
                 - integtest
           requires:
             - build
-      - integration_test_android:
-            filters:
-              branches:
-                only:
-                  - integtest
-            requires:
-              - build
+      # - integration_test_android:
+      #       filters:
+      #         branches:
+      #           only:
+      #             - integtest
+      #       requires:
+      #         - build
