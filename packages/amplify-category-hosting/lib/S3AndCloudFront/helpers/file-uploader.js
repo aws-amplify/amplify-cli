@@ -61,7 +61,7 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
     Bucket: hostingBucketName,
     Key: relativeFilePath,
     Body: fileStream,
-    ContentType: contentType || 'text/plain',
+    ContentType: contentType || 'text/plain'
   };
 
   const data = await s3Client.upload(uploadParams).promise();
