@@ -191,9 +191,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - restore_cache:
-          keys:
-            - amplify-cli-ssh-deps-{{ .Branch }}
+      - checkout
       - run: cd .. && git clone https://github.com/AaronZyLee/amplify-js-samples-staging.git
       - run: 
           command: |

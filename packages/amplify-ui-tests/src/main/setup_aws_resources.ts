@@ -63,4 +63,9 @@ if (!existsSync(projRoot)) {
 const sdk = process.argv[3];
 const categories = process.argv.slice(4);
 
-test(projRoot, sdk, categories);
+try {
+    test(projRoot, sdk, categories);
+} catch (e) {
+    console.log(e.stack);
+    process.exit(1);
+}
