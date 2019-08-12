@@ -362,7 +362,7 @@ jobs:
           name: Wait emulator
           command: |
             circle-android wait-for-boot
-            python3 CircleciScripts/unlock_emulatorscreen.py 
+            python3 ${circleci_root_directory}/sample_app_repo/CircleciScripts/unlock_emulatorscreen.py 
       - run:
           name: "Build and UITest"
           command: |
