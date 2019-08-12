@@ -295,7 +295,7 @@ jobs:
           name: "Checkout PhotoAlbum Sample App Repo"
           command: |
             cd ..
-            git clone https://github.com/changxu0306/aws-android-sdk-sample.git -b appAndTest sample_app_repo
+            git clone https://github.com/changxu0306/aws-android-sdk-sample.git -b develop sample_app_repo
             cd sample_app_repo/PhotoAlbumSample
             app_root=$(pwd)
             echo "export app_root=$app_root" >> $BASH_ENV
