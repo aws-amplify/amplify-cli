@@ -191,9 +191,9 @@ jobs:
     steps:
       # - attach_workspace:
       #     at: ./
-      # - add_ssh_keys:
-      #       fingerprints:
-      #         - "01:c7:91:04:b1:c0:3a:8c:49:2b:68:7c:6a:cf:5a:e9"
+      - add_ssh_keys:
+            fingerprints:
+              - "01:c7:91:04:b1:c0:3a:8c:49:2b:68:7c:6a:cf:5a:e9"
       - run: cd .. && git clone https://github.com/AaronZyLee/amplify-js-samples-staging.git
       # - run: 
       #     command: |
