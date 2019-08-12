@@ -388,9 +388,13 @@ workflows:
             branches:
               only:
                 - master
-      # - test:
-      #     requires:
-      #       - build
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
       - graphql_e2e_tests:
           filters:
             branches:
