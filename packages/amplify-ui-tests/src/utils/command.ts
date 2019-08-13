@@ -32,7 +32,7 @@ export function gitCloneSampleApp(
 
 export function setupCypress(cwd: string) {
     return new Promise((resolve, reject) => {
-        exec('CYPRESS_INSTALL_BINARY=0 yarn', {cwd: cwd}, function(err: Error) {
+        exec('CYPRESS_INSTALL_BINARY=0 npm install', {cwd: cwd}, function(err: Error) {
             if (err) {
                 reject(err);
             } else {
@@ -90,7 +90,6 @@ export async function startServer(
     cwd: string,
     settings: any,
 ) {
-    console.log('Server is starting at PORT ' + settings.port + ' with waiting time ' + SEVER_LAUNCH_TIME + 'ms');
     exec('PORT=' + settings.port + ' yarn start', {cwd: cwd});
     //waiting for the server to launch
     await sleep(SEVER_LAUNCH_TIME);
