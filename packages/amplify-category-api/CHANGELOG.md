@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.11...amplify-category-api@1.11.0) (2019-08-13)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** apigw unauth access ([#1906](https://github.com/aws-amplify/amplify-cli/issues/1906)) ([bcd0d02](https://github.com/aws-amplify/amplify-cli/commit/bcd0d02))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 # [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@1.7.11...amplify-category-api@1.10.0) (2019-08-07)
 
 
