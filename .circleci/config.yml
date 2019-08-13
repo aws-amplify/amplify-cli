@@ -209,7 +209,7 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          command: "cd packages/amplify-ui-tests && yarn run ui"
+          command: "cd packages/amplify-ui-tests && npm run ui"
           name: "Run ui tests in JS SDK"
           no_output_timeout: 45m
       - store_artifacts:
