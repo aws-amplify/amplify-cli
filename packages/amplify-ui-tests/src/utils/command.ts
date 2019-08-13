@@ -18,7 +18,6 @@ export function gitCloneSampleApp(
     verbose: boolean = !isCI()
 ) {
     return new Promise((resolve, reject) => {
-        // nexpect.spawn('git', ['clone', '-b', 'dev', '--single-branch', settings.repo], {cwd, stripColors: true, verbose})
         nexpect.spawn('git', ['clone', settings.repo], {cwd, stripColors: true, verbose})
         .run(err => {
             if (err) {

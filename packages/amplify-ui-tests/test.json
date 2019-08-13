@@ -1,5 +1,5 @@
 {
-    "gitRepo": "https://github.com/AaronZyLee/amplify-js-samples-staging.git",
+    "gitRepo": "https://github.com/aws-amplify/amplify-js-samples-staging.git",
     "Auth": {
         "port": "3001",
         "simpleAuth": {
@@ -12,7 +12,7 @@
                 {
                     "name": "Auth in Vue",
                     "path": "samples/vue/auth/amplify-authenticator",
-                    "testFiles": "auth/*.spec.js"
+                    "testFiles": "auth/authenticator.spec.js"
                 }
             ]
         }

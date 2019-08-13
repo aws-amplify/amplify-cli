@@ -11,7 +11,7 @@ import { runCypressTest, gitCloneSampleApp, buildApp, startServer, closeServer, 
 import { join } from 'path';
 import { addApiWithSimpleModel } from '../../src/categories/api';
 
-describe('Javascript SDK:', () => {
+describe('Storage tests in Javascript SDK:', () => {
     let projRoot: string;
     let destRoot: string;
     const { Storage, gitRepo } = getUITestConfig();

@@ -6,12 +6,13 @@ import { addIdentityText, addConvertWithDefault } from "../../src/categories/pre
 import { existsAWSExportsPath, copyAWSExportsToProj } from "../../src/utils/projectMeta";
 import { join } from "path";
 
-describe('JavaScript SDK:', () => {
+describe('Prediction tests in JavaScript SDK:', () => {
     let projRoot: string;
     let destRoot: string;
     const { Predictions, gitRepo } = getUITestConfig();
     const PREDICT_PORT_NUMBER: string = Predictions.port;
-    const JS_SAMPLE_APP_REPO: string = gitRepo;
+    const JS_SAMPLE_APP_REPO: string =
+      process.env.AMPLIFY_JS_SAMPLES_STAGING_URL ? process.env.AMPLIFY_JS_SAMPLES_STAGING_URL : gitRepo;
 
     describe('Simple predictions UI test:', async () => {
         const { apps } = Predictions.simplePredictions;

@@ -1,5 +1,4 @@
 import * as nexpect from 'nexpect';
-import { join } from 'path';
 
 import { getCLIPath, isCI } from '../utils';
 const defaultSettings = {

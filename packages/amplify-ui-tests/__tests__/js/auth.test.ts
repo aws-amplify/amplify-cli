@@ -11,7 +11,7 @@ import { runCypressTest, startServer, closeServer, gitCloneSampleApp, buildApp, 
 import { join } from 'path';
 
 
-describe('Javascript SDK:', () => {
+describe('Auth tests in Javascript SDK:', () => {
   let projRoot: string;
   let destRoot: string;
   const { Auth, gitRepo } = getUITestConfig();

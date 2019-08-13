@@ -42,8 +42,6 @@ async function test(projRoot: string, sdk: string, categories: string[]) {
         await amplifyPush(projRoot, true);
     }
 
-    console.log('The backend resources are set up successfully.');
-
     //sign up a new user
     await signUpNewUser(projRoot, {}, true);
 }
@@ -65,6 +63,7 @@ const categories = process.argv.slice(4);
 
 try {
     test(projRoot, sdk, categories);
+    console.log('The backend resources are set up successfully.');
 } catch (e) {
     console.log(e.stack);
     process.exit(1);
