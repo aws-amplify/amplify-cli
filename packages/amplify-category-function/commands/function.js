@@ -19,6 +19,10 @@ module.exports = {
         description: `Takes you through a CLI flow to add a ${featureName} resource to your local backend`,
       },
       {
+        name: 'update',
+        description: `Takes you through a CLI flow to update an existing ${featureName} resource`,
+      },
+      {
         name: 'push',
         description: `Provisions only ${featureName} cloud resources with the latest local developments`,
       },
