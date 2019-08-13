@@ -73,12 +73,13 @@ jobs:
         - checkout
         - run: yarn install
         - run: apt-get install -y sudo
+        - run: sudo apt-get update
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
         - run: sudo apt-get install -y zip
         - run: sudo apt-get install -y lsof
         - run: sudo apt-get install -y python
-        - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+        - run: sudo apt-get install -y python-pip libpython-dev
         - run: sudo apt-get install -y jq
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh
