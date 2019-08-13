@@ -167,6 +167,53 @@ afterAll(async () => {
     }
 });
 
+test('Test searchPosts with sort field on a string field', async () => {
+    const firstQuery = await runQuery(`query {
+        searchPosts(sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with filter ')
+    expect(firstQuery).toBeDefined()
+    expect(firstQuery.data.searchPosts).toBeDefined()
+    const fourthItemOfFirstQuery = firstQuery.data.searchPosts.items[3]
+    const secondQuery = await runQuery(`query {
+        searchPosts(limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with limit ')
+    expect(secondQuery).toBeDefined()
+    expect(secondQuery.data.searchPosts).toBeDefined()
+    const nextToken = secondQuery.data.searchPosts.nextToken
+    expect(nextToken).toBeDefined()
+    const thirdQuery = await runQuery(`query {
+        searchPosts(nextToken: "${nextToken}", limit: 3, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+          }
+    }`, 'Test searchPosts with sort limit and nextToken  ')
+    expect(thirdQuery).toBeDefined()
+    expect(thirdQuery.data.searchPosts).toBeDefined()
+    const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0]
+    expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery)
+})
+
 test('Test searchPosts query without filter', async () => {
     const response = await runQuery(`query {
         searchPosts {
