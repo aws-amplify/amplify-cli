@@ -192,7 +192,6 @@ jobs:
       - attach_workspace:
           at: ./
       - checkout
-      - run: cd .. && git clone https://github.com/AaronZyLee/amplify-js-samples-staging.git
       - run: 
           command: |
             apt-get install -y sudo
@@ -210,7 +209,7 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          command: "cd packages/amplify-ui-tests && yarn run ui js/auth"
+          command: "cd packages/amplify-ui-tests && yarn run ui"
           name: "Run ui tests in JS SDK"
           no_output_timeout: 45m
       - store_artifacts:
