@@ -219,10 +219,6 @@ jobs:
   integration_test_ios:
     macos:
       xcode: "10.3.0"
-    parameters:
-      appname:
-        description: "specifies app for UI Testing. Should be a subset of apps specified in config file"
-        type: string
     steps:
       - attach_workspace:
           at: ./
@@ -248,23 +244,23 @@ jobs:
           name: "Set-Up Mobile SDK Dependencies"
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 run_setup_mobile_sdk_dependencies.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples
+            python3 run_setup_mobile_sdk_dependencies.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples
       - run:
           name: "Configure AWS Resources"
           command: |
             cd packages/amplify-ui-tests
-            cp ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>/simple_model.graphql ./schemas/simple_model.graphql
-            npm run config ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >> ios auth storage api
+            cp ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum/simple_model.graphql ./schemas/simple_model.graphql
+            npm run config ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum ios auth storage api
       - run:
           name: "Build and UITest"
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 run_build_and_uitest.py -n << parameters.appname >> -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
+            python3 run_build_and_uitest.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
       - run:
           name: "Clean-Up UITest"
           command: |
             cd packages/amplify-ui-tests
-            npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/<< parameters.appname >>
+            npm run delete ${circleci_root_directory}/aws-sdk-ios-samples/PhotoAlbum
           when: always
       - store_artifacts:
           path: ../uitest_logs
@@ -414,6 +410,9 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
+            - integration_test_js
+            - integration_test_android
+            - integration_test_ios
           filters:
             branches:
               only:
@@ -428,7 +427,6 @@ workflows:
           requires:
             - build
       - integration_test_ios:
-          appname: PhotoAlbum
           filters:
             branches:
               only:
