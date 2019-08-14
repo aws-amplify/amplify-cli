@@ -7,7 +7,7 @@ type AmplifyConfiguration = {
   profileName?: string,
 };
 const defaultSettings = {
-  profileName: 'amplifyinteg',
+  profileName: 'amplify-integ-test-user',
   region: '\r',
   userName: '\r',
 };
@@ -44,7 +44,7 @@ export default function amplifyConfigure(
       .wait(
         'Successfully set up the new user.'
       )
-      .run(function(err) {
+      .run(function(err: Error) {
         if (!err) {
           resolve();
         } else {
