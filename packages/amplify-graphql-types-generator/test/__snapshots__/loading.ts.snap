@@ -382,3 +382,9 @@ Object {
   "kind": "Document",
 }
 `;
+
+exports[`Validation should throw a helpful message when a file has invalid gql snippets 1`] = `
+"Could not parse graphql queries in test/fixtures/misc/invalid-gqlQueries.js
+Syntax Error: Unexpected Name \\"world\\"
+query : world and other words"
+`;
