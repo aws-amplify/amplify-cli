@@ -76,7 +76,7 @@ export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string
       return parse(source);
     } catch (err) {
       const relativePathToInput = relative(process.cwd(), source.name);
-      throw new Error(`Could not parse graphql queries in ${relativePathToInput}\n${err.message}\nquery : ${source.body}`);
+      throw new Error(`Could not parse graphql operations in ${relativePathToInput}\n${err.message}\nquery : ${source.body}`);
     }
   })
   return concatAST(parsedSources);
