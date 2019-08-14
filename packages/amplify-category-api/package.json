@@ -14,7 +14,6 @@
     "amplify-category-function": "1.11.0",
     "amplify-category-storage": "1.12.0",
     "aws-sdk": "^2.391.0",
-    "eslint": "^4.9.0",
     "fs-extra": "^7.0.0",
     "graphql": "^0.13.2",
     "graphql-relational-schema-transformer": "1.4.0",
@@ -26,6 +25,7 @@
     "uuid": "^2.0.3"
   },
   "devDependencies": {
+    "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"
   }
