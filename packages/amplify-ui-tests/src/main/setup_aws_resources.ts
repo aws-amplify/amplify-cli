@@ -43,7 +43,7 @@ async function test(projRoot: string, sdk: string, categories: string[]) {
     }
 
     //sign up a new user
-    await signUpNewUser(projRoot, {}, true);
+    await signUpNewUser(projRoot, {username: 'test01', password: 'The#test1'}, true);
 }
 
 if (process.argv.length <= 3) {
