@@ -1,11 +1,10 @@
 {
   "name": "amplify-category-function",
-  "version": "1.9.0",
+  "version": "1.11.0",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "1.10.0",
-    "eslint": "^4.19.1",
+    "amplify-category-storage": "1.12.0",
     "fs-extra": "^7.0.0",
     "inquirer": "6.3.1",
     "mime-types": "^2.1.24",
@@ -19,6 +18,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"
   }

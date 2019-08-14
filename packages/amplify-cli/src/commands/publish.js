@@ -26,9 +26,9 @@ module.exports = {
       return continueToCheckNext;
     });
 
-    await context.amplify.pushResources(context);
+    const didPush = await context.amplify.pushResources(context);
 
-    let continueToPublish = !context.exeInfo.pushAborted;
+    let continueToPublish = didPush;
     if (!continueToPublish && isHostingAlreadyPushed) {
       context.print.info('');
       continueToPublish = await context.amplify.confirmPrompt.run('Do you still want to publish the frontend?');

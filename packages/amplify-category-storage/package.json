@@ -1,11 +1,10 @@
 {
   "name": "amplify-category-storage",
-  "version": "1.10.0",
+  "version": "1.12.0",
   "description": "amplify-cli storage plugin",
   "main": "index.js",
   "dependencies": {
-    "amplify-category-auth": "1.9.0",
-    "eslint": "^4.19.1",
+    "amplify-category-auth": "1.11.0",
     "fs-extra": "^7.0.0",
     "inquirer": "6.3.1",
     "lodash": "^4.17.10",
@@ -18,6 +17,7 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0"
   }

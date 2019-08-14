@@ -13,7 +13,7 @@ import {
 } from 'graphql'
 
 import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator'
-
+import { loadSchema } from './generator/utils/loading';
 const TEMPLATE_DIR = path.resolve(path.join(__dirname, '../templates'))
 const FILE_EXTENSION_MAP = {
   javascript: 'js',
@@ -29,20 +29,15 @@ function generate(
   options: { separateFiles: boolean; language: string; maxDepth: number }
 ): void {
   const language = options.language || 'graphql'
-  const schemaContent = fs.readFileSync(schemaPath, 'utf8').trim()
-  const schemaData = JSON.parse(schemaContent)
-  if (!schemaData.data && !schemaData.__schema) {
-    // tslint:disable-line
-    throw new Error('GraphQL schema file should contain a valid GraphQL introspection query result')
-  }
+  const schemaData = loadSchema(schemaPath);
   if (!Object.keys(FILE_EXTENSION_MAP).includes(language)) {
     throw new Error(`Language ${language} not supported`)
   }
 
-  const schema: IntrospectionQuery = schemaData.data || schemaData
+
   const maxDepth = options.maxDepth || 3
   const useExternalFragmentForS3Object = options.language === 'graphql'
-  const gqlOperations: GQLAllOperations = generateAllOps(schema, maxDepth, {
+  const gqlOperations: GQLAllOperations = generateAllOps(schemaData, maxDepth, {
     useExternalFragmentForS3Object: useExternalFragmentForS3Object,
   })
   registerPartials()

@@ -114,7 +114,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.triggers && props.triggers !== '{}') { %>
+      <%if (props.triggers && props.triggers !== '{}' && props.dependsOn) { %>
       LambdaConfig:
         <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
@@ -166,7 +166,7 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>      
     DependsOn: SNSRole
     <% } %>
-  <%if (props.triggers) { %>
+  <%if (props.triggers && props.dependsOn) { %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
   UserPoolCreateAuthChallengeLambdaInvokePermission: 
     Type: "AWS::Lambda::Permission"
@@ -767,7 +767,7 @@ Resources:
   # Created to execute Lambda which sets MFA config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole     , '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -785,7 +785,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.mfaLambdaRole}` %>', '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role` %>', '-', !Ref env]]]
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -843,7 +843,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_iam_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -859,7 +859,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_log_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref mfaLambdaRole, !Join ['',[!Ref mfaLambdaRole, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -897,7 +897,7 @@ Resources:
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -915,7 +915,7 @@ Resources:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'
-              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.openIdLambdaRoleName}` %>', '-', !Ref env]]]
+              Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_openid_lambda_role` %>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_openid_lambda_role` %>', '-', !Ref env]]]
     DependsOn: UserPoolClientInputs
   OpenIdLambda:
   # Lambda which sets OpenId Values
@@ -1003,7 +1003,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_iam_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -1030,7 +1030,7 @@ Resources:
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_log_policy`%>
       Roles: 
-        - !If [ShouldNotCreateEnvResources, !Ref openIdLambdaRoleName, !Join ['',[!Ref openIdLambdaRoleName, '-', !Ref env]]]
+        - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
         Statement:

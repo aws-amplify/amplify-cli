@@ -312,7 +312,7 @@ function updateCloudFormationNestedStack(
   const jsonString = JSON.stringify(nestedStack, null, '\t');
   context.filesystem.write(nestedStackFilepath, jsonString);
 
-  return new Cloudformation(context, undefined, userAgentAction)
+  return new Cloudformation(context, userAgentAction)
     .then(cfnItem => cfnItem.updateResourceStack(
       path.normalize(path.join(backEndDir, providerName)),
       nestedStackFileName,
@@ -401,15 +401,17 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
 /* eslint-enable */
   const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
-
   const { amplifyMeta } = projectDetails;
-
+  let authResourceName;
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'provider');
   categories.forEach((category) => {
     const resources = Object.keys(amplifyMeta[category]);
     resources.forEach((resource) => {
       const resourceDetails = amplifyMeta[category][resource];
+      if (category === 'auth') {
+        authResourceName = resource;
+      }
       const resourceKey = category + resource;
       let templateURL;
       if (resourceDetails.providerPlugin) {
@@ -462,7 +464,21 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
       }
     });
   });
+
+  if (authResourceName) {
+    updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+  }
   return nestedStack;
+}
+
+function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
+  const authLogicalResourceName = `auth${authResourceName}`;
+  const idpUpdateRoleCfn = context.amplify.readJsonFile(`${__dirname}/update-idp-roles-cfn.json`);
+
+  idpUpdateRoleCfn.UpdateRolesWithIDPFunction.DependsOn.push(authLogicalResourceName);
+  idpUpdateRoleCfn.UpdateRolesWithIDPFunctionOutputs.Properties.idpId['Fn::GetAtt'].unshift(authLogicalResourceName);
+
+  Object.assign(nestedStack.Resources, idpUpdateRoleCfn);
 }
 
 module.exports = {

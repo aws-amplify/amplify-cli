@@ -110,6 +110,10 @@ export class ModelConnectionTransformer extends Transformer {
         // Find the associated connection field if one exists.
         const associatedConnectionField = relatedType.fields.find(
             (f: FieldDefinitionNode) => {
+                // Make sure we don't associate with the same field in a self connection
+                if (f === field) {
+                    return false;
+                }
                 const relatedDirective = f.directives.find((dir: DirectiveNode) => dir.name.value === 'connection');
                 if (relatedDirective) {
                     const relatedDirectiveName = getDirectiveArgument(relatedDirective)("name")

@@ -2,6 +2,10 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 
+const CUSTOM_CONFIG_BLACK_LIST = [
+  'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
+  'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
+];
 
 function createAmplifyConfig(context, amplifyResources) {
   const { amplify } = context;
@@ -47,11 +51,13 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
   if (currentAWSExports) {
-    Object.keys(currentAWSExports).forEach((key) => {
-      if (!cloudAWSExports[key]) {
-        customConfigs[key] = currentAWSExports[key];
-      }
-    });
+    Object.keys(currentAWSExports)
+      .filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key))
+      .forEach((key) => {
+        if (!cloudAWSExports[key]) {
+          customConfigs[key] = currentAWSExports[key];
+        }
+      });
   }
   return customConfigs;
 }
@@ -235,22 +241,30 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 function getS3Config(s3Resources) {
   // There can only be one s3 resource - user files
   const s3Resource = s3Resources[0];
-
-  return {
+  const config = {
     aws_user_files_s3_bucket: s3Resource.output.BucketName,
     aws_user_files_s3_bucket_region: s3Resource.output.Region,
   };
+
+  if (s3Resource.testMode) {
+    config.aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing = true;
+  }
+  return config;
 }
 
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
-  return {
+  const config = {
     aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
     aws_appsync_region: projectRegion,
     aws_appsync_authenticationType: appsyncResource.output.securityType,
     aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput || undefined,
   };
+  if (appsyncResource.testMode) {
+    config.aws_appsync_dangerously_connect_to_http_endpoint_for_testing = true;
+  }
+  return config;
 }
 
 function getAPIGWConfig(apigwResources, projectRegion) {

@@ -47,8 +47,8 @@ jobs:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
-          command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e
-          no_output_timeout: 45m
+          command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
+          no_output_timeout: 90m
 
   amplify_e2e_tests:
     <<: *defaults
@@ -58,9 +58,9 @@ jobs:
       - restore_cache:
           key: "amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum \"yarn.lock\" }}"
       - run:
-          command: "cd packages/amplify-e2e-tests && yarn run e2e"
+          command: "cd packages/amplify-e2e-tests && yarn run e2e --maxWorkers=3"
           name: "Run Amplify end-to-end tests"
-          no_output_timeout: 45m
+          no_output_timeout: 90m
     working_directory: ~/repo
 
   integration_test:
@@ -73,12 +73,13 @@ jobs:
         - checkout
         - run: yarn install
         - run: apt-get install -y sudo
+        - run: sudo apt-get update
         - run: sudo apt-get install -y tcl
         - run: sudo apt-get install -y expect
         - run: sudo apt-get install -y zip
         - run: sudo apt-get install -y lsof
         - run: sudo apt-get install -y python
-        - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+        - run: sudo apt-get install -y python-pip libpython-dev
         - run: sudo apt-get install -y jq
         - run: pip install awscli
         - run: cd .circleci/ && chmod +x aws.sh

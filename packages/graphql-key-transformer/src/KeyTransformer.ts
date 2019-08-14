@@ -240,6 +240,7 @@ export default class FunctionTransformer extends Transformer {
             } else {
                 listArguments = addHashField(definition, args, listArguments);
             }
+            listArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
             listField = { ...listField, arguments: listArguments };
             query = { ...query, fields: query.fields.map(field => field.name.value === listField.name.value ? listField : field)}
             ctx.putType(query);
@@ -261,6 +262,7 @@ export default class FunctionTransformer extends Transformer {
             } else {
                 queryArguments = addHashField(definition, args, queryArguments);
             }
+            queryArguments.push(makeInputValueDefinition('sortDirection', makeNamedType('ModelSortDirection')));
             const queryField = makeConnectionField(args.queryField, definition.name.value, queryArguments);
             queryType = {
                 ...queryType,
@@ -691,7 +693,8 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
         RequestMappingTemplate: print(
             compoundExpression([
                 setQuerySnippet(definition, directive, ctx),
-                set(ref('limit'), ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
+                set(ref('limit'),
+                ref(`util.defaultIfNull($context.args.limit, ${defaultPageLimit})`)),
                 set(
                     ref(requestVariable),
                     obj({
@@ -701,6 +704,12 @@ function makeQueryResolver(definition: ObjectTypeDefinitionNode, directive: Dire
                         query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
                         index: str(index)
                     })
+                ),
+                ifElse(
+                    raw(`!$util.isNull($ctx.args.sortDirection)
+                    && $ctx.args.sortDirection == "DESC"`),
+                    set(ref(`${requestVariable}.scanIndexForward`), bool(false)),
+                    set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
                 ),
                 iff(
                     ref('context.args.nextToken'),

@@ -1,7 +1,8 @@
+import { print } from './print';
 import {
     obj, Expression, str, ObjectNode, iff, ifElse,
     ref, raw, int, CompoundExpressionNode, compoundExpression,
-    set, qref
+    set, qref, ListNode,
 } from './ast';
 
 export class ElasticsearchMappingTemplate {
@@ -28,24 +29,24 @@ export class ElasticsearchMappingTemplate {
      * @param from the next token
      * @param query the query
      */
-    public static searchItem({ query, size, from, path, sort }: {
+    public static searchItem({ query, size, search_after, path, sort }: {
         path: Expression,
         sort?: Expression | ObjectNode,
         query?: ObjectNode | Expression,
         size?: Expression,
-        from?: Expression
+        search_after?: Expression | ListNode
     }): ObjectNode {
         return obj({
             version: str('2017-02-28'),
             operation: str('GET'),
             path,
             params: obj({
-                body: obj({
-                    from,
-                    size,
-                    sort,
-                    query
-                })
+                body: raw(`{
+                #if( $context.args.nextToken )"search_after": ${print(search_after)}, #end
+                "size": ${print(size)},
+                "sort": ${print(sort)},
+                "query": ${print(query)}
+                }`)
             })
         })
     }

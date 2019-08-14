@@ -8,7 +8,7 @@ import {
   GraphQLEnumType,
   isNonNullType,
   isListType,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
 } from 'graphql';
 
 import { CompilerContext, Operation, Fragment, SelectionSet, Field } from '../compiler';
@@ -154,7 +154,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
       {
         className,
         modifiers: ['public', 'final'],
-        adoptedProtocols: [protocol]
+        adoptedProtocols: [protocol],
       },
       () => {
         if (source) {
@@ -231,7 +231,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
 
         this.structDeclarationForSelectionSet({
           structName: 'Data',
-          selectionSet
+          selectionSet,
         });
       }
     );
@@ -244,7 +244,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
       {
         structName,
         adoptedProtocols: ['GraphQLFragment'],
-        selectionSet
+        selectionSet,
       },
       () => {
         if (source) {
@@ -261,7 +261,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
     {
       structName,
       adoptedProtocols = ['GraphQLSelectionSet'],
-      selectionSet
+      selectionSet,
     }: {
       structName: string;
       adoptedProtocols?: string[];
@@ -279,7 +279,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
         structName,
         adoptedProtocols,
         variant: typeCase.default,
-        typeCase
+        typeCase,
       },
       before,
       () => {
@@ -290,7 +290,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
 
           this.structDeclarationForVariant({
             structName: variant.structName,
-            variant
+            variant,
           });
         }
       }
@@ -302,7 +302,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
       structName,
       adoptedProtocols = ['GraphQLSelectionSet'],
       variant,
-      typeCase
+      typeCase,
     }: {
       structName: string;
       adoptedProtocols?: string[];
@@ -334,7 +334,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
 
       this.propertyDeclaration({
         propertyName: 'snapshot',
-        typeName: 'Snapshot'
+        typeName: 'Snapshot',
       });
 
       this.printNewlineIfNeeded();
@@ -380,12 +380,12 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
 
         this.structDeclaration(
           {
-            structName: 'Fragments'
+            structName: 'Fragments',
           },
           () => {
             this.propertyDeclaration({
               propertyName: 'snapshot',
-              typeName: 'Snapshot'
+              typeName: 'Snapshot',
             });
 
             for (const fragmentSpread of fragmentSpreads) {
@@ -424,7 +424,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
         if (isCompositeType(getNamedType(field.type)) && field.selectionSet) {
           this.structDeclarationForSelectionSet({
             structName: field.structName,
-            selectionSet: field.selectionSet
+            selectionSet: field.selectionSet,
           });
         }
       }
@@ -473,7 +473,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
             join(
               [
                 `"__typename": "${variant.possibleTypes[0]}"`,
-                ...properties.map(this.propertyAssignmentForField, this)
+                ...properties.map(this.propertyAssignmentForField, this),
               ],
               ', '
             ) || ':',
@@ -488,7 +488,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
         const properties = this.helpers.propertiesForSelectionSet(
           {
             possibleTypes: [possibleType],
-            selections: variant.selections
+            selections: variant.selections,
           },
           namespace
         );
@@ -509,7 +509,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
               join(
                 [
                   `"__typename": "${possibleType}"`,
-                  ...properties.map(this.propertyAssignmentForField, this)
+                  ...properties.map(this.propertyAssignmentForField, this),
                 ],
                 ', '
               ) || ':',
@@ -714,7 +714,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
                   args &&
                     args.length &&
                     `arguments: ${this.helpers.dictionaryLiteralForFieldArguments(args)}`,
-                  `type: ${this.helpers.fieldTypeEnum(type, structName)}`
+                  `type: ${this.helpers.fieldTypeEnum(type, structName)}`,
                 ],
                 ', '
               )
@@ -729,7 +729,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
                 [
                   `variableName: "${selection.variableName}"`,
                   `inverted: ${selection.inverted}`,
-                  'selections: '
+                  'selections: ',
                 ],
                 ', '
               )
@@ -746,7 +746,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
                     selection.selectionSet.possibleTypes.map(type => `"${type.name}"`),
                     ', '
                   )}]`,
-                  'selections: '
+                  'selections: ',
                 ],
                 ', '
               )
@@ -860,20 +860,28 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
     if (isS3Field(type)) {
       properties = [
         ...properties,
-        {
-          propertyName: 'localUri',
-          name: 'localUri',
-          typeName: 'String',
-          isOptional: false,
-          description: '',
-        },
-        {
-          propertyName: 'mimeType',
-          name: 'mimeType',
-          typeName: 'String',
-          isOptional: false,
-          description: '',
-        },
+        ...(properties.find(p => p.name === 'localUri')
+          ? []
+          : [
+              {
+                propertyName: 'localUri',
+                name: 'localUri',
+                typeName: 'String',
+                isOptional: false,
+                description: '',
+              },
+            ]),
+        ...(properties.find(p => p.name === 'mimeType')
+          ? []
+          : [
+              {
+                propertyName: 'mimeType',
+                name: 'mimeType',
+                typeName: 'String',
+                isOptional: false,
+                description: '',
+              },
+            ]),
       ];
     }
 
@@ -890,7 +898,7 @@ export class SwiftAPIGenerator extends SwiftGenerator<CompilerContext> {
             properties.map(({ propertyName, typeName, isOptional }) =>
               join([
                 `${escapeIdentifierIfNeeded(propertyName)}: ${typeName}`,
-                isOptional && ' = nil'
+                isOptional && ' = nil',
               ])
             ),
             ', '
