@@ -436,9 +436,9 @@ workflows:
           requires:
             - build
       - integration_test_android:
-            filters:
-              branches:
-                only:
-                  - integtest
-            requires:
-              - build
+          filters:
+            branches:
+              only:
+                - integtest
+          requires:
+            - build
