@@ -211,7 +211,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
-            aws configure set region $AWS_DEFAULT_REGION --profile default
+            aws configure set region $CLI_REGION --profile default
       - run:
           command: "cd packages/amplify-ui-tests && npm run ui"
           name: "Run ui tests in JS SDK"
@@ -245,7 +245,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
-            aws configure set region $AWS_DEFAULT_REGION --profile default
+            aws configure set region $CLI_REGION --profile default
       - run:
           name: "Set-Up configuration for UITests"
           command: |
@@ -331,7 +331,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
-            aws configure set region $AWS_DEFAULT_REGION --profile default
+            aws configure set region $CLI_REGION --profile default
       - run: 
           name: Install json parser
           command: sudo pip3 install demjson
