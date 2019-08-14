@@ -448,13 +448,13 @@ workflows:
           filters:
             branches:
               only:
-                - integtest1
+                - integtest
           requires:
             - build
       - integration_test_android:
           filters:
             branches:
               only:
-                - integtest1
+                - integtest
           requires:
             - build
