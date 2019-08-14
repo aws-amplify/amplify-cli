@@ -6,10 +6,10 @@ import { exec } from 'child_process';
 const SEVER_LAUNCH_TIME: number = 30000;
 //default settings for new user sign up
 const defaultSettings = {
-    username: process.env.COGNITO_SIGN_IN_USERNAME ? process.env.COGNITO_SIGN_IN_USERNAME : 'test01',
-    password: process.env.COGNITO_SIGN_IN_PASSWORD ? process.env.COGNITO_SIGN_IN_PASSWORD : 'The#test1',
-    email: process.env.COGNITO_SIGN_IN_EMAIL ? process.env.COGNITO_SIGN_IN_EMAIL : 'lizeyutest01@amazon.com',
-    phone: process.env.COGNITO_SIGN_IN_PHONE_NUMBER ? process.env.COGNITO_SIGN_IN_PHONE_NUMBER : '6666666666'
+    username: 'test01',
+    password: 'The#test1',
+    email: 'lizeyutest01@amazon.com',
+    phone: '6666666666'
 };
 
 export function gitCloneSampleApp(
