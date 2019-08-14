@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 machine:
     environment:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
@@ -7,9 +7,6 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
       - image: circleci/node:10.8
-
-orbs:
-  aws-cli: circleci/aws-cli@0.1.13
 
 jobs:
   build:
@@ -206,8 +203,15 @@ jobs:
             mkdir screenshots
             npm install cypress
           name: "Install Cypress Binary"
-      - aws-cli/install
-      - aws-cli/configure
+      - run:
+          name: "Install AWS CLI"
+          command: pip install awscli
+      - run:
+          name: "Configure AWS CLI"
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $AWS_DEFAULT_REGION --profile default
       - run:
           command: "cd packages/amplify-ui-tests && npm run ui"
           name: "Run ui tests in JS SDK"
@@ -233,8 +237,15 @@ jobs:
           command: |
             cd ..
             git clone https://github.com/phanisrikar93/aws-sdk-ios-samples
-      - aws-cli/install
-      - aws-cli/configure
+      - run:
+          name: "Install AWS CLI"
+          command: pip install awscli
+      - run:
+          name: "Configure AWS CLI"
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $AWS_DEFAULT_REGION --profile default
       - run:
           name: "Set-Up configuration for UITests"
           command: |
@@ -275,8 +286,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ./
-      - aws-cli/install
-      - aws-cli/configure
       - run:
           name: Install Android platforms 18, 21, 23
           command: |
@@ -314,6 +323,15 @@ jobs:
           name: Install pip3
           command: |
             sudo apt-get -y install python3-pip
+      - run:
+          name: "Install AWS CLI"
+          command: sudo pip3 install awscli
+      - run:
+          name: "Configure AWS CLI"
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
+            aws configure set region $AWS_DEFAULT_REGION --profile default
       - run: 
           name: Install json parser
           command: sudo pip3 install demjson
