@@ -17,7 +17,7 @@ Before running the scripts, you need to do the installation by the following ste
 * Create a `test.json` file under root folder **only if you want to test JavaScript SDK integration tests**. A template for the json file is provided as following.
 ```json
 {
-    "gitRepo":"MY_SAMPLE_APP_REPO"
+    "gitRepo":"MY_SAMPLE_APP_REPO",
     "CATEGORY_NAME_#1": {
         "port": "SERVER_LAUNCHING_PORT_UNDER_THIS_CATEGORY",
         "SUB_CATEGORY_NAME_#1": {
