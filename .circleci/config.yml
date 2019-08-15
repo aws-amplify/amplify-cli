@@ -225,3 +225,4 @@ workflows:
                 - release
                 - master
                 - beta
+                - ddb-local-install-script
