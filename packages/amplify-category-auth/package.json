@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "amplify-category-function": "1.11.0",
-    "aws-sdk": "^2.475.0",
+    "aws-sdk": "^2.510.0",
     "chalk": "^2.4.1",
     "chalk-pipe": "^2.0.0",
     "fs-extra": "^7.0.0",

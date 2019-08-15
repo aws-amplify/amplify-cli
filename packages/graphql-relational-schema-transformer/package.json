@@ -29,7 +29,7 @@
     "@types/graphql": "^14.0.3",
     "@types/jest": "23.1.1",
     "@types/mysql": "^2.15.5",
-    "aws-sdk": "^2.391.0",
+    "aws-sdk": "^2.510.0",
     "cloudform": "^3.5.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",

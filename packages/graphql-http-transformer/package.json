@@ -28,7 +28,7 @@
     "@types/graphql": "^0.13.1",
     "@types/jest": "23.1.1",
     "@types/node": "^10.3.4",
-    "aws-sdk": "^2.259.1",
+    "aws-sdk": "^2.510.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.10.0",

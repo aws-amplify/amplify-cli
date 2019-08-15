@@ -30,7 +30,7 @@
     "@types/lodash": "^4.14.129",
     "@types/node": "^10.3.4",
     "aws-amplify": "1.1.35",
-    "aws-sdk": "^2.259.1",
+    "aws-sdk": "^2.510.0",
     "axios": "^0.19.0",
     "graphql-auth-transformer": "3.11.0",
     "graphql-connection-transformer": "3.9.0",
