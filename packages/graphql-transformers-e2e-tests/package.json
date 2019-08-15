@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "amazon-cognito-identity-js": "^3.0.7",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "cloudform": "^3.5.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "3.5.0",
@@ -28,10 +28,10 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/graphql": "^0.13.1",
+    "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
-    "@types/node": "^10.3.4",
-    "aws-amplify": "1.1.4",
+    "@types/node": "^8.10.51",
+    "aws-amplify": "^1.1.36",
     "aws-sdk": "^2.510.0",
     "graphql-auth-transformer": "3.11.0",
     "graphql-connection-transformer": "3.9.0",
@@ -41,10 +41,10 @@
     "graphql-key-transformer": "1.5.0",
     "graphql-versioned-transformer": "3.8.0",
     "jest": "^23.1.0",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^2.6.0",
     "ts-jest": "^22.4.6",
-    "tslint": "^5.10.0",
-    "typescript": "^3.5.1"
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   },
   "jest": {
     "transform": {

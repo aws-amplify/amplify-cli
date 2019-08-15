@@ -1,4 +1,4 @@
-import { GraphQLScalarType, GraphQLError, Kind, isValueNode, StringValueNode } from 'graphql';
+import { GraphQLScalarType, GraphQLError, Kind, StringValueNode } from 'graphql';
 import * as GraphQLJSON from 'graphql-type-json';
 import { isValidNumber, getNumberType, CountryCode } from 'libphonenumber-js';
 

@@ -17,7 +17,6 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/fs-extra": "^5.0.5",
     "fs-extra": "^8.1.0",
     "graphql": "^0.13.2",
     "graphql-mapping-template": "3.5.0",
@@ -26,14 +25,15 @@
     "mysql": "^2.16.0"
   },
   "devDependencies": {
-    "@types/graphql": "^14.0.3",
+    "@types/fs-extra": "^8.0.0",
+    "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
     "@types/mysql": "^2.15.5",
     "aws-sdk": "^2.510.0",
     "cloudform": "^3.5.0",
     "jest": "^23.1.0",
     "ts-jest": "^22.4.6",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.3"
   },
   "jest": {
     "collectCoverage": true,
