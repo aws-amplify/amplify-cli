@@ -6,6 +6,7 @@ const waitPort = require('wait-port');
 const portPid = require('port-pid');
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
+const os = require('os');
 
 // random port I chose in the ephemeral range.
 const basePort = 62224;
@@ -17,7 +18,7 @@ const defaultOptions = {
     startTimeout: 20 * 1000
 };
 
-const emulatorPath = path.join(__dirname, 'emulator');
+const emulatorPath = getDynamoDBLocalDirectory();
 const retryInterval = 20;
 const maxRetries = 5;
 
@@ -227,6 +228,11 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
     return new Emulator(proc, opts);
 }
 
+function getDynamoDBLocalDirectory() {
+    const homedir = os.homedir();
+    return path.join(homedir, '.amplify-dynamodb-local-emulator');
+  }
+
 function getClient(emu, options = {}) {
     const { DynamoDB } = require('aws-sdk');
     return new DynamoDB({
@@ -240,5 +246,6 @@ function getClient(emu, options = {}) {
 
 module.exports = {
     launch,
-    getClient
+    getClient,
+    getDynamoDBLocalDirectory
 };

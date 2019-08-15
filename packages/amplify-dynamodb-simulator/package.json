@@ -6,11 +6,11 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "install": "download --extract -o emulator https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip",
+    "install": "node scripts/install-dynamodb-local.js",
     "test": "jest"
   },
   "dependencies": {
-    "download-cli": "^1.1.1",
+    "download": "^7.1.0",
     "event-to-promise": "^0.8.0",
     "execa": "^2.0.3",
     "fs-extra": "8.1.0",
