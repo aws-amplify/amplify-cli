@@ -441,20 +441,20 @@ workflows:
           filters:
             branches:
               only:
-                - integtest
+                - master
           requires:
             - build
       - integration_test_ios:
           filters:
             branches:
               only:
-                - integtest
+                - master
           requires:
             - build
       - integration_test_android:
           filters:
             branches:
               only:
-                - integtest
+                - master
           requires:
             - build
