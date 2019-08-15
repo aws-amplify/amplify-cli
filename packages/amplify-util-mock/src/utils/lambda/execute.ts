@@ -94,7 +94,6 @@ process.on('message', async options => {
     process.send(JSON.stringify({ result, error: null }));
   } catch (error) {
     process.send(JSON.stringify({ result: null, error }));
-
     process.exit(1);
   }
 });
