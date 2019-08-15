@@ -15,7 +15,7 @@ Before running the scripts, you need to do the installation by the following ste
 
 * To run the tests locally, you need to have your both Amplify CLI and AWS CLI configured and make sure `amplify` and `aws` are in bash environment.
 * Create a `test.json` file under root folder **only if you want to test JavaScript SDK integration tests**. A template for the json file is provided as following.
-```
+```json
 {
     "gitRepo":"MY_SAMPLE_APP_REPO"
     "CATEGORY_NAME_#1": {
@@ -75,7 +75,7 @@ When the tests are running in CircleCI, the videos and screenshots are recorded 
 To run the JS UI tests locally, you can run `npm run ui js/[category]` for each category or run `npm run ui` for all categories. The tests are run in parallel so that it will save a lot of time in CircleCI.
 
 ## How to write your own integation tests for JS SDK
-```
+```javascript
 describe('[Category] tests in JavaScript SDK', () => {
 
     //TODO: get configuration for [Category]
