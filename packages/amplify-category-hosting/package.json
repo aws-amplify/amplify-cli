@@ -12,14 +12,14 @@
     "test-ci": "jest --ci -i"
   },
   "dependencies": {
-    "chalk": "^2.4.1",
-    "fs-extra": "^7.0.0",
-    "inquirer": "6.3.1",
-    "mime-types": "^2.1.18",
+    "chalk": "^2.4.2",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^6.5.1",
+    "mime-types": "^2.1.24",
     "minimatch": "^3.0.4",
-    "moment": "^2.22.2",
+    "moment": "^2.24.0",
     "opn": "^5.3.0",
-    "ora": "^3.0.0",
+    "ora": "^3.4.0",
     "promise-sequential": "^1.1.1"
   },
   "devDependencies": {

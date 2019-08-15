@@ -28,7 +28,7 @@
     "should": "^7.0.1"
   },
   "dependencies": {
-    "lodash": "4.17.11"
+    "lodash": "^4.17.15"
   },
   "scripts": {
     "test": "mocha tests --require should",

@@ -16,7 +16,7 @@
     "aws"
   ],
   "dependencies": {
-    "cloudform": "^2.2.1"
+    "cloudform": "^3.5.0"
   },
   "devDependencies": {
     "@types/jest": "22.2.3",

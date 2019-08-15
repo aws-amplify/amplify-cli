@@ -22,8 +22,8 @@
     "amplify-provider-awscloudformation": "1.17.0",
     "amplify-storage-simulator": "0.3.0",
     "chokidar": "^3.0.0",
-    "fs-extra": "^7.0.1",
-    "lodash": "^4.17.11"
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/jest": "^24.0.16",
