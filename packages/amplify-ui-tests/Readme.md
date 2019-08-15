@@ -12,11 +12,40 @@ Before running the scripts, you need to do the installation by the following ste
 * Then `cd packages/amplify-ui-tests` to make sure you are under this package.
 
 ## Configuration
-To run the tests locally, you need to have your AWS credentials stored in a `.env` file of this package. These values are used to configure the tests projects.
 
-To be more specific, you need two variables in `.env`, which are `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
-
-The `.env` file does not get commited as its in `.gitignore` file.
+* To run the tests locally, you need to have your both Amplify CLI and AWS CLI configured and make sure `amplify` and `aws` are in bash environment.
+* Create a `test.json` file under root folder **only if you want to test JavaScript SDK integration tests**. A template for the json file is provided as following.
+```
+{
+    "gitRepo":"MY_SAMPLE_APP_REPO"
+    "CATEGORY_NAME_#1": {
+        "port": "SERVER_LAUNCHING_PORT_UNDER_THIS_CATEGORY",
+        "SUB_CATEGORY_NAME_#1": {
+            "apps":[
+                {
+                    "name": "APP_NAME_#1"
+                    "path": "RELATIVE_PATH_IN_SAMPLE_APP_REPO_#1"
+                    "testFiles":"CYPRESS_TEST_FILES_#1"
+                },
+                {
+                    "name": "APP_NAME_#2"
+                    "path": "RELATIVE_PATH_IN_SAMPLE_APP_REPO_#2"
+                    "testFiles":"CYPRESS_TEST_FILES_#2"
+                }
+            ]
+        }
+    }
+}
+```
+**Definations for parameters**
+* `gitRepo`: It is sample app Github repo. This is a mandatory parameter. You should have the access to clone the repo.
+* 'CATEGORY_NAME`: This is a literal name. It is a general classification name for amplify categories. Each category has a corresponding `.test.js` file under `__test__/` folder. All the tests files are running in parallel based on general categories.
+* `port`: The server launching port under each category. This is a mandatory parameter and used for running tests in parallel. 
+* `SUB_CATEGORY_NAME`: This is a literal name. This is a detailed classification within the general category. You can have multiple sub categories under one general category. They share the same port number inherited from general port and run in order. Besides, the apps under the one sub category share the same `aws-exports.js` file.
+* `apps`: The list of apps you want to test under each sub categories.
+* `name`: The literal name for the app. It is a required parameter.
+* `path`: The relative path to the app root in sample app repo. It is a required parameter.
+* `testFiles`: A regex expression for the Cypress test files. By default Cypress will look up files under `cypress/integration` folder. It is a required parameter.
 
 ## How to run the AWS resources provision scripts
 
@@ -43,4 +72,56 @@ The UI tests scripts for JS SDK are included in this package. The test scripts a
 
 When the tests are running in CircleCI, the videos and screenshots are recorded for all the tests, and will be uploaded to artifact section. Screenshots are only recorded when the tests fail.
 
-To run the JS UI tests locally, you can run `npm run ui js/[category]` for each category or run `npm run ui js` for all categories. The tests are run in parallel so that it will save a lot of time in CircleCI.
+To run the JS UI tests locally, you can run `npm run ui js/[category]` for each category or run `npm run ui` for all categories. The tests are run in parallel so that it will save a lot of time in CircleCI.
+
+## How to write your own integation tests for JS SDK
+```
+describe('[Category] tests in JavaScript SDK', () => {
+
+    //TODO: get configuration for [Category]
+    
+    describe('[Sub-category-#1] test:', () => {
+
+        //TODO: get configuration for [Sub-category]
+
+        beforeAll(() => {
+            //TODO: create a folder for sub-category
+        });
+
+        afterAll(() => {
+            //TODO: tear down all aws resources
+        })
+        
+        it('should set up amplify backend and generate aws-exports.js file', () => {
+            //TODO: add your aws provision method here
+        });
+        
+        describe('Run UI tests on JS app', () => {
+            afterEach(() => {
+                closeServer();
+            })
+            apps.forEach((app) => {
+                it('should pass all UI tests on app ${app.name}', () => {
+                    //TODO: add your test steps
+                    createTestMetaFile();
+                    copyAWSExportsFileToProj();
+                    buildApp();
+                    startSever();
+                    runCypressTest()
+                });
+            });
+        });
+    });
+
+    describe('[Sub-category-#2] test:', () => {
+        //TODO: follow the same pattern mentioned above
+    });
+});
+```
+A code pattern is presented above to write your own integration tests on new category or sub-category. Follow the instructions below:
+
+1. Determine the sample app you want to add.
+2. Determine the category and sub category for your test.
+3. Add new resource provision functions if necessary.
+4. Refer to the code pattern above and make code changes.
+5. Update the test.json based on the tests you add.
