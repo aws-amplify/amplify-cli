@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-android",
-  "version": "1.12.0",
+  "version": "1.12.1-ddb-local-install-script.0",
   "description": "amplify-cli front-end plugin for Android project",
   "main": "index.js",
   "author": "Amazon Web Services",
