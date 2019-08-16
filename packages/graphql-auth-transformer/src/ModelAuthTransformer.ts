@@ -1093,7 +1093,7 @@ All @auth directives used on field definitions are performed when the field is r
         if ( rules.length > 1 && hasOwner ) {
             this.addSubscriptionOwnerArgument(ctx, resolver, false)
         }
-        }
+    }
 
     private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
         let subscription = ctx.getSubscription();
