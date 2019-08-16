@@ -13,9 +13,8 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run: yarn cache clean --force
-      - run: yarn
       - run: yarn config set workspaces-experimental true
+      - run: yarn cache clean --force
       - run: yarn run production-build
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -35,8 +34,8 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
           name: Run tests
+      - run:
           command: yarn test-ci
   graphql_e2e_tests:
     <<: *defaults
@@ -71,7 +70,6 @@ jobs:
             TERM: dumb
       steps:
         - checkout
-        - run: yarn install
         - run: apt-get install -y sudo
         - run: sudo apt-get update
         - run: sudo apt-get install -y tcl
@@ -92,14 +90,14 @@ jobs:
               cd ..
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
-              yarn install
+              yarn
         - run: cd .circleci/ && chmod +x auth.sh
         - run: cd .circleci/ && chmod +x amplify_init.sh
         - run: cd .circleci/ && chmod +x amplify_init.exp
         - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-auth
         - run: expect .circleci/enable_auth.exp
         - run: cd ../aws-amplify-cypress-auth
-        - run: yarn
+        - run: yarn --frozen-lockfile
         - run: cd ../aws-amplify-cypress-auth/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start Auth test server in background"
@@ -131,7 +129,7 @@ jobs:
         - run: expect .circleci/amplify_init.exp ../aws-amplify-cypress-api
         - run: expect .circleci/enable_api.exp
         - run: cd ../aws-amplify-cypress-api
-        - run: yarn
+        - run: yarn --frozen-lockfile
         - run: cd ../aws-amplify-cypress-api/src && cat $(find . -type f -name 'aws-exports*')
         - run:
             name: "Start API test server in background"
