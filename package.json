@@ -41,18 +41,18 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "lerna": "3.10.8"
+    "lerna": "^3.16.4"
   },
   "workspaces": [
     "packages/*"
   ],
   "devDependencies": {
-    "@commitlint/cli": "^7.1.2",
-    "@commitlint/config-conventional": "^7.1.2",
-    "@commitlint/config-lerna-scopes": "^7.1.2",
-    "commitizen": "^3.0.2",
-    "cz-conventional-changelog": "^2.1.0",
-    "husky": "^1.1.0"
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
+    "@commitlint/config-lerna-scopes": "^8.1.0",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.0.2",
+    "husky": "^3.0.3"
   },
   "config": {
     "commitizen": {
