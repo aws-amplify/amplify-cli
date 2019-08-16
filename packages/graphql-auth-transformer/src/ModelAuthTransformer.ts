@@ -16,11 +16,10 @@ import {
 } from 'graphql-mapping-template';
 
 import {
-    OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
-    DEFAULT_IDENTITY_FIELD,
-    GROUPS_AUTH_STRATEGY,
-    DEFAULT_GROUPS_FIELD
+    ON_CREATE_FIELD,
+    ON_UPDATE_FIELD,
+    ON_DELETE_FIELD,
 } from './constants'
 
 /**
@@ -66,9 +65,6 @@ import {
  */
 
 let MODEL_DIRECTIVE_STACK;
-const onCreate = 'onCreate';
-const onUpdate = 'onUpdate';
-const onDelete = 'onDelete';
 
 export type AppSyncAuthModeModes = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS'; // Introduce later: | 'AWS_IAM' | 'OPENID_CONNECT';
 const validateAuthMode = (mode: string) => {
@@ -201,19 +197,19 @@ export class ModelAuthTransformer extends Transformer {
         const subscription = modelDirective.arguments.find((arg) => arg.name.value === 'subscriptions');
         if (subscription && subscription.value.kind !== "NullValue") {
             const subscriptionFields: Object = this.resources.subscriptionHas(subscription);
-            if (Object.keys(subscriptionFields).includes(onCreate)) {
-                subscriptionFields[onCreate].forEach( (fieldName: string) => {
+            if (Object.keys(subscriptionFields).includes(ON_CREATE_FIELD)) {
+                subscriptionFields[ON_CREATE_FIELD].forEach( (fieldName: string) => {
                     this.protectCreateSubcriptions(ctx, operationRules.create, def, fieldName);
                 })
             }
-            if (Object.keys(subscriptionFields).includes(onUpdate)) {
-                subscriptionFields[onUpdate].forEach( (fieldName: string) => {
+            if (Object.keys(subscriptionFields).includes(ON_UPDATE_FIELD)) {
+                subscriptionFields[ON_UPDATE_FIELD].forEach( (fieldName: string) => {
                     this.protectUpdateSubcriptions(ctx, operationRules.update, def, fieldName);
                 })
             }
-            if (Object.keys(subscriptionFields).includes(onDelete)) {
-                subscriptionFields[onDelete].forEach( (fieldName: string) => {
-                    this.protectUpdateSubcriptions(ctx, operationRules.delete, def, fieldName);
+            if (Object.keys(subscriptionFields).includes(ON_DELETE_FIELD)) {
+                subscriptionFields[ON_DELETE_FIELD].forEach( (fieldName: string) => {
+                    this.protectDeleteSubcriptions(ctx, operationRules.delete, def, fieldName);
                 })
             }
         } else {
@@ -908,10 +904,10 @@ All @auth directives used on field definitions are performed when the field is r
 
     private protectCreateSubcriptions(ctx: TransformerContext, rules: AuthRule[],  parent: ObjectTypeDefinitionNode, nameOverride?: string) {
         // on create subscription logic
-        const fieldName = nameOverride ? nameOverride : graphqlName(onCreate + toUpper(parent.name.value));
+        const fieldName = nameOverride ? nameOverride : graphqlName(ON_CREATE_FIELD + toUpper(parent.name.value));
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
-        if (!rules || rules.length === 0 || !resolver) {
+        if (!rules || rules.length === 0) {
             return;
         } else {
             // Break the rules out by strategy.
@@ -952,7 +948,7 @@ All @auth directives used on field definitions are performed when the field is r
             ctx.setResource(resolverResourceId, resolver);
             ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
         }
-        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
         if (rules.length === 1 && hasOwner ) {
             this.addSubscriptionOwnerArgument(ctx, resolver, true);
         }
@@ -963,10 +959,10 @@ All @auth directives used on field definitions are performed when the field is r
 
     // OnUpdate Subscription
     private protectUpdateSubcriptions(ctx: TransformerContext, rules: AuthRule[], parent: ObjectTypeDefinitionNode, nameOverride?: string) {
-        const fieldName = nameOverride ? nameOverride : graphqlName(onUpdate + toUpper(parent.name.value));
+        const fieldName = nameOverride ? nameOverride : graphqlName(ON_UPDATE_FIELD + toUpper(parent.name.value));
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
-        if (!rules || rules.length === 0 || !resolver) {
+        if (!rules || rules.length === 0) {
             return;
         } else {
             // Break the rules out by strategy.
@@ -1007,22 +1003,7 @@ All @auth directives used on field definitions are performed when the field is r
             ctx.setResource(resolverResourceId, resolver);
             ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
         }
-        let subscription = ctx.getSubscription();
-        let updateField: FieldDefinitionNode = subscription.fields.find(
-            field => field.name.value === resolver.Properties.FieldName,
-            ) as FieldDefinitionNode;
-        const updateArguments = [makeInputValueDefinition('owner', makeNamedType('String'))];
-        updateField = {
-            ...updateField,
-            arguments: updateArguments,
-        };
-        subscription = {
-            ...subscription,
-            fields: subscription.fields.map(
-                field => field.name.value === resolver.Properties.FieldName ? updateField : field,
-            ),
-        };
-        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
         if (rules.length === 1 && hasOwner ) {
             this.addSubscriptionOwnerArgument(ctx, resolver, true);
         }
@@ -1033,10 +1014,10 @@ All @auth directives used on field definitions are performed when the field is r
 
     // OnDelete Subscription
     private protectDeleteSubcriptions(ctx: TransformerContext, rules: AuthRule[], parent: ObjectTypeDefinitionNode, nameOverride?: string) {
-        const fieldName = nameOverride ? nameOverride : graphqlName(onDelete + toUpper(parent.name.value));
+        const fieldName = nameOverride ? nameOverride : graphqlName(ON_DELETE_FIELD + toUpper(parent.name.value));
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
-        if (!rules || rules.length === 0 || !resolver) {
+        if (!rules || rules.length === 0) {
             return;
         } else {
             // Break the rules out by strategy.
@@ -1077,7 +1058,7 @@ All @auth directives used on field definitions are performed when the field is r
             ctx.setResource(resolverResourceId, resolver);
             ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
         }
-        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
         if (rules.length === 1 && hasOwner ) {
             this.addSubscriptionOwnerArgument(ctx, resolver, true);
         }
@@ -1092,7 +1073,7 @@ All @auth directives used on field definitions are performed when the field is r
             field => field.name.value === resolver.Properties.FieldName,
             ) as FieldDefinitionNode;
         const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
-        const createArguments = [makeInputValueDefinition('owner', nameNode)];
+        const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
         createField = {
             ...createField,
             arguments: createArguments,

@@ -1,6 +1,6 @@
 import Template from 'cloudform-types/types/template'
 import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
-import { AppSync, Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
+import { AppSync, Fn, StringParameter, Refs } from 'cloudform-types'
 import { AuthRule } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
@@ -8,15 +8,14 @@ import {
     or, Expression, SetNode, and, not, parens,
     block, print
 } from 'graphql-mapping-template'
-import { ResourceConstants, graphqlName, toUpper, NONE_VALUE } from 'graphql-transformer-common'
+import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
-import { ModelResourceIDs } from 'graphql-transformer-common';
 
 import {
     OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     DEFAULT_IDENTITY_FIELD,
-    GROUPS_AUTH_STRATEGY,
+    LOCAL_DATASOURCE,
     DEFAULT_GROUPS_FIELD
 } from './constants'
 
@@ -302,7 +301,6 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
             const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
             const isUsern = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
-            const ownerFieldIsList = fieldIsList(ownerAttribute)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownershipAuthorizationExpressions = ownershipAuthorizationExpressions.concat(
                 formatComment ?
@@ -311,8 +309,15 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
                 isUsern ?
                     // tslint:disable-next-line
-                    set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`)) :
-                    set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
+                    set(
+                        ref('identityValue'),
+                        raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"),
+                        $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`)
+                        )
+                    : set(
+                        ref('identityValue'),
+                        raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)
+                        ),
                 // If a list of owners check for at least one.
                 iff(
                     raw(`$util.isList($${allowedOwnersVariable})`),
@@ -767,7 +772,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
     public generateSubscriptionResolver(type: string, fieldName: string, subscriptionTypeName: string = 'Subscription') {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: "Local",
+            DataSourceName: LOCAL_DATASOURCE,
             FieldName: fieldName,
             TypeName: subscriptionTypeName,
             RequestMappingTemplate: print(
