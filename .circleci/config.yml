@@ -32,7 +32,7 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:10.8
-      - image: circleci/dynamodb:jdk
+      - image: circleci/openjdk:jdk
     steps:
       - attach_workspace:
           at: ./
