@@ -1,17 +1,19 @@
 import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
+import Resolver from 'cloudform-types/types/appSync/resolver';
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
 import {
     ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode, TypeDefinitionNode, Kind,
-    FieldDefinitionNode, InterfaceTypeDefinitionNode
+    FieldDefinitionNode, InterfaceTypeDefinitionNode, valueFromASTUntyped,
 } from 'graphql'
-import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType } from 'graphql-transformer-common'
+import { ResourceConstants, ResolverResourceIDs, isListType,
+    getBaseType, makeNamedType, makeInputValueDefinition,
+    makeNonNullType, graphqlName, toUpper } from 'graphql-transformer-common'
 import {
     Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression, or, newline,
     comment
 } from 'graphql-mapping-template';
-import { valueFromASTUntyped } from 'graphql'
 
 import {
     OWNER_AUTH_STRATEGY,
@@ -62,6 +64,12 @@ import {
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
+
+let MODEL_DIRECTIVE_STACK;
+const onCreate = 'onCreate';
+const onUpdate = 'onUpdate';
+const onDelete = 'onDelete';
+
 export type AppSyncAuthModeModes = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS'; // Introduce later: | 'AWS_IAM' | 'OPENID_CONNECT';
 const validateAuthMode = (mode: string) => {
     if (
@@ -172,6 +180,7 @@ export class ModelAuthTransformer extends Transformer {
         if (!modelDirective) {
             throw new InvalidDirectiveError('Types annotated with @auth must also be annotated with @model.')
         }
+        MODEL_DIRECTIVE_STACK = def.name.value;
 
         // Get and validate the auth rules.
         const rules = getArg('rules', []) as AuthRule[]
@@ -187,6 +196,31 @@ export class ModelAuthTransformer extends Transformer {
         this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
         this.protectConnections(ctx, def, operationRules.read)
         this.protectQueries(ctx, def, operationRules.read)
+
+        // Check if subscriptions is enabled
+        const subscription = modelDirective.arguments.find((arg) => arg.name.value === 'subscriptions');
+        if (subscription && subscription.value.kind !== "NullValue") {
+            const subscriptionFields: Object = this.resources.subscriptionHas(subscription);
+            if (Object.keys(subscriptionFields).includes(onCreate)) {
+                subscriptionFields[onCreate].forEach( (fieldName: string) => {
+                    this.protectCreateSubcriptions(ctx, operationRules.create, def, fieldName);
+                })
+            }
+            if (Object.keys(subscriptionFields).includes(onUpdate)) {
+                subscriptionFields[onUpdate].forEach( (fieldName: string) => {
+                    this.protectUpdateSubcriptions(ctx, operationRules.update, def, fieldName);
+                })
+            }
+            if (Object.keys(subscriptionFields).includes(onDelete)) {
+                subscriptionFields[onDelete].forEach( (fieldName: string) => {
+                    this.protectUpdateSubcriptions(ctx, operationRules.delete, def, fieldName);
+                })
+            }
+        } else {
+            this.protectCreateSubcriptions(ctx, operationRules.create, def);
+            this.protectUpdateSubcriptions(ctx, operationRules.update, def);
+            this.protectDeleteSubcriptions(ctx, operationRules.delete, def);
+        }
     }
 
     public field = (
@@ -870,6 +904,206 @@ All @auth directives used on field definitions are performed when the field is r
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(ctx.getQueryTypeName(), args.queryField);
             this.protectListQuery(ctx, resolverResourceId, rules)
         }
+    }
+
+    private protectCreateSubcriptions(ctx: TransformerContext, rules: AuthRule[],  parent: ObjectTypeDefinitionNode, nameOverride?: string) {
+        // on create subscription logic
+        const fieldName = nameOverride ? nameOverride : graphqlName(onCreate + toUpper(parent.name.value));
+        const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
+        const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
+        if (!rules || rules.length === 0 || !resolver) {
+            return;
+        } else {
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
+            const ownerAuthorizationRules = this.getOwnerRules(rules);
+
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                staticGroupAuthorizationRules);
+
+            const fieldIsList = (fieldName: string) => {
+                const field = parent.fields.find(field => field.name.value === fieldName);
+                if (field) {
+                    return isListType(field.type);
+                }
+                return false;
+            }
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
+                ownerAuthorizationRules,
+                fieldIsList
+            );
+
+            const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
+            const templateParts = [
+                print(
+                    compoundExpression([
+                        staticGroupAuthorizationExpression,
+                        newline(),
+                        ownerAuthorizationExpression,
+                        newline(),
+                        throwIfUnauthorizedExpression
+                    ])
+                ),
+                // Create an OnCreateSubcription Resolver
+                resolver.Properties.ResponseMappingTemplate
+            ];
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+            ctx.setResource(resolverResourceId, resolver);
+            ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
+        }
+        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        if (rules.length === 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, true);
+        }
+        if ( rules.length > 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, false)
+        }
+    }
+
+    // OnUpdate Subscription
+    private protectUpdateSubcriptions(ctx: TransformerContext, rules: AuthRule[], parent: ObjectTypeDefinitionNode, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName(onUpdate + toUpper(parent.name.value));
+        const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
+        const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
+        if (!rules || rules.length === 0 || !resolver) {
+            return;
+        } else {
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
+            const ownerAuthorizationRules = this.getOwnerRules(rules);
+
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                staticGroupAuthorizationRules);
+
+            const fieldIsList = (fieldName: string) => {
+                const field = parent.fields.find(field => field.name.value === fieldName);
+                if (field) {
+                    return isListType(field.type);
+                }
+                return false;
+            }
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
+                ownerAuthorizationRules,
+                fieldIsList
+            );
+
+            const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
+            const templateParts = [
+                print(
+                    compoundExpression([
+                        staticGroupAuthorizationExpression,
+                        newline(),
+                        ownerAuthorizationExpression,
+                        newline(),
+                        throwIfUnauthorizedExpression
+                    ])
+                ),
+                // Create an OnUpdateSubcription Resolver
+                resolver.Properties.ResponseMappingTemplate
+            ];
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+            ctx.setResource(resolverResourceId, resolver);
+            ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
+        }
+        let subscription = ctx.getSubscription();
+        let updateField: FieldDefinitionNode = subscription.fields.find(
+            field => field.name.value === resolver.Properties.FieldName,
+            ) as FieldDefinitionNode;
+        const updateArguments = [makeInputValueDefinition('owner', makeNamedType('String'))];
+        updateField = {
+            ...updateField,
+            arguments: updateArguments,
+        };
+        subscription = {
+            ...subscription,
+            fields: subscription.fields.map(
+                field => field.name.value === resolver.Properties.FieldName ? updateField : field,
+            ),
+        };
+        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        if (rules.length === 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, true);
+        }
+        if ( rules.length > 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, false)
+        }
+    }
+
+    // OnDelete Subscription
+    private protectDeleteSubcriptions(ctx: TransformerContext, rules: AuthRule[], parent: ObjectTypeDefinitionNode, nameOverride?: string) {
+        const fieldName = nameOverride ? nameOverride : graphqlName(onDelete + toUpper(parent.name.value));
+        const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
+        const resolver = this.resources.generateSubscriptionResolver(parent.name.value, fieldName);
+        if (!rules || rules.length === 0 || !resolver) {
+            return;
+        } else {
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
+            const ownerAuthorizationRules = this.getOwnerRules(rules);
+
+            // Generate the expressions to validate each strategy.
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                staticGroupAuthorizationRules);
+
+            const fieldIsList = (fieldName: string) => {
+                const field = parent.fields.find(field => field.name.value === fieldName);
+                if (field) {
+                    return isListType(field.type);
+                }
+                return false;
+            };
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
+                ownerAuthorizationRules,
+                fieldIsList
+            );
+
+            const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
+            const templateParts = [
+                print(
+                    compoundExpression([
+                        staticGroupAuthorizationExpression,
+                        newline(),
+                        ownerAuthorizationExpression,
+                        newline(),
+                        throwIfUnauthorizedExpression
+                    ])
+                ),
+                // Create an OnDeleteSubcription Resolver
+                resolver.Properties.ResponseMappingTemplate
+            ];
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+            ctx.setResource(resolverResourceId, resolver);
+            ctx.mapResourceToStack(MODEL_DIRECTIVE_STACK, resolverResourceId);
+        }
+        const hasOwner = rules.find( rule => rule.allow === 'owner');
+        if (rules.length === 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, true);
+        }
+        if ( rules.length > 1 && hasOwner ) {
+            this.addSubscriptionOwnerArgument(ctx, resolver, false)
+        }
+    }
+
+    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
+        let subscription = ctx.getSubscription();
+        let createField: FieldDefinitionNode = subscription.fields.find(
+            field => field.name.value === resolver.Properties.FieldName,
+            ) as FieldDefinitionNode;
+        const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
+        const createArguments = [makeInputValueDefinition('owner', nameNode)];
+        createField = {
+            ...createField,
+            arguments: createArguments,
+        };
+        subscription = {
+            ...subscription,
+            fields: subscription.fields.map(
+                field => field.name.value === resolver.Properties.FieldName ? createField : field,
+            ),
+        };
+        ctx.putType(subscription);
     }
 
     private getOwnerRules(rules: AuthRule[]): AuthRule[] {

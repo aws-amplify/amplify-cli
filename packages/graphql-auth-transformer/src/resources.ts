@@ -1,6 +1,4 @@
 import Template from 'cloudform-types/types/template'
-import Cognito from 'cloudform-types/types/cognito'
-import Output from 'cloudform-types/types/output'
 import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
 import { AppSync, Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
 import { AuthRule } from './AuthRule'
@@ -10,8 +8,9 @@ import {
     or, Expression, SetNode, and, not, parens,
     block, print
 } from 'graphql-mapping-template'
-import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
+import { ResourceConstants, graphqlName, toUpper, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
+import { ModelResourceIDs } from 'graphql-transformer-common';
 
 import {
     OWNER_AUTH_STRATEGY,
@@ -274,6 +273,69 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
         return block('Owner Authorization Checks', [
             this.ownershipAuthorizationExpressionForCreate(rules, fieldIsList, variableToCheck, variableToSet)
         ])
+    }
+
+    public ownerAuthorizationExpressionForSubscriptions(
+        rules: AuthRule[],
+        fieldIsList: (fieldName: string) => boolean,
+        variableToCheck: string = 'ctx.args',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
+    ): Expression {
+        if (!rules || rules.length === 0) {
+            return comment(`No Owner Authorization Rules`)
+        }
+        return block('Owner Authorization Checks', [
+            this.ownershipAuthorizationExpressionForSubscriptions(rules, fieldIsList, variableToCheck, variableToSet)
+        ])
+    }
+    public ownershipAuthorizationExpressionForSubscriptions(
+        rules: AuthRule[],
+        fieldIsList: (fieldName: string) => boolean,
+        variableToCheck: string = 'ctx.args',
+        variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
+        formatComment?: (rule: AuthRule) => string,
+    ) {
+        let ownershipAuthorizationExpressions = []
+        let ruleNumber = 0;
+        for (const rule of rules) {
+            const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
+            const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const isUsern = isUsername(rawUsername)
+            const identityAttribute = replaceIfUsername(rawUsername)
+            const ownerFieldIsList = fieldIsList(ownerAttribute)
+            const allowedOwnersVariable = `allowedOwners${ruleNumber}`
+            ownershipAuthorizationExpressions = ownershipAuthorizationExpressions.concat(
+                formatComment ?
+                    comment(formatComment(rule)) :
+                    comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
+                isUsern ?
+                    // tslint:disable-next-line
+                    set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`)) :
+                    set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
+                // If a list of owners check for at least one.
+                iff(
+                    raw(`$util.isList($${allowedOwnersVariable})`),
+                    forEach(ref('allowedOwner'), ref(allowedOwnersVariable), [
+                        iff(
+                            raw(`$allowedOwner == $identityValue`),
+                            set(ref(variableToSet), raw('true'))),
+                    ])
+                ),
+                // If a single owner check for at least one.
+                iff(
+                    raw(`$util.isString($${allowedOwnersVariable})`),
+                    iff(
+                        raw(`$${allowedOwnersVariable} == $identityValue`),
+                        set(ref(variableToSet), raw('true'))),
+                )
+            )
+            ruleNumber++
+        }
+        return compoundExpression([
+            set(ref(variableToSet), raw(`false`)),
+            ...ownershipAuthorizationExpressions,
+        ]);
     }
 
     /**
@@ -588,7 +650,19 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         ])
     }
 
-    //
+    public throwIfSubscriptionUnauthorized(): Expression {
+        const ifUnauthThrow = iff(
+            not(parens(
+                or([
+                    equals(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true')),
+                    equals(ref(ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable), raw('true'))
+                ])
+            )), raw('$util.unauthorized()')
+        )
+        return block('Throw if unauthorized', [
+            ifUnauthThrow,
+        ])
+    }
 
     public throwIfUnauthorized(): Expression {
         const ifUnauthThrow = iff(
@@ -688,5 +762,35 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
 
     public setUserGroups(): SetNode {
         return set(ref('userGroups'), raw('$util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), [])'));
+    }
+
+    public generateSubscriptionResolver(type: string, fieldName: string, subscriptionTypeName: string = 'Subscription') {
+        return new AppSync.Resolver({
+            ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            DataSourceName: "Local",
+            FieldName: fieldName,
+            TypeName: subscriptionTypeName,
+            RequestMappingTemplate: print(
+                raw(`{
+                        "version": "2018-05-29",
+                        "payload": {}
+                    }`)
+            ),
+            ResponseMappingTemplate: print(
+                raw(`{ "ok": true }`)
+            )
+        });
+    }
+
+    public subscriptionHas(subscription: any): Object {
+        const operations: Object = {};
+        subscription.value.fields.forEach((field: any) => {
+            const subNames: string[] = [];
+            field.value.values.forEach((value: any) => {
+                subNames.push(value.value);
+            });
+            operations[field.name.value] = subNames;
+        });
+        return operations;
     }
 }
