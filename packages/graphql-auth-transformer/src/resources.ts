@@ -8,7 +8,7 @@ import {
     or, Expression, SetNode, and, not, parens,
     block, print, ifElse,
 } from 'graphql-mapping-template'
-import { ResourceConstants, graphqlName, toUpper, NONE_VALUE } from 'graphql-transformer-common'
+import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
