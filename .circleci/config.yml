@@ -223,5 +223,6 @@ workflows:
             branches:
               only:
                 - release
+                - authSubRelease
                 - master
                 - beta
