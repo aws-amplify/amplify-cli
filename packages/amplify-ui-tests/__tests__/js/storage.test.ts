@@ -32,16 +32,16 @@ describe('Storage tests in Javascript SDK:', () => {
         });
 
         afterAll(async () => {
-            await deleteProject(projRoot);
+            await deleteProject(projRoot, true, true);
             deleteProjectDir(projRoot);
         });
 
         it('should set up amplify backend and generate aws-export.js file', async () => {
-            await initProjectWithProfile(projRoot);
-            await addAuthWithDefault(projRoot); // should add auth before add storage
-            await addStorageWithDefault(projRoot);
-            await addApiWithSimpleModel(projRoot);
-            await amplifyPushApi(projRoot);
+            await initProjectWithProfile(projRoot, {}, true);
+            await addAuthWithDefault(projRoot, {}, true); // should add auth before add storage
+            await addStorageWithDefault(projRoot, {}, true);
+            await addApiWithSimpleModel(projRoot, {}, true);
+            await amplifyPushApi(projRoot, true);
             expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy()
         });
 

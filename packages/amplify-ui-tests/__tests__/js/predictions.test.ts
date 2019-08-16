@@ -27,16 +27,16 @@ describe('Prediction tests in JavaScript SDK:', () => {
         });
 
         afterAll(async () => {
-            await deleteProject(projRoot);
+            await deleteProject(projRoot, true, true);
             deleteProjectDir(projRoot);
         });
 
         it('should set up amplify backend and generate aws-export.js file', async () => {
-            await initProjectWithProfile(projRoot);
-            await addAuthWithDefault(projRoot); // should add auth before add predictions
-            await addIdentityText(projRoot);
-            await addConvertWithDefault(projRoot);
-            await amplifyPush(projRoot);
+            await initProjectWithProfile(projRoot, {}, true);
+            await addAuthWithDefault(projRoot, {}, true); // should add auth before add predictions
+            await addIdentityText(projRoot, {}, true);
+            await addConvertWithDefault(projRoot, {}, true);
+            await amplifyPush(projRoot, true);
             expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy()
         });
 

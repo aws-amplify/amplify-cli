@@ -32,14 +32,14 @@ describe('Auth tests in Javascript SDK:', () => {
     });
 
     afterAll(async () => {
-      await deleteProject(projRoot); // delete the project from the cloud
+      await deleteProject(projRoot, true, true); // delete the project from the cloud
       deleteProjectDir(projRoot); // delete the project directory
     });
 
     it('should set up amplify backend and generate aws-export.js file', async () => {
-      await initProjectWithProfile(projRoot);
-      await addAuthWithDefault(projRoot);
-      await amplifyPush(projRoot); // Push it to the cloud
+      await initProjectWithProfile(projRoot, {}, true);
+      await addAuthWithDefault(projRoot, {}, true);
+      await amplifyPush(projRoot, true); // Push it to the cloud
       expect(existsAWSExportsPath(projRoot, 'js')).toBeTruthy();
     });
 
