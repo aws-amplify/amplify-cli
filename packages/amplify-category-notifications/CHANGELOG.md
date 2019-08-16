@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-authSubRelease.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.14...amplify-category-notifications@1.8.1-authSubRelease.0) (2019-08-16)
+
+
+### Bug Fixes
+
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d0))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.14...amplify-category-notifications@1.8.0) (2019-08-13)
 
 
