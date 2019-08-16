@@ -92,7 +92,6 @@ process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
     process.send(JSON.stringify({ result, error: null }));
-    process.exit(0);
   } catch (error) {
     process.send(JSON.stringify({ result: null, error }));
     process.exit(1);
