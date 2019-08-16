@@ -4,7 +4,7 @@ import { isValidNumber, getNumberType, CountryCode } from 'libphonenumber-js';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
-import { EmailAddress, URL } from '@okgrow/graphql-scalars';
+import { EmailAddressTypeDefinition, URLTypeDefinition } from 'graphql-scalars';
 
 const phoneValidator = (ast, options) => {
   const { country = 'US' } = options;
@@ -94,8 +94,8 @@ export const scalars = {
   AWSTime,
   AWSDateTime,
   AWSPhone,
-  AWSEmail: EmailAddress,
-  AWSURL: URL,
+  AWSEmail: EmailAddressTypeDefinition,
+  AWSURL: URLTypeDefinition,
 };
 
 export function wrapSchema(schemaString) {

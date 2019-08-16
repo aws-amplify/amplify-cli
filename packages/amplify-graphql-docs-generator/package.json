@@ -28,7 +28,6 @@
   "devDependencies": {
     "@types/ejs": "^2.6.0",
     "@types/graphql": "^0.13.4",
-    "@types/handlebars": "^4.1.0",
     "@types/jest": "23.3.1",
     "@types/node": "^8.10.51",
     "@types/prettier": "^1.13.2",

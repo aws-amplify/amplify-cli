@@ -27,7 +27,6 @@
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/graphql": "^0.13.4",
     "@types/jest": "23.1.1",
     "@types/node": "^8.10.51",

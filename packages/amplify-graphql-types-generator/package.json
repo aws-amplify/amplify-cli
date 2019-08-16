@@ -24,9 +24,6 @@
     "Yathiraj"
   ],
   "license": "MIT",
-  "engines": {
-    "node": ">=6.0"
-  },
   "devDependencies": {
     "@types/common-tags": "^1.2.5",
     "@types/glob": "^7.1.1",
