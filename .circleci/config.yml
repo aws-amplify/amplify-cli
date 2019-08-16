@@ -30,6 +30,9 @@ jobs:
           paths: .
   test:
     <<: *defaults
+    docker:
+      - image: circleci/node:10.8
+      - image: circleci/dynamodb:jdk
     steps:
       - attach_workspace:
           at: ./
