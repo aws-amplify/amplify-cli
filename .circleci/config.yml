@@ -30,14 +30,14 @@ jobs:
           paths: .
   test:
     <<: *defaults
-    docker:
-      - image: circleci/node:10.8
-      - image: circleci/openjdk:jdk
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
       - run:
           name: Run tests
           command: yarn test-ci
