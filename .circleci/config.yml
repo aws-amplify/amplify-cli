@@ -441,6 +441,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - integtest
           requires:
             - build
@@ -448,6 +449,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - integtest
           requires:
             - build
@@ -455,6 +457,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - integtest
           requires:
             - build
