@@ -90,7 +90,7 @@ jobs:
               cd ..
               git clone $AUTH_CLONE_URL
               cd aws-amplify-cypress-auth
-              yarn install --frozen-lockfile
+              yarn
         - run: cd .circleci/ && chmod +x auth.sh
         - run: cd .circleci/ && chmod +x amplify_init.sh
         - run: cd .circleci/ && chmod +x amplify_init.exp
