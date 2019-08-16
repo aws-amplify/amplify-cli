@@ -15,7 +15,6 @@ jobs:
       - checkout
       - run: yarn config set workspaces-experimental true
       - run: yarn cache clean --force
-      - run: yarn --frozen-lockfile
       - run: yarn run production-build
       - save_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -71,7 +70,6 @@ jobs:
             TERM: dumb
       steps:
         - checkout
-        - run: yarn --frozen-lockfile
         - run: apt-get install -y sudo
         - run: sudo apt-get update
         - run: sudo apt-get install -y tcl
