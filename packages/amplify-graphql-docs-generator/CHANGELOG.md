@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-authSubRelease.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.4.3...amplify-graphql-docs-generator@1.8.1-authSubRelease.0) (2019-08-16)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@1.4.3...amplify-graphql-docs-generator@1.8.0) (2019-08-13)
 
 
