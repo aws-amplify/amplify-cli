@@ -442,6 +442,7 @@ workflows:
             branches:
               only:
                 - master
+                - integtest
           requires:
             - build
       - integration_test_ios:
@@ -449,6 +450,7 @@ workflows:
             branches:
               only:
                 - master
+                - integtest
           requires:
             - build
       - integration_test_android:
@@ -456,5 +458,6 @@ workflows:
             branches:
               only:
                 - master
+                - integtest
           requires:
             - build
