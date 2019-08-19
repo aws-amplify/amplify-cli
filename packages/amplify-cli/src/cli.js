@@ -6,6 +6,17 @@ const globalPrefix = require('./lib/global-prefix');
 
 const MIGRATE = 'migrate';
 
+// Gluegun has no hooks for errors happening inside executing the commands,
+// so we need a process level handler, to log the errors like environment
+// not initialized and such errors in a friendly way without technical data
+// like stacktrace which does not add value in this case.
+process.on('uncaughtException', handleError);
+
+function handleError(error) {
+  console.error(error.message);
+  process.exit(1);
+}
+
 async function run(argv) {
   const localNodeModulesDirPath = path.normalize(path.join(__dirname, '../', 'node_modules'));
   const globalNodeModulesDirPath = globalPrefix.getGlobalNodeModuleDirPath();

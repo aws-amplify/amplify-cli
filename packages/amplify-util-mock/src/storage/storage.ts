@@ -18,7 +18,6 @@ export class StorageTest {
     const meta = context.amplify.getProjectDetails().amplifyMeta;
     const existingStorage = meta.storage;
     this.storageRegion = meta.providers.awscloudformation.Region;
-    //console.log("existingStorage",existingStorage);
     if (
       existingStorage === undefined ||
       Object.keys(existingStorage).length === 0

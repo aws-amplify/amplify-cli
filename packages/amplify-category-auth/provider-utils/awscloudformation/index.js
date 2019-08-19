@@ -312,7 +312,7 @@ async function updateConfigOnEnvInit(context, category, service) {
       });
 
       if (missingParams.length) {
-        throw Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
     if (resourceParams.hostedUIProviderMeta) {

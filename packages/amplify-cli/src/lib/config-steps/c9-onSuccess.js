@@ -6,8 +6,8 @@ async function run(context) {
   const { amplify } = context;
 
   let jsonString = JSON.stringify(context.exeInfo.projectConfig, null, 4);
-  const projectCofnigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
-  fs.writeFileSync(projectCofnigFilePath, jsonString, 'utf8');
+  const projectConfigFilePath = amplify.pathManager.getProjectConfigFilePath(projectPath);
+  fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
 
   jsonString = JSON.stringify(context.exeInfo.localEnvInfo, null, 4);
   const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();

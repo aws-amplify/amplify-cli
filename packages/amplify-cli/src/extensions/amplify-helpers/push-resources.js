@@ -4,6 +4,7 @@ const { showResourceTable } = require('./resource-status');
 const { onCategoryOutputsChange } = require('./on-category-outputs-change');
 const { initializeEnv } = require('../../lib/initialize-env');
 const { getProviderPlugins } = require('./get-provider-plugins');
+const { getEnvInfo } = require('./get-env-info');
 const { readJsonFile } = require('./read-json-file');
 
 /*
@@ -24,8 +25,7 @@ async function pushResources(context, category, resourceName, filteredResources)
       if (fs.existsSync(projectConfigFilePath)) {
         context.exeInfo.projectConfig = readJsonFile(projectConfigFilePath);
       }
-      const envFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-      context.exeInfo.localEnvInfo = readJsonFile(envFilePath);
+      context.exeInfo.localEnvInfo = getEnvInfo();
 
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
