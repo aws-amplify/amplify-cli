@@ -21,7 +21,7 @@
     "inquirer": "^6.5.1",
     "merge-graphql-schemas": "^1.7.0",
     "moment": "^2.24.0",
-    "opn": "^5.3.0",
+    "open": "^6.4.0",
     "ora": "^3.4.0",
     "uuid": "^3.3.2"
   },
