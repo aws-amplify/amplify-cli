@@ -23,7 +23,7 @@ import { ResolverResourceIDs, SearchableResourceIDs, getBaseType } from 'graphql
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
-const numberTypes = ["Int", "Float", "Boolean", "AWSTimestamp"];
+const nonKeywordTypes = ["Int", "Float", "Boolean", "AWSTimestamp", "AWSDate", "AWSDateTime"];
 
 interface QueryNameMap {
     search?: string;
@@ -101,7 +101,7 @@ export class SearchableModelTransformer extends Transformer {
         const queryFields = [];
         const numberFields: Expression[] = [];
         def.fields.forEach( field => {
-            if (numberTypes.includes(getBaseType(field.type))) {
+            if (nonKeywordTypes.includes(getBaseType(field.type))) {
                 numberFields.push(str(field.name.value));
             }
         });
