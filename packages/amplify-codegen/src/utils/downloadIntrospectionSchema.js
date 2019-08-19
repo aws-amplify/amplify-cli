@@ -19,11 +19,15 @@ async function downloadIntrospectionSchema(context, apiId, downloadLocation, reg
     const introspectionDir = dirname(downloadLocation);
     fs.ensureDirSync(introspectionDir);
     fs.writeFileSync(downloadLocation, schema, 'utf8');
-    return relative(amplify.getEnvInfo().projectPath, downloadLocation);
+    if (!context.withoutInit) {
+      return relative(amplify.getEnvInfo().projectPath, downloadLocation);
+    } else {
+      return relative(process.cwd(), downloadLocation);
+    }
   } catch (ex) {
     if (ex.code === 'NotFoundException') {
       throw new AmplifyCodeGenAPINotFoundError(constants.ERROR_APPSYNC_API_NOT_FOUND);
-    }
+    } 
     throw ex;
   }
 }

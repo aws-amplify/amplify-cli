@@ -19,10 +19,17 @@ const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
 
 async function add(context, apiId = null) {
-  let region = getProjectAwsRegion(context);
+  let { region } = context
+  // context.region is undefined if working within a valid amplify project
+  if (!region) {
+    region = getProjectAwsRegion(context);
+  }
   const config = loadConfig(context);
   if (config.getProjects().length) {
-    throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
+    // If adding codegen without init don't throw an error here
+    if (!context.withoutInit) {
+      throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
+    }
   }
   let apiDetails;
   if (!apiId) {
@@ -43,7 +50,9 @@ async function add(context, apiId = null) {
         apiDetailSpinner.start('Getting API details');
         apiDetails = await getAppSyncAPIInfo(context, apiId, region);
         apiDetailSpinner.succeed();
-        await updateAmplifyMeta(context, apiDetails);
+        if (!context.withoutInit) {
+          await updateAmplifyMeta(context, apiDetails);
+        }
         break;
       } catch (e) {
         apiDetailSpinner.fail();
@@ -60,6 +69,7 @@ async function add(context, apiId = null) {
   if (!apiDetails) {
     return;
   }
+  context.apiDetails = apiDetails;
   const answer = await addWalkThrough(context);
 
   const schema = await downloadIntrospectionSchemaWithProgress(

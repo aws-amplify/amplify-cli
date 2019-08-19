@@ -11,7 +11,10 @@ const frontEndToTargetMappings = {
 };
 
 async function askCodeGenTargetLanguage(context, target) {
-  const frontend = getFrontEndHandler(context);
+  let frontend = context.frontend;
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+  }
   const isAngular = frontend === 'javascript' && getFrontEndFramework(context) === 'angular';
   const isIonic = frontend === 'javascript' && getFrontEndFramework(context) === 'ionic';
   const targetLanguage = isAngular || isIonic ? 'angular' : frontend;

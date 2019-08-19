@@ -5,13 +5,21 @@ const statementsGen = require('amplify-graphql-docs-generator').default;
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails, getAppSyncAPIInfo } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
-  const apis = getAppSyncAPIDetails(context);
-  const { projectPath } = context.amplify.getEnvInfo();
+  let apis = [];
+  if (!context.withoutInit) {
+    apis = getAppSyncAPIDetails(context);
+  } else {
+    apis = [context.apiDetails];
+  }
+  let projectPath = process.cwd();
+  if (!context.withoutInit) {
+    projectPath = context.amplify.getEnvInfo().projectPath;
+  }
   if (!projects.length || !apis.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
@@ -30,7 +38,10 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
         cfg.amplifyExtension.region,
       );
     }
-    const frontend = getFrontEndHandler(context);
+    let frontend = context.frontend
+    if (!context.withoutInit) {
+      frontend = getFrontEndHandler(context);
+    }
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();

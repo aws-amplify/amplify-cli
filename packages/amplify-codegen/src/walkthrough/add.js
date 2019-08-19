@@ -28,8 +28,20 @@ async function addWalkThrough(context, skip = []) {
     yesFlag = context.exeInfo.inputParams.yes;
   }
 
-  const frontend = getFrontEndHandler(context);
-  const schemaLocation = getSchemaDownloadLocation(context);
+  let frontend = context.frontend
+  // javascript schema location by default
+  let schemaLocation = './src/graphql/schema.json';
+  if (frontend === 'android') {
+    schemaLocation = './app/src/main/graphql/schema.json';
+  }
+  if (frontend === 'ios') {
+    schemaLocation = './graphql/schema.json';
+  }
+  
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+    schemaLocation = getSchemaDownloadLocation(context);
+  } 
   const answers = {
     excludePattern: DEFAULT_EXCLUDE_PATTERNS,
     schemaLocation,

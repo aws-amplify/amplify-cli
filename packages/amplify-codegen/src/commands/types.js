@@ -9,17 +9,29 @@ const loadConfig = require('../codegen-config');
 const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateTypes(context, forceDownloadSchema) {
-  const frontend = getFrontEndHandler(context);
+  let frontend = context.frontend
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+  }
   if (frontend !== 'android') {
     const config = loadConfig(context);
     const projects = config.getProjects();
-    const apis = getAppSyncAPIDetails(context);
-    if (!projects.length || !apis.length) {
-      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-      return;
+    let apis = [];
+    if (!context.withoutInit) {
+      apis = getAppSyncAPIDetails(context);
+    } else {
+      apis = [context.apiDetails];
     }
-
-    const { projectPath } = context.amplify.getEnvInfo();
+    if (!projects.length || !apis.length) {
+      if (!context.withoutInit) {
+        context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+        return;
+      }
+    }
+    let projectPath = process.cwd();
+    if (!context.withoutInit) {
+      projectPath = context.amplify.getEnvInfo().projectPath;      
+    }
 
     projects.forEach(async (cfg) => {
       const { generatedFileName } = cfg.amplifyExtension || {};
