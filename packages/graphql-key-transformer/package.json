@@ -11,6 +11,7 @@
     "clean": "rm -rf ./lib"
   },
   "dependencies": {
+    "case": "^1.6.2",
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
