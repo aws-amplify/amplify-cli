@@ -149,7 +149,6 @@ export class StorageServer {
   }
 
   private async handleRequestList(request, response) {
-
     let ListBucketResult = {};
     ListBucketResult[LIST_CONTENT] = [];
     ListBucketResult[LIST_COMMOM_PREFIXES] = [];
@@ -211,7 +210,6 @@ export class StorageServer {
   }
 
   private async handleRequestDelete(request, response) {
-
     const filePath = join(this.localDirectoryPath, request.params.path);
     if (existsSync(filePath)) {
       unlink(filePath, err => {
