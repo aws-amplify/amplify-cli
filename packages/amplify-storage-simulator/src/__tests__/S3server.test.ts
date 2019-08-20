@@ -86,6 +86,13 @@ describe("Test list api", () => {
     expect(response.Contents[0].Key).toEqual("normal/2.png");
     expect(response.Contents.length).toEqual(1);
   });
+  test("get list", async () => {
+    const response = await s3client
+      .listObjects({ Bucket: bucket })
+      .promise();
+    expect(response).toBeDefined();
+    //expect(response.Contents.length).toEqual(1);
+  });
   test("empty bucket", async () => {
     const response = await s3client
       .listObjects({ Bucket: bucket, Prefix: "public" })
@@ -143,7 +150,7 @@ describe("Test put api", () => {
     const params = {
       Bucket: bucket, // pass your bucket name
       Key: "2.png",
-      Prefix: "upload", 
+      Prefix: "upload",
       Body: buffer
     };
     const data = await s3client.upload(params).promise();
@@ -156,7 +163,7 @@ describe("Test put api", () => {
   test("put text", async () => {
     const params = {
       Bucket: bucket, // pass your bucket name
-      Key: "upload/abc.txt", 
+      Key: "upload/abc.txt",
       Body: buf1
     };
     const data = await s3client.upload(params).promise();
@@ -169,10 +176,37 @@ describe("Test put api", () => {
   test(" multipart upload", async () => {
     const params = {
       Bucket: bucket, // pass your bucket name
-      Key: "upload/long_image.jpg", 
+      Key: "upload/long_image.jpg",
       Body: buf2
     };
     const data = await s3client.upload(params).promise();
     expect(data.Key).toBe("upload/long_image.jpg");
+  });
+
+  test(" async uploads", async () => {
+    const params1 = {
+      Bucket: bucket, // pass your bucket name
+      Key: "upload/long_image1.jpg",
+      Body: buf2
+    };
+    const data = await s3client.upload(params1).promise();
+
+    const params2 = {
+      Bucket: bucket, // pass your bucket name
+      Key: "upload/long_image2.jpg",
+      Body: buf2
+    };
+    const data2 = await s3client.upload(params2).promise();
+
+    const params3 = {
+      Bucket: bucket, // pass your bucket name
+      Key: "upload/long_image3.jpg",
+      Body: buf2
+    };
+    const data3 = await s3client.upload(params3).promise();
+    
+    expect(data.Key).toBe("upload/long_image1.jpg");
+    expect(data2.Key).toBe("upload/long_image2.jpg");
+    expect(data3.Key).toBe("upload/long_image3.jpg");
   });
 });
