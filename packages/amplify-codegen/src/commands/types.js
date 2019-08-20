@@ -9,7 +9,7 @@ const loadConfig = require('../codegen-config');
 const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateTypes(context, forceDownloadSchema) {
-  let frontend = context.frontend
+  let { frontend } = context;
   if (!context.withoutInit) {
     frontend = getFrontEndHandler(context);
   }
@@ -30,7 +30,7 @@ async function generateTypes(context, forceDownloadSchema) {
     }
     let projectPath = process.cwd();
     if (!context.withoutInit) {
-      projectPath = context.amplify.getEnvInfo().projectPath;      
+      ({ projectPath } = context.amplify.getEnvInfo());
     }
 
     projects.forEach(async (cfg) => {

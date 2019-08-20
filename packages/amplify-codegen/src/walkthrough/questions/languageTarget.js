@@ -11,7 +11,7 @@ const frontEndToTargetMappings = {
 };
 
 async function askCodeGenTargetLanguage(context, target) {
-  let frontend = context.frontend;
+  let { frontend } = context;
   if (!context.withoutInit) {
     frontend = getFrontEndHandler(context);
   }

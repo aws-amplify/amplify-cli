@@ -19,7 +19,7 @@ const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
 
 async function add(context, apiId = null) {
-  let { region } = context
+  let { region } = context;
   // context.region is undefined if working within a valid amplify project
   if (!region) {
     region = getProjectAwsRegion(context);

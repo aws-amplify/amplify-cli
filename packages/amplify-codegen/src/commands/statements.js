@@ -5,7 +5,7 @@ const statementsGen = require('amplify-graphql-docs-generator').default;
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
-const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails, getAppSyncAPIInfo } = require('../utils');
+const { downloadIntrospectionSchemaWithProgress, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
@@ -18,7 +18,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
   }
   let projectPath = process.cwd();
   if (!context.withoutInit) {
-    projectPath = context.amplify.getEnvInfo().projectPath;
+    ({ projectPath } = context.amplify.getEnvInfo());
   }
   if (!projects.length || !apis.length) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
@@ -38,7 +38,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
         cfg.amplifyExtension.region,
       );
     }
-    let frontend = context.frontend
+    let { frontend } = context;
     if (!context.withoutInit) {
       frontend = getFrontEndHandler(context);
     }
