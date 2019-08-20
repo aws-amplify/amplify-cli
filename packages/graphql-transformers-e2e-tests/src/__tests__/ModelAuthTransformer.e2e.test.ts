@@ -978,6 +978,51 @@ test(`Test listPWProtecteds when the user is authorized.`, async () => {
     expect(dReq.data.deletePWProtected).toBeTruthy()
 })
 
+test(`Test listPWProtecteds when groups is null in dynamodb.`, async () => {
+    const req = await GRAPHQL_CLIENT_1.query(`
+    mutation {
+        createPWProtected(input: { content: "Foobie" }) {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req, null, 4))
+    expect(req.data.createPWProtected).toBeTruthy()
+
+    const req2 = await GRAPHQL_CLIENT_1.query(`
+    query {
+        listPWProtecteds {
+            items {
+                id
+                content
+                participants
+                watchers
+            }
+            nextToken
+        }
+    }
+    `)
+    expect(req2.data.listPWProtecteds.items.length).toEqual(0)
+
+    const req3 = await GRAPHQL_CLIENT_1.query(`
+    query {
+        getPWProtected(id: "${req.data.createPWProtected.id}") {
+            id
+            content
+            participants
+            watchers
+        }
+    }
+    `)
+    console.log(JSON.stringify(req3, null, 4))
+    expect(req3.data.getPWProtected).toEqual(null)
+    expect(req3.errors.length).toEqual(1)
+    expect((req3.errors[0] as any).errorType).toEqual('Unauthorized')
+})
+
 test(`Test Protecteds when the user is not authorized.`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(`
     mutation {
