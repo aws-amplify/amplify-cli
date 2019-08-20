@@ -37,4 +37,8 @@ export class AmplifyStorageSimulator {
   get url() {
     return this._server.url;
   }
+
+  get getServer() {
+    return this._server;
+  }
 }

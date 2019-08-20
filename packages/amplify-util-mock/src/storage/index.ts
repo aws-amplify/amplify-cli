@@ -20,7 +20,9 @@ export async function start(context) {
         }
         const testApi = new StorageTest();
         try {
-            testApi.start(context);
+            await testApi.start(context);
+            // call s3 trigger
+             testApi.trigger(context);
         } catch (e) {
             console.log(e);
             // Sending term signal so we clean up after ourself
