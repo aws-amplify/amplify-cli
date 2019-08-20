@@ -6,7 +6,7 @@ async function askForFrontend(frontends) {
     name: 'selectedFrontend',
     message: "Choose the type of app that you're building",
     choices: frontends,
-    default: 'android',
+    default: 'javascript',
   };
   const answer = await inquirer.prompt(selectFrontend);
   return answer.selectedFrontend;

@@ -23,10 +23,8 @@ async function generateTypes(context, forceDownloadSchema) {
       apis = [context.apiDetails];
     }
     if (!projects.length || !apis.length) {
-      if (!context.withoutInit) {
-        context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-        return;
-      }
+      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+      return;
     }
     let projectPath = process.cwd();
     if (!context.withoutInit) {

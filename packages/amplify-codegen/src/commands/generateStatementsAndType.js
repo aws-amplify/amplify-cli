@@ -11,9 +11,16 @@ const { downloadIntrospectionSchemaWithProgress, isAppSyncApiPendingPush, getApp
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
-
-  const { projectPath } = context.amplify.getEnvInfo();
-  const apis = getAppSyncAPIDetails(context);
+  let projectPath = process.cwd();
+  if (!context.withoutInit) {
+    ({ projectPath } = context.amplify.getEnvInfo());
+  }
+  let apis = [];
+  if (!context.withoutInit) {
+    apis = getAppSyncAPIDetails(context);
+  } else {
+    apis = [context.apiDetails];
+  }
   if (!projects.length || !apis.length) {
     throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
   }
@@ -31,9 +38,12 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
   }
   await generateStatements(context, false, maxDepth);
   await generateTypes(context, false);
-  const pendingPush = await isAppSyncApiPendingPush(context);
-  if (pendingPush) {
-    context.print.info(constants.MSG_CODEGEN_PENDING_API_PUSH);
+  let pendingPush;
+  if (!context.withoutInit) {
+    pendingPush = await isAppSyncApiPendingPush(context);
+    if (pendingPush) {
+      context.print.info(constants.MSG_CODEGEN_PENDING_API_PUSH);
+    }
   }
 }
 

@@ -26,10 +26,7 @@ async function add(context, apiId = null) {
   }
   const config = loadConfig(context);
   if (config.getProjects().length) {
-    // If adding codegen without init don't throw an error here
-    if (!context.withoutInit) {
-      throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
-    }
+    throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
   }
   let apiDetails;
   if (!apiId) {
@@ -89,6 +86,7 @@ async function add(context, apiId = null) {
       generatedFileName: answer.generatedFileName || '',
       docsFilePath: answer.docsFilePath,
       region,
+      apiId,
     },
   };
 

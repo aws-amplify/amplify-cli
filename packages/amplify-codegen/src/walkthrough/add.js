@@ -29,13 +29,16 @@ async function addWalkThrough(context, skip = []) {
   }
 
   let { frontend } = context;
-  // javascript schema location by default
-  let schemaLocation = './src/graphql/schema.json';
+  let schemaLocation = '';
+
   if (frontend === 'android') {
     schemaLocation = './app/src/main/graphql/schema.json';
-  }
-  if (frontend === 'ios') {
+  } else if (frontend === 'ios') {
     schemaLocation = './graphql/schema.json';
+  } else if (frontend === 'javascript') {
+    schemaLocation = './src/graphql/schema.json';
+  } else {
+    schemaLocation = './src/graphql/schema.json';
   }
 
   if (!context.withoutInit) {
