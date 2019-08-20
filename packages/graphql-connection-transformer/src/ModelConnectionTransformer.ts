@@ -1,4 +1,4 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, gql } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
 import Table from 'cloudform-types/types/dynamoDb/table'
 import {
     DirectiveNode, ObjectTypeDefinitionNode,
@@ -26,6 +26,23 @@ import Resource from 'cloudform-types/types/resource';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack'
 
+interface KeySchema {
+    AttributeName: string;
+    KeyType: string;
+}
+
+interface RelationArguments {
+    keyName?: string;
+    fields: string[];
+}
+
+interface Index {
+    IndexName: string;
+    KeySchema: KeySchema[];
+    Projection?: any;
+    ProvisionedThroughput?: any;
+}
+
 function makeConnectionAttributeName(type: string, field?: string) {
     return field ? toCamelCase([type, field, 'id']) : toCamelCase([type, 'id'])
 }
@@ -47,6 +64,58 @@ function validateKeyField(field: FieldDefinitionNode): void {
 }
 
 /**
+ * Ensure that the field passed in is compatible to be a key field
+ * (Not a list and of type ID or String)
+ * @param field: the field to be checked.
+ */
+function validateKeyFieldNewConnection(field: FieldDefinitionNode): void {
+    if (!field) {
+        return
+    }
+    const isNonNull = isNonNullType(field.type);
+    const isAList = isListType(field.type)
+
+    // The only valid key fields are single non-null fields.
+    if (!isAList && isNonNull) {
+        return;
+    }
+    throw new InvalidDirectiveError(`All fields used for a connection cannot be lists and must be of Non-Null types.`)
+}
+
+/**
+ * Checks that the fields being used to query match the expected key types for the index being used.
+ * @param parentFields: All fields of the parent object.
+ * @param realtedTypeFields: All fields of the related object.
+ * @param inputFieldNames: The fields passed in to the @connection directive.
+ * @param keySchema: The key schema for the index being used.
+ */
+function checkFieldsAgainstIndex(parentFields: ReadonlyArray<FieldDefinitionNode>,
+                                 relatedTypeFields: ReadonlyArray<FieldDefinitionNode>,
+                                 inputFieldNames: string[],
+                                 keySchema: KeySchema[]): void {
+    let hashAttributeName = keySchema[0].AttributeName;
+    let tablePKType = relatedTypeFields.find(f => f.name.value === hashAttributeName).type;
+    let queryPKType = parentFields.find(f => f.name.value === inputFieldNames[0]).type;
+    let numFields = inputFieldNames.length;
+
+    if (getBaseType(tablePKType) !== getBaseType(queryPKType)) {
+        throw new InvalidDirectiveError(inputFieldNames[0] + ' field is not of type ' + getBaseType(tablePKType))
+    }
+    if (numFields > keySchema.length) {
+        // throw new InvalidDirectiveError('Too many fields passed in for connection.')
+    }
+    if (numFields > 1) {
+        // let sortAttributeName = keySchema[1].AttributeName;
+        // let tableSKType = relatedTypeFields.find(f => f.name.value === sortAttributeName).type;
+        // let querySKType = parentFields.find(f => f.name.value === inputFieldNames[1]).type;
+
+        // if (getBaseType(tableSKType) !== getBaseType(querySKType)) {
+        //     throw new InvalidDirectiveError(inputFieldNames[1] + ' field is not of type ' + getBaseType(tableSKType))
+        // }
+    }
+}
+
+/**
  * The @connection transform.
  *
  * This transform configures the GSIs and resolvers needed to implement
@@ -59,7 +128,12 @@ export class ModelConnectionTransformer extends Transformer {
     constructor() {
         super(
             'ModelConnectionTransformer',
-            gql`directive @connection(name: String, keyField: String, sortField: String) on FIELD_DEFINITION`
+            gql`directive @connection(name: String,
+                                      keyField: String,
+                                      sortField: String,
+                                      keyName: String,
+                                      fields: [String],
+                                      model: String) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -102,6 +176,11 @@ export class ModelConnectionTransformer extends Transformer {
         const modelDirective = relatedType.directives.find((dir: DirectiveNode) => dir.name.value === 'model')
         if (!modelDirective) {
             throw new InvalidDirectiveError(`Object type ${relatedTypeName} must be annotated with @model.`)
+        }
+
+        if (getDirectiveArgument(directive)("fields")) {
+            this.newParameterization(parent, field, directive, ctx)
+            return
         }
 
         let connectionName = getDirectiveArgument(directive)("name")
@@ -327,6 +406,123 @@ export class ModelConnectionTransformer extends Transformer {
                 ctx.putType(updated)
             }
         }
+    }
+
+    public newParameterization = (
+        parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+        field: FieldDefinitionNode,
+        directive: DirectiveNode,
+        ctx: TransformerContext
+    ): void => {
+        const parentTypeName = parent.name.value;
+        const fieldName = field.name.value;
+        const args : RelationArguments = getDirectiveArguments(directive);
+        const numFields = args.fields.length;
+
+        // Check that related type exists and that the connected object is annotated with @model.
+        const relatedTypeName = getBaseType(field.type)
+        const relatedType = ctx.inputDocument.definitions.find(
+            d => d.kind === Kind.OBJECT_TYPE_DEFINITION && d.name.value === relatedTypeName
+        ) as ObjectTypeDefinitionNode | undefined
+
+        // Get Child object's table.
+        const tableLogicalID = ModelResourceIDs.ModelTableResourceID(relatedType.name.value);
+        const tableResource = ctx.getResource(tableLogicalID) as Table;
+
+        // Ensure that there is at least one field provided.
+        if (numFields === 0) {
+            throw new InvalidDirectiveError('No fields passed in to @connection directive.')
+        }
+
+        // Check that each field provided exists in the parent model and that it is a valid key type (single non-null).
+        let inputFields : FieldDefinitionNode[] = [];
+        args.fields.forEach(
+            item => {
+                let fieldsArrayLength = inputFields.length;
+                inputFields[fieldsArrayLength] = parent.fields.find(f => f.name.value === item);
+                if (!inputFields[fieldsArrayLength]) {
+                    throw new InvalidDirectiveError(item + ' is not a field in ' + parentTypeName)
+                }
+
+                validateKeyFieldNewConnection(inputFields[fieldsArrayLength]);
+            })
+
+        var index : Index;
+        // If no index is provided use the default index for the related model type and
+        // check that the query fields match the PK/SK of the table. Else confirm that index exists.
+        if (!args.keyName || args.keyName === 'default' || args.keyName === 'Default') {
+
+            args.keyName = 'default';
+            checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, tableResource.Properties.KeySchema);
+
+        } else {
+            index = (tableResource.Properties.GlobalSecondaryIndexes ?
+                tableResource.Properties.GlobalSecondaryIndexes.find(GSI => GSI.IndexName === args.keyName) : null)
+                || (tableResource.Properties.LocalSecondaryIndexes ?
+                tableResource.Properties.LocalSecondaryIndexes.find(LSI => LSI.IndexName === args.keyName) : null)
+            if (!index) {
+                throw new InvalidDirectiveError('Key ' + args.keyName + ' does not exist for model ' + relatedTypeName)
+            }
+
+            // Confirm that types of query fields match types of PK/SK of the index being queried.
+            checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, index.KeySchema);
+        }
+
+        // If the related type is not a list, the index has to be the default index and the fields provided must match the PK/SK of the index.
+        if (!isListType(field.type)) {
+            if (args.keyName !== 'default') {
+                throw new InvalidDirectiveError('Connection is to a single object but the keyName provided does not reference the default table.')
+            }
+
+            // Start with GetItem resolver for case where the connection is to a single object.
+            let getResolver = this.resources.makeGetItemNewConnectionResolver(
+                parentTypeName,
+                fieldName,
+                relatedTypeName,
+                args.fields,
+                tableResource.Properties.KeySchema
+            )
+
+            ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver);
+            ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
+        } else {
+
+            let keySchema : KeySchema[] = index ? index.KeySchema : tableResource.Properties.KeySchema;
+
+            let queryResolver = this.resources.makeQueryNewConnectionResolver(
+                parentTypeName,
+                fieldName,
+                relatedType,
+                args.fields,
+                keySchema,
+                index ? index.IndexName : null
+            )
+
+            ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
+            ctx.mapResourceToStack(relatedTypeName, ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName));
+
+            var sortKeyInfo : { fieldName : string, typeName : string};
+            if (args.fields.length > 1) {
+                sortKeyInfo = undefined;
+            } else {
+                const compositeSortKeyType = 'String';
+                const compositeSortKeyName = keySchema[1] ? this.resources.makeCompositeSortKeyName(keySchema[1].AttributeName) : undefined;
+                const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName)
+
+                if (sortKeyField) {
+                    sortKeyInfo = keySchema[1] ?
+                                    { fieldName : keySchema[1].AttributeName, typeName : getBaseType(sortKeyField.type)} :
+                                    undefined;
+                } else {
+                    sortKeyInfo = keySchema[1] ?
+                                        { fieldName : compositeSortKeyName, typeName : compositeSortKeyType} :
+                                        undefined;
+                }
+            }
+
+            this.extendTypeWithConnection(ctx, parent, field, relatedType, sortKeyInfo);
+        }
+
     }
 
     private typeExist(type: string, ctx: TransformerContext): boolean {

@@ -279,11 +279,11 @@ async function transformGraphQLSchema(context, options) {
   const transformerList = [
     // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
     new DynamoDBModelTransformer(),
-    new ModelConnectionTransformer(),
     new VersionedModelTransformer(),
     new FunctionTransformer(),
     new HTTPTransformer(),
     new KeyTransformer(),
+    new ModelConnectionTransformer(),
     new RelationTransformer(),
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
