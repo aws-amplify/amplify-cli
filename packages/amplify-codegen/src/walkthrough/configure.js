@@ -4,14 +4,28 @@ const askForGraphQLAPIResource = require('./questions/selectProject');
 const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
+const askForFrontend = require('./questions/selectFrontend');
 const askMaxDepth = require('./questions/maxDepth');
 const { getFrontEndHandler, getIncludePattern } = require('../utils/');
+
+const frontends = ['android', 'ios', 'javascript'];
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 async function configureProjectWalkThrough(context, amplifyConfig) {
-  const frontend = getFrontEndHandler(context);
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    context.withoutInit = true;
+  }
+  let frontend;
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+  } else {
+    frontend = await askForFrontend(frontends);
+    context.frontend = frontend;
+  }
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
@@ -31,7 +45,6 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
       amplifyExtension.codeGenTarget,
     );
   }
-
   const includePatternDefault = getIncludePattern(targetLanguage, selectedProjectConfig.schema);
   const includePathGlob = join(
     includePatternDefault.graphQLDirectory,

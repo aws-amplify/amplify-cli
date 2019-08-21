@@ -4,10 +4,13 @@ const systemConfigManager = require('../../../amplify-provider-awscloudformation
 const askForFrontend = require('../../src/walkthrough/questions/selectFrontend');
 const askForFramework = require('../../src/walkthrough/questions/selectFramework');
 const askForProfile = require('../../src/walkthrough/questions/selectProfile');
+const askForCreateProfile = require('../../src/walkthrough/questions/setupNewProfile');
 const askApiId = require('../../src/walkthrough/questions/getApiId');
 const featureName = 'add';
 const frontends = ['android', 'ios', 'javascript'];
 const frameworks = ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
+const setupNewUser = require('../../../amplify-provider-awscloudformation/lib/setup-new-user');
+const loadConfig = require('../../src/codegen-config');
 
 module.exports = {
   name: featureName,
@@ -21,6 +24,10 @@ module.exports = {
         context.amplify.getProjectMeta();
       } catch(e) {
         context.withoutInit = true;
+        const config = loadConfig(context);
+        if (config.getProjects().length) {
+          throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
+        }
       }
 
       if (keys.length && !keys.includes('apiId') && !context.withoutInit) {
@@ -48,8 +55,20 @@ module.exports = {
       } else {
         // Only ask for profile if not in an amplify project
         if (context.withoutInit) {
-          context.profile = await askForProfile(Object.keys(namedProfiles));
-          context.region = systemConfigManager.getProfileRegion(context.profile);
+          if (!Object.keys(namedProfiles).length) {
+            const setupNewAnswer = await askForCreateProfile();
+            if (setupNewAnswer) {
+              await setupNewUser.run(context);
+              process.exit(0);
+            }
+            else {
+              throw Error("No AWS profiles")
+            }
+          } else {
+            context.profile = await askForProfile(Object.keys(namedProfiles));
+            context.region = systemConfigManager.getProfileRegion(context.profile);
+          }
+          
         }
       }
       // Grab the frontend if it is provided
