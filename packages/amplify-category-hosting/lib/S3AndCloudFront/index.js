@@ -10,6 +10,8 @@ const constants = require('../constants');
 
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
+const devSourceTemplateFileName = 'template-dev.json';
+const prodSourceTemplateFileName = 'template-prod.json';
 const templateFileName = 'template.json';
 const parametersFileName = 'parameters.json';
 
@@ -22,14 +24,18 @@ const Environments = [
 ];
 
 async function enable(context) {
-  let templateFilePath = path.join(__dirname, templateFileName);
+  // will take this out once cloudformation invoke and wait are separated;
+  const environment = await checkCDN(context);
+
+  let templateFilePath = path.join(
+    __dirname,
+    environment === DEV ? devSourceTemplateFileName : prodSourceTemplateFileName,
+  );
   context.exeInfo.template = context.amplify.readJsonFile(templateFilePath);
 
   let parametersFilePath = path.join(__dirname, parametersFileName);
   context.exeInfo.parameters = context.amplify.readJsonFile(parametersFilePath);
 
-  // will take this out once cloudformation invoke and wait are separated;
-  await checkCDN(context);
 
   await configManager.init(context);
 
@@ -60,7 +66,7 @@ async function enable(context) {
   );
 }
 
-async function checkCDN(context) {
+async function checkCDN() {
   const selectEnvironment = {
     type: 'list',
     name: 'environment',
@@ -69,25 +75,9 @@ async function checkCDN(context) {
     default: DEV,
   };
   const answer = await inquirer.prompt(selectEnvironment);
-  if (answer.environment === DEV) {
-    removeCDN(context);
-  } else {
-    makeBucketPrivate(context);
-  }
+  return answer.environment;
 }
 
-function removeCDN(context) {
-  delete context.exeInfo.template.Resources.OriginAccessIdentity;
-  delete context.exeInfo.template.Resources.CloudFrontDistribution;
-  delete context.exeInfo.template.Resources.PrivateBucketPolicy;
-  delete context.exeInfo.template.Outputs.CloudFrontDistributionID;
-  delete context.exeInfo.template.Outputs.CloudFrontDomainName;
-  delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
-}
-
-function makeBucketPrivate(context) {
-  delete context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl;
-}
 
 async function configure(context) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();

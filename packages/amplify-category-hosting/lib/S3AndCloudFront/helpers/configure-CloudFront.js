@@ -16,9 +16,10 @@ const originErrorCodes = {
 };
 
 async function configure(context) {
-  const templateFilePath = path.join(__dirname, '../template.json');
-  const originalTemplate = context.amplify.readJsonFile(templateFilePath);
   if (!context.exeInfo.template.Resources.CloudFrontDistribution) {
+    const templateFilePath = path.join(__dirname, '../template-prod.json');
+    const originalTemplate = context.amplify.readJsonFile(templateFilePath);
+
     context.print.info('CloudFront is NOT in the current hosting');
     const answer = await inquirer.prompt({
       name: 'AddCloudFront',
@@ -33,6 +34,9 @@ async function configure(context) {
         PrivateBucketPolicy,
       } = originalTemplate.Resources;
       const { Outputs } = originalTemplate;
+      // Since DEV (S3 only with HTTP) was enabled before, specific bucket policy attached to make
+      // access public should be removed first before adding the one specific to cloudfront.
+      delete context.exeInfo.template.Resources.PrivateBucketPolicy;
       context.exeInfo.template.Resources.OriginAccessIdentity = OriginAccessIdentity;
       context.exeInfo.template.Resources.CloudFrontDistribution = CloudFrontDistribution;
       context.exeInfo.template.Resources.PrivateBucketPolicy = PrivateBucketPolicy;
@@ -52,6 +56,8 @@ async function configure(context) {
       default: false,
     });
     if (answer.RemoveCloudFront) {
+      const templateFilePath = path.join(__dirname, '../template-dev.json');
+      const originalTemplate = context.amplify.readJsonFile(templateFilePath);
       delete context.exeInfo.template.Resources.OriginAccessIdentity;
       delete context.exeInfo.template.Resources.CloudFrontDistribution;
       // Don't remove the following line,
@@ -62,13 +68,16 @@ async function configure(context) {
       delete context.exeInfo.template.Outputs.CloudFrontDomainName;
       delete context.exeInfo.template.Outputs.CloudFrontSecureURL;
       const { AccessControl } = originalTemplate.Resources.S3Bucket.Properties;
+      const { PrivateBucketPolicy } = originalTemplate.Resources;
       context.exeInfo.template.Resources.S3Bucket.Properties.AccessControl = AccessControl;
+      context.exeInfo.template.Resources.PrivateBucketPolicy = PrivateBucketPolicy;
     }
   }
 
   if (context.exeInfo.template.Resources.CloudFrontDistribution) {
-    const { DistributionConfig } =
-                context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
+    const {
+      DistributionConfig,
+    } = context.exeInfo.template.Resources.CloudFrontDistribution.Properties;
 
     const questions = [
       {
@@ -272,7 +281,7 @@ async function removeCER(context, CustomErrorResponses) {
 function getConfiguredErrorCodes(CustomErrorResponses) {
   const result = [];
   for (let i = 0; i < CustomErrorResponses.length; i++) {
-    result.push((CustomErrorResponses[i].ErrorCode).toString());
+    result.push(CustomErrorResponses[i].ErrorCode.toString());
   }
   return result;
 }
