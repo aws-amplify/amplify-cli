@@ -92,7 +92,7 @@ describe('configure-CloudFront', ()=>{
         expect(mockContext.exeInfo.template.Resources.OriginAccessIdentity).not.toBeDefined();
         expect(mockContext.exeInfo.template.Resources.CloudFrontDistribution).not.toBeDefined();
         expect(mockContext.exeInfo.template.Resources.BucketPolicy).not.toBeDefined(); 
-        expect(mockContext.exeInfo.template.Resources.PrivateBucketPolicy).not.toBeDefined();
+        expect(mockContext.exeInfo.template.Resources.PrivateBucketPolicy).toBeDefined();
         expect(mockContext.exeInfo.template.Outputs.CloudFrontDistributionID).not.toBeDefined();
         expect(mockContext.exeInfo.template.Outputs.CloudFrontDomainName).not.toBeDefined();
         expect(mockContext.exeInfo.template.Outputs.CloudFrontSecureURL).not.toBeDefined();

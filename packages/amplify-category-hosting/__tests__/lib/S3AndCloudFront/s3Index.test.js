@@ -15,7 +15,7 @@ const configManager = require('../../../lib/S3AndCloudFront/configuration-manage
 const fileUPloader = require('../../../lib/S3AndCloudFront/helpers/file-uploader');
 const cloudFrontManager = require('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
-const internalTemplateContents = require('../../../lib/S3AndCloudFront/template.json');
+const internalTemplateContents = require('../../../lib/S3AndCloudFront/template-dev.json');
 const internalParametersContents = require('../../../lib/S3AndCloudFront/parameters.json');
 const mockTemplate = require('../../../__mocks__/mockTemplate');
 const mockParameters = require('../../../__mocks__/mockParameters');
@@ -23,6 +23,7 @@ const mockParameters = require('../../../__mocks__/mockParameters');
 const serviceName = 'S3AndCloudFront';
 const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
+const internalTemplateFileName = 'template-dev.json';
 const parametersFileName = 'parameters.json';
 
 
@@ -39,6 +40,7 @@ const s3IndexModule = require('../../../lib/S3AndCloudFront/index');
 describe('s3IndexModule', () => {
     const INTERNAL_TEMPLATE_FILE_PATH = path.normalize(path.join(__dirname, '../../../lib/', templateFileName));
     const INTERNAL_PARAMETERS_FILE_PATH = path.normalize(path.join(__dirname, '../../../lib/', parametersFileName));
+    
 
     const mockAmplifyMeta = {
         "providers": {
@@ -114,18 +116,21 @@ describe('s3IndexModule', () => {
         fs.readFileSync = jest.fn((filePath)=>{
             let result; 
             filePath = path.normalize(filePath); 
-            if(filePath.indexOf(templateFileName) > -1){
-                if(filePath === INTERNAL_TEMPLATE_FILE_PATH){
-                    result = JSON.stringify(internalTemplateContents); 
-                }else{
-                    result = JSON.stringify(mockTemplate); 
-                }
-            }else if(filePath.indexOf(parametersFileName)>-1){
-                if(filePath === INTERNAL_PARAMETERS_FILE_PATH){
-                    result = JSON.stringify(internalParametersContents);
-                }else{
-                    result = JSON.stringify(mockParameters); 
-                }
+            if (
+              filePath.indexOf(templateFileName) > -1 ||
+              filePath.indexOf(internalTemplateFileName) > -1
+            ) {
+              if (filePath === INTERNAL_TEMPLATE_FILE_PATH) {
+                result = JSON.stringify(internalTemplateContents);
+              } else {
+                result = JSON.stringify(mockTemplate);
+              }
+            } else if (filePath.indexOf(parametersFileName) > -1) {
+              if (filePath === INTERNAL_PARAMETERS_FILE_PATH) {
+                result = JSON.stringify(internalParametersContents);
+              } else {
+                result = JSON.stringify(mockParameters);
+              }
             }
             return result; 
         }); 
