@@ -37,10 +37,7 @@ module.exports = {
         return;
       }
       let apiId = context.parameters.options.apiId || null;
-      if (!apiId && context.withoutInit) {
-        apiId = await askApiId();
-      }
-      
+
       // Grab the profile if its provided
       const profile = context.parameters.options.profile;
       let namedProfiles = systemConfigManager.getNamedProfiles();
@@ -55,22 +52,27 @@ module.exports = {
       } else {
         // Only ask for profile if not in an amplify project
         if (context.withoutInit) {
-          if (!Object.keys(namedProfiles).length) {
-            const setupNewAnswer = await askForCreateProfile();
-            if (setupNewAnswer) {
-              await setupNewUser.run(context);
-              process.exit(0);
+          const setupNewAnswer = await askForCreateProfile();
+          if (!setupNewAnswer) {
+            context.profile = await setupNewUser.run(context);
+            context.region = systemConfigManager.getProfileRegion(context.profile);
+          }
+          else {
+            if (!Object.keys(namedProfiles).length) {
+              throw Error("No existing AWS profiles")
             }
-            else {
-              throw Error("No AWS profiles")
-            }
-          } else {
             context.profile = await askForProfile(Object.keys(namedProfiles));
             context.region = systemConfigManager.getProfileRegion(context.profile);
           }
           
         }
       }
+
+      // Ask for apiId if not provided and not in amplify project
+      if (!apiId && context.withoutInit) {
+        apiId = await askApiId();
+      }
+
       // Grab the frontend if it is provided
       const frontend = context.parameters.options.frontend;
       if (frontend) {
