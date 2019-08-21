@@ -10,19 +10,21 @@
     "graphiql-explorer": "^0.4.3",
     "graphql": "^14.4.2",
     "jsonwebtoken": "^8.5.1",
+    "prop-types": "^15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
-    "react-scripts": "3.0.1",
+    "react-scripts": "3.1.1",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "0.87.3",
-    "yarn": "^1.17.3"
+    "semantic-ui-react": "0.87.3"
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
-    "@types/node": "12.6.8",
+    "@types/node": "^8.10.51",
     "@types/react-dom": "16.8.5",
     "cross-env": "^5.2.0",
-    "prettier": "^1.18.2"
+    "eslint": "^6.1.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.3"
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",

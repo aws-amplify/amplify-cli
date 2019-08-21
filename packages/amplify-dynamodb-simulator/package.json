@@ -11,10 +11,11 @@
     "test-ci": "jest"
   },
   "dependencies": {
+    "aws-sdk": "^2.510.0",
     "download-cli": "^1.1.1",
     "event-to-promise": "^0.8.0",
     "execa": "^2.0.3",
-    "fs-extra": "8.1.0",
+    "fs-extra": "^8.1.0",
     "logdown": "^3.2.3",
     "object-hash": "^1.3.0",
     "detect-port":"^1.3.0",
@@ -22,12 +23,8 @@
     "which": "^1.3.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.260.1",
     "jest": "^24.8.0",
     "jest-environment-node": "^24.8.0"
-  },
-  "peerDependencies": {
-    "aws-sdk": "^2.260.1"
   },
   "jest": {
     "testEnvironment": "node"
