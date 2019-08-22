@@ -7,7 +7,7 @@
     "amplify-category-auth": "1.11.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
-    "opn": "^5.3.0",
+    "open": "^6.4.0",
     "ora": "^3.4.0",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.3.2"
