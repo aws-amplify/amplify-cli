@@ -556,6 +556,7 @@ Either make the field optional, set auth on the object and not the field, or dis
     }
 
     private validateFieldRules(rules: AuthRule[]) {
+        // check if the rules in the field are a subset of the rules in authrule
         for (const rule of rules) {
             const { queries, mutations } = rule;
             if (queries || mutations) {
@@ -1131,11 +1132,11 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     private getStaticGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && Boolean(rule.groups));
+        return rules.filter(rule => rule.allow === 'groups' && (Boolean(rule.groups) || Boolean(rule.groupClaim)));
     }
 
     private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
+        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups) && !Boolean(rule.groupClaim));
     }
 
 }
