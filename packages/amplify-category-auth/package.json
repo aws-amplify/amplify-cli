@@ -14,17 +14,17 @@
   },
   "dependencies": {
     "amplify-category-function": "1.11.0",
-    "aws-sdk": "^2.475.0",
-    "chalk": "^2.4.1",
+    "aws-sdk": "^2.510.0",
+    "chalk": "^2.4.2",
     "chalk-pipe": "^2.0.0",
-    "fs-extra": "^7.0.0",
-    "inquirer": "6.3.1",
-    "lodash": "^4.17.10",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^6.5.1",
+    "lodash": "^4.17.15",
     "mime-types": "^2.1.24",
-    "opn": "^5.3.0",
+    "open": "^6.4.0",
     "ora": "^3.4.0",
     "promise-sequential": "^1.1.1",
-    "uuid": "^2.0.3"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

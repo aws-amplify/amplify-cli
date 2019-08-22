@@ -13,7 +13,6 @@ import { AppSyncAuthModeModes } from './ModelAuthTransformer';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 import {
-    OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     DEFAULT_IDENTITY_FIELD,
     DEFAULT_GROUPS_FIELD
@@ -614,7 +613,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: ${rule.allow}, groupsField: "${groupsAttribute}" }`),
-                set(ref('allowedGroups'), ref(`${variableToCheck}.${groupsAttribute}`)),
+                set(ref('allowedGroups'), ref(`util.defaultIfNull($${variableToCheck}.${groupsAttribute}, [])`)),
                 forEach(ref('userGroup'), ref('userGroups'), [
                     iff(
                         raw('$util.isList($allowedGroups)'),

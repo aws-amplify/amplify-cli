@@ -6,9 +6,9 @@
   "dependencies": {
     "amplify-category-auth": "1.11.0",
     "amplify-category-function": "1.11.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.1.0",
     "fuzzy": "^0.1.3",
-    "inquirer": "6.3.1",
+    "inquirer": "^6.5.1",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "mime-types": "^2.1.24",
     "uuid": "^3.3.2"
