@@ -148,8 +148,7 @@ export class ModelConnectionTransformer extends Transformer {
                                       keyField: String,
                                       sortField: String,
                                       keyName: String,
-                                      fields: [String],
-                                      model: String) on FIELD_DEFINITION`
+                                      fields: [String]) on FIELD_DEFINITION`
         )
         this.resources = new ResourceFactory();
     }
@@ -426,6 +425,19 @@ export class ModelConnectionTransformer extends Transformer {
         }
     }
 
+    /**
+     * The @connection parameterization with "fields" can be used to connect objects by running a query on a table.
+     * The directive is given an index to query and a list of fields to query by such that it
+     * returns a list objects (or in certain cases a single object) that are connected to the
+     * object it is called on.
+     * This directive is designed to leverage indices configured using @key to create relationships.
+     *
+     * Directive Definition:
+     * @connection(keyName: String, fields: [String!]!) on FIELD_DEFINITION
+     * param @keyName The name of the index configured using @key that should be queried to get
+     *      connected objects
+     * param @fields The names of the fields on the current object to query by.
+     */
     public newParameterization = (
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         field: FieldDefinitionNode,
