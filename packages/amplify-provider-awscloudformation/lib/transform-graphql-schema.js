@@ -285,7 +285,7 @@ async function transformGraphQLSchema(context, options) {
     new ModelConnectionTransformer(),
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
-    new ModelAuthTransformer({ authMode })
+    new ModelAuthTransformer({ authMode }),
   ];
 
   if (directiveMap.directives.includes('searchable')) {
