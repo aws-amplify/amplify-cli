@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "main": "./lib/index.js",
+  "engines": {
+    "node": ">=8.12.0"
+  },
   "bin": "./lib/cli.js",
   "scripts": {
     "clean": "rm -rf lib",

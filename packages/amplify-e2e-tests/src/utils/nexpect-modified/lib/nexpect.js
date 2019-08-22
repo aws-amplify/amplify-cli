@@ -333,8 +333,13 @@ function testExpectation(data, expectation) {
 }
 
 function createUnexpectedEndError(message, remainingQueue) {
-  var desc = remainingQueue.map(function(it) { return it.description; });
-  var msg = message + '\n' + desc.join('\n');
+  var desc = [];
+
+  if (isCI() === false) {
+    var desc = remainingQueue.map(function(it) { return it.description; });
+    var msg = message + '\n' + desc.join('\n');
+  }
+
   return new AssertionError({
     message: msg,
     expected: [],
@@ -392,6 +397,10 @@ function nspawn (command, params, options) {
   };
 
   return chain(context);
+}
+
+function isCI() {
+  return process.env.CI ? true : false;
 }
 
 //
