@@ -20,37 +20,45 @@ async function generateTypes(context, forceDownloadSchema) {
 
     const { projectPath } = context.amplify.getEnvInfo();
 
-    projects.forEach(async (cfg) => {
-      const { generatedFileName } = cfg.amplifyExtension || {};
-      const includeFiles = cfg.includes;
-      if (!generatedFileName || generatedFileName === '' || includeFiles.length === 0) {
-        return;
-      }
+    try {
+      projects.forEach(async (cfg) => {
+        const { generatedFileName } = cfg.amplifyExtension || {};
+        const includeFiles = cfg.includes;
+        if (!generatedFileName || generatedFileName === '' || includeFiles.length === 0) {
+          return;
+        }
 
-      const excludes = cfg.excludes.map(pattern => `!${pattern}`);
-      const queries = glob.sync([...includeFiles, ...excludes], {
-        cwd: projectPath,
-        absolute: true,
-      });
-      const schemaPath = path.join(projectPath, cfg.schema);
-      const target = cfg.amplifyExtension.codeGenTarget;
+        const excludes = cfg.excludes.map(pattern => `!${pattern}`);
+        const queries = glob.sync([...includeFiles, ...excludes], {
+          cwd: projectPath,
+          absolute: true,
+        });
+        const schemaPath = path.join(projectPath, cfg.schema);
+        const target = cfg.amplifyExtension.codeGenTarget;
 
-      const outputPath = path.join(projectPath, generatedFileName);
-      const { region } = cfg.amplifyExtension;
-      await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
-      const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
-      codeGenSpinner.start();
-      generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
-        addTypename: true,
-        complexObjectSupport: 'auto',
+        const outputPath = path.join(projectPath, generatedFileName);
+        const { region } = cfg.amplifyExtension;
+        await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
+        const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
+        codeGenSpinner.start();
+        try {
+          generate(queries, schemaPath, path.join(projectPath, generatedFileName), '', target, '', {
+            addTypename: true,
+            complexObjectSupport: 'auto',
+          });
+          codeGenSpinner.succeed(
+            `${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(
+              path.resolve('.'),
+              outputPath,
+            )}`,
+          );
+        } catch (err) {
+          codeGenSpinner.fail(err.message);
+        }
       });
-      codeGenSpinner.succeed(
-        `${constants.INFO_MESSAGE_CODEGEN_GENERATE_SUCCESS} ${path.relative(
-          path.resolve('.'),
-          outputPath,
-        )}`,
-      );
-    });
+    } catch (err) {
+      throw Error(err.message);
+    }
   }
 }
 
