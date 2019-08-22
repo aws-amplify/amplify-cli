@@ -10,4 +10,5 @@ export interface AuthRule {
     operations?: ModelOperation[]
     queries?: ModelQuery[]
     mutations?: ModelMutation[]
+    groupClaim?: string;
 }
