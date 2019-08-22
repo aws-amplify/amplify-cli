@@ -189,24 +189,25 @@ describe("Test put api", () => {
       Key: "upload/long_image1.jpg",
       Body: buf2
     };
-    const data = await s3client.upload(params1).promise();
-
     const params2 = {
       Bucket: bucket, // pass your bucket name
       Key: "upload/long_image2.jpg",
       Body: buf2
     };
-    const data2 = await s3client.upload(params2).promise();
-
     const params3 = {
       Bucket: bucket, // pass your bucket name
       Key: "upload/long_image3.jpg",
       Body: buf2
     };
-    const data3 = await s3client.upload(params3).promise();
-    
-    expect(data.Key).toBe("upload/long_image1.jpg");
-    expect(data2.Key).toBe("upload/long_image2.jpg");
-    expect(data3.Key).toBe("upload/long_image3.jpg");
+
+    const uploadPromises = [];
+    uploadPromises.push(s3client.upload(params1).promise());
+    uploadPromises.push(s3client.upload(params2).promise());
+    uploadPromises.push(s3client.upload(params3).promise());
+
+    const uploadResults = await Promise.all(uploadPromises);
+    expect(uploadResults[0].Key).toBe('upload/long_image1.jpg');
+    expect(uploadResults[1].Key).toBe("upload/long_image2.jpg");
+    expect(uploadResults[2].Key).toBe("upload/long_image3.jpg");
   });
 });
