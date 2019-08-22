@@ -22,7 +22,7 @@ import {
 } from 'graphql'
 import blankTemplate from './util/blankTemplate'
 import DefaultSchemaDefinition from './defaultSchema'
-import { 
+import {
     InterfaceTypeExtensionNode, UnionTypeExtensionNode,
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
