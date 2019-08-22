@@ -6,16 +6,16 @@ import {
     str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, equals, comment,
     or, Expression, SetNode, and, not, parens,
-    block, print
+    block, print, ifElse,
 } from 'graphql-mapping-template'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
+import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 import {
     OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     DEFAULT_IDENTITY_FIELD,
-    LOCAL_DATASOURCE,
     DEFAULT_GROUPS_FIELD
 } from './constants'
 
@@ -140,6 +140,7 @@ export class ResourceFactory {
             return comment(`No Static Group Authorization Rules`)
         }
         const allowedGroups: string[] = []
+        let customClaim: string;
         for (const rule of rules) {
             const groups = rule.groups;
             for (const group of groups) {
@@ -147,14 +148,21 @@ export class ResourceFactory {
                     allowedGroups.push(group);
                 }
             }
+            if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
+                customClaim = rule.groupClaim;
+            }
         }
         // TODO: Enhance cognito:groups to work with non cognito based auth.
-        return block('Static Group Authorization Checks', [
+        const cognitoClaim: Expression = block('Static Group Authorization Checks', [
             comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}" }`),
             this.setUserGroups(),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
-            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
+            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
+                $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
             forEach(ref('userGroup'), ref('userGroups'), [
                 forEach(ref('allowedGroup'), ref('allowedGroups'), [
                     iff(
@@ -164,7 +172,34 @@ export class ResourceFactory {
                 ])
             ])
         ])
+
+        const customGroupClaim: Expression = block('Static Group Authorization Checks with Custom Groups', [
+            comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}", groupClaim: "${customClaim}" }`),
+            this.setCustomClaim(customClaim),
+            set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
+            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
+                $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
+            forEach(ref('userGroup'), ref('userGroups'), [
+                iff(
+                    raw(`$util.isList($userGroups)`),
+                    iff(
+                        ref(`$ctx.args.input.userGroups.contains($userGroup)`),
+                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
+                    ),
+                ),
+                iff(
+                    raw(`$util.isString($userGroups)`),
+                    iff(
+                        raw(`$userGroups == $userGroup`),
+                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
+                    ),
+                )
+            ])
+        ])
+        return customClaim ? customGroupClaim : cognitoClaim;
     }
+
+
 
     /**
      * Given a set of dynamic group authorization rules verifies that input
@@ -299,7 +334,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
-            const isUsern = isUsername(rawUsername)
+            const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownershipAuthorizationExpressions = ownershipAuthorizationExpressions.concat(
@@ -307,7 +342,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
                     comment(formatComment(rule)) :
                     comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
-                isUsern ?
+                isUser ?
                     // tslint:disable-next-line
                     set(
                         ref('identityValue'),
@@ -382,7 +417,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
-            const isUsern = isUsername(rawUsername)
+            const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
@@ -391,7 +426,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
                     comment(formatComment(rule)) :
                     comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
-                isUsern ?
+                isUser ?
                     // tslint:disable-next-line
                     set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`)) :
                     set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
@@ -523,7 +558,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
-            const isUsern = isUsername(rawUsername)
+            const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
             const ownerName = `owner${ruleNumber}`
@@ -545,7 +580,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
                 raw(`$util.qr($ownerAuthExpressionNames.put("#${ownerName}", "${ownerAttribute}"))`),
                 // tslint:disable
-                isUsern ?
+                isUser ?
                     raw(`$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")))))`) :
                     raw(`$util.qr($ownerAuthExpressionValues.put(":${identityName}", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))))`)
                 // tslint:enable
@@ -622,13 +657,13 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
             const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
-            const isUsern = isUsername(rawUsername)
+            const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
-                isUsern ?
+                isUser ?
                     // tslint:disable-next-line
                     set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${rawUsername}"), $util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}"))`)) :
                     set(ref('identityValue'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${identityAttribute}"), "${NONE_VALUE}")`)),
@@ -769,10 +804,14 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         return set(ref('userGroups'), raw('$util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), [])'));
     }
 
-    public generateSubscriptionResolver(type: string, fieldName: string, subscriptionTypeName: string = 'Subscription') {
+    public setCustomClaim(customGroups: string): SetNode {
+        return set(ref('userGroups'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${customGroups}"), [])`));
+    }
+
+    public generateSubscriptionResolver(fieldName: string, subscriptionTypeName: string = 'Subscription') {
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: LOCAL_DATASOURCE,
+            DataSourceName: "NONE",
             FieldName: fieldName,
             TypeName: subscriptionTypeName,
             RequestMappingTemplate: print(
@@ -787,15 +826,20 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         });
     }
 
-    public subscriptionHas(subscription: any): Object {
-        const operations: Object = {};
-        subscription.value.fields.forEach((field: any) => {
-            const subNames: string[] = [];
-            field.value.values.forEach((value: any) => {
-                subNames.push(value.value);
-            });
-            operations[field.name.value] = subNames;
-        });
-        return operations;
+    public operationCheckExpression(field: string) {
+        return block('Checking for allowed operations which can return this field', [
+            set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
+            ifElse(
+                raw('$operation == "query"'),
+                ref(`util.toJson($context.source.${field})`),
+                ref('util.toJson(null)')
+            )
+        ])
+    }
+
+    public setOperationExpression(operation: string) {
+        return block('Setting the operation', [
+            set(ref('context.result.operation'), str(operation))
+        ])
     }
 }
