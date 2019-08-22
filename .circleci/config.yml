@@ -39,7 +39,6 @@ jobs:
           command: sudo apt-get install default-jdk
       - run:
           name: Run tests
-      - run:
           command: yarn test-ci
   graphql_e2e_tests:
     <<: *defaults
