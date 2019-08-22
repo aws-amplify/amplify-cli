@@ -9,7 +9,7 @@ import {
     ifElse, compoundExpression, bool, equals, iff, raw, comment, qref, Expression, block
 } from 'graphql-mapping-template'
 import { ResourceConstants, ModelResourceIDs, DEFAULT_SCALARS, NONE_VALUE, applyKeyConditionExpression,
-         attributeTypeFromScalar, toCamelCase } from 'graphql-transformer-common'
+         attributeTypeFromScalar, toCamelCase, applyCompositeKeyConditionExpression } from 'graphql-transformer-common'
 import { InvalidDirectiveError } from 'graphql-transformer-core';
 
 
@@ -210,10 +210,10 @@ export class ResourceFactory {
                                            connectionAttributes: string[],
                                            keySchema: KeySchema[]): Resolver {
 
-        let attributeName = keySchema[0].AttributeName as string
+        const partitionKeyName = keySchema[0].AttributeName as string
 
         let keyObj : ObjectNode = obj({
-            [attributeName] :
+            [partitionKeyName] :
                 ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`)
             })
 
@@ -224,6 +224,7 @@ export class ResourceFactory {
             const condensedSortKeyValue = this.condenseRangeKey(
                 rangeKeyFields.map(keyField => `\${ctx.args.${keyField}}`)
             )
+
             keyObj.attributes.push([
                 sortKeyName,
                 ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${condensedSortKeyValue}, "${NONE_VALUE}"))`)
@@ -238,7 +239,7 @@ export class ResourceFactory {
 
         return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType), 'Name'),
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
@@ -251,7 +252,7 @@ export class ResourceFactory {
             ResponseMappingTemplate: print(
                 ref('util.toJson($context.result)')
             )
-        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType)])
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     /**
@@ -280,19 +281,20 @@ export class ResourceFactory {
         // If the key schema has a sort key but one is not provided for the query, let a sort key be
         // passed in via $ctx.args.
         if (keySchema[1] && !connectionAttributes[1]) {
-            const compositeSortKeyAttType = "S";
-            let sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName);
+            const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName);
 
             if (sortKeyField) {
                 setup.push(applyKeyConditionExpression(String(keySchema[1].AttributeName),
                                                        attributeTypeFromScalar(sortKeyField.type), 'query'));
             } else {
-                setup.push(applyKeyConditionExpression(this.makeCompositeSortKeyName(String(keySchema[1].AttributeName)),
-                                                       compositeSortKeyAttType, 'query'));
+                setup.push(applyCompositeKeyConditionExpression(this.getSortKeyNames(String(keySchema[1].AttributeName)),
+                                                                'query',
+                                                                this.makeCompositeSortKeyName(String(keySchema[1].AttributeName)),
+                                                                String(keySchema[1].AttributeName)));
             }
         }
 
-        var queryArguments : { query, filter, scanIndexForward, limit, nextToken, index? } = {
+        let queryArguments : { query, filter, scanIndexForward, limit, nextToken, index? } = {
             query: raw('$util.toJson($query)'),
             scanIndexForward: ifElse(
                 ref('context.args.sortDirection'),
@@ -317,13 +319,13 @@ export class ResourceFactory {
         }
 
         if (indexName) {
-            let indexArg = "index";
+            const indexArg = "index";
             queryArguments[indexArg] = str(indexName);
         }
 
         return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-            DataSourceName: ModelResourceIDs.ModelTableResourceID(relatedType.name.value),
+            DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(relatedType.name.value), 'Name'),
             FieldName: field,
             TypeName: type,
             RequestMappingTemplate: print(
@@ -338,7 +340,7 @@ export class ResourceFactory {
                     raw('$util.toJson($result)')
                 ])
             )
-        }).dependsOn([ResourceConstants.RESOURCES.GraphQLSchemaLogicalID, ModelResourceIDs.ModelTableResourceID(relatedType.name.value)])
+        }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
     }
 
     /**
@@ -349,13 +351,15 @@ export class ResourceFactory {
      */
     public makeExpression(keySchema: KeySchema[], connectionAttributes: string[]) : ObjectNode {
         if (keySchema[1] && connectionAttributes[1]) {
-            var condensedSortKeyValue = undefined;
+
+            let condensedSortKeyValue : string = undefined;
             if (connectionAttributes.length > 2) {
                 const rangeKeyFields = connectionAttributes.slice(1);
                 condensedSortKeyValue = this.condenseRangeKey(
                     rangeKeyFields.map(keyField => `\${context.source.${keyField}}`)
                 )
             }
+
             return obj({
                 'expression': str('#partitionKey = :partitionKey AND #sortKey = :sortKey'),
                 'expressionNames': obj({
@@ -393,6 +397,10 @@ export class ResourceFactory {
     public makeCompositeSortKeyName(sortKeyName: string) {
         const attributeNames = sortKeyName.split(ModelResourceIDs.ModelCompositeKeySeparator());
         return toCamelCase(attributeNames)
+    }
+
+    private getSortKeyNames(compositeSK: string) {
+        return compositeSK.split(ModelResourceIDs.ModelCompositeKeySeparator());
     }
 
 }

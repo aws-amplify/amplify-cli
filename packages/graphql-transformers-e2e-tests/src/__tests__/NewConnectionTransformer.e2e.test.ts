@@ -56,6 +56,47 @@ type Parent
 
 	child: Child @connection(fields: ["childID", "childName"])
 }
+
+type User
+	@model
+	@key(fields: ["id", "name"])
+	@key(name: "compositeSK", fields: ["id", "name", "surname"])
+{
+	id: ID!
+	name: String!
+    surname: String!
+
+    authorPosts: [PostAuthor] @connection(keyName: "byAuthor", fields: ["id"])
+}
+
+type PostModel @model {
+	id: ID!
+	authorID: ID!
+	authorName: String!
+	authorSurname: String!
+	postContents: [String]
+
+	authors: [User] @connection(keyName: "compositeSK", fields: ["authorID", "authorName", "authorSurname"])
+}
+
+type Post @model {
+	id: ID!
+	authorID: ID!
+	postContents: [String]
+
+	authors: [User] @connection(keyName: "compositeSK", fields: ["authorID"])
+}
+
+type PostAuthor
+    @model
+    @key(name: "byAuthor", fields: ["authorID", "postID"])
+{
+    id: ID!
+    authorID: ID!
+    postID: ID!
+
+    post: Post @connection(fields: ["postID"])
+}
 `
     const transformer = new GraphQLTransform({
         transformers: [
@@ -199,4 +240,128 @@ test('Test Child.parents query', async () => {
     expect(items[0].id).toEqual(createParent1.data.createParent.id)
     expect(items[0].childID).toEqual(createParent1.data.createParent.childID)
     expect(items[0].childName).toEqual(createParent1.data.createParent.childName)
+})
+
+test('Test PostModel.authors query with composite sortkey', async () => {
+    const createUser = await GRAPHQL_CLIENT.query(`mutation {
+        createUser(input: { id: "123" name: "Bob", surname: "Rob" }) {
+          id
+          name
+          surname
+        }
+      }`, {})
+
+      expect(createUser.data.createUser.id).toBeDefined()
+      expect(createUser.data.createUser.name).toEqual('Bob')
+      expect(createUser.data.createUser.surname).toEqual('Rob')
+    const createPostModel = await GRAPHQL_CLIENT.query(`mutation {
+        createPostModel(input: { authorID: "${createUser.data.createUser.id}",
+                                 authorName: "${createUser.data.createUser.name}",
+                                 authorSurname: "${createUser.data.createUser.surname}",
+                                 postContents: "potato"
+                                }
+                        )
+        {
+          id
+          authorID
+          authorName
+          authorSurname
+          postContents
+        }
+      }`, {})
+    expect(createPostModel.data.createPostModel.id).toBeDefined()
+    expect(createPostModel.data.createPostModel.authorID).toEqual(createUser.data.createUser.id)
+    expect(createPostModel.data.createPostModel.authorName).toEqual(createUser.data.createUser.name)
+    expect(createPostModel.data.createPostModel.authorSurname).toEqual(createUser.data.createUser.surname)
+    const queryPostModel = await GRAPHQL_CLIENT.query(`query {
+        getPostModel(id: "${createPostModel.data.createPostModel.id}") {
+            id
+            authors {
+                items {
+                    id
+                    name
+                    surname
+                }
+            }
+        }
+    }`, {})
+    expect(queryPostModel.data.getPostModel).toBeDefined()
+    const items = queryPostModel.data.getPostModel.authors.items
+    expect(items.length).toEqual(1)
+    expect(items[0].id).toEqual(createUser.data.createUser.id)
+    expect(items[0].name).toEqual(createUser.data.createUser.name)
+    expect(items[0].surname).toEqual(createUser.data.createUser.surname)
+
+})
+
+test('Test PostModel.authors query with composite sortkey passed as arg.', async () => {
+    const createUser = await GRAPHQL_CLIENT.query(`mutation {
+        createUser(input: { id: "123", name: "Bobby", surname: "Rob" }) {
+          id
+          name
+          surname
+        }
+      }`, {})
+    expect(createUser.data.createUser.id).toBeDefined()
+    expect(createUser.data.createUser.name).toEqual('Bobby')
+    expect(createUser.data.createUser.surname).toEqual('Rob')
+    const createPost = await GRAPHQL_CLIENT.query(`mutation {
+        createPost(input: { id: "321", authorID: "${createUser.data.createUser.id}", postContents: "potato"}) {
+          id
+          authorID
+          postContents
+        }
+      }`, {})
+    expect(createPost.data.createPost.id).toBeDefined()
+    expect(createPost.data.createPost.authorID).toEqual(createUser.data.createUser.id)
+    const queryPost = await GRAPHQL_CLIENT.query(`query {
+        getPost(id: "${createPost.data.createPost.id}") {
+            id
+            authors(nameSurname: {beginsWith: {name: "${createUser.data.createUser.name}", surname: "${createUser.data.createUser.surname}"}}) {
+                items {
+                    id
+                    name
+                    surname
+                }
+            }
+        }
+    }`, {})
+    expect(queryPost.data.getPost).toBeDefined()
+    const items = queryPost.data.getPost.authors.items
+    expect(items.length).toEqual(1)
+    expect(items[0].id).toEqual(createUser.data.createUser.id)
+    expect(items[0].name).toEqual(createUser.data.createUser.name)
+    expect(items[0].surname).toEqual(createUser.data.createUser.surname)
+
+})
+
+test('Test User.authorPosts.posts query followed by getItem (intermediary model)', async () => {
+    const createPostAuthor = await GRAPHQL_CLIENT.query(`mutation {
+        createPostAuthor(input: { authorID: "123", postID: "321" }) {
+            id
+            authorID
+            postID
+        }
+    }`)
+    expect(createPostAuthor.data.createPostAuthor.id).toBeDefined()
+    expect(createPostAuthor.data.createPostAuthor.authorID).toEqual("123")
+    expect(createPostAuthor.data.createPostAuthor.postID).toEqual("321")
+    const queryUser = await GRAPHQL_CLIENT.query(`query {
+        getUser(id: "123", name: "Bob") {
+            id
+            authorPosts {
+                items {
+                    post {
+                        id
+                        postContents
+                    }
+                }
+            }
+        }
+    }`, {})
+    expect(queryUser.data.getUser).toBeDefined()
+    const items = queryUser.data.getUser.authorPosts.items
+    expect(items.length).toEqual(1)
+    expect(items[0].post.id).toEqual("321")
+    expect(items[0].post.postContents).toEqual(["potato"])
 })

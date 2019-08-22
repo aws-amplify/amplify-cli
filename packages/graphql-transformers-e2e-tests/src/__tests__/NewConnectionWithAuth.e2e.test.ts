@@ -370,3 +370,98 @@ test('Test that @connection resolvers respect @model read operations.', async ()
     expect(response4.data.getOpenTopLevel.id).toEqual("1")
     expect(response4.data.getOpenTopLevel.protected.items).toHaveLength(1)
 })
+
+// Per field auth in mutations
+test('Test that owners cannot set the field of a FieldProtected object unless authorized.', async () => {
+    const response1 = await GRAPHQL_CLIENT_1.query(`mutation {
+        createFieldProtected(input: { id: "2", owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(JSON.stringify(response1));
+    expect(response1.data.createFieldProtected.id).toEqual("2")
+    expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1)
+    expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected")
+
+    const response2 = await GRAPHQL_CLIENT_1.query(`mutation {
+        createFieldProtected(input: { id: "3", owner: "${USERNAME2}", ownerOnly: "owner-protected" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(response2);
+    expect(response2.data.createFieldProtected).toBeNull()
+    expect(response2.errors).toHaveLength(1)
+
+    // The auth rule is on ownerOnly. Omitting the "ownerOnly" field will
+    // not trigger the @auth check
+    const response3 = await GRAPHQL_CLIENT_1.query(`mutation {
+        createFieldProtected(input: { id: "4", owner: "${USERNAME2}" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(response3);
+    expect(response3.data.createFieldProtected.id).toEqual("4")
+    expect(response3.data.createFieldProtected.owner).toEqual(USERNAME2)
+    // The length is one because the 'ownerOnly' field is protected on reads.
+    // Since the caller is not the owner this will throw after the mutation succeeds
+    // and return partial results.
+    expect(response3.errors).toHaveLength(1)
+})
+
+test('Test that owners cannot update the field of a FieldProtected object unless authorized.', async () => {
+    const response1 = await GRAPHQL_CLIENT_1.query(`mutation {
+        createFieldProtected(input: { owner: "${USERNAME1}", ownerOnly: "owner-protected" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(JSON.stringify(response1));
+    expect(response1.data.createFieldProtected.id).not.toBeNull()
+    expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1)
+    expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected")
+
+    const response2 = await GRAPHQL_CLIENT_2.query(`mutation {
+        updateFieldProtected(input: { id: "${response1.data.createFieldProtected.id}", ownerOnly: "owner2-protected" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(response2);
+    expect(response2.data.updateFieldProtected).toBeNull()
+    expect(response2.errors).toHaveLength(1)
+
+    // The auth rule is on ownerOnly. Omitting the "ownerOnly" field will
+    // not trigger the @auth check
+    const response3 = await GRAPHQL_CLIENT_1.query(`mutation {
+        updateFieldProtected(input: { id: "${response1.data.createFieldProtected.id}", ownerOnly: "updated" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(response3);
+    expect(response3.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
+    expect(response3.data.updateFieldProtected.owner).toEqual(USERNAME1)
+    expect(response3.data.updateFieldProtected.ownerOnly).toEqual("updated")
+
+    // This request should succeed since we are not updating the protected field.
+    const response4 = await GRAPHQL_CLIENT_3.query(`mutation {
+        updateFieldProtected(input: { id: "${response1.data.createFieldProtected.id}", owner: "${USERNAME3}" }) {
+            id
+            owner
+            ownerOnly
+        }
+    }`, {})
+    console.log(response4);
+    expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
+    expect(response4.data.updateFieldProtected.owner).toEqual(USERNAME3)
+    expect(response4.data.updateFieldProtected.ownerOnly).toEqual("updated")
+})

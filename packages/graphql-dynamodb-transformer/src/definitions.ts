@@ -3,6 +3,7 @@ import {
     InputValueDefinitionNode, FieldDefinitionNode, Kind, TypeNode,
     EnumTypeDefinitionNode, ObjectTypeExtensionNode,
     TypeDefinitionNode,
+    NamedTypeNode,
 } from 'graphql'
 import {
     wrapNonNull, unwrapNonNull, makeNamedType, toUpper, graphqlName, makeListType,
@@ -530,6 +531,10 @@ export interface SortKeyFieldInfo {
     fieldName: string;
     // The GraphQL type of the sort key field.
     typeName: string;
+    // Name of the model this field is on.
+    model?: string;
+    // The name of the key  that this sortKey is on.
+    keyName?: string;
 }
 export function makeModelConnectionField(fieldName: string, returnTypeName: string, sortKeyInfo?: SortKeyFieldInfo): FieldDefinitionNode {
     const args = [
@@ -539,8 +544,15 @@ export function makeModelConnectionField(fieldName: string, returnTypeName: stri
         makeInputValueDefinition('nextToken', makeNamedType('String'))
     ];
     if (sortKeyInfo) {
+        let namedType : NamedTypeNode;
+        if (sortKeyInfo.typeName === 'Composite') {
+            namedType = makeNamedType(ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(sortKeyInfo.model, sortKeyInfo.keyName));
+        } else {
+            namedType = makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName))
+        }
+
         args.unshift(
-            makeInputValueDefinition(sortKeyInfo.fieldName, makeNamedType(ModelResourceIDs.ModelKeyConditionInputTypeName(sortKeyInfo.typeName)))
+            makeInputValueDefinition(sortKeyInfo.fieldName, namedType)
         );
     }
     return makeField(

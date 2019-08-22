@@ -334,7 +334,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.stacks.Test1.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
     const schemaDoc = parse(out.schema);
 
     const testObjType = getObjectType(schemaDoc, 'Test');
@@ -371,15 +371,15 @@ test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.stacks.Test1.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherParts')]).toBeTruthy();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherParts')]).toBeTruthy();
     const schemaDoc = parse(out.schema);
 
     const testObjType = getObjectType(schemaDoc, 'Test');
     expectFields(testObjType, ['otherParts']);
     const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
 
-    expect(relatedField.arguments.length).toEqual(5);
-    expectArguments(relatedField, ['email', 'filter', 'limit', 'nextToken', 'sortDirection']);
+    expect(relatedField.arguments.length).toEqual(4);
+    expectArguments(relatedField, ['filter', 'limit', 'nextToken', 'sortDirection']);
     expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 
     expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
@@ -413,8 +413,8 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
 
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    expect(out.stacks.User.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'author')]).toBeTruthy();
-    expect(out.stacks.Post.Resources[ResolverResourceIDs.ResolverResourceID('User', 'posts')]).toBeTruthy();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'author')]).toBeTruthy();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('User', 'posts')]).toBeTruthy();
     const schemaDoc = parse(out.schema);
 
     const userType = getObjectType(schemaDoc, 'User');
@@ -432,6 +432,134 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
     const userField = postType.fields.find(f => f.name.value === 'author');
     expect(userField.type.kind).toEqual(Kind.NAMED_TYPE);
 
+})
+
+test('Test ModelConnectionTransformer for One-to-Many query with a composite sort key.', () => {
+    const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        name: String!
+        otherParts: [Test1] @connection(fields: ["id", "email", "name"])
+    }
+
+    type Test1
+        @model
+        @key(fields: ["id", "email", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        email: String!
+        name: String!
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new KeyTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherParts')]).toBeTruthy();
+    const schemaDoc = parse(out.schema);
+
+    const testObjType = getObjectType(schemaDoc, 'Test');
+    expectFields(testObjType, ['otherParts']);
+    const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+
+    expect(relatedField.arguments.length).toEqual(4);
+    expectArguments(relatedField, ['filter', 'limit', 'nextToken', 'sortDirection']);
+    expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+    expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
+
+})
+test('Test ModelConnectionTransformer for One-to-Many query with a composite sort key passed in as an argument.', () => {
+    const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        name: String!
+        otherParts: [Test1] @connection(fields: ["id"])
+    }
+
+    type Test1
+        @model
+        @key(fields: ["id", "email", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        email: String!
+        name: String!
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new KeyTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherParts')]).toBeTruthy();
+    const schemaDoc = parse(out.schema);
+
+    const testObjType = getObjectType(schemaDoc, 'Test');
+    expectFields(testObjType, ['otherParts']);
+    const relatedField = testObjType.fields.find(f => f.name.value === 'otherParts');
+
+    expect(relatedField.arguments.length).toEqual(5);
+    expectArguments(relatedField, ['emailName', 'filter', 'limit', 'nextToken', 'sortDirection']);
+    expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+    expect((relatedField.type as any).name.value).toEqual('ModelTest1Connection');
+
+})
+
+test('Test ModelConnectionTransformer for One-to-One getItem with composite sort key.', () => {
+    const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        name: String!
+        otherHalf: Test1 @connection(fields: ["id", "email", "name"])
+    }
+
+    type Test1
+        @model
+        @key(fields: ["id", "email", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        email: String!
+        name: String!
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new KeyTransformer(),
+            new ModelConnectionTransformer()
+        ]
+    })
+
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
+    const schemaDoc = parse(out.schema);
+
+    const testObjType = getObjectType(schemaDoc, 'Test');
+    expectFields(testObjType, ['otherHalf']);
+    const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
+    expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
 })
 
 function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitionNode | undefined {
