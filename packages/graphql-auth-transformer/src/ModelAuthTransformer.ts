@@ -279,6 +279,7 @@ export class ModelAuthTransformer extends Transformer {
         // get model args
         const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
         const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
+
         //  check if subscriptions is explicity disabled or if it's set to public
         if ('subscriptions' in parentModelArgs &&
         (!parentModelArgs.subscriptions ||
@@ -611,6 +612,7 @@ Static group authorization should perform as expected.`
     }
 
     private validateFieldRules(rules: AuthRule[]) {
+        // check if the rules in the field are a subset of the rules in authrule
         for (const rule of rules) {
             const { queries, mutations } = rule;
             if (queries || mutations) {
@@ -1085,7 +1087,7 @@ All @auth directives used on field definitions are performed when the field is r
         if ( rules.length > 1 && hasOwner ) {
             this.addSubscriptionOwnerArgument(ctx, resolver, false)
         }
-    }
+        }
 
     private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
         let subscription = ctx.getSubscription();
@@ -1127,11 +1129,11 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     private getStaticGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && Boolean(rule.groups));
+        return rules.filter(rule => rule.allow === 'groups' && (Boolean(rule.groups) || Boolean(rule.groupClaim)));
     }
 
     private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
+        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups) && !Boolean(rule.groupClaim));
     }
 
 }
