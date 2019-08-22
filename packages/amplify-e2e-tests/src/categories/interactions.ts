@@ -1,5 +1,4 @@
-
-import * as nexpect from 'nexpect';
+import * as nexpect from '../utils/nexpect-modified';
 import { join } from 'path';
 import * as fs from 'fs';
 
