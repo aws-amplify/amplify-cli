@@ -11,7 +11,7 @@ import { ResourceConstants, ResolverResourceIDs, isListType,
     getBaseType, makeNamedType, makeInputValueDefinition,
     makeNonNullType, graphqlName, toUpper, makeField } from 'graphql-transformer-common'
 import {
-    Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression, or, newline,
+    Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline,
     comment
 } from 'graphql-mapping-template';
 
@@ -34,10 +34,17 @@ interface MutationNameMap {
     delete?: string;
 }
 
+enum ModelSubscriptionStatus {
+    OFF,
+    PUBLIC,
+    ON,
+}
+
 interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
+    status? : ModelSubscriptionStatus
 }
 
 interface ModelDirectiveArgs {
@@ -224,20 +231,23 @@ export class ModelAuthTransformer extends Transformer {
         const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
         if ("subscriptions" in directiveArguments) {
             const subscription = directiveArguments.subscriptions;
-            if (subscription && subscription.onCreate) {
-                subscription.onCreate.forEach( (fieldName: string) => {
-                    this.protectOnCreateSubcription(ctx, operationRules.create, def, fieldName);
-                })
-            }
-            if (subscription && subscription.onUpdate) {
-                subscription.onUpdate.forEach( (fieldName: string) => {
-                    this.protectOnUpdateSubcription(ctx, operationRules.update, def, fieldName);
-                })
-            }
-            if (subscription && subscription.onDelete) {
-                subscription.onDelete.forEach( (fieldName: string) => {
-                    this.protectOnDeleteSubcription(ctx, operationRules.delete, def, fieldName);
-                })
+            // check that subscription is not set to off
+            if (subscription && subscription.status !== ModelSubscriptionStatus.PUBLIC) {
+                if (subscription.onCreate) {
+                    subscription.onCreate.forEach( (fieldName: string) => {
+                        this.protectOnCreateSubcription(ctx, operationRules.create, def, fieldName);
+                    })
+                }
+                if (subscription.onUpdate) {
+                    subscription.onUpdate.forEach( (fieldName: string) => {
+                        this.protectOnUpdateSubcription(ctx, operationRules.update, def, fieldName);
+                    })
+                }
+                if (subscription.onDelete) {
+                    subscription.onDelete.forEach( (fieldName: string) => {
+                        this.protectOnDeleteSubcription(ctx, operationRules.delete, def, fieldName);
+                    })
+                }
             }
         } else {
             this.protectOnCreateSubcription(ctx, operationRules.create, def);
@@ -264,13 +274,13 @@ export class ModelAuthTransformer extends Transformer {
         }
         // get parent auth rules
         const authDirective = parent.directives.find((dir) => dir.name.value === 'auth')
-        const parentAuthArgs = getDirectiveArguments(authDirective);
+        const parentAuthArgs = authDirective ? getDirectiveArguments(authDirective) : {};
         let protectMutations = false;
         let subscriptionsEnabled = true;
 
         // get model args
         const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
-        const parentModelArgs: ModelDirectiveArgs = getDirectiveArguments(modelDirective)
+        const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
         //  check if subscriptions is explicity disabled
         if ('subscriptions' in parentModelArgs && !parentModelArgs.subscriptions) {
             subscriptionsEnabled = false
@@ -292,10 +302,10 @@ Static group authorization should perform as expected.`
         this.validateFieldRules(rules)
         // if the object has auth enabled and the field rules are a superset of the object rules
         // protect the mutations for the field
-        if (parentAuthArgs
-                && parentAuthArgs.rules
-                && rules.length < parentAuthArgs.rules.length
-                && subscriptionsEnabled) {
+        if (
+                (parentAuthArgs
+                && rules.length < parentAuthArgs.rules.length)
+                || subscriptionsEnabled) {
             protectMutations = true;
         }
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
