@@ -9,7 +9,8 @@ exports[`Test "create", "update", "delete" auth operations 3`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
@@ -58,7 +59,8 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
@@ -257,7 +259,8 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
@@ -389,7 +392,8 @@ exports[`Test that operation overwrites queries in auth operations 3`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
@@ -438,7 +442,8 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
@@ -637,7 +642,8 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 ## Authorization rule: { allow: groups, groups: \\"[\\"Admin\\",\\"Dev\\"]\\" } **
 #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
 #set( $allowedGroups = [\\"Admin\\", \\"Dev\\"] )
-#set($isStaticGroupAuthorized = $util.defaultIfNull($isStaticGroupAuthorized, false))
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
 #foreach( $userGroup in $userGroups )
   #foreach( $allowedGroup in $allowedGroups )
     #if( $allowedGroup == $userGroup )
