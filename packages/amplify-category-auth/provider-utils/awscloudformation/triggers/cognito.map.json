@@ -23,5 +23,11 @@
   "VerifyAuthChallengeResponse": {
     "name": "Verify Auth Challenge Response"
   },
+  "PreTokenGeneration": {
+    "name": "Pre Token Generation"
+  },
+  "UserMigration": {
+    "name": "User Migration"
+  },
   "URL": "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html"
 }

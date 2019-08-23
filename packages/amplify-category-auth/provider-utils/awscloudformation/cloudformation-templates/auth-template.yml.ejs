@@ -137,6 +137,12 @@ Resources:
         <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
           PreSignUp: !Ref function<%=props.resourceName%>PreSignupArn
         <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+          PreTokenGeneration: !Ref function<%=props.resourceName%>PreTokenGenerationArn
+        <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('UserMigration'))) { %>
+          UserMigration: !Ref function<%=props.resourceName%>UserMigrationArn
+        <% } %>
         <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
