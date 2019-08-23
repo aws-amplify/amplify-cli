@@ -276,7 +276,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
     console.log(response1);
     expect(response1.data.createFieldProtected.id).toEqual("1")
     expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1)
-    expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected")
+    expect(response1.data.createFieldProtected.ownerOnly).toBeNull()
 
     const response2 = await GRAPHQL_CLIENT_2.query(`query {
         getFieldProtected(id: "1") {
@@ -372,7 +372,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
     console.log(JSON.stringify(response1));
     expect(response1.data.createFieldProtected.id).toEqual("2")
     expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1)
-    expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected")
+    expect(response1.data.createFieldProtected.ownerOnly).toBeNull()
 
     const response2 = await GRAPHQL_CLIENT_1.query(`mutation {
         createFieldProtected(input: { id: "3", owner: "${USERNAME2}", ownerOnly: "owner-protected" }) {
@@ -414,7 +414,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     console.log(JSON.stringify(response1));
     expect(response1.data.createFieldProtected.id).not.toBeNull()
     expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1)
-    expect(response1.data.createFieldProtected.ownerOnly).toEqual("owner-protected")
+    expect(response1.data.createFieldProtected.ownerOnly).toBeNull()
 
     const response2 = await GRAPHQL_CLIENT_2.query(`mutation {
         updateFieldProtected(input: { id: "${response1.data.createFieldProtected.id}", ownerOnly: "owner2-protected" }) {
@@ -439,7 +439,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     console.log(response3);
     expect(response3.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
     expect(response3.data.updateFieldProtected.owner).toEqual(USERNAME1)
-    expect(response3.data.updateFieldProtected.ownerOnly).toEqual("updated")
+    expect(response3.data.updateFieldProtected.ownerOnly).toBeNull()
 
     // This request should succeed since we are not updating the protected field.
     const response4 = await GRAPHQL_CLIENT_3.query(`mutation {
@@ -452,5 +452,5 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     console.log(response4);
     expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id)
     expect(response4.data.updateFieldProtected.owner).toEqual(USERNAME3)
-    expect(response4.data.updateFieldProtected.ownerOnly).toEqual("updated")
+    expect(response4.data.updateFieldProtected.ownerOnly).toBeNull()
 })
