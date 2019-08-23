@@ -304,7 +304,7 @@ Static group authorization should perform as expected.`
         // protect the mutations for the field
         if (
                 (parentAuthArgs
-                && rules.length < parentAuthArgs.rules.length)
+                && rules.length < (parentAuthArgs.rules || []).length)
                 || subscriptionsEnabled) {
             protectMutations = true;
         }
