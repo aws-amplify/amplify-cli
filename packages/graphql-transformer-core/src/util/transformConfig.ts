@@ -50,6 +50,12 @@ export interface TransformConfig {
      * generalizes this behavior.
      */
     Migration?: TransformMigrationConfig;
+
+    /**
+     * Notifying customers on a breaking change if auth is included
+     * This will be used as a flag to let customers know that a breaking change has been made
+     */
+    AuthWarning?: boolean;
 }
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);
