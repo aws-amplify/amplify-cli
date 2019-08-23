@@ -1,4 +1,6 @@
 const codeGen = require('../../src/index');
+const path = require('path');
+const fs = require('fs-extra');
 const constants = require('../../src/constants');
 const systemConfigManager = require('../../../amplify-provider-awscloudformation/lib/system-config-manager');
 const askForFrontend = require('../../src/walkthrough/questions/selectFrontend');
@@ -38,39 +40,10 @@ module.exports = {
       }
       let apiId = context.parameters.options.apiId || null;
 
-      // Grab the profile if its provided
-      const profile = context.parameters.options.profile;
-      let namedProfiles = systemConfigManager.getNamedProfiles();
-      if (profile) {
-        if (namedProfiles[profile]){
-          context.profile = profile;
-          context.region = systemConfigManager.getProfileRegion(profile);
-        } 
-        else {
-          throw Error('Invalid profile name provided. Use an existing AWS profile');
-        }
-      } else {
-        // Only ask for profile if not in an amplify project
-        if (context.withoutInit) {
-          const setupNewAnswer = await askForCreateProfile();
-          if (!setupNewAnswer) {
-            context.profile = await setupNewUser.run(context);
-            context.region = systemConfigManager.getProfileRegion(context.profile);
-          }
-          else {
-            if (!Object.keys(namedProfiles).length) {
-              throw Error("No existing AWS profiles")
-            }
-            context.profile = await askForProfile(Object.keys(namedProfiles));
-            context.region = systemConfigManager.getProfileRegion(context.profile);
-          }
-          
-        }
-      }
-
-      // Ask for apiId if not provided and not in amplify project
-      if (!apiId && context.withoutInit) {
-        apiId = await askApiId();
+      let schema = './schema.json';
+      const schemaPath = path.join(process.cwd(), schema);
+      if(!fs.existsSync(schemaPath)) {
+        throw Error("Please download the introspection schema and place in " + schemaPath + " before adding codegen when not in an amplify project");
       }
 
       // Grab the frontend if it is provided

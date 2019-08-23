@@ -13,17 +13,22 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
   let apis = [];
   if (!context.withoutInit) {
     apis = getAppSyncAPIDetails(context);
-  } else {
-    apis = [context.apiDetails];
   }
   let projectPath = process.cwd();
   if (!context.withoutInit) {
     ({ projectPath } = context.amplify.getEnvInfo());
   }
   if (!projects.length || !apis.length) {
+    if (!context.withoutInit) {
+      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+      return;
+    }
+  }
+  if (!projects.length && context.withoutInit) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
+
   projects.forEach(async (cfg) => {
     const includeFiles = path.join(projectPath, cfg.includes[0]);
     const opsGenDirectory = cfg.amplifyExtension.docsFilePath
@@ -31,12 +36,14 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
       : path.dirname(path.dirname(includeFiles));
     const schemaPath = path.join(projectPath, cfg.schema);
     if (forceDownloadSchema || fs.existsSync(schemaPath) !== 'file') {
-      await downloadIntrospectionSchemaWithProgress(
-        context,
-        apis[0].id,
-        schemaPath,
-        cfg.amplifyExtension.region,
-      );
+      if (!context.withoutInit) {
+        await downloadIntrospectionSchemaWithProgress(
+          context,
+          apis[0].id,
+          schemaPath,
+          cfg.amplifyExtension.region,
+        );
+      }
     }
     let { frontend } = context;
     if (!context.withoutInit) {

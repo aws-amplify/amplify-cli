@@ -18,11 +18,11 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
   let apis = [];
   if (!context.withoutInit) {
     apis = getAppSyncAPIDetails(context);
-  } else {
-    apis = [context.apiDetails];
   }
   if (!projects.length || !apis.length) {
-    throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+    if (!context.withoutInit) {
+      throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+    }
   }
 
   if (forceDownloadSchema) {

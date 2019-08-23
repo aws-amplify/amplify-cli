@@ -19,12 +19,12 @@ async function generateTypes(context, forceDownloadSchema) {
     let apis = [];
     if (!context.withoutInit) {
       apis = getAppSyncAPIDetails(context);
-    } else {
-      apis = [context.apiDetails];
     }
     if (!projects.length || !apis.length) {
-      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
-      return;
+      if (!context.withoutInit) {
+        context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+        return;
+      }
     }
     let projectPath = process.cwd();
     if (!context.withoutInit) {
@@ -48,12 +48,14 @@ async function generateTypes(context, forceDownloadSchema) {
 
       const outputPath = path.join(projectPath, generatedFileName);
       if (forceDownloadSchema || fs.existsSync(schemaPath) !== 'file') {
-        await downloadIntrospectionSchemaWithProgress(
-          context,
-          apis[0].id,
-          schemaPath,
-          cfg.amplifyExtension.region,
-        );
+        if (!context.withoutInit) {
+          await downloadIntrospectionSchemaWithProgress(
+            context,
+            apis[0].id,
+            schemaPath,
+            cfg.amplifyExtension.region,
+          );
+        }
       }
       const codeGenSpinner = new Ora(constants.INFO_MESSAGE_CODEGEN_GENERATE_STARTED);
       codeGenSpinner.start();

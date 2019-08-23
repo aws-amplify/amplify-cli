@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs-extra');
 const constants = require('../../src/constants');
 const codeGen = require('../../src');
 const loadConfig = require('../../src/codegen-config');
@@ -12,6 +14,12 @@ module.exports = {
       context.amplify.getProjectMeta();
     } catch(e) {
       context.withoutInit = true;
+    }
+
+    let schema = './schema.json';
+    const schemaPath = path.join(process.cwd(), schema);
+    if(!fs.existsSync(schemaPath)) {
+      throw Error("Please download the introspection schema and place in " + schemaPath + " before codegen when not in an amplify project");
     }
 
     if (context.parameters.options.help) {
@@ -43,22 +51,13 @@ module.exports = {
       context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
       process.exit(1);
     }
-    
     try {
-      const forceDownloadSchema = !context.parameters.options.nodownload;
-      const config = loadConfig(context);
-      const projects = config.getProjects();
-      if (!projects.length) {
-        throw Error(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+      let forceDownloadSchema = !context.parameters.options.nodownload;
+      if (context.withoutInit) {
+        forceDownloadSchema = false;
       }
-      const project = projects[0];
-      const { apiId } = project.amplifyExtension;
-      const { region } = project.amplifyExtension;
+      
       let { maxDepth } = context.parameters.options;
-      if (!maxDepth) {
-        ({ maxDepth } = project.amplifyExtension);
-      }
-      context.apiDetails = await getAppSyncAPIInfo(context, apiId, region);
       await codeGen.generate(context, forceDownloadSchema, maxDepth);
     } catch (e) {
       context.print.info(e.message);
