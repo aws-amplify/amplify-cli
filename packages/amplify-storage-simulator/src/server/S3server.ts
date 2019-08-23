@@ -217,7 +217,8 @@ export class StorageServer extends EventEmitter {
     // loading data in map for each part
     if (request.query.partNumber !== undefined) {
       this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
-    } else {
+    }
+    else {
       writeFileSync(directoryPath, new_data);
       // event trigger  to differentitiate between multipart and normal put
       let eventObj = this.createEvent(request);
@@ -240,15 +241,15 @@ export class StorageServer extends EventEmitter {
           InitiateMultipartUploadResult: {
             Bucket: this.route,
             Key: request.params.path,
-            UploadId: id,
+            UploadId: id
           },
         })
       );
     } else if (this.uploadIds.includes(request.query.uploadId)) {
       let arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
       delete this.upload_bufferMap[request.query.uploadId]; // clear the map with current requestID
-      // remove the current upload ID
 
+      // remove the current upload ID
       this.uploadIds.splice(this.uploadIds.indexOf(request.query.uploadId), 1);
 
       response.set('Content-Type', 'text/xml');
@@ -265,6 +266,7 @@ export class StorageServer extends EventEmitter {
       );
       let buf = Buffer.concat(arr);
       writeFileSync(directoryPath, buf);
+      
       // event trigger for multipart post
       let eventObj = this.createEvent(request);
       this.emit('event', eventObj);
@@ -291,7 +293,6 @@ export class StorageServer extends EventEmitter {
       );
     }
   }
-
   // build eevent obj for s3 trigger
   private createEvent(request) {
     const filePath = normalize(join(this.localDirectoryPath, request.params.path));
