@@ -2,7 +2,7 @@ const fs = require('fs');
 const sequential = require('promise-sequential');
 const { initializeEnv } = require('../../lib/initialize-env');
 const { getProviderPlugins } = require('../../extensions/amplify-helpers/get-provider-plugins');
-const { readJsonFile } = require('../../extensions/amplify-helpers/read-json-file');
+const { getEnvInfo } = require('../../extensions/amplify-helpers/get-env-info');
 
 module.exports = {
   name: 'checkout',
@@ -20,11 +20,10 @@ module.exports = {
     // Set the current env to the environment name provided
 
     const localEnvFilePath = context.amplify.pathManager.getLocalEnvFilePath();
-    const localEnvInfo = readJsonFile(localEnvFilePath);
+    const localEnvInfo = getEnvInfo();
     localEnvInfo.envName = envName;
     const jsonString = JSON.stringify(localEnvInfo, null, 4);
     fs.writeFileSync(localEnvFilePath, jsonString, 'utf8');
-
 
     // Setup exeinfo
 

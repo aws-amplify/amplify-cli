@@ -20,6 +20,7 @@ import {
 } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import * as Case from 'case';
 
 interface KeyArguments {
     name?: string;
@@ -170,7 +171,7 @@ export default class FunctionTransformer extends Transformer {
                     compositeKeyFields.push (field);
                 }
             }
-            const keyName = args.name || 'Primary';
+            const keyName = Case.pascal(args.name || 'Primary');
             const keyConditionInput = makeCompositeKeyConditionInputForKey(definition.name.value, keyName, compositeKeyFields);
             if (!ctx.getType(keyConditionInput.name.value)) {
                 ctx.addInput(keyConditionInput);

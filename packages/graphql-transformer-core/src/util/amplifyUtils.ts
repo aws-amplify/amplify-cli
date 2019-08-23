@@ -119,7 +119,7 @@ export async function ensureMissingStackMappings(config: ProjectOptions) {
         const copyOfCloudBackend = await readFromPath(currentCloudBackendDirectory);
         const stackMapping = transformOutput.stackMapping;
         if (copyOfCloudBackend && copyOfCloudBackend.build) {
-            const stackNames = copyOfCloudBackend.build.stacks;
+            const stackNames = Object.keys(copyOfCloudBackend.build.stacks);
 
             // We walk through each of the stacks that were deployed in the most recent deployment.
             // If we find a resource that was deployed into a different stack than it should have
