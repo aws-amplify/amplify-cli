@@ -38,7 +38,7 @@ interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
-    status?: ModelSubscriptionStatus;
+    level?: ModelSubscriptionStatus;
 }
 
 interface ModelDirectiveArgs {
@@ -86,7 +86,7 @@ export class DynamoDBModelTransformer extends Transformer {
                 onCreate: [String]
                 onUpdate: [String]
                 onDelete: [String]
-                status: ModelSubscriptionStatus
+                level: ModelSubscriptionStatus
             }
             enum ModelSubscriptionStatus {
                 OFF
@@ -394,7 +394,7 @@ export class DynamoDBModelTransformer extends Transformer {
         if (subscriptionsArgument === null) {
             return;
         } else if (subscriptionsArgument &&
-             subscriptionsArgument.status === ModelSubscriptionStatus.OFF) {
+             subscriptionsArgument.level === ModelSubscriptionStatus.OFF) {
             return;
         } else if (subscriptionsArgument) {
             // Add the custom subscriptions
