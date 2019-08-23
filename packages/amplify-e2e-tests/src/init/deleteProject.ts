@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import * as nexpect from '../utils/nexpect-modified';
+import * as nexpect from 'nexpect';
 
 import { getCLIPath, isCI } from '../utils';
 import { getProjectMeta } from '../utils';
