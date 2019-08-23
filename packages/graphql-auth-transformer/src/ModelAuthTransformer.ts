@@ -44,7 +44,7 @@ interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
-    status? : ModelSubscriptionStatus
+    level? : ModelSubscriptionStatus
 }
 
 interface ModelDirectiveArgs {
@@ -122,12 +122,16 @@ export class ModelAuthTransformer extends Transformer {
                 # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
                 allow: AuthStrategy!
 
+                # Legacy name for identifyClaim
+                identityField: String
+                    @deprecated(reason: "The 'identifyField' argument will be replaced by the 'identifyClaim' argument in a future release.")
+
                 # Specifies the name of the claim to look for on the request's JWT token
                 # from Cognito User Pools (and in the future OIDC) that contains the identity
                 # of the user. If 'allow' is 'groups', this value should point to a list of groups
                 # in the claims. If 'allow' is 'owner', this value should point to the logged in user identity string.
                 # Defaults to "cognito:username" for Cognito User Pools auth.
-                identityField: String
+                identityClaim: String
 
                 # Allowed when the 'allow' argument is 'owner'.
                 # Specifies the field of type String or [String] that contains owner(s) that can access the object.
@@ -232,7 +236,7 @@ export class ModelAuthTransformer extends Transformer {
         if ("subscriptions" in directiveArguments) {
             const subscription = directiveArguments.subscriptions;
             // check that subscription is not set to off
-            if (subscription && subscription.status !== ModelSubscriptionStatus.PUBLIC) {
+            if (subscription && subscription.level !== ModelSubscriptionStatus.PUBLIC) {
                 if (subscription.onCreate) {
                     subscription.onCreate.forEach( (fieldName: string) => {
                         this.protectOnCreateSubcription(ctx, operationRules.create, def, fieldName);
@@ -276,14 +280,15 @@ export class ModelAuthTransformer extends Transformer {
         const authDirective = parent.directives.find((dir) => dir.name.value === 'auth')
         const parentAuthArgs = authDirective ? getDirectiveArguments(authDirective) : {};
         let protectMutations = false;
-        let subscriptionsEnabled = true;
+        let protectPrivateFields = true;
 
         // get model args
         const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
         const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
         //  check if subscriptions is explicity disabled
-        if ('subscriptions' in parentModelArgs && !parentModelArgs.subscriptions) {
-            subscriptionsEnabled = false
+        if ('subscriptions' in parentModelArgs &&
+        (!parentModelArgs.subscriptions || parentModelArgs.subscriptions === ModelSubscriptionStatus.PUBLIC)) {
+            protectPrivateFields = false
         }
         if (
             parent.name.value === ctx.getQueryTypeName() ||
@@ -305,7 +310,7 @@ Static group authorization should perform as expected.`
         if (
                 (parentAuthArgs
                 && rules.length < (parentAuthArgs.rules || []).length)
-                || subscriptionsEnabled) {
+                || protectPrivateFields) {
             protectMutations = true;
         }
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
@@ -596,7 +601,8 @@ Static group authorization should perform as expected.`
 
     private validateRules(rules: AuthRule[]) {
         for (const rule of rules) {
-            const { queries, mutations, operations, allow, groupClaim } = rule;
+            const { queries, mutations, operations,
+                allow, groupClaim, identityClaim, identityField } = rule;
             if (mutations && operations) {
                 console.warn(
                     `It is not recommended to use 'mutations' and 'operations'. The 'operations' argument will be used.`)
@@ -604,6 +610,10 @@ Static group authorization should perform as expected.`
             if (queries && operations) {
                 console.warn(
                     `It is not recommended to use 'queries' and 'operations'. The 'operations' argument will be used.`)
+            }
+            if ( allow === 'groups' && (identityClaim || identityField)) {
+                throw new InvalidDirectiveError(`
+                @auth identifyField/Claim is only for 'allow: owner'`)
             }
             if (allow === 'owner' && groupClaim) {
                 throw new InvalidDirectiveError(`
