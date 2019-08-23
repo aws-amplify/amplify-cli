@@ -34,24 +34,37 @@ Run \`amplify update api\` and choose
 }
 
 function warnOnAuth(context, map) {
-  Object.keys(map).forEach((type) => {
-    if (!map[type].includes('auth') && map[type].includes('model')) {
-      context.print.warning(`\nThe type ${type} does not have '@auth' enabled\nConsider using auth to protect your operations\n`);
-    }
-  });
+  const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
+
+  if (unAuthModelTypes.length) {
+    context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
+    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
+    context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth');
+  }
 }
 
 /**
  * @TODO change authWarning to version number to compare
- *  between transformer versions if there is a breaking change
+ *  This version number will be included in a map to keep
+ *  a track of changes
  */
 async function transformerVersionCheck(context, resourceDir, usedDirectives) {
+  const versionChangeMessage = 'The default behavoir for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
   const transformerConfig = await readTransformerConfiguration(resourceDir);
-  if (!transformerConfig.AuthWarning && usedDirectives.includes('auth')) {
-    context.print.warning('\nSome breaking changes have been made in auth - view docs here: <link>\n');
-    transformerConfig.AuthWarning = true;
+  if (!transformerConfig.Version && usedDirectives.includes('auth')) {
+    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+      context.print.warning(`\n${versionChangeMessage}\n`);
+    } else {
+      await inquirer.prompt({
+        name: 'tranformerConfig',
+        type: 'confirm',
+        message: `${versionChangeMessage} \n Do you wish to continue?`,
+        default: false,
+      });
+    }
+    transformerConfig.Version = 3.0;
     await writeTransformerConfiguration(resourceDir, transformerConfig);
   }
 }
