@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const opn = require('opn');
+const open = require('open');
 const chalk = require('chalk');
 const { URL } = require('url');
 
@@ -222,7 +222,7 @@ async function remove(context) {
 
 function console(context) {
   context.print.info(chalk.green(SUMERIAN_CONSOLE_URL));
-  opn(SUMERIAN_CONSOLE_URL, { wait: false });
+  open(SUMERIAN_CONSOLE_URL, { wait: false });
 }
 
 function getProjectNameFromPath(urlPath) {

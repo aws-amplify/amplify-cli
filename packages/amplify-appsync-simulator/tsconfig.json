@@ -5,6 +5,7 @@
         "sourceMap": true,
         "outDir": "lib",
         "lib": [
+            "dom",
             "es2015",
             "es2016.array.include",
             "esnext.asynciterable"
