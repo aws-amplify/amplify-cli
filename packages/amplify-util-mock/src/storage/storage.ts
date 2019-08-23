@@ -3,6 +3,9 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from "../utils";
 import { ConfigOverrideManager } from "../utils/config-override";
+import { invoke } from "amplify-category-function";
+
+const category = 'function';
 
 const port = 20005; // port for S3
 
@@ -64,6 +67,77 @@ export class StorageTest {
     await this.storageSimulator.stop();
   }
 
+  // to fire s3 triggers attached on the bucket
+  async trigger(context) {
+    let region = this.storageRegion;
+    this.storageSimulator.getServer.on('event', (eventObj: any) => {
+      const meta = context.amplify.getProjectDetails().amplifyMeta;
+      const existingStorage = meta.storage;
+      let backendPath = context.amplify.pathManager.getBackendDirPath();
+      const resourceName = Object.keys(existingStorage)[0];
+      const CFNFilePath = path.join(
+        backendPath,
+        "storage",
+        resourceName,
+        "s3-cloudformation-template.json"
+      );
+      const storageParams = context.amplify.readJsonFile(CFNFilePath);
+      const lambdaConfig = storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
+      //no trigger case
+      if (lambdaConfig === undefined) {
+        return;
+      }
+
+      // loop over lambda config to check for trigger based on prefix
+
+      let triggerName;
+      for (let obj of lambdaConfig) {
+        let prefix_arr = obj.Filter;
+        if (prefix_arr === undefined) {
+          let eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
+          if ( eventName === "ObjectRemoved" || eventName === "ObjectCreated") {
+            triggerName = String(obj.Function.Ref).split("function")[1].split("Arn")[0];
+            break;
+          }
+        }
+        else {
+          let keyName = String(eventObj.Records[0].s3.object.key);
+          prefix_arr = obj.Filter.S3Key.Rules;
+          for (let rules of prefix_arr) {
+            let node;
+            if (typeof (rules.Value) === 'object') {
+              node = String(Object.values(rules.Value)[0][1][0] + String(region) + ':');
+            }
+
+            if (typeof (rules.Value) === 'string') {
+              node = String(rules.Value);
+            }
+            // check prefix given  is the prefix of keyname in the event object
+            if (keyName.indexOf(node) === 0) {
+              triggerName = String(obj.Function.Ref).split("function")[1].split("Arn")[0];
+              break;
+            }
+          }
+        }
+        if (triggerName !== undefined) {
+          break;
+        }
+      }
+
+      const srcDir = path.normalize(path.join(backendPath, category, String(triggerName), 'src'));
+      const event = eventObj;
+
+      const invokeOptions = {
+        packageFolder: srcDir,
+        fileName: `${srcDir}/index.js`,
+        handler: 'handler',
+        event,
+      };
+      invoke(invokeOptions);
+    });
+
+  }
+
   private async generateTestFrontendExports(context) {
     await this.generateFrontendExports(context, {
       endpoint: this.storageSimulator.url,
@@ -122,5 +196,9 @@ export class StorageTest {
     const localPath = path.join(directoryPath, resourceName);
     fs.ensureDirSync(localPath);
     return localPath;
+  }
+
+  get getSimulatorObject() {
+    return this.storageSimulator;
   }
 }
