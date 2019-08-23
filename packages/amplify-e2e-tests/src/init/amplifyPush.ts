@@ -1,4 +1,4 @@
-import * as nexpect from 'nexpect';
+import * as nexpect from '../utils/nexpect-modified';
 import { getCLIPath, isCI } from '../utils';
 
 function amplifyPush(

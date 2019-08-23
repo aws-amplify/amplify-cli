@@ -43,7 +43,7 @@ function extractDocumentFromJavascript(content: string, tagName: string = 'gql')
   let match
   const matches = []
 
-  while(match = re.exec(content)) {
+  while (match = re.exec(content)) {
     const doc = match[1]
       .replace(/\${[^}]*}/g, '')
 
@@ -76,7 +76,7 @@ export function loadAndMergeQueryDocuments(inputPaths: string[], tagName: string
       return parse(source);
     } catch (err) {
       const relativePathToInput = relative(process.cwd(), source.name);
-      throw new Error(`Could not parse graphql operations in ${relativePathToInput}\n${err.message}\nquery : ${source.body}`);
+      throw new ToolError(`Could not parse graphql operations in ${relativePathToInput}\n  Failed on : ${source.body}`)
     }
   })
   return concatAST(parsedSources);

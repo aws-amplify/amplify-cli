@@ -8,7 +8,7 @@ module.exports = {
   run: async (context) => {
     if (context.parameters.options.help) {
       const header = `amplify ${featureName} [subcommand] [[--nodownload] [--max-depth <number>]]\nDescriptions:
-      Generates GraphQL statements(queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
+      Generates GraphQL statements (queries, mutations and subscriptions) and type annotations. \nSub Commands:`;
 
       const commands = [
         {
