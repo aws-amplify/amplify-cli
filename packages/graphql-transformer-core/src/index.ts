@@ -3,7 +3,7 @@ import TransformerContext from './TransformerContext'
 import Transformer from './Transformer'
 import ITransformer from './ITransformer'
 import GraphQLTransform from './GraphQLTransform'
-import { collectDirectiveNames } from './collectDirectives'
+import { collectDirectiveNames, collectDirectivesByTypeNames } from './collectDirectives';
 import { stripDirectives } from './stripDirectives'
 import {
     buildProject as buildAPIProject,
@@ -14,7 +14,9 @@ import {
 } from './util/amplifyUtils'
 import {
     readSchema as readProjectSchema,
-    loadProject as readProjectConfiguration
+    loadProject as readProjectConfiguration,
+    loadConfig as readTransformerConfiguration,
+    writeConfig as writeTransformerConfiguration,
 } from './util/transformConfig'
 
 export * from './errors'
@@ -27,12 +29,15 @@ export {
     Transformer,
     ITransformer,
     collectDirectiveNames,
+    collectDirectivesByTypeNames,
     stripDirectives,
     buildAPIProject,
     migrateAPIProject,
     uploadAPIProject,
     readProjectSchema,
     readProjectConfiguration,
+    readTransformerConfiguration,
+    writeTransformerConfiguration,
     revertAPIMigration,
     ensureMissingStackMappings
 }

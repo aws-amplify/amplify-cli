@@ -17,6 +17,7 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
     for (const def of doc.definitions) {
         switch (def.kind) {
             case Kind.OBJECT_TYPE_DEFINITION:
+                // Does def node have a @model and no @auth.
                 directives = directives.concat(collectObjectDirectives(def))
                 break;
             case Kind.INTERFACE_TYPE_DEFINITION:
@@ -37,6 +38,54 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
         }
     }
     return directives
+}
+
+export function collectDirectivesByTypeNames(sdl: string): Object {
+    let types = collectDirectivesByType(sdl);
+    const directives: Set<string> = new Set();
+    Object.keys(types).forEach( (dir) => {
+        let set: Set<string> = new Set();
+        types[dir].forEach( (d: DirectiveNode) => {
+            set.add(d.name.value);
+            directives.add(d.name.value);
+        })
+        types[dir] = Array.from(set);
+    })
+    return { types, directives: Array.from(directives) };
+}
+export function collectDirectivesByType(sdl: string): Object {
+    const doc = parse(sdl)
+    // defined types with directives list
+    let types = {};
+    for (const def of doc.definitions) {
+        switch (def.kind) {
+            case Kind.OBJECT_TYPE_DEFINITION:
+                types[def.name.value] = [ ...types[def.name.value] || [],
+                    ...collectObjectDirectives(def)]
+                break;
+            case Kind.INTERFACE_TYPE_DEFINITION:
+                types[def.name.value] = [...types[def.name.value] || [],
+                    ...collectInterfaceDirectives(def)]
+                break;
+            case Kind.UNION_TYPE_DEFINITION:
+                types[def.name.value] = [...types[def.name.value] || [],
+                    ...collectUnionDirectives(def)]
+                break;
+            case Kind.INPUT_OBJECT_TYPE_DEFINITION:
+                types[def.name.value] = [...types[def.name.value] || [],
+                    ...collectInputObjectDirectives(def)]
+                break;
+            case Kind.ENUM_TYPE_DEFINITION:
+                types[def.name.value] = [...types[def.name.value] || [],
+                    ...collectEnumDirectives(def)]
+                break;
+            case Kind.SCALAR_TYPE_DEFINITION:
+                types[def.name.value] = [...types[def.name.value] || [],
+                    ...collectScalarDirectives(def)]
+                break;
+        }
+    }
+    return types;
 }
 
 export function collectObjectDirectives(node: ObjectTypeDefinitionNode): DirectiveNode[] {
