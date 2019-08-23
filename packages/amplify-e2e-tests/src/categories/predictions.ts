@@ -1,5 +1,5 @@
 import { isCI } from "../utils";
-import * as nexpect from '../utils/nexpect-modified';
+import * as nexpect from 'nexpect';
 import { getCLIPath } from '../utils/index';
 
 // add convert resource
