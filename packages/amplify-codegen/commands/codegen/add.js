@@ -42,7 +42,7 @@ module.exports = {
 
       let schema = './schema.json';
       const schemaPath = path.join(process.cwd(), schema);
-      if(!fs.existsSync(schemaPath)) {
+      if(!fs.existsSync(schemaPath) && context.withoutInit) {
         throw Error("Please download the introspection schema and place in " + schemaPath + " before adding codegen when not in an amplify project");
       }
 
