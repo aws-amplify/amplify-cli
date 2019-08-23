@@ -83,10 +83,9 @@ export class StorageTest {
       );
       const storageParams = context.amplify.readJsonFile(CFNFilePath);
       const lambdaConfig = storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
+      //no trigger case
       if (lambdaConfig === undefined) {
-        return context.print.warning(
-          "S3Trigger has not yet been added to this bucket. Please add the trigger"
-        );
+        return;
       }
 
       // loop over lambda config to check for trigger based on prefix
@@ -95,7 +94,8 @@ export class StorageTest {
       for (let obj of lambdaConfig) {
         let prefix_arr = obj.Filter;
         if (prefix_arr === undefined) {
-          if (String(eventObj.Records[0].event.eventName).split(':')[0] === "ObjectRemoved" || String(eventObj.Records[0].event.eventName).split(':')[0] === "ObjectCreated") {
+          let eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
+          if ( eventName === "ObjectRemoved" || eventName === "ObjectCreated") {
             triggerName = String(obj.Function.Ref).split("function")[1].split("Arn")[0];
             break;
           }
