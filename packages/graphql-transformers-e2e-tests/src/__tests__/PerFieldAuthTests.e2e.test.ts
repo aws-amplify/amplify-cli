@@ -105,7 +105,11 @@ beforeAll(async () => {
     # Any authenticated user may view Employee ids & emails.
     # Owners and members of "Admin" group may see employee salaries.
     # Owners of "Admin" group may create and update employee salaries.
-    type Employee @model @auth(rules: [
+    type Employee @model (
+        subscriptions: {
+            level: PUBLIC
+        }
+    ) @auth(rules: [
         { allow: owner, ownerField: "email", operations: [update] },
         { allow: groups, groups: ["Admin"], operations: [create,update,delete]}
     ]) {
