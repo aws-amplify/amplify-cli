@@ -28,16 +28,23 @@ interface MutationNameMap {
     delete?: string;
 }
 
+enum ModelSubscriptionStatus {
+    OFF,
+    PUBLIC,
+    ON
+}
+
 interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
+    status?: ModelSubscriptionStatus;
 }
 
 interface ModelDirectiveArgs {
     queries?: QueryNameMap,
     mutations?: MutationNameMap,
-    subscriptions?: SubscriptionNameMap
+    subscriptions?: SubscriptionNameMap,
 }
 
 export interface DynamoDBModelTransformerOptions {
@@ -79,6 +86,12 @@ export class DynamoDBModelTransformer extends Transformer {
                 onCreate: [String]
                 onUpdate: [String]
                 onDelete: [String]
+                status: ModelSubscriptionStatus
+            }
+            enum ModelSubscriptionStatus {
+                OFF
+                PUBLIC
+                ON
             }
             `
         )
@@ -120,10 +133,10 @@ export class DynamoDBModelTransformer extends Transformer {
         )
 
         // check if auth if enabled
-        const authDirective = def.directives.find((dir) => dir.name.value === 'auth')
-        if (!authDirective) {
-            console.warn(`@auth not enabled for ${def.name.value} - Warned that subscriptons are not enabled`)
-        }
+        // const authDirective = def.directives.find((dir) => dir.name.value === 'auth')
+        // if (!authDirective) {
+        //     console.warn(`@auth not enabled for ${def.name.value} - Warned that subscriptons are not enabled`)
+        // }
 
         // Create the dynamodb table to hold the @model type
         // TODO: Handle types with more than a single "id" hash key
@@ -379,6 +392,9 @@ export class DynamoDBModelTransformer extends Transformer {
         const updateResolver = ctx.getResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName))
         const deleteResolver = ctx.getResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName))
         if (subscriptionsArgument === null) {
+            return;
+        } else if (subscriptionsArgument &&
+             subscriptionsArgument.status === ModelSubscriptionStatus.OFF) {
             return;
         } else if (subscriptionsArgument) {
             // Add the custom subscriptions
