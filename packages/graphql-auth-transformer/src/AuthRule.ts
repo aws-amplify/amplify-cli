@@ -5,6 +5,7 @@ export interface AuthRule {
     allow: 'owner' | 'groups';
     ownerField?: string;
     identityField?: string;
+    identityClaim?: string;
     groupsField?: string;
     groups?: string[];
     operations?: ModelOperation[]

@@ -18,12 +18,12 @@ import {
     DEFAULT_GROUPS_FIELD
 } from './constants'
 
-function replaceIfUsername(identityField: string): string {
-    return (identityField === 'username') ? 'cognito:username' : identityField;
+function replaceIfUsername(identityClaim: string): string {
+    return (identityClaim === 'username') ? 'cognito:username' : identityClaim;
 }
 
-function isUsername(identityField: string): boolean {
-    return identityField === 'username'
+function isUsername(identityClaim: string): boolean {
+    return identityClaim === 'username'
 }
 
 export class ResourceFactory {
@@ -332,14 +332,14 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const rawUsername = rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD
             const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownershipAuthorizationExpressions = ownershipAuthorizationExpressions.concat(
                 formatComment ?
                     comment(formatComment(rule)) :
-                    comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                    comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
                 isUser ?
                     // tslint:disable-next-line
@@ -399,7 +399,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
                 rules, fieldIsList, variableToCheck, variableToSet,
                 rule => `Authorization rule: { allow: ${rule.allow}, \
 ownerField: "${rule.ownerField || DEFAULT_OWNER_FIELD}", \
-identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
+identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD}" }`
             )
         ])
     }
@@ -415,7 +415,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const rawUsername = rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD
             const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
@@ -423,7 +423,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
             ownershipAuthorizationExpressions = ownershipAuthorizationExpressions.concat(
                 formatComment ?
                     comment(formatComment(rule)) :
-                    comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                    comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), raw(`$util.defaultIfNull($${variableToCheck}.${ownerAttribute}, null)`)),
                 isUser ?
                     // tslint:disable-next-line
@@ -556,7 +556,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const rawUsername = rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD
             const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const ownerFieldIsList = fieldIsList(ownerAttribute)
@@ -565,7 +565,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
 
             ownerAuthorizationExpressions.push(
                 // tslint:disable:max-line-length
-                comment(`Authorization rule${fieldMention}: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                comment(`Authorization rule${fieldMention}: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
             )
             if (ownerFieldIsList) {
                 ownerAuthorizationExpressions.push(
@@ -655,12 +655,12 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
         let ruleNumber = 0;
         for (const rule of rules) {
             const ownerAttribute = rule.ownerField || DEFAULT_OWNER_FIELD
-            const rawUsername = rule.identityField || DEFAULT_IDENTITY_FIELD
+            const rawUsername = rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_FIELD
             const isUser = isUsername(rawUsername)
             const identityAttribute = replaceIfUsername(rawUsername)
             const allowedOwnersVariable = `allowedOwners${ruleNumber}`
             ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
-                comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityField: "${identityAttribute}" }`),
+                comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
                 set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
                 isUser ?
                     // tslint:disable-next-line
