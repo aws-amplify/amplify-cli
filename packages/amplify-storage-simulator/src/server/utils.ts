@@ -6,7 +6,7 @@ export function parseUrl(request, route: String) {
   request.url = normalize(decodeURIComponent(request.url));
   const temp = request.url.split(route);
   request.params.path = '';
-
+  
   if (request.query.prefix !== undefined) request.params.path = request.query.prefix + '/';
 
   if (temp[1] !== undefined)

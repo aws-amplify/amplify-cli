@@ -1,8 +1,6 @@
 import Template from 'cloudform-types/types/template'
-import Cognito from 'cloudform-types/types/cognito'
-import Output from 'cloudform-types/types/output'
 import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
-import { AppSync, Fn, StringParameter, Refs, NumberParameter, Condition } from 'cloudform-types'
+import { AppSync, Fn, StringParameter, Refs } from 'cloudform-types'
 import { AuthRule } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
@@ -14,10 +12,8 @@ import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
 import { AppSyncAuthModeModes } from './ModelAuthTransformer';
 
 import {
-    OWNER_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     DEFAULT_IDENTITY_FIELD,
-    GROUPS_AUTH_STRATEGY,
     DEFAULT_GROUPS_FIELD
 } from './constants'
 
@@ -512,7 +508,7 @@ identityField: "${rule.identityField || DEFAULT_IDENTITY_FIELD}" }`
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: ${rule.allow}, groupsField: "${groupsAttribute}" }`),
-                set(ref('allowedGroups'), ref(`${variableToCheck}.${groupsAttribute}`)),
+                set(ref('allowedGroups'), ref(`util.defaultIfNull($${variableToCheck}.${groupsAttribute}, [])`)),
                 forEach(ref('userGroup'), ref('userGroups'), [
                     iff(
                         raw('$util.isList($allowedGroups)'),
