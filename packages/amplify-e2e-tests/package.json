@@ -14,11 +14,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "23.1.6",
-    "@types/nexpect": "0.4.30",
     "@types/node": "^8.10.51",
     "aws-amplify": "^1.1.36",
     "dotenv": "6.2.0",
     "jest": "23.1.0",
+    "nexpect": "file:./src/utils/nexpect-modified",
     "node-fetch": "^2.6.0",
     "rimraf": "^3.0.0",
     "ts-jest": "^22.4.6",
