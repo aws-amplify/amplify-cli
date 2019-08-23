@@ -82,7 +82,7 @@ export class ResolverOverrides {
       }
     });
 
-    // Files that are disk used by resolvers created by custom stack will exist in resolver folder
+    // Files that are in the disk used by resolvers created by custom stack will exist in resolver folder
     //  include them in the resolver output
     const resolversCreatedByTransformer = result.map(r => r.path);
     const customResolverTemplates = Array.from(this.overrides.values()).filter(
