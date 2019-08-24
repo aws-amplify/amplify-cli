@@ -63,12 +63,15 @@ async function transformerVersionCheck(
       context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
-      await inquirer.prompt({
+      const response = await inquirer.prompt({
         name: 'tranformerConfig',
         type: 'confirm',
         message: `${versionChangeMessage} \n Do you wish to continue?`,
         default: false,
       });
+      if (!response.confirm) {
+        process.exit(0);
+      }
     }
   }
   transformerConfig.Version = 3.0;
