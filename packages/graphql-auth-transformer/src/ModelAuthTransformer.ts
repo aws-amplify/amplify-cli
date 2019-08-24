@@ -34,7 +34,7 @@ interface MutationNameMap {
     delete?: string;
 }
 
-enum ModelSubscriptionStatus {
+enum ModelSubscriptionLevel {
     OFF,
     PUBLIC,
     ON,
@@ -44,7 +44,7 @@ interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
-    level? : ModelSubscriptionStatus
+    level? : ModelSubscriptionLevel
 }
 
 interface ModelDirectiveArgs {
@@ -232,11 +232,10 @@ export class ModelAuthTransformer extends Transformer {
 
         // Check if subscriptions is enabled
         const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(modelDirective);
-        const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
         if ("subscriptions" in directiveArguments) {
             const subscription = directiveArguments.subscriptions;
             // check that subscription is not set to off
-            if (subscription && subscription.level !== ModelSubscriptionStatus.PUBLIC) {
+            if (subscription && subscription.level !== ModelSubscriptionLevel.PUBLIC) {
                 if (subscription.onCreate) {
                     subscription.onCreate.forEach( (fieldName: string) => {
                         this.protectOnCreateSubcription(ctx, operationRules.create, def, fieldName);
@@ -277,9 +276,6 @@ export class ModelAuthTransformer extends Transformer {
             return argument ? valueFromASTUntyped(argument.value) : dflt
         }
         // get parent auth rules
-        const authDirective = parent.directives.find((dir) => dir.name.value === 'auth')
-        const parentAuthArgs = authDirective ? getDirectiveArguments(authDirective) : {};
-        let protectMutations = false;
         let protectPrivateFields = true;
 
         // get model args
@@ -287,7 +283,7 @@ export class ModelAuthTransformer extends Transformer {
         const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
         //  check if subscriptions is explicity disabled
         if ('subscriptions' in parentModelArgs &&
-        (!parentModelArgs.subscriptions || parentModelArgs.subscriptions === ModelSubscriptionStatus.PUBLIC)) {
+        (!parentModelArgs.subscriptions || parentModelArgs.subscriptions === ModelSubscriptionLevel.PUBLIC)) {
             protectPrivateFields = false
         }
         if (
@@ -307,12 +303,6 @@ Static group authorization should perform as expected.`
         this.validateFieldRules(rules)
         // if the object has auth enabled and the field rules are a superset of the object rules
         // protect the mutations for the field
-        if (
-                (parentAuthArgs
-                && rules.length < (parentAuthArgs.rules || []).length)
-                || protectPrivateFields) {
-            protectMutations = true;
-        }
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
             if (rule.operations) {
                 const matchesOp = rule.operations.find(o => o === op)
@@ -329,7 +319,7 @@ Static group authorization should perform as expected.`
         // The field handler adds the read rule on the object
         const readRules = rules.filter((rule: AuthRule) => isReadRule(rule))
         this.protectField(ctx, parent.name.value, definition.name.value,
-            readRules, protectMutations)
+            readRules, protectPrivateFields)
 
         // Protect mutations when objects including this field are trying to be created.
         const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule))
@@ -346,7 +336,7 @@ Static group authorization should perform as expected.`
     }
 
     private protectField(ctx: TransformerContext, typeName: string,
-        fieldName: string, rules: AuthRule[], protectMutations?: boolean) {
+        fieldName: string, rules: AuthRule[], protectPrivateFields?: boolean) {
         if (rules && rules.length) {
             const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
             // If the resolver exists (e.g. @connection use it else make a blank one against None)
@@ -362,7 +352,7 @@ Static group authorization should perform as expected.`
                 resolver = this.resources.blankResolver(typeName, fieldName)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
-            if (protectMutations) {
+            if (protectPrivateFields) {
                 // add operation to queryField
                 this.addOperationToQuery(ctx, typeName, 'query')
                 // add operation check in the field resolver
@@ -602,7 +592,8 @@ Static group authorization should perform as expected.`
     private validateRules(rules: AuthRule[]) {
         for (const rule of rules) {
             const { queries, mutations, operations,
-                allow, groupClaim, identityClaim, identityField } = rule;
+                allow, groupClaim, identityClaim,
+                identityField, groups, groupsField } = rule;
             if (mutations && operations) {
                 console.warn(
                     `It is not recommended to use 'mutations' and 'operations'. The 'operations' argument will be used.`)
@@ -618,6 +609,9 @@ Static group authorization should perform as expected.`
             if (allow === 'owner' && groupClaim) {
                 throw new InvalidDirectiveError(`
                 @auth groupClaim is only for 'allow: groups'`);
+            }
+            if ( groupsField && groups) {
+                throw new InvalidDirectiveError("This rule has groupsField and groups - use one or the other!")
             }
         }
     }
@@ -1145,11 +1139,11 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     private getStaticGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && (Boolean(rule.groups) || Boolean(rule.groupClaim)));
+        return rules.filter(rule => rule.allow === 'groups' && Boolean(rule.groups));
     }
 
     private getDynamicGroupRules(rules: AuthRule[]): AuthRule[] {
-        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups) && !Boolean(rule.groupClaim));
+        return rules.filter(rule => rule.allow === 'groups' && !Boolean(rule.groups));
     }
 
 }

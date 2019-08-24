@@ -253,7 +253,15 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
         formatComment?: (rule: AuthRule) => string,
     ) {
         let groupAuthorizationExpressions = []
+        let customClaim: string;
         for (const rule of rules) {
+            if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
+                customClaim = rule.groupClaim;
+            }
+            // for loop do check of rules here
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 formatComment ?
@@ -281,8 +289,10 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
                 ])
             )
         }
+
+        // adds group claim
         return compoundExpression([
-            this.setUserGroups(),
+            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
             ...groupAuthorizationExpressions,
         ])
     }
@@ -510,7 +520,14 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
 
         let groupAuthorizationExpressions = []
         let ruleNumber = 0
+        let customClaim: string;
         for (const rule of rules) {
+            if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
+                customClaim = rule.groupClaim;
+            }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             const groupsAttributeName = `groupsAttribute${ruleNumber}`
             const groupName = `group${ruleNumber}`
@@ -525,8 +542,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             )
             ruleNumber++
         }
+        // check for groupclaim here
         return block('Dynamic group authorization checks', [
-            this.setUserGroups(),
+            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
             set(ref('groupAuthExpressions'), list([])),
             set(ref('groupAuthExpressionValues'), obj({})),
             set(ref('groupAuthExpressionNames'), obj({})),
@@ -609,7 +627,14 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             return comment(`No Dynamic Group Authorization Rules`)
         }
         let groupAuthorizationExpressions = [];
+        let customClaim: string;
         for (const rule of rules) {
+            if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
+                customClaim = rule.groupClaim;
+            }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
             groupAuthorizationExpressions = groupAuthorizationExpressions.concat(
                 comment(`Authorization rule: { allow: ${rule.allow}, groupsField: "${groupsAttribute}" }`),
@@ -630,8 +655,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                 ])
             )
         }
+        // check for group claim here
         return block('Dynamic Group Authorization Checks', [
-            this.setUserGroups(),
+            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
             set(ref(variableToSet), defaultValue),
             ...groupAuthorizationExpressions,
         ])
