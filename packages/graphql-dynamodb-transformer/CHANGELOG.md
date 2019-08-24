@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.1-authSubRelease.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.12.1-authSubRelease.3) (2019-08-24)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** added scan index forward ([72cda1e](https://github.com/aws-amplify/amplify-cli/commit/72cda1e)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+* **graphql-dynamodb-transformer:** auth check ([16a10c7](https://github.com/aws-amplify/amplify-cli/commit/16a10c7)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+
+
+
+
+
 ## [3.12.1-authSubRelease.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.12.1-authSubRelease.0) (2019-08-16)
 
 
