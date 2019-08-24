@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.1-authSubRelease.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.7.5...graphql-transformer-core@3.11.1-authSubRelease.3) (2019-08-24)
+
+
+### Bug Fixes
+
+* [#1715](https://github.com/aws-amplify/amplify-cli/issues/1715) - Fix stack enumeration so transform.conf.json will be generated ([#2114](https://github.com/aws-amplify/amplify-cli/issues/2114)) ([d1b266b](https://github.com/aws-amplify/amplify-cli/commit/d1b266b))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+* **graphql-transformer-core:** added getfieldarguments ([7fb883b](https://github.com/aws-amplify/amplify-cli/commit/7fb883b)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+
+
+
+
+
 ## [3.11.1-authSubRelease.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.7.5...graphql-transformer-core@3.11.1-authSubRelease.0) (2019-08-16)
 
 
