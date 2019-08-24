@@ -48,13 +48,19 @@ function warnOnAuth(context, map) {
  *  This version number will be included in a map to keep
  *  a track of changes
  */
-async function transformerVersionCheck(context, resourceDir, usedDirectives) {
+async function transformerVersionCheck(
+  context, resourceDir, cloudBackendDirectory,
+  updatedResources, usedDirectives,
+) {
   const versionChangeMessage = 'The default behavoir for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
-  const transformerConfig = await readTransformerConfiguration(resourceDir);
-  if (!transformerConfig.Version && usedDirectives.includes('auth')) {
-    if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+  const transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  const resources = updatedResources.filter(resource => resource.service === 'AppSync');
+  if (!transformerConfig.Version && usedDirectives.includes('auth')
+  && resources.length > 0) {
+    if (context.exeInfo &&
+      context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
       await inquirer.prompt({
@@ -64,9 +70,9 @@ async function transformerVersionCheck(context, resourceDir, usedDirectives) {
         default: false,
       });
     }
-    transformerConfig.Version = 3.0;
-    await writeTransformerConfiguration(resourceDir, transformerConfig);
   }
+  transformerConfig.Version = 3.0;
+  await writeTransformerConfiguration(resourceDir, transformerConfig);
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
@@ -257,6 +263,8 @@ async function transformGraphQLSchema(context, options) {
   await transformerVersionCheck(
     context,
     resourceDir,
+    previouslyDeployedBackendDir,
+    resourcesToBeUpdated,
     directiveMap.directives,
   );
 
