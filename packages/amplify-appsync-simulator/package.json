@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "0.3.1-authSubRelease.3",
+  "version": "0.3.1-authSubRelease.4",
   "description": "An AppSync Simulator to test AppSync API.",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@conduitvc/mosca": "^2.8.3",
-    "amplify-velocity-template": "0.2.1-authSubRelease.3",
+    "amplify-velocity-template": "^0.2.1-authSubRelease.4",
     "cors": "^2.8.5",
     "dateformat": "^3.0.3",
     "event-to-promise": "^0.8.0",
@@ -50,7 +50,7 @@
     "@types/jest": "^24.0.16",
     "@types/mosca": "^2.8.1",
     "@types/node": "^8.10.51",
-    "amplify-graphiql-explorer": "0.3.1-authSubRelease.3",
+    "amplify-graphiql-explorer": "^0.3.1-authSubRelease.4",
     "aws-sdk": "^2.510.0",
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
