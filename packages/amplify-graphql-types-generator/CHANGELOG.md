@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1-authSubRelease.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.12...amplify-graphql-types-generator@1.4.1-authSubRelease.5) (2019-08-25)
+
+
+### Bug Fixes
+
+* **amplify-graphql-types-generator:** generate valid swift code ([2f25bf7](https://github.com/aws-amplify/amplify-cli/commit/2f25bf7)), closes [#1903](https://github.com/aws-amplify/amplify-cli/issues/1903)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+
+
+
+
+
 ## [1.4.1-authSubRelease.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@1.0.12...amplify-graphql-types-generator@1.4.1-authSubRelease.3) (2019-08-24)
 
 

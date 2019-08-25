@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "1.10.1-authSubRelease.4",
+  "version": "1.10.1-authSubRelease.5",
   "description": "",
   "main": "index.js",
   "private": true,
