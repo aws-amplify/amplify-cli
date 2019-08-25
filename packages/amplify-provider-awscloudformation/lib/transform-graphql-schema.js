@@ -35,9 +35,8 @@ Run \`amplify update api\` and choose
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
-
   if (unAuthModelTypes.length) {
-    context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
+    context.print.warning('\nThe following types do not have \'@auth\' enabled.Consider using @auth with @model');
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth');
   }
@@ -53,9 +52,14 @@ async function transformerVersionCheck(
   updatedResources, usedDirectives,
 ) {
   const versionChangeMessage = 'The default behavoir for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  let transformerConfig;
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
-  const transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  try {
+    transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  } catch (err) {
+    transformerConfig = {};
+  }
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
   if (!transformerConfig.Version && usedDirectives.includes('auth')
   && resources.length > 0) {
@@ -63,12 +67,15 @@ async function transformerVersionCheck(
       context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
-      await inquirer.prompt({
+      const response = await inquirer.prompt({
         name: 'tranformerConfig',
         type: 'confirm',
         message: `${versionChangeMessage} \n Do you wish to continue?`,
         default: false,
       });
+      if (!response.confirm) {
+        process.exit(0);
+      }
     }
   }
   transformerConfig.Version = 3.0;

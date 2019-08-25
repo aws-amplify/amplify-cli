@@ -63,6 +63,7 @@ const ADMIN_GROUP_NAME = 'Admin';
 const DEVS_GROUP_NAME = 'Devs';
 const PARTICIPANT_GROUP_NAME = 'Participant';
 const WATCHER_GROUP_NAME = 'Watcher';
+const INSTRUCTOR_GROUP_NAME = 'Instructor';
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' })
 const customS3Client = new S3Client('us-west-2')
@@ -139,6 +140,17 @@ beforeAll(async () => {
         # Since delete operations are at the object level, this actually adds auth rules to the update mutation.
         notes: String @auth(rules: [{ allow: owner, ownerField: "email", operations: [delete] }])
     }
+
+    type Student @model
+    @auth(rules: [
+        {allow: owner}
+        {allow: groups, groups: ["Instructor"]}
+    ]) {
+        id: String,
+        name: String,
+        bio: String,
+        notes: String @auth(rules: [{allow: owner}])
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
@@ -172,20 +184,21 @@ beforeAll(async () => {
         // Configure Amplify, create users, and sign in.
         configureAmplify(USER_POOL_ID, userPoolClientId)
 
-        const authRes: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD)
-        const authRes2: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD)
-        const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD)
-
+        await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD)
+        await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD)
         await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME)
         await createGroup(USER_POOL_ID, PARTICIPANT_GROUP_NAME)
         await createGroup(USER_POOL_ID, WATCHER_GROUP_NAME)
         await createGroup(USER_POOL_ID, DEVS_GROUP_NAME)
+        await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME)
         await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID)
         await addUserToGroup(PARTICIPANT_GROUP_NAME, USERNAME1, USER_POOL_ID)
         await addUserToGroup(WATCHER_GROUP_NAME, USERNAME1, USER_POOL_ID)
         await addUserToGroup(DEVS_GROUP_NAME, USERNAME2, USER_POOL_ID)
-        const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD)
+        await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID)
+        await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID)
 
+        const authResAfterGroup: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD)
         const idToken = authResAfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_1 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken })
 
@@ -193,6 +206,7 @@ beforeAll(async () => {
         const idToken2 = authRes2AfterGroup.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_2 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken2 })
 
+        const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD)
         const idToken3 = authRes3.getIdToken().getJwtToken()
         GRAPHQL_CLIENT_3 = new GraphQLClient(GRAPHQL_ENDPOINT, { Authorization: idToken3 })
 
@@ -467,4 +481,47 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
         }
     }`, {})
     expect(deleteNotes.data.updateEmployee.notes).toBeNull()
+})
+
+test('Test with auth with subscriptions on default behavior', async () => {
+    const secureNote1 = "secureNote1"
+    const createStudent2 = await GRAPHQL_CLIENT_2.query(`mutation {
+        createStudent(input: {bio: "bio1", name: "student1", notes: "${secureNote1}"}) {
+            id
+            bio
+            name
+            notes
+            owner
+        }
+    }`, {})
+    console.log(createStudent2)
+    expect(createStudent2.data.createStudent.id).toBeDefined()
+    const createStudent1queryID = createStudent2.data.createStudent.id
+    expect(createStudent2.data.createStudent.bio).toEqual('bio1')
+    expect(createStudent2.data.createStudent.notes).toBeNull()
+    // running query as username1 should return value
+    const queryForStudent2 = await GRAPHQL_CLIENT_2.query(`query {
+        getStudent(id: "${createStudent1queryID}") {
+            bio
+            id
+            name
+            notes
+            owner
+        }
+    }`, {})
+    console.log(queryForStudent2)
+    expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1)
+
+    // running query as username1 should return the type though return notes as null
+    const queryAsStudent1 = await GRAPHQL_CLIENT_1.query(`query {
+        getStudent(id: "${createStudent1queryID}") {
+            bio
+            id
+            name
+            notes
+            owner
+        }
+    }`, {})
+    console.log(queryAsStudent1)
+    expect(queryAsStudent1.data.getStudent.notes).toBeNull()
 })

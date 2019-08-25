@@ -35,9 +35,9 @@ interface MutationNameMap {
 }
 
 enum ModelSubscriptionLevel {
-    OFF,
-    PUBLIC,
-    ON,
+    OFF = "OFF",
+    PUBLIC = "PUBLIC",
+    ON = "ON",
 }
 
 interface SubscriptionNameMap {
@@ -275,16 +275,16 @@ export class ModelAuthTransformer extends Transformer {
             const argument = directive.arguments.find(get(arg))
             return argument ? valueFromASTUntyped(argument.value) : dflt
         }
-        // get parent auth rules
         let protectPrivateFields = true;
 
         // get model args
         const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
         const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
-        //  check if subscriptions is explicity disabled
+        //  check if subscriptions is explicity disabled or if it's set to public
         if ('subscriptions' in parentModelArgs &&
-        (!parentModelArgs.subscriptions || parentModelArgs.subscriptions === ModelSubscriptionLevel.PUBLIC)) {
-            protectPrivateFields = false
+        (!parentModelArgs.subscriptions ||
+            parentModelArgs.subscriptions.level === ModelSubscriptionLevel.PUBLIC)) {
+            protectPrivateFields = false;
         }
         if (
             parent.name.value === ctx.getQueryTypeName() ||
@@ -301,8 +301,6 @@ Static group authorization should perform as expected.`
         // Get and validate the auth rules.
         const rules = getArg('rules', []) as AuthRule[]
         this.validateFieldRules(rules)
-        // if the object has auth enabled and the field rules are a superset of the object rules
-        // protect the mutations for the field
         const isOpRule = (op: ModelOperation) => (rule: AuthRule) => {
             if (rule.operations) {
                 const matchesOp = rule.operations.find(o => o === op)
@@ -356,8 +354,8 @@ Static group authorization should perform as expected.`
                 // add operation to queryField
                 this.addOperationToQuery(ctx, typeName, 'query')
                 // add operation check in the field resolver
-                const authResponseExpression = this.resources.operationCheckExpression(fieldName)
-                resolver.Properties.ResponseMappingTemplate = print(authResponseExpression);
+                resolver.Properties.ResponseMappingTemplate = print(
+                    this.resources.operationCheckExpression(fieldName));
             }
             // If a resolver exists, a @connection for example. Prepend it to the req.
             const templateParts = [
@@ -377,7 +375,7 @@ Static group authorization should perform as expected.`
         const listResolverResource = ctx.getResource(listResolverResourceID)
 
         // make set operation experession
-        const operationExpression = this.resources.setOperationExpression('query');
+        const operationExpression = this.resources.setOperationExpression(operation);
 
         // add expression to get
         const getTemplateParts = [
@@ -617,7 +615,6 @@ Static group authorization should perform as expected.`
     }
 
     private validateFieldRules(rules: AuthRule[]) {
-        // check if the rules in the field are a subset of the rules in authrule
         for (const rule of rules) {
             const { queries, mutations } = rule;
             if (queries || mutations) {
@@ -673,7 +670,7 @@ All @auth directives used on field definitions are performed when the field is r
         const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
 
         // Update the existing resolver with the authorization checks.
-        const expressions = [
+        return compoundExpression([
             staticGroupAuthorizationExpression,
             newline(),
             dynamicGroupAuthorizationExpression,
@@ -681,12 +678,7 @@ All @auth directives used on field definitions are performed when the field is r
             ownerAuthorizationExpression,
             newline(),
             throwIfUnauthorizedExpression
-        ]
-        expressions.push(
-
-        )
-        const templateExpression = compoundExpression(expressions);
-        return templateExpression
+        ]);
     }
 
     /**
@@ -1027,7 +1019,8 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     // OnDelete Subscription
-    private protectOnDeleteSubcription(ctx: TransformerContext, rules: AuthRule[], parent: ObjectTypeDefinitionNode, nameOverride?: string) {
+    private protectOnDeleteSubcription(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName(ON_DELETE_FIELD + toUpper(parent.name.value));
         this.protectSubscription(ctx, rules, parent, fieldName)
     }
@@ -1038,7 +1031,7 @@ All @auth directives used on field definitions are performed when the field is r
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(fieldName);
 
-        // creates the none data source
+        // creates the none data source if doesn't exist for the subscription resolvers
         const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource)
         if (!noneDS) {
             ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
@@ -1079,7 +1072,6 @@ All @auth directives used on field definitions are performed when the field is r
                         throwIfUnauthorizedExpression
                     ])
                 ),
-                // Create an OnDeleteSubcription Resolver
                 resolver.Properties.ResponseMappingTemplate
             ];
             resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');

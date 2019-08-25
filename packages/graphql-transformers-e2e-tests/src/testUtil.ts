@@ -1,4 +1,4 @@
-import { 
+import {
     ObjectTypeDefinitionNode, FieldDefinitionNode, DocumentNode,
     InputObjectTypeDefinitionNode, Kind, InputValueDefinitionNode,
     DefinitionNode

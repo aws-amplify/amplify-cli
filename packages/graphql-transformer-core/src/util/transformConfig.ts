@@ -52,8 +52,7 @@ export interface TransformConfig {
     Migration?: TransformMigrationConfig;
 
     /**
-     * Notifying customers on a breaking change if auth is included
-     * This will be used as a flag to let customers know that a breaking change has been made
+     * Keeping a track of transformer version changes
      */
     Version?: number;
 }

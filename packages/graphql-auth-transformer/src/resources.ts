@@ -148,16 +148,13 @@ export class ResourceFactory {
                 }
             }
             if (rule.groupClaim) {
-                if (customClaim) {
-                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
-                }
                 customClaim = rule.groupClaim;
             }
         }
-        // TODO: Enhance cognito:groups to work with non cognito based auth.
-        const cognitoClaim: Expression = block('Static Group Authorization Checks', [
+
+        return block('Static Group Authorization Checks', [
             comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}" }`),
-            this.setUserGroups(),
+            this.setUserGroups(customClaim),
             set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
             // tslint:disable-next-line
             raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
@@ -171,31 +168,6 @@ export class ResourceFactory {
                 ])
             ])
         ])
-
-        const customGroupClaim: Expression = block('Static Group Authorization Checks with Custom Groups', [
-            comment(`Authorization rule: { allow: groups, groups: "${JSON.stringify(allowedGroups)}", groupClaim: "${customClaim}" }`),
-            this.setCustomClaim(customClaim),
-            set(ref('allowedGroups'), list(allowedGroups.map(s => str(s)))),
-            raw(`#set($${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable} = $util.defaultIfNull(
-                $${ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable}, false))`),
-            forEach(ref('userGroup'), ref('userGroups'), [
-                iff(
-                    raw(`$util.isList($userGroups)`),
-                    iff(
-                        ref(`$ctx.args.input.userGroups.contains($userGroup)`),
-                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
-                    ),
-                ),
-                iff(
-                    raw(`$util.isString($userGroups)`),
-                    iff(
-                        raw(`$userGroups == $userGroup`),
-                        set(ref(ResourceConstants.SNIPPETS.IsStaticGroupAuthorizedVariable), raw('true'))
-                    ),
-                )
-            ])
-        ])
-        return customClaim ? customGroupClaim : cognitoClaim;
     }
 
 
@@ -292,7 +264,7 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
 
         // adds group claim
         return compoundExpression([
-            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
+            this.setUserGroups(customClaim),
             ...groupAuthorizationExpressions,
         ])
     }
@@ -523,9 +495,6 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         let customClaim: string;
         for (const rule of rules) {
             if (rule.groupClaim) {
-                if (customClaim) {
-                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
-                }
                 customClaim = rule.groupClaim;
             }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
@@ -544,7 +513,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         }
         // check for groupclaim here
         return block('Dynamic group authorization checks', [
-            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
+            this.setUserGroups(customClaim),
             set(ref('groupAuthExpressions'), list([])),
             set(ref('groupAuthExpressionValues'), obj({})),
             set(ref('groupAuthExpressionNames'), obj({})),
@@ -630,9 +599,6 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         let customClaim: string;
         for (const rule of rules) {
             if (rule.groupClaim) {
-                if (customClaim) {
-                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
-                }
                 customClaim = rule.groupClaim;
             }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
@@ -657,7 +623,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         }
         // check for group claim here
         return block('Dynamic Group Authorization Checks', [
-            customClaim ? this.setCustomClaim(customClaim) : this.setUserGroups(),
+            this.setUserGroups(customClaim),
             set(ref(variableToSet), defaultValue),
             ...groupAuthorizationExpressions,
         ])
@@ -825,12 +791,17 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         )
     }
 
-    public setUserGroups(): SetNode {
+    public setUserGroups(customGroup?: string): Expression {
+        if (customGroup) {
+            return block( `Using groupClaim: ${customGroup} as source for userGroup`, [
+                set(ref('userGroup'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${customGroup}"), [])`)),
+                iff(
+                    raw('$util.isString($userGroup)'),
+                    set(ref('userGroup'), raw('[$userGroup]')),
+                ),
+            ]);
+        }
         return set(ref('userGroups'), raw('$util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), [])'));
-    }
-
-    public setCustomClaim(customGroups: string): SetNode {
-        return set(ref('userGroups'), raw(`$util.defaultIfNull($ctx.identity.claims.get("${customGroups}"), [])`));
     }
 
     public generateSubscriptionResolver(fieldName: string, subscriptionTypeName: string = 'Subscription') {

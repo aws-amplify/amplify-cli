@@ -29,9 +29,9 @@ interface MutationNameMap {
 }
 
 enum ModelSubscriptionLevel {
-    OFF,
-    PUBLIC,
-    ON
+    OFF = "OFF",
+    PUBLIC = "PUBLIC",
+    ON = "ON",
 }
 
 interface SubscriptionNameMap {
@@ -131,12 +131,6 @@ export class DynamoDBModelTransformer extends Transformer {
                 }
             }
         )
-
-        // check if auth if enabled
-        // const authDirective = def.directives.find((dir) => dir.name.value === 'auth')
-        // if (!authDirective) {
-        //     console.warn(`@auth not enabled for ${def.name.value} - Warned that subscriptons are not enabled`)
-        // }
 
         // Create the dynamodb table to hold the @model type
         // TODO: Handle types with more than a single "id" hash key
