@@ -43,9 +43,7 @@ function warnOnAuth(context, map) {
 }
 
 /**
- * @TODO change authWarning to version number to compare
- *  This version number will be included in a map to keep
- *  a track of changes
+ * @TODO Include a map of versions to keep track
  */
 async function transformerVersionCheck(
   context, resourceDir, cloudBackendDirectory,
