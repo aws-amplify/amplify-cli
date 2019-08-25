@@ -148,6 +148,9 @@ export class ResourceFactory {
                 }
             }
             if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
                 customClaim = rule.groupClaim;
             }
         }
@@ -495,6 +498,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         let customClaim: string;
         for (const rule of rules) {
             if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
                 customClaim = rule.groupClaim;
             }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
@@ -599,6 +605,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         let customClaim: string;
         for (const rule of rules) {
             if (rule.groupClaim) {
+                if (customClaim) {
+                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                }
                 customClaim = rule.groupClaim;
             }
             const groupsAttribute = rule.groupsField || DEFAULT_GROUPS_FIELD
@@ -817,7 +826,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                     }`)
             ),
             ResponseMappingTemplate: print(
-                raw(`{ "ok": true }`)
+                raw(`$util.toJson(null)`)
             )
         });
     }
