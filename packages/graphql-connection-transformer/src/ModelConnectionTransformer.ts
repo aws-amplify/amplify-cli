@@ -23,24 +23,13 @@ import {
 import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common'
 import { updateCreateInputWithConnectionField, updateUpdateInputWithConnectionField } from './definitions';
 import Resource from 'cloudform-types/types/resource';
+import { KeySchema, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 
 const CONNECTION_STACK_NAME = 'ConnectionStack'
-
-interface KeySchema {
-    AttributeName: string;
-    KeyType: string;
-}
 
 interface RelationArguments {
     keyName?: string;
     fields: string[];
-}
-
-interface Index {
-    IndexName: string;
-    KeySchema: KeySchema[];
-    Projection?: any;
-    ProvisionedThroughput?: any;
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
@@ -79,7 +68,7 @@ function validateKeyFieldNewConnection(field: FieldDefinitionNode): void {
     if (!isAList && isNonNull) {
         return;
     }
-    throw new InvalidDirectiveError(`All fields used for a connection cannot be lists and must be of Non-Null types.`)
+    throw new InvalidDirectiveError(`All fields provided to an @connection must be non-null scalar fields.`)
 }
 
 /**
@@ -114,7 +103,7 @@ function checkFieldsAgainstIndex(parentFields: ReadonlyArray<FieldDefinitionNode
         }
 
     } else if (numFields > 2) {
-        const tableSortFields = keySchema[1].AttributeName.split(ModelResourceIDs.ModelCompositeKeySeparator());
+        const tableSortFields = String(keySchema[1].AttributeName).split(ModelResourceIDs.ModelCompositeKeySeparator());
         const tableSortKeyTypes = tableSortFields.map(name => relatedTypeFields.find(f => f.name.value === name).type);
         const querySortFields = inputFieldNames.slice(1);
         const querySortKeyTypes = querySortFields.map(name => parentFields.find(f => f.name.value === name).type);
@@ -195,6 +184,8 @@ export class ModelConnectionTransformer extends Transformer {
             throw new InvalidDirectiveError(`Object type ${relatedTypeName} must be annotated with @model.`)
         }
 
+        // Checks if "fields" argument is provided which indicates use of the new parameterization
+        // hence dive straight to new logic and return.
         if (getDirectiveArgument(directive)("fields")) {
             this.newParameterization(parent, field, directive, ctx)
             return
@@ -477,14 +468,11 @@ export class ModelConnectionTransformer extends Transformer {
                 validateKeyFieldNewConnection(inputFields[fieldsArrayLength]);
             })
 
-        let index : Index = undefined;
+        let index : GlobalSecondaryIndex = undefined;
         // If no index is provided use the default index for the related model type and
         // check that the query fields match the PK/SK of the table. Else confirm that index exists.
-        if (!args.keyName || args.keyName === 'default' || args.keyName === 'Default') {
-
-            args.keyName = 'default';
+        if (!args.keyName) {
             checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, tableResource.Properties.KeySchema);
-
         } else {
             index = (tableResource.Properties.GlobalSecondaryIndexes ?
                 tableResource.Properties.GlobalSecondaryIndexes.find(GSI => GSI.IndexName === args.keyName) : null)
@@ -495,12 +483,12 @@ export class ModelConnectionTransformer extends Transformer {
             }
 
             // Confirm that types of query fields match types of PK/SK of the index being queried.
-            checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, index.KeySchema);
+            checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, <KeySchema[]>index.KeySchema);
         }
 
         // If the related type is not a list, the index has to be the default index and the fields provided must match the PK/SK of the index.
         if (!isListType(field.type)) {
-            if (args.keyName !== 'default') {
+            if (args.keyName) {
                 throw new InvalidDirectiveError('Connection is to a single object but the keyName provided does not reference the default table.')
             }
 
@@ -525,7 +513,7 @@ export class ModelConnectionTransformer extends Transformer {
                 relatedType,
                 args.fields,
                 keySchema,
-                index ? index.IndexName : null
+                index ? String(index.IndexName) : undefined
             )
 
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
@@ -535,16 +523,16 @@ export class ModelConnectionTransformer extends Transformer {
                 sortKeyInfo = undefined;
             } else {
                 const compositeSortKeyType = 'Composite';
-                const compositeSortKeyName = keySchema[1] ? this.resources.makeCompositeSortKeyName(keySchema[1].AttributeName) : undefined;
+                const compositeSortKeyName = keySchema[1] ? this.resources.makeCompositeSortKeyName(String(keySchema[1].AttributeName)) : undefined;
                 const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName)
 
                 // If a sort key field is found then add a simple sort key, else add a composite sort key.
                 if (sortKeyField) {
                     sortKeyInfo = keySchema[1] ?
-                                        { fieldName : keySchema[1].AttributeName,
+                                        { fieldName : String(keySchema[1].AttributeName),
                                           typeName : getBaseType(sortKeyField.type),
                                           model: relatedTypeName,
-                                          keyName: index ? index.IndexName : 'Primary'
+                                          keyName: index ? String(index.IndexName) : 'Primary'
                                         } :
                                         undefined;
                 } else {
@@ -552,7 +540,7 @@ export class ModelConnectionTransformer extends Transformer {
                                         { fieldName : compositeSortKeyName,
                                           typeName : compositeSortKeyType,
                                           model: relatedTypeName,
-                                          keyName: index ? index.IndexName : 'Primary'
+                                          keyName: index ? String(index.IndexName) : 'Primary'
                                         } :
                                         undefined;
                 }

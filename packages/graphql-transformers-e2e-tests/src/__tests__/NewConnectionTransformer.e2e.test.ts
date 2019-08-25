@@ -59,15 +59,39 @@ type Parent
 
 type User
 	@model
-	@key(fields: ["id", "name"])
-	@key(name: "compositeSK", fields: ["id", "name", "surname"])
+	@key(fields: ["id", "name", "surname"])
 {
 	id: ID!
 	name: String!
     surname: String!
 
+    friendships: [Friendship] @connection(keyName: "byUser", fields: ["id"])
+}
+
+type Friendship
+    @model
+    @key(name: "byUser", fields: ["userID", "friendID"])
+{
+    id: ID!
+    userID: ID!
+    friendID: ID!
+
+    friend: [User] @connection(fields: ["friendID"])
+}
+
+type UserModel
+    @model
+    @key(fields: ["id", "rollNumber"])
+    @key(name: "composite", fields: ["id", "name", "surname"])
+{
+    id: ID!
+    rollNumber: Int!
+	name: String!
+    surname: String!
+
     authorPosts: [PostAuthor] @connection(keyName: "byAuthor", fields: ["id"])
 }
+
 
 type PostModel @model {
 	id: ID!
@@ -76,7 +100,8 @@ type PostModel @model {
 	authorSurname: String!
 	postContents: [String]
 
-	authors: [User] @connection(keyName: "compositeSK", fields: ["authorID", "authorName", "authorSurname"])
+    authors: [UserModel] @connection(keyName: "composite", fields: ["authorID", "authorName", "authorSurname"])
+    singleAuthor: User @connection(fields: ["authorID", "authorName", "authorSurname"])
 }
 
 type Post @model {
@@ -84,7 +109,7 @@ type Post @model {
 	authorID: ID!
 	postContents: [String]
 
-	authors: [User] @connection(keyName: "compositeSK", fields: ["authorID"])
+	authors: [User] @connection(fields: ["authorID"])
 }
 
 type PostAuthor
@@ -242,9 +267,9 @@ test('Test Child.parents query', async () => {
     expect(items[0].childName).toEqual(createParent1.data.createParent.childName)
 })
 
-test('Test PostModel.authors query with composite sortkey', async () => {
+test('Test PostModel.singleAuthor GetItem with composite sortkey', async () => {
     const createUser = await GRAPHQL_CLIENT.query(`mutation {
-        createUser(input: { id: "123" name: "Bob", surname: "Rob" }) {
+        createUser(input: { id: "123", name: "Bob", surname: "Rob" }) {
           id
           name
           surname
@@ -258,10 +283,7 @@ test('Test PostModel.authors query with composite sortkey', async () => {
         createPostModel(input: { authorID: "${createUser.data.createUser.id}",
                                  authorName: "${createUser.data.createUser.name}",
                                  authorSurname: "${createUser.data.createUser.surname}",
-                                 postContents: "potato"
-                                }
-                        )
-        {
+                                 postContents: "potato" }) {
           id
           authorID
           authorName
@@ -276,9 +298,69 @@ test('Test PostModel.authors query with composite sortkey', async () => {
     const queryPostModel = await GRAPHQL_CLIENT.query(`query {
         getPostModel(id: "${createPostModel.data.createPostModel.id}") {
             id
+            singleAuthor {
+                id
+                name
+                surname
+            }
+        }
+    }`, {})
+    expect(queryPostModel.data.getPostModel).toBeDefined()
+    const author = queryPostModel.data.getPostModel.singleAuthor
+    expect(author.id).toEqual(createUser.data.createUser.id)
+    expect(author.name).toEqual(createUser.data.createUser.name)
+    expect(author.surname).toEqual(createUser.data.createUser.surname)
+
+})
+
+test('Test PostModel.authors query with composite sortkey', async () => {
+    const createUser = await GRAPHQL_CLIENT.query(`mutation {
+        createUserModel(input: { id: "123", rollNumber: 1, name: "Bob", surname: "Rob" }) {
+          id
+          rollNumber
+          name
+          surname
+        }
+      }`, {})
+    expect(createUser.data.createUserModel.id).toBeDefined()
+    expect(createUser.data.createUserModel.name).toEqual('Bob')
+    expect(createUser.data.createUserModel.rollNumber).toEqual(1)
+    expect(createUser.data.createUserModel.surname).toEqual('Rob')
+    const createUser2 = await GRAPHQL_CLIENT.query(`mutation {
+        createUserModel(input: { id: "123", rollNumber: 2, name: "Bob", surname: "Rob" }) {
+          id
+          rollNumber
+          name
+          surname
+        }
+      }`, {})
+    expect(createUser2.data.createUserModel.id).toBeDefined()
+    expect(createUser2.data.createUserModel.name).toEqual('Bob')
+    expect(createUser2.data.createUserModel.rollNumber).toEqual(2)
+    expect(createUser2.data.createUserModel.surname).toEqual('Rob')
+    const createPostModel = await GRAPHQL_CLIENT.query(`mutation {
+        createPostModel(input: { authorID: "${createUser.data.createUserModel.id}",
+                                 authorName: "${createUser.data.createUserModel.name}",
+                                 authorSurname: "${createUser.data.createUserModel.surname}",
+                                 postContents: "potato" }) {
+          id
+          authorID
+          authorName
+          authorSurname
+          postContents
+        }
+      }`, {})
+    expect(createPostModel.data.createPostModel.id).toBeDefined()
+    expect(createPostModel.data.createPostModel.authorID).toEqual(createUser.data.createUserModel.id)
+    expect(createPostModel.data.createPostModel.authorName).toEqual(createUser.data.createUserModel.name)
+    expect(createPostModel.data.createPostModel.authorSurname).toEqual(createUser.data.createUserModel.surname)
+    const queryPostModel = await GRAPHQL_CLIENT.query(`query {
+        getPostModel(id: "${createPostModel.data.createPostModel.id}") {
+            id
             authors {
                 items {
                     id
+                    rollNumber
                     name
                     surname
                 }
@@ -287,10 +369,20 @@ test('Test PostModel.authors query with composite sortkey', async () => {
     }`, {})
     expect(queryPostModel.data.getPostModel).toBeDefined()
     const items = queryPostModel.data.getPostModel.authors.items
-    expect(items.length).toEqual(1)
-    expect(items[0].id).toEqual(createUser.data.createUser.id)
-    expect(items[0].name).toEqual(createUser.data.createUser.name)
-    expect(items[0].surname).toEqual(createUser.data.createUser.surname)
+    expect(items.length).toEqual(2)
+    expect(items[0].id).toEqual(createUser.data.createUserModel.id)
+    try {
+        expect(items[0].rollNumber).toEqual(createUser.data.createUserModel.rollNumber)
+        expect(items[1].rollNumber).toEqual(createUser2.data.createUserModel.rollNumber)
+    } catch (error) {
+        expect(items[1].rollNumber).toEqual(createUser.data.createUserModel.rollNumber)
+        expect(items[0].rollNumber).toEqual(createUser2.data.createUserModel.rollNumber)
+    }
+    expect(items[0].name).toEqual(createUser.data.createUserModel.name)
+    expect(items[0].surname).toEqual(createUser.data.createUserModel.surname)
+    expect(items[1].id).toEqual(createUser2.data.createUserModel.id)
+    expect(items[1].surname).toEqual(createUser2.data.createUserModel.surname)
+    expect(items[1].name).toEqual(createUser2.data.createUserModel.name)
 
 })
 
@@ -347,7 +439,7 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
     expect(createPostAuthor.data.createPostAuthor.authorID).toEqual("123")
     expect(createPostAuthor.data.createPostAuthor.postID).toEqual("321")
     const queryUser = await GRAPHQL_CLIENT.query(`query {
-        getUser(id: "123", name: "Bob") {
+        getUserModel(id: "123", rollNumber: 1) {
             id
             authorPosts {
                 items {
@@ -359,9 +451,62 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
             }
         }
     }`, {})
-    expect(queryUser.data.getUser).toBeDefined()
-    const items = queryUser.data.getUser.authorPosts.items
+    expect(queryUser.data.getUserModel).toBeDefined()
+    const items = queryUser.data.getUserModel.authorPosts.items
     expect(items.length).toEqual(1)
     expect(items[0].post.id).toEqual("321")
     expect(items[0].post.postContents).toEqual(["potato"])
+})
+
+test('Test User.friendship.friend query (reflexive has many).', async () => {
+    const createUser = await GRAPHQL_CLIENT.query(`mutation {
+        createUser(input: { id: "12", name: "Bobby", surname: "Rob" }) {
+          id
+          name
+          surname
+        }
+      }`, {})
+    expect(createUser.data.createUser.id).toBeDefined()
+    expect(createUser.data.createUser.name).toEqual('Bobby')
+    expect(createUser.data.createUser.surname).toEqual('Rob')
+    const createUser1 = await GRAPHQL_CLIENT.query(`mutation {
+        createUser(input: { id: "13", name: "Bob", surname: "Rob" }) {
+          id
+          name
+          surname
+        }
+      }`, {})
+    expect(createUser1.data.createUser.id).toBeDefined()
+    expect(createUser1.data.createUser.name).toEqual('Bob')
+    expect(createUser1.data.createUser.surname).toEqual('Rob')
+    const createFriendship = await GRAPHQL_CLIENT.query(`mutation {
+        createFriendship(input: { id: "1", userID: 13, friendID: 12 }) {
+          id
+          userID
+          friendID
+        }
+      }`, {})
+    expect(createFriendship.data.createFriendship.id).toBeDefined()
+    expect(createFriendship.data.createFriendship.userID).toEqual('13')
+    expect(createFriendship.data.createFriendship.friendID).toEqual('12')
+    const queryUser = await GRAPHQL_CLIENT.query(`query {
+        getUser(id: "13", name: "Bob", surname: "Rob") {
+            id
+            friendships {
+                items {
+                    friend {
+                        items {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }`, {})
+    expect(queryUser.data.getUser).toBeDefined()
+    const items = queryUser.data.getUser.friendships.items
+    expect(items.length).toEqual(1)
+    expect(items[0].friend.items[0].id).toEqual("12")
+    expect(items[0].friend.items[0].name).toEqual("Bobby")
 })

@@ -217,17 +217,17 @@ export class ResourceFactory {
                 ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[0]}, "${NONE_VALUE}"))`)
             })
 
-        // Add sort key if there is one.
+        // Add a composite sort key or simple sort key if there is one.
         if (connectionAttributes.length > 2) {
             const rangeKeyFields = connectionAttributes.slice(1);
             const sortKeyName = keySchema[1].AttributeName as string
             const condensedSortKeyValue = this.condenseRangeKey(
-                rangeKeyFields.map(keyField => `\${ctx.args.${keyField}}`)
+                rangeKeyFields.map(keyField => `\${ctx.source.${keyField}}`)
             )
 
             keyObj.attributes.push([
                 sortKeyName,
-                ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${condensedSortKeyValue}, "${NONE_VALUE}"))`)
+                ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank("${condensedSortKeyValue}", "${NONE_VALUE}"))`)
             ]);
         } else if (connectionAttributes[1]) {
             const sortKeyName = keySchema[1].AttributeName as string
@@ -294,7 +294,7 @@ export class ResourceFactory {
             }
         }
 
-        let queryArguments : { query, filter, scanIndexForward, limit, nextToken, index? } = {
+        let queryArguments = {
             query: raw('$util.toJson($query)'),
             scanIndexForward: ifElse(
                 ref('context.args.sortDirection'),
@@ -315,13 +315,16 @@ export class ResourceFactory {
                 ref('context.args.nextToken'),
                 str('$context.args.nextToken'),
                 nul()
-            )
+            ),
+            index: indexName ? str(indexName) : undefined
         }
 
-        if (indexName) {
-            const indexArg = "index";
-            queryArguments[indexArg] = str(indexName);
+        if (!indexName) {
+            const indexArg = 'index'
+            delete queryArguments[indexArg];
         }
+
+        const queryObj = DynamoDBMappingTemplate.query(queryArguments);
 
         return new Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -331,7 +334,7 @@ export class ResourceFactory {
             RequestMappingTemplate: print(
                 compoundExpression([
                     ...setup,
-                    DynamoDBMappingTemplate.query(queryArguments)
+                    queryObj
                 ])
             ),
             ResponseMappingTemplate: print(
