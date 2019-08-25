@@ -49,14 +49,15 @@ async function transformerVersionCheck(
   context, resourceDir, cloudBackendDirectory,
   updatedResources, usedDirectives,
 ) {
-  const versionChangeMessage = 'The default behavoir for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
   let transformerConfig;
   // this is where we check if there is a prev version of the transformer being used
   // by using the transformer.conf.json file
   try {
     transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
   } catch (err) {
-    transformerConfig = {};
+    // check local resource if the question has been answered before
+    transformerConfig = await readTransformerConfiguration(resourceDir);
   }
   const resources = updatedResources.filter(resource => resource.service === 'AppSync');
   if (!transformerConfig.Version && usedDirectives.includes('auth')
@@ -66,12 +67,12 @@ async function transformerVersionCheck(
       context.print.warning(`\n${versionChangeMessage}\n`);
     } else {
       const response = await inquirer.prompt({
-        name: 'tranformerConfig',
+        name: 'transformerConfig',
         type: 'confirm',
         message: `${versionChangeMessage} \n Do you wish to continue?`,
         default: false,
       });
-      if (!response.confirm) {
+      if (!response.transformerConfig) {
         process.exit(0);
       }
     }

@@ -316,7 +316,7 @@ Static group authorization should perform as expected.`
         const isDeleteRule = isOpRule('delete');
         // The field handler adds the read rule on the object
         const readRules = rules.filter((rule: AuthRule) => isReadRule(rule))
-        this.protectField(ctx, parent.name.value, definition.name.value,
+        this.protectField(ctx, parent.name.value, definition,
             readRules, protectPrivateFields)
 
         // Protect mutations when objects including this field are trying to be created.
@@ -334,9 +334,9 @@ Static group authorization should perform as expected.`
     }
 
     private protectField(ctx: TransformerContext, typeName: string,
-        fieldName: string, rules: AuthRule[], protectPrivateFields?: boolean) {
+        field: FieldDefinitionNode, rules: AuthRule[], protectPrivateFields?: boolean) {
         if (rules && rules.length) {
-            const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+            const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, field.name.value);
             // If the resolver exists (e.g. @connection use it else make a blank one against None)
             let resolver = ctx.getResource(resolverResourceId)
             if (!resolver) {
@@ -347,15 +347,19 @@ Static group authorization should perform as expected.`
                 }
                 // We also need to add a stack mapping so that this resolver is added to the model stack.
                 ctx.mapResourceToStack(typeName, resolverResourceId)
-                resolver = this.resources.blankResolver(typeName, fieldName)
+                resolver = this.resources.blankResolver(typeName, field.name.value)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
             if (protectPrivateFields) {
+                if (field.type.kind === Kind.NON_NULL_TYPE) {
+                    throw new InvalidDirectiveError(`Per-field auth on a required type is not supported.
+Either make the type optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to OFF or PUBLIC)`)
+                }
                 // add operation to queryField
                 this.addOperationToQuery(ctx, typeName, 'query')
                 // add operation check in the field resolver
                 resolver.Properties.ResponseMappingTemplate = print(
-                    this.resources.operationCheckExpression(fieldName));
+                    this.resources.operationCheckExpression(field.name.value));
             }
             // If a resolver exists, a @connection for example. Prepend it to the req.
             const templateParts = [
