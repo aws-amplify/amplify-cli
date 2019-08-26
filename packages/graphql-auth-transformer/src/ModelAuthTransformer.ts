@@ -37,7 +37,6 @@ interface MutationNameMap {
 enum ModelSubscriptionLevel {
     OFF = "OFF",
     PUBLIC = "PUBLIC",
-    ON = "ON",
 }
 
 interface SubscriptionNameMap {
@@ -235,7 +234,7 @@ export class ModelAuthTransformer extends Transformer {
         if ("subscriptions" in directiveArguments) {
             const subscription = directiveArguments.subscriptions;
             // check that subscription is not set to off
-            if (subscription && subscription.level !== ModelSubscriptionLevel.PUBLIC) {
+            if (subscription && !subscription.level) {
                 if (subscription.onCreate) {
                     subscription.onCreate.forEach( (fieldName: string) => {
                         this.protectOnCreateSubcription(ctx, operationRules.create, def, fieldName);
@@ -251,7 +250,7 @@ export class ModelAuthTransformer extends Transformer {
                         this.protectOnDeleteSubcription(ctx, operationRules.delete, def, fieldName);
                     })
                 }
-            }
+            } else { return; }
         } else {
             this.protectOnCreateSubcription(ctx, operationRules.create, def);
             this.protectOnUpdateSubcription(ctx, operationRules.update, def);
@@ -283,7 +282,7 @@ export class ModelAuthTransformer extends Transformer {
         //  check if subscriptions is explicity disabled or if it's set to public
         if ('subscriptions' in parentModelArgs &&
         (!parentModelArgs.subscriptions ||
-            parentModelArgs.subscriptions.level === ModelSubscriptionLevel.PUBLIC)) {
+            parentModelArgs.subscriptions.level)) {
             protectPrivateFields = false;
         }
         if (
@@ -352,11 +351,10 @@ Static group authorization should perform as expected.`
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
             if (protectPrivateFields) {
                 if (field.type.kind === Kind.NON_NULL_TYPE) {
-                    throw new InvalidDirectiveError(`Per-field auth on a required type is not supported.
-Either make the type optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to OFF or PUBLIC)`)
+                    throw new InvalidDirectiveError(`Per-field auth on a required type is not supported with subscriptions.`)
                 }
                 // add operation to queryField
-                this.addOperationToQuery(ctx, typeName, 'query')
+                this.protectMutations(ctx, typeName, 'mutation')
                 // add operation check in the field resolver
                 resolver.Properties.ResponseMappingTemplate = print(
                     this.resources.operationCheckExpression(field.name.value));
@@ -371,33 +369,27 @@ Either make the type optional, set auth on the object and not the field, or disa
         }
     }
 
-    private addOperationToQuery(ctx: TransformerContext, typeName: string, operation: string) {
+    private protectMutations(ctx: TransformerContext, typeName: string, operation: string) {
         // retrieve get and list resources
-        const getResolverResourceID = ResolverResourceIDs.DynamoDBGetResolverResourceID(typeName);
-        const listResolverResourceID = ResolverResourceIDs.DynamoDBListResolverResourceID(typeName);
-        const getResolverResource = ctx.getResource(getResolverResourceID)
-        const listResolverResource = ctx.getResource(listResolverResourceID)
-
+        const createResolverResourceID = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+        const updateResolverResourceID = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
+        const deleteResolverResourceID = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
+        const createResolverResource = ctx.getResource(createResolverResourceID)
+        const updateResolverResource = ctx.getResource(updateResolverResourceID)
+        const deleteResolverResource = ctx.getResource(deleteResolverResourceID)
+        const resourceIDs = [createResolverResourceID, updateResolverResourceID, deleteResolverResourceID]
+        const operations = [createResolverResource, updateResolverResource, deleteResolverResource];
         // make set operation experession
         const operationExpression = this.resources.setOperationExpression(operation);
 
-        // add expression to get
-        const getTemplateParts = [
-            print(operationExpression),
-            getResolverResource.Properties.ResponseMappingTemplate,
-        ]
-        getResolverResource.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
-
-        // add expression to list
-        const listTemplateParts = [
-            print(operationExpression),
-            listResolverResource.Properties.ResponseMappingTemplate,
-        ]
-        listResolverResource.Properties.ResponseMappingTemplate = listTemplateParts.join('\n\n')
-
-        // assign the respective resources in the ctx
-        ctx.setResource(getResolverResourceID, getResolverResource)
-        ctx.setResource(listResolverResourceID, listResolverResource)
+        operations.forEach( (operation, index) => {
+            const getTemplateParts = [
+                print(operationExpression),
+                operation.Properties.ResponseMappingTemplate,
+            ];
+            operation.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
+            ctx.setResource(resourceIDs[index], operation)
+        })
     }
 
     private protectUpdateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {

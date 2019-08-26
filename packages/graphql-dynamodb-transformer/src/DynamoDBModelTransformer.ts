@@ -31,7 +31,6 @@ interface MutationNameMap {
 enum ModelSubscriptionLevel {
     OFF = "OFF",
     PUBLIC = "PUBLIC",
-    ON = "ON",
 }
 
 interface SubscriptionNameMap {
@@ -390,8 +389,7 @@ export class DynamoDBModelTransformer extends Transformer {
         } else if (subscriptionsArgument &&
              subscriptionsArgument.level === ModelSubscriptionLevel.OFF) {
             return;
-        } else if (subscriptionsArgument &&
-            subscriptionsArgument.level !== ModelSubscriptionLevel.PUBLIC) {
+        } else if (subscriptionsArgument) {
             // Add the custom subscriptions
             const subscriptionToMutationsMap: { [subField: string]: string[] } = {}
             const onCreate = subscriptionsArgument.onCreate || []

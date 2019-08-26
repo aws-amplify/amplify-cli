@@ -835,9 +835,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         return block('Checking for allowed operations which can return this field', [
             set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
             ifElse(
-                raw('$operation == "query"'),
+                raw('$operation == "mutation"'),
+                ref('util.toJson(null)'),
                 ref(`util.toJson($context.source.${field})`),
-                ref('util.toJson(null)')
             )
         ])
     }
