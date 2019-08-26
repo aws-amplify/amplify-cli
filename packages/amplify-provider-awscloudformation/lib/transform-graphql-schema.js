@@ -77,7 +77,7 @@ async function transformerVersionCheck(
       }
     }
   }
-  transformerConfig.Version = 3.0;
+  transformerConfig.Version = 4.0;
   await writeTransformerConfiguration(resourceDir, transformerConfig);
 }
 
