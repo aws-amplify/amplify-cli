@@ -2632,13 +2632,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/nexpect@0.4.30":
-  version "0.4.30"
-  resolved "https://registry.yarnpkg.com/@types/nexpect/-/nexpect-0.4.30.tgz#08919064509d78b2b75e7150b07d718597bff9ab"
-  integrity sha512-7JEP3RT7lMjhPSFhHBkBpikReNCBdU8TaYCLLeH8Y74/Prm1hScLZIhvIFo6CBZV7fEiAw35E+cKQVOvbBZvUw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/node-fetch@1.6.7":
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-1.6.7.tgz#521078e8f0c69a158e5022005aca92d2620f6d57"
@@ -14333,6 +14326,12 @@ netmask@^1.0.6:
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
   integrity sha1-ICl+idhvb2QA8lDZ9Pa0wZRfzTU=
 
+<<<<<<< HEAD
+=======
+"nexpect@file:./packages/amplify-e2e-tests/src/utils/nexpect-modified":
+  version "0.5.0"
+
+>>>>>>> master
 next-tick@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
