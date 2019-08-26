@@ -351,7 +351,8 @@ Static group authorization should perform as expected.`
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
             if (protectPrivateFields) {
                 if (field.type.kind === Kind.NON_NULL_TYPE) {
-                    throw new InvalidDirectiveError(`Per-field auth on a required type is not supported with subscriptions.`)
+                    throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
+Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to OFF or PUBLIC)\n`)
                 }
                 // add operation to queryField
                 this.protectMutations(ctx, typeName, 'mutation')
