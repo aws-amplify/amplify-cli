@@ -347,11 +347,11 @@ export class DynamoDBModelTransformer extends Transformer {
      * }
      *  Subscription Levels
      *   subscriptions.level === OFF || subscriptions === null
-     *      Will not create subscription resolvers
+     *      Will not create subscription operations
      *   subcriptions.level === PUBLIC
-     *      Will continue as is creating subscription resolvers
+     *      Will continue as is creating subscription operations
      *   subscriptions.level === ON || subscriptions === undefined
-     *      If auth is enabled it will enabled protection on subscription operations
+     *      If auth is enabled it will enabled protection on subscription operations and resolvers
      */
     private createSubscriptions = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const typeName = def.name.value
