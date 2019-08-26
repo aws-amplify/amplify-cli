@@ -262,10 +262,6 @@ export function cantHaveMoreThan200Resources(diffs: Diff[], currentBuild: Diffab
     }
 }
 
-export function authSubscriptions(diff: Diff[]) {
-    // check if the subscription
-}
-
 // Takes a list of object and returns an object keyed by the given attribute.
 // This allows us to make more accurate diffs.
 function keyBy(objects: any[], attr: string) {

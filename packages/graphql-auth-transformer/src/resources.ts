@@ -149,7 +149,8 @@ export class ResourceFactory {
             }
             if (rule.groupClaim) {
                 if (customClaim) {
-                    throw new InvalidDirectiveError('@auth directive currently only supports one source for groupClaim!')
+                    throw new InvalidDirectiveError(`@auth directive currently only supports one source for groupClaim.
+  - Identified '${customClaim}' and '${rule.groupClaim}'`)
                 }
                 customClaim = rule.groupClaim;
             }
@@ -831,11 +832,11 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         });
     }
 
-    public operationCheckExpression(field: string) {
+    public operationCheckExpression(operation: string, field: string) {
         return block('Checking for allowed operations which can return this field', [
             set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
             ifElse(
-                raw('$operation == "mutation"'),
+                raw(`$operation == "${operation}"`),
                 ref('util.toJson(null)'),
                 ref(`util.toJson($context.source.${field})`),
             )

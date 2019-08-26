@@ -7,9 +7,9 @@ export interface AuthRule {
     identityField?: string;
     identityClaim?: string;
     groupsField?: string;
-    groups?: string[];
-    operations?: ModelOperation[]
-    queries?: ModelQuery[]
-    mutations?: ModelMutation[]
     groupClaim?: string;
+    groups?: string[];
+    operations?: ModelOperation[];
+    queries?: ModelQuery[];
+    mutations?: ModelMutation[];
 }

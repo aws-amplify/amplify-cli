@@ -36,7 +36,7 @@ Run \`amplify update api\` and choose
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
   if (unAuthModelTypes.length) {
-    context.print.warning('\nThe following types do not have \'@auth\' enabled.Consider using @auth with @model');
+    context.print.warning('The following types do not have \'@auth\' enabled. Consider using @auth with @model');
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
     context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth');
   }

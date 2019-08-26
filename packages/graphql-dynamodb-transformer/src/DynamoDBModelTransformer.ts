@@ -15,36 +15,7 @@ import {
 } from 'graphql-transformer-common'
 import { ResolverResourceIDs, ModelResourceIDs, makeConnectionField } from 'graphql-transformer-common'
 import { DeletionPolicy } from 'cloudform-types';
-
-interface QueryNameMap {
-    get?: string;
-    list?: string;
-    query?: string;
-}
-
-interface MutationNameMap {
-    create?: string;
-    update?: string;
-    delete?: string;
-}
-
-enum ModelSubscriptionLevel {
-    OFF = "OFF",
-    PUBLIC = "PUBLIC",
-}
-
-interface SubscriptionNameMap {
-    onCreate?: string[];
-    onUpdate?: string[];
-    onDelete?: string[];
-    level?: ModelSubscriptionLevel;
-}
-
-interface ModelDirectiveArgs {
-    queries?: QueryNameMap,
-    mutations?: MutationNameMap,
-    subscriptions?: SubscriptionNameMap,
-}
+import { ModelDirectiveArgs } from './ModelDirectiveArgs';
 
 export interface DynamoDBModelTransformerOptions {
     EnableDeletionProtection?: boolean
@@ -65,6 +36,7 @@ export interface DynamoDBModelTransformerOptions {
  *  updatedAt (LSI w/ type)
  * }
  */
+
 export class DynamoDBModelTransformer extends Transformer {
 
     resources: ResourceFactory
@@ -387,7 +359,7 @@ export class DynamoDBModelTransformer extends Transformer {
         if (subscriptionsArgument === null) {
             return;
         } else if (subscriptionsArgument &&
-             subscriptionsArgument.level === ModelSubscriptionLevel.OFF) {
+            subscriptionsArgument.level === "OFF") {
             return;
         } else if (subscriptionsArgument) {
             // Add the custom subscriptions

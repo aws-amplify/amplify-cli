@@ -370,7 +370,8 @@ export class ResourceFactory {
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
+                                [
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
@@ -392,7 +393,8 @@ export class ResourceFactory {
                                     ifElse(
                                         raw('$velocityCount == 1'),
                                         qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put(\
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])
@@ -610,7 +612,8 @@ export class ResourceFactory {
                             set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
                             ifElse(
                                 ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),[
+                                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`),
+                                [
                                     qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ]),
@@ -631,7 +634,8 @@ export class ResourceFactory {
                                     ifElse(
                                         raw('$velocityCount == 1'),
                                         qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                                        qref('$condition.put("expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
+                                        qref('$condition.put(\
+"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
                                     ),
                                     qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")')
                                 ])
