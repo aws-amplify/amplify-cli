@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.1-authSubRelease.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@3.7.5...graphql-auth-transformer@3.11.1-authSubRelease.8) (2019-08-26)
+
+
+### Bug Fixes
+
+* [#2013](https://github.com/aws-amplify/amplify-cli/issues/2013) - Dynamic group auth when groups field is null ([#2097](https://github.com/aws-amplify/amplify-cli/issues/2097)) ([4ad3d5c](https://github.com/aws-amplify/amplify-cli/commit/4ad3d5c))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* pr review changes ([ee1f106](https://github.com/aws-amplify/amplify-cli/commit/ee1f106)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+* subscription feedback changes ([46725f0](https://github.com/aws-amplify/amplify-cli/commit/46725f0)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+* **graphql-auth-transformer:** pr changes ([281d235](https://github.com/aws-amplify/amplify-cli/commit/281d235)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* **graphql-auth-transformer:** pr changes ([8e09847](https://github.com/aws-amplify/amplify-cli/commit/8e09847)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* **graphql-auth-transformer:** protect mutations ([e9c2dc3](https://github.com/aws-amplify/amplify-cli/commit/e9c2dc3)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* **graphql-auth-transformer:** protect mutations ([20236b5](https://github.com/aws-amplify/amplify-cli/commit/20236b5)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* **graphql-auth-transformer:** protecting subscriptions ([b5c655f](https://github.com/aws-amplify/amplify-cli/commit/b5c655f)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* **graphql-auth-transformer:** protecting subscriptions ([a70351d](https://github.com/aws-amplify/amplify-cli/commit/a70351d)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+
+
+### BREAKING CHANGES
+
+* **graphql-auth-transformer:** the subscription operations will require an argument if owner is the only auth rule
+* **graphql-auth-transformer:** If an owner is included in the auth directive it will either be a requirement if
+it's the only rule or an optional input if used with other rules
+* **graphql-auth-transformer:** If an owner is used in the auth directive it will either be a requirement if it's
+the only rule or an optional input if used with other rules
+* Subscriptions will require an argument if an owner is only rule set - If owner &
+group rules are owner will be an optional arg
+* **graphql-auth-transformer:** the subscription operations will require an argument if owner is the only auth rule
+* **graphql-auth-transformer:** If an owner is included in the auth directive it will either be a requirement if
+it's the only rule or an optional input if used with other rules
+* **graphql-auth-transformer:** If an owner is used in the auth directive it will either be a requirement if it's
+the only rule or an optional input if used with other rules
+
+
+
+
+
 ## [3.11.1-authSubRelease.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@3.7.5...graphql-auth-transformer@3.11.1-authSubRelease.6) (2019-08-26)
 
 
