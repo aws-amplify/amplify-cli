@@ -140,9 +140,6 @@ Resources:
         <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
           PreTokenGeneration: !Ref function<%=props.resourceName%>PreTokenGenerationArn
         <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('UserMigration'))) { %>
-          UserMigration: !Ref function<%=props.resourceName%>UserMigrationArn
-        <% } %>
         <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
@@ -251,16 +248,6 @@ Resources:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreTokenGenerationName
-      SourceArn: !GetAtt UserPool.Arn
-  <% } %> 
-  <%if (props.dependsOn.find(i => i.resourceName.includes('UserMigration'))) { %>
-  UserPoolUserMigrationLambdaInvokePermission: 
-    Type: "AWS::Lambda::Permission"
-    DependsOn: UserPool
-    Properties: 
-      Action: "lambda:invokeFunction"
-      Principal: "cognito-idp.amazonaws.com"
-      FunctionName: !Ref function<%=props.resourceName%>UserMigrationName
       SourceArn: !GetAtt UserPool.Arn
   <% } %> 
   <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
