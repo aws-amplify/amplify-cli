@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1-authSubRelease.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.6.3...amplify-category-interactions@1.10.1-authSubRelease.9) (2019-08-26)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+
+
+
+
+
 ## [1.10.1-authSubRelease.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@1.6.3...amplify-category-interactions@1.10.1-authSubRelease.6) (2019-08-26)
 
 

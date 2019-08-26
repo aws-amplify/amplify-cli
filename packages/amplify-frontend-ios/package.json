@@ -1,6 +1,6 @@
 {
   "name": "amplify-frontend-ios",
-  "version": "1.12.1-authSubRelease.8",
+  "version": "1.12.1-authSubRelease.9",
   "description": "amplify-cli front-end plugin for xcode projects",
   "main": "index.js",
   "author": "Amazon Web Services",
