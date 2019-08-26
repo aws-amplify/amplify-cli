@@ -1,6 +1,6 @@
 {
   "name": "graphql-function-transformer",
-  "version": "1.5.1-authSubRelease.8",
+  "version": "1.5.1-authSubRelease.10",
   "description": "Implements the @function directive.",
   "main": "lib/index.js",
   "author": "Michael Paris",
@@ -14,9 +14,9 @@
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "^3.5.1-authSubRelease.8",
-    "graphql-transformer-common": "^3.12.1-authSubRelease.8",
-    "graphql-transformer-core": "^3.11.1-authSubRelease.8"
+    "graphql-mapping-template": "^3.5.1-authSubRelease.10",
+    "graphql-transformer-common": "^3.12.1-authSubRelease.10",
+    "graphql-transformer-core": "^3.11.1-authSubRelease.10"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",

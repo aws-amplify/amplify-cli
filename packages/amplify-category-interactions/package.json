@@ -1,11 +1,11 @@
 {
   "name": "amplify-category-interactions",
-  "version": "1.10.1-authSubRelease.8",
+  "version": "1.10.1-authSubRelease.10",
   "main": "index.js",
   "description": "amplify-cli interactions plugin",
   "dependencies": {
-    "amplify-category-auth": "^1.11.1-authSubRelease.8",
-    "amplify-category-function": "^1.11.1-authSubRelease.8",
+    "amplify-category-auth": "^1.11.1-authSubRelease.10",
+    "amplify-category-function": "^1.11.1-authSubRelease.10",
     "fs-extra": "^8.1.0",
     "fuzzy": "^0.1.3",
     "inquirer": "^6.5.1",
