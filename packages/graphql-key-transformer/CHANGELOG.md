@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1-authSubRelease.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.1.7...graphql-key-transformer@1.5.1-authSubRelease.11) (2019-08-26)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** added sort direction ([a0f9f30](https://github.com/aws-amplify/amplify-cli/commit/a0f9f30)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676)
+* **graphql-key-transformer:** key req resolver edit ([c4a9da5](https://github.com/aws-amplify/amplify-cli/commit/c4a9da5)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676) [#1990](https://github.com/aws-amplify/amplify-cli/issues/1990) [#1629](https://github.com/aws-amplify/amplify-cli/issues/1629)
+* [#1720](https://github.com/aws-amplify/amplify-cli/issues/1720) - fix GraphQL name generation for [@key](https://github.com/key) ([#2093](https://github.com/aws-amplify/amplify-cli/issues/2093)) ([51716f3](https://github.com/aws-amplify/amplify-cli/commit/51716f3))
+* [#2033](https://github.com/aws-amplify/amplify-cli/issues/2033) - Make sure key field order is preserved ([#2117](https://github.com/aws-amplify/amplify-cli/issues/2117)) ([58f8f76](https://github.com/aws-amplify/amplify-cli/commit/58f8f76))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 ## [1.5.1-authSubRelease.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.1.7...graphql-key-transformer@1.5.1-authSubRelease.6) (2019-08-26)
 
 

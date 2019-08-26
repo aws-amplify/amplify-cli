@@ -1,10 +1,10 @@
 {
   "name": "amplify-category-function",
-  "version": "1.11.1-authSubRelease.10",
+  "version": "1.11.1-authSubRelease.11",
   "main": "index.js",
   "description": "amplify-cli function plugin",
   "dependencies": {
-    "amplify-category-storage": "^1.12.1-authSubRelease.10",
+    "amplify-category-storage": "1.12.1-authSubRelease.11",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
     "mime-types": "^2.1.24",
