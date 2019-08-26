@@ -345,6 +345,13 @@ export class DynamoDBModelTransformer extends Transformer {
      *      onPostCreated: Post @aws_subscribe(mutations: ["createPost"])
      *      onFeedUpdated: Post @aws_subscribe(mutations: ["createPost"])
      * }
+     *  Subscription Levels
+     *   subscriptions.level === OFF || subscriptions === null
+     *      Will not create subscription resolvers
+     *   subcriptions.level === PUBLIC
+     *      Will continue as is creating subscription resolvers
+     *   subscriptions.level === ON || subscriptions === undefined
+     *      If auth is enabled it will enabled protection on subscription operations
      */
     private createSubscriptions = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) => {
         const typeName = def.name.value
@@ -356,13 +363,14 @@ export class DynamoDBModelTransformer extends Transformer {
         const createResolver = ctx.getResource(ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName))
         const updateResolver = ctx.getResource(ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName))
         const deleteResolver = ctx.getResource(ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName))
+
         if (subscriptionsArgument === null) {
             return;
         } else if (subscriptionsArgument &&
             subscriptionsArgument.level === "OFF") {
             return;
         } else if (subscriptionsArgument &&
-            subscriptionsArgument.level !== "PUBLIC") {
+            (subscriptionsArgument.onCreate || subscriptionsArgument.onUpdate || subscriptionsArgument.onDelete)) {
             // Add the custom subscriptions
             const subscriptionToMutationsMap: { [subField: string]: string[] } = {}
             const onCreate = subscriptionsArgument.onCreate || []
