@@ -508,6 +508,13 @@ const capabilities = [
       VerifyAuthChallengeResponse: ['boilerplate-verify'],
     },
   },
+  {
+    name: 'Override ID Token Claims',
+    value: 'alter-claims',
+    triggers: {
+      PreTokenGeneration: ['alter-claims'],
+    },
+  },
 ];
 
 const additonalConfigMap = [

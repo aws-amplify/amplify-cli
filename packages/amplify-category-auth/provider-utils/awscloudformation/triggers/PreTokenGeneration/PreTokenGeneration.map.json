@@ -1,3 +1,6 @@
 {
-
+  "alter-claims": {
+    "name": "Override ID Token Claims",
+    "description": "This alters allows for the addition, updating or removal of id token claims."
+  }
 }
