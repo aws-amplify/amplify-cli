@@ -85,3 +85,20 @@ test('Test that model with an LSI but no primary sort key will fail.', () => {
     })
     expect(() => transformer.transform(validSchema)).toThrowError(InvalidDirectiveError);
 })
+
+test('KeyTransformer should fail if a non-existing type field is defined as key field.', () => {
+    const validSchema = `
+    type Test @key(name: "Test", fields: ["one"]) {
+        id: ID!
+        email: String
+    }
+    `
+
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new KeyTransformer()
+        ]
+    })
+
+    expect(() => transformer.transform(validSchema)).toThrowError(InvalidDirectiveError);
+})
