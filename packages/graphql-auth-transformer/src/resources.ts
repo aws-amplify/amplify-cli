@@ -822,9 +822,9 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
             TypeName: subscriptionTypeName,
             RequestMappingTemplate: print(
                 raw(`{
-                        "version": "2018-05-29",
-                        "payload": {}
-                    }`)
+    "version": "2018-05-29",
+    "payload": {}
+}`)
             ),
             ResponseMappingTemplate: print(
                 raw(`$util.toJson(null)`)

@@ -203,10 +203,13 @@ export class ModelAuthTransformer extends Transformer {
         // Check if subscriptions is enabled
         const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(modelDirective);
         const subscription = this.validateSubscriptionLevel(directiveArguments);
-        if (subscription.level === "ON") {
-            this.protectOnCreateSubcription(ctx, operationRules.create, def, subscription.onCreate);
-            this.protectOnUpdateSubcription(ctx, operationRules.update, def, subscription.onUpdate);
-            this.protectOnDeleteSubcription(ctx, operationRules.delete, def, subscription.onDelete);
+        if (subscription.level !== "OFF") {
+            this.protectOnCreateSubcription(ctx, operationRules.create, def,
+                subscription.level, subscription.onCreate);
+            this.protectOnUpdateSubcription(ctx, operationRules.update, def,
+                subscription.level, subscription.onUpdate);
+            this.protectOnDeleteSubcription(ctx, operationRules.delete, def,
+                subscription.level, subscription.onDelete);
         }
     }
 
@@ -964,43 +967,45 @@ All @auth directives used on field definitions are performed when the field is r
 
     // OnCreate Subscription
     private protectOnCreateSubcription(ctx: TransformerContext, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode, onCreate?: string[]) {
+        parent: ObjectTypeDefinitionNode, level: string, onCreate?: string[]) {
         if (onCreate) {
             onCreate.forEach( (name) => {
-                this.protectSubscription(ctx, rules, parent, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
             })
         } else {
-            this.protectSubscription(ctx, rules, parent, graphqlName(ON_CREATE_FIELD + toUpper(parent.name.value)))
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_CREATE_FIELD + toUpper(parent.name.value)))
         }
     }
 
     // OnUpdate Subscription
     private protectOnUpdateSubcription(ctx: TransformerContext, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode, onUpdate?: string[]) {
+        parent: ObjectTypeDefinitionNode, level: string, onUpdate?: string[]) {
         if (onUpdate) {
             onUpdate.forEach( (name) => {
-                this.protectSubscription(ctx, rules, parent, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
             })
         } else {
-            this.protectSubscription(ctx, rules, parent, graphqlName(ON_UPDATE_FIELD + toUpper(parent.name.value)))
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_UPDATE_FIELD + toUpper(parent.name.value)))
         }
     }
 
     // OnDelete Subscription
     private protectOnDeleteSubcription(ctx: TransformerContext, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode, onDelete?: string[]) {
+        parent: ObjectTypeDefinitionNode, level: string, onDelete?: string[]) {
         if (onDelete) {
             onDelete.forEach( (name) => {
-                this.protectSubscription(ctx, rules, parent, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
             })
         } else {
-            this.protectSubscription(ctx, rules, parent, graphqlName(ON_DELETE_FIELD + toUpper(parent.name.value)))
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_DELETE_FIELD + toUpper(parent.name.value)))
         }
     }
 
-    // generate subscrption based on operation
-    private protectSubscription(ctx: TransformerContext, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode, fieldName: string) {
+    private addSubscriptionResolvers(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, level: string, fieldName: string) {
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(fieldName);
 
@@ -1013,12 +1018,15 @@ All @auth directives used on field definitions are performed when the field is r
         // add the rules in the subscription resolver
         if (!rules || rules.length === 0) {
             return;
+        } else if (level === "PUBLIC") {
+            // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
+            ctx.setResource(resolverResourceId, resolver);
+            ctx.mapResourceToStack(parent.name.value, resolverResourceId);
         } else {
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
             const ownerAuthorizationRules = this.getOwnerRules(rules);
 
-            // Generate the expressions to validate each strategy.
             const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
                 staticGroupAuthorizationRules);
 
