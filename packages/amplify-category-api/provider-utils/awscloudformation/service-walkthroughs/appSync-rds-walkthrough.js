@@ -148,20 +148,20 @@ async function selectDatabase(inputs, clusterArn, secretArn, AWS) {
   // Database Name Question
   const DataApi = new AWS.RDSDataService();
   const params = new DataApiParams();
-  params.awsSecretStoreArn = secretArn;
-  params.dbClusterOrInstanceArn = clusterArn;
-  params.sqlStatements = 'SHOW databases';
+  params.secretArn = secretArn;
+  params.resourceArn = clusterArn;
+  params.sql = 'SHOW databases';
 
   spinner.start('Fetching Aurora Serverless cluster...');
-  const dataApiResult = await DataApi.executeSql(params).promise();
+  const dataApiResult = await DataApi.executeStatement(params).promise();
 
   // eslint-disable-next-line prefer-destructuring
   const records
-   = dataApiResult.sqlStatementResults[0].resultFrame.records;
+   = dataApiResult.records;
   const databaseList = [];
 
   for (let i = 0; i < records.length; i += 1) {
-    const recordValue = records[i].values[0].stringValue;
+    const recordValue = records[i][0].stringValue;
     // ignore the three meta tables that the cluster creates
     if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
       databaseList.push(recordValue);
