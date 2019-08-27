@@ -17,6 +17,8 @@ import {
 import { ModelDirectiveArgs, SubscriptionNameMap } from 'graphql-dynamodb-transformer/src/ModelDirectiveArgs'
 
 import {
+    OWNER_AUTH_STRATEGY,
+    GROUPS_AUTH_STRATEGY,
     DEFAULT_OWNER_FIELD,
     ON_CREATE_FIELD,
     ON_UPDATE_FIELD,
@@ -204,11 +206,11 @@ export class ModelAuthTransformer extends Transformer {
         const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(modelDirective);
         const subscription = this.validateSubscriptionLevel(directiveArguments);
         if (subscription.level !== "OFF") {
-            this.protectOnCreateSubcription(ctx, operationRules.create, def,
+            this.protectOnCreateSubscription(ctx, operationRules.create, def,
                 subscription.level, subscription.onCreate);
-            this.protectOnUpdateSubcription(ctx, operationRules.update, def,
+            this.protectOnUpdateSubscription(ctx, operationRules.update, def,
                 subscription.level, subscription.onUpdate);
-            this.protectOnDeleteSubcription(ctx, operationRules.delete, def,
+            this.protectOnDeleteSubscription(ctx, operationRules.delete, def,
                 subscription.level, subscription.onDelete);
         }
     }
@@ -966,7 +968,7 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     // OnCreate Subscription
-    private protectOnCreateSubcription(ctx: TransformerContext, rules: AuthRule[],
+    private protectOnCreateSubscription(ctx: TransformerContext, rules: AuthRule[],
         parent: ObjectTypeDefinitionNode, level: string, onCreate?: string[]) {
         if (onCreate) {
             onCreate.forEach( (name) => {
@@ -979,7 +981,7 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     // OnUpdate Subscription
-    private protectOnUpdateSubcription(ctx: TransformerContext, rules: AuthRule[],
+    private protectOnUpdateSubscription(ctx: TransformerContext, rules: AuthRule[],
         parent: ObjectTypeDefinitionNode, level: string, onUpdate?: string[]) {
         if (onUpdate) {
             onUpdate.forEach( (name) => {
@@ -992,7 +994,7 @@ All @auth directives used on field definitions are performed when the field is r
     }
 
     // OnDelete Subscription
-    private protectOnDeleteSubcription(ctx: TransformerContext, rules: AuthRule[],
+    private protectOnDeleteSubscription(ctx: TransformerContext, rules: AuthRule[],
         parent: ObjectTypeDefinitionNode, level: string, onDelete?: string[]) {
         if (onDelete) {
             onDelete.forEach( (name) => {
@@ -1004,25 +1006,28 @@ All @auth directives used on field definitions are performed when the field is r
         }
     }
 
+    // adds subscription resolvers (request / response) based on the operation provided
     private addSubscriptionResolvers(ctx: TransformerContext, rules: AuthRule[],
         parent: ObjectTypeDefinitionNode, level: string, fieldName: string) {
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(fieldName);
-
-        // creates the none data source if doesn't exist for the subscription resolvers
+        // If the data source does not exist it is created and added as a resource for PUBLIC && ON levels
         const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource)
-        if (!noneDS) {
-            ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
-        }
 
         // add the rules in the subscription resolver
         if (!rules || rules.length === 0) {
             return;
         } else if (level === "PUBLIC") {
             // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
+            if (!noneDS) {
+                ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
+            }
             ctx.setResource(resolverResourceId, resolver);
             ctx.mapResourceToStack(parent.name.value, resolverResourceId);
         } else {
+            if (!noneDS) {
+                ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
+            }
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
             const ownerAuthorizationRules = this.getOwnerRules(rules);
@@ -1060,16 +1065,15 @@ All @auth directives used on field definitions are performed when the field is r
             ctx.mapResourceToStack(parent.name.value, resolverResourceId);
         }
         // check if owner is enabled in auth
-        const hasOwner = rules.find( rule => rule.allow === DEFAULT_OWNER_FIELD);
+        const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+        const hasStaticGroupAuth = rules.find( rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
         if (hasOwner) {
             this.addOwner(ctx, parent.name.value);
-            // if the only rule has owner included it becomes a requirement
-            if (rules.length === 1) {
-                this.addSubscriptionOwnerArgument(ctx, resolver, true);
-            }
-            // if another group is used other than has Owner the parameter for adding owner is optional
-            if (rules.length > 1) {
+            // If static group is specified in any of the rules then it would specify the owner arg as optional
+            if (hasStaticGroupAuth) {
                 this.addSubscriptionOwnerArgument(ctx, resolver, false)
+            } else {
+                this.addSubscriptionOwnerArgument(ctx, resolver, true)
             }
         }
         }
