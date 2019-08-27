@@ -1055,17 +1055,18 @@ All @auth directives used on field definitions are performed when the field is r
             ];
             resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
             ctx.setResource(resolverResourceId, resolver);
-        }
-        // check if owner is enabled in auth
-        const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
-        const hasStaticGroupAuth = rules.find( rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
-        if (hasOwner) {
-            this.addOwner(ctx, parent.name.value);
-            // If static group is specified in any of the rules then it would specify the owner arg as optional
-            if (hasStaticGroupAuth) {
-                this.addSubscriptionOwnerArgument(ctx, resolver, false)
-            } else {
-                this.addSubscriptionOwnerArgument(ctx, resolver, true)
+
+                // check if owner is enabled in auth
+            const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+            const hasStaticGroupAuth = rules.find( rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
+            if (hasOwner) {
+                this.addOwner(ctx, parent.name.value);
+                // If static group is specified in any of the rules then it would specify the owner arg as optional
+                if (hasStaticGroupAuth) {
+                    this.addSubscriptionOwnerArgument(ctx, resolver, false)
+                } else {
+                    this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                }
             }
         }
         // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
