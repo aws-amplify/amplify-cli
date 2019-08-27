@@ -58,6 +58,7 @@
             "check-operator",
             "check-separator",
             "check-type"
-        ]
+        ],
+        "string": "single"
     }
 }

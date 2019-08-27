@@ -204,7 +204,7 @@ export class ResourceFactory {
      * @param connectionAttributes The names of the underlying attributes containing the fields to query by.
      * @param keySchema Key schema of the index or table being queried.
      */
-    public makeGetItemNewConnectionResolver(type: string,
+    public makeGetItemConnectionWithKeyResolver(type: string,
                                            field: string,
                                            relatedType: string,
                                            connectionAttributes: string[],
@@ -264,7 +264,7 @@ export class ResourceFactory {
      * @param keySchema The keySchema for the table or index being queried.
      * @param indexName The index to run the query on.
      */
-    public makeQueryNewConnectionResolver(
+    public makeQueryConnectionWithKeyResolver(
         type: string,
         field: string,
         relatedType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,

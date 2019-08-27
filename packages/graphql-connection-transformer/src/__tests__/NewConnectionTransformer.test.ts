@@ -163,7 +163,7 @@ test('ModelConnectionTransformer should fail if the query is not run on the defa
 
     expect(() =>
         transformer.transform(validSchema)).toThrowError(
-                'Connection is to a single object but the keyName provided does not reference the default table.'
+            'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.'
         )
 })
 

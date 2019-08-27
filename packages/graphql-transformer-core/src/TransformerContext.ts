@@ -28,6 +28,7 @@ import {
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
 import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
+import { _Kind } from 'graphql/language/kinds';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -179,6 +180,26 @@ export default class TransformerContext {
         if (!this.getSchema()) {
             this.putSchema(DefaultSchemaDefinition);
         }
+    }
+
+    /**
+     * Scans through the context nodeMap and returns all type definition nodes
+     * that are of the given kind.
+     * @param kind Kind value of type definition nodes expected.
+     */
+    public getTypeDefinitionsOfKind(kind: string) {
+        const typeDefs: TypeDefinitionNode[] = [];
+        for (const key of Object.keys(this.nodeMap)) {
+            const definition = this.nodeMap[key];
+            switch (definition.kind) {
+                case kind:
+                    typeDefs.push(definition as TypeDefinitionNode)
+                    break;
+                default:
+                    break;
+            }
+        }
+        return typeDefs
     }
 
     public mergeResources(resources: { [key: string]: Resource }) {
