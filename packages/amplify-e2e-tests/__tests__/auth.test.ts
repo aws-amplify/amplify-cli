@@ -13,7 +13,8 @@ import {
   addAuthWithRecaptchaTrigger,
   addAuthWithCustomTrigger,
   updateAuthWithoutCustomTrigger,
-  addAuthViaAPIWithTrigger
+  addAuthViaAPIWithTrigger,
+  addAuthWithMaxOptions
 } from '../src/categories/auth';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool, getUserPoolClients, getLambdaFunction } from '../src/utils';
 
@@ -115,6 +116,28 @@ describe('amplify add auth...', () => {
     await expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
   });
 
+  it('...should init a project where all possible options are selected', async () => {
+    await initProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithMaxOptions(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+    const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
+    const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clients = await getUserPoolClients(id, meta.providers.awscloudformation.Region);
+    const createFunction =  await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region)
+    const defineFunction =  await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region)
+
+    await expect(userPool.UserPool).toBeDefined();
+    await expect(clients).toHaveLength(2);
+    await expect(createFunction).toBeDefined();
+    await expect(defineFunction).toBeDefined();
+
+    await expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+    await expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+  })
+
 });
 
 describe('amplify updating auth...', () => {
@@ -153,7 +176,5 @@ describe('amplify updating auth...', () => {
     await expect(updatedDirContents.includes('custom.js')).toBeFalsy();
     await expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
     await expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
-
   });
-
-})
+});

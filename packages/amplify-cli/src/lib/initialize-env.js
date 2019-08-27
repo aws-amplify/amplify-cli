@@ -70,10 +70,16 @@ async function initializeEnv(context, currentAmplifyMeta) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt.run('Do you want to push your resources to the cloud for your environment?');
     }
     if (context.exeInfo.forcePush) {
-      context.exeInfo.projectConfig.providers.forEach((provider) => {
+      for (let i = 0; i < context.exeInfo.projectConfig.providers.length; i += 1) {
+        const provider = context.exeInfo.projectConfig.providers[i];
         const providerModule = require(providerPlugins[provider]);
-        providerPushTasks.push(() => providerModule.pushResources(context));
-      });
+        const resourceDefiniton = await context.amplify.getResourceStatus(
+          undefined,
+          undefined,
+          provider,
+        );
+        providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));
+      }
       await sequential(providerPushTasks);
     }
     // Generate AWS exports/configurtion file

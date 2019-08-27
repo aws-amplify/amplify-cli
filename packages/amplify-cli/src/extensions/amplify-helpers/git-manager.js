@@ -42,6 +42,7 @@ function getGitIgnoreAppendString() {
   const ignoreList = [
     'amplify/\\#current-cloud-backend',
     'amplify/.config/local-*',
+    'amplify/mock-data',
     'amplify/backend/amplify-meta.json',
     'amplify/backend/awscloudformation',
     'build/',

@@ -199,8 +199,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
 
 function getS3Config(s3Resources) {
   const s3Resource = s3Resources[0];
-
-  return {
+  const testMode = s3Resource.testMode || false;
+  const result = {
     S3TransferUtility: {
       Default: {
         Bucket: s3Resource.output.BucketName,
@@ -208,6 +208,10 @@ function getS3Config(s3Resources) {
       },
     },
   };
+  if (testMode) {
+    result.S3TransferUtility.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+  return result;
 }
 
 function getPinpointConfig(pinpointResources) {
@@ -240,6 +244,7 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const testMode = appsyncResource.testMode || false;
   const result = {
     AppSync: {
       Default: {
@@ -254,6 +259,11 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       },
     },
   };
+
+  if (testMode) {
+    result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
+  }
+
   const additionalAuths = appsyncResource.output.additionalAuthenticationProviders || [];
   additionalAuths.forEach((authType) => {
     const apiName = `${appsyncResource.resourceName}_${authType}`;
@@ -264,6 +274,9 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       ApiKey: authType === 'API_KEY' ? appsyncResource.output.GraphQLAPIKeyOutput : undefined,
       ClientDatabasePrefix: apiName,
     };
+    if (testMode) {
+      config.DangerouslyConnectToHTTPEndpointForTesting = true;
+    }
     result.AppSync[apiName] = config;
   });
 

@@ -1,0 +1,18 @@
+
+scalar AWSDate
+scalar AWSTime
+scalar AWSDateTime
+scalar AWSTimestamp
+scalar AWSEmail
+scalar AWSJSON
+scalar AWSURL
+scalar AWSPhone
+scalar AWSIPAddress
+scalar BigInt
+scalar Double
+
+directive @aws_subscribe(mutations: [String!]!) on FIELD_DEFINITION
+directive @aws_auth(cognito_groups: [String!]!) on FIELD_DEFINITION
+
+# Allows transformer libraries to deprecate directive arguments.
+directive @deprecated(reason: String!) on INPUT_FIELD_DEFINITION | ENUM

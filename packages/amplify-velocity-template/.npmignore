@@ -1,0 +1,9 @@
+.DS_Store
+.gitignore
+.rvmrc
+Makefile
+examples
+coverage
+build
+dist
+tests

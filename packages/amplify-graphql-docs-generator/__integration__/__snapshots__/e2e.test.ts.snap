@@ -485,7 +485,7 @@ subscription ReviewAdded($episode: Episode) {
 `;
 
 exports[`end 2 end tests should generate statements in JS 1`] = `
-"// eslint-disable
+"/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const hero = \`query Hero($episode: Episode) {

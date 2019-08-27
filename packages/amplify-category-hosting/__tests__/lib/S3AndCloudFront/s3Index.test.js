@@ -1,13 +1,13 @@
 jest.mock('fs-extra');
-jest.mock('opn');
+jest.mock('open');
 
-jest.mock('../../../lib/S3AndCloudFront/configuration-manager'); 
+jest.mock('../../../lib/S3AndCloudFront/configuration-manager');
 jest.mock('../../../lib/S3AndCloudFront/helpers/file-uploader');
 jest.mock('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
 const fs = require('fs-extra');
 const path = require('path');
-const opn = require('opn');
+const open = require('open');
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
@@ -74,17 +74,17 @@ describe('s3IndexModule', () => {
     }
     const mockAnswers = {
         environment: DEV
-    }; 
+    };
     let mockContext = {
         amplify: {
             pathManager: {
                 getBackendDirPath: jest.fn(()=>{
-                    return 'mockBackendDirPath'; 
+                    return 'mockBackendDirPath';
                 })
-            }, 
+            },
             updateamplifyMetaAfterResourceAdd: jest.fn(),
             getProjectMeta: jest.fn(()=>{
-                return mockAmplifyMeta; 
+                return mockAmplifyMeta;
             }),
             readJsonFile: jest.fn(path => JSON.parse(fs.readFileSync(path))),
         },
@@ -105,64 +105,64 @@ describe('s3IndexModule', () => {
         parameters: {
             options: {}
         }
-    }; 
+    };
     beforeAll(() => {
-        mockirer(inquirer, mockAnswers); 
-        fs.ensureDirSync = jest.fn(); 
+        mockirer(inquirer, mockAnswers);
+        fs.ensureDirSync = jest.fn();
         fs.existsSync = jest.fn(()=>{return true;})
-        fs.writeFileSync = jest.fn(); 
+        fs.writeFileSync = jest.fn();
         fs.readFileSync = jest.fn((filePath)=>{
-            let result; 
-            filePath = path.normalize(filePath); 
+            let result;
+            filePath = path.normalize(filePath);
             if(filePath.indexOf(templateFileName) > -1){
                 if(filePath === INTERNAL_TEMPLATE_FILE_PATH){
-                    result = JSON.stringify(internalTemplateContents); 
+                    result = JSON.stringify(internalTemplateContents);
                 }else{
-                    result = JSON.stringify(mockTemplate); 
+                    result = JSON.stringify(mockTemplate);
                 }
             }else if(filePath.indexOf(parametersFileName)>-1){
                 if(filePath === INTERNAL_PARAMETERS_FILE_PATH){
                     result = JSON.stringify(internalParametersContents);
                 }else{
-                    result = JSON.stringify(mockParameters); 
+                    result = JSON.stringify(mockParameters);
                 }
             }
-            return result; 
-        }); 
+            return result;
+        });
         fileUPloader.run = jest.fn(()=>{return Promise.resolve(); });
         cloudFrontManager.invalidateCloudFront = jest.fn(()=>{return Promise.resolve(); });
 
-    }); 
+    });
 
     beforeEach(() => {
-        fs.ensureDirSync.mockClear(); 
-        fs.writeFileSync.mockClear(); 
+        fs.ensureDirSync.mockClear();
+        fs.writeFileSync.mockClear();
     });
 
     test('enable', async () => {
-        await s3IndexModule.enable(mockContext); 
-        expect(configManager.init).toBeCalled(); 
+        await s3IndexModule.enable(mockContext);
+        expect(configManager.init).toBeCalled();
         expect(mockContext.amplify.updateamplifyMetaAfterResourceAdd).toBeCalled();
     });
 
     test('configure', async () => {
-        await s3IndexModule.configure(mockContext); 
-        expect(configManager.configure).toBeCalled(); 
+        await s3IndexModule.configure(mockContext);
+        expect(configManager.configure).toBeCalled();
     });
 
     test('publish', async () => {
-        await s3IndexModule.publish(mockContext, {distributionDirPath: 'dist'}); 
-        expect(fileUPloader.run).toBeCalled(); 
-        expect(cloudFrontManager.invalidateCloudFront).toBeCalled(); 
-        expect(opn).toBeCalled(); 
+        await s3IndexModule.publish(mockContext, {distributionDirPath: 'dist'});
+        expect(fileUPloader.run).toBeCalled();
+        expect(cloudFrontManager.invalidateCloudFront).toBeCalled();
+        expect(open).toBeCalled();
     });
 
     test('console', async () => {
-        await s3IndexModule.console(mockContext); 
-        expect(opn).toBeCalled(); 
+        await s3IndexModule.console(mockContext);
+        expect(open).toBeCalled();
     });
 
     test('migrate', async () => {
-        await s3IndexModule.migrate(mockContext); 
+        await s3IndexModule.migrate(mockContext);
     });
 })

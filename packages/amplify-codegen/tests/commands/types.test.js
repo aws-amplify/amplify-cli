@@ -7,7 +7,7 @@ const loadConfig = require('../../src/codegen-config');
 const generateTypes = require('../../src/commands/types');
 const constants = require('../../src/constants');
 const {
-  downloadIntrospectionSchemaWithProgress,
+  ensureIntrospectionSchema,
   getFrontEndHandler,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
@@ -75,7 +75,6 @@ describe('command - types', () => {
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
-    expect(fs.existsSync).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       MOCK_QUERIES,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
@@ -97,11 +96,12 @@ describe('command - types', () => {
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
     await generateTypes(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
@@ -109,11 +109,12 @@ describe('command - types', () => {
     fs.existsSync.mockReturnValue(false);
     const forceDownload = false;
     await generateTypes(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 

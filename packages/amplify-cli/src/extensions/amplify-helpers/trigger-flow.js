@@ -268,7 +268,7 @@ const triggerFlow = async (context, resource, category, previousTriggers = {}) =
   const tempTriggerObj = Object.assign({}, triggerObj);
   Object.values(tempTriggerObj).forEach((t, index) => {
     if (!t || t.length < 1) {
-      delete triggerObj[Object.keys(triggerObj)[index]];
+      delete triggerObj[Object.keys(tempTriggerObj)[index]];
     }
   }, { triggerObj });
   return triggerObj;

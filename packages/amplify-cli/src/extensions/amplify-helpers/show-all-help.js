@@ -57,6 +57,10 @@ function showAllHelp(context) {
       description: 'Displays subcommands of the specified Amplify category.',
     },
     {
+      name: 'mock',
+      description: 'Run mock server for testing categories locally.',
+    },
+    {
       name: 'codegen',
       description: 'Generates GraphQL statements(queries, mutations and subscriptions) and type annotations.',
     },

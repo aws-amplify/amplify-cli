@@ -442,22 +442,21 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
     const parentResourceParams = providerPlugin
       .loadResourceParameters(context, resourceParams.parentStack, resourceParams.parentResource);
     const triggers = typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
-    const parentKeys = Object.keys(parentResourceParams);
-    const parentValues = Object.values(parentResourceParams);
-    const index = parentValues.indexOf(resourceParams.resourceName);
-    const currentTrigger = parentKeys[index];
-    const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
-    const triggerPath = `${__dirname}/../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
-    if (context.commandName !== 'checkout') {
-      envParams = await context.amplify.getTriggerEnvInputs(
-        context,
-        triggerPath,
-        currentTrigger,
-        triggers[currentTrigger],
-        currentEnvVariables,
-      );
-    } else {
-      envParams = currentEnvVariables;
+    const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
+    if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
+      const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
+      const triggerPath = `${__dirname}/../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
+      if (context.commandName !== 'checkout') {
+        envParams = await context.amplify.getTriggerEnvInputs(
+          context,
+          triggerPath,
+          currentTrigger,
+          triggers[currentTrigger],
+          currentEnvVariables,
+        );
+      } else {
+        envParams = currentEnvVariables;
+      }
     }
   }
   return envParams;

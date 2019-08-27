@@ -8,6 +8,9 @@ const {
   invokeFunction,
 } = require('./provider-utils/awscloudformation/utils/invoke');
 
+const {
+  run,
+} = require('./commands/function/invoke');
 
 const category = 'function';
 
@@ -129,6 +132,9 @@ function invoke(options) {
   invokeFunction(options);
 }
 
+function invokeWalkthroughRun(context) {
+  run(context);
+}
 
 module.exports = {
   add,
@@ -138,4 +144,5 @@ module.exports = {
   initEnv,
   getPermissionPolicies,
   invoke,
+  invokeWalkthroughRun,
 };

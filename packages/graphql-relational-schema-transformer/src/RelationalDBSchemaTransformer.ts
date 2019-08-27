@@ -138,6 +138,7 @@ export class RelationalDBSchemaTransformer {
     getSchemaType(): SchemaDefinitionNode {
         return {
             kind: Kind.SCHEMA_DEFINITION,
+            directives: [],
             operationTypes: [
                 getOperationTypeDefinition('query', getNamedType('Query')),
                 getOperationTypeDefinition('mutation', getNamedType('Mutation')),

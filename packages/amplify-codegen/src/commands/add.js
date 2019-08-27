@@ -5,7 +5,6 @@ const generateStatements = require('./statements');
 const generateTypes = require('./types');
 const {
   AmplifyCodeGenNoAppSyncAPIAvailableError: NoAppSyncAPIAvailableError,
-  AmplifyCodeGenAPIPendingPush,
   AmplifyCodeGenAPINotFoundError,
 } = require('../errors');
 const {
@@ -14,6 +13,8 @@ const {
   getAppSyncAPIInfo,
   getProjectAwsRegion,
   updateAmplifyMeta,
+  getSDLSchemaLocation,
+  getFrontEndHandler,
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
@@ -30,11 +31,8 @@ async function add(context, apiId = null) {
     if (availableAppSyncApis.length === 0) {
       throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_AVAILABLE);
     }
-    const pendingPushAPIs = availableAppSyncApis.filter(a => !a.id);
-    if (pendingPushAPIs.length) {
-      throw new AmplifyCodeGenAPIPendingPush(constants.ERROR_CODEGEN_PENDING_API_PUSH);
-    }
     [apiDetails] = availableAppSyncApis;
+    apiDetails.isLocal = true;
   } else {
     let shouldRetry = true;
     while (shouldRetry) {
@@ -62,12 +60,19 @@ async function add(context, apiId = null) {
   }
   const answer = await addWalkThrough(context);
 
-  const schema = await downloadIntrospectionSchemaWithProgress(
-    context,
-    apiDetails.id,
-    answer.schemaLocation,
-    region,
-  );
+  let schema;
+  if (!apiDetails.isLocal) {
+    schema = await downloadIntrospectionSchemaWithProgress(
+      context,
+      apiDetails.id,
+      answer.schemaLocation,
+      region,
+    );
+  } else if (getFrontEndHandler(context) === 'android') {
+    schema = answer.schemaLocation;
+  } else {
+    schema = getSDLSchemaLocation(apiDetails.name);
+  }
 
   const newProject = {
     projectName: apiDetails.name,

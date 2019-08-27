@@ -102,22 +102,9 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
       targetDir,
       context,
     );
-    const previousKeys = Object.keys(previouslySaved);
-
-    /*
-      if a trigger has been deselected entirely, we need to remove the key from coreAnswers
-      (this is in addition to the actual triggers key/value attribute).
-    */
-    for (let i = 0; i < previousKeys.length; i += 1) {
-      if (!keys.includes(previousKeys[i])) {
-        delete coreAnswers[previousKeys[i]];
-      }
-    }
   }
 
-  coreAnswers = Object.assign(coreAnswers, triggerKeyValues);
-
-  if (triggerKeyValues) {
+  if (coreAnswers.triggers) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
 

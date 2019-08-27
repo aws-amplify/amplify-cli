@@ -12,7 +12,7 @@ export function addConvert(
       return new Promise((resolve, reject) => {
         nexpect
         .spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose } )
-        .wait('Please select from of the below mentioned categories')
+        .wait('Please select from one of the categories below')
         // j = down arrow
         .sendline('j')
         .sendline('\r')
@@ -49,7 +49,7 @@ export function addIdentifyCollection(
         return new Promise((resolve, reject) => {
           nexpect
           .spawn(getCLIPath(), ['predictions', 'add'], { cwd, stripColors: true, verbose } )
-          .wait('Please select from of the below mentioned categories')
+          .wait('Please select from one of the categories below')
           // j = down arrow
           // .sendline('j')
           .sendline('\r')
@@ -95,7 +95,7 @@ export function addInterpret(
       return new Promise((resolve, reject) => {
         nexpect
         .spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose } )
-        .wait('Please select from of the below mentioned categories')
+        .wait('Please select from one of the categories below')
         // j = down arrow
         .sendline('jj')
         .wait('What would you like to interpret?')

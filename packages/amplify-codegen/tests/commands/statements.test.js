@@ -6,7 +6,7 @@ const loadConfig = require('../../src/codegen-config');
 const generateStatements = require('../../src/commands/statements');
 const constants = require('../../src/constants');
 const {
-  downloadIntrospectionSchemaWithProgress,
+  ensureIntrospectionSchema,
   getFrontEndHandler,
   getAppSyncAPIDetails,
 } = require('../../src/utils');
@@ -72,7 +72,6 @@ describe('command - statements', () => {
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
 
-    expect(fs.existsSync).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA));
     expect(generate).toHaveBeenCalledWith(
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
       path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH),
@@ -94,11 +93,12 @@ describe('command - statements', () => {
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 
@@ -106,11 +106,12 @@ describe('command - statements', () => {
     fs.existsSync.mockReturnValue(false);
     const forceDownload = false;
     await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(downloadIntrospectionSchemaWithProgress).toHaveBeenCalledWith(
+    expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
-      MOCK_API_ID,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      MOCK_APIS[0],
       MOCK_REGION,
+      forceDownload,
     );
   });
 

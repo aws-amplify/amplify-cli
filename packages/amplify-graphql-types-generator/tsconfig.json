@@ -13,7 +13,8 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "allowJs": true,
-    "allowUnreachableCode": true
+    "allowUnreachableCode": true,
+    "skipLibCheck": true
   },
   "include" : [
     "src/**/*"

@@ -1,12 +1,10 @@
-const fs = require('fs');
-
 const subcommand = 'invoke';
 const category = 'function';
-const servicesMetadata = JSON.parse(fs.readFileSync(`${__dirname}/../../provider-utils/supported-services.json`));
 
 module.exports = {
   name: subcommand,
   run: async (context) => {
+    const servicesMetadata = context.amplify.readJsonFile(`${__dirname}/../../provider-utils/supported-services.json`);
     const { amplify } = context;
 
     return amplify.serviceSelectionPrompt(context, category, servicesMetadata)

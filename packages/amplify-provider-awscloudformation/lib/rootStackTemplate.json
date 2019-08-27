@@ -33,16 +33,11 @@
                   "Statement": [
                     {
                       "Sid": "",
-                      "Effect": "Allow",
+                      "Effect": "Deny",
                       "Principal": {
                         "Federated": "cognito-identity.amazonaws.com"
                       },
-                      "Action": "sts:AssumeRoleWithWebIdentity",
-                      "Condition": {
-                        "ForAnyValue:StringLike": {
-                          "cognito-identity.amazonaws.com:amr": "authenticated"
-                        }
-                      }
+                      "Action": "sts:AssumeRoleWithWebIdentity"
                     }
                   ]
                 }
@@ -57,16 +52,11 @@
                   "Statement": [
                     {
                       "Sid": "",
-                      "Effect": "Allow",
+                      "Effect": "Deny",
                       "Principal": {
                         "Federated": "cognito-identity.amazonaws.com"
                       },
-                      "Action": "sts:AssumeRoleWithWebIdentity",
-                      "Condition": {
-                        "ForAnyValue:StringLike": {
-                          "cognito-identity.amazonaws.com:amr": "unauthenticated"
-                        }
-                      }
+                      "Action": "sts:AssumeRoleWithWebIdentity"
                     }
                   ]
                 }

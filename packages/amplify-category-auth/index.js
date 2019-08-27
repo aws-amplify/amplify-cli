@@ -150,7 +150,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
       const resourceDirPath = path.join(
         amplify.pathManager.getBackendDirPath(),
         '/auth/',
-        resourceName,
+        authProps.resourceName,
         'parameters.json',
       );
       const authParameters = amplify.readJsonFile(resourceDirPath);

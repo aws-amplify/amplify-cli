@@ -40,27 +40,4 @@ describe('When handling selected triggers...', () => {
     const triggers = await handleTriggers(context, mockAnswers);
     expect(triggers).toEqual(mockAnswers.triggers);
   });
-
-  it('...it should remove deselected triggers from coreAnswers', async () => {
-    const context = mockContext();
-    const mockAnswers = {
-      triggers: {
-        PostConfirmation: ['add-to-group'],
-      },
-      PostConfirmation: 'abc123',
-      CustomMessage: 'xyz987',
-    };
-    const previousAnswers = {
-      triggers: {
-        PostConfirmation: ['add-to-group'],
-        CustomMessage: ['custom'],
-      },
-      PostConfirmation: 'abc123',
-      CustomMessage: 'xyz987',
-    };
-    context.updatingAuth = { resourceName: 'proj' };
-    await handleTriggers(context, mockAnswers, previousAnswers);
-    expect(mockAnswers.PostConfirmation).toEqual('abc123');
-    expect(mockAnswers.CustomMessage).toBeUndefined();
-  });
 });

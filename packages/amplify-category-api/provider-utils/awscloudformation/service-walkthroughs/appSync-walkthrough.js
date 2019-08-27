@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
-const opn = require('opn');
+const open = require('open');
 
 const category = 'api';
 const serviceName = 'AppSync';
@@ -30,7 +30,7 @@ function openConsole(context) {
 
     const consoleUrl =
           `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
-    opn(consoleUrl, { wait: false });
+    open(consoleUrl, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
   }
