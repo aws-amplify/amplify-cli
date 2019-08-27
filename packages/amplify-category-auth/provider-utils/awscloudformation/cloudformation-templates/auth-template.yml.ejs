@@ -137,6 +137,9 @@ Resources:
         <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
           PreSignUp: !Ref function<%=props.resourceName%>PreSignupArn
         <% } %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+          PreTokenGeneration: !Ref function<%=props.resourceName%>PreTokenGenerationArn
+        <% } %>
         <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
@@ -235,6 +238,16 @@ Resources:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreSignupName
+      SourceArn: !GetAtt UserPool.Arn
+  <% } %>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+  UserPoolPreTokenGenerationLambdaInvokePermission: 
+    Type: "AWS::Lambda::Permission"
+    DependsOn: UserPool
+    Properties: 
+      Action: "lambda:invokeFunction"
+      Principal: "cognito-idp.amazonaws.com"
+      FunctionName: !Ref function<%=props.resourceName%>PreTokenGenerationName
       SourceArn: !GetAtt UserPool.Arn
   <% } %> 
   <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
