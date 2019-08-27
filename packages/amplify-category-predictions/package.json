@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-predictions",
-  "version": "1.4.1-authSubRelease.10",
+  "version": "1.4.1-authSubRelease.11",
   "main": "index.js",
   "description": "amplify-cli predictions plugin",
   "author": "Amazon Web Services",
