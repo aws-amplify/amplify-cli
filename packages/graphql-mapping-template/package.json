@@ -1,6 +1,6 @@
 {
   "name": "graphql-mapping-template",
-  "version": "3.5.1-authSubRelease.11",
+  "version": "3.5.1-authSubRelease.12",
   "description": "An AST wrapper around AWS AppSync resolvers",
   "main": "lib/index.js",
   "scripts": {

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.1-authSubRelease.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.12.1-authSubRelease.12) (2019-08-27)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** added scan index forward ([72cda1e](https://github.com/aws-amplify/amplify-cli/commit/72cda1e)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676)
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* **graphql-dynamodb-transformer:** auth check ([2456bb1](https://github.com/aws-amplify/amplify-cli/commit/2456bb1)), closes [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043)
+* pr review changes ([ee1f106](https://github.com/aws-amplify/amplify-cli/commit/ee1f106)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+* subscription feedback changes ([46725f0](https://github.com/aws-amplify/amplify-cli/commit/46725f0)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+
+
+### BREAKING CHANGES
+
+* Subscriptions will require an argument if an owner is only rule set - If owner &
+group rules are owner will be an optional arg
+
+
+
+
+
 ## [3.12.1-authSubRelease.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@3.12.1-authSubRelease.6) (2019-08-26)
 
 

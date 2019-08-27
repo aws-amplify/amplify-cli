@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "1.9.1-authSubRelease.11",
+  "version": "1.9.1-authSubRelease.12",
   "description": "amplify code generator",
   "main": "src/index.js",
   "scripts": {
@@ -14,8 +14,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "amplify-graphql-docs-generator": "^1.8.1-authSubRelease.11",
-    "amplify-graphql-types-generator": "^1.4.1-authSubRelease.11",
+    "amplify-graphql-docs-generator": "1.8.1-authSubRelease.12",
+    "amplify-graphql-types-generator": "1.4.1-authSubRelease.12",
     "aws-appsync-codegen": "^0.17.4",
     "chalk": "^2.4.2",
     "fs-extra": "^8.1.0",

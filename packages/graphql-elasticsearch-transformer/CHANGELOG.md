@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.1-authSubRelease.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.6.6...graphql-elasticsearch-transformer@3.10.1-authSubRelease.12) (2019-08-27)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** fixed es req template ([311f57d](https://github.com/aws-amplify/amplify-cli/commit/311f57d))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe))
+
+
+
+
+
 ## [3.10.1-authSubRelease.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@3.6.6...graphql-elasticsearch-transformer@3.10.1-authSubRelease.6) (2019-08-26)
 
 
