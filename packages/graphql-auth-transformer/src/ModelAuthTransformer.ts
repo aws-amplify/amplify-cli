@@ -1018,16 +1018,9 @@ All @auth directives used on field definitions are performed when the field is r
         if (!rules || rules.length === 0) {
             return;
         } else if (level === "PUBLIC") {
-            // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
-            if (!noneDS) {
-                ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
-            }
+            // set the resource with no auth logic
             ctx.setResource(resolverResourceId, resolver);
-            ctx.mapResourceToStack(parent.name.value, resolverResourceId);
         } else {
-            if (!noneDS) {
-                ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
-            }
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
             const ownerAuthorizationRules = this.getOwnerRules(rules);
@@ -1062,7 +1055,6 @@ All @auth directives used on field definitions are performed when the field is r
             ];
             resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
             ctx.setResource(resolverResourceId, resolver);
-            ctx.mapResourceToStack(parent.name.value, resolverResourceId);
         }
         // check if owner is enabled in auth
         const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
@@ -1076,7 +1068,13 @@ All @auth directives used on field definitions are performed when the field is r
                 this.addSubscriptionOwnerArgument(ctx, resolver, true)
             }
         }
+        // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
+        if (!noneDS) {
+            ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
         }
+        // finally map the resource to the stack
+        ctx.mapResourceToStack(parent.name.value, resolverResourceId);
+    }
 
     private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
         let subscription = ctx.getSubscription();
@@ -1102,10 +1100,12 @@ All @auth directives used on field definitions are performed when the field is r
         let subscriptionMap: SubscriptionNameMap = {
             level: "ON"
         }
-        if ("subscriptions" in modelDirectiveArgs) {
+        if (modelDirectiveArgs.subscriptions) {
             subscriptionMap = modelDirectiveArgs.subscriptions
             subscriptionMap.level = modelDirectiveArgs.subscriptions.level ?
             modelDirectiveArgs.subscriptions.level : "ON";
+        } else if (!modelDirectiveArgs.subscriptions && "subscriptions" in modelDirectiveArgs) {
+            subscriptionMap.level = "OFF";
         }
         return subscriptionMap;
     }
