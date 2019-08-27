@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "1.6.1-authSubRelease.13",
+  "version": "1.6.1-authSubRelease.14",
   "description": "amplify-cli hosting plugin",
   "main": "index.js",
   "author": "Amazon Web Services",
