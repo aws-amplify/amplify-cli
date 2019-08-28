@@ -292,7 +292,8 @@ test('Test update mutation validation with three part secondary key.', async () 
     expect(updateResponseMissingFirstSortKey.errors).toHaveLength(1);
     const updateResponseMissingAllSortKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', name: 'testing'});
     expect(updateResponseMissingAllSortKeys.data.updateShippingUpdate.name).toEqual('testing')
-    const updateResponseMissingNoKeys = await updateShippingUpdate({ id: item.id, orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'testing2' });
+    const updateResponseMissingNoKeys = await updateShippingUpdate(
+        { id: item.id, orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'testing2' });
     expect(updateResponseMissingNoKeys.data.updateShippingUpdate.name).toEqual('testing2')
 })
 
@@ -332,7 +333,7 @@ test('Test @key directive with sortDirection on GSI', async () => {
     const newShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'DESC');
     const oldShippingUpdates = await listGSIShippingUpdate('order1', { beginsWith: { itemId: 'product' } }, 'ASC');
     expect(oldShippingUpdates.data.shippingUpdates.items[0].status).toEqual('PENDING');
-    expect(oldShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name1');
+    expect(oldShippingUpdates.data.shippingUpdates.items[0].name).toEqual('testing2');
     expect(newShippingUpdates.data.shippingUpdates.items[0].status).toEqual('DELIVERED');
     expect(newShippingUpdates.data.shippingUpdates.items[0].name).toEqual('order1Name4');
 })
@@ -547,7 +548,8 @@ interface ItemCompositeKeyInput {
     createdAt?: string
 }
 async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyConditionInput, limit?: number, nextToken?: string) {
-    const result = await GRAPHQL_CLIENT.query(`query ListItems($orderId: ID, $statusCreatedAt: ModelItemPrimaryCompositeKeyConditionInput, $limit: Int, $nextToken: String) {
+    const result = await GRAPHQL_CLIENT.query(`query ListItems(
+        $orderId: ID, $statusCreatedAt: ModelItemPrimaryCompositeKeyConditionInput, $limit: Int, $nextToken: String) {
         listItems(orderId: $orderId, statusCreatedAt: $statusCreatedAt, limit: $limit, nextToken: $nextToken) {
             items {
                 orderId
@@ -563,7 +565,8 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
 }
 
 async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput, limit?: number, nextToken?: string) {
-    const result = await GRAPHQL_CLIENT.query(`query ListByStatus($status: Status!, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+    const result = await GRAPHQL_CLIENT.query(`query ListByStatus(
+        $status: Status!, $createdAt: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
         itemsByStatus(status: $status, createdAt: $createdAt, limit: $limit, nextToken: $nextToken) {
             items {
                 orderId
@@ -579,7 +582,8 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
 }
 
 async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionInput, limit?: number, nextToken?: string) {
-    const result = await GRAPHQL_CLIENT.query(`query ListByCreatedAt($createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
+    const result = await GRAPHQL_CLIENT.query(`query ListByCreatedAt(
+        $createdAt: AWSDateTime!, $status: ModelStringKeyConditionInput, $limit: Int, $nextToken: String) {
         itemsByCreatedAt(createdAt: $createdAt, status: $status, limit: $limit, nextToken: $nextToken) {
             items {
                 orderId

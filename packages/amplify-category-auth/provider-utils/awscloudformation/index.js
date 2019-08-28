@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const opn = require('opn');
+const open = require('open');
 const _ = require('lodash');
 const {
   existsSync,
@@ -312,7 +312,7 @@ async function updateConfigOnEnvInit(context, category, service) {
       });
 
       if (missingParams.length) {
-        throw Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
+        throw new Error(`auth headless init is missing the following inputParams ${missingParams.join(', ')}`);
       }
     }
     if (resourceParams.hostedUIProviderMeta) {
@@ -532,7 +532,7 @@ function getCognitoOutput(amplifyMeta) {
 async function openUserPoolConsole(context, region, userPoolId) {
   const userPoolConsoleUrl =
     `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
-  await opn(userPoolConsoleUrl, { wait: false });
+  await open(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
 }
@@ -540,7 +540,7 @@ async function openUserPoolConsole(context, region, userPoolId) {
 async function openIdentityPoolConsole(context, region, identityPoolId) {
   const identityPoolConsoleUrl =
     `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
-  await opn(identityPoolConsoleUrl, { wait: false });
+  await open(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
 }

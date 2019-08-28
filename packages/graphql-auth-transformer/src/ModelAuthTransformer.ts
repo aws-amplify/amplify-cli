@@ -1,25 +1,30 @@
-import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments } from 'graphql-transformer-core'
+import { Transformer, TransformerContext, InvalidDirectiveError, gql, getDirectiveArguments, getFieldArguments } from 'graphql-transformer-core'
 import GraphQLAPI from 'cloudform-types/types/appSync/graphQlApi'
+import Resolver from 'cloudform-types/types/appSync/resolver';
 import { ResourceFactory } from './resources'
 import { AuthRule, ModelQuery, ModelMutation, ModelOperation } from './AuthRule'
 import {
     ObjectTypeDefinitionNode, DirectiveNode, ArgumentNode, TypeDefinitionNode, Kind,
-    FieldDefinitionNode, InterfaceTypeDefinitionNode
+    FieldDefinitionNode, InterfaceTypeDefinitionNode, valueFromASTUntyped,
 } from 'graphql'
-import { ResourceConstants, ResolverResourceIDs, isListType, getBaseType } from 'graphql-transformer-common'
+import { ResourceConstants, ResolverResourceIDs, isListType,
+    getBaseType, makeNamedType, makeInputValueDefinition,
+    makeNonNullType, graphqlName, toUpper, makeField } from 'graphql-transformer-common'
 import {
-    Expression, print, raw, iff, equals, forEach, set, ref, list, compoundExpression, or, newline,
+    Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline,
     comment
 } from 'graphql-mapping-template';
-import { valueFromASTUntyped } from 'graphql'
+import { ModelDirectiveArgs, SubscriptionNameMap } from 'graphql-dynamodb-transformer/src/ModelDirectiveArgs'
 
 import {
     OWNER_AUTH_STRATEGY,
-    DEFAULT_OWNER_FIELD,
-    DEFAULT_IDENTITY_FIELD,
     GROUPS_AUTH_STRATEGY,
-    DEFAULT_GROUPS_FIELD
+    DEFAULT_OWNER_FIELD,
+    ON_CREATE_FIELD,
+    ON_UPDATE_FIELD,
+    ON_DELETE_FIELD,
 } from './constants'
+
 
 /**
  * Implements the ModelAuthTransformer.
@@ -62,6 +67,7 @@ import {
  * attributes of the records using conditional expressions. This will likely
  * be via a new argument such as "groupsField".
  */
+
 export type AppSyncAuthModeModes = 'API_KEY' | 'AMAZON_COGNITO_USER_POOLS'; // Introduce later: | 'AWS_IAM' | 'OPENID_CONNECT';
 const validateAuthMode = (mode: string) => {
     if (
@@ -88,12 +94,20 @@ export class ModelAuthTransformer extends Transformer {
                 # Specifies the auth rule's strategy. Allowed values are 'owner' and 'groups'.
                 allow: AuthStrategy!
 
+                # Legacy name for identityClaim
+                identityField: String
+                    @deprecated(reason: "The 'identityField' argument is replaced by the 'identityClaim'.")
+
                 # Specifies the name of the claim to look for on the request's JWT token
                 # from Cognito User Pools (and in the future OIDC) that contains the identity
                 # of the user. If 'allow' is 'groups', this value should point to a list of groups
                 # in the claims. If 'allow' is 'owner', this value should point to the logged in user identity string.
                 # Defaults to "cognito:username" for Cognito User Pools auth.
-                identityField: String
+                identityClaim: String
+
+                # Allows for custom config of 'groups' which is validated against the JWT
+                # Specifies a static list of groups that should have access to the object
+                groupClaim: String
 
                 # Allowed when the 'allow' argument is 'owner'.
                 # Specifies the field of type String or [String] that contains owner(s) that can access the object.
@@ -187,6 +201,18 @@ export class ModelAuthTransformer extends Transformer {
         this.protectListQuery(ctx, ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value), queryRules.list)
         this.protectConnections(ctx, def, operationRules.read)
         this.protectQueries(ctx, def, operationRules.read)
+
+        // Check if subscriptions is enabled
+        const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(modelDirective);
+        const subscription = this.validateSubscriptionLevel(directiveArguments);
+        if (subscription.level !== "OFF") {
+            this.protectOnCreateSubscription(ctx, operationRules.create, def,
+                subscription.level, subscription.onCreate);
+            this.protectOnUpdateSubscription(ctx, operationRules.update, def,
+                subscription.level, subscription.onUpdate);
+            this.protectOnDeleteSubscription(ctx, operationRules.delete, def,
+                subscription.level, subscription.onDelete);
+        }
     }
 
     public field = (
@@ -205,7 +231,16 @@ export class ModelAuthTransformer extends Transformer {
             const argument = directive.arguments.find(get(arg))
             return argument ? valueFromASTUntyped(argument.value) : dflt
         }
+        let protectPrivateFields = true;
 
+        // get model args
+        const modelDirective = parent.directives.find((dir) => dir.name.value === 'model')
+        const parentModelArgs: ModelDirectiveArgs = modelDirective ? getDirectiveArguments(modelDirective) : {};
+        // check if subscriptions is enabled by validating the level
+        const subscriptions = this.validateSubscriptionLevel(parentModelArgs);
+        if (subscriptions.level !== "ON") {
+            protectPrivateFields = false;
+        }
         if (
             parent.name.value === ctx.getQueryTypeName() ||
             parent.name.value === ctx.getMutationTypeName() ||
@@ -236,7 +271,8 @@ Static group authorization should perform as expected.`
         const isDeleteRule = isOpRule('delete');
         // The field handler adds the read rule on the object
         const readRules = rules.filter((rule: AuthRule) => isReadRule(rule))
-        this.protectField(ctx, parent.name.value, definition.name.value, readRules)
+        this.protectField(ctx, parent.name.value, definition,
+            readRules, protectPrivateFields)
 
         // Protect mutations when objects including this field are trying to be created.
         const createRules = rules.filter((rule: AuthRule) => isCreateRule(rule))
@@ -244,16 +280,18 @@ Static group authorization should perform as expected.`
 
         // Protect update mutations when objects inluding this field are trying to be updated.
         const updateRules = rules.filter((rule: AuthRule) => isUpdateRule(rule))
-        this.protectUpdateForField(ctx, parent, definition, updateRules)
+        this.protectUpdateForField(ctx, parent, definition,
+            updateRules)
 
         // Delete operations are only protected by @auth directives on objects.
         const deleteRules = rules.filter((rule: AuthRule) => isDeleteRule(rule))
         this.protectDeleteForField(ctx, parent, definition, deleteRules)
     }
 
-    private protectField(ctx: TransformerContext, typeName: string, fieldName: string, rules: AuthRule[]) {
+    private protectField(ctx: TransformerContext, typeName: string,
+        field: FieldDefinitionNode, rules: AuthRule[], protectPrivateFields: boolean) {
         if (rules && rules.length) {
-            const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, fieldName);
+            const resolverResourceId = ResolverResourceIDs.ResolverResourceID(typeName, field.name.value);
             // If the resolver exists (e.g. @connection use it else make a blank one against None)
             let resolver = ctx.getResource(resolverResourceId)
             if (!resolver) {
@@ -264,9 +302,20 @@ Static group authorization should perform as expected.`
                 }
                 // We also need to add a stack mapping so that this resolver is added to the model stack.
                 ctx.mapResourceToStack(typeName, resolverResourceId)
-                resolver = this.resources.blankResolver(typeName, fieldName)
+                resolver = this.resources.blankResolver(typeName, field.name.value)
             }
             const authExpression = this.authorizationExpressionOnSingleObject(rules, 'ctx.source')
+            if (protectPrivateFields) {
+                if (field.type.kind === Kind.NON_NULL_TYPE) {
+                    throw new InvalidDirectiveError(`\nPer-field auth on the required field ${field.name.value} is not supported with subscriptions.
+Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to OFF or PUBLIC)\n`)
+                }
+                // add operation to queryField
+                this.protectMutations(ctx, typeName, ctx.getMutationTypeName())
+                // add operation check in the field resolver
+                resolver.Properties.ResponseMappingTemplate = print(
+                    this.resources.operationCheckExpression(ctx.getMutationTypeName(), field.name.value));
+            }
             // If a resolver exists, a @connection for example. Prepend it to the req.
             const templateParts = [
                 print(authExpression),
@@ -275,6 +324,29 @@ Static group authorization should perform as expected.`
             resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
             ctx.setResource(resolverResourceId, resolver)
         }
+    }
+
+    private protectMutations(ctx: TransformerContext, typeName: string, operation: string) {
+        // retrieve get and list resources
+        const createResolverResourceID = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+        const updateResolverResourceID = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
+        const deleteResolverResourceID = ResolverResourceIDs.DynamoDBDeleteResolverResourceID(typeName);
+        const createResolverResource = ctx.getResource(createResolverResourceID)
+        const updateResolverResource = ctx.getResource(updateResolverResourceID)
+        const deleteResolverResource = ctx.getResource(deleteResolverResourceID)
+        const resourceIDs = [createResolverResourceID, updateResolverResourceID, deleteResolverResourceID]
+        const operations = [createResolverResource, updateResolverResource, deleteResolverResource];
+        // make set operation experession
+        const operationExpression = this.resources.setOperationExpression(operation);
+
+        operations.forEach( (operation, index) => {
+            const getTemplateParts = [
+                print(operationExpression),
+                operation.Properties.ResponseMappingTemplate,
+            ];
+            operation.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
+            ctx.setResource(resourceIDs[index], operation)
+        })
     }
 
     private protectUpdateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
@@ -294,7 +366,8 @@ Static group authorization should perform as expected.`
      * @param fieldName The name of the field with the @auth directive.
      * @param rules The set of rules that should be applied to create operations.
      */
-    private protectCreateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[]) {
+    private protectCreateForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode,
+        field: FieldDefinitionNode, rules: AuthRule[]) {
         const typeName = parent.name.value;
         const resolverResourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
         const createResolverResource = ctx.getResource(resolverResourceId);
@@ -478,6 +551,7 @@ Static group authorization should perform as expected.`
                 console.warn(
                     `It is not recommended to use 'queries' and 'operations'. The 'operations' argument will be used.`)
             }
+            this.commonRuleValidation(rule);
         }
     }
 
@@ -489,8 +563,30 @@ Static group authorization should perform as expected.`
                     `@auth directives used on field definitions may not specify the 'queries' or 'mutations' arguments. \
 All @auth directives used on field definitions are performed when the field is resolved and can be thought of as 'read' operations.`)
             }
+            this.commonRuleValidation(rule);
         }
     }
+
+    // commmon rule validation between obj and field
+    private commonRuleValidation(rule: AuthRule) {
+        const { identityField, identityClaim, allow,
+           groups, groupsField, groupClaim
+        } = rule;
+       if ( allow === 'groups' && (identityClaim || identityField)) {
+           throw new InvalidDirectiveError(`
+           @auth identityField/Claim can only be used for 'allow: owner'`)
+       }
+       if (allow === 'owner' && groupClaim) {
+           throw new InvalidDirectiveError(`
+           @auth groupClaim can only be used 'allow: groups'`);
+       }
+       if ( groupsField && groups) {
+           throw new InvalidDirectiveError("This rule has groupsField and groups, please use one or the other")
+       }
+       if (identityField && identityClaim) {
+           throw new InvalidDirectiveError("Please use consider IdentifyClaim over IdentityField as it is deprecated.")
+       }
+   }
 
     /**
      * Protect get queries.
@@ -537,7 +633,7 @@ All @auth directives used on field definitions are performed when the field is r
         const throwIfUnauthorizedExpression = this.resources.throwIfUnauthorized()
 
         // Update the existing resolver with the authorization checks.
-        const templateExpression = compoundExpression([
+        return compoundExpression([
             staticGroupAuthorizationExpression,
             newline(),
             dynamicGroupAuthorizationExpression,
@@ -545,8 +641,7 @@ All @auth directives used on field definitions are performed when the field is r
             ownerAuthorizationExpression,
             newline(),
             throwIfUnauthorizedExpression
-        ])
-        return templateExpression
+        ]);
     }
 
     /**
@@ -872,6 +967,165 @@ All @auth directives used on field definitions are performed when the field is r
         }
     }
 
+    // OnCreate Subscription
+    private protectOnCreateSubscription(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, level: string, onCreate?: string[]) {
+        if (onCreate) {
+            onCreate.forEach( (name) => {
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+            })
+        } else {
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_CREATE_FIELD + toUpper(parent.name.value)))
+        }
+    }
+
+    // OnUpdate Subscription
+    private protectOnUpdateSubscription(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, level: string, onUpdate?: string[]) {
+        if (onUpdate) {
+            onUpdate.forEach( (name) => {
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+            })
+        } else {
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_UPDATE_FIELD + toUpper(parent.name.value)))
+        }
+    }
+
+    // OnDelete Subscription
+    private protectOnDeleteSubscription(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, level: string, onDelete?: string[]) {
+        if (onDelete) {
+            onDelete.forEach( (name) => {
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+            })
+        } else {
+            this.addSubscriptionResolvers(ctx, rules, parent,
+                level, graphqlName(ON_DELETE_FIELD + toUpper(parent.name.value)))
+        }
+    }
+
+    // adds subscription resolvers (request / response) based on the operation provided
+    private addSubscriptionResolvers(ctx: TransformerContext, rules: AuthRule[],
+        parent: ObjectTypeDefinitionNode, level: string, fieldName: string) {
+        const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
+        const resolver = this.resources.generateSubscriptionResolver(fieldName);
+        // If the data source does not exist it is created and added as a resource for PUBLIC && ON levels
+        const noneDS = ctx.getResource(ResourceConstants.RESOURCES.NoneDataSource)
+
+        // add the rules in the subscription resolver
+        if (!rules || rules.length === 0) {
+            return;
+        } else if (level === "PUBLIC") {
+            // set the resource with no auth logic
+            ctx.setResource(resolverResourceId, resolver);
+        } else {
+            // Break the rules out by strategy.
+            const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
+            const ownerAuthorizationRules = this.getOwnerRules(rules);
+
+            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                staticGroupAuthorizationRules);
+
+            const fieldIsList = (fieldName: string) => {
+                const field = parent.fields.find(field => field.name.value === fieldName);
+                if (field) {
+                    return isListType(field.type);
+                }
+                return false;
+            };
+            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
+                ownerAuthorizationRules,
+                fieldIsList
+            );
+
+            const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
+            const templateParts = [
+                print(
+                    compoundExpression([
+                        staticGroupAuthorizationExpression,
+                        newline(),
+                        ownerAuthorizationExpression,
+                        newline(),
+                        throwIfUnauthorizedExpression
+                    ])
+                ),
+                resolver.Properties.ResponseMappingTemplate
+            ];
+            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
+            ctx.setResource(resolverResourceId, resolver);
+
+                // check if owner is enabled in auth
+            const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+            const hasStaticGroupAuth = rules.find( rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
+            if (hasOwner) {
+                this.addOwner(ctx, parent.name.value);
+                // If static group is specified in any of the rules then it would specify the owner arg as optional
+                if (hasStaticGroupAuth) {
+                    this.addSubscriptionOwnerArgument(ctx, resolver, false)
+                } else {
+                    this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                }
+            }
+        }
+        // If the subscription level is set to PUBLIC it adds the subscription resolver with no auth logic
+        if (!noneDS) {
+            ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource())
+        }
+        // finally map the resource to the stack
+        ctx.mapResourceToStack(parent.name.value, resolverResourceId);
+    }
+
+    private addSubscriptionOwnerArgument(ctx: TransformerContext, resolver: Resolver, makeNonNull: boolean = false) {
+        let subscription = ctx.getSubscription();
+        let createField: FieldDefinitionNode = subscription.fields.find(
+            field => field.name.value === resolver.Properties.FieldName,
+            ) as FieldDefinitionNode;
+        const nameNode: any = makeNonNull ? makeNonNullType(makeNamedType('String')) : makeNamedType('String');
+        const createArguments = [makeInputValueDefinition(DEFAULT_OWNER_FIELD, nameNode)];
+        createField = {
+            ...createField,
+            arguments: createArguments,
+        };
+        subscription = {
+            ...subscription,
+            fields: subscription.fields.map(
+                field => field.name.value === resolver.Properties.FieldName ? createField : field,
+            ),
+        };
+        ctx.putType(subscription);
+    }
+
+    private validateSubscriptionLevel(modelDirectiveArgs: ModelDirectiveArgs): SubscriptionNameMap {
+        let subscriptionMap: SubscriptionNameMap = {
+            level: "ON"
+        }
+        if (modelDirectiveArgs.subscriptions) {
+            subscriptionMap = modelDirectiveArgs.subscriptions
+            subscriptionMap.level = modelDirectiveArgs.subscriptions.level ?
+            modelDirectiveArgs.subscriptions.level : "ON";
+        } else if (!modelDirectiveArgs.subscriptions && "subscriptions" in modelDirectiveArgs) {
+            subscriptionMap.level = "OFF";
+        }
+        return subscriptionMap;
+    }
+
+    private addOwner(ctx: TransformerContext, parent: string) {
+        const modelType: any = ctx.getType(parent);
+        const fields = getFieldArguments(modelType);
+        if (!("owner" in fields)) {
+            modelType.fields.push(
+                makeField(
+                    DEFAULT_OWNER_FIELD,
+                    [],
+                    makeNamedType('String'),
+                )
+            )
+        }
+        ctx.putType(modelType);
+    }
+
     private getOwnerRules(rules: AuthRule[]): AuthRule[] {
         return rules.filter(rule => rule.allow === 'owner');
     }
@@ -891,8 +1145,6 @@ function fieldHasDirective(field: FieldDefinitionNode, directiveName: string): b
         (d: DirectiveNode) => d.name.value === directiveName
     ))
 }
-
-
 
 function isTruthyOrNull(obj: any): boolean {
     return obj || obj === null;

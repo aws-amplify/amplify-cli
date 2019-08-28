@@ -500,7 +500,7 @@ function loadConfigFromPath(context, profilePath) {
       return config;
     }
   }
-  throw Error(`Invalid config ${profilePath}`);
+  throw new Error(`Invalid config ${profilePath}`);
 }
 
 async function loadConfigurationForEnv(context, env) {

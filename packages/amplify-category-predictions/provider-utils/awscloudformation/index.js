@@ -1,4 +1,4 @@
-import opn from 'opn';
+import open from 'open';
 
 const path = require('path');
 const chalk = require('chalk');
@@ -62,7 +62,7 @@ async function console(context, resourceObj, amplifyMeta) {
 async function openEndpointDetails(context, region, endpointName) {
   const endpointConsoleUrl =
     `https://${region}.console.aws.amazon.com/sagemaker/home?region=${region}#/endpoints/${endpointName}`;
-  await opn(endpointConsoleUrl, { wait: false });
+  await open(endpointConsoleUrl, { wait: false });
   context.print.info('Endpoint Console:');
   context.print.success(endpointConsoleUrl);
 }
@@ -121,7 +121,7 @@ async function openRekognitionUploadUrl(context, bucketName, region, folderPolic
   const URL = folderPolicies === 'admin' ? `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/admin/?region=${region}`
     : `https://s3.console.aws.amazon.com/s3/buckets/${bucketName}/${prefixForAdminTrigger}/?region=${region}`;
   if (!printOnlyURL) {
-    await opn(URL, { wait: false });
+    await open(URL, { wait: false });
   }
   context.print.info(chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`);
 }

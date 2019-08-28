@@ -84,8 +84,12 @@ function runBuildScriptHook(resourceName, projectRoot) {
 }
 
 function scriptExists(projectRoot, scriptName) {
-  const rootPackageJsonContents = require(path.normalize(path.join(projectRoot, 'package.json')));
-  return rootPackageJsonContents.scripts && rootPackageJsonContents.scripts[scriptName];
+  const packageJsonPath = path.normalize(path.join(projectRoot, 'package.json'));
+  if (fs.existsSync(packageJsonPath)) {
+    const rootPackageJsonContents = require(packageJsonPath);
+    return rootPackageJsonContents.scripts && rootPackageJsonContents.scripts[scriptName];
+  }
+  return false;
 }
 
 function installDependencies(resourceDir) {

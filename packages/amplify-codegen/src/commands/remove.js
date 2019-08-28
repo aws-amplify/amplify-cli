@@ -8,7 +8,7 @@ async function remove(context) {
   const projects = config.getProjects();
   let projectName;
   if (projects.length === 0) {
-    throw Error('Codegen is not configured');
+    throw new Error('Codegen is not configured');
   }
 
   if (projects.length === 1) {

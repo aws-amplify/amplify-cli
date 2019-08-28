@@ -1,9 +1,8 @@
 const path = require('path');
-const portfinder = require('portfinder');
 const e2p = require('event-to-promise');
 const fs = require('fs-extra');
 const waitPort = require('wait-port');
-const portPid = require('port-pid');
+const detectPort = require('detect-port');
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
 
@@ -108,8 +107,13 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
     }
     let { port } = givenOptions;
     if (!port) {
-        port = await portfinder.getPortPromise({ port: basePort });
+        port = await detectPort(basePort);
         log.info('found open port', { port });
+    } else {
+        const freePort = await detectPort(port);
+        if(freePort !== port) {
+            throw new Error(`Port ${port} is not free. Please use a different port`);
+        }
     }
     const opts = { ...defaultOptions, ...givenOptions, port };
 
@@ -134,33 +138,6 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
         throw err;
     }
 
-    async function checkProcess() {
-        // Does not work well on windows. There are couple of issue with dependcies on port-pid and netstat
-        // We can enable this once the following PRs are merged
-        // https://github.com/radiovisual/netstats/pull/2
-        // https://github.com/radiovisual/port-pid/pull/7
-
-        if (process.platform !== 'win32') {
-            const portOnPID = await portPid(port);
-            // we invoke this after verifying the port we are attempting to
-            // bind has bound and we can connect. The logic here is if the
-            // port is bound but we have exited we know for sure that we need
-            // to retry starting the emulator.
-            if (
-                proc.exitCode != null ||
-                // verify that _we_ bound the port rather than another process.
-                portOnPID.all.length === 0 ||
-                portOnPID.all.indexOf(proc.pid) === -1
-            ) {
-                log.error('Port bound but by another process ... time to retry');
-                // port is open but it's not our process...
-                const err = new Error('port taken');
-                err.code = 'port_taken';
-                throw err;
-            }
-        }
-    }
-
     // define this now so we can use it later to remove a listener.
     let prematureExit;
     // This is a fairly complex set of logic to retry starting
@@ -182,7 +159,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
                                 host: 'localhost',
                                 port,
                                 output: 'silent'
-                            }).then(checkProcess)
+                            })
                         );
                     }
                 }

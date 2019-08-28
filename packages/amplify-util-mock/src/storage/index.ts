@@ -18,9 +18,11 @@ export async function start(context) {
             );
             return Promise.resolve(false);
         }
-        const testApi = new StorageTest();
+        const mockStorage = new StorageTest();
         try {
-            testApi.start(context);
+            await mockStorage.start(context);
+            // call s3 trigger
+            mockStorage.trigger(context);
         } catch (e) {
             console.log(e);
             // Sending term signal so we clean up after ourself

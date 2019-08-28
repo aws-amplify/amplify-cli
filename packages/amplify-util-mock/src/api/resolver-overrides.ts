@@ -82,13 +82,26 @@ export class ResolverOverrides {
       }
     });
 
+    // Files that are in the disk used by resolvers created by custom stack will exist in resolver folder
+    //  include them in the resolver output
+    const resolversCreatedByTransformer = result.map(r => r.path);
+    const customResolverTemplates = Array.from(this.overrides.values()).filter(
+      o => !resolversCreatedByTransformer.includes(o)
+    );
+    customResolverTemplates.forEach(templateName => {
+      result.push({
+        path: templateName,
+        content: this.contentMap.get(templateName),
+      });
+    });
+
     // Write files to disk
     filesToWrite.forEach((content, filePath) => {
       // Update the content in the map
       this.contentMap.set(filePath, content);
       const abPath = this.getAbsPath(filePath);
       fs.ensureFileSync(abPath);
-      fs.writeFileSync(abPath, content)
+      fs.writeFileSync(abPath, content);
     });
 
     // Delete the files that are no longer needed

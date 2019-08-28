@@ -1,15 +1,12 @@
 {
   "name": "amplify-velocity-template",
   "description": "Velocity Template Language(VTL) for JavaScript",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "keywords": [
     "velocity template"
   ],
   "author": "Amazon Web Services",
   "license": "MIT",
-  "engines": {
-    "node": ">=0.8.0"
-  },
   "main": "src/velocity.js",
   "bin": {
     "velocity": "bin/velocity"
@@ -28,7 +25,7 @@
     "should": "^7.0.1"
   },
   "dependencies": {
-    "lodash": "4.17.11"
+    "lodash": "^4.17.15"
   },
   "scripts": {
     "test": "mocha tests --require should",

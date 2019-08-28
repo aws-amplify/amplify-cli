@@ -5,7 +5,8 @@ import { createServer as createHTTPServer } from 'http';
 import * as e2p from 'event-to-promise';
 import * as portfinder from 'portfinder';
 
-import { Server as CoreHTTPServer, AddressInfo } from 'net';
+import { Server as CoreHTTPServer } from 'net';
+import { AddressInfo } from 'dgram';
 import { Server as MQTTServer } from '@conduitvc/mosca';
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
@@ -24,7 +25,7 @@ const log = console;
 
 export class SubscriptionServer {
   private registrations;
-  private iteratorTimeout: Map<string, NodeJS.Timeout>;
+  private iteratorTimeout: Map<string, NodeJS.Timer>;
   private webSocketServer: CoreHTTPServer;
   private mqttServer;
   url: string;

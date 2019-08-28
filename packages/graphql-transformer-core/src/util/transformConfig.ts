@@ -50,6 +50,11 @@ export interface TransformConfig {
      * generalizes this behavior.
      */
     Migration?: TransformMigrationConfig;
+
+    /**
+     * Keeping a track of transformer version changes
+     */
+    Version?: number;
 }
 export async function loadConfig(projectDir: string): Promise<TransformConfig> {
     const configPath = path.join(projectDir, TRANSFORM_CONFIG_FILE_NAME);

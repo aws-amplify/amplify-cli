@@ -20,6 +20,7 @@ import {
 } from 'graphql';
 import { AppSync, IAM, Fn, DynamoDB, Refs } from 'cloudform-types'
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import * as Case from 'case';
 
 interface KeyArguments {
     name?: string;
@@ -159,8 +160,18 @@ export default class FunctionTransformer extends Transformer {
         const args: KeyArguments = getDirectiveArguments(directive);
         if (args.fields.length > 2) {
             const compositeKeyFieldNames = args.fields.slice(1);
-            const compositeKeyFields = definition.fields.filter(field => Boolean(compositeKeyFieldNames.find(k => k === field.name.value)));
-            const keyName = args.name || 'Primary';
+            // To make sure we get the intended behavior and type conversion we have to keep the order of the fields
+            // as it is in the key field list
+            const compositeKeyFields = [];
+            for (const compositeKeyFieldName of compositeKeyFieldNames) {
+                const field = definition.fields.find(field => field.name.value === compositeKeyFieldName);
+                if (!field) {
+                    throw new InvalidDirectiveError(`Can't find field: ${compositeKeyFieldName} in ${definition.name.value}, but it was specified in the @key definition.`);
+                } else {
+                    compositeKeyFields.push (field);
+                }
+            }
+            const keyName = Case.pascal(args.name || 'Primary');
             const keyConditionInput = makeCompositeKeyConditionInputForKey(definition.name.value, keyName, compositeKeyFields);
             if (!ctx.getType(keyConditionInput.name.value)) {
                 ctx.addInput(keyConditionInput);

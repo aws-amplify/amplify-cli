@@ -1,74 +1,69 @@
-import * as express from "express";
-import * as cors from "cors";
-import { join, normalize } from "path";
-import {
-  readFile,
-  unlink,
-  statSync,
-  ensureFileSync,
-  writeFileSync,
-  existsSync
-} from "fs-extra";
-import * as xml from "xml";
-import * as bodyParser from "body-parser";
-import * as convert from "xml-js";
-import * as e2p from "event-to-promise";
-import * as serveStatic from "serve-static";
-import * as glob from "glob";
-import * as o2x from "object-to-xml";
-import * as uuid from "uuid";
-import * as etag from "etag";
+import * as express from 'express';
+import * as cors from 'cors';
+import { join, normalize } from 'path';
+import { readFile, unlink, statSync, ensureFileSync, writeFileSync, existsSync } from 'fs-extra';
+import * as xml from 'xml';
+import * as bodyParser from 'body-parser';
+import * as convert from 'xml-js';
+import * as e2p from 'event-to-promise';
+import * as serveStatic from 'serve-static';
+import * as glob from 'glob';
+import * as o2x from 'object-to-xml';
+import * as uuid from 'uuid';
+import * as etag from 'etag';
+import * as EventEmitter from 'events';
 
-import { StorageSimulatorServerConfig } from "../index";
+import { StorageSimulatorServerConfig } from '../index';
 
-const LIST_CONTENT = "Contents";
-const LIST_COMMOM_PREFIXES = "CommonPrefixes";
+import * as util from './utils';
+
+const LIST_CONTENT = 'Contents';
+const LIST_COMMOM_PREFIXES = 'CommonPrefixes';
+const EVENT_RECORDS = 'Records';
 
 var corsOptions = {
   maxAge: 20000,
-  exposedHeaders: [
-    "x-amz-server-side-encryption",
-    "x-amz-request-id",
-    "x-amz-id-2",
-    "ETag"
-  ]
+  exposedHeaders: ['x-amz-server-side-encryption', 'x-amz-request-id', 'x-amz-id-2', 'ETag'],
 };
-export class StorageServer {
+export class StorageServer extends EventEmitter {
   private app;
   private server;
   private connection;
   private route; // bucket name get from the CFN parser
   url: string;
-  private uploadId;
+  private uploadIds = [];
+  private upload_bufferMap: {
+    [key: string]: {
+      [key: string]: Buffer;
+    };
+  }; // object to store parts of a big file
+
   private localDirectoryPath: string;
 
   constructor(private config: StorageSimulatorServerConfig) {
+    super();
     this.localDirectoryPath = config.localDirS3;
     this.app = express();
     this.app.use(express.json());
     this.app.use(cors(corsOptions));
-    this.app.use(bodyParser.raw({ limit: "100mb", type: "*/*" }));
-    this.app.use(bodyParser.json({ limit: "50mb", type: "*/*" }));
-    this.app.use(
-      bodyParser.urlencoded({ limit: "50mb", extended: false, type: "*/*" })
-    );
-    this.app.use(
-      serveStatic(this.localDirectoryPath),
-      this.handleRequestAll.bind(this)
-    );
+    this.app.use(bodyParser.raw({ limit: '100mb', type: '*/*' }));
+    this.app.use(bodyParser.json({ limit: '50mb', type: '*/*' }));
+    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: false, type: '*/*' }));
+    this.app.use(serveStatic(this.localDirectoryPath), this.handleRequestAll.bind(this));
 
     this.server = null;
     this.route = config.route;
+    this.upload_bufferMap = {};
   }
 
   start() {
     if (this.server) {
-      throw new Error("Server is already running");
+      throw new Error('Server is already running');
     }
 
     this.server = this.app.listen(this.config.port);
 
-    return e2p(this.server, "listening").then(() => {
+    return e2p(this.server, 'listening').then(() => {
       this.connection = this.server.address();
       this.url = `http://localhost:${this.connection.port}`;
       return this.server;
@@ -80,61 +75,47 @@ export class StorageServer {
       this.server.close();
       this.server = null;
       this.connection = null;
+      this.uploadIds = null;
+      this.upload_bufferMap = null;
     }
   }
 
   private async handleRequestAll(request, response) {
     // parsing the path and the request parameters
-    request.url = decodeURIComponent(request.url);
-    const temp = request.url.split(this.route);
-    request.params.path = "";
+    util.parseUrl(request, this.route);
 
-    // getting the path of the image from the url and storing in the request.params.path  with the prefix
-    if (request.query.prefix !== undefined)
-      request.params.path = request.query.prefix + "/";
+    // create eventObj for thr trigger
 
-    if (temp[1] !== undefined)
-      request.params.path = normalize(
-        join(request.params.path, temp[1].split("?")[0])
-      ); // change for IOS as no bucket name is present in the original url
-    else
-      request.params.path = normalize(
-        join(request.params.path, temp[0].split("?")[0])
-      );
-
-    if (request.params.path[0] == '/') {
-      request.params.path = request.params.path.substring(1);
-    }
-
-    if (request.method === "PUT") {
+    if (request.method === 'PUT') {
       this.handleRequestPut(request, response);
     }
 
-    if (request.method === "POST") {
+    if (request.method === 'POST') {
       this.handleRequestPost(request, response);
     }
 
-    if (request.method === "GET") {
-      if (request.params.path.indexOf(".") === -1) {
-        this.handleRequestList(request, response);
-      } else {
-        this.handleRequestGet(request, response);
-      }
+    if (request.method === 'GET') {
+      this.handleRequestGet(request, response);
     }
-    if (request.method === "DELETE") {
+
+    if (request.method === 'LIST') {
+      this.handleRequestList(request, response);
+    }
+
+    if (request.method === 'DELETE') {
+      // emit event for delete
+      let eventObj = this.createEvent(request);
+      this.emit('event', eventObj);
       this.handleRequestDelete(request, response);
     }
   }
 
   private async handleRequestGet(request, response) {
-
-    const filePath = normalize(
-      join(this.localDirectoryPath, request.params.path)
-    );
+    const filePath = normalize(join(this.localDirectoryPath, request.params.path));
     if (existsSync(filePath)) {
       readFile(filePath, (err, data) => {
         if (err) {
-          console.log(`failed to read file ${filePath} with error ${err}`);
+          console.log('error');
         }
         response.send(data);
       });
@@ -144,12 +125,12 @@ export class StorageServer {
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
           Error: {
-            Code: "NoSuchKey",
-            Message: "The specified key does not exist.",
+            Code: 'NoSuchKey',
+            Message: 'The specified key does not exist.',
             Key: request.params.path,
-            RequestId: "",
-            HostId: ""
-          }
+            RequestId: '',
+            HostId: '',
+          },
         })
       );
     }
@@ -161,24 +142,23 @@ export class StorageServer {
     ListBucketResult[LIST_COMMOM_PREFIXES] = [];
 
     let maxKeys;
-    let prefix = request.query.prefix || "";
+    let prefix = request.query.prefix || '';
     if (request.query.maxKeys !== undefined) {
       maxKeys = Math.min(request.query.maxKeys, 1000);
     } else {
       maxKeys = 1000;
     }
-    let delimiter = request.query.delimiter || "";
-    let startAfter = request.query.startAfter || "";
+    let delimiter = request.query.delimiter || '';
+    let startAfter = request.query.startAfter || '';
     let keyCount = 0;
     // getting folders recursively
-    const dirPath = normalize(
-      join(this.localDirectoryPath, request.params.path) + "/"
-    );
-    let files = glob.sync(dirPath + "/**/*");
+    const dirPath = normalize(join(this.localDirectoryPath, request.params.path) + '/');
+
+    let files = glob.sync(dirPath + '/**/*');
     for (let file in files) {
-      if (delimiter !== "" && checkfile(file, prefix, delimiter)) {
+      if (delimiter !== '' && util.checkfile(file, prefix, delimiter)) {
         ListBucketResult[LIST_COMMOM_PREFIXES].push({
-          prefix: request.params.path + files[file].split(dirPath)[1]
+          prefix: request.params.path + files[file].split(dirPath)[1],
         });
       }
       if (!statSync(files[file]).isDirectory()) {
@@ -191,41 +171,36 @@ export class StorageServer {
           LastModified: new Date(statSync(files[file]).mtime).toISOString(),
           Size: statSync(files[file]).size,
           ETag: etag(files[file]),
-          StorageClass: "STANDARD"
+          StorageClass: 'STANDARD',
         });
         keyCount = keyCount + 1;
       }
     }
-    ListBucketResult["Name"] = this.route.split("/")[1];
-    ListBucketResult["Prefix"] = request.query.prefix || "";
-    ListBucketResult["KeyCount"] = keyCount;
-    ListBucketResult["MaxKeys"] = maxKeys;
-    ListBucketResult["Delimiter"] = delimiter;
+    ListBucketResult['Name'] = this.route.split('/')[1];
+    ListBucketResult['Prefix'] = request.query.prefix || '';
+    ListBucketResult['KeyCount'] = keyCount;
+    ListBucketResult['MaxKeys'] = maxKeys;
+    ListBucketResult['Delimiter'] = delimiter;
     if (keyCount === maxKeys) {
-      ListBucketResult["IsTruncated"] = true;
+      ListBucketResult['IsTruncated'] = true;
     } else {
-      ListBucketResult["IsTruncated"] = false;
+      ListBucketResult['IsTruncated'] = false;
     }
-    response.set("Content-Type", "text/xml");
+    response.set('Content-Type', 'text/xml');
     response.send(
       o2x({
         '?xml version="1.0" encoding="utf-8"?': null,
-        ListBucketResult
+        ListBucketResult,
       })
     );
   }
 
   private async handleRequestDelete(request, response) {
-    // fill in  this content
     const filePath = join(this.localDirectoryPath, request.params.path);
     if (existsSync(filePath)) {
       unlink(filePath, err => {
         if (err) throw err;
-        response.send(
-          xml(
-            convert.json2xml(JSON.stringify(request.params.id + "was deleted"))
-          )
-        );
+        response.send(xml(convert.json2xml(JSON.stringify(request.params.id + 'was deleted'))));
       });
     } else {
       response.sendStatus(204);
@@ -238,9 +213,18 @@ export class StorageServer {
     );
     ensureFileSync(directoryPath);
     // strip signature in android , returns same buffer for other clients
-    var new_data = stripChunkSignature(request.body);
-    writeFileSync(directoryPath, new_data);
-    response.send(xml(convert.json2xml(JSON.stringify("upload success"))));
+    var new_data = util.stripChunkSignature(request.body);
+    // loading data in map for each part
+    if (request.query.partNumber !== undefined) {
+      this.upload_bufferMap[request.query.uploadId][request.query.partNumber] = request.body;
+    }
+    else {
+      writeFileSync(directoryPath, new_data);
+      // event trigger  to differentitiate between multipart and normal put
+      let eventObj = this.createEvent(request);
+      this.emit('event', eventObj);
+    }
+    response.send(xml(convert.json2xml(JSON.stringify('upload success'))));
   }
 
   private async handleRequestPost(request, response) {
@@ -248,20 +232,27 @@ export class StorageServer {
       join(String(this.localDirectoryPath), String(request.params.path))
     );
     if (request.query.uploads !== undefined) {
-      this.uploadId = uuid();
-      //response.set('Content-Type', 'text/xml');
+      let id = uuid();
+      this.uploadIds.push(id);
+      this.upload_bufferMap[id] = {};
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
           InitiateMultipartUploadResult: {
             Bucket: this.route,
             Key: request.params.path,
-            UploadId: this.uploadId
-          }
+            UploadId: id
+          },
         })
       );
-    } else if (request.query.uploadId === this.uploadId) {
-      response.set("Content-Type", "text/xml");
+    } else if (this.uploadIds.includes(request.query.uploadId)) {
+      let arr: Buffer[] = Object.values(this.upload_bufferMap[request.query.uploadId]); // store all the buffers  in an array
+      delete this.upload_bufferMap[request.query.uploadId]; // clear the map with current requestID
+
+      // remove the current upload ID
+      this.uploadIds.splice(this.uploadIds.indexOf(request.query.uploadId), 1);
+
+      response.set('Content-Type', 'text/xml');
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -269,17 +260,26 @@ export class StorageServer {
             Location: request.url,
             Bucket: this.route,
             Key: request.params.path,
-            Etag: etag(directoryPath)
-          }
+            Etag: etag(directoryPath),
+          },
         })
       );
+      let buf = Buffer.concat(arr);
+      writeFileSync(directoryPath, buf);
+      
+      // event trigger for multipart post
+      let eventObj = this.createEvent(request);
+      this.emit('event', eventObj);
     } else {
       const directoryPath = normalize(
         join(String(this.localDirectoryPath), String(request.params.path))
       );
       ensureFileSync(directoryPath);
-      var new_data = stripChunkSignature(request.body);
+      var new_data = util.stripChunkSignature(request.body);
       writeFileSync(directoryPath, new_data);
+      // event trigger for normal post
+      let eventObj = this.createEvent(request);
+      this.emit('event', eventObj);
       response.send(
         o2x({
           '?xml version="1.0" encoding="utf-8"?': null,
@@ -287,56 +287,47 @@ export class StorageServer {
             Location: request.url,
             Bucket: this.route,
             Key: request.params.path,
-            Etag: etag(directoryPath)
-          }
+            Etag: etag(directoryPath),
+          },
         })
       );
     }
   }
-}
+  // build eevent obj for s3 trigger
+  private createEvent(request) {
+    const filePath = normalize(join(this.localDirectoryPath, request.params.path));
+    let eventObj = {};
+    eventObj[EVENT_RECORDS] = [];
 
-// removing chunk siognature from request payload if present
-function stripChunkSignature(buf: Buffer) {
-  let str = buf.toString();
-  var regex = /^[A-Fa-f0-9]+;chunk-signature=[0-9a-f]{64}/gm;
-  let m;
-  let offset = [];
-  let chunk_size = [];
-  let arr = [];
-  while ((m = regex.exec(str)) !== null) {
-    // This is necessary to avoid infinite loops with zero-width matches
-    if (m.index === regex.lastIndex) {
-      regex.lastIndex++;
-    }
-    m.forEach((match, groupIndex, index) => {
-      offset.push(Buffer.from(match).byteLength);
-      var temp = match.split(";")[0];
-      chunk_size.push(parseInt(temp, 16));
+    let event = {
+      eventVersion: '2.0',
+      eventSource: 'aws:s3',
+      awsRegion: 'local',
+      eventTime: new Date().toISOString(),
+      eventName: `ObjectCreated:${request.method}`,
+    };
+
+    let s3 = {
+      s3SchemaVersion: '1.0',
+      configurationId: 'testConfigRule',
+      bucket: {
+        name: String(this.route).substring(1),
+        ownerIdentity: {
+          principalId: 'A3NL1KOZZKExample',
+        },
+        arn: `arn:aws:s3:::${String(this.route).substring(1)}`,
+      },
+      object: {
+        key: request.params.path,
+        size: statSync(filePath).size,
+        eTag: etag(filePath),
+        versionId: '096fKKXTRTtl3on89fVO.nfljtsv6qko',
+      },
+    };
+    eventObj[EVENT_RECORDS].push({
+      event,
+      s3,
     });
-  }
-  var start = 0;
-  //if no chunk signature is present
-  if (offset.length === 0) {
-    return buf;
-  }
-  for (let i = 0; i < offset.length - 1; i++) {
-    start = start + offset[i] + 2;
-    arr.push(buf.slice(start, start + chunk_size[i]));
-    start = start + chunk_size[i] + 2;
-  }
-  return Buffer.concat(arr);
-}
-
-// check for the delimiter in the file for list object request
-function checkfile(file: String, prefix: String, delimiter: String) {
-  if (delimiter === "") {
-    return true;
-  } else {
-    const temp = file.split(String(prefix))[1].split(String(delimiter));
-    if (temp[1] === undefined) {
-      return false;
-    } else {
-      return true;
-    }
+    return eventObj;
   }
 }

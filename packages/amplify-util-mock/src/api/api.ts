@@ -114,6 +114,8 @@ export class APITest {
   }
 
   private async reload(context, filePath, action) {
+    const apiDir = await this.getAPIBackendDirectory(context)
+    const inputSchemaPath = path.join(apiDir, 'schema');
     try {
       let shouldReload;
       if (this.resolverOverrideManager.isTemplateFile(filePath)) {
@@ -139,7 +141,7 @@ export class APITest {
             mappingTemplates,
           });
         }
-      } else {
+      } else if(filePath.includes(inputSchemaPath)) {
         context.print.info('GraphQL Schema change detected. Reloading...');
         const config = await this.runTransformer(context);
         await this.appSyncSimulator.reload(config);

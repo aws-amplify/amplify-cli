@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const { normalizeEditorCode, editorSelection } =
+const { normalizeEditor, editorSelection } =
   require('../../extensions/amplify-helpers/editor-selection');
 const { makeId } = require('../../extensions/amplify-helpers/make-id');
 const { PROJECT_CONFIG_VERSION } = require('../../extensions/amplify-helpers/constants');
@@ -108,7 +108,7 @@ function normalizeProjectName(projectName) {
 async function getEditor(context) {
   let editor;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
-    editor = normalizeEditorCode(context.exeInfo.inputParams.amplify.defaultEditor);
+    editor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else if (!context.exeInfo.inputParams.yes) {
     editor = await editorSelection(editor);
   }
@@ -146,7 +146,10 @@ async function getEnvName(context) {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
-      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters (only lowercase alphabets).')) : resolvePromise(true))),
+      validate: input =>
+        (!isEnvNameValid(input)
+          ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).'
+          : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

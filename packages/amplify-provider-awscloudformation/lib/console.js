@@ -1,4 +1,4 @@
-const opn = require('opn');
+const open = require('open');
 const constants = require('./constants');
 
 function run(context) {
@@ -8,7 +8,7 @@ function run(context) {
     const { Region, StackId } = metaData.providers[constants.Label];
     consoleUrl = `https://console.aws.amazon.com/cloudformation/home?region=${Region}#/stack/detail?stackId=${StackId}`;
   }
-  opn(consoleUrl, { wait: false });
+  open(consoleUrl, { wait: false });
 }
 
 module.exports = {

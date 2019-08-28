@@ -58,7 +58,7 @@ export function graphQLDataSource(
   const typeName = resource.Properties.Type;
   if (typeName === 'AMAZON_DYNAMODB') {
     return {
-      name: resourceName,
+      name: tableName,
       type: 'AMAZON_DYNAMODB',
       config: {
         tableName,
@@ -152,7 +152,7 @@ export function graphQLResolverHandler(
   if (properties.Kind === 'PIPELINE') {
     functions = (properties.PipelineConfig.Functions || []).map(f => getAppSyncFunctionName(f));
   } else {
-    dataSourceName = getDataSourceName(properties.DataSourceName);
+    dataSourceName = getDataSourceName(properties.DataSourceName, cfnContext.resources);
   }
 
   return {
@@ -166,17 +166,22 @@ export function graphQLResolverHandler(
   };
 }
 
-function getDataSourceName(dataSourceName) {
+function getDataSourceName(dataSourceName, resources) {
   // XXX: Util to map data source based on type of intrinsic function
-  if (typeof dataSourceName === 'string') return dataSourceName;
+  let processedDataSourceName;
+  if (typeof dataSourceName === 'string') {
+    return dataSourceName;
+  }
+
   if (isPlainObject(dataSourceName) && Object.keys(dataSourceName).length === 1) {
     const intrinsicFn = Object.keys(dataSourceName)[0];
     if (intrinsicFn === 'Fn::GetAtt') {
-      return dataSourceName[intrinsicFn][0];
+      processedDataSourceName = dataSourceName[intrinsicFn][0];
     }
   } else if (dataSourceName.name === 'Fn::ImportValue') {
-    return dataSourceName.payload.payload[1][2];
+    processedDataSourceName = dataSourceName.payload.payload[1][2];
   }
+  return resources[processedDataSourceName].name;
 }
 
 function getAppSyncFunctionName(functionConfig) {
@@ -202,7 +207,7 @@ export function graphqlFunctionHandler(
     cfnContext
   ).replace('s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/', '');
 
-  const dataSourceName = getDataSourceName(properties.DataSourceName);
+  const dataSourceName = getDataSourceName(properties.DataSourceName, cfnContext.resources);
 
   return {
     name: resource.Properties.Name,

@@ -2,20 +2,20 @@ const inquirer = require('inquirer');
 
 const editors = [
   {
-    name: 'Sublime Text',
-    value: 'sublime',
-  },
-  {
     name: 'Visual Studio Code',
-    value: 'code',
+    value: 'vscode',
   },
   {
     name: 'Atom Editor',
     value: 'atom',
   },
   {
-    name: 'IDEA 14 CE',
-    value: 'idea14ce',
+    name: 'Sublime Text',
+    value: 'sublime',
+  },
+  {
+    name: 'IntelliJ IDEA',
+    value: 'intellij',
   },
   {
     name: 'Vim (via Terminal, Mac OS only)',
@@ -48,17 +48,27 @@ async function editorSelection(defaultEditor) {
   return editorSelected;
 }
 
-function normalizeEditorCode(editorCode) {
-  if (editorCode) {
-    editorCode = editorCode.toLowerCase();
-    editorCode = editors.findIndex(editor => editor.value === editorCode) > -1 ?
-      editorCode : undefined;
+// To support earlier version of the value we need to fix-up mixed case 'Code' to 'code',
+// map 'code' to 'vscode' or 'idea14ce' to 'intellij'
+function normalizeEditor(editor) {
+  if (editor) {
+    editor = editor.toLowerCase();
+
+    if (editor === 'idea14ce') {
+      editor = 'intellij';
+    } else if (editor === 'code') {
+      editor = 'vscode';
+    }
+
+    editor = editors.findIndex(editorEntry => editorEntry.value === editor) > -1 ?
+      editor : undefined;
   }
-  return editorCode;
+
+  return editor;
 }
 
 module.exports = {
   editors,
-  normalizeEditorCode,
+  normalizeEditor,
   editorSelection,
 };

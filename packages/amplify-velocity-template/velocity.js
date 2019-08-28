@@ -1015,9 +1015,15 @@ return new Parser;
 
 
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
+<<<<<<< HEAD:packages/amplify-velocity-template/velocity.js
 exports.parser = velocity;
 exports.Parser = velocity.Parser;
 exports.parse = function () { return velocity.parse.apply(velocity, arguments); };
+=======
+exports.parser = index;
+exports.Parser = index.Parser;
+exports.parse = function () { return index.parse.apply(index, arguments); };
+>>>>>>> refactor(amplify-velocity-template): updated vtl:packages/amplify-velocity-template/src/parse/index.js
 exports.main = function commonjsMain (args) {
     if (!args[1]) {
         console.log('Usage: '+args[0]+' FILE');

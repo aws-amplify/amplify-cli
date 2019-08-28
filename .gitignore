@@ -19,3 +19,4 @@ packages/*/node_modules
 packages/*/package-lock.json
 packages/amplify-storage-simulator/lib
 **/.env
+amplify-integ*/

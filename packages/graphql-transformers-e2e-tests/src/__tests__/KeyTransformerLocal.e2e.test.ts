@@ -111,8 +111,8 @@ test('Test that a primary @key with 3 fields changes the hash and sort keys.', (
     expectArguments(getTestField, ['email', 'kind', 'date']);
 
     const listTestField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
-    expect(listTestField.arguments).toHaveLength(5);
-    expectArguments(listTestField, ['email', 'kindDate', 'filter', 'nextToken', 'limit']);
+    expect(listTestField.arguments).toHaveLength(6);
+    expectArguments(listTestField, ['email', 'kindDate', 'filter', 'nextToken', 'limit', 'sortDirection']);
 })
 
 test('Test that a secondary @key with 3 fields changes the hash and sort keys and adds a query fields correctly.', () => {
@@ -141,7 +141,7 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
     expect(hashKey.AttributeName).toEqual('id');
     expect(hashKeyAttr.AttributeType).toEqual('S');
     // composite keys will always be strings.
-    
+
     const gsi = tableResource.Properties.GlobalSecondaryIndexes.find(o => o.IndexName === 'GSI')
     const gsiHashKey = gsi.KeySchema.find(o => o.KeyType === 'HASH');
     const gsiHashKeyAttr = tableResource.Properties.AttributeDefinitions.find(o => o.AttributeName === 'email');
@@ -159,8 +159,8 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
     expectArguments(getTestField, ['id']);
 
     const queryField = queryType.fields.find(f => f.name && f.name.value === 'listByEmailKindDate') as FieldDefinitionNode;
-    expect(queryField.arguments).toHaveLength(5);
-    expectArguments(queryField, ['email', 'kindDate', 'filter', 'nextToken', 'limit']);
+    expect(queryField.arguments).toHaveLength(6);
+    expectArguments(queryField, ['email', 'kindDate', 'filter', 'nextToken', 'limit', 'sortDirection']);
 
     const listTestField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
     expect(listTestField.arguments).toHaveLength(3);
@@ -203,13 +203,14 @@ test('Test that a secondary @key with a single field adds a GSI.', () => {
     expect(listTestsField.arguments).toHaveLength(3);
     expectArguments(listTestsField, ['filter', 'nextToken', 'limit']);
     const queryIndexField = queryType.fields.find(f => f.name && f.name.value === 'testsByEmail') as FieldDefinitionNode;
-    expect(queryIndexField.arguments).toHaveLength(4);
-    expectArguments(queryIndexField, ['email', 'filter', 'nextToken', 'limit']);
+    expect(queryIndexField.arguments).toHaveLength(5);
+    expectArguments(queryIndexField, ['email', 'filter', 'nextToken', 'limit', 'sortDirection']);
 })
 
 test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     const validSchema = `
-    type Test @model @key(fields: ["email", "createdAt"]) @key(name: "CategoryGSI", fields: ["category", "createdAt"], queryField: "testsByCategory") {
+    type Test @model @key(fields: ["email", "createdAt"])
+    @key(name: "CategoryGSI", fields: ["category", "createdAt"], queryField: "testsByCategory") {
         email: String!
         createdAt: String!
         category: String!
@@ -251,13 +252,13 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     const schema = parse(out.schema);
     const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as ObjectTypeDefinitionNode;
     const queryIndexField = queryType.fields.find(f => f.name && f.name.value === 'testsByCategory') as FieldDefinitionNode;
-    expect(queryIndexField.arguments).toHaveLength(5);
-    expectArguments(queryIndexField, ['category', 'createdAt', 'filter', 'nextToken', 'limit']);
+    expect(queryIndexField.arguments).toHaveLength(6);
+    expectArguments(queryIndexField, ['category', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 
     // When using a complex primary key args are added to the list field. They are optional and if provided, will use a Query instead of a Scan.
     const listTestsField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
-    expect(listTestsField.arguments).toHaveLength(5);
-    expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit']);
+    expect(listTestsField.arguments).toHaveLength(6);
+    expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 
     // Check the create, update, delete inputs.
     const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as ObjectTypeDefinitionNode;
@@ -276,7 +277,9 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
 
 test('Test that a secondary @key with a multiple field adds an LSI.', () => {
     const validSchema = `
-    type Test @model @key(fields: ["email", "createdAt"]) @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
+    type Test 
+        @model @key(fields: ["email", "createdAt"]) 
+        @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
         email: String!
         createdAt: String!
         updatedAt: String!
@@ -317,13 +320,13 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
     const schema = parse(out.schema);
     const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as ObjectTypeDefinitionNode;
     const queryIndexField = queryType.fields.find(f => f.name && f.name.value === 'testsByEmailByUpdatedAt') as FieldDefinitionNode;
-    expect(queryIndexField.arguments).toHaveLength(5);
-    expectArguments(queryIndexField, ['email', 'updatedAt', 'filter', 'nextToken', 'limit']);
+    expect(queryIndexField.arguments).toHaveLength(6);
+    expectArguments(queryIndexField, ['email', 'updatedAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 
     // When using a complex primary key args are added to the list field. They are optional and if provided, will use a Query instead of a Scan.
     const listTestsField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
-    expect(listTestsField.arguments).toHaveLength(5);
-    expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit']);
+    expect(listTestsField.arguments).toHaveLength(6);
+    expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
 })
 
 test('Test that a primary @key with complex fields will update the input objects.', () => {
