@@ -32,7 +32,7 @@ const customS3Client = new S3Client('us-west-2')
 const awsS3Client = new S3({ region: 'us-west-2' })
 
 const fragments = [
-    `fragment FullPost on Post { id author title ups downs percentageUp isPublished }`
+    `fragment FullPost on Post { id author title ups downs percentageUp isPublished createdAt }`
 ]
 
 const createPosts = async () => {
@@ -95,6 +95,7 @@ beforeAll(async () => {
         version: Int
         relatedPosts: [Post]
         postedAt: String
+        createdAt: AWSDateTime
         comments: [String!]
         ratings: [Int!]
         percentageUp: Float
@@ -212,6 +213,28 @@ test('Test searchPosts with sort field on a string field', async () => {
     expect(thirdQuery.data.searchPosts).toBeDefined()
     const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0]
     expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery)
+})
+
+test('Test searchPosts with sort on date type', async () => {
+    const query  = await runQuery(`query {
+        searchPosts(
+            sort: {
+                field: createdAt
+                direction: desc
+            }) {
+            items {
+                ...FullPost
+            }
+        }
+    }`, 'Test search posts with date type response: ')
+    expect(query).toBeDefined()
+    expect(query.data.searchPosts).toBeDefined()
+    const recentItem = new Date(query.data.searchPosts.items[0].createdAt)
+    const oldestItem = new Date(query.data.searchPosts.items[
+        query.data.searchPosts.items.length - 1
+    ].createdAt)
+    expect(recentItem > oldestItem)
+
 })
 
 test('Test searchPosts query without filter', async () => {
