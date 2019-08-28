@@ -14,17 +14,17 @@ describe('input-validation helper: ', () => {
 
   describe('case: question does not have validation', () => {
     it('...promise should resolve(true) if input is not present and question is not required', async () => {
-      await expect(inputValidation(question)(null)).resolves.toEqual(true);
+      await expect(inputValidation(question)(null)).toEqual(true);
     });
 
     it('...promise should resolve(true) if input is present and question is required', async () => {
       question = { required: true };
-      await expect(inputValidation(question)('val')).resolves.toEqual(true);
+      await expect(inputValidation(question)('val')).toEqual(true);
     });
 
     it('...promise should reject(e) if input is not present but question is required', async () => {
       question = { required: true };
-      await expect(inputValidation(question)(null)).rejects.toThrowError(rejectionString);
+      await expect(inputValidation(question)(null)).toEqual(rejectionString);
     });
   });
 
@@ -38,15 +38,15 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)('')).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)('')).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should reject if input does not include value', async () => {
-      await expect(inputValidation(question)('my-other-value')).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)('my-other-value')).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should resolve(true) if input includes value', async () => {
-      await expect(inputValidation(question)('test-value')).resolves.toEqual(true);
+      await expect(inputValidation(question)('test-value')).toEqual(true);
     });
   });
 
@@ -60,15 +60,15 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)([])).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)([])).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should reject if input does not include value', async () => {
-      await expect(inputValidation(question)(['other-value'])).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)(['other-value'])).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should resolve(true) if input includes value', async () => {
-      await expect(inputValidation(question)(['test-value', 'other-value'])).resolves.toEqual(true);
+      await expect(inputValidation(question)(['test-value', 'other-value'])).toEqual(true);
     });
   });
 
@@ -82,15 +82,15 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)('')).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)('')).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should reject if input fails regex test', async () => {
-      await expect(inputValidation(question)('@@1')).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)('@@1')).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should resolve(true) if input passes regex test', async () => {
-      await expect(inputValidation(question)('hello1')).resolves.toEqual(true);
+      await expect(inputValidation(question)('hello1')).toEqual(true);
     });
   });
 
@@ -104,15 +104,15 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)('')).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)('')).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should reject if input fails range test', async () => {
-      await expect(inputValidation(question)(0)).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)(0)).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should resolve(true) if input passes range test', async () => {
-      await expect(inputValidation(question)(5)).resolves.toEqual(true);
+      await expect(inputValidation(question)(5)).toEqual(true);
     });
   });
 
@@ -126,15 +126,15 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)()).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)()).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should reject if input is empty', async () => {
-      await expect(inputValidation(question)([])).rejects.toEqual(question.validation.onErrorMsg);
+      await expect(inputValidation(question)([])).toEqual(question.validation.onErrorMsg);
     });
 
     it('...promise should resolve(true) if input is populated array', async () => {
-      await expect(inputValidation(question)([1, 2])).resolves.toEqual(true);
+      await expect(inputValidation(question)([1, 2])).toEqual(true);
     });
   });
 
@@ -147,13 +147,13 @@ describe('input-validation helper: ', () => {
     });
 
     it('...promise should reject(e) if input is not present but question is required', async () => {
-      await expect(inputValidation(question)()).rejects.toThrowError(rejectionString);
+      await expect(inputValidation(question)()).toEqual(rejectionString);
     });
 
     it('...promise should resolve(true) if input equals anything truthy', async () => {
-      await expect(inputValidation(question)('val')).resolves.toEqual(true);
-      await expect(inputValidation(question)(1)).resolves.toEqual(true);
-      await expect(inputValidation(question)(['index'])).resolves.toEqual(true);
+      await expect(inputValidation(question)('val')).toEqual(true);
+      await expect(inputValidation(question)(1)).toEqual(true);
+      await expect(inputValidation(question)(['index'])).toEqual(true);
     });
   });
 });
