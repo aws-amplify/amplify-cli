@@ -26,9 +26,9 @@ async function postPushCallback(context, graphQLConfig) {
 
   await downloadIntrospectionSchema(context, apis[0].id, graphQLConfig.gqlConfig.schema);
   if (graphQLConfig.shouldGenerateDocs) {
-    generateStatements(context);
+    await generateStatements(context);
   }
-  generateTypes(context);
+  await generateTypes(context);
 }
 
 module.exports = postPushCallback;
