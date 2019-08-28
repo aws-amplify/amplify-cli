@@ -526,13 +526,13 @@ export function makeSubscriptionField(fieldName: string, returnTypeName: string,
     )
 }
 
-export type typeName = 'Composite' | string;
+export type SortKeyFieldInfoTypeName = 'Composite' | string;
 
 export interface SortKeyFieldInfo {
     // The name of the sort key field.
     fieldName: string;
     // The GraphQL type of the sort key field.
-    typeName: typeName;
+    typeName: SortKeyFieldInfoTypeName;
     // Name of the model this field is on.
     model?: string;
     // The name of the key  that this sortKey is on.

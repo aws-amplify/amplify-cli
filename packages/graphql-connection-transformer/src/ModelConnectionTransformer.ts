@@ -13,7 +13,7 @@ import {
     makeScalarFilterInputs,
     makeModelXFilterInputObject,
     makeModelSortDirectionEnumObject,
-    typeName
+    SortKeyFieldInfoTypeName
 } from 'graphql-dynamodb-transformer'
 import {
     getBaseType, isListType, getDirectiveArgument, blankObject,
@@ -498,8 +498,8 @@ export class ModelConnectionTransformer extends Transformer {
         // If the related type is not a list, the index has to be the default index and the fields provided must match the PK/SK of the index.
         if (!isListType(field.type)) {
             if (args.keyName) {
-                throw new InvalidDirectiveError(`Connection is to a single object but the keyName ${args.keyName} ` +
-                                                `was provided which does not reference the default table.`)
+                // tslint:disable-next-line: max-line-length
+                throw new InvalidDirectiveError(`Connection is to a single object but the keyName ${args.keyName} was provided which does not reference the default table.`)
             }
 
             // Start with GetItem resolver for case where the connection is to a single object.
@@ -528,11 +528,11 @@ export class ModelConnectionTransformer extends Transformer {
 
             ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
 
-            let sortKeyInfo : { fieldName : string, typeName : typeName, model: string, keyName: string } = undefined;
+            let sortKeyInfo : { fieldName : string, typeName : SortKeyFieldInfoTypeName, model: string, keyName: string } = undefined;
             if (args.fields.length > 1) {
                 sortKeyInfo = undefined;
             } else {
-                const compositeSortKeyType : typeName = 'Composite';
+                const compositeSortKeyType : SortKeyFieldInfoTypeName = 'Composite';
                 const compositeSortKeyName = keySchema[1] ? this.resources.makeCompositeSortKeyName(String(keySchema[1].AttributeName)) : undefined;
                 const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName)
 
@@ -583,7 +583,7 @@ export class ModelConnectionTransformer extends Transformer {
         parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
         field: FieldDefinitionNode,
         returnType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-        sortKeyInfo?: { fieldName: string, typeName: typeName, model?: string, keyName?: string }
+        sortKeyInfo?: { fieldName: string, typeName: SortKeyFieldInfoTypeName, model?: string, keyName?: string }
     ) {
         this.generateModelXConnectionType(ctx, returnType)
 
@@ -624,7 +624,7 @@ export class ModelConnectionTransformer extends Transformer {
 
     private generateFilterAndKeyConditionInputs(
         ctx: TransformerContext, field: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-        sortKeyInfo?: { fieldName: string, typeName: string }
+        sortKeyInfo?: { fieldName: string, typeName: SortKeyFieldInfoTypeName }
     ): void {
         const scalarFilters = makeScalarFilterInputs()
         for (const filter of scalarFilters) {

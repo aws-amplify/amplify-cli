@@ -191,12 +191,8 @@ export default class TransformerContext {
         const typeDefs: TypeDefinitionNode[] = [];
         for (const key of Object.keys(this.nodeMap)) {
             const definition = this.nodeMap[key];
-            switch (definition.kind) {
-                case kind:
-                    typeDefs.push(definition as TypeDefinitionNode)
-                    break;
-                default:
-                    break;
+            if (definition.kind === kind) {
+                typeDefs.push(definition as TypeDefinitionNode);
             }
         }
         return typeDefs
