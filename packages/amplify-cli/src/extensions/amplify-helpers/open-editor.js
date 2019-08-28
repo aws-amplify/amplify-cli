@@ -35,21 +35,26 @@ async function openEditor(context, filePath) {
 
     editorArguments.push(filePath);
 
-    const stdio = editor.isTerminalEditor ? 'inherit' : 'ignore';
-
     try {
-      const subProcess = childProcess.spawn(editor.binary, editorArguments, {
-        detached: true,
-        stdio,
-      });
-
       if (!editor.isTerminalEditor) {
+        const subProcess = childProcess.spawn(editor.binary, editorArguments, {
+          detached: true,
+          stdio: 'ignore',
+        });
+
+        subProcess.on('error', () => {
+          context.print.error(`Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`);
+        });
+
         subProcess.unref();
+        context.print.info(`Please edit the file in your editor: ${filePath}`);
+        await inquirer.prompt(continueQuestion);
+      } else {
+        childProcess.spawnSync(editor.binary, editorArguments, {
+          detached: true,
+          stdio: 'inherit',
+        });
       }
-
-      context.print.info(`Please edit the file in your editor: ${filePath}`);
-
-      await inquirer.prompt(continueQuestion);
     } catch (e) {
       context.print.error(`Selected default editor not found in your machine. Please manually edit the file created at ${filePath}`);
     }
