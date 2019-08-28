@@ -5,7 +5,7 @@ import { readFromPath } from './fileUtils';
 import { InvalidMigrationError } from '../errors';
 import { Template } from 'cloudform-types';
 
-interface Diff { 
+interface Diff {
     kind: 'N' | 'E' | 'D' | 'A',
     path: string[],
     lhs?: any,
@@ -18,7 +18,8 @@ interface Diff {
  * Calculates a diff between the last saved cloud backend's build directory
  * and the most recent build.
  */
-export async function check(currentCloudBackendDir: string, buildDirectory: string, rootStackName = 'cloudformation-template.json') {
+export async function check(currentCloudBackendDir: string, buildDirectory: string,
+    rootStackName: string = 'cloudformation-template.json') {
     const cloudBackendDirectoryExists = await fs.exists(currentCloudBackendDir);
     const buildDirectoryExists = await fs.exists(buildDirectory);
 
@@ -121,7 +122,7 @@ export function cantAddLSILater(diff: Diff) {
         );
     }
     if (
-        // implies a field was changed in a GSI after it was created. 
+        // implies a field was changed in a GSI after it was created.
         // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
         (diff.kind === 'E' && diff.path.length === 10 && diff.path[5] === 'GlobalSecondaryIndexes' && diff.path[7] === 'KeySchema') ||
         // implies a field was added to a GSI after it was created.
@@ -175,7 +176,7 @@ export function cantAddLSILater(diff: Diff) {
         );
     }
     if (
-        // implies a field was changed in a GSI after it was created. 
+        // implies a field was changed in a GSI after it was created.
         // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
         diff.kind === 'E' && diff.path.length > 6 && diff.path[5] === 'GlobalSecondaryIndexes'
     ) {

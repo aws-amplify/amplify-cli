@@ -7,7 +7,8 @@
     "test": "jest",
     "test-ci": "jest --ci -i",
     "build": "tsc",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib",
+    "watch": "tsc -w"
   },
   "keywords": [
     "graphql",
@@ -30,6 +31,7 @@
     "cloudform-types": "^3.7.0",
     "graphql-dynamodb-transformer": "3.12.0",
     "jest": "^23.1.0",
+    "rimraf": "^3.0.0",
     "ts-jest": "^22.4.6",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"

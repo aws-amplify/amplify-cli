@@ -75,11 +75,11 @@ function transpileAndCheck(schema: string) {
         new Set([
             'GraphQLAPI', 'GraphQLAPIKey', 'GraphQLSchema', 'User', 'UserPost',
             'Post', 'ConnectionStack', 'SearchableStack', 'FunctionDirectiveStack',
-            'HttpStack'
+            'HttpStack', 'NoneDataSource'
         ])
     );
     expectExactKeys(
-        out.rootStack.Outputs, 
+        out.rootStack.Outputs,
         new Set(['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput', 'GraphQLAPIKeyOutput'])
     );
 
@@ -89,7 +89,8 @@ function transpileAndCheck(schema: string) {
         new Set([
             'UserTable', 'UserIAMRole', 'UserDataSource', 'GetUserResolver',
             'ListUserResolver', 'CreateUserResolver', 'UpdateUserResolver',
-            'DeleteUserResolver'
+            'DeleteUserResolver', 'SubscriptiononCreateUserResolver', 'SubscriptiononDeleteUserResolver',
+            'SubscriptiononUpdateUserResolver'
         ])
     );
     expectExactKeys(

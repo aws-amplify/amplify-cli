@@ -7,7 +7,7 @@
     "test": "jest",
     "test-ci": "jest --ci -i",
     "build": "tsc",
-    "buildw": "tsc -w",
+    "watch": "tsc -w",
     "clean": "rm -rf ./lib"
   },
   "keywords": [

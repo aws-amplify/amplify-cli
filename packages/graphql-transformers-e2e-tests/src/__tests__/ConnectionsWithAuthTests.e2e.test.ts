@@ -101,28 +101,45 @@ beforeAll(async () => {
     }
     await createBucket(BUCKET_NAME)
     const validSchema = `
-    type Post @model @auth(rules: [{ allow: owner }]) {
+    type Post @model(
+        subscriptions: {
+            level: PUBLIC
+    })@auth(rules: [{ allow: owner }]) {
         id: ID!
         title: String!
         author: User @connection(name: "UserPosts", keyField: "owner")
         owner: String
     }
-    type User @model @auth(rules: [{ allow: owner }]) {
+    type User @model(
+        subscriptions: {
+            level: PUBLIC
+        }) @auth(rules: [{ allow: owner }]) {
         id: ID!
         posts: [Post!]! @connection(name: "UserPosts", keyField: "owner")
     }
-    type FieldProtected @model {
+    type FieldProtected @model(
+        subscriptions: {
+            level: PUBLIC
+    }){
         id: ID!
         owner: String
         ownerOnly: String @auth(rules: [{ allow: owner }])
     }
-    type OpenTopLevel @model {
+    type OpenTopLevel @model(
+        subscriptions: {
+            level: PUBLIC
+    }) {
         id: ID!
         name: String
         owner: String
         protected: [ConnectionProtected] @connection(name: "ProtectedConnection")
     }
-    type ConnectionProtected @model(queries: null) @auth(rules: [{ allow: owner }]) {
+    type ConnectionProtected @model(
+        subscriptions: {
+            level: PUBLIC
+        }
+        queries: null
+    )@auth(rules: [{ allow: owner }]) {
         id: ID!
         name: String
         owner: String

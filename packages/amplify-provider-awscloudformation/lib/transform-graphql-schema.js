@@ -13,7 +13,11 @@ const KeyTransformer = require('graphql-key-transformer').default;
 const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 
-const { collectDirectiveNames } = TransformPackage;
+const {
+  collectDirectivesByTypeNames,
+  readTransformerConfiguration,
+  writeTransformerConfiguration,
+} = TransformPackage;
 
 const category = 'api';
 const parametersFileName = 'parameters.json';
@@ -22,9 +26,59 @@ const schemaDirName = 'schema';
 
 function failOnInvalidAuthType(usedDirectives, opts) {
   if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to use the @auth directive without enabling Amazon Cognito user pools for your API.
-Run \`amplify update api\` and choose "Amazon Cognito User Pool" as the authorization type for the API.`);
+    throw new Error(`You are trying to
+use the @auth directive without enabling Amazon Cognito user pools for your API.
+Run \`amplify update api\` and choose
+"Amazon Cognito User Pool" as the authorization type for the API.`);
   }
+}
+
+function warnOnAuth(context, map) {
+  const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
+  if (unAuthModelTypes.length) {
+    context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
+    context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
+    context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
+  }
+}
+
+/**
+ * @TODO Include a map of versions to keep track
+ */
+async function transformerVersionCheck(
+  context, resourceDir, cloudBackendDirectory,
+  updatedResources, usedDirectives,
+) {
+  const versionChangeMessage = 'The default behaviour for @auth has changed in the latest version of Amplify\nRead here for details: https://aws-amplify.github.io/docs/cli-toolchain/graphql#authorizing-subscriptions';
+  let transformerConfig;
+  // this is where we check if there is a prev version of the transformer being used
+  // by using the transformer.conf.json file
+  try {
+    transformerConfig = await readTransformerConfiguration(cloudBackendDirectory);
+  } catch (err) {
+    // check local resource if the question has been answered before
+    transformerConfig = await readTransformerConfiguration(resourceDir);
+  }
+  const resources = updatedResources.filter(resource => resource.service === 'AppSync');
+  if (!transformerConfig.Version && usedDirectives.includes('auth')
+  && resources.length > 0) {
+    if (context.exeInfo &&
+      context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
+      context.print.warning(`\n${versionChangeMessage}\n`);
+    } else {
+      const response = await inquirer.prompt({
+        name: 'transformerConfig',
+        type: 'confirm',
+        message: `\n${versionChangeMessage} \n Do you wish to continue?`,
+        default: false,
+      });
+      if (!response.transformerConfig) {
+        process.exit(0);
+      }
+    }
+  }
+  transformerConfig.Version = 4.0;
+  await writeTransformerConfiguration(resourceDir, transformerConfig);
 }
 
 function apiProjectIsFromOldVersion(pathToProject, resourcesToBeCreated) {
@@ -202,10 +256,22 @@ async function transformGraphQLSchema(context, options) {
   const project = await TransformPackage.readProjectConfiguration(resourceDir);
 
   // Check for common errors
-  const usedDirectives = collectDirectiveNames(project.schema);
+  const directiveMap = collectDirectivesByTypeNames(project.schema);
   failOnInvalidAuthType(
-    usedDirectives,
+    directiveMap.directives,
     { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
+  );
+  warnOnAuth(
+    context,
+    directiveMap.types,
+  );
+
+  await transformerVersionCheck(
+    context,
+    resourceDir,
+    previouslyDeployedBackendDir,
+    resourcesToBeUpdated,
+    directiveMap.directives,
   );
 
   const authMode = parameters.AuthCognitoUserPoolId ? 'AMAZON_COGNITO_USER_POOLS' : 'API_KEY';
@@ -222,7 +288,7 @@ async function transformGraphQLSchema(context, options) {
     new ModelAuthTransformer({ authMode }),
   ];
 
-  if (usedDirectives.includes('searchable')) {
+  if (directiveMap.directives.includes('searchable')) {
     transformerList.push(new SearchableModelTransformer());
   }
 
