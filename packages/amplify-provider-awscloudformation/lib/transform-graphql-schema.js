@@ -38,7 +38,7 @@ function warnOnAuth(context, map) {
   if (unAuthModelTypes.length) {
     context.print.warning('\nThe following types do not have \'@auth\' enabled. Consider using @auth with @model');
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth');
+    context.print.info('Learn more about @auth here: https://aws-amplify.github.io/docs/cli-toolchain/graphql#auth \n');
   }
 }
 
@@ -69,7 +69,7 @@ async function transformerVersionCheck(
       const response = await inquirer.prompt({
         name: 'transformerConfig',
         type: 'confirm',
-        message: `${versionChangeMessage} \n Do you wish to continue?`,
+        message: `\n${versionChangeMessage} \n Do you wish to continue?`,
         default: false,
       });
       if (!response.transformerConfig) {
