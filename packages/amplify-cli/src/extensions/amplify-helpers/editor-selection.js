@@ -2,16 +2,16 @@ const inquirer = require('inquirer');
 
 const editors = [
   {
-    name: 'Sublime Text',
-    value: 'sublime',
-  },
-  {
     name: 'Visual Studio Code',
     value: 'vscode',
   },
   {
     name: 'Atom Editor',
     value: 'atom',
+  },
+  {
+    name: 'Sublime Text',
+    value: 'sublime',
   },
   {
     name: 'IntelliJ IDEA',

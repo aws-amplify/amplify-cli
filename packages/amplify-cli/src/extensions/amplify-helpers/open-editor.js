@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const envEditor = require('env-editor');
 const { editorSelection } = require('./editor-selection');
 const { getEnvInfo } = require('./get-env-info');
+const fs = require('fs-extra');
 
 async function openEditor(context, filePath) {
   const continueQuestion = {
@@ -10,16 +11,12 @@ async function openEditor(context, filePath) {
     name: 'pressKey',
     message: 'Press enter to continue',
   };
-  let editorSelected;
+
 
   // Check if default editor is chosen in init step
   const { defaultEditor } = getEnvInfo();
 
-  if (defaultEditor) {
-    editorSelected = defaultEditor;
-  } else {
-    editorSelected = await editorSelection();
-  }
+  const editorSelected = defaultEditor ? editorSelected : await editorSelection();
 
   if (editorSelected !== 'none') {
     const editorArguments = [];
@@ -28,6 +25,7 @@ async function openEditor(context, filePath) {
     if (!editor) {
       console.error(`Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`);
     }
+    const editorPath = editor.paths.find(p => fs.existsSync(p));
 
     if (editorSelected === 'vscode') {
       editorArguments.push('--goto');
@@ -35,21 +33,26 @@ async function openEditor(context, filePath) {
 
     editorArguments.push(filePath);
 
-    const stdio = editor.isTerminalEditor ? 'inherit' : 'ignore';
-
     try {
-      const subProcess = childProcess.spawn(editor.binary, editorArguments, {
-        detached: true,
-        stdio,
-      });
-
       if (!editor.isTerminalEditor) {
+        const subProcess = childProcess.spawn(editorPath || editor.binary, editorArguments, {
+          detached: true,
+          stdio: 'ignore',
+        });
+
+        subProcess.on('error', () => {
+          context.print.error(`Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`);
+        });
+
         subProcess.unref();
+        context.print.info(`Please edit the file in your editor: ${filePath}`);
+        await inquirer.prompt(continueQuestion);
+      } else {
+        childProcess.spawnSync(editorPath || editor.binary, editorArguments, {
+          detached: true,
+          stdio: 'inherit',
+        });
       }
-
-      context.print.info(`Please edit the file in your editor: ${filePath}`);
-
-      await inquirer.prompt(continueQuestion);
     } catch (e) {
       context.print.error(`Selected default editor not found in your machine. Please manually edit the file created at ${filePath}`);
     }
