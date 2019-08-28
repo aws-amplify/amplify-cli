@@ -312,6 +312,19 @@ place .graphql files in a directory at ${schemaDirPath}`);
   return transformerOutput;
 }
 
+// TODO: Remove until further discussion
+// function getTransformerOptions(project, transformerName) {
+//   if (
+//     project &&
+//     project.config &&
+//     project.config.TransformerOptions &&
+//     project.config.TransformerOptions[transformerName]
+//   ) {
+//     return project.config.TransformerOptions[transformerName];
+//   }
+//   return undefined;
+// }
+
 module.exports = {
   transformGraphQLSchema,
 };
