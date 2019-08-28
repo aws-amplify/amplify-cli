@@ -56,7 +56,7 @@
         "InferModelPolicy": {
             "Type": "AWS::IAM::Policy",
             "Properties": {
-                "PolicyName": { "Ref":"inferPolicyName" },,
+                "PolicyName": { "Ref":"inferPolicyName" },
                 "Roles": {
                     "Fn::If": [
                         "AuthGuestRoleAccess",
