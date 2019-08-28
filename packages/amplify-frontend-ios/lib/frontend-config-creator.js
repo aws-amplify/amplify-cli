@@ -260,6 +260,19 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const { authConfig, securityType } = appsyncResource.output;
+  let authMode = '';
+
+  if (securityType) {
+    authMode = securityType;
+  } else if (authConfig) {
+    authMode = authConfig.defaultAuthentication.authenticationType;
+  }
+
+  const apiKey = authMode === 'API_KEY'
+    ? appsyncResource.output.GraphQLAPIKeyOutput
+    : undefined;
+
   const testMode = appsyncResource.testMode || false;
   const { authConfig, securityType } = appsyncResource.output;
   let authMode = '';
@@ -285,6 +298,7 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
       },
     },
   };
+
   if (testMode) {
     result.AppSync.Default.DangerouslyConnectToHTTPEndpointForTesting = true;
   }

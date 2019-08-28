@@ -456,8 +456,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 1
       #set( $isStaticGroupAuthorized = true )
     #end
   #end
-#end
-## [End] Static Group Authorization Checks **
+  ## [End] Static Group Authorization Checks **
 
 
 ## [Start] Owner Authorization Checks **
@@ -532,7 +531,7 @@ exports[`Test that checks subscription resolvers are generated with auth logic 2
 #if( !($isStaticGroupAuthorized == true || $isOwnerAuthorized == true) )
   $util.unauthorized()
 #end
-## [End] Throw if unauthorized **
+## [End] Check authMode and execute owner/group checks **
 
 $util.toJson(null)"
 `;
