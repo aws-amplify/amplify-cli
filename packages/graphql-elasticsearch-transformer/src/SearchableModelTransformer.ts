@@ -1,4 +1,6 @@
-import { Transformer, TransformerContext, getDirectiveArguments, gql } from "graphql-transformer-core";
+import {
+    Transformer, TransformerContext, getDirectiveArguments,
+    gql } from "graphql-transformer-core";
 import {
     DirectiveNode,
     ObjectTypeDefinitionNode
@@ -23,7 +25,7 @@ import { ResolverResourceIDs, SearchableResourceIDs, getBaseType } from 'graphql
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
-const numberTypes = ["Int", "Float", "Boolean", "AWSTimestamp"];
+const nonKeywordTypes = ["Int", "Float", "Boolean", "AWSTimestamp", "AWSDate", "AWSDateTime"];
 
 interface QueryNameMap {
     search?: string;
@@ -99,10 +101,10 @@ export class SearchableModelTransformer extends Transformer {
 
         //SearchablePostSortableFields
         const queryFields = [];
-        const numberFields: Expression[] = [];
+        const nonKeywordFields: Expression[] = [];
         def.fields.forEach( field => {
-            if (numberTypes.includes(getBaseType(field.type))) {
-                numberFields.push(str(field.name.value));
+            if (nonKeywordTypes.includes(getBaseType(field.type))) {
+                nonKeywordFields.push(str(field.name.value));
             }
         });
 
@@ -111,7 +113,7 @@ export class SearchableModelTransformer extends Transformer {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 
-            const searchResolver = this.resources.makeSearchResolver(def.name.value, numberFields, searchFieldNameOverride);
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, nonKeywordFields, searchFieldNameOverride);
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
             ctx.mapResourceToStack(
                 STACK_NAME,
