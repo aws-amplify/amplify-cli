@@ -90,7 +90,10 @@ export default class RelationalDBResolverGenerator {
                 set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
                 set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
                 RelationalDBMappingTemplate.rdsQuery({
-                    statements: list([str(createSql), str(selectSql)])
+                    statements: list([str(createSql)])
+                }),
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(selectSql)])
                 })
             ])
         )
@@ -208,7 +211,10 @@ export default class RelationalDBResolverGenerator {
                 ),
                 set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
                 RelationalDBMappingTemplate.rdsQuery({
-                    statements: list([str(updateSql), str(selectSql)])
+                    statements: list([str(updateSql)])
+                }),
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(selectSql)])
                 })
             ])
         )
@@ -261,7 +267,10 @@ export default class RelationalDBResolverGenerator {
         const reqTemplate = print(
             compoundExpression([
                 RelationalDBMappingTemplate.rdsQuery({
-                    statements: list([str(selectSql), str(deleteSql)])
+                    statements: list([str(selectSql)])
+                }),
+                RelationalDBMappingTemplate.rdsQuery({
+                    statements: list([str(deleteSql)])
                 })
             ])
         )
