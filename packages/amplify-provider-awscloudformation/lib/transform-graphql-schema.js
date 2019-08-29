@@ -17,7 +17,7 @@ const {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
   writeTransformerConfiguration,
-  TRANSFORM_CONFIG_FILE_NAME
+  TRANSFORM_CONFIG_FILE_NAME,
 } = TransformPackage;
 
 const category = 'api';
