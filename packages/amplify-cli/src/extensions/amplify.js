@@ -141,8 +141,7 @@ module.exports = (context) => {
     getTriggerMetadata,
     getTriggerPermissions,
     getTriggerEnvVariables,
-    getTriggerEnvInputs,
-    transformersManager,
+    getTriggerEnvInputs
   };
 
   context.amplify = amplify;
