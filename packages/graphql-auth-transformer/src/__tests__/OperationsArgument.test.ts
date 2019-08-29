@@ -150,7 +150,7 @@ test('Test that checks subscription resolvers are generated with auth logic', ()
             new ModelAuthTransformer({
                 authConfig: {
                     defaultAuthentication: {
-                        authenticationType: "API_KEY"
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
                     },
                     additionalAuthenticationProviders: []
                 }})
