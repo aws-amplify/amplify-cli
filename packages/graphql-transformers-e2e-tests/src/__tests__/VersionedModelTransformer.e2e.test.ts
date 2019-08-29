@@ -1,7 +1,3 @@
-import {
-    ObjectTypeDefinitionNode, DirectiveNode, parse, FieldDefinitionNode, DocumentNode, DefinitionNode,
-    Kind
-} from 'graphql'
 import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import DynamoDBModelTransformer from 'graphql-dynamodb-transformer'
@@ -50,6 +46,7 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
+            new VersionedModelTransformer(),
             new ModelAuthTransformer({
                 authConfig: {
                     defaultAuthentication: {
@@ -57,7 +54,6 @@ beforeAll(async () => {
                     },
                     additionalAuthenticationProviders: []
                 }}),
-            new VersionedModelTransformer()
         ]
     })
     const out = transformer.transform(validSchema);
@@ -71,9 +67,10 @@ beforeAll(async () => {
     try {
         console.log('Creating Stack ' + STACK_NAME)
         const finishedStack = await deploy(
-            customS3Client, cf, STACK_NAME, out, {}, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
+            customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1' }, TMP_ROOT, BUCKET_NAME, ROOT_KEY,
             BUILD_TIMESTAMP
         )
+
         // Arbitrary wait to make sure everything is ready.
         await cf.wait(10, () => Promise.resolve())
         console.log('Successfully created stack ' + STACK_NAME)
