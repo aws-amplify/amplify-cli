@@ -56,12 +56,7 @@ test('Test schema generation end to end', async() => {
         describeTable: jest.fn((tableName: string) => {
             return getTableContext(tableName)
         }),
-        hydrateTemplateContext: jest.fn((contextShell: TemplateContext) => {      
-            contextShell.secretStoreArn = this.awsSecretStoreArn
-            contextShell.rdsClusterIdentifier = this.dbClusterOrInstanceArn
-            contextShell.databaseSchema = 'mysql'
-            contextShell.databaseName =  this.database
-            contextShell.region = this.dbRegion
+        hydrateTemplateContext: jest.fn((contextShell: TemplateContext) => {
             return contextShell
         })
     }))
