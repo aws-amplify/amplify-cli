@@ -33,7 +33,7 @@ function getAWSConfigObject(amplifyResources) {
   const { serviceResourceMapping } = amplifyResources;
   const configOutput = {
     UserAgent: 'aws-amplify/cli',
-    Version: '1.0',
+    Version: '0.1.0',
     IdentityManager: {
       Default: {},
     },
@@ -260,19 +260,6 @@ function getDynamoDBConfig(dynamoDBResources, projectRegion) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
-  const { authConfig, securityType } = appsyncResource.output;
-  let authMode = '';
-
-  if (securityType) {
-    authMode = securityType;
-  } else if (authConfig) {
-    authMode = authConfig.defaultAuthentication.authenticationType;
-  }
-
-  const apiKey = authMode === 'API_KEY'
-    ? appsyncResource.output.GraphQLAPIKeyOutput
-    : undefined;
-
   const testMode = appsyncResource.testMode || false;
   const { authConfig, securityType } = appsyncResource.output;
   let authMode = '';

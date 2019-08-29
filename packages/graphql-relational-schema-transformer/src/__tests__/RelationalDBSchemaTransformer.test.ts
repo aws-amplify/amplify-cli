@@ -25,7 +25,7 @@ function getTableContext(tableName: string): TableContext {
     const stringFieldList = ['name', 'description']
 
     for (const fieldName of stringFieldList) {
-        
+
         const baseType = getNamedType(getGraphQLTypeFromMySQLType(primaryKeyType))
 
         const type = getNonNullType(baseType)
@@ -34,21 +34,21 @@ function getTableContext(tableName: string): TableContext {
         createFields.push(getInputValueDefinition(type, fieldName))
 
         let updateType = null
-        if (primaryKey == fieldName) {
+        if (primaryKey === fieldName) {
             updateType = getNonNullType(baseType)
         } else {
             updateType = baseType
         }
         updateFields.push(getInputValueDefinition(updateType, fieldName))
     }
-    return new TableContext(getTypeDefinition(fields, tableName), 
+    return new TableContext(getTypeDefinition(fields, tableName),
                     getInputTypeDefinition(createFields, `Create${tableName}Input`),
-                    getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, 
+                    getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey,
                     primaryKeyType, stringFieldList, [])
 }
 
 test('Test schema generation end to end', async() => {
-    
+
     const MockRelationalDBReader = jest.fn<IRelationalDBReader>(() => ({
         listTables: jest.fn(() => {
             return  [ mockTableAName, mockTableBName, mockTableCName, mockTableDName]
@@ -56,15 +56,16 @@ test('Test schema generation end to end', async() => {
         describeTable: jest.fn((tableName: string) => {
             return getTableContext(tableName)
         }),
-        hydrateTemplateContext: jest.fn((contextShell: TemplateContext) => {      
-            contextShell.secretStoreArn = this.awsSecretStoreArn
-            contextShell.rdsClusterIdentifier = this.dbClusterOrInstanceArn
+        hydrateTemplateContext: jest.fn((contextShell: TemplateContext) => {
+            contextShell.secretStoreArn = secretStoreArn
+            contextShell.rdsClusterIdentifier = clusterArn
             contextShell.databaseSchema = 'mysql'
-            contextShell.databaseName =  this.database
-            contextShell.region = this.dbRegion
+            contextShell.databaseName =  testDBName
+            contextShell.region = region
             return contextShell
         })
     }))
+
     const mockReader = new MockRelationalDBReader()
     const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
 
@@ -112,7 +113,7 @@ test('Test list tables fails', async() => {
     const mockReader = new MockRelationalDBReader()
     const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
 
-    
+
     try {
         await dummyTransformer.introspectDatabaseSchema()
         throw new Error('Request should have failed.')
@@ -139,7 +140,7 @@ test('Test describe table fails', async() => {
     }))
     const mockReader = new MockRelationalDBReader()
     const dummyTransformer = new RelationalDBSchemaTransformer(mockReader, testDBName)
-    
+
     try {
         await dummyTransformer.introspectDatabaseSchema()
         throw new Error('Request should have failed.')

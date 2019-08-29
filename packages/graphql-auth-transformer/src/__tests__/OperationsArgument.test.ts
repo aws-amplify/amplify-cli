@@ -139,15 +139,21 @@ test('Test that checks subscription resolvers are generated with auth logic', ()
     @auth( rules: [
         {allow: owner},
         {allow: groups, groups: ["Admin"]}]){
-       id: ID!
-       wage: Int
-       owner: String
-   }
+        id: ID!
+        wage: Int
+        owner: String
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
@@ -178,15 +184,21 @@ test('Test that checks subscription resolvers are created without auth logic', (
         }) @auth( rules: [
         {allow: owner},
         {allow: groups, groups: ["Admin"]}]){
-       id: ID!
-       wage: Int
-       owner: String
-   }
+        id: ID!
+        wage: Int
+        owner: String
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema)
