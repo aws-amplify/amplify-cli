@@ -226,3 +226,4 @@ workflows:
                 - release
                 - master
                 - beta
+                - connectionsv2
