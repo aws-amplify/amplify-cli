@@ -236,7 +236,7 @@ jobs:
           name: "Checkout sample apps repository"
           command: |
             cd ..
-            git clone https://github.com/phanisrikar93/aws-sdk-ios-samples
+            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing 
       - run:
           name: "Install AWS CLI"
           command: pip install awscli
@@ -300,7 +300,7 @@ jobs:
           name: "Checkout PhotoAlbum Sample App Repo"
           command: |
             cd ..
-            git clone https://github.com/changxu0306/aws-android-sdk-sample.git -b develop sample_app_repo
+            git clone https://github.com/awslabs/aws-sdk-android-samples.git -b e2e-tests-sample-app sample_app_repo 
             cd sample_app_repo/PhotoAlbumSample
             app_root=$(pwd)
             echo "export app_root=$app_root" >> $BASH_ENV
