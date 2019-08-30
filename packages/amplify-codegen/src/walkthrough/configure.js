@@ -35,7 +35,7 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
   if (!context.withoutInit) {
     frontend = getFrontEndHandler(context);
   } else {
-    ({ frontend } = selectedProjectConfig.amplifyExtension.frontend);
+    ({ frontend } = selectedProjectConfig.amplifyExtension);
   }
   context.frontend = frontend;
 
