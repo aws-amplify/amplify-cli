@@ -28,8 +28,23 @@ async function addWalkThrough(context, skip = []) {
     yesFlag = context.exeInfo.inputParams.yes;
   }
 
-  const frontend = getFrontEndHandler(context);
-  const schemaLocation = getSchemaDownloadLocation(context);
+  let { frontend } = context;
+  let schemaLocation = '';
+
+  if (frontend === 'android') {
+    schemaLocation = './app/src/main/graphql/schema.json';
+  } else if (frontend === 'ios') {
+    schemaLocation = './graphql/schema.json';
+  } else if (frontend === 'javascript') {
+    schemaLocation = './src/graphql/schema.json';
+  } else {
+    schemaLocation = './src/graphql/schema.json';
+  }
+
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+    schemaLocation = getSchemaDownloadLocation(context);
+  }
   const answers = {
     excludePattern: DEFAULT_EXCLUDE_PATTERNS,
     schemaLocation,

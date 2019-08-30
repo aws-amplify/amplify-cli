@@ -10,9 +10,21 @@ const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = 
 async function generateStatements(context, forceDownloadSchema, maxDepth) {
   const config = loadConfig(context);
   const projects = config.getProjects();
-  const apis = getAppSyncAPIDetails(context);
-  const { projectPath } = context.amplify.getEnvInfo();
+  let apis = [];
+  if (!context.withoutInit) {
+    apis = getAppSyncAPIDetails(context);
+  }
+  let projectPath = process.cwd();
+  if (!context.withoutInit) {
+    ({ projectPath } = context.amplify.getEnvInfo());
+  }
   if (!projects.length || !apis.length) {
+    if (!context.withoutInit) {
+      context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+      return;
+    }
+  }
+  if (!projects.length && context.withoutInit) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
@@ -22,9 +34,15 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
       ? path.join(projectPath, cfg.amplifyExtension.docsFilePath)
       : path.dirname(path.dirname(includeFiles));
     const schemaPath = path.join(projectPath, cfg.schema);
-    const { region } = cfg.amplifyExtension;
-    await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
-    const frontend = getFrontEndHandler(context);
+    let region;
+    let frontend;
+    if (!context.withoutInit) {
+      ({ region } = cfg.amplifyExtension);
+      await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
+      frontend = getFrontEndHandler(context);
+    } else {
+      frontend = context.frontend;
+    }
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);
     opsGenSpinner.start();

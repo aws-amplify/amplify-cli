@@ -5,22 +5,41 @@ const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askMaxDepth = require('./questions/maxDepth');
+const askForFrontend = require('./questions/selectFrontend');
+
+const frontends = ['android', 'ios', 'javascript'];
 const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 async function configureProjectWalkThrough(context, amplifyConfig) {
-  const frontend = getFrontEndHandler(context);
+  let frontend;
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+  } else {
+    frontend = await askForFrontend(frontends);
+  }
+  context.frontend = frontend;
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
   }));
-  const apiId = await askForGraphQLAPIResource(context, projects);
+  let apiId;
+  if (!context.withoutInit) {
+    apiId = await askForGraphQLAPIResource(context, projects);
+  }
 
-  const selectedProjectConfig = deepCopy(
-    amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
-  );
+  let selectedProjectConfig;
+  if (!context.withoutInit) {
+    selectedProjectConfig = deepCopy(
+        amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
+      );
+  } else {
+    selectedProjectConfig = deepCopy(
+      amplifyConfig.find(project => project.projectName === "Codegen Project"),
+    );
+  }
 
   const { amplifyExtension } = selectedProjectConfig;
   let targetLanguage = 'android';
