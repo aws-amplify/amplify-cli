@@ -49,7 +49,7 @@ async function generateTypes(context, forceDownloadSchema) {
 
         const outputPath = path.join(projectPath, generatedFileName);
         let region;
-        if (!codeGenSpinner.withoutInit) {
+        if (!context.withoutInit) {
           ({ region } = cfg.amplifyExtension);
           await ensureIntrospectionSchema(context, schemaPath,
             apis[0], region, forceDownloadSchema);
