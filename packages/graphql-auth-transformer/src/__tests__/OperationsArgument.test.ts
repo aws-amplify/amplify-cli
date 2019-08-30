@@ -156,7 +156,7 @@ test('Test that checks subscription resolvers are created without auth logic', (
     const validSchema = `
     type Salary @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
         }) @auth( rules: [
         {allow: owner},
         {allow: groups, groups: ["Admin"]}]){
@@ -190,3 +190,44 @@ test('Test that checks subscription resolvers are created without auth logic', (
     ).not.toContain('Authorization rule:')
     expect(out.resolvers['Subscription.onUpdateSalary.res.vtl']).toMatchSnapshot();
 });
+
+test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
+    const validSchema = `
+    type Salary @model(
+        mutations: {
+            create: "makeIT",
+            update: "updateIT",
+        })@auth(
+            rules: [
+                {allow: owner},
+                {allow: groups, groups: ["Moderator"], operations: [create]}
+            ]){
+        id: ID!
+        wage: Int
+        owner: String
+     }
+    `
+    const transformer = new GraphQLTransform({
+        transformers: [
+            new DynamoDBModelTransformer(),
+            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+        ]
+    })
+    const out = transformer.transform(validSchema)
+    // expect to generate subscription resolvers for create and update only
+    expect(out).toBeDefined()
+    expect(
+        out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType
+    ).toEqual('AMAZON_COGNITO_USER_POOLS')
+    expect(
+        out.resolvers['Subscription.onCreateSalary.res.vtl']
+    ).toContain('Authorization rule:')
+    expect(out.resolvers['Subscription.onCreateSalary.res.vtl']).toMatchSnapshot();
+    expect(
+        out.resolvers['Subscription.onUpdateSalary.res.vtl']
+    ).toContain('Authorization rule:')
+    expect(out.resolvers['Subscription.onUpdateSalary.res.vtl']).toMatchSnapshot();
+    expect(
+        out.resolvers['Subscription.onDeleteSalary.res.vtl']
+    ).toBeUndefined()
+})
