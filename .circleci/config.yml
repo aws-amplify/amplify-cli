@@ -406,7 +406,6 @@ workflows:
               only:
                 - master
                 - graphql_e2e_testing
-                - integtest
           requires:
             - build
             - integration_test_js
@@ -417,7 +416,6 @@ workflows:
               only:
                 - master
                 - beta
-                - integtest
           requires:
             - build
             - integration_test_js
@@ -427,7 +425,6 @@ workflows:
             branches:
               only:
                 - master
-                - integtest
           requires:
             - build
             - integration_test_js
@@ -450,7 +447,6 @@ workflows:
             branches:
               only:
                 - master
-                - integtest
           requires:
             - build
             - test
@@ -459,7 +455,6 @@ workflows:
             branches:
               only:
                 - master
-                - integtest
           requires:
             - build
             - test
