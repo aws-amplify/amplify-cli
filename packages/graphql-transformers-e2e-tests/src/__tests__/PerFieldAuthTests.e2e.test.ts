@@ -108,7 +108,7 @@ beforeAll(async () => {
     # Owners of "Admin" group may create and update employee salaries.
     type Employee @model (
         subscriptions: {
-            level: PUBLIC
+            level: public
         }
     ) @auth(rules: [
         { allow: owner, ownerField: "email", operations: [update] },
@@ -484,6 +484,10 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
 })
 
 test('Test with auth with subscriptions on default behavior', async () => {
+    /**
+     * client 1 and 2 are in the same user pool though client 1 should
+     * not be able to see notes if they are created by client 2
+     * */
     const secureNote1 = "secureNote1"
     const createStudent2 = await GRAPHQL_CLIENT_2.query(`mutation {
         createStudent(input: {bio: "bio1", name: "student1", notes: "${secureNote1}"}) {
@@ -499,7 +503,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
     const createStudent1queryID = createStudent2.data.createStudent.id
     expect(createStudent2.data.createStudent.bio).toEqual('bio1')
     expect(createStudent2.data.createStudent.notes).toBeNull()
-    // running query as username1 should return value
+    // running query as username2 should return value
     const queryForStudent2 = await GRAPHQL_CLIENT_2.query(`query {
         getStudent(id: "${createStudent1queryID}") {
             bio
@@ -512,7 +516,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
     console.log(queryForStudent2)
     expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1)
 
-    // running query as username1 should return the type though return notes as null
+    // running query as username3 should return the type though return notes as null
     const queryAsStudent1 = await GRAPHQL_CLIENT_1.query(`query {
         getStudent(id: "${createStudent1queryID}") {
             bio
