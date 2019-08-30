@@ -406,23 +406,32 @@ workflows:
               only:
                 - master
                 - graphql_e2e_testing
+                - integtest
           requires:
             - build
+            - integration_test_js
+            - integration_test_ios
       - integration_test:
           filters:
             branches:
               only:
                 - master
                 - beta
+                - integtest
           requires:
             - build
+            - integration_test_js
+            - integration_test_ios
       - amplify_e2e_tests:
           filters:
             branches:
               only:
                 - master
+                - integtest
           requires:
             - build
+            - integration_test_js
+            - integration_test_ios
       - deploy:
           requires:
             - build
@@ -430,9 +439,6 @@ workflows:
             - integration_test
             - graphql_e2e_tests
             - amplify_e2e_tests
-            - integration_test_js
-            - integration_test_ios
-            - integration_test_android
           filters:
             branches:
               only:
@@ -448,14 +454,6 @@ workflows:
           requires:
             - build
       - integration_test_ios:
-          filters:
-            branches:
-              only:
-                - master
-                - integtest
-          requires:
-            - build
-      - integration_test_android:
           filters:
             branches:
               only:
