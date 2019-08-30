@@ -5,16 +5,12 @@ const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askMaxDepth = require('./questions/maxDepth');
-const askForFrontend = require('./questions/selectFrontend');
-
-const frontends = ['android', 'ios', 'javascript'];
 const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 async function configureProjectWalkThrough(context, amplifyConfig) {
-  
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
@@ -39,7 +35,7 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
   if (!context.withoutInit) {
     frontend = getFrontEndHandler(context);
   } else {
-    frontend = selectedProjectConfig.amplifyExtension.frontend;
+    ({ frontend } = selectedProjectConfig.amplifyExtension.frontend);
   }
   context.frontend = frontend;
 
