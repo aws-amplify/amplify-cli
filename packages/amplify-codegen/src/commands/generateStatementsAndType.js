@@ -26,7 +26,7 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
     }
   }
 
-  let downloadPromises 
+  let downloadPromises;
   if (!context.withoutInit) {
     downloadPromises = projects.map(async cfg =>
       await ensureIntrospectionSchema(

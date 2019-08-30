@@ -64,7 +64,7 @@ async function add(context, apiId = null) {
     return;
   }
   const answer = await addWalkThrough(context);
-  
+
 
   let schema;
   if (!context.withoutInit) {
@@ -81,7 +81,7 @@ async function add(context, apiId = null) {
       schema = getSDLSchemaLocation(apiDetails.name);
     }
   } else {
-    schema = "./schema.json";
+    schema = './schema.json';
   }
 
   let newProject;

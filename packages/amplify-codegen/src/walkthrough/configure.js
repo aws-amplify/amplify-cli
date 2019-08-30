@@ -33,11 +33,11 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
   let selectedProjectConfig;
   if (!context.withoutInit) {
     selectedProjectConfig = deepCopy(
-        amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
-      );
+      amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
+    );
   } else {
     selectedProjectConfig = deepCopy(
-      amplifyConfig.find(project => project.projectName === "Codegen Project"),
+      amplifyConfig.find(project => project.projectName === 'Codegen Project'),
     );
   }
 

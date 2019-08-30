@@ -41,7 +41,7 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
       await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
       frontend = getFrontEndHandler(context);
     } else {
-      frontend = context.frontend;
+      ({ frontend } = context);
     }
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);

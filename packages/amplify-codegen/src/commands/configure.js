@@ -5,7 +5,7 @@ const add = require('./add');
 async function configure(context) {
   try {
     context.amplify.getProjectMeta();
-  } catch(e) {
+  } catch (e) {
     context.withoutInit = true;
   }
   const config = loadConfig(context);

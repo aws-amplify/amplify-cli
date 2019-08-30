@@ -47,7 +47,7 @@ async function generateTypes(context, forceDownloadSchema) {
       const target = cfg.amplifyExtension.codeGenTarget;
 
       const outputPath = path.join(projectPath, generatedFileName);
-      let region; 
+      let region;
       if (!context.withoutInit) {
         ({ region } = cfg.amplifyExtension);
         await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
