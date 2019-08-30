@@ -453,6 +453,7 @@ workflows:
                 - integtest
           requires:
             - build
+            - test
       - integration_test_ios:
           filters:
             branches:
@@ -461,3 +462,4 @@ workflows:
                 - integtest
           requires:
             - build
+            - test
