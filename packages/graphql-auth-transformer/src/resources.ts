@@ -296,7 +296,6 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
 
     public ownerAuthorizationExpressionForSubscriptions(
         rules: AuthRule[],
-        fieldIsList: (fieldName: string) => boolean,
         variableToCheck: string = 'ctx.args',
         variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
     ): Expression {
@@ -304,12 +303,11 @@ groupsField: "${rule.groupsField || DEFAULT_GROUPS_FIELD}" }`
             return comment(`No Owner Authorization Rules`)
         }
         return block('Owner Authorization Checks', [
-            this.ownershipAuthorizationExpressionForSubscriptions(rules, fieldIsList, variableToCheck, variableToSet)
+            this.ownershipAuthorizationExpressionForSubscriptions(rules, variableToCheck, variableToSet)
         ])
     }
     public ownershipAuthorizationExpressionForSubscriptions(
         rules: AuthRule[],
-        fieldIsList: (fieldName: string) => boolean,
         variableToCheck: string = 'ctx.args',
         variableToSet: string = ResourceConstants.SNIPPETS.IsOwnerAuthorizedVariable,
         formatComment?: (rule: AuthRule) => string,
