@@ -14,13 +14,7 @@ function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 async function configureProjectWalkThrough(context, amplifyConfig) {
-  let frontend;
-  if (!context.withoutInit) {
-    frontend = getFrontEndHandler(context);
-  } else {
-    frontend = await askForFrontend(frontends);
-  }
-  context.frontend = frontend;
+  
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
@@ -40,6 +34,14 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
       amplifyConfig.find(project => project.projectName === 'Codegen Project'),
     );
   }
+
+  let frontend;
+  if (!context.withoutInit) {
+    frontend = getFrontEndHandler(context);
+  } else {
+    frontend = selectedProjectConfig.amplifyExtension.frontend;
+  }
+  context.frontend = frontend;
 
   const { amplifyExtension } = selectedProjectConfig;
   let targetLanguage = 'android';
