@@ -1,0 +1,54 @@
+{
+  "name": "amplify-ui-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "ui": "npm run setup-profile && jest --maxWorkers=3",
+    "setup-profile": "tsc && node ./lib/configure_tests.js",
+    "build": "tsc",
+    "clean": "rm -rf ./lib",
+    "config": "tsc && node ./lib/configure_tests.js && node ./lib/main/setup_aws_resources.js",
+    "delete": "node ./lib/main/delete.js"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^23.3.14",
+    "@types/nexpect": "0.4.30",
+    "@types/node": "10.3.4",
+    "aws-amplify": "1.1.4",
+    "aws-sdk": "2.259.1",
+    "dotenv": "6.2.0",
+    "jest": "23.1.0",
+    "nexpect": "0.6.0",
+    "node-fetch": "2.2.0",
+    "rimraf": "2.6.2",
+    "ts-jest": "22.4.6",
+    "tslint": "5.10.0",
+    "typescript": "2.8.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost",
+    "testRegex": "(__tests__/.*.test.*)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "src"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "dependencies": {
+    "esm": "^3.2.25"
+  }
+}
