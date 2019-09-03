@@ -59,11 +59,7 @@ export class DynamoDBModelTransformer extends Transformer {
                 onDelete: [String]
                 level: ModelSubscriptionLevel
             }
-            enum ModelSubscriptionLevel {
-                OFF
-                PUBLIC
-                ON
-            }
+            enum ModelSubscriptionLevel { off public on }
             `
         )
         this.opts = this.getOpts(opts);
@@ -367,7 +363,7 @@ export class DynamoDBModelTransformer extends Transformer {
         if (subscriptionsArgument === null) {
             return;
         } else if (subscriptionsArgument &&
-            subscriptionsArgument.level === "OFF") {
+            subscriptionsArgument.level === "off") {
             return;
         } else if (subscriptionsArgument &&
             (subscriptionsArgument.onCreate || subscriptionsArgument.onUpdate || subscriptionsArgument.onDelete)) {

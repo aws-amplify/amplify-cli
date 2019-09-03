@@ -912,3 +912,84 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   \\"condition\\": $util.toJson($condition)
 }"
 `;
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 1`] = `
+"## [Start] Static Group Authorization Checks **
+## Authorization rule: { allow: groups, groups: \\"[\\"Moderator\\"]\\" } **
+#set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:groups\\"), []) )
+#set( $allowedGroups = [\\"Moderator\\"] )
+#set($isStaticGroupAuthorized = $util.defaultIfNull(
+                $isStaticGroupAuthorized, false))
+#foreach( $userGroup in $userGroups )
+  #foreach( $allowedGroup in $allowedGroups )
+    #if( $allowedGroup == $userGroup )
+      #set( $isStaticGroupAuthorized = true )
+    #end
+  #end
+#end
+## [End] Static Group Authorization Checks **
+
+
+## [Start] Owner Authorization Checks **
+#set( $isOwnerAuthorized = false )
+## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
+#set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
+                        $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+#if( $util.isList($allowedOwners0) )
+  #foreach( $allowedOwner in $allowedOwners0 )
+    #if( $allowedOwner == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.isString($allowedOwners0) )
+  #if( $allowedOwners0 == $identityValue )
+    #set( $isOwnerAuthorized = true )
+  #end
+#end
+## [End] Owner Authorization Checks **
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isOwnerAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+$util.toJson(null)"
+`;
+
+exports[`Test that subscriptions are only generated if the respective mutation operation exists 2`] = `
+"## No Static Group Authorization Rules **
+
+
+## [Start] Owner Authorization Checks **
+#set( $isOwnerAuthorized = false )
+## Authorization rule: { allow: owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\" } **
+#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )
+#set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get(\\"username\\"),
+                        $util.defaultIfNull($ctx.identity.claims.get(\\"cognito:username\\"), \\"___xamznone____\\")) )
+#if( $util.isList($allowedOwners0) )
+  #foreach( $allowedOwner in $allowedOwners0 )
+    #if( $allowedOwner == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+#end
+#if( $util.isString($allowedOwners0) )
+  #if( $allowedOwners0 == $identityValue )
+    #set( $isOwnerAuthorized = true )
+  #end
+#end
+## [End] Owner Authorization Checks **
+
+
+## [Start] Throw if unauthorized **
+#if( !($isStaticGroupAuthorized == true || $isOwnerAuthorized == true) )
+  $util.unauthorized()
+#end
+## [End] Throw if unauthorized **
+
+$util.toJson(null)"
+`;
