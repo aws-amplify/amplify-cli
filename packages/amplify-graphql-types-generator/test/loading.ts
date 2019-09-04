@@ -12,4 +12,12 @@ describe('Validation', () => {
 
     expect(document).toMatchSnapshot();
   })
+  test(`should throw a helpful message when a file has invalid gql snippets`, () => {
+    const inputPaths = [
+      path.join(__dirname, './fixtures/misc/invalid-gqlQueries.js'),
+    ];
+    expect(() => {
+      loadAndMergeQueryDocuments(inputPaths);
+    }).toThrowErrorMatchingSnapshot();
+  })
 });

@@ -16,7 +16,7 @@ async function openEditor(context, filePath) {
   // Check if default editor is chosen in init step
   const { defaultEditor } = getEnvInfo();
 
-  const editorSelected = defaultEditor ? editorSelected : await editorSelection();
+  const editorSelected = defaultEditor || await editorSelection();
 
   if (editorSelected !== 'none') {
     const editorArguments = [];

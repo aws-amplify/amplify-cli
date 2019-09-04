@@ -146,7 +146,10 @@ async function getEnvName(context) {
       type: 'input',
       name: 'envName',
       message: 'Enter a name for the environment',
-      validate: input => new Promise((resolvePromise, reject) => (!isEnvNameValid(input) ? reject(new Error('Environment name should be between 2 and 10 characters (only lowercase alphabets).')) : resolvePromise(true))),
+      validate: input =>
+        (!isEnvNameValid(input)
+          ? 'Environment name should be between 2 and 10 characters (only lowercase alphabets).'
+          : true),
     };
 
     ({ envName } = await inquirer.prompt(envNameQuestion));

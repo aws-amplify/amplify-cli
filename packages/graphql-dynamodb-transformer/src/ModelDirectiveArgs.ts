@@ -10,11 +10,13 @@ export interface MutationNameMap {
     delete?: string;
 }
 
+export type ModelSubscriptionLevel = 'off' | 'public' | 'on'
+
 export interface SubscriptionNameMap {
     onCreate?: string[];
     onUpdate?: string[];
     onDelete?: string[];
-    level?: "OFF" | "PUBLIC" | "ON";
+    level?: ModelSubscriptionLevel;
 }
 
 export interface ModelDirectiveArgs {

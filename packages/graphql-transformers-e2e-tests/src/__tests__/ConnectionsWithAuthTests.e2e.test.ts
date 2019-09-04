@@ -12,7 +12,6 @@ import { CreateBucketRequest } from 'aws-sdk/clients/s3'
 import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import { GraphQLClient } from '../GraphQLClient'
 import { S3Client } from '../S3Client';
-import * as path from 'path'
 import { deploy } from '../deployNestedStacks'
 import * as moment from 'moment';
 import emptyBucket from '../emptyBucket';
@@ -103,7 +102,7 @@ beforeAll(async () => {
     const validSchema = `
     type Post @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
     })@auth(rules: [{ allow: owner }]) {
         id: ID!
         title: String!
@@ -112,14 +111,14 @@ beforeAll(async () => {
     }
     type User @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
         }) @auth(rules: [{ allow: owner }]) {
         id: ID!
         posts: [Post!]! @connection(name: "UserPosts", keyField: "owner")
     }
     type FieldProtected @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
     }){
         id: ID!
         owner: String
@@ -127,7 +126,7 @@ beforeAll(async () => {
     }
     type OpenTopLevel @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
     }) {
         id: ID!
         name: String
@@ -136,7 +135,7 @@ beforeAll(async () => {
     }
     type ConnectionProtected @model(
         subscriptions: {
-            level: PUBLIC
+            level: public
         }
         queries: null
     )@auth(rules: [{ allow: owner }]) {
