@@ -382,7 +382,8 @@ export class ResourceFactory {
     /**
      * Create the Elasticsearch search resolver.
      */
-    public makeSearchResolver(type: string, nonKeywordFields: Expression[], nameOverride?: string, queryTypeName: string = 'Query') {
+    public makeSearchResolver(type: string, nonKeywordFields: Expression[],
+        primaryKey: string, nameOverride?: string, queryTypeName: string = 'Query') {
         const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -393,6 +394,17 @@ export class ResourceFactory {
                 compoundExpression([
                     set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
                     set(ref('nonKeywordFields'), list(nonKeywordFields)),
+                    ifElse(
+                        ref('util.isNullOrEmpty($context.args.sort)'),
+                        compoundExpression([
+                            set(ref('sortDirection'), str('desc')),
+                            set(ref('sortField'), str(primaryKey))
+                        ]),
+                        compoundExpression([
+                            set(ref('sortDirection'), raw('$util.defaultIfNull($context.args.sort.direction, "desc")')),
+                            set(ref('sortField'), raw(`$util.defaultIfNull($context.args.sort.field, "${primaryKey}")`))
+                        ]),
+                    ),
                     ElasticsearchMappingTemplate.searchItem({
                         path: str('$indexPath'),
                         size: ifElse(
@@ -407,18 +419,11 @@ export class ResourceFactory {
                             obj({
                                 'match_all': obj({})
                             })),
-                        sort: ifElse(
-                            ref('context.args.sort'),
-                            list([
-                                iff(raw('!$util.isNullOrEmpty($context.args.sort.field) && !$util.isNullOrEmpty($context.args.sort.direction)'),
-                                raw(`{${'#if($nonKeywordFields.contains($context.args.sort.field))\
-                                    \n"$context.args.sort.field" #else "${context.args.sort.field}.keyword" #end'} : {
-                                        "order": "$context.args.sort.direction"
-                                    }
-                                }`)
-                                )
-                            ]),
-                            list([]))
+                        sort: list([
+                            raw('{ #if($nonKeywordFields.contains($sortField))\
+ "$sortField" #else "${sortField}.keyword" #end : {\
+ "order" : "$sortDirection"\
+} }')]),
                     })
                 ])
             ),
@@ -431,7 +436,7 @@ export class ResourceFactory {
                         [
                             iff(
                                 raw('!$foreach.hasNext'),
-                                set(ref('nextToken'), str('$entry.sort.get(0)'))
+                                set(ref('nextToken'), ref('entry.sort.get(0)'))
                             ),
                             qref('$items.add($entry.get("_source"))')
                         ]
