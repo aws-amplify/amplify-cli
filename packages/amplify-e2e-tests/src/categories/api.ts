@@ -40,7 +40,7 @@ export function addApiWithSchema(
       .sendline('\r')
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendline('\r')
-      .wait(/.*Do you want to configure advanced settings.*/)
+      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendline('\r')
       .wait('Do you have an annotated GraphQL schema?')
       .sendline('y')
@@ -84,7 +84,7 @@ export function updateApiWithMultiAuth(
       .sendline('description')
       .wait(/.*After how many days from now the API key should expire.*/)
       .sendline('300')
-      .wait(/.*Do you want to configure advanced settings.*/)
+      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendline('\x1b[B') // Down
       .wait(/.*Choose the additional authorization types you want to configure for the API.*/)
       .sendline('a\r') // All items

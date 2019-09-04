@@ -338,7 +338,7 @@ async function askSecurityQuestions(context, parameters) {
   const advancedSettingsQuestion = {
     type: 'list',
     name: 'advancedSettings',
-    message: 'Do you want to configure advanced settings',
+    message: 'Do you want to configure advanced settings for the GraphQL API',
     choices: [
       {
         name: 'No, I am done.',
@@ -428,8 +428,6 @@ async function askAuthQuestions(authType, context, printLeadText = false) {
   }
 
   if (authType === 'AWS_IAM') {
-    context.print.info('IAM configuration added.');
-
     return {
       authenticationType: 'AWS_IAM',
     };
