@@ -133,6 +133,9 @@ export class ModelAuthTransformer extends Transformer {
     config: ModelAuthTransformerConfig;
     configuredAuthProviders: ConfiguredAuthProviders;
     generateIAMPolicyforUnauthRole: boolean;
+    generateIAMPolicyforAuthRole: boolean;
+    authPolicyResources: Set<string>;
+    unauthPolicyResources: Set<string>;
 
     constructor(config?: ModelAuthTransformerConfig) {
         super(
@@ -217,6 +220,9 @@ export class ModelAuthTransformer extends Transformer {
         this.resources = new ResourceFactory();
         this.configuredAuthProviders = this.getConfiguredAuthProviders();
         this.generateIAMPolicyforUnauthRole = false;
+        this.generateIAMPolicyforAuthRole = false;
+        this.authPolicyResources = new Set<string>();
+        this.unauthPolicyResources = new Set<string>();
     }
 
     /**
@@ -240,6 +246,21 @@ export class ModelAuthTransformer extends Transformer {
     }
 
     public after = (ctx: TransformerContext): void => {
+        if (this.generateIAMPolicyforAuthRole === true) {
+            ctx.mergeParameters({
+                [ResourceConstants.PARAMETERS.AuthRoleName]: new StringParameter({
+                    Description: 'Reference to the name of the Auth Role created for the project.'
+                }),
+            });
+
+            ctx.mergeResources(
+                {
+                    [ResourceConstants.RESOURCES.AuthRolePolicy]:
+                    this.resources.makeIAMPolicyForRole(true, this.authPolicyResources)
+                }
+            );
+        }
+
         if (this.generateIAMPolicyforUnauthRole === true) {
             ctx.mergeParameters({
                 [ResourceConstants.PARAMETERS.UnauthRoleName]: new StringParameter({
@@ -250,7 +271,7 @@ export class ModelAuthTransformer extends Transformer {
             ctx.mergeResources(
                 {
                     [ResourceConstants.RESOURCES.UnauthRolePolicy]:
-                    this.resources.makeIAMPolicyforUnauthRole()
+                    this.resources.makeIAMPolicyForRole(false, this.unauthPolicyResources)
                 }
             );
         }
@@ -286,6 +307,7 @@ export class ModelAuthTransformer extends Transformer {
         this.ensureDefaultAuthProviderAssigned(rules);
         this.validateRules(rules);
         // Check the rules if we've to generate IAM policies for Unauth role or not
+        this.setAuthPolicyFlag(rules);
         this.setUnauthPolicyFlag(rules);
 
         const { operationRules, queryRules } = this.splitRules(rules);
@@ -298,6 +320,7 @@ export class ModelAuthTransformer extends Transformer {
         // Add the directives to the Type node itself
         if (directives.length > 0) {
             this.extendTypeWithDirectives(ctx, def.name.value, directives);
+            this.addTypeToResourceReferences(def.name.value, rules);
         }
 
         // For each operation evaluate the rules and apply the changes to the relevant resolver.
@@ -359,7 +382,10 @@ Static group authorization should perform as expected.`
         this.ensureDefaultAuthProviderAssigned(rules);
         this.validateFieldRules(rules);
         // Check the rules if we've to generate IAM policies for Unauth role or not
+        this.setAuthPolicyFlag(rules);
         this.setUnauthPolicyFlag(rules);
+
+        this.addFieldToResourceReferences(parent.name.value, definition.name.value, rules);
 
         // Add the directives to the parent type as well, but default must be included
         // in propagation
@@ -419,6 +445,7 @@ Static group authorization should perform as expected.`
                         const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
                         this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                        this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
                     }
                 }
 
@@ -504,6 +531,7 @@ Either make the field optional, set auth on the object and not the field, or dis
                     const operationName = modelConfiguration.getName('create');
 
                     this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
                 }
             }
 
@@ -804,6 +832,7 @@ All @auth directives used on field definitions are performed when the field is r
 
                 if (operationDirectives.length > 0) {
                     this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                    this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
                 }
             }
 
@@ -912,6 +941,7 @@ All @auth directives used on field definitions are performed when the field is r
 
                 if (operationDirectives.length > 0) {
                     this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
+                    this.addFieldToResourceReferences(ctx.getQueryTypeName(), operationName, rules);
                 }
             }
 
@@ -1053,6 +1083,7 @@ All @auth directives used on field definitions are performed when the field is r
 
                 if (operationDirectives.length > 0) {
                     this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
                 }
             }
 
@@ -1176,6 +1207,7 @@ All @auth directives used on field definitions are performed when the field is r
 
                 if (operationDirectives.length > 0) {
                     this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                    this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
                 }
             }
 
@@ -1761,6 +1793,19 @@ found '${rule.provider}' assigned.`);
         };
     }
 
+    private setAuthPolicyFlag(rules: AuthRule[]): void {
+        if (!rules || rules.length === 0 || this.generateIAMPolicyforAuthRole === true) {
+            return;
+        }
+
+        for (const rule of rules) {
+            if (rule.allow === 'private' && rule.provider === 'iam') {
+                this.generateIAMPolicyforAuthRole = true;
+                return;
+            }
+        }
+    }
+
     private setUnauthPolicyFlag(rules: AuthRule[]): void {
         if (!rules || rules.length === 0 || this.generateIAMPolicyforUnauthRole === true) {
             return;
@@ -1818,6 +1863,30 @@ found '${rule.provider}' assigned.`);
         }
 
         return false;
+    }
+
+    private addTypeToResourceReferences(typeName: string, rules: AuthRule[]) : void {
+        const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam');
+        const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam');
+
+        if (iamPublicRules.length > 0) {
+            this.unauthPolicyResources.add(`${typeName}/null`);
+        }
+        if (iamPrivateRules.length > 0) {
+            this.authPolicyResources.add(`${typeName}/null`);
+        }
+    }
+
+    private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]) : void {
+        const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam');
+        const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam');
+
+        if (iamPublicRules.length > 0) {
+            this.unauthPolicyResources.add(`${typeName}/${fieldName}`);
+        }
+        if (iamPrivateRules.length > 0) {
+            this.authPolicyResources.add(`${typeName}/${fieldName}`);
+        }
     }
 }
 

@@ -117,6 +117,9 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
       defaultParams: {
         CreateAPIKey: 0,
         APIKeyExpirationEpoch: -1,
+        authRoleName: {
+          Ref: 'AuthRoleName',
+        },
         unauthRoleName: {
           Ref: 'UnauthRoleName',
         },

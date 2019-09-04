@@ -7,6 +7,7 @@ export class ResourceConstants {
         GraphQLAPILogicalID: 'GraphQLAPI',
         GraphQLSchemaLogicalID: 'GraphQLSchema',
         APIKeyLogicalID: 'GraphQLAPIKey',
+        AuthRolePolicy: 'AuthRolePolicy',
         UnauthRolePolicy: 'UnauthRolePolicy',
 
         // Elasticsearch
@@ -34,6 +35,7 @@ export class ResourceConstants {
         AppSyncApiName: 'AppSyncApiName',
         AppSyncApiId: 'AppSyncApiId',
         CreateAPIKey: 'CreateAPIKey',
+        AuthRoleName: 'authRoleName',
         UnauthRoleName: 'unauthRoleName',
         APIKeyExpirationEpoch: 'APIKeyExpirationEpoch',
 

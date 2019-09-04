@@ -1013,12 +1013,53 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         return block("Determine request authentication mode", expressions);
     }
 
-    public makeIAMPolicyforUnauthRole(): Policy {
+    public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): Policy {
+        const authPiece = isAuthPolicy ? "auth" : "unauth";
+        const policyResources: object[] = [];
+
+        for(const resource of resources) {
+            // We always have 2 parts, no need to check
+            const resourceParts = resource.split("/");
+
+            if (resourceParts[1] !== "null") {
+                policyResources.push (
+                    Fn.Sub(
+                        'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}',
+                        {
+                            apiId: {
+                                "Fn::GetAtt": [
+                                    "GraphQLAPI",
+                                    "ApiId"
+                                ]
+                            },
+                            typeName: resourceParts[0],
+                            fieldName: resourceParts[1]
+                        }
+                    )
+                );
+            } else {
+                policyResources.push (
+                    Fn.Sub(
+                        'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*',
+                        {
+                            apiId: {
+                                "Fn::GetAtt": [
+                                    "GraphQLAPI",
+                                    "ApiId"
+                                ]
+                            },
+                            typeName: resourceParts[0]
+                        }
+                    )
+                );
+            }
+        }
+
         return new IAM.Policy({
-            PolicyName: 'appsync-unauthrole-policy',
+            PolicyName: `appsync-${authPiece}role-policy`,
             Roles: [
                 //HACK double casting needed because it cannot except Ref
-                { Ref: 'unauthRoleName' } as unknown as Value<string>
+                { Ref: `${authPiece}RoleName` } as unknown as Value<string>
             ],
             PolicyDocument: {
                 Version: '2012-10-17',
@@ -1028,25 +1069,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
                     Action: [
                         'appsync:GraphQL'
                     ],
-                    Resource: [{
-                        'Fn::Join': [
-                            '',
-                            [
-                                'arn:aws:appsync:',
-                                { Ref: 'AWS::Region' },
-                                ':',
-                                { Ref: 'AWS::AccountId' },
-                                ':apis/',
-                                {
-                                    "Fn::GetAtt": [
-                                        "GraphQLAPI",
-                                        "ApiId"
-                                    ]
-                                },
-                                '/*',
-                            ],
-                        ],
-                    }],
+                    Resource: policyResources,
                 }],
             },
         });

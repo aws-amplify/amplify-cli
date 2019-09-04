@@ -24,15 +24,6 @@ const parametersFileName = 'parameters.json';
 const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 
-function failOnInvalidAuthType(usedDirectives, opts) {
-  if (usedDirectives.includes('auth') && !opts.isUserPoolEnabled) {
-    throw new Error(`You are trying to
-use the @auth directive without enabling Amazon Cognito user pools for your API.
-Run \`amplify update api\` and choose
-"Amazon Cognito User Pool" as the authorization type for the API.`);
-  }
-}
-
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => (!map[type].includes('auth') && map[type].includes('model')));
   if (unAuthModelTypes.length) {
@@ -277,10 +268,6 @@ async function transformGraphQLSchema(context, options) {
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
-  failOnInvalidAuthType(
-    directiveMap.directives,
-    { isUserPoolEnabled: Boolean(parameters.AuthCognitoUserPoolId) },
-  );
   warnOnAuth(
     context,
     directiveMap.types,

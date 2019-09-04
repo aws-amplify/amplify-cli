@@ -90,8 +90,15 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
         const personalParams = JSON.parse(paramFile);
         Object.assign(currentParameters, personalParams);
 
+        // If authRoleName parameter not present, add it
+        if (!currentParameters.authRoleName) {
+          currentParameters.authRoleName = {
+            Ref: 'AuthRoleName',
+          };
+        }
+
         // If unauthRoleName parameter not present, add it
-        if (!currentParameters.unauthRole) {
+        if (!currentParameters.unauthRoleName) {
           currentParameters.unauthRoleName = {
             Ref: 'UnauthRoleName',
           };
