@@ -11,12 +11,11 @@ import {
 import { ResourceConstants, ResolverResourceIDs, isListType,
     getBaseType, makeDirective, makeNamedType, makeInputValueDefinition,
     blankObjectExtension, extensionWithDirectives, extendFieldWithDirectives,
-    ModelResourceIDs, makeNonNullType, graphqlName, toUpper, makeField } from 'graphql-transformer-common'
+    makeNonNullType, makeField } from 'graphql-transformer-common'
 import {
     Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, or, newline,
     comment
 } from 'graphql-mapping-template';
-import { ModelDirectiveConfiguration, ModelDirectiveOperationType } from './ModelDirectiveConfiguration';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
 import {
@@ -401,7 +400,7 @@ Static group authorization should perform as expected.`
     }
 
     private protectReadForField(ctx: TransformerContext, parent: ObjectTypeDefinitionNode, field: FieldDefinitionNode, rules: AuthRule[],
-        protectPrivateFields: boolean, modelConfiguration: ModelDirectiveConfiguration) {
+        modelConfiguration: ModelDirectiveConfiguration) {
         if (rules && rules.length) {
 
             // Get the directives we need to add to the GraphQL nodes
@@ -599,8 +598,8 @@ Either make the field optional, set auth on the object and not the field, or dis
                     createResolverResource.Properties.ResponseMappingTemplate,
                 ];
                 createResolverResource.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, createResolverResource)
             }
-            ctx.setResource(resolverResourceId, createResolverResource)
         }
     }
 
@@ -1281,9 +1280,8 @@ All @auth directives used on field definitions are performed when the field is r
                     resolver.Properties.ResponseMappingTemplate,
                 ];
                 resolver.Properties.ResponseMappingTemplate = getTemplateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver)
             }
-            resolver.Properties.RequestMappingTemplate = templateParts.join('\n\n')
-            ctx.setResource(resolverResourceId, resolver)
         }
     }
 

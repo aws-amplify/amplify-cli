@@ -4023,6 +4023,21 @@ aws-appsync@^1.8.1:
     url "^0.11.0"
     uuid "3.x"
 
+aws-sdk@2.259.1:
+  version "2.259.1"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.259.1.tgz#df4814b65d5654f250d097951aa84e27a472b5aa"
+  integrity sha512-z2/t30caHNadSKeasUTS8trgIoHuWtmOKEhQK72Bqtbbgviqw2++sDG1Gkbj7n7yRihmg+yPNUE6i+JG3vfDrA==
+  dependencies:
+    buffer "4.9.1"
+    events "1.1.1"
+    ieee754 "1.1.8"
+    jmespath "0.15.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    uuid "3.1.0"
+    xml2js "0.4.17"
+
 aws-sdk@2.472.0:
   version "2.472.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.472.0.tgz#0da7062299125a85fdea5786d13019d80aac8ee4"

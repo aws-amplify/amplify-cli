@@ -235,12 +235,19 @@ test('Test that subscriptions are only generated if the respective mutation oper
         id: ID!
         wage: Int
         owner: String
-     }
+    }
     `
     const transformer = new GraphQLTransform({
         transformers: [
             new DynamoDBModelTransformer(),
-            new ModelAuthTransformer({authMode: 'AMAZON_COGNITO_USER_POOLS'})
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "AMAZON_COGNITO_USER_POOLS"
+                    },
+                    additionalAuthenticationProviders: []
+                }
+            })
         ]
     })
     const out = transformer.transform(validSchema)
