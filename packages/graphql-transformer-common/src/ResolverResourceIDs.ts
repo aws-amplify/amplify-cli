@@ -1,6 +1,9 @@
 import { graphqlName, toUpper } from "./util";
 
 export class ResolverResourceIDs {
+    static DynamoDBTableResourceID(typeName: string): string {
+        return `${typeName}Table`
+    }
     static DynamoDBCreateResolverResourceID(typeName: string): string {
         return `Create${typeName}Resolver`
     }
