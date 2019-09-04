@@ -43,6 +43,7 @@ export class TableContext {
 export default class TemplateContext {
     schemaDoc: DocumentNode
     typePrimaryKeyMap: Map<string, string>
+    typePrimaryKeyTypeMap: Map<string, string>
     stringFieldMap: Map<string, string[]>
     intFieldMap: Map<string, string[]>
     secretStoreArn: string
@@ -52,11 +53,13 @@ export default class TemplateContext {
     region: string
 
     constructor(schemaDoc: DocumentNode, typePrimaryKeyMap: Map<string, string>,
-        stringFieldMap: Map<string, string[]>, intFieldMap: Map<string, string[]>) {
+        stringFieldMap: Map<string, string[]>, intFieldMap: Map<string, string[]>,
+        typePrimaryKeyTypeMap?: Map<string, string>) {
         this.schemaDoc = schemaDoc
         this.typePrimaryKeyMap  = typePrimaryKeyMap
         this.stringFieldMap = stringFieldMap
         this.intFieldMap = intFieldMap
+        this.typePrimaryKeyTypeMap = typePrimaryKeyTypeMap
     }
 }
 
@@ -83,6 +86,7 @@ export class RelationalDBSchemaTransformer {
         let typeContexts = new Array()
         let types = new Array()
         let pkeyMap = new Map<string, string>()
+        let pkeyTypeMap = new Map<string, string>()
         let stringFieldMap = new Map<string, string[]>()
         let intFieldMap = new Map<string, string[]>()
 
@@ -113,6 +117,7 @@ export class RelationalDBSchemaTransformer {
                 stringFieldMap.set(tableName, type.stringFieldList)
                 intFieldMap.set(tableName, type.intFieldList)
                 pkeyMap.set(tableName, type.tableKeyField)
+                pkeyTypeMap.set(tableName, type.tableKeyFieldType)
             } else {
                 console.warn(`Skipping table ${type.tableTypeDefinition.name.value} because it does not have a single PRIMARY KEY.`)
             }
@@ -125,8 +130,7 @@ export class RelationalDBSchemaTransformer {
         types.push(this.getSchemaType())
 
         let context =  this.dbReader.hydrateTemplateContext(new TemplateContext({kind: Kind.DOCUMENT,
-            definitions: types}, pkeyMap, stringFieldMap, intFieldMap))
-
+            definitions: types}, pkeyMap, stringFieldMap, intFieldMap, pkeyTypeMap))
          return context
     }
 
