@@ -7,7 +7,7 @@ import * as portfinder from 'portfinder';
 
 import { Server as CoreHTTPServer } from 'net';
 import { AddressInfo } from 'dgram';
-import { Server as MQTTServer } from '@conduitvc/mosca';
+import { Server as MQTTServer } from 'amplify-mqtt-server';
 import { readFileSync } from 'fs-extra';
 import { join } from 'path';
 import { address as getLocalIpAddress } from 'ip';

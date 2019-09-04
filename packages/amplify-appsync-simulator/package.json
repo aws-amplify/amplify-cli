@@ -22,8 +22,8 @@
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
   "dependencies": {
-    "@conduitvc/mosca": "^2.8.3",
     "amplify-velocity-template": "0.16.0",
+    "amplify-mqtt-server": "0.1.0",
     "cors": "^2.8.5",
     "event-to-promise": "^0.8.0",
     "express": "^4.17.1",
