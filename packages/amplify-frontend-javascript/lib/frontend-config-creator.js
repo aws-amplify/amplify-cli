@@ -200,6 +200,9 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     redirectSignIn = oAuthMetadata.CallbackURLs.join(',');
     redirectSignOut = oAuthMetadata.LogoutURLs.join(',');
     [responseType] = oAuthMetadata.AllowedOAuthFlows;
+    if (responseType === 'implicit') {
+      responseType = 'token';
+    }
     userPoolFederation = true;
   }
 
