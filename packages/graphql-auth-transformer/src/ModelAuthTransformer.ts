@@ -618,7 +618,6 @@ Either make the field optional, set auth on the object and not the field, or dis
                 ctx.setResource(resolverResourceId, createResolverResource)
             }
 
-            // TODO Check multi-auth
             if (modelConfiguration.shouldHave('onCreate') &&
                 modelConfiguration.getName('level') as ModelSubscriptionLevel === 'on') {
                 const getTemplateParts = [
@@ -1301,7 +1300,6 @@ All @auth directives used on field definitions are performed when the field is r
                 ctx.setResource(resolverResourceId, resolver)
             }
 
-            // TODO Check multi-auth
             // if protect is for field and there is a subscription for update / delete then protect the field in that operation
             if (field && operation &&
                 modelConfiguration.shouldHave(operation) &&
@@ -1422,7 +1420,7 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onCreate', modelConfiguration)
             })
         }
     }
@@ -1434,7 +1432,7 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onUpdate', modelConfiguration)
             })
         }
     }
@@ -1446,14 +1444,15 @@ All @auth directives used on field definitions are performed when the field is r
         const level = modelConfiguration.getName('level') as ModelSubscriptionLevel;
         if (names) {
             names.forEach( (name) => {
-                this.addSubscriptionResolvers(ctx, rules, parent, level, name)
+                this.addSubscriptionResolvers(ctx, rules, parent, level, name, 'onDelete', modelConfiguration)
             })
         }
     }
 
     // adds subscription resolvers (request / response) based on the operation provided
     private addSubscriptionResolvers(ctx: TransformerContext, rules: AuthRule[],
-        parent: ObjectTypeDefinitionNode, level: ModelSubscriptionLevel, fieldName: string) {
+        parent: ObjectTypeDefinitionNode, level: ModelSubscriptionLevel, fieldName: string,
+        operation: ModelDirectiveOperationType, modelConfiguration: ModelDirectiveConfiguration) {
         const resolverResourceId = ResolverResourceIDs.ResolverResourceID("Subscription", fieldName);
         const resolver = this.resources.generateSubscriptionResolver(fieldName);
         // If the data source does not exist it is created and added as a resource for public && on levels
@@ -1466,41 +1465,89 @@ All @auth directives used on field definitions are performed when the field is r
             // set the resource with no auth logic
             ctx.setResource(resolverResourceId, resolver);
         } else {
+            // Get the directives we need to add to the GraphQL nodes
+            const directives = this.getDirectivesForRules(rules, false);
+
+            if (directives.length > 0) {
+                this.addDirectivesToField(ctx, ctx.getSubscriptionTypeName(), fieldName, directives);
+
+                // If the parent type has any rules for this operation AND
+                // the default provider we've to get directives including the default
+                // as well.
+                const includeDefault = this.isTypeHasRulesForOperation(parent, operation);
+                const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
+
+                const operationName = modelConfiguration.getName(operation);
+
+                this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
+                this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
+            }
+
             // Break the rules out by strategy.
             const staticGroupAuthorizationRules = this.getStaticGroupRules(rules);
             const ownerAuthorizationRules = this.getOwnerRules(rules);
 
-            const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
-                staticGroupAuthorizationRules);
-            const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
-                ownerAuthorizationRules);
+            if (staticGroupAuthorizationRules.length > 0 ||
+                ownerAuthorizationRules.length> 0 ) {
+                const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
+                    staticGroupAuthorizationRules);
+                const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
+                    ownerAuthorizationRules);
 
-            const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
-            const templateParts = [
-                print(
-                    compoundExpression([
-                        staticGroupAuthorizationExpression,
-                        newline(),
-                        ownerAuthorizationExpression,
-                        newline(),
-                        throwIfUnauthorizedExpression
-                    ])
-                ),
-                resolver.Properties.ResponseMappingTemplate
-            ];
-            resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n');
-            ctx.setResource(resolverResourceId, resolver);
+                const throwIfUnauthorizedExpression = this.resources.throwIfSubscriptionUnauthorized();
+
+                // Populate a list of configured authentication providers based on the rules
+                const authModesToCheck = new Set<AuthProvider>();
+                const expressions: Array<Expression> = new Array();
+
+                if (ownerAuthorizationRules.find((r) => r.provider === 'userPools') ||
+                    staticGroupAuthorizationRules.length > 0) {
+                    authModesToCheck.add('userPools');
+                }
+                if (ownerAuthorizationRules.find((r) => r.provider === 'oidc')) {
+                    authModesToCheck.add('oidc');
+                }
+
+                // If we've any modes to check, then add the authMode check code block
+                // to the start of the resolver.
+                if (authModesToCheck.size > 0) {
+                    expressions.push (this.resources.getAuthModeDeterminationExpression(authModesToCheck));
+                }
+
+                const authCheckExpressions = [
+                    staticGroupAuthorizationExpression,
+                    newline(),
+                    ownerAuthorizationExpression,
+                    newline(),
+                    throwIfUnauthorizedExpression
+                ];
+
+                // Create the authMode if block and add it to the resolver
+                expressions.push(
+                    this.resources.getAuthModeCheckWrappedExpression(
+                        authModesToCheck,
+                        compoundExpression(authCheckExpressions))
+                );
+
+                const templateParts = [
+                    print(compoundExpression(expressions)),
+                    resolver.Properties.ResponseMappingTemplate
+                ];
+
+                resolver.Properties.ResponseMappingTemplate = templateParts.join('\n\n')
+                ctx.setResource(resolverResourceId, resolver);
 
                 // check if owner is enabled in auth
-            const hasOwner = rules.find( rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
-            const hasStaticGroupAuth = rules.find( rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
-            if (hasOwner) {
-                this.addOwner(ctx, parent.name.value);
-                // If static group is specified in any of the rules then it would specify the owner arg as optional
-                if (hasStaticGroupAuth) {
-                    this.addSubscriptionOwnerArgument(ctx, resolver, false)
-                } else {
-                    this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                const hasOwner = rules.find(rule => rule.allow === OWNER_AUTH_STRATEGY && !rule.ownerField);
+                const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
+                if (hasOwner) {
+                    this.addOwner(ctx, parent.name.value);
+                    // If static group is specified in any of the rules then it would specify the owner arg as optional
+                    if (hasStaticGroupAuth) {
+                        this.addSubscriptionOwnerArgument(ctx, resolver, false)
+                    } else {
+                        this.addSubscriptionOwnerArgument(ctx, resolver, true)
+                    }
                 }
             }
         }
