@@ -19,7 +19,8 @@ const {
 
 const DEFAULT_EXCLUDE_PATTERNS = ['./amplify/**'];
 
-async function addWalkThrough(context, skip = []) {
+async function addWalkThrough(context, skip = [], withoutInit,
+  decoupleFrontend, decoupleFramework) {
   let inputParams;
   let yesFlag = false;
   if (context.exeInfo && context.exeInfo.inputParams) {
@@ -28,7 +29,7 @@ async function addWalkThrough(context, skip = []) {
     yesFlag = context.exeInfo.inputParams.yes;
   }
 
-  let { frontend } = context;
+  let frontend = decoupleFrontend;
   let schemaLocation = '';
 
   if (frontend === 'android') {
@@ -41,7 +42,7 @@ async function addWalkThrough(context, skip = []) {
     schemaLocation = './src/graphql/schema.json';
   }
 
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     frontend = getFrontEndHandler(context);
     schemaLocation = getSchemaDownloadLocation(context);
   }
@@ -54,7 +55,7 @@ async function addWalkThrough(context, skip = []) {
 
   if (frontend !== 'android') {
     if (!skip.includes('targetLanguage')) {
-      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context));
+      answers.target = await determineValue(inputParams, yesFlag, 'targetLanguage', 'javascript', () => askCodeGenTargetLanguage(context, undefined, withoutInit, decoupleFrontend, decoupleFramework));
       targetLanguage = answers.target;
     }
   }

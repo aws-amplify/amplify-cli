@@ -10,18 +10,18 @@ const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-async function configureProjectWalkThrough(context, amplifyConfig) {
+async function configureProjectWalkThrough(context, amplifyConfig, withoutInit) {
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,
   }));
   let apiId;
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     apiId = await askForGraphQLAPIResource(context, projects);
   }
 
   let selectedProjectConfig;
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     selectedProjectConfig = deepCopy(
       amplifyConfig.find(project => project.amplifyExtension.graphQLApiId === apiId),
     );
@@ -32,12 +32,13 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
   }
 
   let frontend;
-  if (!context.withoutInit) {
+  let framework;
+  if (!withoutInit) {
     frontend = getFrontEndHandler(context);
   } else {
     ({ frontend } = selectedProjectConfig.amplifyExtension);
+    ({ framework } = selectedProjectConfig.amplifyExtension);
   }
-  context.frontend = frontend;
 
   const { amplifyExtension } = selectedProjectConfig;
   let targetLanguage = 'android';
@@ -46,6 +47,9 @@ async function configureProjectWalkThrough(context, amplifyConfig) {
     targetLanguage = await askCodeGenTargetLanguage(
       context,
       amplifyExtension.codeGenTarget,
+      withoutInit,
+      frontend,
+      framework,
     );
   }
 

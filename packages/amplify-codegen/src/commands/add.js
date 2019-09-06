@@ -18,18 +18,68 @@ const {
 } = require('../utils');
 const addWalkThrough = require('../walkthrough/add');
 const changeAppSyncRegion = require('../walkthrough/changeAppSyncRegions');
+const path = require('path');
+const fs = require('fs-extra');
+const askForFrontend = require('../walkthrough/questions/selectFrontend');
+const askForFramework = require('../walkthrough/questions/selectFramework');
+
+const frontends = ['android', 'ios', 'javascript'];
+const frameworks = ['angular', 'ember', 'ionic', 'react', 'react-native', 'vue', 'none'];
 
 async function add(context, apiId = null) {
-  let region;
-  if (!context.withoutInit) {
+  let withoutInit = false;
+  // Determine if working in an amplify project
+  try {
+    context.amplify.getProjectMeta();
+  } catch (e) {
+    withoutInit = true;
+    const testconfig = loadConfig(context);
+    if (testconfig.getProjects().length) {
+      throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
+    }
+  }
+
+  const schemaName = './schema.json';
+  const schemaPath = path.join(process.cwd(), schemaName);
+  if (!fs.existsSync(schemaPath) && withoutInit) {
+    throw Error(`Please download the introspection schema and place in ${schemaPath} before adding codegen when not in an amplify project`);
+  }
+
+  // Grab the frontend
+  let { frontend } = context.parameters.options;
+  if (withoutInit) {
+    if (frontend) {
+      // Make sure provided frontend prarameter is valid
+      if (!frontends.includes(frontend)) {
+        throw Error('Invalid frontend provided');
+      }
+    } else {
+      frontend = await askForFrontend(frontends);
+    }
+  }
+
+  // Grab the framework
+  let { framework } = context.parameters.options;
+  if (withoutInit) {
+    if (framework) {
+      if (frontend !== 'javascript' || !frameworks.includes(framework)) {
+        throw Error('Invalid framework provided');
+      }
+    } else if (frontend === 'javascript') {
+      framework = await askForFramework(frameworks);
+    }
+  }
+
+  let region = 'us-east-1';
+  if (!withoutInit) {
     region = getProjectAwsRegion(context);
   }
-  const config = loadConfig(context);
+  const config = loadConfig(context, withoutInit);
   if (config.getProjects().length) {
     throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
   }
   let apiDetails;
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     if (!apiId) {
       const availableAppSyncApis = getAppSyncAPIDetails(context); // published and un-published
       if (availableAppSyncApis.length === 0) {
@@ -60,14 +110,14 @@ async function add(context, apiId = null) {
     }
   }
 
-  if (!context.withoutInit && !apiDetails) {
+  if (!withoutInit && !apiDetails) {
     return;
   }
-  const answer = await addWalkThrough(context);
+  const answer = await addWalkThrough(context, undefined, withoutInit, frontend, framework);
 
 
   let schema;
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     if (!apiDetails.isLocal) {
       schema = await downloadIntrospectionSchemaWithProgress(
         context,
@@ -84,45 +134,31 @@ async function add(context, apiId = null) {
     schema = './schema.json';
   }
 
-  let newProject;
-  if (!context.withoutInit) {
-    newProject = {
-      projectName: apiDetails.name,
-      includes: answer.includePattern,
-      excludes: answer.excludePattern,
-      schema,
-      amplifyExtension: {
-        codeGenTarget: answer.target || '',
-        generatedFileName: answer.generatedFileName || '',
-        docsFilePath: answer.docsFilePath,
-        region,
-        apiId,
-      },
-    };
-  } else {
-    newProject = {
-      projectName: 'Codegen Project',
-      includes: answer.includePattern,
-      excludes: answer.excludePattern,
-      schema,
-      amplifyExtension: {
-        codeGenTarget: answer.target || '',
-        generatedFileName: answer.generatedFileName || '',
-        docsFilePath: answer.docsFilePath,
-        frontend: context.frontend,
-      },
-    };
-  }
+  const newProject = {
+    projectName: withoutInit ? 'Codegen Project' : apiDetails.name,
+    includes: answer.includePattern,
+    excludes: answer.excludePattern,
+    schema,
+    amplifyExtension: {
+      codeGenTarget: answer.target || '',
+      generatedFileName: answer.generatedFileName || '',
+      docsFilePath: answer.docsFilePath,
+      region,
+      apiId,
+      frontend: withoutInit ? frontend : 'NA',
+      framework: withoutInit ? framework : 'NA',
+    },
+  };
 
   if (answer.maxDepth) {
     newProject.amplifyExtension.maxDepth = answer.maxDepth;
   }
   config.addProject(newProject);
   if (answer.shouldGenerateDocs) {
-    await generateStatements(context, false);
+    await generateStatements(context, false, undefined, withoutInit, frontend);
   }
   if (answer.shouldGenerateCode) {
-    await generateTypes(context, false);
+    await generateTypes(context, false, withoutInit, frontend);
   }
   config.save();
 }

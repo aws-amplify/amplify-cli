@@ -4,7 +4,7 @@ const { join, isAbsolute, relative } = require('path');
 const { graphQlToAmplifyConfig } = require('./utils');
 
 class AmplifyCodeGenConfig {
-  constructor(context) {
+  constructor(context, withoutInit = false) {
     try {
       this.gqlConfig = graphQLConfig.getGraphQLConfig();
       this.fixOldConfig();
@@ -12,7 +12,7 @@ class AmplifyCodeGenConfig {
       if (e instanceof graphQLConfig.ConfigNotFoundError) {
         const { amplify } = context;
         let projectRoot = process.cwd();
-        if (!context.withoutInit) {
+        if (!withoutInit) {
           projectRoot = amplify.getEnvInfo().projectPath || process.cwd();
         }
         const configPath = join(projectRoot, '.graphqlconfig.yml');

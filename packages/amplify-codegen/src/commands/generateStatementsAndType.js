@@ -8,26 +8,27 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
 
-async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
+async function generateStatementsAndTypes(context, forceDownloadSchema,
+  maxDepth, withoutInit, decoupleFrontend) {
   const config = loadConfig(context);
   const projects = config.getProjects();
 
   let projectPath = process.cwd();
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     ({ projectPath } = context.amplify.getEnvInfo());
   }
   let apis = [];
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     apis = getAppSyncAPIDetails(context);
   }
   if (!projects.length || !apis.length) {
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       throw new NoAppSyncAPIAvailableError(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     }
   }
 
   let downloadPromises;
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     downloadPromises = projects.map(async cfg =>
       await ensureIntrospectionSchema(
         context,
@@ -39,8 +40,8 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
     );
     await Promise.all(downloadPromises);
   }
-  await generateStatements(context, false, maxDepth);
-  await generateTypes(context, false);
+  await generateStatements(context, false, maxDepth, withoutInit, decoupleFrontend);
+  await generateTypes(context, false, withoutInit, decoupleFrontend);
 }
 
 module.exports = generateStatementsAndTypes;

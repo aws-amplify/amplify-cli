@@ -7,24 +7,25 @@ const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateStatements(context, forceDownloadSchema, maxDepth) {
+async function generateStatements(context, forceDownloadSchema,
+  maxDepth, withoutInit, decoupleFrontend) {
   const config = loadConfig(context);
   const projects = config.getProjects();
   let apis = [];
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     apis = getAppSyncAPIDetails(context);
   }
   let projectPath = process.cwd();
-  if (!context.withoutInit) {
+  if (!withoutInit) {
     ({ projectPath } = context.amplify.getEnvInfo());
   }
   if (!projects.length || !apis.length) {
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
       return;
     }
   }
-  if (!projects.length && context.withoutInit) {
+  if (!projects.length && withoutInit) {
     context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
     return;
   }
@@ -36,12 +37,12 @@ async function generateStatements(context, forceDownloadSchema, maxDepth) {
     const schemaPath = path.join(projectPath, cfg.schema);
     let region;
     let frontend;
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       ({ region } = cfg.amplifyExtension);
       await ensureIntrospectionSchema(context, schemaPath, apis[0], region, forceDownloadSchema);
       frontend = getFrontEndHandler(context);
     } else {
-      ({ frontend } = context);
+      frontend = decoupleFrontend;
     }
     const language = frontend === 'javascript' ? cfg.amplifyExtension.codeGenTarget : 'graphql';
     const opsGenSpinner = new Ora(constants.INFO_MESSAGE_OPS_GEN);

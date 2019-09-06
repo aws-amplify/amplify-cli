@@ -8,16 +8,17 @@ const featureName = 'codegen';
 module.exports = {
   name: featureName,
   run: async (context) => {
+    let withoutInit = false;
     // Determine if working in an amplify project
     try {
       context.amplify.getProjectMeta();
     } catch(e) {
-      context.withoutInit = true;
+      withoutInit = true;
     }
 
     let schema = './schema.json';
     const schemaPath = path.join(process.cwd(), schema);
-    if(!fs.existsSync(schemaPath) && context.withoutInit) {
+    if(!fs.existsSync(schemaPath) && withoutInit) {
       throw Error("Please download the introspection schema and place in " + schemaPath + " before codegen when not in an amplify project");
     }
 
@@ -53,7 +54,7 @@ module.exports = {
     
     try {
       let forceDownloadSchema = !context.parameters.options.nodownload;
-      if (context.withoutInit) {
+      if (withoutInit) {
         forceDownloadSchema = false;
       }
       let { maxDepth } = context.parameters.options;
@@ -62,9 +63,9 @@ module.exports = {
         throw Error(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
       }
       project = config.getProjects()[0];
-      context.frontend = project.amplifyExtension.frontend;
+      ({ frontend } = project.amplifyExtension.frontend);
       
-      await codeGen.generate(context, forceDownloadSchema, maxDepth);
+      await codeGen.generate(context, forceDownloadSchema, maxDepth, withoutInit, frontend);
     } catch (e) {
       context.print.info(e.message);
       process.exit(1);

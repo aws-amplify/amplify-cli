@@ -7,27 +7,27 @@ const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateTypes(context, forceDownloadSchema) {
-  let { frontend } = context;
-  if (!context.withoutInit) {
+async function generateTypes(context, forceDownloadSchema, withoutInit, decoupleFrontend) {
+  let frontend = decoupleFrontend;
+  if (!withoutInit) {
     frontend = getFrontEndHandler(context);
   }
   if (frontend !== 'android') {
     const config = loadConfig(context);
     const projects = config.getProjects();
     let apis = [];
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       apis = getAppSyncAPIDetails(context);
     }
     if (!projects.length || !apis.length) {
-      if (!context.withoutInit) {
+      if (!withoutInit) {
         context.print.info(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
         return;
       }
     }
 
     let projectPath = process.cwd();
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       ({ projectPath } = context.amplify.getEnvInfo());
     }
 
@@ -49,7 +49,7 @@ async function generateTypes(context, forceDownloadSchema) {
 
         const outputPath = path.join(projectPath, generatedFileName);
         let region;
-        if (!context.withoutInit) {
+        if (!withoutInit) {
           ({ region } = cfg.amplifyExtension);
           await ensureIntrospectionSchema(context, schemaPath,
             apis[0], region, forceDownloadSchema);

@@ -1,17 +1,17 @@
 const getFrontendHandler = require('./getFrontEndHandler');
 
-function getFrontEndFramework(context) {
+function getFrontEndFramework(context, withoutInit, decoupleFrontend, decoupleFramework) {
   const { amplify } = context;
-  let frontendHandler = context.frontend;
-  if (!context.withoutInit) {
+  let frontendHandler = decoupleFrontend;
+  if (!withoutInit) {
     frontendHandler = getFrontendHandler(context);
   }
   if (frontendHandler === 'javascript') {
-    if (!context.withoutInit) {
+    if (!withoutInit) {
       const projectConfig = amplify.getProjectConfig();
       return projectConfig.javascript.framework;
     }
-    return context.framework;
+    return decoupleFramework;
   }
   return '';
 }
