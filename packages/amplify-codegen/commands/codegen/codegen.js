@@ -63,6 +63,7 @@ module.exports = {
         throw Error(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
       }
       let project = config.getProjects()[0];
+      let frontend;
       ({ frontend } = project.amplifyExtension);
       await codeGen.generate(context, forceDownloadSchema, maxDepth, withoutInit, frontend);
     } catch (e) {
