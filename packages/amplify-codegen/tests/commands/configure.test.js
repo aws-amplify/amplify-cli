@@ -27,7 +27,7 @@ describe('command - configure', () => {
   it('should update the configuration of project', async () => {
     await configure(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(configureProjectWalkThrough).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_APPSYNC_APIS);
+    expect(configureProjectWalkThrough).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_APPSYNC_APIS, true);
     expect(MOCK_CONFIG_METHOD.addProject).toHaveBeenCalledWith(MOCK_CONFIG_WALK_THROUGH);
     expect(MOCK_CONFIG_METHOD.save).toHaveBeenCalledWith();
 

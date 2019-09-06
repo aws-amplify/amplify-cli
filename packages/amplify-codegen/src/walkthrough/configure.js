@@ -10,7 +10,7 @@ const { getFrontEndHandler, getIncludePattern } = require('../utils/');
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-async function configureProjectWalkThrough(context, amplifyConfig, withoutInit) {
+async function configureProjectWalkThrough(context, amplifyConfig, withoutInit = false) {
   const projects = amplifyConfig.map(cfg => ({
     name: cfg.projectName,
     value: cfg.amplifyExtension.graphQLApiId,

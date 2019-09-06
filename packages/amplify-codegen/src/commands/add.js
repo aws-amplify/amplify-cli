@@ -46,8 +46,9 @@ async function add(context, apiId = null) {
   }
 
   // Grab the frontend
-  let { frontend } = context.parameters.options;
+  let frontend;
   if (withoutInit) {
+    ({ frontend } = context.parameters.options);
     if (frontend) {
       // Make sure provided frontend prarameter is valid
       if (!frontends.includes(frontend)) {
@@ -59,8 +60,9 @@ async function add(context, apiId = null) {
   }
 
   // Grab the framework
-  let { framework } = context.parameters.options;
+  let framework;
   if (withoutInit) {
+    ({ framework } = context.parameters.options);
     if (framework) {
       if (frontend !== 'javascript' || !frameworks.includes(framework)) {
         throw Error('Invalid framework provided');
@@ -74,7 +76,7 @@ async function add(context, apiId = null) {
   if (!withoutInit) {
     region = getProjectAwsRegion(context);
   }
-  const config = loadConfig(context, withoutInit);
+  const config = loadConfig(context);
   if (config.getProjects().length) {
     throw new Error(constants.ERROR_CODEGEN_SUPPORT_MAX_ONE_API);
   }

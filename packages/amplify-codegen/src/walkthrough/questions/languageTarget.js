@@ -10,8 +10,8 @@ const frontEndToTargetMappings = {
   angular: ['angular', 'typescript'],
 };
 
-async function askCodeGenTargetLanguage(context, target, withoutInit,
-  decoupleFrontend, decoupleFramework) {
+async function askCodeGenTargetLanguage(context, target, withoutInit = false,
+  decoupleFrontend = '', decoupleFramework = '') {
   let frontend = decoupleFrontend;
   if (!withoutInit) {
     frontend = getFrontEndHandler(context);

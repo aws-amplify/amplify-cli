@@ -18,6 +18,9 @@ const MOCK_CONTEXT = {
   print: {
     info: jest.fn(),
   },
+  amplify: {
+    getProjectMeta: jest.fn(),
+  },
 };
 jest.mock('../../src/walkthrough/add');
 jest.mock('../../src/walkthrough/changeAppSyncRegions');
@@ -87,8 +90,9 @@ describe('command - add', () => {
     expect(newProjectConfig.amplifyExtension.generatedFileName).toEqual(MOCK_GENERATED_FILE_NAME);
     expect(newProjectConfig.amplifyExtension.docsFilePath).toEqual(MOCK_DOCS_FILE_PATH);
 
-    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false);
-    expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false);
+    expect(generateStatements).toHaveBeenCalledWith(MOCK_CONTEXT, false,
+      undefined, false, undefined);
+    expect(generateTypes).toHaveBeenCalledWith(MOCK_CONTEXT, false, false, undefined);
 
     expect(LOAD_CONFIG_METHODS.save).toHaveBeenCalledWith();
   });

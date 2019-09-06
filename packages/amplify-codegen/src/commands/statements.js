@@ -8,7 +8,7 @@ const constants = require('../constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateStatements(context, forceDownloadSchema,
-  maxDepth, withoutInit, decoupleFrontend) {
+  maxDepth, withoutInit = false, decoupleFrontend = '') {
   const config = loadConfig(context);
   const projects = config.getProjects();
   let apis = [];

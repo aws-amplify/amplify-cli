@@ -7,7 +7,7 @@ const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
-async function generateTypes(context, forceDownloadSchema, withoutInit, decoupleFrontend) {
+async function generateTypes(context, forceDownloadSchema, withoutInit = false, decoupleFrontend = '') {
   let frontend = decoupleFrontend;
   if (!withoutInit) {
     frontend = getFrontEndHandler(context);
