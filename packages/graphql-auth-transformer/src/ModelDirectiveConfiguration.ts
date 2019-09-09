@@ -184,7 +184,7 @@ export class ModelDirectiveConfiguration {
             return name;
         }
     }
-  
+
     public getNames(op: ModelDirectiveOperationType): string [] | undefined {
         const { shouldHave, names } = this.map.get(op);
 

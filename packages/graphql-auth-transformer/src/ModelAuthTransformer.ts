@@ -1471,16 +1471,7 @@ All @auth directives used on field definitions are performed when the field is r
             if (directives.length > 0) {
                 this.addDirectivesToField(ctx, ctx.getSubscriptionTypeName(), fieldName, directives);
 
-                // If the parent type has any rules for this operation AND
-                // the default provider we've to get directives including the default
-                // as well.
-                const includeDefault = this.isTypeHasRulesForOperation(parent, operation);
-                const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
-
-                const operationName = modelConfiguration.getName(operation);
-
-                this.addDirectivesToOperation(ctx, ctx.getMutationTypeName(), operationName, operationDirectives);
-                this.addFieldToResourceReferences(ctx.getMutationTypeName(), operationName, rules);
+                this.addFieldToResourceReferences(ctx.getSubscriptionTypeName(), fieldName, rules);
             }
 
             // Break the rules out by strategy.
@@ -1488,7 +1479,7 @@ All @auth directives used on field definitions are performed when the field is r
             const ownerAuthorizationRules = this.getOwnerRules(rules);
 
             if (staticGroupAuthorizationRules.length > 0 ||
-                ownerAuthorizationRules.length> 0 ) {
+                ownerAuthorizationRules.length > 0 ) {
                 const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(
                     staticGroupAuthorizationRules);
                 const ownerAuthorizationExpression = this.resources.ownerAuthorizationExpressionForSubscriptions(
