@@ -6,11 +6,12 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { getFunctionDetails } from './lambda-helper';
 import { invoke } from '../../utils/lambda/invoke';
+import { v4 } from 'uuid';
 
 export async function launchDDBLocal() {
   let dbPath;
   while (true) {
-    dbPath = path.join('/tmp', `amplify-cli-emulator-dynamodb-${Math.floor(Math.random() * 100)}`);
+    dbPath = path.join('/tmp', `amplify-cli-emulator-dynamodb-${v4()}`);
     if (!fs.existsSync(dbPath)) break;
   }
 
@@ -32,10 +33,8 @@ export async function deploy(transformerOutput: any, client = null) {
   );
 
   let config: any = processAppSyncResources(stacks, transformerOutput);
-  if (config.appSync.authenticationType == 'API_KEY' && !config.appSync.apiKey) {
-    // transformer generates API Key only if AuthTransformer is included
-    config.appSync.apiKey = 'da-fake-api-key';
-  }
+  config.appSync.apiKey = 'da-fake-api-key';
+
   if (client) {
     await ensureDynamoDBTables(client, config);
     config = configureDDBDataSource(config, client.config);

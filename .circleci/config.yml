@@ -51,6 +51,20 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
           no_output_timeout: 90m
+  mock_e2e_tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
+      - run:
+          name: Run Transformer end-to-end tests with mock server
+          command: cd packages/amplify-util-mock/ && yarn e2e
+          no_output_timeout: 90m
 
   amplify_e2e_tests:
     <<: *defaults
@@ -191,14 +205,14 @@ jobs:
       - attach_workspace:
           at: ./
       - checkout
-      - run: 
+      - run:
           command: |
             apt-get install -y sudo
             sudo apt-get install -y lsof
             sudo apt-get install -y python
             sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
           name: "Install AWS CLI dependencies"
-      - run: 
+      - run:
           command: |
             cd ..
             mkdir videos
@@ -238,7 +252,7 @@ jobs:
           name: "Checkout sample apps repository"
           command: |
             cd ..
-            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing 
+            git clone https://github.com/awslabs/aws-sdk-ios-samples.git -b e2e-testing
       - run:
           name: "Install AWS CLI"
           command: pip install awscli
@@ -268,7 +282,7 @@ jobs:
           name: "Build and UITest"
           command: |
             cd ../aws-sdk-ios-samples/CircleciScripts
-            python3 run_build_and_uitest.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}   
+            python3 run_build_and_uitest.py -n PhotoAlbum -a ${circleci_root_directory}/aws-sdk-ios-samples -c ${circleci_root_directory}
       - run:
           name: "Clean-Up UITest"
           command: |
@@ -283,7 +297,7 @@ jobs:
     environment:
       JVM_OPTS: -Xms1024m -Xmx3584m
       JAVA_TOOL_OPTIONS: -Xms1024m -Xmx3584m
-      MAVEN_OPTS: -Xms1024m -Xmx3584m 
+      MAVEN_OPTS: -Xms1024m -Xmx3584m
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx3584m -XX:+HeapDumpOnOutOfMemoryError"'
     steps:
       - attach_workspace:
@@ -302,7 +316,7 @@ jobs:
           name: "Checkout PhotoAlbum Sample App Repo"
           command: |
             cd ..
-            git clone https://github.com/awslabs/aws-sdk-android-samples.git -b e2e-tests-sample-app sample_app_repo 
+            git clone https://github.com/awslabs/aws-sdk-android-samples.git -b e2e-tests-sample-app sample_app_repo
             cd sample_app_repo/PhotoAlbumSample
             app_root=$(pwd)
             echo "export app_root=$app_root" >> $BASH_ENV
@@ -320,7 +334,7 @@ jobs:
             circleci_root_directory=$(pwd)
             echo "export circleci_root_directory=$circleci_root_directory" >> $BASH_ENV
             echo 'export appSync_branch_to_uitest="master"' >> $BASH_ENV
-            echo 'export android_sdk_branch_to_uitest="master"' >> $BASH_ENV 
+            echo 'export android_sdk_branch_to_uitest="master"' >> $BASH_ENV
       - run:
           name: Install pip3
           command: |
@@ -334,10 +348,10 @@ jobs:
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile default
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile default
             aws configure set region $CLI_REGION --profile default
-      - run: 
+      - run:
           name: Install json parser
           command: sudo pip3 install demjson
-      - run: 
+      - run:
           name: Install lxml
           command: sudo pip3 install lxml
       - run:
@@ -345,7 +359,7 @@ jobs:
           command: |
             cd ${circleci_root_directory}/sample_app_repo/PhotoAlbumSample
             bash gradlew app:dependencies
-            sudo npm install -g apollo-codegen@0.19.1 
+            sudo npm install -g apollo-codegen@0.19.1
       - run:
           name: "Configure AWS Resources"
           command: |
@@ -367,24 +381,24 @@ jobs:
             cd ${ANDROID_HOME}/emulator;ls
             export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib:/usr/lib64:/usr/lib:${ANDROID_HOME}/emulator/lib
             sudo apt-get install libpulse0
-            ${ANDROID_HOME}/emulator/emulator -avd test -no-boot-anim -no-window -noaudio -accel auto -verbose 
-          background: true 
+            ${ANDROID_HOME}/emulator/emulator -avd test -no-boot-anim -no-window -noaudio -accel auto -verbose
+          background: true
       - run:
           name: Launch logcat
-          command: 
+          command:
             adb logcat > logcat.log
           background: true
       - run:
           name: Wait emulator
           command: |
             circle-android wait-for-boot
-            python3 ${circleci_root_directory}/sample_app_repo/CircleciScripts/unlock_emulatorscreen.py 
+            python3 ${circleci_root_directory}/sample_app_repo/CircleciScripts/unlock_emulatorscreen.py
       - run:
           name: "Build and UITest"
           command: |
             cd ${circleci_root_directory}/sample_app_repo/CircleciScripts
             python3 run_build_and_uitest.py -n PhotoAlbumSample -a ${circleci_root_directory}/sample_app_repo -c ${circleci_root_directory}
-      - run: 
+      - run:
           name: "Clean-Up UITest"
           command: |
             cd packages/amplify-ui-tests
@@ -410,6 +424,14 @@ workflows:
             - build
             - integration_test_js
             - integration_test_ios
+      - mock_e2e_tests:
+          filters:
+            branches:
+              only:
+                - master
+                - beta
+          requires:
+            - build
       - integration_test:
           filters:
             branches:

@@ -4,7 +4,7 @@
   "description": "amplify cli plugin providing local testing",
   "main": "lib/index.js",
   "scripts": {
-    "e2e": "jest -w 4 src/__e2e__/*.e2e.test.ts",
+    "e2e": "jest -w 1 src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",
@@ -31,6 +31,7 @@
     "aws-amplify": "^1.1.36",
     "aws-sdk": "^2.510.0",
     "axios": "^0.19.0",
+    "uuid":"^3.3.3",
     "graphql-auth-transformer": "5.0.0",
     "graphql-connection-transformer": "3.11.0",
     "graphql-dynamodb-transformer": "5.0.0",

@@ -55,7 +55,7 @@ module.exports = function(Velocity, utils) {
             const val1 = this.getExpression(exp[1]);
             const val0Json = val0 && val0.toJSON ? val0.toJSON() : val0;
             const val1Json = val1 && val1.toJSON ? val1.toJSON() : val1;
-            ret = _.isEqual(val0, val1);
+            ret = _.isEqual(val0Json, val1Json);
             break;
 
           case '>=':

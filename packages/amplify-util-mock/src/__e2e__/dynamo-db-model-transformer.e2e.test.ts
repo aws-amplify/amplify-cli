@@ -48,7 +48,13 @@ beforeAll(async () => {
   `;
   try {
     const transformer = new GraphQLTransform({
-      transformers: [new DynamoDBModelTransformer(), new ModelAuthTransformer()],
+      transformers: [new DynamoDBModelTransformer(), new ModelAuthTransformer({
+        authConfig: {
+            defaultAuthentication: {
+                authenticationType: "API_KEY"
+            },
+            additionalAuthenticationProviders: []
+        }})],
     });
     const out = await transformer.transform(validSchema);
     let ddbClient;
