@@ -275,7 +275,7 @@ export class SubscriptionServer {
     }
 
     const data = Object.entries(payload.data || {});
-    const payloadData = data.length ? data.pop() : null;
+    const payloadData = data.length ? data[0].pop() : null;
 
     if (!payloadData) {
       return false;
