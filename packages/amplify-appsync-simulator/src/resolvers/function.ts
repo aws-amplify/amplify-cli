@@ -37,6 +37,8 @@ export class AmplifySimulatorFunction {
     context,
     info
   ): Promise<{ result: any; stash: any }> {
+    let result = null;
+    let error = null;
     const requestMappingTemplate = this.simulatorContext.getMappingTemplate(
       this.config.requestMappingTemplateLocation
     );
@@ -44,18 +46,31 @@ export class AmplifySimulatorFunction {
       this.config.responseMappingTemplateLocation
     );
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    let requestPayload;
-    ({ result: requestPayload, stash } = await requestMappingTemplate.render(
+
+    const requestTemplateResult = await requestMappingTemplate.render(
       { source, arguments: args, stash, prevResult },
       context,
       info
-    ));
+    );
+    context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateResult.errors];
 
-    const result = await dataLoader.load(requestPayload);
-    return await responseMappingTemplate.render(
-      { source, arguments: args, result, stash, prevResult },
+    try {
+      result = await dataLoader.load(requestTemplateResult.result);
+    } catch (e) {
+      // pipeline resolver does not throw error
+      // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29
+      error = e;
+    }
+
+    const responseMappingResult = await responseMappingTemplate.render(
+      { source, arguments: args, result, stash, prevResult, error },
       context,
       info
     );
+    context.appsyncErrors = [...context.appsyncErrors, ...responseMappingResult.errors];
+    return {
+      stash: responseMappingResult.stash,
+      result: responseMappingResult.result,
+    };
   }
 }

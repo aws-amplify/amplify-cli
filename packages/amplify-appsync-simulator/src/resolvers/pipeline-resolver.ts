@@ -31,13 +31,17 @@ export class AppSyncPipelineResolver {
 
     let result = {};
     let stash = {};
+    let templateErrors;
 
-    ({ result, stash } = requestMappingTemplate.render(
+    // Pipe line request mapping template
+    ({ result, stash, errors: templateErrors } = requestMappingTemplate.render(
       { source, arguments: args, stash },
       context,
       info
     ));
+    context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
 
+    // Pipe line functions
     await this.config.functions
       .reduce((chain, fn) => {
         const fnResolver = this.simulatorContext.getFunction(fn);
@@ -57,10 +61,14 @@ export class AppSyncPipelineResolver {
       .then(({ prevResult: lastResult }) => {
         result = lastResult;
       });
-    return responseMappingTemplate.render(
+
+    // pipeline response mapping template
+    ({ result, errors: templateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result, prevResult: result },
       context,
       info
-    ).result;
+    ));
+    context.appsyncErrors = [...context.appsyncErrors, ...templateErrors];
+    return result;
   }
 }

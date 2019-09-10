@@ -5,8 +5,9 @@ import { listUtils } from './list-utils';
 import { mapUtils } from './map-utils';
 import { transformUtils } from './transform';
 import { time } from './time';
+import { GraphQLResolveInfo } from 'graphql';
 
-export function create(errors = [], now: Date = new Date()) {
+export function create(errors = [], now: Date = new Date(), info: GraphQLResolveInfo) {
   return {
     ...generalUtils,
     dynamodb: dynamodbUtils,
@@ -15,6 +16,7 @@ export function create(errors = [], now: Date = new Date()) {
     transform: transformUtils,
     now,
     errors,
+    info,
     time: time(now),
   };
 }

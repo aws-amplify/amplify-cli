@@ -2,8 +2,9 @@ import { Compile, parse } from 'amplify-velocity-template';
 import * as JSON5 from 'json5';
 import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
-import { create as createUtil } from './util';
+import { create as createUtil, TemplateSentError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
+import { GraphQLResolveInfo } from 'graphql';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -20,6 +21,7 @@ export type AppSyncVTLRenderContext = {
   stash?: object;
   result?: any;
   prevResult?: any;
+  error?: any;
 };
 
 class VelocityTemplateParseError extends Error {}
@@ -48,38 +50,34 @@ export class VelocityTemplate {
   render(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncSimulatorRequestContext,
-    info?: any
-  ): any {
+    info?: GraphQLResolveInfo
+  ): { result; stash; errors } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
-    try {
-      const templateResult = this.compiler.render(context);
-      const stash = context.ctx.stash.toJSON();
-      let result;
 
-      try {
-        result = JSON5.parse(templateResult);
-      } catch (e) {
-        result = templateResult;
-      }
+    const templateResult = this.compiler.render(context);
+    const stash = context.ctx.stash.toJSON();
+    try {
+      const result = JSON5.parse(templateResult);
       return { result, stash, errors: context.util.errors };
     } catch (e) {
-      throw e;
+      const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
+      throw new TemplateSentError(errorMessage, 'MappingTemplate', null, null, info);
     }
   }
 
   private buildRenderContext(
     ctxValues: AppSyncVTLRenderContext,
     requestContext: any,
-    info: any
+    info: GraphQLResolveInfo
   ): any {
-    const { source, arguments: argument, result, stash, prevResult } = ctxValues;
+    const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
 
     const {
       jwt: { iss: issuer, sub, 'cognito:username': cognitoUserName, username },
       request,
     } = requestContext;
 
-    const util = createUtil();
+    const util = createUtil([], new Date(Date.now()), info);
     const args = convertToJavaTypes(argument);
     // Identity is null for API Key
     let identity = null;
@@ -118,6 +116,7 @@ export class VelocityTemplate {
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
       result: convertToJavaTypes(result),
+      error,
     };
 
     if (prevResult) {

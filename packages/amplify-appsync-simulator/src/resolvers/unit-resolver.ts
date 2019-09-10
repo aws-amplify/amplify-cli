@@ -29,17 +29,34 @@ export class AppSyncUnitResolver {
       this.config.responseMappingTemplateLocation
     );
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload } = requestMappingTemplate.render(
+    const { result: requestPayload, errors: requestTemplateErrors } = requestMappingTemplate.render(
       { source, arguments: args },
       context,
       info
     );
-    const result = await dataLoader.load(requestPayload);
-    const { result: responseTemplateResult } = responseMappingTemplate.render(
-      { source, arguments: args, result },
-      context,
-      info
-    );
+    context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
+    let result = null;
+    let error;
+    try {
+      result = await dataLoader.load(requestPayload);
+    } catch (e) {
+      if (requestPayload && requestPayload.version === '2018-05-29') {
+        // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29
+        error = e;
+      } else {
+        throw e;
+      }
+    }
+    if (requestPayload && requestPayload.version !== '2018-05-29' && result === null) {
+      return;
+    }
+
+    const {
+      result: responseTemplateResult,
+      errors: responseTemplateErrors,
+    } = responseMappingTemplate.render({ source, arguments: args, result, error }, context, info);
+    context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
+
     return responseTemplateResult;
   }
 }
