@@ -3,6 +3,7 @@ import { getNamedType, getNonNullType, getInputValueDefinition, getGraphQLTypeFr
     getTypeDefinition, getFieldDefinition, getInputTypeDefinition } from './RelationalDBSchemaTransformerUtils'
 import { AuroraDataAPIClient } from "./AuroraDataAPIClient";
 import { IRelationalDBReader } from "./IRelationalDBReader";
+import { toUpper } from 'graphql-transformer-common'
 
 /**
  * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
@@ -154,7 +155,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
         //     }
         // }
 
-        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${tableName}Input`),
-                getInputTypeDefinition(updateFields, `Update${tableName}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
+        return new TableContext(getTypeDefinition(fields, tableName), getInputTypeDefinition(createFields, `Create${toUpper(tableName)}Input`),
+                getInputTypeDefinition(updateFields, `Update${toUpper(tableName)}Input`), primaryKey, primaryKeyType, stringFieldList, intFieldList)
     }
 }
