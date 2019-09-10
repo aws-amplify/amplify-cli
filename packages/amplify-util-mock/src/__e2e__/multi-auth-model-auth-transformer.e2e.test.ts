@@ -148,11 +148,6 @@ beforeAll(async () => {
 
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
   USER_POOL_ID = userPoolResponse.UserPool.Id;
-  const userPoolClientResponse = await createUserPoolClient(
-    cognitoClient,
-    USER_POOL_ID,
-    `UserPool${STACK_NAME}`
-  );
 
   try {
     // Clean the bucket
