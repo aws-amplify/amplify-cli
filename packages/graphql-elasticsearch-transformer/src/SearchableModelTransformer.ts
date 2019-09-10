@@ -21,7 +21,7 @@ import {
     makeInputValueDefinition
 } from "graphql-transformer-common";
 import { Expression, str } from 'graphql-mapping-template';
-import { ResolverResourceIDs, SearchableResourceIDs, getBaseType } from 'graphql-transformer-common'
+import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType } from 'graphql-transformer-common'
 import path = require('path');
 
 const STACK_NAME = 'SearchableStack';
@@ -120,7 +120,9 @@ export class SearchableModelTransformer extends Transformer {
             this.generateSearchableInputs(ctx, def)
             this.generateSearchableXConnectionType(ctx, def)
 
-            const searchResolver = this.resources.makeSearchResolver(def.name.value, nonKeywordFields, primaryKey, searchFieldNameOverride);
+            const searchResolver = this.resources.makeSearchResolver(def.name.value, nonKeywordFields,
+                primaryKey, ctx.getQueryTypeName(),
+                searchFieldNameOverride);
             ctx.setResource(ResolverResourceIDs.ElasticsearchSearchResolverResourceID(def.name.value), searchResolver)
             ctx.mapResourceToStack(
                 STACK_NAME,
@@ -226,7 +228,7 @@ export class SearchableModelTransformer extends Transformer {
     }
 
     private getPrimaryKey(ctx: TransformerContext, typeName: string) : string {
-        const tableResourceID = ResolverResourceIDs.DynamoDBTableResourceID(typeName)
+        const tableResourceID = ModelResourceIDs.ModelTableResourceID(typeName);
         const tableResource = ctx.getResource(tableResourceID)
         const primaryKeySchemaElement = tableResource.Properties.KeySchema.find( (keyElement: any) => keyElement.KeyType === 'HASH')
         return primaryKeySchemaElement.AttributeName

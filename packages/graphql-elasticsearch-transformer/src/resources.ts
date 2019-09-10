@@ -383,7 +383,7 @@ export class ResourceFactory {
      * Create the Elasticsearch search resolver.
      */
     public makeSearchResolver(type: string, nonKeywordFields: Expression[],
-        primaryKey: string, nameOverride?: string, queryTypeName: string = 'Query') {
+        primaryKey: string, queryTypeName: string, nameOverride?: string) {
         const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
         return new AppSync.Resolver({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
