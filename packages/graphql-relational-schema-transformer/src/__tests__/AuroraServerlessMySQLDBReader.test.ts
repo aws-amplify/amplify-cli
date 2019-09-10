@@ -2,6 +2,7 @@ import TemplateContext, { TableContext } from '../RelationalDBSchemaTransformer'
 import { Kind} from 'graphql'
 import { AuroraServerlessMySQLDatabaseReader } from '../AuroraServerlessMySQLDatabaseReader';
 import { AuroraDataAPIClient, ColumnDescription } from '../AuroraDataAPIClient';
+import { toUpper } from 'graphql-transformer-common'
 
 const dbRegion = 'us-east-1'
 const secretStoreArn = 'secretStoreArn'
@@ -78,9 +79,9 @@ function describeTableTestCommon(tableName: string, fieldLength: number, isForei
     expect(tableContext.createTypeDefinition.kind).toEqual(Kind.INPUT_OBJECT_TYPE_DEFINITION)
     expect(tableContext.tableTypeDefinition.name.value).toEqual(tableName)
     expect(tableContext.tableTypeDefinition.name.kind).toEqual(Kind.NAME)
-    expect(tableContext.updateTypeDefinition.name.value).toEqual(`Update${tableName}Input`)
+    expect(tableContext.updateTypeDefinition.name.value).toEqual(`Update${toUpper(tableName)}Input`)
     expect(tableContext.updateTypeDefinition.name.kind).toEqual(Kind.NAME)
-    expect(tableContext.createTypeDefinition.name.value).toEqual(`Create${tableName}Input`)
+    expect(tableContext.createTypeDefinition.name.value).toEqual(`Create${toUpper(tableName)}Input`)
     expect(tableContext.createTypeDefinition.name.kind).toEqual(Kind.NAME)
     /**
      * If it's a table with a foreign key constraint, the base type will have one additional element
