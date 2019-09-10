@@ -21,6 +21,7 @@ export async function launchDDBLocal() {
     port: null,
   });
   const client = await dynamoEmulator.getClient(emulator);
+  logDebug(dbPath);
   return { emulator, dbPath, client };
 }
 
@@ -67,12 +68,12 @@ export async function terminateDDB(emulator, dbPath) {
       await emulator.terminate();
     }
   } catch (e) {
-    console.log('Failed to terminate the Local DynamoDB Server', e);
+    logDebug('Failed to terminate the Local DynamoDB Server', e);
   }
   try {
     fs.removeSync(dbPath);
   } catch (e) {
-    console.log('Failed delete Local DynamoDB Server Folder', e);
+    logDebug('Failed delete Local DynamoDB Server Folder', e);
   }
 }
 
@@ -85,6 +86,6 @@ export async function runAppSyncSimulator(config, port?: number, wsPort?: number
 
 export function logDebug(...msgs) {
   if (process.env.DEBUG || process.env.CI) {
-    console.log(...msgs);
+    logDebug(...msgs);
   }
 }

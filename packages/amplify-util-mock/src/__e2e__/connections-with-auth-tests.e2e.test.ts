@@ -124,7 +124,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
 

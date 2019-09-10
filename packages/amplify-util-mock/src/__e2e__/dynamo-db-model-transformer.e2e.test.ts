@@ -63,16 +63,16 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
-    console.log(apiKey);
+    logDebug(apiKey);
     GRAPHQL_CLIENT = new GraphQLClient(GRAPHQL_ENDPOINT, {
       'x-api-key': apiKey,
     });
   } catch (e) {
-    console.log('error when setting up test');
-    console.log(e);
+    logDebug('error when setting up test');
+    logDebug(e);
     expect(true).toEqual(false);
   }
 });
@@ -110,7 +110,7 @@ afterEach(async () => {
     });
     await Promise.all(deletePromises);
   } catch (e) {
-    console.log(e);
+    logDebug(e);
   }
 });
 
@@ -144,7 +144,7 @@ test('Test createAuthor mutation', async () => {
     expect(response.data.createAuthor.entityMetadata).toBeDefined();
     expect(response.data.createAuthor.entityMetadata.isActive).toEqual(true);
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -168,7 +168,7 @@ test('Test createPost mutation', async () => {
     expect(response.data.createPost.createdAt).toBeDefined();
     expect(response.data.createPost.updatedAt).toBeDefined();
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -203,7 +203,7 @@ test('Test updatePost mutation', async () => {
     logDebug(JSON.stringify(updateResponse, null, 4));
     expect(updateResponse.data.updatePost.title).toEqual('Bye, World!');
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -276,7 +276,7 @@ test('Test createPost and updatePost mutation with a client generated id.', asyn
     logDebug(JSON.stringify(getResponse2, null, 4));
     expect(getResponse2.data.getPost).toBeNull();
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -321,7 +321,7 @@ test('Test deletePost mutation', async () => {
     logDebug(JSON.stringify(getResponse, null, 4));
     expect(getResponse.data.getPost).toBeNull();
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -431,7 +431,7 @@ test('Test listPosts query with filter', async () => {
     expect(items.length).toEqual(1);
     expect(items[0].title).toEqual('Test List with filter');
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -607,7 +607,7 @@ test('Test enum filters List', async () => {
       ).toBeTruthy();
     });
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -661,7 +661,7 @@ test('Test createPost mutation with non-model types', async () => {
     expect(response.data.createPost.metadata.tags.metadata.tags.published).toEqual(false);
     expect(response.data.createPost.appearsIn).toEqual(['NEWHOPE']);
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }
@@ -726,7 +726,7 @@ test('Test updatePost mutation with non-model types', async () => {
     expect(updateResponse.data.updatePost.metadata.tags.metadata.tags.published).toEqual(false);
     expect(updateResponse.data.updatePost.appearsIn).toEqual(['NEWHOPE', 'EMPIRE']);
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     // fail
     expect(e).toBeUndefined();
   }

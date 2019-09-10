@@ -13,7 +13,7 @@ import {
   deleteUserPool,
   signupAndAuthenticateUser,
 } from './utils/cognito-utils';
-import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
+import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
@@ -174,10 +174,10 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
-    console.log(`API KEY: ${apiKey}`);
+    logDebug(`API KEY: ${apiKey}`);
     expect(apiKey).toBeTruthy();
 
     // Verify we have all the details
@@ -238,7 +238,7 @@ afterAll(async () => {
       await server.stop();
     }
     await terminateDDB(ddbEmulator, dbPath);
-    console.log('Successfully deleted stack ' + STACK_NAME);
+    logDebug('Successfully deleted stack ' + STACK_NAME);
   } catch (e) {
     console.error(e);
     expect(true).toEqual(false);

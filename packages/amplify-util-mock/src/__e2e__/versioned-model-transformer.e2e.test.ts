@@ -49,7 +49,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     const endpoint = server.url + '/graphql';
-    console.log(`Using graphql url: ${endpoint}`);
+    logDebug(`Using graphql url: ${endpoint}`);
 
     const apiKey = result.config.appSync.apiKey;
     expect(apiKey).toBeDefined();

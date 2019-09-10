@@ -4,7 +4,7 @@
   "description": "amplify cli plugin providing local testing",
   "main": "lib/index.js",
   "scripts": {
-    "e2e": "jest -w 1 src/__e2e__/*.e2e.test.ts",
+    "e2e": "jest -w 1 --forceExit src/__e2e__/*.e2e.test.ts",
     "test-watch": "jest --watch",
     "build": "tsc",
     "watch": "tsc -w",

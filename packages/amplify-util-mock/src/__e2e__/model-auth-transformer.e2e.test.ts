@@ -182,7 +182,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
 
@@ -294,7 +294,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.updatedAt).toBeDefined();
   expect(response.data.createPost.owner).toEqual(USERNAME1);
 
-  console.log('Using access token based client\n');
+  logDebug('Using access token based client\n');
   const response2 = await GRAPHQL_CLIENT_1_ACCESS.query(
     `mutation {
         createPost(input: { title: "Hello, World!" }) {
