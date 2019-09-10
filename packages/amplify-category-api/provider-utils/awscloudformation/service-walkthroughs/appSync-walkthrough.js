@@ -44,7 +44,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     process.exit(0);
   }
 
-
   const { amplify } = context;
   const { inputs } = serviceMetadata;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
@@ -75,9 +74,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     DynamoDBEnableServerSideEncryption: 'false',
   };
 
-  // Ask auth/security question
+  // Ask auth/security questions
 
-  const authType = await askSecurityQuestions(context, parameters);
+  const authConfig = await askSecurityQuestions(context, parameters);
 
   // Ask schema file question
 
@@ -93,7 +92,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   };
 
   const schemaFileAnswer = await inquirer.prompt(schemaFileQuestion);
-
 
   const backendDir = amplify.pathManager.getBackendDirPath();
 
@@ -127,9 +125,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
     fs.copyFileSync(schemaFilePath, `${resourceDir}/${schemaFileName}`);
 
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
 
-    return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
+    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
   }
 
   // The user doesn't have an annotated schema file
@@ -167,14 +165,20 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
     context.print.info('Creating a base schema for you...');
 
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, noConfig: true });
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+      resourceDir, parameters, authConfig,
+    });
 
-    return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
+    return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
   }
+
   // Guided creation of the transform schema
+  const authTypes = getAuthTypes(authConfig);
+  const onlyApiKeyAuthEnabled = authTypes.includes('API_KEY') && authTypes.length === 1;
 
   let templateSchemaChoices = inputs[4].options;
-  if (authType === 'API_KEY') {
+
+  if (onlyApiKeyAuthEnabled) {
     templateSchemaChoices = templateSchemaChoices.filter(schema => schema.value !== 'single-object-auth-schema.graphql');
   }
 
@@ -210,7 +214,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
         let notCompiled = true;
         while (notCompiled) {
           try {
-            await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+            await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
           } catch (e) {
             context.print.error('Failed compiling GraphQL schema:');
             context.print.info(e.message);
@@ -225,15 +229,13 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
           notCompiled = false;
         }
 
-        return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
+        return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
       });
   }
 
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
 
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
-
-
-  return { answers: resourceAnswers, output: { securityType: authType }, noCfnFile: true };
+  return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
 
 async function updateWalkthrough(context) {
@@ -268,72 +270,299 @@ async function updateWalkthrough(context) {
     context.print.info(e.stack);
   }
 
-  const authType = await askSecurityQuestions(context, parameters);
+  const authConfig = await askSecurityQuestions(context, parameters);
 
   const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
   const amplifyMeta = context.amplify.readJsonFile(amplifyMetaFilePath);
 
-  amplifyMeta[category][resourceName].output.securityType = authType;
+  if (amplifyMeta[category][resourceName].output.securityType) {
+    delete amplifyMeta[category][resourceName].output.securityType;
+  }
+
+  amplifyMeta[category][resourceName].output.authConfig = authConfig;
   let jsonString = JSON.stringify(amplifyMeta, null, '\t');
   fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
 
   const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
   const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
 
-  backendConfig[category][resourceName].output.securityType = authType;
+  if (backendConfig[category][resourceName].output.securityType) {
+    delete backendConfig[category][resourceName].output.securityType;
+  }
+
+  backendConfig[category][resourceName].output.authConfig = authConfig;
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
 }
 
 async function askSecurityQuestions(context, parameters) {
-  const securityTypeQuestion = {
+  const authProviderChoices = [
+    {
+      name: 'API key',
+      value: 'API_KEY',
+    },
+    {
+      name: 'Amazon Cognito User Pool',
+      value: 'AMAZON_COGNITO_USER_POOLS',
+    },
+    {
+      name: 'IAM',
+      value: 'AWS_IAM',
+    },
+    {
+      name: 'OpenID Connect',
+      value: 'OPENID_CONNECT',
+    },
+  ];
+
+  const defaultAuthTypeQuestion = {
     type: 'list',
     name: 'authType',
-    message: 'Choose an authorization type for the API',
+    message: 'Choose the default authorization type for the API',
+    choices: authProviderChoices,
+  };
+
+  const { authType } = await inquirer.prompt([defaultAuthTypeQuestion]);
+
+  const authConfig = {
+    additionalAuthenticationProviders: [],
+  };
+
+  // Get default auth configured
+  const defaultAuth = await askAuthQuestions(authType, context);
+
+  authConfig.defaultAuthentication = defaultAuth;
+
+  const advancedSettingsQuestion = {
+    type: 'list',
+    name: 'advancedSettings',
+    message: 'Do you want to configure advanced settings for the GraphQL API',
     choices: [
       {
-        name: 'API key',
-        value: 'API_KEY',
+        name: 'No, I am done.',
+        value: false,
       },
       {
-        name: 'Amazon Cognito User Pool',
-        value: 'AMAZON_COGNITO_USER_POOLS',
+        name: 'Yes, I want to make some additional changes.',
+        value: true,
       },
     ],
   };
 
-  const { authType } = await inquirer.prompt([securityTypeQuestion]);
+  const advancedSettingsAnswer = await inquirer.prompt([advancedSettingsQuestion]);
 
-  if (authType === 'AMAZON_COGNITO_USER_POOLS') {
-    let authResourceName = checkIfAuthExists(context);
+  if (advancedSettingsAnswer.advancedSettings) {
+    // Get additional auth configured
+    const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== authType);
 
-    if (!authResourceName) {
-      try {
-        const { add } = require('amplify-category-auth');
+    const additionalProvidersQuestion = {
+      type: 'checkbox',
+      name: 'authType',
+      message: 'Choose the additional authorization types you want to configure for the API',
+      choices: remainingAuthProviderChoices,
+    };
 
-        authResourceName = await add(context);
-      } catch (e) {
-        context.print.error('Auth plugin not installed in the CLI. You need to install it to use this feature.');
-      }
-    } else {
-      context.print.info('Use a Cognito user pool configured as a part of this project');
+    const additionalProvidersAnswer = await inquirer.prompt([additionalProvidersQuestion]);
+
+    for (let i = 0; i < additionalProvidersAnswer.authType.length; i += 1) {
+      const authProvider = additionalProvidersAnswer.authType[i];
+
+      const config = await askAuthQuestions(authProvider, context, true);
+
+      authConfig.additionalAuthenticationProviders.push(config);
     }
 
-    parameters.AuthCognitoUserPoolId = {
-      'Fn::GetAtt': [
-        `auth${authResourceName}`,
-        'Outputs.UserPoolId',
-      ],
-    };
-  } else if (authType === 'API_KEY') {
-    if (parameters.AuthCognitoUserPoolId) {
+    const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS');
+    const additionalUserPoolProvider = additionalUserPoolProviders.length > 0
+      ? additionalUserPoolProviders[0] : undefined;
+
+    if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
+      let userPoolId;
+      const configuredUserPoolName = checkIfAuthExists(context);
+
+      if (authConfig.userPoolConfig) {
+        ({ userPoolId } = authConfig.userPoolConfig);
+      } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
+        ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
+      } else if (configuredUserPoolName) {
+        userPoolId = `auth${configuredUserPoolName}`;
+      } else {
+        throw new Error('Cannot find a configured Cognito User Pool, it is probably a CLI error, please submit an issue on GitHub.');
+      }
+
+      parameters.AuthCognitoUserPoolId = {
+        'Fn::GetAtt': [
+          userPoolId,
+          'Outputs.UserPoolId',
+        ],
+      };
+    } else {
       delete parameters.AuthCognitoUserPoolId;
     }
   }
 
-  return authType;
+  return authConfig;
+}
+
+async function askAuthQuestions(authType, context, printLeadText = false) {
+  if (authType === 'AMAZON_COGNITO_USER_POOLS') {
+    if (printLeadText) {
+      context.print.info('Cognito UserPool configuration');
+    }
+
+    const userPoolConfig = await askUserPoolQuestions(context);
+
+    return userPoolConfig;
+  }
+
+  if (authType === 'API_KEY') {
+    if (printLeadText) {
+      context.print.info('API key configuration');
+    }
+
+    const apiKeyConfig = await askApiKeyQuestions();
+
+    return apiKeyConfig;
+  }
+
+  if (authType === 'AWS_IAM') {
+    return {
+      authenticationType: 'AWS_IAM',
+    };
+  }
+
+  if (authType === 'OPENID_CONNECT') {
+    if (printLeadText) {
+      context.print.info('OpenID Connect configuration');
+    }
+
+    const openIDConnectConfig = await askOpenIDConnectQuestions();
+
+    return openIDConnectConfig;
+  }
+
+  context.print.error(`Unknown authType: ${authType}`);
+  process.exit(1);
+}
+
+async function askUserPoolQuestions(context) {
+  let authResourceName = checkIfAuthExists(context);
+
+  if (!authResourceName) {
+    try {
+      const { add } = require('amplify-category-auth');
+
+      authResourceName = await add(context);
+    } catch (e) {
+      context.print.error('Auth plugin not installed in the CLI. You need to install it to use this feature.');
+    }
+  } else {
+    context.print.info('Use a Cognito user pool configured as a part of this project.');
+  }
+
+  return {
+    authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    userPoolConfig: {
+      userPoolId: `auth${authResourceName}`,
+    },
+  };
+}
+
+async function askApiKeyQuestions() {
+  const apiKeyQuestions = [
+    {
+      type: 'input',
+      name: 'description',
+      message: 'Enter a description for the API key:',
+    },
+    {
+      type: 'input',
+      name: 'apiKeyExpirationDays',
+      message: 'After how many days from now the API key should expire (1-365):',
+      default: 180,
+      validate: validateDays,
+    },
+  ];
+
+  const apiKeyConfig = await inquirer.prompt(apiKeyQuestions);
+
+  return {
+    authenticationType: 'API_KEY',
+    apiKeyConfig,
+  };
+}
+
+async function askOpenIDConnectQuestions() {
+  const openIDConnectQuestions = [
+    {
+      type: 'input',
+      name: 'name',
+      message: 'Enter a name for the OpenID Connect provider:',
+    },
+    {
+      type: 'input',
+      name: 'issuerUrl',
+      message: 'Enter the OpenID Connect provider domain (Issuer URL):',
+      validate: validateIssuerUrl,
+    },
+    {
+      type: 'input',
+      name: 'clientId',
+      message: 'Enter the Client Id from your OpenID Client Connect application (optional):',
+    },
+    {
+      type: 'input',
+      name: 'iatTTL',
+      message: 'Enter the number of milliseconds a token is valid after being issued to a user:',
+      validate: validateTTL,
+    },
+    {
+      type: 'input',
+      name: 'authTTL',
+      message: 'Enter the number of milliseconds a token is valid after being authenticated:',
+      validate: validateTTL,
+    },
+  ];
+
+  const openIDConnectConfig = await inquirer.prompt(openIDConnectQuestions);
+
+  return {
+    authenticationType: 'OPENID_CONNECT',
+    openIDConnectConfig,
+  };
+}
+
+function validateDays(input) {
+  const isValid = /^\d+$/.test(input);
+  const days = isValid ? parseInt(input, 10) : 0;
+
+  if (!isValid || days < 1 || days > 365) {
+    return 'Number of days must be between 1 and 365.';
+  }
+
+  return true;
+}
+
+function validateIssuerUrl(input) {
+  const isValid = /^(((?!http:\/\/(?!localhost))([a-zA-Z0-9.]{1,}):\/\/([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,})\/)|(?!http)(?!https)([a-zA-Z0-9.]{1,}):\/\/)$/.test(input);
+
+  if (!isValid) {
+    return 'The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost.';
+  }
+
+  return true;
+}
+
+function validateTTL(input) {
+  const isValid = /^\d+$/.test(input);
+
+  if (!isValid) {
+    return 'The value must be a number.';
+  }
+
+  return true;
 }
 
 function resourceAlreadyExists(context) {
@@ -352,7 +581,6 @@ function resourceAlreadyExists(context) {
 
   return resourceName;
 }
-
 
 function checkIfAuthExists(context) {
   const { amplify } = context;
@@ -373,7 +601,7 @@ function checkIfAuthExists(context) {
 }
 
 async function migrate(context) {
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { noConfig: true, forceCompile: true, migrate: true });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true, migrate: true });
 }
 
 function getIAMPolicies(resourceName, crudOptions) {
@@ -422,6 +650,16 @@ function getIAMPolicies(resourceName, crudOptions) {
   return { policy, attributes };
 }
 
+function getAuthTypes(authConfig) {
+  const additionalAuthTypes = (authConfig.additionalAuthenticationProviders || [])
+    .map(provider => provider.authenticationType)
+    .filter(t => !!t);
+
+  const uniqueAuthTypes = new Set([...additionalAuthTypes,
+    authConfig.defaultAuthentication.authenticationType]);
+
+  return [...uniqueAuthTypes.keys()];
+}
 
 module.exports = {
   serviceWalkthrough, updateWalkthrough, openConsole, migrate, getIAMPolicies,

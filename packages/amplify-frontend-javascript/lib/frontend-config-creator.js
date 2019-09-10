@@ -258,10 +258,18 @@ function getS3Config(s3Resources) {
 function getAppSyncConfig(appsyncResources, projectRegion) {
   // There can only be one appsync resource
   const appsyncResource = appsyncResources[0];
+  const { authConfig, securityType } = appsyncResource.output;
+  let authMode = '';
+
+  if (securityType) {
+    authMode = securityType;
+  } else if (authConfig) {
+    authMode = authConfig.defaultAuthentication.authenticationType;
+  }
   const config = {
     aws_appsync_graphqlEndpoint: appsyncResource.output.GraphQLAPIEndpointOutput,
     aws_appsync_region: projectRegion,
-    aws_appsync_authenticationType: appsyncResource.output.securityType,
+    aws_appsync_authenticationType: authMode,
     aws_appsync_apiKey: appsyncResource.output.GraphQLAPIKeyOutput || undefined,
   };
   if (appsyncResource.testMode) {

@@ -2,6 +2,7 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import ModelTransformer from 'graphql-dynamodb-transformer'
 import FunctionTransformer from 'graphql-function-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -10,7 +11,6 @@ import emptyBucket from '../emptyBucket';
 import { deploy } from '../deployNestedStacks'
 import { S3Client } from '../S3Client';
 import * as S3 from 'aws-sdk/clients/s3'
-import * as fs from 'fs'
 import { LambdaHelper } from '../LambdaHelper';
 import { IAMHelper } from '../IAMHelper';
 
@@ -82,12 +82,19 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new ModelTransformer(),
-            new FunctionTransformer()
+            new FunctionTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema);
     const finishedStack = await deploy(
-        customS3Client, cf, STACK_NAME, out, { env: 'dev' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+        customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1', env: 'dev' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
         BUILD_TIMESTAMP
     )
     // Arbitrary wait to make sure everything is ready.

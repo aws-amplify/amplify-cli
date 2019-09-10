@@ -24,7 +24,7 @@ export default class RelationalDBTemplateGenerator {
     /**
      * Creates and returns the basic Cloudform template needed for setting
      * up an AppSync API pointing at the RDS DataSource.
-     * 
+     *
      * @returns the created CloudFormation template.
      */
     public createTemplate(context: any): Template {
@@ -69,7 +69,7 @@ export default class RelationalDBTemplateGenerator {
 
     /**
      * Creates any Parmaters needed for the CFN Template
-     * 
+     *
      * @param databaseName - the name of the database being parsed.
      * @returns the parameters for the template.
      */
@@ -113,7 +113,7 @@ export default class RelationalDBTemplateGenerator {
 
     /**
      * Creates the IAM Role CFN Spec to allow AppSync to interact with the RDS cluster
-     * 
+     *
      * @returns the IAM role CloudFormation resource.
      */
     private makeIAMDataSourceRole() {
@@ -146,7 +146,7 @@ export default class RelationalDBTemplateGenerator {
                                 Effect: 'Allow',
                                 Action: [
                                     'rds-data:ExecuteSql',
-				    'rds-data:ExecuteStatement',
+                                    'rds-data:ExecuteStatement',
                                     'rds-data:DeleteItems',
                                     'rds-data:GetItems',
                                     'rds-data:InsertItems',
@@ -174,7 +174,7 @@ export default class RelationalDBTemplateGenerator {
 
     /**
      * Creates the AppSync DataSource CFN Spec pointing at the provided RDS Cluster
-     * 
+     *
      * @param cliContext - the Amplify context, used to load environment variables.
      * @returns the data source CloudFormation resource.
      */
