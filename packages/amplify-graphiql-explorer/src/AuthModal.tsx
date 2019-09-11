@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
-import { Button, Form, Modal, Dropdown, Input } from 'semantic-ui-react';
-import { decode, sign } from 'jsonwebtoken';
+import { Button, Form, Modal, Dropdown, Input, TextArea, Label } from 'semantic-ui-react';
+import { generateToken, parse } from './utils/jwt'
 
-enum AUTH_MODE {
+export enum AUTH_MODE {
   API_KEY = 'API_KEY',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+  OPENID_CONNECT = 'OPENID_CONNECT',
 }
 
 type State = {
-  currentToken?: string;
-  authMode: string;
+  currentCognitoToken?: string;
+  currentOIDCToken: string;
+  currentOIDCTokenDecoded?: string;
+  currentAuthMode: AUTH_MODE;
   userName?: string;
   userGroups: string[];
   email?: string;
@@ -17,67 +20,79 @@ type State = {
   apiKey?: string;
   possibleGroups: string[];
   isOpen: boolean;
+  supportedAuthModes: AUTH_MODE[];
+  oidcTokenError: string;
 };
 
 type Props = {
   onClose: Function;
-  authMode: string;
-  currentToken?: string;
+  authModes: AUTH_MODE[];
+  selectedAuthMode: AUTH_MODE;
+  currentCognitoToken?: string;
+  currentOIDCToken?: string;
   apiKey?: string;
 };
 export class AuthModal extends Component<Props, State> {
-  state = {
-    currentToken: '',
-    authMode: AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  state:State = {
+    currentCognitoToken: '',
+    currentOIDCTokenDecoded: '',
+    currentOIDCToken: '',
     userName: '',
     issuer: '',
     userGroups: [],
     apiKey: '',
     possibleGroups: [],
     email: '',
+    supportedAuthModes: [AUTH_MODE.API_KEY],
     isOpen: true,
+    currentAuthMode: AUTH_MODE.API_KEY,
+    oidcTokenError: '',
   };
 
   constructor(props, ...args) {
     super(props, ...args);
-    let state = {};
-    if (props.authMode === AUTH_MODE.API_KEY) {
-      state = {
-        apiKey: this.props.apiKey,
-      };
-    } else {
-      const decodedToken = this.parseJWTToken(this.props.currentToken) || {};
-      state = {
-        userName: decodedToken['cognito:username'] || '',
-        userGroups: decodedToken['cognito:groups'] || [],
-        issuer: decodedToken['iss'],
-        email: decodedToken['email'],
-        possibleGroups: decodedToken['cognito:groups'] || [],
-      };
-    }
 
+    const decodedToken = this.parseJWTToken(this.props.currentCognitoToken) || {};
+    let state = {
+      userName: decodedToken['cognito:username'] || '',
+      userGroups: decodedToken['cognito:groups'] || [],
+      issuer: decodedToken['iss'],
+      email: decodedToken['email'],
+      possibleGroups: decodedToken['cognito:groups'] || [],
+    };
     this.state = {
       ...this.state,
       ...state,
-      currentToken: this.props.currentToken || '',
+      currentCognitoToken: this.props.currentCognitoToken || '',
+      currentOIDCToken: this.props.currentOIDCToken || '',
+      currentOIDCTokenDecoded: JSON.stringify(this.parseJWTToken(this.props.currentOIDCToken), null, 4) || '',
+      apiKey: props.apiKey || '',
+      supportedAuthModes: this.props.authModes,
+      currentAuthMode: props.selectedAuthMode,
     };
+
     this.onClose = this.onClose.bind(this);
-    this.changeAuthMode = this.changeAuthMode.bind(this);
     this.onGroupChange = this.onGroupChange.bind(this);
     this.onGroupAdd = this.onGroupAdd.bind(this);
     this.onGenerate = this.onGenerate.bind(this);
     this.changeAPIKey = this.changeAPIKey.bind(this);
     this.changeEmail = this.changeEmail.bind(this);
-    this.changeUserName = this.changeUserName.bind(this);
+    this.onUserNameChange = this.onUserNameChange.bind(this);
+    this.onOIDCTokenChange = this.onOIDCTokenChange.bind(this);
+    this.onAuthModeChange = this.onAuthModeChange.bind(this);
   }
 
   onClose() {
     const result = {
-      authMode: this.props.authMode,
-      apiKey: this.props.authMode === AUTH_MODE.API_KEY ? this.state.apiKey : null,
-      jwtToken:
-        this.props.authMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS
-          ? this.state.currentToken
+      authMode: this.state.currentAuthMode,
+      apiKey: this.state.currentAuthMode === AUTH_MODE.API_KEY ? this.state.apiKey : null,
+      cognitoToken:
+        this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+          ? this.state.currentCognitoToken
+          : null,
+      OIDCToken:
+        this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT
+          ? this.state.currentOIDCToken
           : null,
     };
 
@@ -96,15 +111,21 @@ export class AuthModal extends Component<Props, State> {
     });
   }
 
-  changeAuthMode(ev, data) {
+  onUserNameChange(ev, data) {
     this.setState({
-      authMode: data.value,
+      userName: data.value,
     });
   }
 
-  changeUserName(ev, data) {
+  onOIDCTokenChange(ev, data) {
     this.setState({
-      userName: data.value,
+      currentOIDCTokenDecoded: data.value,
+    });
+  }
+
+  onAuthModeChange(ev, data) {
+    this.setState({
+      currentAuthMode: data.value,
     });
   }
 
@@ -121,18 +142,22 @@ export class AuthModal extends Component<Props, State> {
 
   render() {
     let formContent;
-    let actionText = '';
-    if (this.props.authMode === AUTH_MODE.API_KEY) {
-      actionText = 'Save';
+    let actionText = 'Save';
+    if (this.state.currentAuthMode === AUTH_MODE.API_KEY) {
       formContent = (
         <>
           <Form.Field>
             <label>ApiKey</label>
-            <Input placeholder='APIKey' value={this.state.apiKey} onChange={this.changeAPIKey} />
+            <Input
+              readOnly
+              placeholder='APIKey'
+              value={this.state.apiKey}
+              onChange={this.changeAPIKey}
+            />
           </Form.Field>
         </>
       );
-    } else if (this.props.authMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
+    } else if (this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
       actionText = 'Generate Token';
       formContent = (
         <>
@@ -141,7 +166,7 @@ export class AuthModal extends Component<Props, State> {
             <Input
               placeholder='User Name'
               value={this.state.userName}
-              onChange={this.changeUserName}
+              onChange={this.onUserNameChange}
             />
           </Form.Field>
           <Form.Field>
@@ -169,13 +194,49 @@ export class AuthModal extends Component<Props, State> {
           </Form.Field>
         </>
       );
+    } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
+      const errorLabel = this.state.oidcTokenError ? (
+        <Label basic color="red" pointing="below">
+          {this.state.oidcTokenError}
+        </Label>
+      ) : null
+      formContent = (
+        <>
+          <Form.Field>
+            <label>Decoded OpenID Connect Token</label>
+            { errorLabel }
+            <TextArea
+              onChange={this.onOIDCTokenChange}
+              rows={10}
+              placeholder='Decoded OIDC Token'
+              spellCheck="false"
+              value={this.state.currentOIDCTokenDecoded}
+            />
+          </Form.Field>
+        </>
+      );
     }
+
+    const authModeOptions = this.state.supportedAuthModes
+      .filter(mode => mode)
+      .map(mode => ({
+        key: mode,
+        value: mode,
+        text: mode,
+      }));
 
     return (
       <Modal onClose={this.onClose} onActionClick={this.onGenerate} open={this.state.isOpen}>
         <Modal.Header>Auth Options</Modal.Header>
         <Modal.Content>
           <Modal.Description>
+            <Dropdown
+              placeholder='Auth Mode'
+              selection
+              options={authModeOptions}
+              value={this.state.currentAuthMode}
+              onChange={this.onAuthModeChange}
+            />
             <Form>{formContent}</Form>
           </Modal.Description>
         </Modal.Content>
@@ -188,19 +249,24 @@ export class AuthModal extends Component<Props, State> {
     );
   }
   onGenerate() {
-    const newState = {
-      isOpen: false,
-    };
-    if (this.props.authMode !== AUTH_MODE.API_KEY) {
-      newState['currentToken'] = this.generateJWTToken();
+    try {
+      const newState = {
+        isOpen: false,
+      };
+      if (this.state.currentAuthMode === AUTH_MODE.AMAZON_COGNITO_USER_POOLS) {
+        newState['currentCognitoToken'] = this.generateCognitoJWTToken();
+      } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
+        newState['currentOIDCToken'] = this.generateOIDCJWTToken();
+      }
+      this.setState(newState, () => {
+        this.onClose();
+      });
+    } catch (e) {
     }
-    this.setState(newState, () => {
-      this.onClose();
-    });
   }
 
-  generateJWTToken() {
-    const tokenPayload = {
+  generateCognitoJWTToken() {
+    const tokenPayload:any = {
       sub: '7d8ca528-4931-4254-9273-ea5ee853f271',
       'cognito:groups': [],
       email_verified: true,
@@ -220,12 +286,22 @@ export class AuthModal extends Component<Props, State> {
     tokenPayload['cognito:groups'] = this.state.userGroups;
     tokenPayload['auth_time'] = Math.floor(Date.now() / 1000); // In seconds
 
-    const token = sign(tokenPayload, 'open-secrete');
-
+    const token = generateToken(tokenPayload);
     return token;
   }
+
+  generateOIDCJWTToken() {
+    const tokenPayload = this.state.currentOIDCTokenDecoded || '';
+    try {
+      return generateToken(tokenPayload);
+    } catch (e) {
+      this.setState({
+        oidcTokenError: e.message
+      });
+      throw e;
+    }
+  }
   parseJWTToken(token) {
-    const decodedToken = decode(token);
-    return decodedToken;
+    return parse(token);
   }
 }

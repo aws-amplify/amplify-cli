@@ -1,3 +1,4 @@
+import { Request } from 'express';
 export type AppSyncMockFile = {
   path?: string;
   content: string;
@@ -77,13 +78,43 @@ export enum AmplifyAppSyncSimulatorAuthenticationType {
   API_KEY = 'API_KEY',
   AWS_IAM = 'AWS_IAM',
   AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-  OPENID_CONNECT = ' OPENID_CONNECT',
+  OPENID_CONNECT = 'OPENID_CONNECT',
 }
+
+export type AmplifyAppSyncAuthenticationProviderAPIConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.API_KEY;
+};
+
+export type AmplifyAppSyncAuthenticationProviderIAMConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.AWS_IAM;
+};
+
+export type AmplifyAppSyncAuthenticationProviderCognitoConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS;
+  cognitoUserPoolConfig: {
+    AppIdClientRegex?: string;
+  };
+};
+
+export type AmplifyAppSyncAuthenticationProviderOIDCConfig = {
+  authenticationType: AmplifyAppSyncSimulatorAuthenticationType.OPENID_CONNECT;
+  openIDConnectConfig: {
+    Issuer?: string;
+    ClientId?: string;
+  };
+};
+
+export type AmplifyAppSyncAuthenticationProviderConfig =
+  | AmplifyAppSyncAuthenticationProviderAPIConfig
+  | AmplifyAppSyncAuthenticationProviderIAMConfig
+  | AmplifyAppSyncAuthenticationProviderCognitoConfig
+  | AmplifyAppSyncAuthenticationProviderOIDCConfig;
 
 export type AmplifyAppSyncAPIConfig = {
   name: string;
-  authenticationType: AmplifyAppSyncSimulatorAuthenticationType;
+  defaultAuthenticationType: AmplifyAppSyncAuthenticationProviderConfig;
   apiKey?: string;
+  additionalAuthenticationProviders: AmplifyAppSyncAuthenticationProviderConfig[];
 };
 
 export type AmplifyAppSyncSimulatorConfig = {
@@ -99,3 +130,10 @@ export type AppSyncSimulatorServerConfig = {
   port?: number;
   wsPort?: number;
 };
+
+export type AmplifyAppSyncSimulatorRequestContext = {
+  jwt?: object,
+  requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType,
+  request: Request,
+  appsyncErrors: {}
+}

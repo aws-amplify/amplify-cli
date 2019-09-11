@@ -2,6 +2,7 @@ import { ResourceConstants } from 'graphql-transformer-common'
 import GraphQLTransform from 'graphql-transformer-core'
 import ModelTransformer from 'graphql-dynamodb-transformer'
 import KeyTransformer from 'graphql-key-transformer'
+import ModelAuthTransformer from 'graphql-auth-transformer'
 import { CloudFormationClient } from '../CloudFormationClient'
 import { Output } from 'aws-sdk/clients/cloudformation'
 import { GraphQLClient } from '../GraphQLClient'
@@ -73,12 +74,19 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
         transformers: [
             new ModelTransformer(),
-            new KeyTransformer()
+            new KeyTransformer(),
+            new ModelAuthTransformer({
+                authConfig: {
+                    defaultAuthentication: {
+                        authenticationType: "API_KEY"
+                    },
+                    additionalAuthenticationProviders: []
+                }})
         ]
     })
     const out = transformer.transform(validSchema);
     const finishedStack = await deploy(
-        customS3Client, cf, STACK_NAME, out, { env: 'dev' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
+        customS3Client, cf, STACK_NAME, out, { CreateAPIKey: '1', env: 'dev' }, LOCAL_FS_BUILD_DIR, BUCKET_NAME, S3_ROOT_DIR_KEY,
         BUILD_TIMESTAMP
     )
     // Arbitrary wait to make sure everything is ready.

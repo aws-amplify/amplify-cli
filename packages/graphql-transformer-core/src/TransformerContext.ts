@@ -16,7 +16,6 @@ import {
     parse,
     EnumTypeDefinitionNode,
     TypeDefinitionNode,
-    DefinitionNode,
     OperationTypeDefinitionNode,
     InterfaceTypeDefinitionNode
 } from 'graphql'
@@ -27,7 +26,6 @@ import {
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
-import { ConfigSnapshotDeliveryProperties } from 'cloudform-types/types/config/deliveryChannel';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -402,8 +400,18 @@ export default class TransformerContext {
         }
         // AppSync does not yet understand type extensions so fold the types in.
         const oldNode = this.getObject(obj.name.value)
-        const newDirs = obj.directives || []
+        const newDirs = []
         const oldDirs = oldNode.directives || []
+
+        // Filter out duplicate directives, do not add them
+        if (obj.directives) {
+            for (const newDir of obj.directives) {
+                if (Boolean(oldDirs.find((d) => d.name.value === newDir.name.value)) === false) {
+                    newDirs.push(newDir);
+                }
+            }
+        }
+
         const mergedDirs = [...oldDirs, ...newDirs]
 
         // An extension cannot redeclare fields.

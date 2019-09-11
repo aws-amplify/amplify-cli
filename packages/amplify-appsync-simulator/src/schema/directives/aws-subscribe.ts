@@ -6,9 +6,9 @@ export class AwsSubscribe extends AppSyncSimulatorDirectiveBase {
   name: string = 'aws_subscribe';
 
   visitFieldDefinition(field) {
-    const mutationFiled = this.schema.getMutationType().getFields();
+    const mutationField = this.schema.getMutationType().getFields();
     this.args.mutations.forEach(mutation => {
-      const m = mutationFiled[mutation];
+      const m = mutationField[mutation];
       if (m && m.resolve) {
         const resolve = m.resolve;
         m.resolve = async (...rest) => {

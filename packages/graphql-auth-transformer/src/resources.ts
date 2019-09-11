@@ -1,16 +1,19 @@
 import Template from 'cloudform-types/types/template'
-import GraphQLAPI, { UserPoolConfig } from 'cloudform-types/types/appSync/graphQlApi'
-import { AppSync, Fn, StringParameter, Refs } from 'cloudform-types'
-import { AuthRule } from './AuthRule'
+import Cognito from 'cloudform-types/types/cognito'
+import Output from 'cloudform-types/types/output'
+import Policy from 'cloudform-types/types/iam/policy';
+import { AppSync, Fn, StringParameter, Refs, NumberParameter, IAM, Value } from 'cloudform-types'
+import { AuthRule, AuthProvider } from './AuthRule'
 import {
     str, ref, obj, set, iff, list, raw,
     forEach, compoundExpression, qref, equals, comment,
     or, Expression, SetNode, and, not, parens,
-    block, print, ifElse,
+    block, print, ifElse, newline
 } from 'graphql-mapping-template'
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common'
-import { AppSyncAuthModeModes } from './ModelAuthTransformer';
 import { InvalidDirectiveError } from 'graphql-transformer-core';
+import GraphQLAPI, { UserPoolConfig, GraphQLApiProperties, OpenIDConnectConfig, AdditionalAuthenticationProvider } from './graphQlApi'
+import * as Transformer from './ModelAuthTransformer'
 
 import {
     DEFAULT_OWNER_FIELD,
@@ -30,6 +33,25 @@ export class ResourceFactory {
 
     public makeParams() {
         return {
+            [ResourceConstants.PARAMETERS.AppSyncApiName]: new StringParameter({
+                Description: 'The name of the AppSync API',
+                Default: 'AppSyncSimpleTransform'
+            }),
+            [ResourceConstants.PARAMETERS.APIKeyExpirationEpoch]: new NumberParameter({
+                Description: 'The epoch time in seconds when the API Key should expire.' +
+                    ' Setting this to 0 will default to 180 days from the deployment date.' +
+                    ' Setting this to -1 will not create an API Key.',
+                Default: 0,
+                MinValue: -1
+            }),
+            [ResourceConstants.PARAMETERS.CreateAPIKey]: new NumberParameter({
+                Description: 'The boolean value to control if an API Key will be created or not.' +
+                    ' The value of the property is automatically set by the CLI.' +
+                    ' If the value is set to 0 no API Key will be created.',
+                Default: 0,
+                MinValue: 0,
+                MaxValue: 1
+            }),
             [ResourceConstants.PARAMETERS.AuthCognitoUserPoolId]: new StringParameter({
                 Description: 'The id of an existing User Pool to connect. If this is changed, a user pool will not be created for you.',
                 Default: ResourceConstants.NONE
@@ -40,21 +62,18 @@ export class ResourceFactory {
     /**
      * Creates the barebones template for an application.
      */
-    public initTemplate(): Template {
+    public initTemplate(apiKeyConfig: Transformer.ApiKeyConfig): Template {
         return {
             Parameters: this.makeParams(),
             Resources: {
-                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey()
+                [ResourceConstants.RESOURCES.APIKeyLogicalID]: this.makeAppSyncApiKey(apiKeyConfig)
             },
             Outputs: {
                 [ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput]: this.makeApiKeyOutput()
             },
             Conditions: {
                 [ResourceConstants.CONDITIONS.ShouldCreateAPIKey]:
-                    Fn.And([
-                        Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
-                        Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId), ResourceConstants.NONE)
-                    ]),
+                    Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.CreateAPIKey), 1),
                 [ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive]:
                     Fn.And([
                         Fn.Not(Fn.Equals(Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch), -1)),
@@ -64,15 +83,20 @@ export class ResourceFactory {
         }
     }
 
-    public makeAppSyncApiKey() {
-        const oneWeekFromNowInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * 7 /* d */
+    public makeAppSyncApiKey(apiKeyConfig: Transformer.ApiKeyConfig) {
+        let expirationDays = 180;
+        if (apiKeyConfig && apiKeyConfig.apiKeyExpirationDays) {
+            expirationDays = apiKeyConfig.apiKeyExpirationDays;
+        }
+        const expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays /* d */
         const nowEpochTime = Math.floor(Date.now() / 1000)
         return new AppSync.ApiKey({
             ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
+            Description: (apiKeyConfig && apiKeyConfig.description) ? apiKeyConfig.description : undefined,
             Expires: Fn.If(
                 ResourceConstants.CONDITIONS.APIKeyExpirationEpochIsPositive,
                 Fn.Ref(ResourceConstants.PARAMETERS.APIKeyExpirationEpoch),
-                nowEpochTime + oneWeekFromNowInSeconds
+                nowEpochTime + expirationDateInSeconds
             ),
         }).condition(ResourceConstants.CONDITIONS.ShouldCreateAPIKey)
     }
@@ -91,19 +115,87 @@ export class ResourceFactory {
         };
     }
 
-    public updateGraphQLAPIWithAuth(apiRecord: GraphQLAPI, authMode: AppSyncAuthModeModes) {
-        return new GraphQLAPI({
+    public updateGraphQLAPIWithAuth(apiRecord: GraphQLAPI, authConfig: Transformer.AppSyncAuthConfiguration) {
+        let properties: GraphQLApiProperties = {
             ...apiRecord.Properties,
             Name: apiRecord.Properties.Name,
-            AuthenticationType: authMode,
-            UserPoolConfig: authMode === 'AMAZON_COGNITO_USER_POOLS' ?
-                new UserPoolConfig({
+            AuthenticationType: authConfig.defaultAuthentication.authenticationType,
+            UserPoolConfig: undefined,
+            OpenIDConnectConfig: undefined
+        };
+
+        switch (authConfig.defaultAuthentication.authenticationType) {
+            case 'AMAZON_COGNITO_USER_POOLS':
+                properties.UserPoolConfig = new UserPoolConfig({
                     UserPoolId: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId),
                     AwsRegion: Refs.Region,
                     DefaultAction: 'ALLOW'
-                }) :
-                undefined
-        })
+                });
+                break;
+            case 'OPENID_CONNECT':
+                if (!authConfig.defaultAuthentication.openIDConnectConfig) {
+                    throw new Error('openIDConnectConfig is not configured for defaultAuthentication');
+                }
+
+                properties.OpenIDConnectConfig = this.assignOpenIDConnectConfig(authConfig.defaultAuthentication.openIDConnectConfig);
+                break;
+        }
+
+        // Configure additional authentication providers
+        if (authConfig.additionalAuthenticationProviders && authConfig.additionalAuthenticationProviders.length > 0) {
+            const additionalAuthenticationProviders = new Array<AdditionalAuthenticationProvider>();
+
+            for (const sourceProvider of authConfig.additionalAuthenticationProviders) {
+                let provider: AdditionalAuthenticationProvider;
+
+                switch (sourceProvider.authenticationType) {
+                    case 'AMAZON_COGNITO_USER_POOLS':
+                        provider = {
+                            AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+                            UserPoolConfig: new UserPoolConfig({
+                                UserPoolId: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId),
+                                AwsRegion: Refs.Region
+                            })
+                        };
+                        break;
+                    case 'API_KEY':
+                            provider = {
+                                AuthenticationType: 'API_KEY',
+                            };
+                            break;
+                    case 'AWS_IAM':
+                            provider = {
+                                AuthenticationType: 'AWS_IAM',
+                            };
+                        break;
+                    case 'OPENID_CONNECT':
+                            if (!sourceProvider.openIDConnectConfig) {
+                                throw new Error('openIDConnectConfig is not configured for provider');
+                            }
+
+                            provider = {
+                                AuthenticationType: 'OPENID_CONNECT',
+                                OpenIDConnectConfig: this.assignOpenIDConnectConfig(sourceProvider.openIDConnectConfig)
+                            };
+                        break;
+                }
+
+                additionalAuthenticationProviders.push(provider);
+            }
+
+            properties.AdditionalAuthenticationProviders = additionalAuthenticationProviders;
+        }
+
+        return new GraphQLAPI(properties);
+    }
+
+    private assignOpenIDConnectConfig(config: Transformer.OpenIDConnectConfig) {
+        return new OpenIDConnectConfig({
+            Issuer: config.issuerUrl,
+            ClientId: config.clientId,
+            IatTTL: config.iatTTL,
+            AuthTTL: config.authTTL
+        });
     }
 
     public blankResolver(type: string, field: string) {
@@ -845,5 +937,141 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
         return block('Setting the operation', [
             set(ref('context.result.operation'), str(operation))
         ])
+    }
+
+    public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {
+        if (!expectedAuthModes || expectedAuthModes.size === 0) {
+            return expression;
+        }
+
+        const conditions = [];
+
+        for (const expectedAuthMode of expectedAuthModes) {
+            conditions.push(equals(
+                ref(ResourceConstants.SNIPPETS.AuthMode),
+                str(`${expectedAuthMode}`)
+            ));
+        }
+
+        return block("Check authMode and execute owner/group checks", [
+            iff(
+                conditions.length === 1 ? conditions[0] : or (conditions),
+                expression
+            )
+        ]);
+    }
+
+    public getAuthModeDeterminationExpression(authProviders: Set<AuthProvider>): Expression {
+        if (!authProviders || authProviders.size === 0) {
+            return comment(`No authentication mode determination needed`);
+        }
+
+        const expressions = [];
+
+        for (const authProvider of authProviders) {
+
+            if (authProvider === 'userPools') {
+                const userPoolsExpression = iff(
+                    and([
+                        raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
+                        not(raw(`$util.isNull($ctx.identity)`)),
+                        not(raw(`$util.isNull($ctx.identity.sub)`)),
+                        not(raw(`$util.isNull($ctx.identity.issuer)`)),
+                        not(raw(`$util.isNull($ctx.identity.username)`)),
+                        not(raw(`$util.isNull($ctx.identity.claims)`)),
+                        not(raw(`$util.isNull($ctx.identity.sourceIp)`)),
+                        not(raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`)),
+                    ]),
+                    set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`userPools`))
+                );
+
+                expressions.push(userPoolsExpression);
+
+            } else if (authProvider === 'oidc') {
+                const oidcExpression = iff(
+                    and([
+                        raw(`$util.isNullOrEmpty($${ResourceConstants.SNIPPETS.AuthMode})`),
+                        not(raw(`$util.isNull($ctx.identity)`)),
+                        not(raw(`$util.isNull($ctx.identity.sub)`)),
+                        not(raw(`$util.isNull($ctx.identity.issuer)`)),
+                        not(raw(`$util.isNull($ctx.identity.claims)`)),
+                        raw(`$util.isNull($ctx.identity.username)`),
+                        raw(`$util.isNull($ctx.identity.sourceIp)`),
+                        raw(`$util.isNull($ctx.identity.defaultAuthStrategy)`),
+                    ]),
+                    set(ref(ResourceConstants.SNIPPETS.AuthMode), str(`oidc`))
+                );
+
+                if (expressions.length > 0) {
+                    expressions.push(newline());
+                }
+
+                expressions.push(oidcExpression);
+            }
+        }
+
+        return block("Determine request authentication mode", expressions);
+    }
+
+    public makeIAMPolicyForRole(isAuthPolicy: Boolean, resources: Set<string>): Policy {
+        const authPiece = isAuthPolicy ? "auth" : "unauth";
+        const policyResources: object[] = [];
+
+        for(const resource of resources) {
+            // We always have 2 parts, no need to check
+            const resourceParts = resource.split("/");
+
+            if (resourceParts[1] !== "null") {
+                policyResources.push (
+                    Fn.Sub(
+                        'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/fields/${fieldName}',
+                        {
+                            apiId: {
+                                "Fn::GetAtt": [
+                                    "GraphQLAPI",
+                                    "ApiId"
+                                ]
+                            },
+                            typeName: resourceParts[0],
+                            fieldName: resourceParts[1]
+                        }
+                    )
+                );
+            } else {
+                policyResources.push (
+                    Fn.Sub(
+                        'arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:apis/${apiId}/types/${typeName}/*',
+                        {
+                            apiId: {
+                                "Fn::GetAtt": [
+                                    "GraphQLAPI",
+                                    "ApiId"
+                                ]
+                            },
+                            typeName: resourceParts[0]
+                        }
+                    )
+                );
+            }
+        }
+
+        return new IAM.Policy({
+            PolicyName: `appsync-${authPiece}role-policy`,
+            Roles: [
+                //HACK double casting needed because it cannot except Ref
+                { Ref: `${authPiece}RoleName` } as unknown as Value<string>
+            ],
+            PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                {
+                    Effect: 'Allow',
+                    Action: [
+                        'appsync:GraphQL'
+                    ],
+                    Resource: policyResources,
+                }],
+            },
+        });
     }
 }

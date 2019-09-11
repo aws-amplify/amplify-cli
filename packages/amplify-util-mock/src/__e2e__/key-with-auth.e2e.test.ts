@@ -87,7 +87,14 @@ beforeAll(async () => {
     transformers: [
       new DynamoDBModelTransformer(),
       new KeyTransformer(),
-      new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
     ],
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -109,7 +116,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();

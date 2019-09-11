@@ -123,7 +123,7 @@ export class ResolverOverrides {
     });
   }
 
-  isTemplateFile(filePath: string): boolean {
+  isTemplateFile(filePath: string, isDelete: boolean = false): boolean {
     if (!this.fileExtensions.includes(path.extname(filePath))) {
       return false;
     }
@@ -131,8 +131,14 @@ export class ResolverOverrides {
       const absFolder = path.join(this._rootFolder, folder);
       return filePath.includes(absFolder);
     });
+
     if (!isInWatchedDir) {
       return false;
+    }
+
+    // When a file is unlinked, checking if the path is a file does not make sense
+    if (isDelete) {
+      return true;
     }
 
     if (fs.lstatSync(filePath).isFile()) {
