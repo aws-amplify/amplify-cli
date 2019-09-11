@@ -1,6 +1,6 @@
 {
   "name": "graphql-key-transformer",
-  "version": "1.7.0",
+  "version": "1.8.0-beta.0",
   "description": "Implements the @key directive.",
   "main": "lib/index.js",
   "author": "Michael Paris",
@@ -15,9 +15,9 @@
     "cloudform": "^3.5.0",
     "cloudform-types": "^3.7.0",
     "graphql": "^0.13.2",
-    "graphql-mapping-template": "3.7.0",
-    "graphql-transformer-common": "3.14.0",
-    "graphql-transformer-core": "5.0.0"
+    "graphql-mapping-template": "3.8.0-beta.0",
+    "graphql-transformer-common": "3.15.0-beta.0",
+    "graphql-transformer-core": "6.0.0-beta.0"
   },
   "devDependencies": {
     "@types/jest": "23.1.1",

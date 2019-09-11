@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@1.13.0-beta.0) (2019-09-11)
+
+
+### Bug Fixes
+
+* fix [#1205](https://github.com/aws-amplify/amplify-cli/issues/1205) ([#1961](https://github.com/aws-amplify/amplify-cli/issues/1961)) ([e8d8b97](https://github.com/aws-amplify/amplify-cli/commit/e8d8b97))
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee9029))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d0))
+* **amplify-frontend-javascript:** fix implicit grant oauth bug ([#2213](https://github.com/aws-amplify/amplify-cli/issues/2213)) ([16c71d7](https://github.com/aws-amplify/amplify-cli/commit/16c71d7))
+
+
+### Features
+
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e534))
+
+
+
+
+
 # [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@1.12.0) (2019-08-30)
 
 
