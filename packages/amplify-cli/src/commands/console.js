@@ -17,6 +17,6 @@ module.exports = {
     });
 
     const plugin = require(combinedPlugins[answer.pluginKey]);
-    return plugin.console(context);
+    await plugin.console(context);
   },
 };

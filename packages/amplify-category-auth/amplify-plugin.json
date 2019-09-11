@@ -1,0 +1,14 @@
+{
+    "name": "auth",
+    "type": "category",
+    "commands": [
+        "add",
+        "console",
+        "enable",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "eventHandlers": []
+}

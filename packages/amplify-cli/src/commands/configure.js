@@ -10,12 +10,12 @@ module.exports = {
   name: 'configure',
   run: async (context) => {
     if (!context.parameters.first) {
-      return configureNewUser.run(context);
+      await configureNewUser.run(context);
     }
 
     if (context.parameters.first === 'project') {
       constructExeInfo(context);
-      return analyzeProject.run(context)
+      await analyzeProject.run(context)
         .then(configFrontendHandler.run)
         .then(configProviders.run)
         .then(onSuccess.run)

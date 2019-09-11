@@ -1,0 +1,11 @@
+{
+    "name": "mock",
+    "type": "util",
+    "commands": [
+        "api",
+        "function",
+        "storage",
+        "help"
+    ],
+    "eventHandlers": []
+}
