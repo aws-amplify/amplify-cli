@@ -16,14 +16,15 @@ import { logDebug } from './index';
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
 
-export function configureAmplify(userPoolId: string, userPoolClientId: string) {
+export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
     Amplify.configure({
         Auth: {
             // REQUIRED - Amazon Cognito Region
             region: 'us-west-2',
             userPoolId: userPoolId,
             userPoolWebClientId: userPoolClientId,
-            storage: new TestStorage()
+            storage: new TestStorage(),
+            identityPoolId: identityPoolId
         }
     });
 }

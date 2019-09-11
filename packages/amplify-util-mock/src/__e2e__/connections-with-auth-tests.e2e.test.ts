@@ -96,7 +96,14 @@ beforeAll(async () => {
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),
-      new ModelAuthTransformer({ authMode: 'AMAZON_COGNITO_USER_POOLS' }),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [],
+        },
+      }),
     ],
   });
   const userPoolResponse = await createUserPool(cognitoClient, `UserPool${STACK_NAME}`);
@@ -117,7 +124,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
 
@@ -275,7 +282,7 @@ test('Testing reading an owner protected field as a non owner', async () => {
   logDebug(response1);
   expect(response1.data.createFieldProtected.id).toEqual('1');
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toBeNull();
 
   const response2 = await GRAPHQL_CLIENT_2.query(
     `query {
@@ -392,7 +399,7 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
   logDebug(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).toEqual('2');
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toBeNull();
 
   const response2 = await GRAPHQL_CLIENT_1.query(
     `mutation {
@@ -443,7 +450,7 @@ test('Test that owners cannot update the field of a FieldProtected object unless
   logDebug(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).not.toBeNull();
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
-  expect(response1.data.createFieldProtected.ownerOnly).toEqual('owner-protected');
+  expect(response1.data.createFieldProtected.ownerOnly).toBeNull();
 
   const response2 = await GRAPHQL_CLIENT_2.query(
     `mutation {

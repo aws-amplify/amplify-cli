@@ -39,7 +39,14 @@ beforeAll(async () => {
     const transformer = new GraphQLTransform({
       transformers: [
         new DynamoDBModelTransformer(),
-        new ModelAuthTransformer(),
+        new ModelAuthTransformer({
+          authConfig: {
+            defaultAuthentication: {
+              authenticationType: 'API_KEY',
+            },
+            additionalAuthenticationProviders: [],
+          },
+        }),
         new ModelConnectionTransformer(),
       ],
     });
@@ -51,7 +58,7 @@ beforeAll(async () => {
     server = result.simulator;
 
     GRAPHQL_ENDPOINT = server.url + '/graphql';
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
+    logDebug(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = result.config.appSync.apiKey;
     logDebug(apiKey);
@@ -71,7 +78,7 @@ afterAll(async () => {
     }
     await terminateDDB(ddbEmulator, dbPath);
   } catch (e) {
-    console.log(e);
+    logDebug(e);
     expect(true).toEqual(false);
   }
 });
