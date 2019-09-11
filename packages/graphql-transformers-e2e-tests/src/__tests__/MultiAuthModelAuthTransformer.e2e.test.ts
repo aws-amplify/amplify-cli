@@ -348,16 +348,24 @@ beforeAll(async () => {
         out.rootStack.Resources.UnauthRole = unauthRole;
         out.rootStack.Outputs.UnauthRoleArn = { Value: { 'Fn::GetAtt': [ 'UnauthRole', 'Arn' ] } };
 
-        // Since we're doing the policy here we've to removed the transformer generated artifacts from
+        // Since we're doing the policy here we've to remove the transformer generated artifacts from
         // the generated stack.
         delete out.rootStack.Resources[ResourceConstants.RESOURCES.UnauthRolePolicy];
         delete out.rootStack.Parameters.unauthRoleName;
+        delete out.rootStack.Resources[ResourceConstants.RESOURCES.AuthRolePolicy];
+        delete out.rootStack.Parameters.authRoleName;
 
         for (const key of Object.keys(out.rootStack.Resources)) {
             if (out.rootStack.Resources[key].Properties &&
                 out.rootStack.Resources[key].Properties.Parameters &&
                 out.rootStack.Resources[key].Properties.Parameters.unauthRoleName) {
                 delete out.rootStack.Resources[key].Properties.Parameters.unauthRoleName;
+            }
+
+            if (out.rootStack.Resources[key].Properties &&
+                out.rootStack.Resources[key].Properties.Parameters &&
+                out.rootStack.Resources[key].Properties.Parameters.authRoleName) {
+                delete out.rootStack.Resources[key].Properties.Parameters.authRoleName;
             }
         }
 
@@ -369,10 +377,19 @@ beforeAll(async () => {
                     stack.Parameters.unauthRoleName) {
                     delete stack.Parameters.unauthRoleName;
                 }
+                if (stack.Parameters &&
+                    stack.Parameters.authRoleName) {
+                    delete stack.Parameters.authRoleName;
+                }
                 if (stack.Resources[key].Properties &&
                     stack.Resources[key].Properties.Parameters &&
                     stack.Resources[key].Properties.Parameters.unauthRoleName) {
                     delete stack.Resources[key].Properties.Parameters.unauthRoleName;
+                }
+                if (stack.Resources[key].Properties &&
+                    stack.Resources[key].Properties.Parameters &&
+                    stack.Resources[key].Properties.Parameters.authRoleName) {
+                    delete stack.Resources[key].Properties.Parameters.authRoleName;
                 }
             }
         }
