@@ -26,6 +26,7 @@ import {
     UnionTypeDefinitionNode, EnumTypeExtensionNode, EnumValueDefinitionNode,
     InputObjectTypeExtensionNode, InputValueDefinitionNode
 } from 'graphql/language/ast';
+import { _Kind } from 'graphql/language/kinds';
 
 export function blankObject(name: string): ObjectTypeDefinitionNode {
     return {
@@ -177,6 +178,22 @@ export default class TransformerContext {
         if (!this.getSchema()) {
             this.putSchema(DefaultSchemaDefinition);
         }
+    }
+
+    /**
+     * Scans through the context nodeMap and returns all type definition nodes
+     * that are of the given kind.
+     * @param kind Kind value of type definition nodes expected.
+     */
+    public getTypeDefinitionsOfKind(kind: string) {
+        const typeDefs: TypeDefinitionNode[] = [];
+        for (const key of Object.keys(this.nodeMap)) {
+            const definition = this.nodeMap[key];
+            if (definition.kind === kind) {
+                typeDefs.push(definition as TypeDefinitionNode);
+            }
+        }
+        return typeDefs
     }
 
     public mergeResources(resources: { [key: string]: Resource }) {
