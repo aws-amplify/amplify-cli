@@ -86,6 +86,6 @@ export async function runAppSyncSimulator(config, port?: number, wsPort?: number
 
 export function logDebug(...msgs) {
   if (process.env.DEBUG || process.env.CI) {
-    logDebug(...msgs);
+    console.log(...msgs);
   }
 }
