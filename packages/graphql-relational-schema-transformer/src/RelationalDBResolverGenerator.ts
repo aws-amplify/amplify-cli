@@ -1,5 +1,4 @@
 import TemplateContext from "./RelationalDBSchemaTransformer";
-import TableContext from "./RelationalDBSchemaTransformer";
 import { DocumentNode } from 'graphql'
 import { Fn } from 'cloudform'
 import AppSync from 'cloudform-types/types/appSync'
