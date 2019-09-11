@@ -16,20 +16,20 @@ function openConsole(context) {
   const amplifyMeta = context.amplify.getProjectMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   let appSyncMeta;
-  Object.keys((categoryAmplifyMeta)).forEach((resourceName) => {
-    if (categoryAmplifyMeta[resourceName].service === serviceName &&
-      categoryAmplifyMeta[resourceName].output) {
+  Object.keys(categoryAmplifyMeta).forEach((resourceName) => {
+    if (
+      categoryAmplifyMeta[resourceName].service === serviceName &&
+      categoryAmplifyMeta[resourceName].output
+    ) {
       appSyncMeta = categoryAmplifyMeta[resourceName].output;
     }
   });
-
 
   if (appSyncMeta) {
     const { GraphQLAPIIdOutput } = appSyncMeta;
     const { Region } = amplifyMeta.providers[providerName];
 
-    const consoleUrl =
-          `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+    const consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
     open(consoleUrl, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
@@ -110,7 +110,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
   // Write the default custom resources stack out to disk.
   const defaultCustomResourcesStack = fs.readFileSync(`${__dirname}/defaultCustomResources.json`);
-  fs.writeFileSync(`${resourceDir}/${stacksDirName}/${defaultStackName}`, defaultCustomResourcesStack);
+  fs.writeFileSync(
+    `${resourceDir}/${stacksDirName}/${defaultStackName}`,
+    defaultCustomResourcesStack,
+  );
 
   if (schemaFileAnswer[inputs[2].key]) {
     // User has an annotated schema file
@@ -125,14 +128,18 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
 
     fs.copyFileSync(schemaFilePath, `${resourceDir}/${schemaFileName}`);
 
-    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+      resourceDir,
+      parameters,
+      authConfig,
+    });
 
     return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
   }
 
   // The user doesn't have an annotated schema file
 
-  if (!await amplify.confirmPrompt.run('Do you want a guided schema creation?')) {
+  if (!(await amplify.confirmPrompt.run('Do you want a guided schema creation?'))) {
     // Copy the most basic schema onto the users resource dir and transform that
 
     const targetSchemaFilePath = `${resourceDir}/${schemaFileName}`;
@@ -166,7 +173,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
     context.print.info('Creating a base schema for you...');
 
     await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
-      resourceDir, parameters, authConfig,
+      resourceDir,
+      parameters,
+      authConfig,
     });
 
     return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
@@ -209,31 +218,39 @@ async function serviceWalkthrough(context, defaultValuesFilename, serviceMetadat
   fs.copyFileSync(schemaFilePath, targetSchemaFilePath);
 
   if (editSchemaChoice) {
-    return context.amplify.openEditor(context, targetSchemaFilePath)
-      .then(async () => {
-        let notCompiled = true;
-        while (notCompiled) {
-          try {
-            await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
-          } catch (e) {
-            context.print.error('Failed compiling GraphQL schema:');
-            context.print.info(e.message);
-            const continueQuestion = {
-              type: 'input',
-              name: 'pressKey',
-              message: `Correct the errors in schema.graphql and press Enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
-            };
-            await inquirer.prompt(continueQuestion);
-            continue;
-          }
-          notCompiled = false;
+    return context.amplify.openEditor(context, targetSchemaFilePath).then(async () => {
+      let notCompiled = true;
+      while (notCompiled) {
+        try {
+          await context.amplify.executeProviderUtils(
+            context,
+            'awscloudformation',
+            'compileSchema',
+            { resourceDir, parameters, authConfig },
+          );
+        } catch (e) {
+          context.print.error('Failed compiling GraphQL schema:');
+          context.print.info(e.message);
+          const continueQuestion = {
+            type: 'input',
+            name: 'pressKey',
+            message: `Correct the errors in schema.graphql and press Enter to re-compile.\n\nPath to schema.graphql:\n${targetSchemaFilePath}`,
+          };
+          await inquirer.prompt(continueQuestion);
+          continue;
         }
+        notCompiled = false;
+      }
 
-        return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
-      });
+      return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
+    });
   }
 
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+    resourceDir,
+    parameters,
+    authConfig,
+  });
 
   return { answers: resourceAnswers, output: { authConfig }, noCfnFile: true };
 }
@@ -294,7 +311,11 @@ async function updateWalkthrough(context) {
   jsonString = JSON.stringify(backendConfig, null, '\t');
   fs.writeFileSync(backendConfigFilePath, jsonString, 'utf8');
 
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { resourceDir, parameters, authConfig });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+    resourceDir,
+    parameters,
+    authConfig,
+  });
 }
 
 async function askSecurityQuestions(context, parameters) {
@@ -373,34 +394,33 @@ async function askSecurityQuestions(context, parameters) {
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
+  }
+  const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS');
+  const additionalUserPoolProvider =
+    additionalUserPoolProviders.length > 0 ? additionalUserPoolProviders[0] : undefined;
 
-    const additionalUserPoolProviders = authConfig.additionalAuthenticationProviders.filter(provider => provider.authenticationType === 'AMAZON_COGNITO_USER_POOLS');
-    const additionalUserPoolProvider = additionalUserPoolProviders.length > 0
-      ? additionalUserPoolProviders[0] : undefined;
+  if (
+    authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' ||
+    additionalUserPoolProvider
+  ) {
+    let userPoolId;
+    const configuredUserPoolName = checkIfAuthExists(context);
 
-    if (authConfig.defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS' || additionalUserPoolProvider) {
-      let userPoolId;
-      const configuredUserPoolName = checkIfAuthExists(context);
-
-      if (authConfig.userPoolConfig) {
-        ({ userPoolId } = authConfig.userPoolConfig);
-      } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
-        ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
-      } else if (configuredUserPoolName) {
-        userPoolId = `auth${configuredUserPoolName}`;
-      } else {
-        throw new Error('Cannot find a configured Cognito User Pool, it is probably a CLI error, please submit an issue on GitHub.');
-      }
-
-      parameters.AuthCognitoUserPoolId = {
-        'Fn::GetAtt': [
-          userPoolId,
-          'Outputs.UserPoolId',
-        ],
-      };
+    if (authConfig.userPoolConfig) {
+      ({ userPoolId } = authConfig.userPoolConfig);
+    } else if (additionalUserPoolProvider && additionalUserPoolProvider.userPoolConfig) {
+      ({ userPoolId } = additionalUserPoolProvider.userPoolConfig);
+    } else if (configuredUserPoolName) {
+      userPoolId = `auth${configuredUserPoolName}`;
     } else {
-      delete parameters.AuthCognitoUserPoolId;
+      throw new Error('Cannot find a configured Cognito User Pool.');
     }
+
+    parameters.AuthCognitoUserPoolId = {
+      'Fn::GetAtt': [userPoolId, 'Outputs.UserPoolId'],
+    };
+  } else {
+    delete parameters.AuthCognitoUserPoolId;
   }
 
   return authConfig;
@@ -601,7 +621,10 @@ function checkIfAuthExists(context) {
 }
 
 async function migrate(context) {
-  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', { forceCompile: true, migrate: true });
+  await context.amplify.executeProviderUtils(context, 'awscloudformation', 'compileSchema', {
+    forceCompile: true,
+    migrate: true,
+  });
 }
 
 function getIAMPolicies(resourceName, crudOptions) {
@@ -610,15 +633,20 @@ function getIAMPolicies(resourceName, crudOptions) {
 
   crudOptions.forEach((crudOption) => {
     switch (crudOption) {
-      case 'create': actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
+      case 'create':
+        actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
         break;
-      case 'update': actions.push('appsync:Update*');
+      case 'update':
+        actions.push('appsync:Update*');
         break;
-      case 'read': actions.push('appsync:Get*', 'appsync:List*');
+      case 'read':
+        actions.push('appsync:Get*', 'appsync:List*');
         break;
-      case 'delete': actions.push('appsync:Delete*');
+      case 'delete':
+        actions.push('appsync:Delete*');
         break;
-      default: console.log(`${crudOption} not supported`);
+      default:
+        console.log(`${crudOption} not supported`);
     }
   });
 
@@ -655,12 +683,18 @@ function getAuthTypes(authConfig) {
     .map(provider => provider.authenticationType)
     .filter(t => !!t);
 
-  const uniqueAuthTypes = new Set([...additionalAuthTypes,
-    authConfig.defaultAuthentication.authenticationType]);
+  const uniqueAuthTypes = new Set([
+    ...additionalAuthTypes,
+    authConfig.defaultAuthentication.authenticationType,
+  ]);
 
   return [...uniqueAuthTypes.keys()];
 }
 
 module.exports = {
-  serviceWalkthrough, updateWalkthrough, openConsole, migrate, getIAMPolicies,
+  serviceWalkthrough,
+  updateWalkthrough,
+  openConsole,
+  migrate,
+  getIAMPolicies,
 };
